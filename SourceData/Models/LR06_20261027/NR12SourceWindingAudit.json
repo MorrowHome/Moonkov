@@ -1,0 +1,6755 @@
+{
+  "scope": "original mesh geometry before modifiers; not evaluated export or Unity",
+  "source_unmodified": true,
+  "summary": {
+    "objects": 749,
+    "with_inward_closed_parts": 722,
+    "only_inward_closed_parts": 722,
+    "with_open_parts": 0,
+    "negative_world_determinant": 0,
+    "not_mesh_or_missing": 0
+  },
+  "objects": [
+    {
+      "name": "NR01_West_Entry_Return_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Entry_Return_Roof_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Entry_Return_Roof_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_2.0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_2.0_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_2.0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_2.0_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_13.0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_13.0_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_13.0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_13.0_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_26.5_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-53.0_26.5_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_26.5_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_WestEntry_-49.5_26.5_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Solid_Abutment_-48.6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Coated_Abutment_-48.6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Solid_Abutment_-34.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Coated_Abutment_-34.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Deep_Transfer_Girder",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Rear_Transfer_Girder",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Knee_-48.6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Knee_-34.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Floor",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rear_Wall",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Side_Wall",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_West_Wall",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Front_Sill",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Front_Head",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Setback_Glazing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Window_Mullion_-49",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Window_Mullion_-44.7",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Window_Mullion_-40.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Window_Mullion_-36.2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Window_Mullion_-33",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Asymmetric_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Asymmetric_Roof_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Asymmetric_Roof_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Entry_Identification_Band",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Entry_West_Solid_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Entry_Return_Base",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-31.95_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-31.95_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-31.95_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-31.95_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_Cross_Frame_-31.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_Spine_Receiving_-5.45_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-5.45_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-5.45_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_-5.45_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_Cross_Frame_-5.45",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_Spine_Receiving_Long_Girder_0.9",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Receiving_Long_Girder_5.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_-4.55_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_-4.55_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_-4.55_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_-4.55_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_Cross_Frame_-4.55",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_18.25_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_18.25_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_18.25_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_18.25_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_Cross_Frame_18.25",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_Long_Girder_0.9",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Crossing_Long_Girder_5.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_19.15_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_19.15_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_19.15_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_19.15_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_Cross_Frame_19.15",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_48.349999999999994_0.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_48.349999999999994_0.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_48.349999999999994_5.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_48.349999999999994_5.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_Cross_Frame_48.349999999999994",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_Long_Girder_0.9",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_East_Distribution_Long_Girder_5.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Spine_Service_Trunk",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Pier_-3.1_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Foot_-3.1_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Pier_-3.1_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Foot_-3.1_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Pier_1.7_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Foot_1.7_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Pier_1.7_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Foot_1.7_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Transfer_Floor",
+      "raw_vertices": 32,
+      "raw_faces": 24,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 4,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_West_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_East_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_North_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_South_Panel",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Recessed_Vent",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Vent_Baffle_15.9",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Vent_Baffle_16.35",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Vent_Baffle_16.8",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Vent_Baffle_17.25",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Vent_Baffle_17.7",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Raised_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Raised_Roof_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Raised_Roof_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Slim_Service_Strip",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Head_Throat_Support_-3.05",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Head_Throat_Support_1.65",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Fabrication",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Fabrication_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Fabrication_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-46.8_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-46.8_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Roof_Rib_-46.8",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-33.95_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-33.95_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Roof_Rib_-33.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-21.1_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_-21.1_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Roof_Rib_-21.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Front_Girder",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Standing_Fold_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Standing_Fold_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Fabrication_Standing_Fold_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Freight",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Freight_OuterFold",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Freight_InnerFold",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_-14.4_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_-14.4_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Roof_Rib_-14.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_0.0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_0.0_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Roof_Rib_0.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_14.4_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_14.4_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Roof_Rib_14.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Front_Girder",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Standing_Fold_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Standing_Fold_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Freight_Standing_Fold_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Process",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Process_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Loading_Porch_Process_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_21.8_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_21.8_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_Roof_Rib_21.8",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_34.15_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_34.15_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_Roof_Rib_34.15",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_46.5_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_46.5_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_Roof_Rib_46.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_Front_Girder",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Porch_Process_Standing_Fold_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Porch_Process_Standing_Fold_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Porch_Process_Standing_Fold_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_West_Crosslink_Shelter",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_Shelter_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_Shelter_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_-25.799999999999997_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_-25.799999999999997_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_-25.799999999999997_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_-25.799999999999997_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_-10.1_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_-10.1_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_-10.1_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_-10.1_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_5.6000000000000005_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-19.3_5.6000000000000005_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_5.6000000000000005_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Crosslink_-15.8_5.6000000000000005_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_Shelter",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 3,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_Shelter_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_Shelter_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_-24.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_-24.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_-24.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_-24.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_-9.65_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_-9.65_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_-9.65_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_-9.65_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_5.6000000000000005_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_16.0_5.6000000000000005_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_5.6000000000000005_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Crosslink_20.1_5.6000000000000005_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_Shelter",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_Shelter_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_Shelter_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_-23.599999999999998_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_-23.599999999999998_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_-23.599999999999998_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_-23.599999999999998_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_1.6500000000000004_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_1.6500000000000004_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_1.6500000000000004_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_1.6500000000000004_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_26.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_48.55_26.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_26.9_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Flank_53.15_26.9_Column",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Exit_Approach_Canopy",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Exit_Approach_Canopy_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Exit_Approach_Canopy_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthWest_Link",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthWest_Link_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthWest_Link_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthEast_Link",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthEast_Link_OuterFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_SouthEast_Link_InnerFold",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Dogleg_Full_Height_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Dogleg_Full_Height_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_West_Dogleg_Base",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_East_Dogleg_Base",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Solid_Edge_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_South_Court_Edge_Cap_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Service_Shield",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Tank_Service_Shield_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Entry_Reveal_-35.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Entry_Reveal_-33.45",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Entry_Lintel",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Flight",
+      "raw_vertices": 98,
+      "raw_faces": 51,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Stringer_-1.13",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Stringer_1.13",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_-1.0999999999999999_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Lower_Rail_1.0999999999999999_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Flight",
+      "raw_vertices": 98,
+      "raw_faces": 51,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Stringer_-1.13",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Stringer_1.13",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_-1.0999999999999999_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Upper_Rail_1.0999999999999999_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Mid_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Top_Turn",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Entry_Gallery",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Entry_Threshold_Landing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidSouth_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidWest_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidWest_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidWest_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidWest_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidWest_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidEast_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidEast_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidEast_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidEast_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_MidEast_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopNorth_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopWest_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopWest_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopWest_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopWest_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_TopWest_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_7",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_8",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_9",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_10",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_11",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryEast_Baluster_12",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_6",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_GalleryWest_Baluster_7",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdWest_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdNorth_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdNorth_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdNorth_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdNorth_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_ThresholdNorth_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_0_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_1_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_1_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_2_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_2_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_3_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_3_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_4_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_4_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_5_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_5_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_6_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_6_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_7_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_7_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_8_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Access_Support_8_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Gallery_Crossbeam_12.7",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Gallery_Crossbeam_20.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Gallery_Crossbeam_26.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Dispatch_Gallery_Brace",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_Service_Head_Entry_Reveal_-1.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Entry_Reveal_0.55",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Head_Entry_Lintel",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Flight",
+      "raw_vertices": 90,
+      "raw_faces": 47,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Stringer_-0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Stringer_0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_-0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Lower_Rail_0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Flight",
+      "raw_vertices": 90,
+      "raw_faces": 47,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Stringer_-0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Stringer_0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_-0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Middle_Rail_0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Flight",
+      "raw_vertices": 90,
+      "raw_faces": 47,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Stringer_-0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Stringer_0.855",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_-0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Rail_0.8250000000000001_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Arrival",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_End_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_-2.6_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_-2.6_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_-2.6_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_-2.6_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_-2.6_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_1.35_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_1.35_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_1.35_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_1.35_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_North_Side_1.35_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_End_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_-2.6_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_-2.6_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_-2.6_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_-2.6_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_-2.6_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_1.35_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_1.35_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_1.35_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_1.35_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_South_Side_1.35_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_0_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_0_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_1_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_1_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_2_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_2_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_3_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stair_Support_3_Post",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_West_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_East_Baluster_5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_South_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_South_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_South_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_South_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Stairwell_South_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Upper_Entry_Balcony",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Baluster_3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Front_Baluster_4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_West_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_West_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_West_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_West_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_West_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_East_Handrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_East_Midrail",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_East_Baluster_0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_East_Baluster_1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_East_Baluster_2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Cantilever_-3.15",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Knee_-3.15",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Cantilever_1.75",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Balcony_Knee_1.75",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Ground_Portal_Jamb_-2.8",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Ground_Portal_Jamb_1.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_Service_Ground_Portal_Head",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Service_Upper_Transfer_Beam_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Service_Upper_Transfer_Beam_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Service_Bypass_Surface",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Service_Bypass_Low_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_Cantilever_10.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_Cantilever_21.5",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_East_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 0.9999999403953552
+    },
+    {
+      "name": "NR01_V2_Bypass_South_Jamb",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_South_Header",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_North_Jamb_-4.05",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_North_Jamb_-2.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Bypass_North_Header",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Dispatch_Entry_Porch_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Dispatch_Entry_Porch_West_Return",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Dispatch_Entry_Porch_Column_-36.12",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Dispatch_Entry_Porch_Column_-32.1",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V2_Dispatch_Entry_Porch_Header",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V3_Dispatch_Entry_Light_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V3_Dispatch_Entry_Light_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Base",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Full_Height_Frame",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Enamel_Infill",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Lower_Impact_Panel",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Left_Equipment_Panel",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Right_Utility_Panel",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Instrument_Recess",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Instrument_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Utility_Access_Door",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Service_Spine_Utility_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_Worktop",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_Front_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_WEST_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_WEST_Drawer_Front",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_WEST_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_EAST_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_EAST_Drawer_Front",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_EAST_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_Rear_Cable_Riser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_Test_Tray",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Maintenance_Bench_Test_Module",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Worktop",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Front_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_L_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_L_Access_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_R_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_R_Access_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_L_Display_Stand",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_L_Display_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_L_Display_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_R_Display_Stand",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_R_Display_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_R_Display_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Control_Deck",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Stool_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Stool_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_A_Stool_Seat",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Worktop",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Front_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_L_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_L_Access_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_R_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_R_Access_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_L_Display_Stand",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_L_Display_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_L_Display_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_R_Display_Stand",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_R_Display_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_R_Display_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0000001192092896
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Control_Deck",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Stool_Foot",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Stool_Pedestal",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Dispatch_B_Stool_Seat",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_Shared_Platform",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_A_Carcass",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_A_Door",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_A_Lower_Kickplate",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_A_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_B_Carcass",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_B_Door",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_B_Lower_Kickplate",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_B_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_C_Carcass",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_C_Door",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_C_Lower_Kickplate",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_C_Pull",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Storage_Header_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_MAIN_Service_Beam",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_MAIN_WEST_Roof_Tie",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_MAIN_EAST_Roof_Tie",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_ENTRY_Service_Beam",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_ENTRY_WEST_Roof_Tie",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Ceiling_ENTRY_EAST_Roof_Tie",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Interior_MAINTENANCE_Light_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Interior_MAINTENANCE_Light_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Interior_DISPATCH_Light_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V4_Interior_DISPATCH_Light_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Continuous_Sole",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Full_Height_Wall",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Lower_Impact_Liner",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Upper_Wall_Cap",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Continuous_Sole",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Full_Height_Wall",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Lower_Impact_Liner",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Upper_Wall_Cap",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Ground_Plinth",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Top_Cap",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Impact_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Ground_Plinth",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Top_Cap",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Impact_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Mullion_-19.3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Mullion_-9.65",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Mullion_-0.2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Weather_Baffle_5.18",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Weather_Baffle_5.68",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Clerestory_Weather_Baffle_6.18",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Mullion_-19.3",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Mullion_-9.65",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Mullion_-0.2",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Weather_Baffle_5.18",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Weather_Baffle_5.68",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Clerestory_Weather_Baffle_6.18",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_Raised_SOUTH_Cross_Beam",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_Raised_MID_Cross_Beam",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_Raised_NORTH_Cross_Beam",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_WEST_Raised_Eave",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_EAST_Raised_Eave",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_Raised_Roof_End_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_End_Steel_Sill",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_Raised_Roof_End_Fascia",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_End_Steel_Sill",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_OPEN_ARRIVAL_WEST_Jamb",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_OPEN_ARRIVAL_EAST_Jamb",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_OPEN_ARRIVAL_Open_Header",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_OPEN_ARRIVAL_Threshold_Identifier",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_OPEN_ARRIVAL_WEST_Jamb",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_OPEN_ARRIVAL_EAST_Jamb",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_OPEN_ARRIVAL_Open_Header",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_OPEN_ARRIVAL_Threshold_Identifier",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Lighting_Transom",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_TRANSFER_Lighting_Transom",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_TRANSFER_Worklight_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V5_NORTH_TRANSFER_Worklight_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_WEST_Worklight_Mount",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_WEST_Worklight_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_WEST_Worklight_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_EAST_Worklight_Mount",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_EAST_Worklight_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V8_EAST_Worklight_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_I_Column_-11.65_-26.0",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Foot_-11.65_-26.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Base_Plate_-11.65_-26.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_I_Column_-11.65_-19.95",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Foot_-11.65_-19.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Base_Plate_-11.65_-19.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_I_Column_-3.75_-26.0",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Foot_-3.75_-26.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Base_Plate_-3.75_-26.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_I_Column_-3.75_-19.95",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Foot_-3.75_-19.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Base_Plate_-3.75_-19.95",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Front_Roof_Truss",
+      "raw_vertices": 64,
+      "raw_faces": 48,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 8,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Rear_Roof_Truss",
+      "raw_vertices": 64,
+      "raw_faces": 48,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 8,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Upper_Side_-11.96",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Upper_Side_-3.44",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Upper_Rear_Closure",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Stepped_Eave_-12.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_Stepped_Eave_-3.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_East_Vent_Recess",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Hoist_East_Vent_Blades",
+      "raw_vertices": 32,
+      "raw_faces": 24,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 4,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Runway_-11.55",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Runway_Knee_-11.55_-25.65",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Runway_Knee_-11.55_-20.25",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Runway_-3.85",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Runway_Knee_-3.85_-25.65",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Runway_Knee_-3.85_-20.25",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Travel_Bridge",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Trolley",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Parked_Ropes",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Parked_Hook_Block",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Crane_Parked_Open_Hook",
+      "raw_vertices": 96,
+      "raw_faces": 72,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 12,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Plinth",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Wall_Shell",
+      "raw_vertices": 48,
+      "raw_faces": 36,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 6,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Low_Roof",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Recessed_Door",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Door_Frame",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Control_Cabinet",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Upper_Vent_Recess",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Service_Pod_Upper_Vent_Blades",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Low_Canopy_Rear_Ledger",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Low_Canopy_Knee_-14.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Low_Canopy_Knee_0.0",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V10_Low_Canopy_Knee_14.4",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_WEST_Mount",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_WEST_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_WEST_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_EAST_Mount",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_EAST_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_HOIST_EAST_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_SERVICE_Mount",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_SERVICE_Housing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V11_SERVICE_Diffuser",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Continuous_Grade_Following_Chords",
+      "raw_vertices": 32,
+      "raw_faces": 24,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 4,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Open_Outer_Truss_Web",
+      "raw_vertices": 72,
+      "raw_faces": 54,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 9,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Open_Inner_Truss_Web",
+      "raw_vertices": 72,
+      "raw_faces": 54,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 9,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Carrier_Crossframes",
+      "raw_vertices": 80,
+      "raw_faces": 60,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 10,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Girder_Borne_Cantilever_00",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Girder_Borne_Cantilever_01",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Girder_Borne_Cantilever_02",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Girder_Borne_Cantilever_03",
+      "raw_vertices": 24,
+      "raw_faces": 18,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 3,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Supply_Insulated_Run",
+      "raw_vertices": 40,
+      "raw_faces": 22,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Return_Insulated_Run",
+      "raw_vertices": 32,
+      "raw_faces": 18,
+      "closed_outward_parts": 1,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Pipe_Cradle_Seats",
+      "raw_vertices": 120,
+      "raw_faces": 90,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 15,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_Cradle_Retaining_Bands",
+      "raw_vertices": 320,
+      "raw_faces": 180,
+      "closed_outward_parts": 10,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_Underdeck_Transfer_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_Recessed_Service_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_Identification_Inlay",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_Slab_Suspension",
+      "raw_vertices": 64,
+      "raw_faces": 48,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 8,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_SUPPLY_Bent_Interface",
+      "raw_vertices": 64,
+      "raw_faces": 36,
+      "closed_outward_parts": 2,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_RETURN_Bent_Interface",
+      "raw_vertices": 64,
+      "raw_faces": 36,
+      "closed_outward_parts": 2,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_LOWER_R08_Terminal_Cradle",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_Underdeck_Transfer_Casing",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_Recessed_Service_Face",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_Identification_Inlay",
+      "raw_vertices": 8,
+      "raw_faces": 6,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 1,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_Slab_Suspension",
+      "raw_vertices": 64,
+      "raw_faces": 48,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 8,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_SUPPLY_Bent_Interface",
+      "raw_vertices": 64,
+      "raw_faces": 36,
+      "closed_outward_parts": 2,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_RETURN_Bent_Interface",
+      "raw_vertices": 64,
+      "raw_faces": 36,
+      "closed_outward_parts": 2,
+      "closed_inward_parts": 0,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    },
+    {
+      "name": "NR01_V12_UPPER_NR01_Terminal_Cradle",
+      "raw_vertices": 16,
+      "raw_faces": 12,
+      "closed_outward_parts": 0,
+      "closed_inward_parts": 2,
+      "open_parts": 0,
+      "world_determinant": 1.0
+    }
+  ]
+}

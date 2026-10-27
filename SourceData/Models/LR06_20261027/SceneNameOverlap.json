@@ -1,0 +1,168 @@
+{
+  "scope": "exact GameObject name comparison only; scene aggregates, visibility, transforms and mesh content are unverified",
+  "scene_object_names": 13089,
+  "candidate_instances_after_exact_duplicate_removal": 30212,
+  "groups": {
+    "Map": {
+      "missing_exact_name": 16529,
+      "one_exact_name": 153
+    },
+    "DetailRevisions": {
+      "missing_exact_name": 113
+    },
+    "W18": {
+      "missing_exact_name": 1504
+    },
+    "NR12": {
+      "missing_exact_name": 749
+    },
+    "MC00v5": {
+      "one_exact_name": 9254,
+      "missing_exact_name": 1300,
+      "multiple_exact_names": 24
+    },
+    "GI01": {
+      "missing_exact_name": 586
+    }
+  },
+  "examples": {
+    "Map": {
+      "missing_exact_name": [
+        "B_Ring_Deck_00",
+        "B_Ring_Outer_Fascia_00",
+        "B_Ring_Inner_Girder_00",
+        "B_Ring_Safety_Edge_00",
+        "B_Ring_Safety_Edge_00.001",
+        "B_Ring_Diagonal_0001",
+        "B_Ring_Service_Pipe_0002",
+        "B_Ring_Deck_01",
+        "B_Ring_Safety_Edge_01",
+        "B_Ring_Safety_Edge_01.001",
+        "B_Ring_Diagonal_0003",
+        "B_Ring_Deck_02"
+      ],
+      "one_exact_name": [
+        "R6_T06_THICK_WALL_AND_ROOF_BACKING",
+        "R6_T06_LAYERED_CLADDING_PANELS",
+        "R6_T06_FIXED_INSPECTION_GLAZING",
+        "R6_T06_WINDOW_FRAMES_AND_SILLS",
+        "R6_T06_PORTAL_FRAME_AND_BEARING_SHOES",
+        "R6_T06_ACCESS_REVEALS_AND_CANOPY",
+        "R6_T06_PERSONNEL_DOOR_STATIC_CLOSED",
+        "R6_T06_CARGO_SHUTTER_STATIC_CLOSED",
+        "R6_T06_RECESSED_SEALED_THERMAL_SERVICE",
+        "R6_T06_LAYERED_EAVES_AND_ROOF_SERVICE",
+        "R6_T06_MAIN_FUNCTION_LABEL",
+        "R6_T06_PERSONNEL_LABEL"
+      ]
+    },
+    "DetailRevisions": {
+      "missing_exact_name": [
+        "WH01_Integrated_Seven_Rib_Wheel_Web_DISPLAY_ONLY",
+        "HU01_Integrated_Stepped_Shaft_Two_Flat_Lockring_DISPLAY_ONLY",
+        "CS01_01_Side_Girder_Anchor_Plates",
+        "CS01_02_Paired_Triangulated_Load_Frames",
+        "CS01_03_Open_Base_Carrier_And_Equipment_Cradles",
+        "CS01_04_Three_Staggered_Inline_Isolator_Housings",
+        "CS01_05_True_Bore_Split_Service_Collars",
+        "CS01_06_Outer_Stem_Extensions_And_Mount_Saddles",
+        "CS01_07_Reduction_Cases_With_Seated_Covers",
+        "CS01_08_Static_Isolation_Position_Levers",
+        "CS01_09_Single_Pressure_Compensation_Vessel",
+        "CS01_10_Vessel_Retention_Bands_And_Back_Seats"
+      ]
+    },
+    "W18": {
+      "missing_exact_name": [
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_WalkFloor",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F00_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F10_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F20_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F30_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F40_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F01_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F11_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F21_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F31_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F41_Footing",
+        "WC_A10_PERPENDICULAR_MACHINE_SHOP_F02_Footing"
+      ]
+    },
+    "NR12": {
+      "missing_exact_name": [
+        "NR01_West_Entry_Return_Roof",
+        "NR01_West_Entry_Return_Roof_OuterFold",
+        "NR01_West_Entry_Return_Roof_InnerFold",
+        "NR01_WestEntry_-53.0_2.0_Foot",
+        "NR01_WestEntry_-53.0_2.0_Column",
+        "NR01_WestEntry_-49.5_2.0_Foot",
+        "NR01_WestEntry_-49.5_2.0_Column",
+        "NR01_WestEntry_-53.0_13.0_Foot",
+        "NR01_WestEntry_-53.0_13.0_Column",
+        "NR01_WestEntry_-49.5_13.0_Foot",
+        "NR01_WestEntry_-49.5_13.0_Column",
+        "NR01_WestEntry_-53.0_26.5_Foot"
+      ]
+    },
+    "MC00v5": {
+      "one_exact_name": [
+        "SW_MC00_ENTRY_EVA_01_Keycap",
+        "SW_MC00_ENTRY_EVA_02_Keycap",
+        "SW_MC00_ENTRY_EVA_03_Keycap",
+        "PANEL_MC00_ENTRY_EVA_Fixed",
+        "MC_East EVA aimed worklight housing_04205",
+        "MC_East EVA aimed worklight housing_04208",
+        "MC_East EVA approach ramp edge rail handrail_04221",
+        "MC_East EVA approach ramp edge rail handrail_04222",
+        "MC_East EVA approach ramp edge rail handrail_04228",
+        "MC_East EVA approach ramp edge rail handrail_04229",
+        "MC_East EVA approach ramp edge rail post_04216",
+        "MC_East EVA approach ramp edge rail post_04217"
+      ],
+      "missing_exact_name": [
+        "MC124_W_Sole",
+        "MC124_W_Eave",
+        "MC124_W_Front_Rib",
+        "MC124_W_Centre_Rib",
+        "MC124_W_Rear_Rib",
+        "MC124_E_Sole",
+        "MC124_E_Eave",
+        "MC124_E_Front_Rib",
+        "MC124_E_Centre_Rib",
+        "MC124_E_Rear_Rib",
+        "MC115_Fixed_Frame_Pocket_Cradle",
+        "MC115_Sealed_Clean_Supply_A"
+      ],
+      "multiple_exact_names": [
+        "MC_East EVA outer isolation door individual leaf carriage_04152",
+        "MC_East EVA outer isolation door individual leaf carriage_04154",
+        "MC_East EVA outer isolation door individual leaf carriage_04156",
+        "MC_East EVA outer isolation door individual leaf carriage_04162",
+        "MC_East EVA outer isolation door individual leaf carriage_04164",
+        "MC_East EVA outer isolation door individual leaf carriage_04166",
+        "MC_East EVA outer isolation door stowed telescopic door pan",
+        "MC_East EVA outer isolation door stowed telescopic door pan.001",
+        "MC_East EVA outer isolation door stowed telescopic door pan.002",
+        "MC_East EVA outer isolation door stowed telescopic door pan.003",
+        "MC_East EVA outer isolation door stowed telescopic door pan.004",
+        "MC_East EVA outer isolation door stowed telescopic door panel_0"
+      ]
+    },
+    "GI01": {
+      "missing_exact_name": [
+        "MC00_GI01_Cargo_contour_turn_continuous_plate",
+        "MC00_GI01_Cargo_flush_cross_joint_00",
+        "MC00_GI01_Cargo_flush_cross_joint_01",
+        "MC00_GI01_Cargo_flush_cross_joint_02",
+        "MC00_GI01_Cargo_flush_cross_joint_03",
+        "MC00_GI01_Cargo_flush_cross_joint_04",
+        "MC00_GI01_Cargo_flush_cross_joint_05",
+        "MC00_GI01_Cargo_ochre_edge_-1",
+        "MC00_GI01_Cargo_ochre_edge_1",
+        "MC00_GI01_Cargo_stringer_0_00_web",
+        "MC00_GI01_Cargo_stringer_0_00_lower",
+        "MC00_GI01_Cargo_stringer_0_00_upper"
+      ]
+    }
+  }
+}

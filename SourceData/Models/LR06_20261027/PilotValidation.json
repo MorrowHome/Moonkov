@@ -1,0 +1,34 @@
+{
+  "scope": "isolated 3-object NR12 pilot; formal map not updated",
+  "unity_yaw_correction_degrees": 180.0,
+  "unity_max_bounds_error_metres": 0.000440130767,
+  "blender_roundtrip_max_bounds_error_metres": 0.0001220703125,
+  "unity_preview_materials": 3,
+  "source_emission_verified_after_reimport": true,
+  "same_lighting_blender_comparison_pixels": 349483,
+  "same_lighting_blender_png_mean_absolute_rgb_difference": 0.005325049627572298,
+  "source_light_ids": 118,
+  "saved_unity_light_ids": 118,
+  "source_switch_ids": 135,
+  "saved_unity_switch_ids": 135,
+  "mask_checks": [
+    {
+      "object_index": 0,
+      "compared_pixels": 262144,
+      "metallic_max_error_8bit": 0,
+      "smoothness_max_error_8bit": 0
+    },
+    {
+      "object_index": 1,
+      "compared_pixels": 262144,
+      "metallic_max_error_8bit": 0,
+      "smoothness_max_error_8bit": 0
+    }
+  ],
+  "limitations": [
+    "Lighting is illustrative, not calibrated to Blender area lights.",
+    "Source screenshots are not Unity gameplay or full-map acceptance.",
+    "Formal lighting atlas and dynamic character probes remain unverified.",
+    "Unity marked an unrelated font asset as changed during the work; it is excluded from the task commit."
+  ]
+}

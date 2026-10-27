@@ -1,0 +1,6693 @@
+{
+  "status": "analysis_only_no_Unity_materials_created",
+  "materials": [
+    {
+      "name": "B_Dark_Deck_And_Sealed_Cover",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "B_DeepGray_Structural_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "B_Gray_Mineral_Support",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "B_GrayWhite_Rough_Cladding",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "B_REFERENCE_Real_DEM_Gray",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "B_Restricted_Engineering_Orange",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_01_Dark_Seated_Gasket",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_05_Restrained_Service_Stencil",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_01_Dry_Cast_Drive_Housing",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_02_Warm_Satin_Ceramic_Armor",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_03_Muted_BlueGray_Drive_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_04_Graphite_Metal_Louver",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_05_Dark_Phosphated_Drive_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_06_Turned_Collar_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_07_Cast_Flange_Limited_Contact",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_08_Service_Lid_Protective_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CM01_M1_09_Captive_Fastener_Stainless",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "CS01_M1_Accumulator_Shell_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_IMAGE",
+        "TEX_NOISE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_OffWhite_Ceramic_Coat_MetallicGloss.png.001",
+        "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png.001"
+      ]
+    },
+    {
+      "name": "CS01_M1_Coated_Service_Housings",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_IMAGE",
+        "TEX_NOISE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_MetallicGloss.png.001"
+      ]
+    },
+    {
+      "name": "CS01_M1_Machined_Shafts_And_Couplings",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_IMAGE",
+        "TEX_NOISE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png.001"
+      ]
+    },
+    {
+      "name": "CS01_M1_Maintenance_Cover_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_IMAGE",
+        "TEX_NOISE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_OffWhite_Ceramic_Coat_MetallicGloss.png.001",
+        "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png.001"
+      ]
+    },
+    {
+      "name": "CS01_M1_Satin_Formed_Service_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_IMAGE",
+        "TEX_NOISE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_MetallicGloss.png.001"
+      ]
+    },
+    {
+      "name": "ENTRY_Industrial_Coated_Deck_v12",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "ENTRY_Industrial_Coated_Deck_v12_BaseColor.png",
+        "ENTRY_Industrial_Coated_Deck_v12_Normal.png",
+        "ENTRY_Industrial_Coated_Deck_v12_ORM.png"
+      ]
+    },
+    {
+      "name": "ENTRY_Threshold_Powder_v11",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "ENTRY_Threshold_Powder_v11_Normal.png",
+        "ENTRY_Threshold_Powder_v11_ORM.png",
+        "ENTRY_Threshold_UseAtlas_BaseColor.png"
+      ]
+    },
+    {
+      "name": "ES01_Identification_Offwhite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Door_Coating_Local_Handwear",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Elastomer_And_Deep_Seals",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Entry_Kick_Plates_Brushed_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Entry_Shell_Sealed_Panels",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Foundation_Contact_Dust",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Graphite_Structural_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_GreenGray_Industrial_Powdercoat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Handled_Metal_Contact_Polish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Removable_Covers_Sealed_Perimeter",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Restrained_Ochre_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Satin_Machined_Service_Metal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Threshold_Directional_Traffic_And_Dust",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "ES01_M1_Warm_Gray_Insulated_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "FS01_PRIVATE_C12_West_CastMineral_Formwork_3m_x_1p5m",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "COMBINE_COLOR",
+        "COMBXYZ",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "TEX_WHITE_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "G03_Receiving_UseAtlas",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "G03_Receiving_UseAtlas_BaseColor.png",
+        "G03_Receiving_UseAtlas_ORM.png"
+      ]
+    },
+    {
+      "name": "L14_CAND_Aged_Bone_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Dark_Parkerized_Structural_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Graphite_Gaskets",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Heat_Stained_Pipe",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Ivory_Stencil",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Laminated_Pressure_Glass",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Lower_Liner_Band",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Mineral_Dust_Scuffed_Floor",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Ochre_Safety_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Oxblood_Valve_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Practical_Diffuser",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Rolled_Traction_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Warm_Grey_Pressure_Liner",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_CAND_Worn_Satin_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_NEXT_Dull_Galvanized_Tray",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_NEXT_Insulated_Service_Cable",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "L14_NEXT_Satin_Process_Stainless",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "L22_Desk_Satin_Aluminium",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "L22_Desk_Satin_ORM.png",
+        "LD2_Anodized_DarkAlloy_Normal.png",
+        "LD2_Brushed_Aluminium_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Anodized_DarkAlloy",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "LD2_Anodized_DarkAlloy_BaseColor.png",
+        "LD2_Anodized_DarkAlloy_Normal.png.001",
+        "LD2_Anodized_DarkAlloy_ORM.png"
+      ]
+    },
+    {
+      "name": "LD2_Brushed_Aluminium",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "LD2_Anodized_DarkAlloy_Normal.png",
+        "LD2_Brushed_Aluminium_BaseColor.png.001",
+        "LD2_Brushed_Aluminium_ORM.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Deck_BareSteel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_8409ea197419cf_BaseColor.png",
+        "Compact_a3740a41928db0_Normal.png",
+        "Compact_d0c8a724c4a08b_ORM.png"
+      ]
+    },
+    {
+      "name": "LD2_Deck_NonslipCoat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_117cf0e4c86711_ORM.png",
+        "Compact_14c376024a6152_Normal.png",
+        "Compact_412f76b33445a5_BaseColor.png"
+      ]
+    },
+    {
+      "name": "LD2_Glass_ClearPartition",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "LD2_Glass_SmokedPressureViewport",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "LD2_Hardstand_SinteredRegolith",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_4bd4a0e3ef70e8_ORM.png",
+        "Compact_5b781085bbe490_Normal.png",
+        "Compact_9931c61227a418_BaseColor.png"
+      ]
+    },
+    {
+      "name": "LD2_Hull_CeramicPaint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_c3327fe88ca43f_ORM.png",
+        "LD2_Hull_CeramicPaint_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Light_NeutralTask",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "LD2_Painted_Metal_Grey",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_0647f842d095a5_ORM.png",
+        "Compact_75066932c53291_Normal.png",
+        "LD2_Painted_Metal_Grey_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Raw_StainlessSteel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "LD2_Anodized_DarkAlloy_Normal.png",
+        "LD2_Raw_StainlessSteel_BaseColor.png.001",
+        "LD2_Raw_StainlessSteel_ORM.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Regolith_FineAggregate",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_6611a56582de04_BaseColor.png",
+        "Compact_b7664983fa8173_Normal.png",
+        "Compact_c3fd811facbb82_ORM.png"
+      ]
+    },
+    {
+      "name": "LD2_Safety_MutedOchre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_c3327fe88ca43f_ORM.png",
+        "LD2_Safety_MutedOchre_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Seal_Elastomer",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_1500150af78eb9_ORM.png",
+        "Compact_db1bf151bf2b72_Normal.png",
+        "LD2_Seal_Elastomer_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Structure_GraphiteCoat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_9969fc184c9600_ORM.png",
+        "LD2_Structure_GraphiteCoat_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LD2_Wayfinding_DesaturatedTeal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_f4710eb51a0d94_ORM.png",
+        "LD2_Wayfinding_DesaturatedTeal_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "LR01_WARM_CLERESTORY_B_GrayWhite_Rough_Cladding",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "LR01_WARM_HIGHBAY_WINDOW_R6_Dark_Inspection_Glazing",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "LR06_NR01_V5_Transfer_Diffuser_Warm_LOCAL_ONLY",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_ABRADED_ALLOY_EDGE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_DUST_WORN_OLIVE_PLATE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_FADED_STENCIL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_GRAPHITE_LOAD_STEEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_MUTED_OCHRE_RAIL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_RECESSED_JOINT",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_REGOLITH_CONTACT_BEARING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC00_GI01_REPLACED_DARK_PLATE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC106_Anchoring_Webbing_Constant_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC106_Dense_Teal_Gusset_Constant_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC106_Folded_Flax_Binding_Constant_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC106_PBR_back_pad_slot0",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_back_pad_BaseColor",
+        "MC106_back_pad_Normal"
+      ]
+    },
+    {
+      "name": "MC106_PBR_back_pad_slot1",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_back_pad_BaseColor",
+        "MC106_back_pad_Normal"
+      ]
+    },
+    {
+      "name": "MC106_PBR_back_pad_slot2",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_back_pad_BaseColor",
+        "MC106_back_pad_Normal"
+      ]
+    },
+    {
+      "name": "MC106_PBR_fitted_seat_cushion_slot0",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_fitted_seat_cushion_BaseColor",
+        "MC106_fitted_seat_cushion_Normal"
+      ]
+    },
+    {
+      "name": "MC106_PBR_fitted_seat_cushion_slot1",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_fitted_seat_cushion_BaseColor",
+        "MC106_fitted_seat_cushion_Normal"
+      ]
+    },
+    {
+      "name": "MC106_PBR_fitted_seat_cushion_slot2",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "MC106_fitted_seat_cushion_BaseColor",
+        "MC106_fitted_seat_cushion_Normal"
+      ]
+    },
+    {
+      "name": "MC106_Reading_Diffuser",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC106_Waxed_Flax_Thread_Constant_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC107_Backboard_Painted_Cassette",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_0647f842d095a5_ORM.png",
+        "Compact_75066932c53291_Normal.png",
+        "LD2_Painted_Metal_Grey_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "MC107_Cabinet_Ceramic_Satin",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_c3327fe88ca43f_ORM.png",
+        "LD2_Hull_CeramicPaint_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "MC107_Captured_Polymer_Glide",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC107_Formed_Aluminium_Edges",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "LD2_Anodized_DarkAlloy_Normal.png",
+        "LD2_Brushed_Aluminium_BaseColor.png.001",
+        "LD2_Brushed_Aluminium_ORM.png.001"
+      ]
+    },
+    {
+      "name": "MC107_Guide_Graphite_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png",
+        "Compact_9969fc184c9600_ORM.png",
+        "LD2_Structure_GraphiteCoat_BaseColor.png.001"
+      ]
+    },
+    {
+      "name": "MC107_Handled_Aluminium_Polish",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC107_Local_Graphite_Lettering",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC107_Recessed_Expansion_Joint",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC107_Recessed_Grip_Graphite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Bare_Contact_Edge",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Drawer_Interior",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Elastomer_Liner",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Etched_Lettering",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Formed_Stainless",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Graphite_Frame",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Load_Bearing_Polymer",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Service_Teal",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Task_Diffuser",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Tool_Grip",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Tool_Insert_Base",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Warm_PowderCoat",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC108_Zinc_Runner",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC111_Key_State",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC113_Fabric_Crew_Ochre",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenAmber",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenFace",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenFace.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenInk",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenWhite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC95_ScreenWhite.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC96_bench_slide_polish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "bench_slide_polish_BaseColorAlpha.png",
+        "bench_slide_polish_ORM.png"
+      ]
+    },
+    {
+      "name": "MC96_floor_heel_polish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "floor_heel_polish_BaseColorAlpha.png",
+        "floor_heel_polish_ORM.png"
+      ]
+    },
+    {
+      "name": "MC_Data",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC_Display",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC_Exterior_Task_Diffuser",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "MC_L11_LowerPanel_Slate_CleanableCoat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_0647f842d095a5_ORM.png",
+        "Compact_75066932c53291_Normal.png",
+        "MC_L11_LowerPanel_Slate_BaseColor"
+      ]
+    },
+    {
+      "name": "MC_L2_Directory_Matte_Print",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "MC_L2_Directory_BaseColor"
+      ]
+    },
+    {
+      "name": "MC_N_FirstFlight_Antislip_Contact_Local",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "MC_N_Stair_Contact_BaseColor",
+        "MC_N_Stair_Contact_Normal",
+        "MC_N_Stair_Contact_ORM"
+      ]
+    },
+    {
+      "name": "NR01_Dark_Structural_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Folded_Slate_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Machinery_Graphite",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Muted_Ochre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Recessed_Glass",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Rough_Mineral_Base",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Dispatch_Exterior_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Entry_Lens",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Gallery_Dry_Tread",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Interior_Utility_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Light_Canopy_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V3_Service_Exterior_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V4_Brushed_Dark_Worktop",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V4_Recessed_Instrument_Face",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Canopy_WarmGrey_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Dry_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Exposed_Structural_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Folded_Graphite_Edge",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Impact_Liner_Slate_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Spine_Pale_Utility_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Wall_Warm_Utility_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_V9_Weather_Baffle_Zinc",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OBJECT_INFO",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "NR01_Warm_Offwhite_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_ARMOR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_CONCRETE",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_DARK",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_METAL",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_ORANGE",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_PIPE",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R03_STEEL",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_ceramic_panel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_dark_void",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_exposed_alloy",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_gasket",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_label",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_machinery_slate",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_pale_panel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_structural_graphite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R05_warm_warning",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R13_Carbide_Replaceable_Tip",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R13_Cast_Bearing_Housing",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R13_Dark_Seal_And_Gasket",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R13_Dark_Seal_And_Gasket.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R13_Drum_Wear_Resistant_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R13_Machined_Steel_Contact",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R13_Machined_Steel_Contact.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png.001"
+      ]
+    },
+    {
+      "name": "R13_Protected_Frame_Coating",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R13_Settled_Regolith_On_Ledges",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R14_Coated_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Coated_Cladding_BaseColor",
+        "R14_Coated_Cladding_Normal",
+        "R14_Coated_Cladding_ORM"
+      ]
+    },
+    {
+      "name": "R14_Coated_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Coated_Steel_BaseColor",
+        "R14_Coated_Steel_Normal",
+        "R14_Coated_Steel_ORM"
+      ]
+    },
+    {
+      "name": "R14_Dark_Assembly",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Dark_Assembly_BaseColor",
+        "R14_Dark_Assembly_Normal",
+        "R14_Dark_Assembly_ORM"
+      ]
+    },
+    {
+      "name": "R14_Exposed_Alloy",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Exposed_Alloy_BaseColor",
+        "R14_Exposed_Alloy_Normal",
+        "R14_Exposed_Alloy_ORM"
+      ]
+    },
+    {
+      "name": "R14_Mineral_Sill",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Mineral_Sill_BaseColor",
+        "R14_Mineral_Sill_Normal",
+        "R14_Mineral_Sill_ORM"
+      ]
+    },
+    {
+      "name": "R14_Orange_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R14_Orange_Coating_BaseColor",
+        "R14_Orange_Coating_Normal",
+        "R14_Orange_Coating_ORM"
+      ]
+    },
+    {
+      "name": "R17_Burnished_Cutting_Face_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R19_CoatedPanel_PRIVATE_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R19_CoatedPanel_BaseColor_sRGB",
+        "R19_CoatedPanel_Normal_OpenGL",
+        "R19_CoatedPanel_Roughness_Linear"
+      ]
+    },
+    {
+      "name": "R19_MineralBase_PRIVATE_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R19_MineralBase_BaseColor_sRGB",
+        "R19_MineralBase_Normal_OpenGL",
+        "R19_MineralBase_Roughness_Linear"
+      ]
+    },
+    {
+      "name": "R19_Recessed_Seal_PRIVATE",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R19_Service_Cover_Enamel_PRIVATE_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R19_CoatedPanel_Normal_OpenGL",
+        "R19_CoatedPanel_Roughness_Linear"
+      ]
+    },
+    {
+      "name": "R21_Ring_Satin_Graphite_Coated_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R23_Concrete_Metric_Surface",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R5_PH_Concrete008_MetallicGloss_2k.png",
+        "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+        "R5_PH_Concrete008_NormalGL_2k.png"
+      ]
+    },
+    {
+      "name": "R23_Connection_Plate_Graphite_Coating",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R23_Exposed_Steel_Calm_Finish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_MetallicGloss.png"
+      ]
+    },
+    {
+      "name": "R23_Exposed_Steel_Calm_Finish.001",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_MetallicGloss.png.001"
+      ]
+    },
+    {
+      "name": "R23_Fastener_Satin_Passivated_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R23_Matte_Deck_Fine_Finish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Matte_Deck_Plates_MetallicGloss.png"
+      ]
+    },
+    {
+      "name": "R23_Protective_Steel_Microfinish",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_MetallicGloss.png"
+      ]
+    },
+    {
+      "name": "R23_Protective_Steel_Microfinish.001",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_MetallicGloss.png.001"
+      ]
+    },
+    {
+      "name": "R24_Compacted_Regolith_Trace",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Dark_Forged_Joint_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Exposed_Machined_Contact_Steel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Fresh_Cut_Rock_Fragments",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Localized_Lunar_Dust_Deposit",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Recessed_Elastomer_Seal",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Service_Stencil_Offwhite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R24_Slate_Gray_Industrial_Enamel",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R26V2_Baked_Heavy_Structures",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R29_PBR_1b07801b358c13a1_Linear",
+        "R29_PBR_755d0dc342bf5e96_Linear",
+        "R29_PBR_b1c386536eb72caa_sRGB",
+        "R29_PBR_e5f18076473ccf09_Linear"
+      ]
+    },
+    {
+      "name": "R26V2_Baked_Hero_Mechanics",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R29_PBR_755d0dc342bf5e96_Linear",
+        "R29_PBR_7866825c8bb4da13_Linear",
+        "R29_PBR_e5f18076473ccf09_Linear",
+        "R29_PBR_fdb837adb14bd187_sRGB"
+      ]
+    },
+    {
+      "name": "R26V2_Baked_Service_Decks",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R29_PBR_5797ec72901b46d4_Linear",
+        "R29_PBR_755d0dc342bf5e96_Linear",
+        "R29_PBR_bf80b31eca6dbb1a_sRGB",
+        "R29_PBR_e5f18076473ccf09_Linear"
+      ]
+    },
+    {
+      "name": "R27_Access_Armor_Used_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R29_PBR_092d4a12191e13a4_Linear",
+        "R29_PBR_56e3ccced1bbf510_sRGB",
+        "R29_PBR_627870e2e57c24b6_Linear"
+      ]
+    },
+    {
+      "name": "R27_HYD_Used_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R29_PBR_55240c18469a09e5_Linear",
+        "R29_PBR_6eca721d22d3b93f_sRGB",
+        "R29_PBR_7c1889ffbc10fc6b_Linear"
+      ]
+    },
+    {
+      "name": "R27S_Compacted_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_Compacted_BaseColor.png",
+        "R26_Regolith_Compacted_Normal_OpenGL.png",
+        "R26_Regolith_Compacted_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R27S_DustyClasts_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_DustyClasts_BaseColor.png",
+        "R26_Regolith_DustyClasts_Normal_OpenGL.png",
+        "R26_Regolith_DustyClasts_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R27S_FineDust_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_FineDust_BaseColor.png",
+        "R26_Regolith_FineDust_Normal_OpenGL.png",
+        "R26_Regolith_FineDust_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R28_Shaft_Mineral_Lining",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R29_PBR_03512fbada730321_Linear",
+        "R29_PBR_3c45f54fa36695bb_Linear",
+        "R29_PBR_b922989ffa110dc5_Linear",
+        "R29_PBR_ee0e86ce9703793f_sRGB"
+      ]
+    },
+    {
+      "name": "R28_Suspension_Coating_And_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R29_PBR_77d3504e740300a5_sRGB",
+        "R29_PBR_8d08a031ee9b3fb9_Linear",
+        "R29_PBR_b748b9b36b251a1f_Linear",
+        "R29_PBR_e5f18076473ccf09_Linear"
+      ]
+    },
+    {
+      "name": "R33_01_Service_Shroud_Dry_Ceramic_And_Trapped_Dust",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R33_02_Brake_Cover_Enamel_Dust_And_Contact_Wear",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R34_01_Service_Shroud_Baked_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R34_Shroud_BaseColor",
+        "R34_Shroud_Metallic",
+        "R34_Shroud_NormalTS",
+        "R34_Shroud_Roughness"
+      ]
+    },
+    {
+      "name": "R34_02_Brake_Cover_Baked_PBR",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R34_Cover_BaseColor",
+        "R34_Cover_Metallic",
+        "R34_Cover_NormalTS",
+        "R34_Cover_Roughness"
+      ]
+    },
+    {
+      "name": "R37_West_Seam_Compacted_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_Compacted_BaseColor.png",
+        "R26_Regolith_Compacted_Normal_OpenGL.png",
+        "R26_Regolith_Compacted_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R37_West_Seam_DustyClasts_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_DustyClasts_BaseColor.png",
+        "R26_Regolith_DustyClasts_Normal_OpenGL.png",
+        "R26_Regolith_DustyClasts_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R37_West_Seam_FineDust_WorldContinuous_PBR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "GROUP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE",
+        "UVMAP",
+        "VECT_MATH"
+      ],
+      "images": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26_Regolith_FineDust_BaseColor.png",
+        "R26_Regolith_FineDust_Normal_OpenGL.png",
+        "R26_Regolith_FineDust_Roughness.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R39_Deck0176_Industrial_Plated_Surface",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R39_Deck0176_BaseColor_sRGB.png",
+        "R39_Deck0176_MetallicSmoothness_Linear.png",
+        "R39_Deck0176_Normal_OpenGL.png",
+        "R39_Deck0176_Roughness_Linear.png"
+      ]
+    },
+    {
+      "name": "R3_Galvanized_Stair_Grating",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R3_LowLanding_Tracked_MoonDust",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R3_Restrained_Service_Ochre",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R3_Weathered_WarmGray_Sheet",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R40_Dry_Cast_Housing_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R40_Satin_Flange_Contact_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R41_NORTH_Crossbeam_Weathered_Ceramic",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "COMBXYZ",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R41_Primary_Buttress_Weathered_Ceramic",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "COMBXYZ",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Dry_Captive_Seal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Machined_Satin_Clamp_Land",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Protected_Cast_Charcoal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Removable_Cap_WarmGrey_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Service_Plug_Restrained_Ochre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R44_Service_Shell_BlueGrey_Coating",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R45_Folded_Transfer_Guard_Slate_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R45_Rectangular_Transition_Dark_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R45_Service_Lid_Light_Grey_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "AMBIENT_OCCLUSION",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "R4_Antislip_Deck_Plates",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Antislip_Deck_Plates_BaseColor.png",
+        "R4_Antislip_Deck_Plates_MetallicGloss.png",
+        "R4_Antislip_Deck_Plates_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_Compacted_Dust_Contact",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Compacted_Dust_Contact_BaseColor.png",
+        "R4_Compacted_Dust_Contact_MetallicGloss.png",
+        "R4_Compacted_Dust_Contact_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_Dark_Coated_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Dark_Coated_Steel_BaseColor.png",
+        "R4_Dark_Coated_Steel_MetallicGloss.png",
+        "R4_Dark_Coated_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_Exposed_Rough_Metal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Exposed_Rough_Metal_BaseColor.png",
+        "R4_Exposed_Rough_Metal_MetallicGloss.png",
+        "R4_Exposed_Rough_Metal_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_GrayWhite_Modular_Panels",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_GrayWhite_Modular_Panels_BaseColor.png",
+        "R4_GrayWhite_Modular_Panels_MetallicGloss.png",
+        "R4_GrayWhite_Modular_Panels_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_GrayWhite_Plain_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_GrayWhite_Plain_Coat_BaseColor.png",
+        "R4_GrayWhite_Plain_Coat_MetallicGloss.png",
+        "R4_GrayWhite_Plain_Coat_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_Mineral_Support_Surface",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Mineral_Support_Surface_BaseColor.png",
+        "R4_Mineral_Support_Surface_MetallicGloss.png",
+        "R4_Mineral_Support_Surface_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_Muted_Safety_Ochre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_Muted_Safety_Ochre_BaseColor.png",
+        "R4_Muted_Safety_Ochre_MetallicGloss.png",
+        "R4_Muted_Safety_Ochre_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R4_West_Access_ID",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R4_West_Access_ID_BaseColor.png",
+        "R4_West_Access_ID_MetallicGloss.png",
+        "R4_West_Access_ID_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Contact_Roof_Gabled_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Contact_Roof_Overhung_Extractor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Dispatch_High_Bay_Rough_Service_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Contact_Roof_Gabled_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Contact_Roof_Overhung_Extractor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Receiving_Hangar_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Contact_Roof_Heavy_Flat_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Contact_Roof_Overhung_Extractor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G2_Recovery_Cross_Wing_Rough_Service_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Contact_Roof_Heavy_Flat_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Contact_Roof_Overhung_Extractor_",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_Inward_Maintenance_Wing_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Contact_Roof_Main_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Contact_Roof_Monitor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Contact_Roof_Overhung_Extractor_C",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_North_Process_High_Bay_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Contact_Roof_Heavy_Flat_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Contact_Roof_Overhung_Extractor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G3_South_Reactor_Block_Rough_Service_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Contact_Roof_Main_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Contact_Roof_Monitor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Contact_Roof_Overhung_Extractor_Ca",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Long_Sorting_Exchange_Rough_Service_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Contact_Roof_Gabled_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Contact_Roof_Overhung_Extractor_Cap",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Lower_Transfer_Store_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Cast_Mineral_Plinth",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Contact_Roof_Heavy_Flat_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Contact_Roof_Overhung_Extractor_Ca",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Exposed_Blasted_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Painted_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Pale_Equipment_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Protective_Frame_Paint",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R54_G5_Upper_Loading_Gallery_Rough_Service_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "GROUP",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R5_PH_Concrete008_Neutral_2p710m",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R5_PH_Concrete008_MetallicGloss_2k.png",
+        "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+        "R5_PH_Concrete008_NormalGL_2k.png"
+      ]
+    },
+    {
+      "name": "R64_Brushed_Service_Metal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Dark_Joint_Gasket",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Dust_Concrete_Support",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Graphite_Pipe_And_Frame",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Muted_Repair_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Pale_Ceramic_Coated_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Rough_Standing_Seam_Roof",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Valve_Ochre_Marker",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R64_Warm_Process_Casing",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "R6_Dark_Inspection_Glazing",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R6_Label_Dark",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "R8_Dark_Protective_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_BaseColor.png",
+        "R8_Dark_Protective_Steel_MetallicGloss.png",
+        "R8_Dark_Protective_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R8_GrayWhite_Panel_Cladding",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_GrayWhite_Panel_Cladding_BaseColor.png",
+        "R8_GrayWhite_Panel_Cladding_MetallicGloss.png",
+        "R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R8_Matte_Deck_Plates",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Matte_Deck_Plates_BaseColor.png",
+        "R8_Matte_Deck_Plates_MetallicGloss.png",
+        "R8_Matte_Deck_Plates_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R8_OffWhite_Ceramic_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_OffWhite_Ceramic_Coat_BaseColor.png",
+        "R8_OffWhite_Ceramic_Coat_MetallicGloss.png",
+        "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R8_OffWhite_Ceramic_Coat.001",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_OffWhite_Ceramic_Coat_BaseColor.png.001",
+        "R8_OffWhite_Ceramic_Coat_MetallicGloss.png.001",
+        "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png.001"
+      ]
+    },
+    {
+      "name": "R8_Reference_DEM_TwoLayer_Regolith",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "CAMERA",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Regolith_3p7m_Normal_OpenGL.png",
+        "R8_Regolith_Global_Control_0_4096.png",
+        "R8_Regolith_HighTone_BaseColor.png",
+        "R8_Regolith_LowTone_BaseColor.png",
+        "R8_Regolith_TerrainMask.png"
+      ]
+    },
+    {
+      "name": "R8_Restrained_Safety_Ochre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+        "R8_Restrained_Safety_Ochre_BaseColor.png",
+        "R8_Restrained_Safety_Ochre_MetallicGloss.png"
+      ]
+    },
+    {
+      "name": "R8_Restrained_Safety_Ochre.001",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Dark_Protective_Steel_Normal_OpenGL.png.001",
+        "R8_Restrained_Safety_Ochre_BaseColor.png.001",
+        "R8_Restrained_Safety_Ochre_MetallicGloss.png.001"
+      ]
+    },
+    {
+      "name": "R8_Rough_Exposed_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R8_Rough_Exposed_Steel_BaseColor.png",
+        "R8_Rough_Exposed_Steel_MetallicGloss.png",
+        "R8_Rough_Exposed_Steel_Normal_OpenGL.png"
+      ]
+    },
+    {
+      "name": "R8_Scanned_Mineral_Support",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MATH",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE",
+        "UVMAP"
+      ],
+      "images": [
+        "R5_PH_Concrete008_MetallicGloss_2k.png",
+        "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+        "R5_PH_Concrete008_NormalGL_2k.png"
+      ]
+    },
+    {
+      "name": "RB11_G01_Clear_Glass_Local_Refraction",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "TH01_01_MidGray_Structural_And_Barrel_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "TH01_02_Pale_Mineral_Long_Armor_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "TH01_03_Subdued_Offset_Guard_Coat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "TH01_04_Dry_Cast_Articulation_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "TH01_05_Sliding_Contact_Precision_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_dark",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_glass2",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_metal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_mineral",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_repair2",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_rubber",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_ART_MAT_steel2",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F100_SERVICE_CASSETTE_COATING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_AGED_LIGHT_ALLOY",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_FOLDED_ZINC_EDGES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_IDENTIFIER_DARK_BACKING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_LOWER_DRY_CONTACT_COATING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_PORTAL_RUBBED_GUARDS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_REPLACEMENT_ALLOY",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_RESTRAINED_OCHRE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F120_STRUCTURAL_GRAPHITE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F70_seam",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_BLACK_ELASTOMER",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_COATED_STRUCTURAL_STEEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_COPPER_WINDING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_DARK_MACHINED_STEEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_DARK_RECESSES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_DRY_DUST_CONCRETE_FLOOR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_INDICATOR_GLASS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_INSPECTION_LUMINAIRE",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_LETTERS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_MACHINE_BLUEGREEN_CASTING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_MACHINED_SATIN_METAL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_PANEL_OFFWHITE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_REPLACEMENT_PANEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F80_SAFETY_OCHRE_ENAMEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_COATED_ROOF_SHEETS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "TEX_WHITE_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_CONCRETE_CONTROL_JOINT",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_DRY_CONTACT_REGOLITH",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BSDF_TRANSPARENT",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_EXTERIOR_MINERAL_COATING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_FOLDED_METAL_EDGES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_FORECOURT_MONOLITHIC_CONCRETE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_FORMED_MINERAL_BASE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_GALLERY_MINERAL_CONCRETE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_MATTED_CLADDING_FOLDS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_F90_SMALL_ANGULAR_REGOLITH",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A01_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A01_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A01_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A01_Sunbleached_Upper",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A10_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A10_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_A10_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B01_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B01_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B01_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B01_Sunbleached_Upper",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B10_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B10_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_B10_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C01_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C01_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C01_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C01_Sunbleached_Upper",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C20_Enamel_Field",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C20_Mineral_Kick",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_C20_Service_Replacement",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Cargo_Muted_Olive",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Letter",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Mineral_Formwork",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Raw_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Roof_Dark_Slate",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Roof_Repair_Zinc",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Roof_Weathered_Sheet",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Service_Clay_Enamel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Shelter_Working_Structure",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Shelter_Zinc_Underside",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Structural_Faded_Graphite",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_FINISH_Worn_Ochre",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_INTERFACE_Battered_Aggregate_Sole",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_INTERFACE_Cast_Mineral_Contact",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_INTERFACE_Local_Dry_Regolith_Feather",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BSDF_TRANSPARENT",
+        "BUMP",
+        "MATH",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_INTERFACE_Replacement_Mineral_Lift",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_L160_OPAL_WORKLIGHT_DIFFUSER",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_L180_FRACTURED_LUNAR_BASALT",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_L180_FRESH_FRACTURE_FACES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_L180_REWORKED_DRY_REGOLITH_FEATHER",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BSDF_TRANSPARENT",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M150_CLEAR_NONEMISSIVE_ROOFLIGHT",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BSDF_TRANSPARENT",
+        "FRESNEL",
+        "LIGHT_PATH",
+        "MIX_SHADER",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_BARE_BRUSHED_WORKTOPS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_BARE_SATIN_ENDCAPS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_EQUIPMENT_PAINTED_FRAMES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_GALVANIZED_SHELVES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_LOWER_RETURN_IMPACT_MINERAL_BASE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_LOWER_RETURN_MINERAL_WALL_WITH_DADO",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_LOWER_RETURN_WORKED_MINERAL_FLOOR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_MOTOR_COATED_BLUE_GREY",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_NORTH_HIGH_IMPACT_MINERAL_BASE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_NORTH_HIGH_MINERAL_WALL_WITH_DADO",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_NORTH_HIGH_WORKED_MINERAL_FLOOR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_SOUTH_HIGH_IMPACT_MINERAL_BASE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_SOUTH_HIGH_MINERAL_WALL_WITH_DADO",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_SOUTH_HIGH_WORKED_MINERAL_FLOOR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_STOCK_MODULE_MINERAL_OLIVE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_UPPER_RETURN_IMPACT_MINERAL_BASE",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_UPPER_RETURN_MINERAL_WALL_WITH_DADO",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_M170_UPPER_RETURN_WORKED_MINERAL_FLOOR",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "MAP_RANGE",
+        "MATH",
+        "MIX_RGB",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "SEPXYZ",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VECT_MATH"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Dry_Contact_Regolith",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Graphite_Exposed_Structural_Steel",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Ivory_Baked_Steel_Panels",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Matte_Steel_Walk_Deck",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Offwhite_Painted_Identification",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Replacement_Warm_Gray_Panels",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_MAT_Rough_Cast_Mineral_Footings",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_AGED_ALLOY",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_CONNECTION_PLATES",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_DRY_SEAL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_GRAPHITE_MAIN_STEEL",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_MACHINED_BEARING",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_R130_OCHRE_JACKING_POINTS",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "BUMP",
+        "OUTPUT_MATERIAL",
+        "TEX_COORD",
+        "TEX_NOISE",
+        "VALTORGB"
+      ],
+      "images": []
+    },
+    {
+      "name": "WC_RS_Dry_Compacted_Regolith_Shoulder",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "ATTRIBUTE",
+        "BSDF_PRINCIPLED",
+        "BSDF_TRANSPARENT",
+        "BUMP",
+        "MIX_RGB",
+        "MIX_SHADER",
+        "NEW_GEOMETRY",
+        "OUTPUT_MATERIAL",
+        "TEX_NOISE"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Label_Graphite",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Label_Graphite.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Label_Laminate",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Label_Laminate.001",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Textile_MutedTeal",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_Textile_WarmGrey",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WL_ToolContact_Dark",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WQ_L0_Hub_ImpactFacing_Satin",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "Compact_75066932c53291_Normal.png"
+      ]
+    },
+    {
+      "name": "WQ_L13_Matte_Optical_Shield",
+      "status": "candidate_for_direct_URP_recipe",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "OUTPUT_MATERIAL"
+      ],
+      "images": []
+    },
+    {
+      "name": "WQ_Surface_Clean_Cable_Rubber",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "WQ_Surface_BaseColor.png",
+        "WQ_Surface_Normal_OpenGL.png",
+        "WQ_Surface_ORM.png"
+      ]
+    },
+    {
+      "name": "WQ_Surface_Contact_Powdercoat",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "WQ_Surface_BaseColor.png",
+        "WQ_Surface_Normal_OpenGL.png",
+        "WQ_Surface_ORM.png"
+      ]
+    },
+    {
+      "name": "WQ_Surface_Handled_Brushed_Metal",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "WQ_Surface_BaseColor.png",
+        "WQ_Surface_Normal_OpenGL.png",
+        "WQ_Surface_ORM.png"
+      ]
+    },
+    {
+      "name": "WQ_Surface_Work_Record_Paper",
+      "status": "requires_bake_or_explicit_adapter",
+      "connected_node_types": [
+        "BSDF_PRINCIPLED",
+        "NORMAL_MAP",
+        "OUTPUT_MATERIAL",
+        "SEPARATE_COLOR",
+        "TEX_IMAGE"
+      ],
+      "images": [
+        "WQ_Surface_BaseColor.png",
+        "WQ_Surface_Normal_OpenGL.png",
+        "WQ_Surface_ORM.png"
+      ]
+    }
+  ]
+}

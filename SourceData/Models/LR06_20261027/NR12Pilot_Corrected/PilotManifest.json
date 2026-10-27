@@ -1,0 +1,183 @@
+{
+  "status": "offline_pilot_not_Unity_validated",
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "source_preserved_on_disk": true,
+  "objects": [
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.014999999664723873,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12Pilot_Corrected/pilot_0_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 35209
+        },
+        "roughness": {
+          "path": "NR12Pilot_Corrected/pilot_0_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 38037
+        },
+        "normal": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_control": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_strong_control": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal_strong_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        }
+      },
+      "normal_status": "bump_bake_not_proven",
+      "normal_max_channel_difference": 9.298324584960938e-05,
+      "normal_strong_control_max_difference": 0.26543259620666504
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "source_material": "NR01_Dark_Structural_Steel",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.375,
+          2462.41015625,
+          256.050048828125
+        ],
+        [
+          1999.97509765625,
+          2462.7900390625,
+          256.1900634765625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.4300000071525574,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12Pilot_Corrected/pilot_1_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 23666
+        },
+        "roughness": {
+          "path": "NR12Pilot_Corrected/pilot_1_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 12357
+        },
+        "normal": {
+          "path": "NR12Pilot_Corrected/pilot_1_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_control": {
+          "path": "NR12Pilot_Corrected/pilot_1_normal_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        }
+      },
+      "normal_status": "bump_bake_not_proven",
+      "normal_max_channel_difference": 0.0009668469429016113
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "source_material": "LR06_NR01_V5_Transfer_Diffuser_Warm_LOCAL_ONLY",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.455078125,
+          2462.465087890625,
+          256.030029296875
+        ],
+        [
+          1999.89501953125,
+          2462.735107421875,
+          256.050048828125
+        ]
+      ],
+      "base_color": [
+        0.6200000047683716,
+        0.6700000166893005,
+        0.6499999761581421,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.47999998927116394,
+      "emission_color": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284,
+        1.0
+      ],
+      "emission_strength": 2.0,
+      "linked_inputs": [],
+      "textures": {},
+      "normal_status": "constant"
+    }
+  ],
+  "fbx": {
+    "path": "NR12Pilot_Corrected/NR12_corridor_pilot.fbx",
+    "bytes": 36428,
+    "sha256": "03a225f10d30ba6366cef8a6ab428bac7458e1211efe939308b21197ca858cd1"
+  },
+  "limitations": [
+    "Normal-map material wiring and visual equivalence require Unity verification.",
+    "AO used a small local scene context; compare with the complete source.",
+    "Unity coordinate, lighting, material assignment and visuals remain unverified."
+  ]
+}

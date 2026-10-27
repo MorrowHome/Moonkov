@@ -1,0 +1,2624 @@
+{
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "source_unmodified": true,
+  "source_images": 201,
+  "unique_files": 183,
+  "formats": {
+    ".png": 201
+  },
+  "images": [
+    {
+      "source_image": "bench_slide_polish_BaseColorAlpha.png",
+      "path": "PackedTextures/675dd7398256c7c921164553af815dcfc2f3478af192f8b0e8e435a6b48fbf1b.png",
+      "bytes": 14153,
+      "sha256": "675dd7398256c7c921164553af815dcfc2f3478af192f8b0e8e435a6b48fbf1b",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "bench_slide_polish_ORM.png",
+      "path": "PackedTextures/5964a25bd0c679481a02cda72d459c3347421d34691f5d1b7de54b6b9811cbf1.png",
+      "bytes": 5335,
+      "sha256": "5964a25bd0c679481a02cda72d459c3347421d34691f5d1b7de54b6b9811cbf1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_0647f842d095a5_ORM.png",
+      "path": "PackedTextures/adccfb14eff2115ff0c0d6b8592b8e567013a72c24bdedf892ed15b87f28f521.png",
+      "bytes": 141144,
+      "sha256": "adccfb14eff2115ff0c0d6b8592b8e567013a72c24bdedf892ed15b87f28f521",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_117cf0e4c86711_ORM.png",
+      "path": "PackedTextures/1af124aa07a7a9a3b55fbc41f56ab10f883e6fd18c0f563920d97f0998672136.png",
+      "bytes": 174530,
+      "sha256": "1af124aa07a7a9a3b55fbc41f56ab10f883e6fd18c0f563920d97f0998672136",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_14c376024a6152_Normal.png",
+      "path": "PackedTextures/36180986bd3c4e5d71cda0e1f34f374ec5e8095ea13e7a2ad91ac01b5c30a9cd.png",
+      "bytes": 347289,
+      "sha256": "36180986bd3c4e5d71cda0e1f34f374ec5e8095ea13e7a2ad91ac01b5c30a9cd",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_1500150af78eb9_ORM.png",
+      "path": "PackedTextures/4477fd3c0fb561f512ce1683b5b855cc143ba9042fbf00211c08ce1bc2a61f32.png",
+      "bytes": 152656,
+      "sha256": "4477fd3c0fb561f512ce1683b5b855cc143ba9042fbf00211c08ce1bc2a61f32",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_412f76b33445a5_BaseColor.png",
+      "path": "PackedTextures/fb3463c7d3c0505fb4d3e95036c41f9ac8dcc2b46d3ebe86325d66d3cfcca200.png",
+      "bytes": 161517,
+      "sha256": "fb3463c7d3c0505fb4d3e95036c41f9ac8dcc2b46d3ebe86325d66d3cfcca200",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_4bd4a0e3ef70e8_ORM.png",
+      "path": "PackedTextures/25e4af209a96bb830474102694a17c349b5cfbbbae35141ee1e2b9a6f67d80ff.png",
+      "bytes": 111111,
+      "sha256": "25e4af209a96bb830474102694a17c349b5cfbbbae35141ee1e2b9a6f67d80ff",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_5b781085bbe490_Normal.png",
+      "path": "PackedTextures/a09ae97e1cc7ff61d1ccd9f9c22b9a174e7711c29fcbe7fa1e2005df29691fc8.png",
+      "bytes": 316882,
+      "sha256": "a09ae97e1cc7ff61d1ccd9f9c22b9a174e7711c29fcbe7fa1e2005df29691fc8",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_6611a56582de04_BaseColor.png",
+      "path": "PackedTextures/dbe8af6fba1c404a46c889239de5b206f37797f3386c90e177a7f108d851de5a.png",
+      "bytes": 166970,
+      "sha256": "dbe8af6fba1c404a46c889239de5b206f37797f3386c90e177a7f108d851de5a",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_75066932c53291_Normal.png",
+      "path": "PackedTextures/085a81cd481e127aa068a6e7625bc8dd791418ad238cebdee0c6cbbf044f290e.png",
+      "bytes": 123246,
+      "sha256": "085a81cd481e127aa068a6e7625bc8dd791418ad238cebdee0c6cbbf044f290e",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_8409ea197419cf_BaseColor.png",
+      "path": "PackedTextures/eeff2520d7f6f6b6e9052d41c7dff4ac0b182840c81adca707cf6fb1befdf7cf.png",
+      "bytes": 158055,
+      "sha256": "eeff2520d7f6f6b6e9052d41c7dff4ac0b182840c81adca707cf6fb1befdf7cf",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_9931c61227a418_BaseColor.png",
+      "path": "PackedTextures/85307950f3c83e73dc19bc869dd2c7a625289372128e4a1f00b936ab034cef0e.png",
+      "bytes": 165030,
+      "sha256": "85307950f3c83e73dc19bc869dd2c7a625289372128e4a1f00b936ab034cef0e",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_9969fc184c9600_ORM.png",
+      "path": "PackedTextures/671db898b0b027b7df491b79c6510764e1e434bc3a42879329811ebfae222e64.png",
+      "bytes": 141379,
+      "sha256": "671db898b0b027b7df491b79c6510764e1e434bc3a42879329811ebfae222e64",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_a3740a41928db0_Normal.png",
+      "path": "PackedTextures/a51eecc5c613163d6784ef27515d54d23ce29a7ca3ff6ca22df8bfb28241fec4.png",
+      "bytes": 348019,
+      "sha256": "a51eecc5c613163d6784ef27515d54d23ce29a7ca3ff6ca22df8bfb28241fec4",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_b7664983fa8173_Normal.png",
+      "path": "PackedTextures/721bf288638d0289661d125b4464a400d2fe4fa28dfd0767737c45243e3c4eb7.png",
+      "bytes": 515836,
+      "sha256": "721bf288638d0289661d125b4464a400d2fe4fa28dfd0767737c45243e3c4eb7",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_c3327fe88ca43f_ORM.png",
+      "path": "PackedTextures/87a495452231f9c0d9ced4856ce95bcf962baab70b4062d3b806e2fd1e701008.png",
+      "bytes": 141332,
+      "sha256": "87a495452231f9c0d9ced4856ce95bcf962baab70b4062d3b806e2fd1e701008",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_c3fd811facbb82_ORM.png",
+      "path": "PackedTextures/700e721444c2fc07f86d4d6c4e1988d7b61c12e3b5c934ef32d6a2a059199bea.png",
+      "bytes": 147043,
+      "sha256": "700e721444c2fc07f86d4d6c4e1988d7b61c12e3b5c934ef32d6a2a059199bea",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_d0c8a724c4a08b_ORM.png",
+      "path": "PackedTextures/3273144514ea72479be8c3137ff0077ee9ef793bd15d739fab993b708fdbb0b4.png",
+      "bytes": 177664,
+      "sha256": "3273144514ea72479be8c3137ff0077ee9ef793bd15d739fab993b708fdbb0b4",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_db1bf151bf2b72_Normal.png",
+      "path": "PackedTextures/7e3d3c98a139e1e216dbdebe69840fe2049381b78ebca2ee795289431dd56821.png",
+      "bytes": 193566,
+      "sha256": "7e3d3c98a139e1e216dbdebe69840fe2049381b78ebca2ee795289431dd56821",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "Compact_f4710eb51a0d94_ORM.png",
+      "path": "PackedTextures/df22029958b9f02512fa3babe517849fbf372de06e44e86991aaa2934d4b6923.png",
+      "bytes": 141213,
+      "sha256": "df22029958b9f02512fa3babe517849fbf372de06e44e86991aaa2934d4b6923",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Industrial_Coated_Deck_v12_BaseColor.png",
+      "path": "PackedTextures/e03710fc45a69459e13f6cbb1fd9af5320f12ec1464aec4f6d28ccae75c3d8a1.png",
+      "bytes": 347570,
+      "sha256": "e03710fc45a69459e13f6cbb1fd9af5320f12ec1464aec4f6d28ccae75c3d8a1",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Industrial_Coated_Deck_v12_Normal.png",
+      "path": "PackedTextures/203e12368534a6fd1f7178a5facc311e5ec7348c83d0f02b6af86e0d5d32c2c7.png",
+      "bytes": 499044,
+      "sha256": "203e12368534a6fd1f7178a5facc311e5ec7348c83d0f02b6af86e0d5d32c2c7",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Industrial_Coated_Deck_v12_ORM.png",
+      "path": "PackedTextures/9acd1fff5f14446a3770a87619cf5a5e9174aed6c5d36c36977cf9ad5c2b4c0b.png",
+      "bytes": 341560,
+      "sha256": "9acd1fff5f14446a3770a87619cf5a5e9174aed6c5d36c36977cf9ad5c2b4c0b",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Threshold_Powder_v11_Normal.png",
+      "path": "PackedTextures/9092e7e5ff9d4ee68b33d4b0c3a5f6ca17b09d9dd931cdd328f7740714246c0f.png",
+      "bytes": 158034,
+      "sha256": "9092e7e5ff9d4ee68b33d4b0c3a5f6ca17b09d9dd931cdd328f7740714246c0f",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Threshold_Powder_v11_ORM.png",
+      "path": "PackedTextures/3b2774f30bfc40acefcd95d390361529ba2448dbaaecba04705eefd095dfc5ce.png",
+      "bytes": 196697,
+      "sha256": "3b2774f30bfc40acefcd95d390361529ba2448dbaaecba04705eefd095dfc5ce",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "ENTRY_Threshold_UseAtlas_BaseColor.png",
+      "path": "PackedTextures/d436ef0acbc07ed843214b25360e025b6f458b5584fb77421a0078834abd7bcf.png",
+      "bytes": 111543,
+      "sha256": "d436ef0acbc07ed843214b25360e025b6f458b5584fb77421a0078834abd7bcf",
+      "format": ".png",
+      "size": [
+        1024,
+        640
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "floor_heel_polish_BaseColorAlpha.png",
+      "path": "PackedTextures/de5457bb422073b52aab05c3c64af77aaa548c8fb8ad6d9fc68f6d2dc711485d.png",
+      "bytes": 24457,
+      "sha256": "de5457bb422073b52aab05c3c64af77aaa548c8fb8ad6d9fc68f6d2dc711485d",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "floor_heel_polish_ORM.png",
+      "path": "PackedTextures/95d2237706b93d4a0727d282653dc2d78ed4413cb51181274c94a8a52568c3f4.png",
+      "bytes": 5333,
+      "sha256": "95d2237706b93d4a0727d282653dc2d78ed4413cb51181274c94a8a52568c3f4",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "G03_Receiving_UseAtlas_BaseColor.png",
+      "path": "PackedTextures/eaa97acf264972c134616c29085cb425db38a205d64618537ebe34d5c7b95911.png",
+      "bytes": 60262,
+      "sha256": "eaa97acf264972c134616c29085cb425db38a205d64618537ebe34d5c7b95911",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "G03_Receiving_UseAtlas_ORM.png",
+      "path": "PackedTextures/5a9c37ed8f101f850665b2379d40b855f22abdef04859e983544dcc389621e89.png",
+      "bytes": 152510,
+      "sha256": "5a9c37ed8f101f850665b2379d40b855f22abdef04859e983544dcc389621e89",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "L22_Desk_Satin_ORM.png",
+      "path": "PackedTextures/4f169e223b7b231c317bd723d466d5cd6e617b704cd10f6822df35cb39bd7cef.png",
+      "bytes": 57629,
+      "sha256": "4f169e223b7b231c317bd723d466d5cd6e617b704cd10f6822df35cb39bd7cef",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Anodized_DarkAlloy_BaseColor.png",
+      "path": "PackedTextures/f3e3a84e046e6f99d1093a148c3a2e17d40c7dc18ddc8115f042094cbac3f039.png",
+      "bytes": 38872,
+      "sha256": "f3e3a84e046e6f99d1093a148c3a2e17d40c7dc18ddc8115f042094cbac3f039",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Anodized_DarkAlloy_Normal.png",
+      "path": "PackedTextures/3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043.png",
+      "bytes": 22024,
+      "sha256": "3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Anodized_DarkAlloy_Normal.png.001",
+      "path": "PackedTextures/3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043.png",
+      "bytes": 22024,
+      "sha256": "3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Anodized_DarkAlloy_ORM.png",
+      "path": "PackedTextures/99589e37467182eaf668a4ec7815a6ddc8e8e7000b65f025c8d64bca2f232656.png",
+      "bytes": 60802,
+      "sha256": "99589e37467182eaf668a4ec7815a6ddc8e8e7000b65f025c8d64bca2f232656",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Brushed_Aluminium_BaseColor.png.001",
+      "path": "PackedTextures/c40ab0faf0dac9db70f8ae4c7b0a909e7f39a79ddcd5e3fe1762ffc8a180585c.png",
+      "bytes": 40756,
+      "sha256": "c40ab0faf0dac9db70f8ae4c7b0a909e7f39a79ddcd5e3fe1762ffc8a180585c",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Brushed_Aluminium_ORM.png.001",
+      "path": "PackedTextures/67a118af30f0145432a4968997ecd2d99a9352780e8e4f05e33f1e4268541d8c.png",
+      "bytes": 60539,
+      "sha256": "67a118af30f0145432a4968997ecd2d99a9352780e8e4f05e33f1e4268541d8c",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Hull_CeramicPaint_BaseColor.png.001",
+      "path": "PackedTextures/2bf86fe832373f5c08e935ad1d77b72b37b7353e5a352f58ac82a844fc0a3e5b.png",
+      "bytes": 156711,
+      "sha256": "2bf86fe832373f5c08e935ad1d77b72b37b7353e5a352f58ac82a844fc0a3e5b",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Painted_Metal_Grey_BaseColor.png.001",
+      "path": "PackedTextures/008540f0f7180ca39525aab214feb03a6b46df8fa7e7c8a5d7d48b5e7885d78f.png",
+      "bytes": 144929,
+      "sha256": "008540f0f7180ca39525aab214feb03a6b46df8fa7e7c8a5d7d48b5e7885d78f",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Raw_StainlessSteel_BaseColor.png.001",
+      "path": "PackedTextures/6c1b08e06f3eef25cbe65622de002a91de564b03465a4a56d3fab6a44142ea73.png",
+      "bytes": 39102,
+      "sha256": "6c1b08e06f3eef25cbe65622de002a91de564b03465a4a56d3fab6a44142ea73",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Raw_StainlessSteel_ORM.png.001",
+      "path": "PackedTextures/54fea7f996f0faaa235b373c57bc1f9ca2ed2ebc70e5a1db22029a04f4bce536.png",
+      "bytes": 48865,
+      "sha256": "54fea7f996f0faaa235b373c57bc1f9ca2ed2ebc70e5a1db22029a04f4bce536",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Safety_MutedOchre_BaseColor.png.001",
+      "path": "PackedTextures/d43f46b1905b1010bf12a4365476a40ddb5059f63285ca9346711954c1191291.png",
+      "bytes": 172113,
+      "sha256": "d43f46b1905b1010bf12a4365476a40ddb5059f63285ca9346711954c1191291",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Seal_Elastomer_BaseColor.png.001",
+      "path": "PackedTextures/a09748a603c7a57d38c8a0a3cf98d84f6f6b71577b27a377b9b37221f7ec624c.png",
+      "bytes": 132348,
+      "sha256": "a09748a603c7a57d38c8a0a3cf98d84f6f6b71577b27a377b9b37221f7ec624c",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Structure_GraphiteCoat_BaseColor.png.001",
+      "path": "PackedTextures/bd68a24ce1bb25353954f8e9f696058364088ddeea32fbb7987fad2a204b7ac6.png",
+      "bytes": 145417,
+      "sha256": "bd68a24ce1bb25353954f8e9f696058364088ddeea32fbb7987fad2a204b7ac6",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "LD2_Wayfinding_DesaturatedTeal_BaseColor.png.001",
+      "path": "PackedTextures/45f8f91351d4072d0e3fa3bf72ee225cb2a7c111b2055ec3202817d3db74ea82.png",
+      "bytes": 150680,
+      "sha256": "45f8f91351d4072d0e3fa3bf72ee225cb2a7c111b2055ec3202817d3db74ea82",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC106_back_pad_BaseColor",
+      "path": "PackedTextures/e690cde32ab584e30c480a6e1c9734bede17246f64ccacc78e9a1267e31a1807.png",
+      "bytes": 147226,
+      "sha256": "e690cde32ab584e30c480a6e1c9734bede17246f64ccacc78e9a1267e31a1807",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC106_back_pad_Normal",
+      "path": "PackedTextures/7dfe92f0836ea269692b2242fbb79a5ae6b9e82d9d5052323bc369a79375b1d0.png",
+      "bytes": 573559,
+      "sha256": "7dfe92f0836ea269692b2242fbb79a5ae6b9e82d9d5052323bc369a79375b1d0",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC106_fitted_seat_cushion_BaseColor",
+      "path": "PackedTextures/198718782c668951f23f7d3888c61c729d6cdc5bbcb17ec2b76b2746c6c7ff98.png",
+      "bytes": 135932,
+      "sha256": "198718782c668951f23f7d3888c61c729d6cdc5bbcb17ec2b76b2746c6c7ff98",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC106_fitted_seat_cushion_Normal",
+      "path": "PackedTextures/8f48f953d4212c7e9545f0c24c3a27e16dc374c741862fe08fd882db5d35d092.png",
+      "bytes": 684688,
+      "sha256": "8f48f953d4212c7e9545f0c24c3a27e16dc374c741862fe08fd882db5d35d092",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC_L11_LowerPanel_Slate_BaseColor",
+      "path": "PackedTextures/bccbe5313c14be53ee101dde4b33c3225a632d611cc888e2e7073cb901694048.png",
+      "bytes": 79249,
+      "sha256": "bccbe5313c14be53ee101dde4b33c3225a632d611cc888e2e7073cb901694048",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC_L2_Directory_BaseColor",
+      "path": "PackedTextures/d031db4d6bb350e9355c68d2e74342edd6495e027b2075e5cb72781346a0bdf9.png",
+      "bytes": 85150,
+      "sha256": "d031db4d6bb350e9355c68d2e74342edd6495e027b2075e5cb72781346a0bdf9",
+      "format": ".png",
+      "size": [
+        2048,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC_N_Stair_Contact_BaseColor",
+      "path": "PackedTextures/163879e954b9bdcaaf91c2797b900c378f3a8351e84c77f4875227e9a7d35c30.png",
+      "bytes": 119301,
+      "sha256": "163879e954b9bdcaaf91c2797b900c378f3a8351e84c77f4875227e9a7d35c30",
+      "format": ".png",
+      "size": [
+        512,
+        256
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC_N_Stair_Contact_Normal",
+      "path": "PackedTextures/37db3d324e2b1b511c476f02ac0c5893a4aba3af84ba41247d6ba11a04dfffc1.png",
+      "bytes": 56765,
+      "sha256": "37db3d324e2b1b511c476f02ac0c5893a4aba3af84ba41247d6ba11a04dfffc1",
+      "format": ".png",
+      "size": [
+        512,
+        256
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "MC_N_Stair_Contact_ORM",
+      "path": "PackedTextures/8ed12a0dc2aa8af0ddc763bf060cb461fa3f35e49a0c251dfa66319effa51034.png",
+      "bytes": 72942,
+      "sha256": "8ed12a0dc2aa8af0ddc763bf060cb461fa3f35e49a0c251dfa66319effa51034",
+      "format": ".png",
+      "size": [
+        512,
+        256
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R14_Coated_Cladding_BaseColor",
+      "path": "PackedTextures/0f95deac7658f14dab5e968bfe75279528bcff124db708d3e325d3593077e4ff.png",
+      "bytes": 76545,
+      "sha256": "0f95deac7658f14dab5e968bfe75279528bcff124db708d3e325d3593077e4ff",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Coated_Cladding_Normal",
+      "path": "PackedTextures/cefdc91cd71d0136117463d13b1b7b37d3b2190403bf36f86206ba4af3717d86.png",
+      "bytes": 9165,
+      "sha256": "cefdc91cd71d0136117463d13b1b7b37d3b2190403bf36f86206ba4af3717d86",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Coated_Cladding_ORM",
+      "path": "PackedTextures/84b3633f9e6cc88b7a635b45431ed4f089b38d42c6cf1880ba7acfc1ec4b31ef.png",
+      "bytes": 119548,
+      "sha256": "84b3633f9e6cc88b7a635b45431ed4f089b38d42c6cf1880ba7acfc1ec4b31ef",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Coated_Steel_BaseColor",
+      "path": "PackedTextures/7dc4e187fc4b49510ab42d722cdd8796968119248959e7fff4f4c87ec88abde3.png",
+      "bytes": 104792,
+      "sha256": "7dc4e187fc4b49510ab42d722cdd8796968119248959e7fff4f4c87ec88abde3",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Coated_Steel_Normal",
+      "path": "PackedTextures/d0705b4e1a461afd3ed6d5968d99927a73f6f6bc92878f93f2a3f0bb6c3241e5.png",
+      "bytes": 19112,
+      "sha256": "d0705b4e1a461afd3ed6d5968d99927a73f6f6bc92878f93f2a3f0bb6c3241e5",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Coated_Steel_ORM",
+      "path": "PackedTextures/8722a32be6662df7ce645640a30f7617fb27c07e458c28adf84415dd3090054e.png",
+      "bytes": 112070,
+      "sha256": "8722a32be6662df7ce645640a30f7617fb27c07e458c28adf84415dd3090054e",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Dark_Assembly_BaseColor",
+      "path": "PackedTextures/dac673cccf00140114092525fda2049ba56bf1d3fe5b0b9629113c83868755cb.png",
+      "bytes": 68779,
+      "sha256": "dac673cccf00140114092525fda2049ba56bf1d3fe5b0b9629113c83868755cb",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Dark_Assembly_Normal",
+      "path": "PackedTextures/2697370f17bccd67ca8f689fd9ccd915c4ebedb379fe39cee3fcce348c99c018.png",
+      "bytes": 12441,
+      "sha256": "2697370f17bccd67ca8f689fd9ccd915c4ebedb379fe39cee3fcce348c99c018",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Dark_Assembly_ORM",
+      "path": "PackedTextures/46731fddd3a521e031657db68c950bfb6d6da09b991e749fe3ebd4bbe3f4922e.png",
+      "bytes": 69103,
+      "sha256": "46731fddd3a521e031657db68c950bfb6d6da09b991e749fe3ebd4bbe3f4922e",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Exposed_Alloy_BaseColor",
+      "path": "PackedTextures/97c201f82eb5f32a05db5e77a1fd7135e8dd1c9346d10587b8b2d6488145adff.png",
+      "bytes": 72168,
+      "sha256": "97c201f82eb5f32a05db5e77a1fd7135e8dd1c9346d10587b8b2d6488145adff",
+      "format": ".png",
+      "size": [
+        1024,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Exposed_Alloy_Normal",
+      "path": "PackedTextures/6638c163bdbbe975af971f9c2d722d54f7c11fb6ad75fdcc029346cec1817e1e.png",
+      "bytes": 6902,
+      "sha256": "6638c163bdbbe975af971f9c2d722d54f7c11fb6ad75fdcc029346cec1817e1e",
+      "format": ".png",
+      "size": [
+        1024,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Exposed_Alloy_ORM",
+      "path": "PackedTextures/1dea714dd78fd189927ee7e2d4b8d1e355e8da1cbdc5cb77f6c59d025601f1ee.png",
+      "bytes": 69990,
+      "sha256": "1dea714dd78fd189927ee7e2d4b8d1e355e8da1cbdc5cb77f6c59d025601f1ee",
+      "format": ".png",
+      "size": [
+        1024,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Mineral_Sill_BaseColor",
+      "path": "PackedTextures/e8533a026bc5da7a22e5d023727f0c6435a5710afe92c57ac4664d8ff03c64c1.png",
+      "bytes": 3734,
+      "sha256": "e8533a026bc5da7a22e5d023727f0c6435a5710afe92c57ac4664d8ff03c64c1",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Mineral_Sill_Normal",
+      "path": "PackedTextures/67c7099376385821157edf1070934c035b179a667350930f92c7d79df033ef0b.png",
+      "bytes": 436,
+      "sha256": "67c7099376385821157edf1070934c035b179a667350930f92c7d79df033ef0b",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Mineral_Sill_ORM",
+      "path": "PackedTextures/d25a8507a59da3f9d9c33870525f73ce38bf5d63e1e2ff3f018d194352226755.png",
+      "bytes": 721,
+      "sha256": "d25a8507a59da3f9d9c33870525f73ce38bf5d63e1e2ff3f018d194352226755",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Orange_Coating_BaseColor",
+      "path": "PackedTextures/f61b468644db6b19fba1645142988e551aabc0e0e12cb6e27771c4c3f297c46f.png",
+      "bytes": 4267,
+      "sha256": "f61b468644db6b19fba1645142988e551aabc0e0e12cb6e27771c4c3f297c46f",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Orange_Coating_Normal",
+      "path": "PackedTextures/08ae14f1f6fc0911ab6a23c94eb95214aca2e9ef5f694db52eb42e7e429a7ee0.png",
+      "bytes": 771,
+      "sha256": "08ae14f1f6fc0911ab6a23c94eb95214aca2e9ef5f694db52eb42e7e429a7ee0",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R14_Orange_Coating_ORM",
+      "path": "PackedTextures/72b585c9fb4143371ab2f7a3dc21dd977581588f5574bdc347743c0c9de69aa3.png",
+      "bytes": 4511,
+      "sha256": "72b585c9fb4143371ab2f7a3dc21dd977581588f5574bdc347743c0c9de69aa3",
+      "format": ".png",
+      "size": [
+        512,
+        128
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "NONE"
+    },
+    {
+      "source_image": "R19_CoatedPanel_BaseColor_sRGB",
+      "path": "PackedTextures/ba4f6f25a59edae630b70f9476840602187f794a545e4e19adcb16336bd484bf.png",
+      "bytes": 179266,
+      "sha256": "ba4f6f25a59edae630b70f9476840602187f794a545e4e19adcb16336bd484bf",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R19_CoatedPanel_Normal_OpenGL",
+      "path": "PackedTextures/b2b1dea37165e5c70209cde876052b6c1603d814a2ebb9efeff88cff433d866b.png",
+      "bytes": 1159749,
+      "sha256": "b2b1dea37165e5c70209cde876052b6c1603d814a2ebb9efeff88cff433d866b",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R19_CoatedPanel_Roughness_Linear",
+      "path": "PackedTextures/173aacd425b6edb235387497db72bdb9f24da3b013a09804e97e2edcd6d0412b.png",
+      "bytes": 674408,
+      "sha256": "173aacd425b6edb235387497db72bdb9f24da3b013a09804e97e2edcd6d0412b",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R19_MineralBase_BaseColor_sRGB",
+      "path": "PackedTextures/b0006a222cd1109ee9f4e8b7e5fc90861c60884e89efebed1ba476c096d0803f.png",
+      "bytes": 253797,
+      "sha256": "b0006a222cd1109ee9f4e8b7e5fc90861c60884e89efebed1ba476c096d0803f",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R19_MineralBase_Normal_OpenGL",
+      "path": "PackedTextures/4fb8f54ef415abcf917bc921304899b795c9c7f712ee59021f2b3e6f39cd4571.png",
+      "bytes": 1758023,
+      "sha256": "4fb8f54ef415abcf917bc921304899b795c9c7f712ee59021f2b3e6f39cd4571",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R19_MineralBase_Roughness_Linear",
+      "path": "PackedTextures/2bde1ece000e9e54b591518fb8bc77a219326f3c398343e7b97cdf5b7d59963e.png",
+      "bytes": 244829,
+      "sha256": "2bde1ece000e9e54b591518fb8bc77a219326f3c398343e7b97cdf5b7d59963e",
+      "format": ".png",
+      "size": [
+        1024,
+        1536
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Compacted_BaseColor.png",
+      "path": "PackedTextures/37d8ab19596756cb16dacb2a5e678c36d63fc563eda9070d6cd23f45ae0050c5.png",
+      "bytes": 2279703,
+      "sha256": "37d8ab19596756cb16dacb2a5e678c36d63fc563eda9070d6cd23f45ae0050c5",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Compacted_Height16.png",
+      "path": "PackedTextures/d93574b94a336703b20b5fe144cf7b4b5658dec1fdfb9ba449b763450bd10146.png",
+      "bytes": 7103610,
+      "sha256": "d93574b94a336703b20b5fe144cf7b4b5658dec1fdfb9ba449b763450bd10146",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Compacted_Normal_OpenGL.png",
+      "path": "PackedTextures/e8f88452a5dfb312d7b9e4921947da62b288fd99bd96d00c07e453637e6f3ffb.png",
+      "bytes": 9659864,
+      "sha256": "e8f88452a5dfb312d7b9e4921947da62b288fd99bd96d00c07e453637e6f3ffb",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Compacted_Roughness.png",
+      "path": "PackedTextures/0c2c021bdbe5db7efeac73d6a88f66e1c4cabb58c8ebaea3f54713262a99d7bb.png",
+      "bytes": 1842585,
+      "sha256": "0c2c021bdbe5db7efeac73d6a88f66e1c4cabb58c8ebaea3f54713262a99d7bb",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_DustyClasts_BaseColor.png",
+      "path": "PackedTextures/206b9e292cbf3d9c56769657fbcd7f09bee11ddec09b5d41972465e975e5e324.png",
+      "bytes": 2224527,
+      "sha256": "206b9e292cbf3d9c56769657fbcd7f09bee11ddec09b5d41972465e975e5e324",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_DustyClasts_Normal_OpenGL.png",
+      "path": "PackedTextures/67df96ba3a12aadc22a7edb112a64b4070d9a60ec128618940274ad51d809afe.png",
+      "bytes": 10530523,
+      "sha256": "67df96ba3a12aadc22a7edb112a64b4070d9a60ec128618940274ad51d809afe",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_DustyClasts_Roughness.png",
+      "path": "PackedTextures/6bca887837b070c0551b2d8532d1a340917a4ad3e7daf6279177d22064e00851.png",
+      "bytes": 1840588,
+      "sha256": "6bca887837b070c0551b2d8532d1a340917a4ad3e7daf6279177d22064e00851",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_FineDust_BaseColor.png",
+      "path": "PackedTextures/1aeb296cdefb84e8bc0e241b0dfde1afba53abe0f41f4371c4b03f77ee222d49.png",
+      "bytes": 2167584,
+      "sha256": "1aeb296cdefb84e8bc0e241b0dfde1afba53abe0f41f4371c4b03f77ee222d49",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_FineDust_Normal_OpenGL.png",
+      "path": "PackedTextures/44861ca2df7e3fe2df33ef2c8d0cf0b8bb6c67de8b917d69ebea9d3f8666ebae.png",
+      "bytes": 8189384,
+      "sha256": "44861ca2df7e3fe2df33ef2c8d0cf0b8bb6c67de8b917d69ebea9d3f8666ebae",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_FineDust_Roughness.png",
+      "path": "PackedTextures/fbf2a11500e726e955eecbea9230a2d0d9787defd8d15d2b02537b839607cef4.png",
+      "bytes": 1752542,
+      "sha256": "fbf2a11500e726e955eecbea9230a2d0d9787defd8d15d2b02537b839607cef4",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Macro32m.png",
+      "path": "PackedTextures/4de56d0ca40ff992b5fbcc68f875dca2a30787bc4eff67e3f20cf0d9d2974978.png",
+      "bytes": 333059,
+      "sha256": "4de56d0ca40ff992b5fbcc68f875dca2a30787bc4eff67e3f20cf0d9d2974978",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26_Regolith_Micro025m_Normal_OpenGL.png",
+      "path": "PackedTextures/e20362bd00ed2e7b3844ef1ddec05da339459bee8219352ff5d78d80ac181b1a.png",
+      "bytes": 9770668,
+      "sha256": "e20362bd00ed2e7b3844ef1ddec05da339459bee8219352ff5d78d80ac181b1a",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R26S_World_Edge_Transition_Mask.png",
+      "path": "PackedTextures/2f5bfa7120e535b0b0539136a61863644f081275c14c9b8ee14cb001da70e733.png",
+      "bytes": 33206,
+      "sha256": "2f5bfa7120e535b0b0539136a61863644f081275c14c9b8ee14cb001da70e733",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R27_Regolith_Macro256m.png",
+      "path": "PackedTextures/3aff285bea37905b1c4d36fbb2c166bbe560428e56d0b83a0fa05d9c66637367.png",
+      "bytes": 290131,
+      "sha256": "3aff285bea37905b1c4d36fbb2c166bbe560428e56d0b83a0fa05d9c66637367",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R27_Regolith_World64m_BaseColor.png",
+      "path": "PackedTextures/b7939003648ac8d962dac4e774dcc23a4300ef2555c75acfd3c9a1a38686420d.png",
+      "bytes": 1198806,
+      "sha256": "b7939003648ac8d962dac4e774dcc23a4300ef2555c75acfd3c9a1a38686420d",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R27_Regolith_World64m_Height16.png",
+      "path": "PackedTextures/4ce271e880b906679dbdf413743d5415c00123c462ebcd6badf0f4e1956115fa.png",
+      "bytes": 6132890,
+      "sha256": "4ce271e880b906679dbdf413743d5415c00123c462ebcd6badf0f4e1956115fa",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R27_Regolith_World64m_Roughness.png",
+      "path": "PackedTextures/1d63885cce70a514f785c7d3e4f92e0b0d9dcddb12995bdbf4bd103743b7cf25.png",
+      "bytes": 896119,
+      "sha256": "1d63885cce70a514f785c7d3e4f92e0b0d9dcddb12995bdbf4bd103743b7cf25",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R29_PBR_03512fbada730321_Linear",
+      "path": "PackedTextures/03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4.png",
+      "bytes": 3304923,
+      "sha256": "03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_092d4a12191e13a4_Linear",
+      "path": "PackedTextures/092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56.png",
+      "bytes": 5817490,
+      "sha256": "092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_1b07801b358c13a1_Linear",
+      "path": "PackedTextures/1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315.png",
+      "bytes": 14101637,
+      "sha256": "1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_3c45f54fa36695bb_Linear",
+      "path": "PackedTextures/3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3.png",
+      "bytes": 215672,
+      "sha256": "3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_55240c18469a09e5_Linear",
+      "path": "PackedTextures/55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7.png",
+      "bytes": 8168400,
+      "sha256": "55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_56e3ccced1bbf510_sRGB",
+      "path": "PackedTextures/56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330.png",
+      "bytes": 2555853,
+      "sha256": "56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_5797ec72901b46d4_Linear",
+      "path": "PackedTextures/5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1.png",
+      "bytes": 3252174,
+      "sha256": "5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_627870e2e57c24b6_Linear",
+      "path": "PackedTextures/627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3.png",
+      "bytes": 1676407,
+      "sha256": "627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_6eca721d22d3b93f_sRGB",
+      "path": "PackedTextures/6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88.png",
+      "bytes": 5308165,
+      "sha256": "6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_755d0dc342bf5e96_Linear",
+      "path": "PackedTextures/755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a.png",
+      "bytes": 701817,
+      "sha256": "755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_77d3504e740300a5_sRGB",
+      "path": "PackedTextures/77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8.png",
+      "bytes": 1257091,
+      "sha256": "77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_7866825c8bb4da13_Linear",
+      "path": "PackedTextures/7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24.png",
+      "bytes": 11308360,
+      "sha256": "7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_7c1889ffbc10fc6b_Linear",
+      "path": "PackedTextures/7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6.png",
+      "bytes": 17469645,
+      "sha256": "7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_8d08a031ee9b3fb9_Linear",
+      "path": "PackedTextures/8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2.png",
+      "bytes": 1634658,
+      "sha256": "8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_b1c386536eb72caa_sRGB",
+      "path": "PackedTextures/b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb.png",
+      "bytes": 7809756,
+      "sha256": "b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_b748b9b36b251a1f_Linear",
+      "path": "PackedTextures/b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258.png",
+      "bytes": 754316,
+      "sha256": "b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_b922989ffa110dc5_Linear",
+      "path": "PackedTextures/b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2.png",
+      "bytes": 244997,
+      "sha256": "b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R29_PBR_bf80b31eca6dbb1a_sRGB",
+      "path": "PackedTextures/bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6.png",
+      "bytes": 1605815,
+      "sha256": "bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_e5f18076473ccf09_Linear",
+      "path": "PackedTextures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+      "bytes": 1076932,
+      "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_ee0e86ce9703793f_sRGB",
+      "path": "PackedTextures/ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7.png",
+      "bytes": 1551911,
+      "sha256": "ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R29_PBR_fdb837adb14bd187_sRGB",
+      "path": "PackedTextures/fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483.png",
+      "bytes": 4577361,
+      "sha256": "fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483",
+      "format": ".png",
+      "size": [
+        4096,
+        4096
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R34_Cover_BaseColor",
+      "path": "PackedTextures/69b007b91c324f7fea4766b955dd2d2008c4c40b990f8cc37498a7f778b6d2f2.png",
+      "bytes": 262867,
+      "sha256": "69b007b91c324f7fea4766b955dd2d2008c4c40b990f8cc37498a7f778b6d2f2",
+      "format": ".png",
+      "size": [
+        2048,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Cover_Metallic",
+      "path": "PackedTextures/ef01acfd670ddcbdf6b4ea38c329bc186a1e34a1d7adbc6c3d8ca52d749bc366.png",
+      "bytes": 86762,
+      "sha256": "ef01acfd670ddcbdf6b4ea38c329bc186a1e34a1d7adbc6c3d8ca52d749bc366",
+      "format": ".png",
+      "size": [
+        2048,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Cover_NormalTS",
+      "path": "PackedTextures/39d36ce0ca6ecd438caf78b783d839a7c2b44dc1a75188f569bb24b2fb71bb5a.png",
+      "bytes": 5348732,
+      "sha256": "39d36ce0ca6ecd438caf78b783d839a7c2b44dc1a75188f569bb24b2fb71bb5a",
+      "format": ".png",
+      "size": [
+        2048,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Cover_Roughness",
+      "path": "PackedTextures/0edb74a1a12677ea05225bf2c0c8f9f1648d25a7444a677676974fa0f9a24233.png",
+      "bytes": 342379,
+      "sha256": "0edb74a1a12677ea05225bf2c0c8f9f1648d25a7444a677676974fa0f9a24233",
+      "format": ".png",
+      "size": [
+        2048,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Shroud_BaseColor",
+      "path": "PackedTextures/4806812a61801e0730bddb5085758ce8801b72d728c67b54156815a7ab0459e4.png",
+      "bytes": 349782,
+      "sha256": "4806812a61801e0730bddb5085758ce8801b72d728c67b54156815a7ab0459e4",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Shroud_Metallic",
+      "path": "PackedTextures/e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b.png",
+      "bytes": 4145,
+      "sha256": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Shroud_NormalTS",
+      "path": "PackedTextures/16d2905a8a2d3e426425bb3ed12459563e4c3a77aa2ba89d05efca327fe149bd.png",
+      "bytes": 11921267,
+      "sha256": "16d2905a8a2d3e426425bb3ed12459563e4c3a77aa2ba89d05efca327fe149bd",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R34_Shroud_Roughness",
+      "path": "PackedTextures/cc8dffb9c42ef4f2452dd727b79838be34c44cb1b66cf462f5510f02b09192e2.png",
+      "bytes": 644117,
+      "sha256": "cc8dffb9c42ef4f2452dd727b79838be34c44cb1b66cf462f5510f02b09192e2",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R39_Deck0176_BaseColor_sRGB.png",
+      "path": "PackedTextures/1668819b81c685aa64b9c3e475a436e1869e8d56374ccaa111636bad76f18ab1.png",
+      "bytes": 1916893,
+      "sha256": "1668819b81c685aa64b9c3e475a436e1869e8d56374ccaa111636bad76f18ab1",
+      "format": ".png",
+      "size": [
+        2048,
+        1408
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R39_Deck0176_MetallicSmoothness_Linear.png",
+      "path": "PackedTextures/54423774beb3a74274827dcb0739e373feca58e5bc4b5e9f165b494e5bbdb8c2.png",
+      "bytes": 1485685,
+      "sha256": "54423774beb3a74274827dcb0739e373feca58e5bc4b5e9f165b494e5bbdb8c2",
+      "format": ".png",
+      "size": [
+        2048,
+        1408
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R39_Deck0176_Normal_OpenGL.png",
+      "path": "PackedTextures/aab94ece5826f2e1eed8efafe910d0ae1ea45e966c37a08d4dce3e40a08a1092.png",
+      "bytes": 248684,
+      "sha256": "aab94ece5826f2e1eed8efafe910d0ae1ea45e966c37a08d4dce3e40a08a1092",
+      "format": ".png",
+      "size": [
+        2048,
+        1408
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R39_Deck0176_Roughness_Linear.png",
+      "path": "PackedTextures/2d52827caa9d1046bdff62c88556a8ee4d13720fa4210bf3a83d63ed0f9bea1a.png",
+      "bytes": 958316,
+      "sha256": "2d52827caa9d1046bdff62c88556a8ee4d13720fa4210bf3a83d63ed0f9bea1a",
+      "format": ".png",
+      "size": [
+        2048,
+        1408
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Antislip_Deck_Plates_BaseColor.png",
+      "path": "PackedTextures/2fd4d70ca90c2fd8dd8240510cb3b5b1bc5846cb9a743f60fc9d45345e03fb56.png",
+      "bytes": 2828667,
+      "sha256": "2fd4d70ca90c2fd8dd8240510cb3b5b1bc5846cb9a743f60fc9d45345e03fb56",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Antislip_Deck_Plates_MetallicGloss.png",
+      "path": "PackedTextures/8e220cf80368fccd84dd7bfea21233ea2cee2ca45ac9aeffbdf4cd2c123c7095.png",
+      "bytes": 281376,
+      "sha256": "8e220cf80368fccd84dd7bfea21233ea2cee2ca45ac9aeffbdf4cd2c123c7095",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Antislip_Deck_Plates_Normal_OpenGL.png",
+      "path": "PackedTextures/5319c91f908b39639e94fe40b9f553cb79bd5638edbe688c24f8b84404c20099.png",
+      "bytes": 3809769,
+      "sha256": "5319c91f908b39639e94fe40b9f553cb79bd5638edbe688c24f8b84404c20099",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Compacted_Dust_Contact_BaseColor.png",
+      "path": "PackedTextures/063ed048a7b54f28f67f6f9b70f143ed9bb90e53b4717a8a8a1bd233310f1cc3.png",
+      "bytes": 173179,
+      "sha256": "063ed048a7b54f28f67f6f9b70f143ed9bb90e53b4717a8a8a1bd233310f1cc3",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Compacted_Dust_Contact_MetallicGloss.png",
+      "path": "PackedTextures/06a26e6a3ee07cbd0845ddcfb8c76b2704ae8cd5360f2eafb5fed413299cd721.png",
+      "bytes": 123472,
+      "sha256": "06a26e6a3ee07cbd0845ddcfb8c76b2704ae8cd5360f2eafb5fed413299cd721",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Compacted_Dust_Contact_Normal_OpenGL.png",
+      "path": "PackedTextures/7842d2524c9759e6cb1cbeb06162274c76fd560c69704b68c25ca8f62d2184d9.png",
+      "bytes": 162116,
+      "sha256": "7842d2524c9759e6cb1cbeb06162274c76fd560c69704b68c25ca8f62d2184d9",
+      "format": ".png",
+      "size": [
+        512,
+        512
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Dark_Coated_Steel_BaseColor.png",
+      "path": "PackedTextures/b57949d33e82e1aaf7d9cc71266c04d65b7a20b45c8be204ab10e3fcaed3af0f.png",
+      "bytes": 40510,
+      "sha256": "b57949d33e82e1aaf7d9cc71266c04d65b7a20b45c8be204ab10e3fcaed3af0f",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Dark_Coated_Steel_MetallicGloss.png",
+      "path": "PackedTextures/8c949a02c6e956cec0e15f27ac00584732827192529586169cc6edab701a5f34.png",
+      "bytes": 102463,
+      "sha256": "8c949a02c6e956cec0e15f27ac00584732827192529586169cc6edab701a5f34",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Dark_Coated_Steel_Normal_OpenGL.png",
+      "path": "PackedTextures/d559a6e98b38ca415e4655df42f9356b394d8fc2f44e17e9caf73140e670f380.png",
+      "bytes": 322232,
+      "sha256": "d559a6e98b38ca415e4655df42f9356b394d8fc2f44e17e9caf73140e670f380",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Exposed_Rough_Metal_BaseColor.png",
+      "path": "PackedTextures/41802be8f68eedeba7a9c47c8ef9ca9cc795609f15824ae5005d9c3cb7e3a3dd.png",
+      "bytes": 79851,
+      "sha256": "41802be8f68eedeba7a9c47c8ef9ca9cc795609f15824ae5005d9c3cb7e3a3dd",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Exposed_Rough_Metal_MetallicGloss.png",
+      "path": "PackedTextures/48c0f4ecb63359b632ac58f5f1b83f36e8071458c56a8b1d172a27fe952a3d89.png",
+      "bytes": 109371,
+      "sha256": "48c0f4ecb63359b632ac58f5f1b83f36e8071458c56a8b1d172a27fe952a3d89",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Exposed_Rough_Metal_Normal_OpenGL.png",
+      "path": "PackedTextures/1ec086aed02307431ebc5f72f56165f2d3807880c7e262e9a9bf1a241109b875.png",
+      "bytes": 260665,
+      "sha256": "1ec086aed02307431ebc5f72f56165f2d3807880c7e262e9a9bf1a241109b875",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Modular_Panels_BaseColor.png",
+      "path": "PackedTextures/78b5a28658c28cf476cccde450a21ae950cf594e45cbe8808516a2ded4144db5.png",
+      "bytes": 209439,
+      "sha256": "78b5a28658c28cf476cccde450a21ae950cf594e45cbe8808516a2ded4144db5",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Modular_Panels_MetallicGloss.png",
+      "path": "PackedTextures/1f077bb3c23225d390cd9bdbf4772f47c19cff1830492eb01917031aeb597796.png",
+      "bytes": 187340,
+      "sha256": "1f077bb3c23225d390cd9bdbf4772f47c19cff1830492eb01917031aeb597796",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Modular_Panels_Normal_OpenGL.png",
+      "path": "PackedTextures/eadab5f541fcdfb000829b8cab132f6f18b747ce359b2ef4951a57096711be51.png",
+      "bytes": 1200203,
+      "sha256": "eadab5f541fcdfb000829b8cab132f6f18b747ce359b2ef4951a57096711be51",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Plain_Coat_BaseColor.png",
+      "path": "PackedTextures/37412e74e250715e1f8a7e543d7ff6819a3c429dc74b8f1b755a241131fd032d.png",
+      "bytes": 155859,
+      "sha256": "37412e74e250715e1f8a7e543d7ff6819a3c429dc74b8f1b755a241131fd032d",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Plain_Coat_MetallicGloss.png",
+      "path": "PackedTextures/0955ecede3875b208dd247156b71feedaa5d2011d3faf1e46a7570444a290c04.png",
+      "bytes": 84879,
+      "sha256": "0955ecede3875b208dd247156b71feedaa5d2011d3faf1e46a7570444a290c04",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_GrayWhite_Plain_Coat_Normal_OpenGL.png",
+      "path": "PackedTextures/ffaa51c1524bfaa10a886b903b859537f2e5cb09b309fe89ba8b27aa849fd1f2.png",
+      "bytes": 321144,
+      "sha256": "ffaa51c1524bfaa10a886b903b859537f2e5cb09b309fe89ba8b27aa849fd1f2",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Mineral_Support_Surface_BaseColor.png",
+      "path": "PackedTextures/6ad4f3f4e03d6309aa2490d49d69c5612be86e0dee45f33a38910d4d00807fd5.png",
+      "bytes": 268695,
+      "sha256": "6ad4f3f4e03d6309aa2490d49d69c5612be86e0dee45f33a38910d4d00807fd5",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Mineral_Support_Surface_MetallicGloss.png",
+      "path": "PackedTextures/849979d45ece76b89a8cedac653431e6c13ca03c4e0905aa3b4cf5ec13ce9e47.png",
+      "bytes": 49040,
+      "sha256": "849979d45ece76b89a8cedac653431e6c13ca03c4e0905aa3b4cf5ec13ce9e47",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Mineral_Support_Surface_Normal_OpenGL.png",
+      "path": "PackedTextures/594cc439af30429cd152b75717b5a76520fb158088428e18f51bca8bfb9becc3.png",
+      "bytes": 623105,
+      "sha256": "594cc439af30429cd152b75717b5a76520fb158088428e18f51bca8bfb9becc3",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Muted_Safety_Ochre_BaseColor.png",
+      "path": "PackedTextures/8c47f700d38059f8324118ac90d4796b0a95455de47dc560b55d224234dc8884.png",
+      "bytes": 158163,
+      "sha256": "8c47f700d38059f8324118ac90d4796b0a95455de47dc560b55d224234dc8884",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Muted_Safety_Ochre_MetallicGloss.png",
+      "path": "PackedTextures/b5c781ccf26a3bd90390d27a4b57926f9f45bf03a5def9b5a21d198ce6ce9133.png",
+      "bytes": 84844,
+      "sha256": "b5c781ccf26a3bd90390d27a4b57926f9f45bf03a5def9b5a21d198ce6ce9133",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_Muted_Safety_Ochre_Normal_OpenGL.png",
+      "path": "PackedTextures/661ba56e59a4d2ece4fc21908916c9e72d5a0213a043831c593509b1bbceb65a.png",
+      "bytes": 259350,
+      "sha256": "661ba56e59a4d2ece4fc21908916c9e72d5a0213a043831c593509b1bbceb65a",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_West_Access_ID_BaseColor.png",
+      "path": "PackedTextures/adc07d3cffc088d7910112814b905a5cdce60bd845db6a87fea6f7fabaf1afbf.png",
+      "bytes": 26030,
+      "sha256": "adc07d3cffc088d7910112814b905a5cdce60bd845db6a87fea6f7fabaf1afbf",
+      "format": ".png",
+      "size": [
+        1024,
+        768
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_West_Access_ID_MetallicGloss.png",
+      "path": "PackedTextures/fdad5135b6f04ed20e179078c96d6c411af9a5d2ead3f9ca61df7ee66c98ecd0.png",
+      "bytes": 4289,
+      "sha256": "fdad5135b6f04ed20e179078c96d6c411af9a5d2ead3f9ca61df7ee66c98ecd0",
+      "format": ".png",
+      "size": [
+        1024,
+        768
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R4_West_Access_ID_Normal_OpenGL.png",
+      "path": "PackedTextures/ef3f36669170e21759afbbb1c05e0c0bb98b19300c4a3d537f1b479434fd9243.png",
+      "bytes": 3430,
+      "sha256": "ef3f36669170e21759afbbb1c05e0c0bb98b19300c4a3d537f1b479434fd9243",
+      "format": ".png",
+      "size": [
+        1024,
+        768
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R5_PH_Concrete008_MetallicGloss_2k.png",
+      "path": "PackedTextures/cee28d21fa1325517f46ac0b4f1224514e8de339c3f32a581beea9bfd6bed0de.png",
+      "bytes": 1478905,
+      "sha256": "cee28d21fa1325517f46ac0b4f1224514e8de339c3f32a581beea9bfd6bed0de",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+      "path": "PackedTextures/778e9de3de0f1ee7198fb3061227eb5a1c24f4057f1ca3c3a90f648bd3da19b4.png",
+      "bytes": 4147461,
+      "sha256": "778e9de3de0f1ee7198fb3061227eb5a1c24f4057f1ca3c3a90f648bd3da19b4",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R5_PH_Concrete008_NormalGL_2k.png",
+      "path": "PackedTextures/3d26d24586556ee400506888ad6496733a67bcc9020616c10119c1c343c5be24.png",
+      "bytes": 14170572,
+      "sha256": "3d26d24586556ee400506888ad6496733a67bcc9020616c10119c1c343c5be24",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_BaseColor.png",
+      "path": "PackedTextures/5789bb943ab122b5d2a0e4f5c94b0f2fbba37747a93e2453a69ab0fa59a43007.png",
+      "bytes": 211647,
+      "sha256": "5789bb943ab122b5d2a0e4f5c94b0f2fbba37747a93e2453a69ab0fa59a43007",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_BaseColor.png.001",
+      "path": "PackedTextures/5789bb943ab122b5d2a0e4f5c94b0f2fbba37747a93e2453a69ab0fa59a43007.png",
+      "bytes": 211647,
+      "sha256": "5789bb943ab122b5d2a0e4f5c94b0f2fbba37747a93e2453a69ab0fa59a43007",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_MetallicGloss.png",
+      "path": "PackedTextures/2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2.png",
+      "bytes": 256787,
+      "sha256": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_MetallicGloss.png.001",
+      "path": "PackedTextures/2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2.png",
+      "bytes": 256787,
+      "sha256": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_MetallicGloss.png.002",
+      "path": "PackedTextures/2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2.png",
+      "bytes": 256787,
+      "sha256": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+      "path": "PackedTextures/ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1.png",
+      "bytes": 769835,
+      "sha256": "ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_Normal_OpenGL.png.001",
+      "path": "PackedTextures/ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1.png",
+      "bytes": 769835,
+      "sha256": "ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Dark_Protective_Steel_Normal_OpenGL.png.002",
+      "path": "PackedTextures/ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1.png",
+      "bytes": 769835,
+      "sha256": "ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_BaseColor.png",
+      "path": "PackedTextures/5501c8cf1e25b4d9fcb04972b17ed990ea9af700465c32477d1ca6e1bd306301.png",
+      "bytes": 264726,
+      "sha256": "5501c8cf1e25b4d9fcb04972b17ed990ea9af700465c32477d1ca6e1bd306301",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_BaseColor.png.001",
+      "path": "PackedTextures/5501c8cf1e25b4d9fcb04972b17ed990ea9af700465c32477d1ca6e1bd306301.png",
+      "bytes": 264726,
+      "sha256": "5501c8cf1e25b4d9fcb04972b17ed990ea9af700465c32477d1ca6e1bd306301",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_MetallicGloss.png",
+      "path": "PackedTextures/a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f.png",
+      "bytes": 651537,
+      "sha256": "a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_MetallicGloss.png.001",
+      "path": "PackedTextures/a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f.png",
+      "bytes": 651537,
+      "sha256": "a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png",
+      "path": "PackedTextures/cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671.png",
+      "bytes": 2898968,
+      "sha256": "cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png.001",
+      "path": "PackedTextures/cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671.png",
+      "bytes": 2898968,
+      "sha256": "cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Matte_Deck_Plates_BaseColor.png",
+      "path": "PackedTextures/9c4019e528cc8a9ac0bdb8ae11f42008967e5a80be4f9539889aae6c96ad1c56.png",
+      "bytes": 564136,
+      "sha256": "9c4019e528cc8a9ac0bdb8ae11f42008967e5a80be4f9539889aae6c96ad1c56",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Matte_Deck_Plates_MetallicGloss.png",
+      "path": "PackedTextures/2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b.png",
+      "bytes": 644112,
+      "sha256": "2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Matte_Deck_Plates_Normal_OpenGL.png",
+      "path": "PackedTextures/6d84a86c959554c8fc5f23739888242d6bc2dd1bf52635edad68546829e3e6a5.png",
+      "bytes": 4610330,
+      "sha256": "6d84a86c959554c8fc5f23739888242d6bc2dd1bf52635edad68546829e3e6a5",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_BaseColor.png",
+      "path": "PackedTextures/1d87c6dad47f6e884c5a55ee932a833ff17928317ca6a2ccb2497d51148ee569.png",
+      "bytes": 138256,
+      "sha256": "1d87c6dad47f6e884c5a55ee932a833ff17928317ca6a2ccb2497d51148ee569",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_BaseColor.png.001",
+      "path": "PackedTextures/1d87c6dad47f6e884c5a55ee932a833ff17928317ca6a2ccb2497d51148ee569.png",
+      "bytes": 138256,
+      "sha256": "1d87c6dad47f6e884c5a55ee932a833ff17928317ca6a2ccb2497d51148ee569",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_MetallicGloss.png",
+      "path": "PackedTextures/0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f.png",
+      "bytes": 229882,
+      "sha256": "0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_MetallicGloss.png.001",
+      "path": "PackedTextures/0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f.png",
+      "bytes": 229882,
+      "sha256": "0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png",
+      "path": "PackedTextures/771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb.png",
+      "bytes": 827355,
+      "sha256": "771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png.001",
+      "path": "PackedTextures/771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb.png",
+      "bytes": 827355,
+      "sha256": "771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Regolith_3p7m_Normal_OpenGL.png",
+      "path": "PackedTextures/71afa4c0d94995ff3c1d99a0d26f4ab4544f7ed08a12863ea0eb3274f2865cfc.png",
+      "bytes": 5211936,
+      "sha256": "71afa4c0d94995ff3c1d99a0d26f4ab4544f7ed08a12863ea0eb3274f2865cfc",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Regolith_Global_Control_0_4096.png",
+      "path": "PackedTextures/3a81067fd733a3dfc986f00aa53b869e70b84743347271a35c8895aa32124cd9.png",
+      "bytes": 2807828,
+      "sha256": "3a81067fd733a3dfc986f00aa53b869e70b84743347271a35c8895aa32124cd9",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Regolith_HighTone_BaseColor.png",
+      "path": "PackedTextures/a00e51dc528a8a29df871aaf609834ff36af0f217264c54410ee767e8e950410.png",
+      "bytes": 3283606,
+      "sha256": "a00e51dc528a8a29df871aaf609834ff36af0f217264c54410ee767e8e950410",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Regolith_LowTone_BaseColor.png",
+      "path": "PackedTextures/b2cc4ad1c371f3d55050b1c4a249b162f110ba72d70cbe89dbdece36d2b05726.png",
+      "bytes": 3337452,
+      "sha256": "b2cc4ad1c371f3d55050b1c4a249b162f110ba72d70cbe89dbdece36d2b05726",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Regolith_TerrainMask.png",
+      "path": "PackedTextures/c3e24f1a58a468a1824140d7d7791f059522b820a29e25ee204e74635eefb8eb.png",
+      "bytes": 2264981,
+      "sha256": "c3e24f1a58a468a1824140d7d7791f059522b820a29e25ee204e74635eefb8eb",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_BaseColor.png",
+      "path": "PackedTextures/9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248.png",
+      "bytes": 211305,
+      "sha256": "9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_BaseColor.png.001",
+      "path": "PackedTextures/9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248.png",
+      "bytes": 211305,
+      "sha256": "9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_BaseColor.png.002",
+      "path": "PackedTextures/9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248.png",
+      "bytes": 211305,
+      "sha256": "9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_MetallicGloss.png",
+      "path": "PackedTextures/9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444.png",
+      "bytes": 206716,
+      "sha256": "9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_MetallicGloss.png.001",
+      "path": "PackedTextures/9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444.png",
+      "bytes": 206716,
+      "sha256": "9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Restrained_Safety_Ochre_MetallicGloss.png.002",
+      "path": "PackedTextures/9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444.png",
+      "bytes": 206716,
+      "sha256": "9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Rough_Exposed_Steel_BaseColor.png",
+      "path": "PackedTextures/a5c5475b1b01e29430c289382f69376cbb509625a7c652fe8e213b4f89851878.png",
+      "bytes": 263537,
+      "sha256": "a5c5475b1b01e29430c289382f69376cbb509625a7c652fe8e213b4f89851878",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+      "path": "PackedTextures/54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1.png",
+      "bytes": 244671,
+      "sha256": "54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Rough_Exposed_Steel_MetallicGloss.png.001",
+      "path": "PackedTextures/54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1.png",
+      "bytes": 244671,
+      "sha256": "54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+      "path": "PackedTextures/298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b.png",
+      "bytes": 671611,
+      "sha256": "298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png.001",
+      "path": "PackedTextures/298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b.png",
+      "bytes": 671611,
+      "sha256": "298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "CHANNEL_PACKED"
+    },
+    {
+      "source_image": "WQ_Surface_BaseColor.png",
+      "path": "PackedTextures/3e877a2a415defcc32c448080d1c7981971e2cde55671154b78e5e712f1cb111.png",
+      "bytes": 187359,
+      "sha256": "3e877a2a415defcc32c448080d1c7981971e2cde55671154b78e5e712f1cb111",
+      "format": ".png",
+      "size": [
+        2048,
+        2048
+      ],
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "WQ_Surface_Normal_OpenGL.png",
+      "path": "PackedTextures/fb5cea9dde53d8fc06a3e70663495d9e0975b9fa8e1d7ec0431f65284f7e9cf9.png",
+      "bytes": 106356,
+      "sha256": "fb5cea9dde53d8fc06a3e70663495d9e0975b9fa8e1d7ec0431f65284f7e9cf9",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    },
+    {
+      "source_image": "WQ_Surface_ORM.png",
+      "path": "PackedTextures/81c46cbe20fa412e6ea0fb5fb6a56d45e69bc080ef5855a512c6c2b79ee95e37.png",
+      "bytes": 78648,
+      "sha256": "81c46cbe20fa412e6ea0fb5fb6a56d45e69bc080ef5855a512c6c2b79ee95e37",
+      "format": ".png",
+      "size": [
+        1024,
+        1024
+      ],
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT"
+    }
+  ]
+}

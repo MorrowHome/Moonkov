@@ -1,0 +1,50 @@
+{
+  "status": "download_and_reassembly_hash_pass",
+  "source": {
+    "path": "Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend",
+    "bytes": 341657959,
+    "sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054"
+  },
+  "parts": [
+    {
+      "path": "Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend.part01",
+      "bytes": 94371840,
+      "sha256": "851f80550ec753b8ccfadb25cac0746be10da665c81f175faf9916d31b27bb54"
+    },
+    {
+      "path": "Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend.part02",
+      "bytes": 94371840,
+      "sha256": "314e5b86a1b2e8d2268562f12bad60d227bb092c5ea6842b667d4e5727a1de66"
+    },
+    {
+      "path": "Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend.part03",
+      "bytes": 94371840,
+      "sha256": "66c5e51cb5bdb01d07d9385eba3ec71774ac3ffe1184df06d4d2488cafbe7a4d"
+    },
+    {
+      "path": "Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend.part04",
+      "bytes": 58542439,
+      "sha256": "8676139487334ba3a8e2bc2ec55cba09973a52785b3632e749d8737c714506ee"
+    }
+  ],
+  "blender": "5.2.2 LTS",
+  "source_counts": {
+    "meshes": 18731,
+    "materials": 481,
+    "images": 201,
+    "actions": 0,
+    "node_groups": 3,
+    "collections": 476
+  },
+  "scene_object_types": {
+    "EMPTY": 766,
+    "MESH": 21464,
+    "CURVE": 312,
+    "CAMERA": 77,
+    "LIGHT": 406,
+    "FONT": 329
+  },
+  "source_light_mapping_entries": 118,
+  "source_switch_mapping_entries": 135,
+  "unity_imported": false
+}

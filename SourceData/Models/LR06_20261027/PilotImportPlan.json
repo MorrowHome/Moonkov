@@ -1,0 +1,442 @@
+{
+  "status": "awaiting_Unity_import_and_visual_validation",
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "scope": "one wall, one housing, one warm diffuser; source lights recorded for later conversion",
+  "fbx_import": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "scale": 1,
+    "import_normals": true,
+    "calculate_tangents": true,
+    "generate_collider": false,
+    "import_lights": false
+  },
+  "coordinate_check": "For each model compare bounds with Blender (x,z,y); test identity and 180-degree Y correction. Do not save a scene or prefab on mismatch.",
+  "materials": [
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.014999999664723873,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12Pilot_Corrected/pilot_0_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 35209
+        },
+        "roughness": {
+          "path": "NR12Pilot_Corrected/pilot_0_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 38037
+        },
+        "normal": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_control": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_strong_control": {
+          "path": "NR12Pilot_Corrected/pilot_0_normal_strong_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        }
+      },
+      "normal_status": "bump_bake_not_proven",
+      "normal_max_channel_difference": 9.298324584960938e-05,
+      "normal_strong_control_max_difference": 0.26543259620666504
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "source_material": "NR01_Dark_Structural_Steel",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.375,
+          2462.41015625,
+          256.050048828125
+        ],
+        [
+          1999.97509765625,
+          2462.7900390625,
+          256.1900634765625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.4300000071525574,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12Pilot_Corrected/pilot_1_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 23666
+        },
+        "roughness": {
+          "path": "NR12Pilot_Corrected/pilot_1_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 12357
+        },
+        "normal": {
+          "path": "NR12Pilot_Corrected/pilot_1_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        },
+        "normal_control": {
+          "path": "NR12Pilot_Corrected/pilot_1_normal_control.exr",
+          "colorspace": "Non-Color",
+          "bytes": 4202917
+        }
+      },
+      "normal_status": "bump_bake_not_proven",
+      "normal_max_channel_difference": 0.0009668469429016113
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "source_material": "LR06_NR01_V5_Transfer_Diffuser_Warm_LOCAL_ONLY",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.455078125,
+          2462.465087890625,
+          256.030029296875
+        ],
+        [
+          1999.89501953125,
+          2462.735107421875,
+          256.050048828125
+        ]
+      ],
+      "base_color": [
+        0.6200000047683716,
+        0.6700000166893005,
+        0.6499999761581421,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.47999998927116394,
+      "emission_color": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284,
+        1.0
+      ],
+      "emission_strength": 2.0,
+      "linked_inputs": [],
+      "textures": {},
+      "normal_status": "constant"
+    }
+  ],
+  "assets": [
+    {
+      "path": "NR12Pilot_Corrected/NR12_corridor_pilot.fbx",
+      "role": "model",
+      "bytes": 36428,
+      "sha256": "03a225f10d30ba6366cef8a6ab428bac7458e1211efe939308b21197ca858cd1",
+      "colorspace": null
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_0_basecolor.png",
+      "role": "basecolor",
+      "bytes": 35209,
+      "sha256": "c8c8409a35ff77a4cc215af42cada4ba074b3410df43b5a48af3aa1748e5841a",
+      "colorspace": "sRGB"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_0_roughness.png",
+      "role": "roughness",
+      "bytes": 38037,
+      "sha256": "35eca6ba45058bc49cffd31a601563af8aad69b9d8b61038b39593e538aa79ff",
+      "colorspace": "Non-Color"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_0_normal.exr",
+      "role": "normal",
+      "bytes": 4202917,
+      "sha256": "95c922f1041af497be0d21643b3475c23ec59373c7bb76a500f32713e011d2e2",
+      "colorspace": "Non-Color"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_1_basecolor.png",
+      "role": "basecolor",
+      "bytes": 23666,
+      "sha256": "e2a3e1c7ef9c26030a0932001b7a6afacc7f9da34fb2c080d799182e64a5e533",
+      "colorspace": "sRGB"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_1_roughness.png",
+      "role": "roughness",
+      "bytes": 12357,
+      "sha256": "684d0e6aba83064f77d7a5870c1105d6ffc6aedf33f8335dae53b65a2131e027",
+      "colorspace": "Non-Color"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_1_normal.exr",
+      "role": "normal",
+      "bytes": 4202917,
+      "sha256": "5a6ac7014aaceb4155872f6699f1020ed0164af935b7259020da7fcb3243d27a",
+      "colorspace": "Non-Color"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_0_metallic_smoothness.png",
+      "role": "metallic_smoothness",
+      "bytes": 37780,
+      "sha256": "72f5b4510206a3d9ca5e94e6976c9afc7028c0afc14e5660886ac1a813490a98",
+      "colorspace": "Non-Color"
+    },
+    {
+      "path": "NR12Pilot_Corrected/pilot_1_metallic_smoothness.png",
+      "role": "metallic_smoothness",
+      "bytes": 12159,
+      "sha256": "ceeda4cafe9e9a131e7434947a51b6e41834c0d4a2fd4268486a0e3d105342aa",
+      "colorspace": "Non-Color"
+    }
+  ],
+  "source_lights": [
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_AREA",
+      "group": "NR01",
+      "collections": [
+        "NR01_V5_05_SCOPED_CORRIDOR_WORKLIGHTS"
+      ],
+      "hide_render": false,
+      "parent": null,
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1998.175048828125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          2462.60009765625
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          256.0240478515625
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "type": "AREA",
+      "color": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284
+      ],
+      "energy_watts": 900.0,
+      "shape": "RECTANGLE",
+      "size": 3.440000057220459,
+      "size_y": 0.27000001072883606,
+      "spot_size_radians": null,
+      "spot_blend": null,
+      "use_shadow": true,
+      "cutoff_distance": 40.0,
+      "use_custom_distance": false,
+      "light_node_types": [
+        "OUTPUT_LIGHT",
+        "EMISSION"
+      ],
+      "light_nodes": [
+        {
+          "type": "OUTPUT_LIGHT",
+          "name": "Light Output",
+          "inputs": {}
+        },
+        {
+          "type": "EMISSION",
+          "name": "Emission",
+          "inputs": {
+            "Color": {
+              "value": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linked": false
+            },
+            "Strength": {
+              "value": 1.0,
+              "linked": false
+            },
+            "Weight": {
+              "value": 0.0,
+              "linked": false
+            }
+          }
+        }
+      ],
+      "light_node_links": [
+        {
+          "from": "Emission",
+          "output": "Emission",
+          "to": "Light Output",
+          "input": "Surface"
+        }
+      ]
+    },
+    {
+      "name": "NR01_V5_NORTH_TRANSFER_AREA",
+      "group": "NR01",
+      "collections": [
+        "NR01_V5_05_SCOPED_CORRIDOR_WORKLIGHTS"
+      ],
+      "hide_render": false,
+      "parent": null,
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1998.175048828125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          2474.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          256.0240478515625
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "type": "AREA",
+      "color": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284
+      ],
+      "energy_watts": 900.0,
+      "shape": "RECTANGLE",
+      "size": 3.440000057220459,
+      "size_y": 0.27000001072883606,
+      "spot_size_radians": null,
+      "spot_blend": null,
+      "use_shadow": true,
+      "cutoff_distance": 40.0,
+      "use_custom_distance": false,
+      "light_node_types": [
+        "OUTPUT_LIGHT",
+        "EMISSION"
+      ],
+      "light_nodes": [
+        {
+          "type": "OUTPUT_LIGHT",
+          "name": "Light Output",
+          "inputs": {}
+        },
+        {
+          "type": "EMISSION",
+          "name": "Emission",
+          "inputs": {
+            "Color": {
+              "value": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linked": false
+            },
+            "Strength": {
+              "value": 1.0,
+              "linked": false
+            },
+            "Weight": {
+              "value": 0.0,
+              "linked": false
+            }
+          }
+        }
+      ],
+      "light_node_links": [
+        {
+          "from": "Emission",
+          "output": "Emission",
+          "to": "Light Output",
+          "input": "Surface"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "URP Lit base color texture is sRGB. Metallic/smoothness mask and normal are linear.",
+    "Metallic/smoothness mask uses metallic in R and 1 minus Blender roughness in A.",
+    "The diffuser uses its source base color and HDR emission; it requires no UV.",
+    "Blender AREA-light power is not a directly transferable Unity intensity.",
+    "The normal bake responds to an exaggerated bump, but the real effect is sub-8-bit and remains visually unverified.",
+    "No baked-lighting or runtime switch integration is claimed."
+  ]
+}

@@ -1,0 +1,20 @@
+# Keep verified reconstruction fragments locally. The complete source is the canonical asset.
+*.part01
+*.part02
+*.part03
+*.part04
+*.log
+SourceInspection.json
+EmbeddedTexts/
+PackedTextures/
+AuthorNotes/LR02_RECOVERY_AND_CHECKSUMS.md
+AuthorNotes/LR03_RECOVERY_AND_CHECKSUMS.md
+AuthorNotes/LR04_RECOVERY_AND_CHECKSUMS.md
+AuthorNotes/LR05_RECOVERY_AND_CHECKSUMS.md
+NR12Pilot_Corrected/*
+!NR12Pilot_Corrected/PilotManifest.json
+!NR12Pilot_Corrected/RoundTripQA.json
+!NR12Pilot_Corrected/MaskValidation.json
+!NR12Pilot_Corrected/UnityImport.json
+!NR12Pilot_Corrected/MaterialComparison.json
+!NR12Pilot_Corrected/UnityPreview.json

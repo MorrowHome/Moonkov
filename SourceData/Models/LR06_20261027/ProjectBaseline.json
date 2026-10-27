@@ -1,0 +1,35 @@
+{
+  "status": "read_only_before_LR06_scene_changes",
+  "files": [
+    {
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+      "bytes": 40823465,
+      "sha256": "7eaf4e275f0b85532444967ed826de8f59cbcab4e16f817eb3b698ce244362c9"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 4566,
+      "sha256": "cb9107b1bafc676aab5f9931bfdaed2f295fdccfd705eade371f0075e390bcc1"
+    },
+    {
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearCollision.asset",
+      "bytes": 12881584,
+      "sha256": "ce8c930d6165d3a5abeb58aecb83bf83846ea10dab7231a997b39db666a8fc65"
+    },
+    {
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset",
+      "bytes": 14283132,
+      "sha256": "821631a75f55e8c681e0c6b844c2ec2b70d54fe07b6154696296f09332eaa68e"
+    },
+    {
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+      "bytes": 14283132,
+      "sha256": "7324ba44511edee38afded22276c6b847119f2c1ce542ffc021461b5b576544d"
+    },
+    {
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarCollision.asset",
+      "bytes": 12881580,
+      "sha256": "83d4f0c9086fbfe830467b40af4912f48df98c2062f6566c5754d64e9d680fbf"
+    }
+  ]
+}

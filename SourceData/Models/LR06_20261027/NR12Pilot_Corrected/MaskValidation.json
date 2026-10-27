@@ -1,0 +1,14 @@
+[
+  {
+    "object_index": 0,
+    "compared_pixels": 262144,
+    "metallic_max_error_8bit": 0,
+    "smoothness_max_error_8bit": 0
+  },
+  {
+    "object_index": 1,
+    "compared_pixels": 262144,
+    "metallic_max_error_8bit": 0,
+    "smoothness_max_error_8bit": 0
+  }
+]

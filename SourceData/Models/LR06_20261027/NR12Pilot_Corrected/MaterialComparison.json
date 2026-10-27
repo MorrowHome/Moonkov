@@ -1,0 +1,19 @@
+{
+  "scope": "isolated Blender comparison of source nodes and baked maps, same geometry/camera/lights; not Unity acceptance",
+  "samples": 64,
+  "compared_pixels": 349483,
+  "absolute_decoded_png_rgb_mean": 0.005325049627572298,
+  "absolute_decoded_png_rgb_p95": 0.003921583294868469,
+  "reference_mean_rgb": [
+    0.2742336392402649,
+    0.2723273038864136,
+    0.2573621869087219
+  ],
+  "baked_mean_rgb": [
+    0.27465611696243286,
+    0.27274394035339355,
+    0.25824248790740967
+  ],
+  "source_render": "NR12Pilot_Corrected/material_compare_source.png",
+  "baked_render": "NR12Pilot_Corrected/material_compare_baked.png"
+}
