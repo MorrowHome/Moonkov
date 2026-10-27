@@ -250,7 +250,9 @@ namespace Unity.MP_FPS
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
             { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
-            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (menu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
+            bool cancelMenu = ChatInputBlocked || CinematicInputBlocked || MapInputBlocked || m_WasSettled ||
+                m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
+            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
                 SendQuickTactical(TacticalItemAction.Cancel);
             var selected = m_QuickBindings.SelectedItem(graph);
             TacticalItemsFeedback.SetSelectedItem(m_QuickActive ? selected?.Code : null);

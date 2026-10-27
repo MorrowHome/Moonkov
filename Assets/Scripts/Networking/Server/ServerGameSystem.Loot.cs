@@ -189,9 +189,13 @@ namespace Unity.MP_FPS
                         bool accepted=eligible && !weaponBusy;
                         if(accepted)
                         {
-                            inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
-                            CancelManualMission(ref state,connection,"任务操作中断：开始搜索或关闭搜刮。");
-                            inventory.OpenedLootId=r.LootId;
+                            if(r.LootId<0)inventory.CloseLoot();
+                            else
+                            {
+                                inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
+                                CancelManualMission(ref state,connection,"任务操作中断：开始搜索。");
+                                inventory.OpenedLootId=r.LootId;
+                            }
                             double now=SystemAPI.Time.ElapsedTime;
                             if(r.LootId>=0 && now>=inventory.NextLootNoiseAt)
                             {

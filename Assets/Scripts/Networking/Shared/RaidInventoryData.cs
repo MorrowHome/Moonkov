@@ -171,6 +171,16 @@ namespace Unity.MP_FPS
         public readonly System.Collections.Generic.List<int> RemovedSearches = new System.Collections.Generic.List<int>();
         public bool TacticalPending;
         public bool ActionPending => TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
+        public void CloseLoot()
+        {
+            // Closing a view owns the search, not an unrelated self-use action.
+            if(DissectingLootId>=0)
+            {
+                DissectingLootId=-1;
+                ActionFeedback="已取消搜索；未获取物品。";
+            }
+            OpenedLootId=-1;LastSentVersion=LastSentLootVersion=-1;
+        }
         public void CancelActions(string feedback=null)
         {
             TacticalPending=false;DissectingLootId=-1;MedicalItemId=null;MedicalIsConsumable=false;ActionFeedback=feedback;LastSentVersion=-1;

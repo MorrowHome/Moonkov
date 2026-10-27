@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
         private float m_InventoryRequestedAt;
         private bool m_InventoryRequestPending;
         private bool m_LootOpenPending;
+        private bool m_CloseLootWhenIdle;
         private int m_DissectingLootId=-1;
         private float m_DissectionEndsAt;
         private bool m_DissectionInterrupted;
@@ -284,6 +285,7 @@ namespace Unity.MP_FPS
             m_MedicalActive=m_ConsumableActive=m_ConsumableFood=false; m_DissectingLootId=-1; m_ActionFeedbackUntil=0; m_ActionFeedback=null;
             m_ActionAccepted=m_ActionCancelPending=m_ActionFailed=false; m_ActionRequestId=0;
             m_ProgressTacticalRequest=0;m_ProgressTacticalDuration=0;
+            m_CloseLootWhenIdle=false;
         }
         private void BeginTimedAction()
         {
@@ -312,17 +314,30 @@ namespace Unity.MP_FPS
             if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
             {
-                if(!TimedActionActive)return;
-                CancelTimedAction();
+                if(!TimedActionActive && !QuickTacticalActionPending)return;
+                if(!m_MedicalActive && !QuickTacticalActionPending)CancelTimedAction();
             }
             if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending)) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
-            if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
+            if(visible)m_CloseLootWhenIdle=false;
+            else if(m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)
+            {
+                if(m_MedicalActive || QuickTacticalActionPending)m_CloseLootWhenIdle=true;
+                else RequestLoot(-1);
+            }
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible) { UpdateInventoryView(); if(!m_LootOpenPending && !m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
         private void ClosePack() => SetInventory(false);
+        private void CloseLootWhenIdle()
+        {
+            if(!m_CloseLootWhenIdle)return;
+            if(m_InventoryVisible || m_OpenedLootId<0 || m_Snapshot.Phase!=RaidPhase.Active)
+            {m_CloseLootWhenIdle=false;return;}
+            if(!TimedActionActive && !QuickTacticalActionPending && !m_InventoryRequestPending && RequestLoot(-1))
+                m_CloseLootWhenIdle=false;
+        }
         private void ResultBack() { m_ResultStep = Mathf.Max(0, m_ResultStep - 1); RenderResult(); }
         private void ResultNext() { m_ResultStep = Mathf.Min(2, m_ResultStep + 1); RenderResult(); }
         private void ReturnToShip() { if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync(); }
@@ -396,7 +411,7 @@ namespace Unity.MP_FPS
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
             if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
-                {if(!m_InventoryRequestPending || TimedActionActive)SetInventory(!m_InventoryVisible);}
+                {if(!m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
             if (settled && !m_WasSettled)
@@ -447,6 +462,7 @@ namespace Unity.MP_FPS
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked && !CinematicInputBlocked;
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
+            CloseLootWhenIdle();
             PresentProtection(alive && ready && !settled && !m_InventoryVisible && !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen);
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);

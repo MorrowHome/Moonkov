@@ -260,6 +260,22 @@ public static class MoonkovRaidActionChecks
             Check(deleted.Any(u=>u.LootId==drop && u.Removed && u.Deleted) && !markers.Bags.ContainsKey(drop) &&
                 !lateJoin.Bags.ContainsKey(drop) && !inventory.SearchedLoot.Contains(drop),"Recycled drop retained ghost marker/search state");
             CheckManualMissionRequests(world,handle,a,inventory,origin,out missionObject);
+            var closing=Actor(out var closingInventory);
+            var closingPlayer=em.GetComponentData<JoinedClient>(closing).PlayerEntity;
+            var closingMedicine=closingInventory.Graph.Items.Single(i=>i.Code=="medkit");
+            float closingHealth=em.GetComponentData<PredictedPlayerGhost>(closingPlayer).CurrentHealth;
+            closingInventory.OpenedLootId=0;world.SetTime(new TimeData(100,.02f));
+            Request(world,closing,new RaidMedicalUseRpc {RaidId=7,RequestId=1,ExpectedVersion=closingInventory.Graph.Version,
+                ItemId=closingMedicine.Id,Part=BodyPart.RightArm});Process(world,handle,"HandleInventoryRequests");
+            Request(world,closing,new RaidLootOpenRpc {RaidId=7,RequestId=2,LootId=-1});Process(world,handle,"HandleLootRequests");
+            Check(closingInventory.MedicalItemId==closingMedicine.Id && closingInventory.OpenedLootId<0 && closingInventory.Graph.Count("medkit")==2,
+                "Closing loot RPC cancelled treatment or consumed medicine early");
+            Refresh(world,handle,closing,103);Refresh(world,handle,closing,110);
+            Check(closingInventory.Graph.Count("medkit")==1 && em.GetComponentData<PredictedPlayerGhost>(closingPlayer).CurrentHealth==closingHealth+40,
+                "Treatment did not finish exactly once after closing loot RPC");
+            var closingTool=Actor(out var toolInventory);toolInventory.TacticalPending=true;toolInventory.OpenedLootId=0;
+            Request(world,closingTool,new RaidLootOpenRpc {RaidId=7,RequestId=1,LootId=-1});Process(world,handle,"HandleLootRequests");
+            Check(toolInventory.TacticalPending && toolInventory.OpenedLootId<0,"Closing loot RPC cancelled a tactical tool");
             Debug.Log($"Raid server request checks passed: {s_Count} assertions for actual handlers, server clock/cancel/replay, wrong raid/source/dead/disconnect/stale drops, server placement, range/wall/search gates, re-open and competing pickup.");
         }
         finally
