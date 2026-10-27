@@ -27,7 +27,8 @@ public static class LR06CaptureSavedDisplay
             camera.scene = scene; camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
             void Capture(string name, int width, int height, Vector3 position, Vector3 look)
             {
-                var target = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
+                // Match the existing PC pipeline's two-sample MSAA for the Game view.
+                var target = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32) { antiAliasing = 2 };
                 Texture2D pixels = null;
                 try
                 {

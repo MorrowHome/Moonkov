@@ -7,6 +7,7 @@
 - 实际 Unity 预览图：[整体](FullPreviewStaging/UnityOverview.png)、[中央设施](FullPreviewStaging/UnityCentralStructure.png)、[北侧走廊](FullPreviewStaging/UnityNorthCorridor.png)。
 - 同机位对照：[Blender 源场景](FullPreviewStaging/BlenderPBRBuilding.png)、[Unity 修改前](FullPreviewStaging/UnityPBRBuildingBefore.png)、[Unity 材质和主光调整后](FullPreviewStaging/UnityPBRBuildingLit.png)。Blender 使用 Cycles、AgX 和源灯，图为 16 采样；Unity 使用展示灯且未启用相机后期。图中亮度不能直接当作材质误差。
 - 更新后的 Unity 展示图：[全图](FullPreviewStaging/UnityPBRFullOverview.png)、[建筑近景](FullPreviewStaging/UnityWarmBuilding.png)。图像来自重新打开后的场景。
+- 同机位阴影改进：[Unity 调整后](FullPreviewStaging/UnityShadowImproved.png)。与上方 Blender 源图使用相同机位和 960×600 分辨率；Unity 截图启用现有的 2 倍抗锯齿。
 
 - 源文件的可见清单有 30212 个实例。已去除 633 组来源、变换和材质完全相同的重复文字或曲线。
 - 显示几何合并为 65 个 FBX 分片。源分片合计 3707404 个三角形。全部分片已核对哈希、三角形索引和材质名称。
@@ -16,7 +17,9 @@
 - R6_T06 代表建筑的有效 UV 和切线已检查。三处同机位取样命中同一材质，位置偏差最大约 1.6 厘米。全图还有 UV 无效面：浅色陶瓷涂层约占该材质表面积的 18%，粗糙裸钢约占 52%，主要集中在 `Map_22`、`Map_29` 和 `Map_31` 等分片。这些面不能认为已完成贴图验收。程序节点也尚未完整转换，其余复杂材质仍为基础颜色近似。
 - 新增的 13 张共享贴图在本机 Unity Editor 中报告约 34.7 MiB。贴图通道经 GPU 抽样核对；这不是目标设备的显存或性能结论。明细见 `FullPreviewStaging/UnityUVReport.json` 和 `UnityPBRChannels.json`。
 - 全部 406 盏源灯的原始参数留在清单中。展示场景保留 31 盏暖色代理灯，位置参考源灯具，均不投实时阴影。展示主光参考 Blender 预览主光的方向，使用一盏带软阴影的方向光。代理灯只用于展示，不是源灯的等价转换或最终烘焙。
-- 本机 Editor 预览中，主光阴影图为 2048×2048，报告约 8 MiB。项目现有管线的阴影距离为 50 米，使用四级级联。这不是目标设备的性能或显存结论。
+- 原共享管线的阴影距离为 50 米。隔离试验表明，改为 200 米后，桥底和远处结构的投影恢复。展示场景为编辑器活动场景时，临时使用独立的管线副本；切回其他场景时恢复原设置。共享管线文件未修改。超出 200 米的总览视角仍可能缺少远处阴影。
+- 本机 Editor 预览中，主光阴影图为 2048×2048，报告约 8 MiB，使用四级级联。更远的阴影可能增加绘制开销；尚未测目标设备性能或显存。
+- 正面断续细线在去掉贴图的对照中仍存在。2 倍抗锯齿可明显缓解采样锯齿；是否存在其他共面或法线问题仍需检查。
 - 展示灯不接按钮。正式场景原有 118 灯和 135 按钮的映射保持不变。固定灯与可控灯在正式接入前仍需逐项分类；不能把可关闭的照明全部烘焙成无法关闭的结果，也不能假设关闭 Mixed 灯会移除已烘焙间接光。
 - 重新打开场景后，65 个 Renderer、两份原显示地形、32 盏灯和材质引用均可读取。展示场景没有碰撞、玩法或灯控。正式地图、地形、灯控和交互不改动。尚未做正式地图画面、动态探针、性能或玩法验收。
 
