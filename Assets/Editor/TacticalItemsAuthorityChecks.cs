@@ -263,6 +263,31 @@ public static class TacticalItemsAuthorityChecks
                 "The alarm did not respect the wall-attenuated hearing range");
             UnityEngine.Object.DestroyImmediate(soundWall);
             foreach(var listener in alarmListeners){em.DestroyEntity(listener.entity);UnityEngine.Object.DestroyImmediate(listener.root);}
+            alarmListeners.Clear();
+            Clear();root.transform.position=Vector3.zero;
+            var blastListener=Listener(Vector3.forward*20);
+            var blastBlocked=Listener(Vector3.right*30);
+            var blastClash=Listener(Vector3.forward*20,clash:true);
+            var blastWall=GameObject.CreatePrimitive(PrimitiveType.Cube);SceneManager.MoveGameObjectToScene(blastWall,scene);
+            blastWall.transform.position=new Vector3(12,1,0);blastWall.transform.localScale=new Vector3(.2f,4,5);
+            var blast=new TacticalServerWorld.Object {Id=84,Definition=TacticalItemRules.Find("frag_bomb"),Phase=TacticalWorldPhase.Flying,
+                Scene=scene.GetPhysicsScene(),Position=Vector3.zero,Until=now+.05,Created=now};Data().Objects.Add(blast);
+            Tick();
+            Check(blast.Phase==TacticalWorldPhase.Explosion && blastListener.MissionAlarmId==
+                RaidEnvironmentalNoise.ExplosionId(false,Data().Epoch,blast.Id) && blastListener.Target==Entity.Null && !blastListener.Visible,
+                "A real frag detonation did not deliver an anonymous blast clue");
+            Check(blastBlocked.MissionAlarmId==null && blastClash.MissionAlarmId==null,
+                "A wall or bounty exclusion did not limit blast investigation");
+            var bountyMode=em.CreateEntity(typeof(RaidModeState));
+            em.SetComponentData(bountyMode,new RaidModeState {Mode=RaidGameMode.BountyClash});
+            var otherModeListener=Listener(Vector3.forward*12);
+            RaidEnvironmentalNoise.EmitExplosion(em,scene.GetPhysicsScene(),Vector3.zero,
+                RaidEnvironmentalNoise.ExplosionId(true,0,7),now);
+            Check(otherModeListener.MissionAlarmId==null,"Blast sound changed bounty mode");
+            em.DestroyEntity(bountyMode);
+            UnityEngine.Object.DestroyImmediate(blastWall);
+            foreach(var listener in alarmListeners){em.DestroyEntity(listener.entity);UnityEngine.Object.DestroyImmediate(listener.root);}
+            alarmListeners.Clear();
             Clear();root.transform.position=Vector3.zero;
             var data=Data();var fireDef=TacticalItemRules.Find("fire_bomb");
             var fire=new TacticalServerWorld.Object {Id=50,Owner=7,OwnerPlayer=player,Definition=fireDef,Phase=TacticalWorldPhase.Fire,

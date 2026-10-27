@@ -214,7 +214,18 @@ public static partial class AlienEnemyChecks
             Check(trapAlien.Action == AlienAction.Search && trapAlien.Target == Entity.Null && trapAlien.AttackCount == 0 &&
                 Vector3.Distance(trapAlien.transform.position, trapPosition) < Vector3.Distance(alienStart, trapPosition) - .1f,
                 "A nearby alien did not investigate the trap alarm without a fabricated target.");
-            return "PASS " + checks + " machine and trap hearing checks: server dispatch, NPC decisions, movement, occlusion and stop.";
+            var blastPosition = origin + new Vector3(18, 0, -12);
+            var blastAlien = Alien(holder.transform, world, profile,
+                blastPosition + Vector3.forward * 8 + Vector3.up * (.56f * profile.Scale), MultiplayerRole.Server, -29003);
+            manager.AddComponent<Simulate>(blastAlien.GhostGameObject.LinkedEntity);
+            alienStart = blastAlien.transform.position;
+            RaidEnvironmentalNoise.EmitExplosion(manager, holder.scene.GetPhysicsScene(), blastPosition,
+                RaidEnvironmentalNoise.ExplosionId(true, 0, 1), 112);
+            Step(blastAlien, 45);
+            Check(blastAlien.Action == AlienAction.Search && blastAlien.Target == Entity.Null && blastAlien.AttackCount == 0 &&
+                Vector3.Distance(blastAlien.transform.position, blastPosition) < Vector3.Distance(alienStart, blastPosition) - .1f,
+                "A nearby alien did not investigate the blast without a fabricated target.");
+            return "PASS " + checks + " machine, trap and blast hearing checks: server dispatch, NPC decisions, movement, occlusion and stop.";
         }
         finally
         {

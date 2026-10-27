@@ -183,6 +183,8 @@ namespace Unity.MP_FPS
                 // Resolve shielding once, then distribute the residual over living tissue.
                 BountyClashDamage.Apply(World, entity, grenade.Source, BodyPart.Auto, damage, tick, RaidDamageKind.Explosion, (Unity.Mathematics.float3)grenade.Position);
             }
+            RaidEnvironmentalNoise.EmitExplosion(EntityManager, grenade.Scene, grenade.Position,
+                RaidEnvironmentalNoise.ExplosionId(true, 0, grenade.Id), SystemAPI.Time.ElapsedTime);
         }
 
         private static void Broadcast(EntityCommandBuffer ecb, Grenade grenade, uint tick, bool exploded)

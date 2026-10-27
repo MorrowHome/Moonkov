@@ -60,17 +60,64 @@ namespace Unity.MP_FPS
         public const float Range = 35;
         private static class PhysicsMask { public static readonly int World = LayerMask.GetMask("Default", "Ground"); }
         public static string EventId(uint epoch, uint id) => id == 0 ? null : $"trap/{epoch}/{id}";
-        public static bool WithinRange(float squaredDistance, bool obstructed) =>
-            MissionMachineSounds.WithinRange(squaredDistance, Range, obstructed);
-        public static bool Audible(PhysicsScene scene, Vector3 source, Vector3 listener)
+        public static bool WithinRange(float squaredDistance, bool obstructed, float range = Range) =>
+            MissionMachineSounds.WithinRange(squaredDistance, range, obstructed);
+        public static bool Audible(PhysicsScene scene, Vector3 source, Vector3 listener, float range = Range)
         {
             if (!scene.IsValid()) return false;
             Vector3 delta = listener - source;
             float distanceSquared = delta.sqrMagnitude;
-            if (!WithinRange(distanceSquared, false)) return false;
-            if (WithinRange(distanceSquared, true)) return true;
+            if (!WithinRange(distanceSquared, false, range)) return false;
+            if (WithinRange(distanceSquared, true, range)) return true;
             float distance = Mathf.Sqrt(distanceSquared);
             return !scene.Raycast(source, delta / distance, out _, distance, PhysicsMask.World, QueryTriggerInteraction.Ignore);
+        }
+    }
+
+    // One bounded dispatch per real explosion. Nearby idle enemies receive only
+    // the blast position, never the thrower or a firing solution.
+    public static class RaidEnvironmentalNoise
+    {
+        public const float ExplosionRange = 50;
+        public static string ExplosionId(bool energy, uint epoch, uint id) => id == 0 ? null :
+            energy ? $"blast/energy/{id}" : $"blast/tactical/{epoch}/{id}";
+
+        public static void EmitExplosion(EntityManager manager, PhysicsScene scene, Vector3 position, string clue, double now)
+        {
+            if (!scene.IsValid() || string.IsNullOrEmpty(clue) || !double.IsFinite(now) || BountyClashRuntime.Enabled(manager)) return;
+            Vector3 source = position + Vector3.up;
+            using var humans = manager.CreateEntityQuery(new EntityQueryDesc {
+                All = new[] { ComponentType.ReadOnly<DollSingerEnemy>(), ComponentType.ReadOnly<Simulate>(),
+                    ComponentType.ReadOnly<LocalTransform>(), ComponentType.ReadOnly<PredictedPlayerGhost>(), ComponentType.ReadOnly<GhostGameObjectLink>() },
+                None = new[] { ComponentType.ReadOnly<ClashBot>() } });
+            using var actors = humans.ToEntityArray(Allocator.Temp);
+            foreach (var entity in actors)
+            {
+                if (manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth <= 0 ||
+                    !manager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                var link = manager.GetComponentObject<GhostGameObjectLink>(entity);
+                if (!link.LinkedInstance || link.LinkedInstance.gameObject.scene.GetPhysicsScene() != scene) continue;
+                var brain = manager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                Vector3 listener = (Vector3)manager.GetComponentData<LocalTransform>(entity).Position + Vector3.up * 1.2f;
+                if (brain.Target != Entity.Null || brain.Leaving ||
+                    !TacticalAlarmHearing.Audible(scene, source, listener, ExplosionRange)) continue;
+                DollSingerEnemySystem.HearMissionAlarm(brain, clue, position, now);
+            }
+            using var aliens = manager.CreateEntityQuery(new EntityQueryDesc {
+                All = new[] { ComponentType.ReadOnly<ProceduralAlienEnemy.State>(), ComponentType.ReadOnly<Simulate>(),
+                    ComponentType.ReadOnly<LocalTransform>(), ComponentType.ReadOnly<PredictedPlayerGhost>(), ComponentType.ReadOnly<GhostGameObjectLink>() } });
+            using var creatures = aliens.ToEntityArray(Allocator.Temp);
+            foreach (var entity in creatures)
+            {
+                if (manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth <= 0 ||
+                    !TacticalAlarmHearing.WithinRange(((Vector3)manager.GetComponentData<LocalTransform>(entity).Position - source).sqrMagnitude,
+                        false, ExplosionRange)) continue;
+                var link = manager.GetComponentObject<GhostGameObjectLink>(entity);
+                if (!link.LinkedInstance || link.LinkedInstance.gameObject.scene.GetPhysicsScene() != scene) continue;
+                var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
+                if (alien && TacticalAlarmHearing.Audible(scene, source, alien.AimPoint, ExplosionRange))
+                    alien.HearMissionAlarm(clue, position);
+            }
         }
     }
 
@@ -437,6 +484,8 @@ namespace Unity.MP_FPS
                     if(other!=obj && (other.Phase==TacticalWorldPhase.Wire || other.Phase==TacticalWorldPhase.Armed) &&
                         other.Scene==obj.Scene && Vector3.Distance(other.Position,obj.Position)<=8 &&
                         EnergyGrenadePhysics.ClearSight(obj.Scene,obj.Position,other.Position+Vector3.up*.2f,null))other.Until=now;
+            RaidEnvironmentalNoise.EmitExplosion(state.EntityManager,obj.Scene,obj.Position,
+                RaidEnvironmentalNoise.ExplosionId(false,world.Epoch,obj.Id),now);
             obj.Phase=TacticalWorldPhase.Explosion;obj.Until=now+.6;obj.NextSnapshot=0;TacticalBroadcast(ecb,world,obj,false);
         }
         private void TacticalArea(ref SystemState state,TacticalServerWorld world,TacticalServerWorld.Object obj,double now,uint tick)

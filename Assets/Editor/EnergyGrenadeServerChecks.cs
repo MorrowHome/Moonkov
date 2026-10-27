@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -112,6 +113,12 @@ public static class EnergyGrenadeServerChecks
             RaidHealth.Initialize(ref openHealth);
             em.SetComponentData(open, openHealth);
             var (covered, _) = Victim("Covered target", end + Vector3.right * 2 - Vector3.up * .8f);
+            Vector3 listenerPosition = end + Vector3.forward * 20 - Vector3.up * .8f;
+            var (listener, _) = Victim("Blast listener", listenerPosition);
+            em.AddComponentData(listener, LocalTransform.FromPosition(listenerPosition));
+            em.AddComponent<DollSingerEnemy>(listener); em.AddComponent<Simulate>(listener);
+            var listenerBrain = new DollSingerEnemyBrain { Action = PmcAction.Scavenge };
+            em.AddComponentObject(listener, listenerBrain);
             var wall = GameObject.CreatePrimitive(PrimitiveType.Cube); SceneManager.MoveGameObjectToScene(wall, scene);
             wall.transform.position = end + Vector3.right;
             wall.transform.localScale = new Vector3(.08f,10,10);
@@ -124,9 +131,12 @@ public static class EnergyGrenadeServerChecks
             Check(em.GetComponentData<PredictedPlayerGhost>(covered).CurrentHealth == 1000, "Covered victim protected");
             using var query = em.CreateEntityQuery(typeof(EnergyGrenadeStateRpc), typeof(SendRpcCommandRequest));
             using var poses = query.ToComponentDataArray<EnergyGrenadeStateRpc>(Allocator.Temp);
-            int explosions = 0;
-            foreach (var pose in poses) if (pose.Exploded != 0) explosions++;
+            int explosions = 0; uint explosionId = 0;
+            foreach (var pose in poses) if (pose.Exploded != 0) { explosions++; explosionId = pose.Id; }
             Check(explosions == 1 && item.Quantity == 2, "One explosion event and one total item spent");
+            Check(listenerBrain.MissionAlarmId == RaidEnvironmentalNoise.ExplosionId(true, 0, explosionId) &&
+                listenerBrain.Target == Entity.Null && !listenerBrain.Visible,
+                "A real energy detonation did not deliver an anonymous blast clue");
             Debug.Log("Energy grenade authority checks: " + checks + " passed using actual server system. Includes replay/cooldown/raid/death rejection, self damage and cover. Transport and gameplay Play acceptance remain separate.");
         }
         finally
