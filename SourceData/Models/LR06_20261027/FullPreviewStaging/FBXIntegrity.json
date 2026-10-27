@@ -1,0 +1,462 @@
+{
+  "scope": "binary FBX structure, triangle indices and material names; not Unity visual acceptance",
+  "parts": 65,
+  "triangles": 3707404,
+  "checks": [
+    {
+      "path": "FullPreviewStaging/DetailRevisions_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 29514,
+      "triangles": 46432,
+      "materials": 41
+    },
+    {
+      "path": "FullPreviewStaging/GI01_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 31160,
+      "triangles": 60320,
+      "materials": 6
+    },
+    {
+      "path": "FullPreviewStaging/GI01_01.fbx",
+      "fbx_version": 7400,
+      "vertices": 4276,
+      "triangles": 7088,
+      "materials": 4
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 32351,
+      "triangles": 48181,
+      "materials": 23
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_01.fbx",
+      "fbx_version": 7400,
+      "vertices": 64810,
+      "triangles": 111740,
+      "materials": 22
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_02.fbx",
+      "fbx_version": 7400,
+      "vertices": 29270,
+      "triangles": 46940,
+      "materials": 32
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_03.fbx",
+      "fbx_version": 7400,
+      "vertices": 28232,
+      "triangles": 41540,
+      "materials": 21
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_04.fbx",
+      "fbx_version": 7400,
+      "vertices": 14782,
+      "triangles": 25820,
+      "materials": 21
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_05.fbx",
+      "fbx_version": 7400,
+      "vertices": 40689,
+      "triangles": 66839,
+      "materials": 45
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_06.fbx",
+      "fbx_version": 7400,
+      "vertices": 49555,
+      "triangles": 76767,
+      "materials": 28
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_07.fbx",
+      "fbx_version": 7400,
+      "vertices": 48709,
+      "triangles": 82063,
+      "materials": 30
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_08.fbx",
+      "fbx_version": 7400,
+      "vertices": 12757,
+      "triangles": 20077,
+      "materials": 18
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_09.fbx",
+      "fbx_version": 7400,
+      "vertices": 71941,
+      "triangles": 119959,
+      "materials": 25
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_10.fbx",
+      "fbx_version": 7400,
+      "vertices": 68364,
+      "triangles": 97778,
+      "materials": 14
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_11.fbx",
+      "fbx_version": 7400,
+      "vertices": 81456,
+      "triangles": 130068,
+      "materials": 14
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_12.fbx",
+      "fbx_version": 7400,
+      "vertices": 90564,
+      "triangles": 165443,
+      "materials": 20
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_13.fbx",
+      "fbx_version": 7400,
+      "vertices": 31688,
+      "triangles": 50711,
+      "materials": 27
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_14.fbx",
+      "fbx_version": 7400,
+      "vertices": 29645,
+      "triangles": 42891,
+      "materials": 26
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_15.fbx",
+      "fbx_version": 7400,
+      "vertices": 14562,
+      "triangles": 24606,
+      "materials": 16
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_16.fbx",
+      "fbx_version": 7400,
+      "vertices": 24524,
+      "triangles": 45624,
+      "materials": 8
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_17.fbx",
+      "fbx_version": 7400,
+      "vertices": 50080,
+      "triangles": 88244,
+      "materials": 10
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_18.fbx",
+      "fbx_version": 7400,
+      "vertices": 94343,
+      "triangles": 179877,
+      "materials": 26
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_19.fbx",
+      "fbx_version": 7400,
+      "vertices": 18498,
+      "triangles": 30360,
+      "materials": 21
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_20.fbx",
+      "fbx_version": 7400,
+      "vertices": 43992,
+      "triangles": 76508,
+      "materials": 20
+    },
+    {
+      "path": "FullPreviewStaging/MC00v5_21.fbx",
+      "fbx_version": 7400,
+      "vertices": 5152,
+      "triangles": 8108,
+      "materials": 8
+    },
+    {
+      "path": "FullPreviewStaging/Map_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 40323,
+      "triangles": 73988,
+      "materials": 27
+    },
+    {
+      "path": "FullPreviewStaging/Map_01.fbx",
+      "fbx_version": 7400,
+      "vertices": 19278,
+      "triangles": 35620,
+      "materials": 13
+    },
+    {
+      "path": "FullPreviewStaging/Map_02.fbx",
+      "fbx_version": 7400,
+      "vertices": 22910,
+      "triangles": 43279,
+      "materials": 13
+    },
+    {
+      "path": "FullPreviewStaging/Map_03.fbx",
+      "fbx_version": 7400,
+      "vertices": 14442,
+      "triangles": 26766,
+      "materials": 12
+    },
+    {
+      "path": "FullPreviewStaging/Map_04.fbx",
+      "fbx_version": 7400,
+      "vertices": 27194,
+      "triangles": 41314,
+      "materials": 20
+    },
+    {
+      "path": "FullPreviewStaging/Map_05.fbx",
+      "fbx_version": 7400,
+      "vertices": 49846,
+      "triangles": 79628,
+      "materials": 17
+    },
+    {
+      "path": "FullPreviewStaging/Map_06.fbx",
+      "fbx_version": 7400,
+      "vertices": 9142,
+      "triangles": 12638,
+      "materials": 12
+    },
+    {
+      "path": "FullPreviewStaging/Map_07.fbx",
+      "fbx_version": 7400,
+      "vertices": 21870,
+      "triangles": 28678,
+      "materials": 17
+    },
+    {
+      "path": "FullPreviewStaging/Map_08.fbx",
+      "fbx_version": 7400,
+      "vertices": 5258,
+      "triangles": 8078,
+      "materials": 10
+    },
+    {
+      "path": "FullPreviewStaging/Map_09.fbx",
+      "fbx_version": 7400,
+      "vertices": 35664,
+      "triangles": 61858,
+      "materials": 23
+    },
+    {
+      "path": "FullPreviewStaging/Map_10.fbx",
+      "fbx_version": 7400,
+      "vertices": 158574,
+      "triangles": 297484,
+      "materials": 61
+    },
+    {
+      "path": "FullPreviewStaging/Map_11.fbx",
+      "fbx_version": 7400,
+      "vertices": 76342,
+      "triangles": 145300,
+      "materials": 9
+    },
+    {
+      "path": "FullPreviewStaging/Map_12.fbx",
+      "fbx_version": 7400,
+      "vertices": 42950,
+      "triangles": 76758,
+      "materials": 17
+    },
+    {
+      "path": "FullPreviewStaging/Map_13.fbx",
+      "fbx_version": 7400,
+      "vertices": 4716,
+      "triangles": 7428,
+      "materials": 7
+    },
+    {
+      "path": "FullPreviewStaging/Map_14.fbx",
+      "fbx_version": 7400,
+      "vertices": 10952,
+      "triangles": 14660,
+      "materials": 13
+    },
+    {
+      "path": "FullPreviewStaging/Map_15.fbx",
+      "fbx_version": 7400,
+      "vertices": 192911,
+      "triangles": 363513,
+      "materials": 49
+    },
+    {
+      "path": "FullPreviewStaging/Map_16.fbx",
+      "fbx_version": 7400,
+      "vertices": 7464,
+      "triangles": 10312,
+      "materials": 11
+    },
+    {
+      "path": "FullPreviewStaging/Map_17.fbx",
+      "fbx_version": 7400,
+      "vertices": 5550,
+      "triangles": 9106,
+      "materials": 25
+    },
+    {
+      "path": "FullPreviewStaging/Map_18.fbx",
+      "fbx_version": 7400,
+      "vertices": 8618,
+      "triangles": 13018,
+      "materials": 23
+    },
+    {
+      "path": "FullPreviewStaging/Map_19.fbx",
+      "fbx_version": 7400,
+      "vertices": 9966,
+      "triangles": 15366,
+      "materials": 10
+    },
+    {
+      "path": "FullPreviewStaging/Map_20.fbx",
+      "fbx_version": 7400,
+      "vertices": 4794,
+      "triangles": 7582,
+      "materials": 13
+    },
+    {
+      "path": "FullPreviewStaging/Map_21.fbx",
+      "fbx_version": 7400,
+      "vertices": 6882,
+      "triangles": 9628,
+      "materials": 18
+    },
+    {
+      "path": "FullPreviewStaging/Map_22.fbx",
+      "fbx_version": 7400,
+      "vertices": 5038,
+      "triangles": 7934,
+      "materials": 31
+    },
+    {
+      "path": "FullPreviewStaging/Map_23.fbx",
+      "fbx_version": 7400,
+      "vertices": 11170,
+      "triangles": 15112,
+      "materials": 18
+    },
+    {
+      "path": "FullPreviewStaging/Map_24.fbx",
+      "fbx_version": 7400,
+      "vertices": 9656,
+      "triangles": 12950,
+      "materials": 15
+    },
+    {
+      "path": "FullPreviewStaging/Map_25.fbx",
+      "fbx_version": 7400,
+      "vertices": 4716,
+      "triangles": 7428,
+      "materials": 11
+    },
+    {
+      "path": "FullPreviewStaging/Map_26.fbx",
+      "fbx_version": 7400,
+      "vertices": 5348,
+      "triangles": 8132,
+      "materials": 31
+    },
+    {
+      "path": "FullPreviewStaging/Map_27.fbx",
+      "fbx_version": 7400,
+      "vertices": 12878,
+      "triangles": 21176,
+      "materials": 35
+    },
+    {
+      "path": "FullPreviewStaging/Map_28.fbx",
+      "fbx_version": 7400,
+      "vertices": 7144,
+      "triangles": 11092,
+      "materials": 14
+    },
+    {
+      "path": "FullPreviewStaging/Map_29.fbx",
+      "fbx_version": 7400,
+      "vertices": 8590,
+      "triangles": 14074,
+      "materials": 21
+    },
+    {
+      "path": "FullPreviewStaging/Map_30.fbx",
+      "fbx_version": 7400,
+      "vertices": 4714,
+      "triangles": 7262,
+      "materials": 32
+    },
+    {
+      "path": "FullPreviewStaging/Map_31.fbx",
+      "fbx_version": 7400,
+      "vertices": 20899,
+      "triangles": 36298,
+      "materials": 22
+    },
+    {
+      "path": "FullPreviewStaging/Map_32.fbx",
+      "fbx_version": 7400,
+      "vertices": 11160,
+      "triangles": 17322,
+      "materials": 16
+    },
+    {
+      "path": "FullPreviewStaging/Map_33.fbx",
+      "fbx_version": 7400,
+      "vertices": 1454,
+      "triangles": 2178,
+      "materials": 13
+    },
+    {
+      "path": "FullPreviewStaging/NR12_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 41718,
+      "triangles": 80828,
+      "materials": 22
+    },
+    {
+      "path": "FullPreviewStaging/NR12_01.fbx",
+      "fbx_version": 7400,
+      "vertices": 17864,
+      "triangles": 34732,
+      "materials": 21
+    },
+    {
+      "path": "FullPreviewStaging/W18_00.fbx",
+      "fbx_version": 7400,
+      "vertices": 69618,
+      "triangles": 113240,
+      "materials": 36
+    },
+    {
+      "path": "FullPreviewStaging/W18_01.fbx",
+      "fbx_version": 7400,
+      "vertices": 83693,
+      "triangles": 138268,
+      "materials": 71
+    },
+    {
+      "path": "FullPreviewStaging/W18_02.fbx",
+      "fbx_version": 7400,
+      "vertices": 56928,
+      "triangles": 100704,
+      "materials": 61
+    },
+    {
+      "path": "FullPreviewStaging/W18_03.fbx",
+      "fbx_version": 7400,
+      "vertices": 1376,
+      "triangles": 2688,
+      "materials": 3
+    }
+  ]
+}

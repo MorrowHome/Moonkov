@@ -1,0 +1,20 @@
+{
+  "status": "saved_scene_reopened_in_preview",
+  "scene": "Assets/MoonEnvironment/Variants/LR06FullPreview/Scenes/LR06_Full_Display.unity",
+  "rootCount": 4,
+  "meshFilters": 65,
+  "meshRenderers": 65,
+  "triangles": 3691162,
+  "terrainAssets": [
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset"
+  ],
+  "colliders": 0,
+  "lights": 32,
+  "shadowLights": 0,
+  "cameras": 1,
+  "missingRenderers": [],
+  "sceneDirty": false,
+  "originalScene": "Assets/Scenes/MainMenu.unity",
+  "originalSceneDirty": false
+}

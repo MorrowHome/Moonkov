@@ -1,0 +1,641 @@
+{
+  "scope": "independent full-layout Unity display; material and light approximations are explicit",
+  "scene": "Assets/MoonEnvironment/Variants/LR06FullPreview/Scenes/LR06_Full_Display.unity",
+  "prefab": "Assets/MoonEnvironment/Variants/LR06FullPreview/LR06_Full_Display.prefab",
+  "parts": 65,
+  "instances": 30212,
+  "triangles": 3691162,
+  "expectedTriangles": 3707404,
+  "triangleDifferences": [
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/DetailRevisions_00.fbx",
+      "expectedTriangles": 46432,
+      "actualTriangles": 46240
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/GI01_00.fbx",
+      "expectedTriangles": 60320,
+      "actualTriangles": 60134
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_00.fbx",
+      "expectedTriangles": 48181,
+      "actualTriangles": 46881
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_01.fbx",
+      "expectedTriangles": 111740,
+      "actualTriangles": 109925
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_02.fbx",
+      "expectedTriangles": 46940,
+      "actualTriangles": 46882
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_03.fbx",
+      "expectedTriangles": 41540,
+      "actualTriangles": 41511
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_04.fbx",
+      "expectedTriangles": 25820,
+      "actualTriangles": 25817
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_05.fbx",
+      "expectedTriangles": 66839,
+      "actualTriangles": 65937
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_06.fbx",
+      "expectedTriangles": 76767,
+      "actualTriangles": 74853
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_07.fbx",
+      "expectedTriangles": 82063,
+      "actualTriangles": 80555
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_08.fbx",
+      "expectedTriangles": 20077,
+      "actualTriangles": 20073
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_09.fbx",
+      "expectedTriangles": 119959,
+      "actualTriangles": 119815
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_10.fbx",
+      "expectedTriangles": 97778,
+      "actualTriangles": 96920
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_11.fbx",
+      "expectedTriangles": 130068,
+      "actualTriangles": 129550
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_12.fbx",
+      "expectedTriangles": 165443,
+      "actualTriangles": 164353
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_13.fbx",
+      "expectedTriangles": 50711,
+      "actualTriangles": 50678
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_14.fbx",
+      "expectedTriangles": 42891,
+      "actualTriangles": 42680
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_18.fbx",
+      "expectedTriangles": 179877,
+      "actualTriangles": 179275
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_20.fbx",
+      "expectedTriangles": 76508,
+      "actualTriangles": 76251
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_00.fbx",
+      "expectedTriangles": 73988,
+      "actualTriangles": 73856
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_09.fbx",
+      "expectedTriangles": 61858,
+      "actualTriangles": 61834
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_10.fbx",
+      "expectedTriangles": 297484,
+      "actualTriangles": 294508
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_11.fbx",
+      "expectedTriangles": 145300,
+      "actualTriangles": 145236
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_12.fbx",
+      "expectedTriangles": 76758,
+      "actualTriangles": 76690
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_15.fbx",
+      "expectedTriangles": 363513,
+      "actualTriangles": 362645
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/NR12_00.fbx",
+      "expectedTriangles": 80828,
+      "actualTriangles": 80684
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/NR12_01.fbx",
+      "expectedTriangles": 34732,
+      "actualTriangles": 34660
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_00.fbx",
+      "expectedTriangles": 113240,
+      "actualTriangles": 113006
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_01.fbx",
+      "expectedTriangles": 138268,
+      "actualTriangles": 138264
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_02.fbx",
+      "expectedTriangles": 100704,
+      "actualTriangles": 100672
+    }
+  ],
+  "renderers": 65,
+  "materials": 449,
+  "directTextureMaterials": 66,
+  "emissiveMaterials": 19,
+  "fallbackSlots": 0,
+  "unmatchedNamedSlots": 0,
+  "unmatchedNames": [],
+  "terrainDisplayReferences": [
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset"
+  ],
+  "sourceLightsRecorded": 406,
+  "warmProxies": 31,
+  "proxyShadows": false,
+  "maxBoundsOutsideSourceMetres": 0.0008544922,
+  "checks": [
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/DetailRevisions_00.fbx",
+      "group": "DetailRevisions",
+      "triangles": 46240,
+      "expectedTriangles": 46432,
+      "boundsOutsideSourceMetres": 0.000305175781
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/GI01_00.fbx",
+      "group": "GI01",
+      "triangles": 60134,
+      "expectedTriangles": 60320,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/GI01_01.fbx",
+      "group": "GI01",
+      "triangles": 7088,
+      "expectedTriangles": 7088,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_00.fbx",
+      "group": "MC00v5",
+      "triangles": 46881,
+      "expectedTriangles": 48181,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_01.fbx",
+      "group": "MC00v5",
+      "triangles": 109925,
+      "expectedTriangles": 111740,
+      "boundsOutsideSourceMetres": 0.000305175781
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_02.fbx",
+      "group": "MC00v5",
+      "triangles": 46882,
+      "expectedTriangles": 46940,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_03.fbx",
+      "group": "MC00v5",
+      "triangles": 41511,
+      "expectedTriangles": 41540,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_04.fbx",
+      "group": "MC00v5",
+      "triangles": 25817,
+      "expectedTriangles": 25820,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_05.fbx",
+      "group": "MC00v5",
+      "triangles": 65937,
+      "expectedTriangles": 66839,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_06.fbx",
+      "group": "MC00v5",
+      "triangles": 74853,
+      "expectedTriangles": 76767,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_07.fbx",
+      "group": "MC00v5",
+      "triangles": 80555,
+      "expectedTriangles": 82063,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_08.fbx",
+      "group": "MC00v5",
+      "triangles": 20073,
+      "expectedTriangles": 20077,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_09.fbx",
+      "group": "MC00v5",
+      "triangles": 119815,
+      "expectedTriangles": 119959,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_10.fbx",
+      "group": "MC00v5",
+      "triangles": 96920,
+      "expectedTriangles": 97778,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_11.fbx",
+      "group": "MC00v5",
+      "triangles": 129550,
+      "expectedTriangles": 130068,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_12.fbx",
+      "group": "MC00v5",
+      "triangles": 164353,
+      "expectedTriangles": 165443,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_13.fbx",
+      "group": "MC00v5",
+      "triangles": 50678,
+      "expectedTriangles": 50711,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_14.fbx",
+      "group": "MC00v5",
+      "triangles": 42680,
+      "expectedTriangles": 42891,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_15.fbx",
+      "group": "MC00v5",
+      "triangles": 24606,
+      "expectedTriangles": 24606,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_16.fbx",
+      "group": "MC00v5",
+      "triangles": 45624,
+      "expectedTriangles": 45624,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_17.fbx",
+      "group": "MC00v5",
+      "triangles": 88244,
+      "expectedTriangles": 88244,
+      "boundsOutsideSourceMetres": 0.0
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_18.fbx",
+      "group": "MC00v5",
+      "triangles": 179275,
+      "expectedTriangles": 179877,
+      "boundsOutsideSourceMetres": 0.00032043457
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_19.fbx",
+      "group": "MC00v5",
+      "triangles": 30360,
+      "expectedTriangles": 30360,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_20.fbx",
+      "group": "MC00v5",
+      "triangles": 76251,
+      "expectedTriangles": 76508,
+      "boundsOutsideSourceMetres": 0.0007324219
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/MC00v5_21.fbx",
+      "group": "MC00v5",
+      "triangles": 8108,
+      "expectedTriangles": 8108,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_00.fbx",
+      "group": "Map",
+      "triangles": 73856,
+      "expectedTriangles": 73988,
+      "boundsOutsideSourceMetres": 0.000305175781
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_01.fbx",
+      "group": "Map",
+      "triangles": 35620,
+      "expectedTriangles": 35620,
+      "boundsOutsideSourceMetres": 0.00032043457
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_02.fbx",
+      "group": "Map",
+      "triangles": 43279,
+      "expectedTriangles": 43279,
+      "boundsOutsideSourceMetres": 0.0002593994
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_03.fbx",
+      "group": "Map",
+      "triangles": 26766,
+      "expectedTriangles": 26766,
+      "boundsOutsideSourceMetres": 0.0002593994
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_04.fbx",
+      "group": "Map",
+      "triangles": 41314,
+      "expectedTriangles": 41314,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_05.fbx",
+      "group": "Map",
+      "triangles": 79628,
+      "expectedTriangles": 79628,
+      "boundsOutsideSourceMetres": 0.000366210938
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_06.fbx",
+      "group": "Map",
+      "triangles": 12638,
+      "expectedTriangles": 12638,
+      "boundsOutsideSourceMetres": 0.000289917
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_07.fbx",
+      "group": "Map",
+      "triangles": 28678,
+      "expectedTriangles": 28678,
+      "boundsOutsideSourceMetres": 0.0007324219
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_08.fbx",
+      "group": "Map",
+      "triangles": 8078,
+      "expectedTriangles": 8078,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_09.fbx",
+      "group": "Map",
+      "triangles": 61834,
+      "expectedTriangles": 61858,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_10.fbx",
+      "group": "Map",
+      "triangles": 294508,
+      "expectedTriangles": 297484,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_11.fbx",
+      "group": "Map",
+      "triangles": 145236,
+      "expectedTriangles": 145300,
+      "boundsOutsideSourceMetres": 0.000305175781
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_12.fbx",
+      "group": "Map",
+      "triangles": 76690,
+      "expectedTriangles": 76758,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_13.fbx",
+      "group": "Map",
+      "triangles": 7428,
+      "expectedTriangles": 7428,
+      "boundsOutsideSourceMetres": 0.00032043457
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_14.fbx",
+      "group": "Map",
+      "triangles": 14660,
+      "expectedTriangles": 14660,
+      "boundsOutsideSourceMetres": 0.000366210938
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_15.fbx",
+      "group": "Map",
+      "triangles": 362645,
+      "expectedTriangles": 363513,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_16.fbx",
+      "group": "Map",
+      "triangles": 10312,
+      "expectedTriangles": 10312,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_17.fbx",
+      "group": "Map",
+      "triangles": 9106,
+      "expectedTriangles": 9106,
+      "boundsOutsideSourceMetres": 0.000366210938
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_18.fbx",
+      "group": "Map",
+      "triangles": 13018,
+      "expectedTriangles": 13018,
+      "boundsOutsideSourceMetres": 0.0002593994
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_19.fbx",
+      "group": "Map",
+      "triangles": 15366,
+      "expectedTriangles": 15366,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_20.fbx",
+      "group": "Map",
+      "triangles": 7582,
+      "expectedTriangles": 7582,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_21.fbx",
+      "group": "Map",
+      "triangles": 9628,
+      "expectedTriangles": 9628,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_22.fbx",
+      "group": "Map",
+      "triangles": 7934,
+      "expectedTriangles": 7934,
+      "boundsOutsideSourceMetres": 0.000610351563
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_23.fbx",
+      "group": "Map",
+      "triangles": 15112,
+      "expectedTriangles": 15112,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_24.fbx",
+      "group": "Map",
+      "triangles": 12950,
+      "expectedTriangles": 12950,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_25.fbx",
+      "group": "Map",
+      "triangles": 7428,
+      "expectedTriangles": 7428,
+      "boundsOutsideSourceMetres": 0.000366210938
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_26.fbx",
+      "group": "Map",
+      "triangles": 8132,
+      "expectedTriangles": 8132,
+      "boundsOutsideSourceMetres": 0.0008544922
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_27.fbx",
+      "group": "Map",
+      "triangles": 21176,
+      "expectedTriangles": 21176,
+      "boundsOutsideSourceMetres": 0.0002746582
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_28.fbx",
+      "group": "Map",
+      "triangles": 11092,
+      "expectedTriangles": 11092,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_29.fbx",
+      "group": "Map",
+      "triangles": 14074,
+      "expectedTriangles": 14074,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_30.fbx",
+      "group": "Map",
+      "triangles": 7262,
+      "expectedTriangles": 7262,
+      "boundsOutsideSourceMetres": 0.0007324219
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_31.fbx",
+      "group": "Map",
+      "triangles": 36298,
+      "expectedTriangles": 36298,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_32.fbx",
+      "group": "Map",
+      "triangles": 17322,
+      "expectedTriangles": 17322,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_33.fbx",
+      "group": "Map",
+      "triangles": 2178,
+      "expectedTriangles": 2178,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/NR12_00.fbx",
+      "group": "NR12",
+      "triangles": 80684,
+      "expectedTriangles": 80828,
+      "boundsOutsideSourceMetres": 0.0007324219
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/NR12_01.fbx",
+      "group": "NR12",
+      "triangles": 34660,
+      "expectedTriangles": 34732,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_00.fbx",
+      "group": "W18",
+      "triangles": 113006,
+      "expectedTriangles": 113240,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_01.fbx",
+      "group": "W18",
+      "triangles": 138264,
+      "expectedTriangles": 138268,
+      "boundsOutsideSourceMetres": 0.00048828125
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_02.fbx",
+      "group": "W18",
+      "triangles": 100672,
+      "expectedTriangles": 100704,
+      "boundsOutsideSourceMetres": 0.0007324219
+    },
+    {
+      "modelPath": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/W18_03.fbx",
+      "group": "W18",
+      "triangles": 2688,
+      "expectedTriangles": 2688,
+      "boundsOutsideSourceMetres": 0.00032043457
+    }
+  ],
+  "captures": [
+    "Library/BuildValidation/LR06FullPreview/overview.png",
+    "Library/BuildValidation/LR06FullPreview/north_corridor.png",
+    "Library/BuildValidation/LR06FullPreview/central_structure.png"
+  ],
+  "noGameplayOrCollisions": true,
+  "formalSceneChanged": false,
+  "lightingFinal": false
+}
