@@ -430,7 +430,8 @@ namespace Unity.MP_FPS
                     RaidHealth.SelfTreatmentDamageUnchanged(health, brain.NutritionDamageSequence, brain.NutritionShieldSequence) &&
                     health.LastShotTick == brain.NutritionShot && health.LastGrenadeShotTick == brain.NutritionGrenade &&
                     health.LastReloadTick == brain.NutritionReload && health.EquippedWeaponID == brain.NutritionWeapon &&
-                    (position - brain.NutritionOrigin).sqrMagnitude <= 1;
+                    (position - brain.NutritionOrigin).sqrMagnitude <=
+                        RaidInventoryState.ItemActionMovementLimit * RaidInventoryState.ItemActionMovementLimit;
                 if (!eligible || !unchanged)
                 { Cancel(brain, now); return; }
                 if (now < brain.NutritionUntil) return;

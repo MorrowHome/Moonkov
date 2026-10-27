@@ -55,7 +55,9 @@ public static class PmcNutritionChecks
 
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 13);
         Check(brain.NutritionUntil == 16 && brain.NutritionItemId == rationId, "a ration uses the normal food duration");
-        PmcNutrition.Advance(brain, ref health, Vector3.right * 1.01f, true, 14);
+        PmcNutrition.Advance(brain, ref health, Vector3.right * .75f, true, 13.5);
+        Check(brain.NutritionUntil == 16 && inventory.Find(rationId) != null, "the player's exact movement boundary is permitted");
+        PmcNutrition.Advance(brain, ref health, Vector3.right * .751f, true, 14);
         Check(brain.NutritionUntil == 0 && inventory.Find(rationId) != null && Near(health.Energy, 34),
             "moving too far interrupts food without consuming it");
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 15);
