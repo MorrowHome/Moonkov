@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
             public Vector3 Position;
             public float StepDistance;
             public uint Shot, Reload, Land, Loot;
-            public double SeenAt;
+            public double SeenAt, NextCough;
         }
         private struct SensorEvent
         {
@@ -318,6 +318,9 @@ namespace Unity.MP_FPS
                     track.Land = health.ValueRO.LastLandTick;
                     track.Loot = health.ValueRO.LootSearchSequence;
                 }
+                if (RaidCoughSound.TryEmit(ref track.NextCough, now, health.ValueRO.TacticalCoughSeconds,
+                    health.ValueRO.ClashEnabled || m_ClashRegistry != null))
+                    m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = RaidCoughSound.Range });
                 var player = link.LinkedInstance.GetComponent<PlayerGhost>();
                 var capsule = player != null && player.Controller != null ? player.Controller.CharacterController : null;
                 // Use the actual controller stance, not imaginary standing hit points over a prone body.

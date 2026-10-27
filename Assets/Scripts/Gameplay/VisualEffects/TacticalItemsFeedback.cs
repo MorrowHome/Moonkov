@@ -198,11 +198,11 @@ namespace Unity.MP_FPS
         }
         public void PresentCough(int id,Vector3 position)
         {
-            if(!Camera.main || Vector3.Distance(position,Camera.main.transform.position)>25)return;
+            if(!Camera.main || Vector3.Distance(position,Camera.main.transform.position)>RaidCoughSound.Range)return;
             if(!m_CoughEmitters.TryGetValue(id,out var emitter))
             {if(m_CoughEmitters.Count>=32)return;emitter=new CoughEmitter {Root=new GameObject("Replicated choke breathing")};emitter.Root.transform.SetParent(transform,false);m_CoughEmitters[id]=emitter;}
             emitter.Expires=Time.time+3;
-            if(Time.time<emitter.Next)return;emitter.Next=Time.time+3.2f;emitter.Root.transform.position=position;MoonkovAudio.Play(MoonkovAudio.Library?.TacticalCough,position,.65f);
+            if(Time.time<emitter.Next)return;emitter.Next=Time.time+(float)RaidCoughSound.Interval;emitter.Root.transform.position=position;MoonkovAudio.Play(MoonkovAudio.Library?.TacticalCough,position,.65f);
         }
         private void DrawAimPreview()
         {

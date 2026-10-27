@@ -61,6 +61,7 @@ namespace Unity.MP_FPS
             public Vector3 Position;
             public float Distance, SampledAt;
             public uint LandTick, LootSequence;
+            public double NextCough;
         }
         private readonly Dictionary<Entity, FootstepTrack> m_Footsteps = new Dictionary<Entity, FootstepTrack>();
         private readonly List<Entity> m_ExpiredFootsteps = new List<Entity>();
@@ -201,19 +202,23 @@ namespace Unity.MP_FPS
                 uint shot = health.LastShotTick;
                 bool fired = m_ObservedShots.TryGetValue(entity, out uint previousShot) && previousShot != shot;
                 m_ObservedShots[entity] = shot;
-                bool stepped = Footstep(entity, point, health, out bool landed, out bool looting);
+                bool stepped = Footstep(entity, point, health, out bool landed, out bool looting, out bool cough);
                 bool visible = distance <= profile.SightRange &&
                     !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
                 float movementHearing = profile.HearingRange * RaidFootsteps.AlienMovementRangeScale;
                 float stepRange = landed ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled) :
                     RaidFootsteps.HearingRange(movementHearing, health.ControllerState.Stance,
                         health.ControllerState.Sprinting, health.CarriedWeight, health.ClashEnabled);
-                if (looting) stepRange = Mathf.Max(stepped ? stepRange : 0, Mathf.Min(RaidLootAcoustics.HearingRange, profile.HearingRange));
+                if (looting || cough)
+                {
+                    float extra = Mathf.Max(looting ? RaidLootAcoustics.HearingRange : 0, cough ? RaidCoughSound.Range : 0);
+                    stepRange = Mathf.Max(stepped ? stepRange : 0, Mathf.Min(extra, profile.HearingRange));
+                }
                 bool blocked = false;
-                if (!visible && (fired && distance <= profile.HearingRange || (stepped || looting) && distance <= stepRange))
+                if (!visible && (fired && distance <= profile.HearingRange || (stepped || looting || cough) && distance <= stepRange))
                     blocked = UnityEngine.Physics.Linecast(AimPoint, point, m_FootstepWorldMask, QueryTriggerInteraction.Ignore);
                 bool heardShot = !visible && fired && RaidFootsteps.Audible(distance, profile.HearingRange, blocked);
-                bool heardStep = !visible && !heardShot && (stepped || looting) && RaidFootsteps.Audible(distance, stepRange, blocked);
+                bool heardStep = !visible && !heardShot && (stepped || looting || cough) && RaidFootsteps.Audible(distance, stepRange, blocked);
                 if (!visible && !heardShot && !heardStep) continue;
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);
                 if (score >= best) continue;
@@ -233,19 +238,22 @@ namespace Unity.MP_FPS
             foreach (var expired in m_ExpiredFootsteps) { m_Footsteps.Remove(expired); m_ObservedShots.Remove(expired); }
             ObserveTargetMotion();
         }
-        private bool Footstep(Entity entity, Vector3 position, in PredictedPlayerGhost health, out bool landed, out bool looting)
+        private bool Footstep(Entity entity, Vector3 position, in PredictedPlayerGhost health, out bool landed, out bool looting, out bool cough)
         {
-            landed = false; looting = false;
+            landed = false; looting = false; cough = false;
             if (!m_Footsteps.TryGetValue(entity, out var track))
             {
-                m_Footsteps[entity] = new FootstepTrack { Position = position, SampledAt = m_Clock,
+                track = new FootstepTrack { Position = position, SampledAt = m_Clock,
                     LandTick = health.LastLandTick, LootSequence = health.LootSearchSequence };
+                cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds, health.ClashEnabled);
+                m_Footsteps[entity] = track;
                 return false;
             }
             landed = track.LandTick != health.LastLandTick;
             track.LandTick = health.LastLandTick;
             looting = track.LootSequence != health.LootSearchSequence;
             track.LootSequence = health.LootSearchSequence;
+            cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds, health.ClashEnabled);
             float elapsed = m_Clock - track.SampledAt;
             Vector3 delta = position - track.Position; delta.y = 0;
             float distance = delta.magnitude;

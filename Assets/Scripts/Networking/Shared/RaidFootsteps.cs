@@ -30,6 +30,20 @@ namespace Unity.MP_FPS
             distance <= range * (blocked ? ObstructionMultiplier : 1);
     }
 
+    // Coughs are discrete, local sounds. Keep the cadence while a short break
+    // in exposure occurs so leaving and re-entering cannot spam extra events.
+    public static class RaidCoughSound
+    {
+        public const float Range = 25;
+        public const double Interval = 3.2;
+        public static bool TryEmit(ref double next, double now, float remaining, bool clash)
+        {
+            if (clash || !double.IsFinite(now) || !float.IsFinite(remaining) || remaining <= 0 || now < next) return false;
+            next = now + Interval;
+            return true;
+        }
+    }
+
     // Alien hearing produces a search clue, not sight. A stable bearing keeps a
     // burst of shots from averaging into the exact position of a hidden actor.
     public static class RaidAlienHearing

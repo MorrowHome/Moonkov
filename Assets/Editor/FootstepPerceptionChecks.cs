@@ -15,6 +15,8 @@ using Object = UnityEngine.Object;
 public static partial class AlienEnemyChecks
 {
     [MenuItem("Tools/Moonkov/Check Footstep Perception")]
+    public static void RunFootstepFromEditor() => Debug.Log(RunFootstepContract());
+
     public static string RunFootstepContract()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play first.");
@@ -141,6 +143,33 @@ public static partial class AlienEnemyChecks
             GunshotCase(6, true, true);
             GunshotCase(18, false, false);
 
+            void CoughCase(float distance, bool wall, bool clash, bool expected)
+            {
+                Vector3 origin = new Vector3(-21000 + index++ * 100, 1000, -21000);
+                CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(50, .5f, 50));
+                var alien = Alien(holder.transform, world, profile, origin + Vector3.up * (.56f * profile.Scale), MultiplayerRole.Server, -59000 - index);
+                Step(alien, 7);
+                Vector3 point = new Vector3(alien.AimPoint.x, origin.y, alien.AimPoint.z);
+                if (wall) CounterplayBox(holder.transform, "Cough wall", point + new Vector3(0, 2, distance / 2), new Vector3(15, 4, .5f));
+                var human = Humanoid(holder.transform, world, point + new Vector3(0, 0, distance), false, 300 + index);
+                var health = manager.GetComponentData<PredictedPlayerGhost>(human.LinkedEntity);
+                health.TacticalCoughSeconds = 1; health.ClashEnabled = clash; health.ClashLife = ClashLife.Alive;
+                manager.SetComponentData(human.LinkedEntity, health);
+                Step(alien, 7);
+                Check((alien.Target == human.LinkedEntity) == expected,
+                    $"Alien cough hearing mismatch: distance={distance}, wall={wall}, clash={clash}.");
+                if (!expected) return;
+                var clue = (Vector3)typeof(ProceduralAlienEnemy).GetField("m_LastSeen", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(alien);
+                Check(alien.Action == AlienAction.Search && alien.AttackCount == 0 &&
+                    Vector3.Distance(clue, human.transform.position + Vector3.up) > 1,
+                    "An unseen cough revealed an exact target or caused an immediate attack.");
+            }
+            CoughCase(12, false, false, true);
+            CoughCase(12, true, false, false);
+            CoughCase(6, true, false, true);
+            CoughCase(18, false, false, false);
+            CoughCase(6, false, true, false);
+
             Vector3 pmcOrigin = new Vector3(-8000, 1000, -9000);
             var humanTarget = Humanoid(holder.transform, world, pmcOrigin + new Vector3(-1.25f, 0, 6), false, 100);
             manager.AddComponent<Simulate>(humanTarget.LinkedEntity);
@@ -197,9 +226,25 @@ public static partial class AlienEnemyChecks
                 humanTarget.transform.position = teleport; manager.SetComponentData(humanTarget.LinkedEntity, LocalTransform.FromPosition(teleport));
                 collect.Invoke(ai, new object[] { 20d });
                 Check(((IList)eventField.GetValue(ai)).Count == 0, "A stale PMC sample generated a footstep.");
+                var coughPosition = pmcOrigin + Vector3.forward * 6;
+                humanTarget.transform.position = coughPosition;
+                manager.SetComponentData(humanTarget.LinkedEntity, LocalTransform.FromPosition(coughPosition));
+                var coughing = manager.GetComponentData<PredictedPlayerGhost>(humanTarget.LinkedEntity);
+                coughing.TacticalCoughSeconds = 1; manager.SetComponentData(humanTarget.LinkedEntity, coughing);
+                collect.Invoke(ai, new object[] { 21d });
+                var coughListener = Brain();
+                sense.Invoke(ai, new object[] { coughListener, observer.transform, pmcOrigin + Vector3.up * 1.4f, 0f, 21d });
+                Check(coughListener.Target == humanTarget.LinkedEntity && !coughListener.Visible &&
+                    !coughListener.Contacts[humanTarget.LinkedEntity].Confirmed,
+                    "PMC did not investigate the actual cough as uncertain hearing.");
+                collect.Invoke(ai, new object[] { 21.1d });
+                Check(((IList)eventField.GetValue(ai)).Count == 0, "The same cough replayed on every sensor update.");
+                coughing.ClashEnabled = true; manager.SetComponentData(humanTarget.LinkedEntity, coughing);
+                collect.Invoke(ai, new object[] { 25d });
+                Check(((IList)eventField.GetValue(ai)).Count == 0, "Bounty cough changed raid hearing.");
             }
             finally { Object.DestroyImmediate(tuning); }
-            return $"PASS {checks} footstep checks: actual PMC perception, alien hearing, posture, weight, walls and unseen targets.";
+            return $"PASS {checks} footstep and cough checks: actual PMC perception, alien hearing, posture, weight, walls and unseen targets.";
         }
         finally
         {
