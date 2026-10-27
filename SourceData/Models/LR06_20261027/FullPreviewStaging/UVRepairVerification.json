@@ -1,0 +1,200 @@
+{
+  "scope": "independent LR06 display scene only",
+  "repair": {
+    "scope": "display-only FBX UV0 repair; no geometry or material-slot changes",
+    "parts": [
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_22.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_22.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_22.fbx",
+        "original_sha256": "a17b88725c6e8890c89d2183b2adefa0abf3753ddbf40ae4f95794b505fa803f",
+        "candidate_sha256": "1b8fc58bba952e547ec9939e8e40838a8806ca27f3e2408ec2b821cafb877b30",
+        "materials_repaired_triangles": {
+          "R8_OffWhite_Ceramic_Coat": 148,
+          "R8_Rough_Exposed_Steel": 496
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_23.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_23.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_23.fbx",
+        "original_sha256": "41b71902554fa18c789e4e04c397d80107f2da67211fd5b264c9e7640917fb29",
+        "candidate_sha256": "438a2253f1e325e69c6606e77072afe956efa5896fa8cf1e7456afff42d0c0af",
+        "materials_repaired_triangles": {
+          "R8_OffWhite_Ceramic_Coat": 12
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_27.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_27.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_27.fbx",
+        "original_sha256": "282170658cc2fc51db86386d4cc22d3304590d7f03a60619952b192dc60bce25",
+        "candidate_sha256": "36a4be6c2d5dd16e6675f78ff4ab5d1a800319a13573e27a0787c0ca44ebefc3",
+        "materials_repaired_triangles": {
+          "R8_OffWhite_Ceramic_Coat": 36
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_29.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_29.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_29.fbx",
+        "original_sha256": "a7b51fb8a9a7e0bd5bd58eede71b4b3c196aeaf9b9cceca4d9ee4772ec3ef1b5",
+        "candidate_sha256": "4808472a3b783d7bc72b30fc3cbc290c88a28c12d1f27c81a7b9738aff24e047",
+        "materials_repaired_triangles": {
+          "R8_Rough_Exposed_Steel": 1116,
+          "R8_OffWhite_Ceramic_Coat": 372
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_30.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_30.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_30.fbx",
+        "original_sha256": "ad88098ca770dc541d272e66179616647810f7b80bc2ba500b4fd8c282debe2d",
+        "candidate_sha256": "2b3f47d1bb1bbcc90ed19eb4c90628a9397e16233f3fd3e8ed6e6eba728a6e0e",
+        "materials_repaired_triangles": {
+          "R8_OffWhite_Ceramic_Coat": 24
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Models/Map_31.fbx",
+        "source": "SourceData/Models/LR06_20261027/FullPreviewStaging/Map_31.fbx",
+        "candidate": "Library/BuildValidation/LR06UVLighting/RepairedFBX/Map_31.fbx",
+        "original_sha256": "b0c9a1edc73c0ed277f4e65805fe08e35605428bbd47eb4bf8cb0b85a5294e27",
+        "candidate_sha256": "dfc5013ce6011e1313468f861aea1682f5b00f0300934812c643474fe68d486f",
+        "materials_repaired_triangles": {
+          "R8_OffWhite_Ceramic_Coat": 136,
+          "R8_Rough_Exposed_Steel": 496
+        },
+        "zero_geometry_skipped": 0,
+        "target_density_texels_per_metre_at_1024": 853.3333333333334,
+        "other_fbx_fields_identical": true,
+        "source_blend_changed": false
+      }
+    ]
+  },
+  "blender_import_geometry": [
+    {
+      "part": 22,
+      "vertices": 5038,
+      "triangles": 7934,
+      "geometry_and_material_index_sha256": "8d508b39f555ac807aea583a7ad41411e1eab9770cccefd9461ed06ca53f10fd",
+      "original_and_repaired_match": true
+    },
+    {
+      "part": 23,
+      "vertices": 11170,
+      "triangles": 15112,
+      "geometry_and_material_index_sha256": "1fd0bbda60444219c1791f565e9d5d4e9870da4b78fb5757f77f3d02ab42312c",
+      "original_and_repaired_match": true
+    },
+    {
+      "part": 27,
+      "vertices": 12878,
+      "triangles": 21176,
+      "geometry_and_material_index_sha256": "198365b142bcce68dd75d2879cf33cc14909a5410be95d1244b855f248ca8495",
+      "original_and_repaired_match": true
+    },
+    {
+      "part": 29,
+      "vertices": 8590,
+      "triangles": 14074,
+      "geometry_and_material_index_sha256": "d7ef348dbf465c8e311217a06622f62fd905a9c9989e08f33b73140f21fd01b4",
+      "original_and_repaired_match": true
+    },
+    {
+      "part": 30,
+      "vertices": 4714,
+      "triangles": 7262,
+      "geometry_and_material_index_sha256": "60929f8a1ef02ca0068200d988448a578ee161227a0b943f8e1a4ad95d9e65c0",
+      "original_and_repaired_match": true
+    },
+    {
+      "part": 31,
+      "vertices": 20899,
+      "triangles": 36298,
+      "geometry_and_material_index_sha256": "cba6edfb24f18713e4082d7865627eb44acd486c687ab84f77d76a851da3c361",
+      "original_and_repaired_match": true
+    }
+  ],
+  "map29_geometry_qa": {
+    "geometry_metrics_equal": true,
+    "baseline_pass": false,
+    "repaired_pass": false,
+    "baseline_errors": 80,
+    "repaired_errors": 80,
+    "baseline_warnings": 4,
+    "repaired_warnings": 4,
+    "baseline_floating_findings": 78,
+    "repaired_floating_findings": 78,
+    "note": "Existing geometry findings remain; UV repair does not change geometry."
+  },
+  "unity_checks": {
+    "VerifyFullPreviewScene": {
+      "status": "saved_scene_reopened_in_preview",
+      "scene": "Assets/MoonEnvironment/Variants/LR06FullPreview/Scenes/LR06_Full_Display.unity",
+      "rootCount": 4,
+      "meshFilters": 65,
+      "meshRenderers": 65,
+      "triangles": 3691162,
+      "terrainAssets": [
+        "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+        "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset"
+      ],
+      "colliders": 0,
+      "lights": 32,
+      "warmPointProxies": 31,
+      "pointShadowLights": 0,
+      "directionalShadowLights": 1,
+      "cameras": 1,
+      "missingRenderers": [],
+      "sceneDirty": false,
+      "originalScene": "Assets/Scenes/MainMenu.unity",
+      "originalSceneDirty": false
+    },
+    "VerifySharedPBR": {
+      "status": "saved_scene_and_pbr_reopened",
+      "materials": 7,
+      "rendererMaterialReferences": 164,
+      "renderers": 65,
+      "terrains": 2,
+      "colliders": 0,
+      "lights": 32,
+      "pointLights": 31,
+      "shadowLights": 1,
+      "originalScene": "Assets/Scenes/MainMenu.unity",
+      "originalSceneDirty": false
+    },
+    "VerifyDisplayShadowScope": {
+      "status": "scene_scoped_pipeline_restoration_checked",
+      "sourceShadowDistance": 50,
+      "previewShadowDistance": 200,
+      "inactiveUnchanged": true,
+      "deactivateRestored": true,
+      "reenableRestored": true,
+      "switchSceneRestored": true,
+      "sourcePipelineDirty": false,
+      "originalScene": "Assets/Scenes/MainMenu.unity"
+    }
+  },
+  "mapping_note": "New UV coordinates use per-face projection at the existing texture density; they are not recovered source UVs."
+}
