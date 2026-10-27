@@ -36,16 +36,23 @@ namespace Unity.MP_FPS
             double now=SystemAPI.Time.ElapsedTime;
             if(now<caches.NextRefillCheck)return;
             caches.NextRefillCheck=now+1;
-            var protectedDrops=new System.Collections.Generic.HashSet<int>();
+            var protectedLoot=new System.Collections.Generic.HashSet<int>();
             foreach(var (session,connection) in SystemAPI.Query<RefRO<RaidSession>>().WithEntityAccess())
             {
                 if(session.ValueRO.Phase!=RaidPhase.Active || !state.EntityManager.HasComponent<RaidInventoryState>(connection) ||
                     SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))continue;
                 var inventory=GetRaidInventory(ref state,connection);
-                if(inventory.OpenedLootId>=0)protectedDrops.Add(inventory.OpenedLootId);
-                if(inventory.DissectingLootId>=0)protectedDrops.Add(inventory.DissectingLootId);
+                if(inventory.OpenedLootId>=0)protectedLoot.Add(inventory.OpenedLootId);
+                if(inventory.DissectingLootId>=0)protectedLoot.Add(inventory.DissectingLootId);
             }
-            caches.RecycleEmptyDrops(now,protectedDrops);
+            foreach(var (health,entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>>()
+                        .WithAll<DollSingerEnemy,Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                if(health.ValueRO.CurrentHealth<=0 || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity))continue;
+                var brain=state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                if(PmcLootRules.SearchingCache(brain))protectedLoot.Add(brain.Cache);
+            }
+            caches.RecycleEmptyDrops(now,protectedLoot);
             if(ClashEnabled(ref state))return; // Keep empty-drop cleanup without replenishing Clash supplies.
             bool hasActivePlayer=false;
             foreach(var (session,joined,connection) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>().WithEntityAccess())
@@ -59,7 +66,7 @@ namespace Unity.MP_FPS
             foreach(var refill in caches.RefillStates)
             {
                 if(!caches.Containers.TryGetValue(refill.Key,out var cache) || refill.Key>=map.LootPositions.Length)continue;
-                bool blocked=!hasActivePlayer;
+                bool blocked=!hasActivePlayer || protectedLoot.Contains(refill.Key);
                 if(!blocked && !RaidLootRefillState.HasContents(cache))
                 {
                     float3 target=map.LootPositions[refill.Key];

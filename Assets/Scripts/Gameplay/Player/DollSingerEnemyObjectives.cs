@@ -13,6 +13,11 @@ namespace Unity.MP_FPS
         public static bool CanSearch(in PredictedPlayerGhost health, double lastDamage, double now) =>
             !RaidHealth.HandsBusy(health) && now - lastDamage >= 1;
 
+        // Keep the same container stable until this real search completes or is
+        // interrupted, including the tick where its timer has just elapsed.
+        public static bool SearchingCache(DollSingerEnemyBrain brain) => brain != null && !brain.IsClashBot &&
+            brain.Action == PmcAction.Scavenge && brain.Cache >= 0 && brain.LootUntil > 0;
+
         public static bool IsHumanCorpse(RaidLootContainers caches, int id) => caches != null &&
             caches.DeathBags.TryGetValue(id, out var corpse) && corpse.CharacterIndex >= 0 && caches.Containers.ContainsKey(id);
 

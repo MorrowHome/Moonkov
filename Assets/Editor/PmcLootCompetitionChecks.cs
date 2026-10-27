@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 
@@ -127,6 +128,30 @@ public static class PmcLootCompetitionChecks
             "ordinary valuables still compete while mission objects stay protected");
         Check(cache.Count("mooncore_fragment") == 2 && cache.Find(nested.Id) != null && inventory.Count("mooncore_fragment", true) == 0,
             "PMC cannot remove unique mission items directly or inside a bag");
+
+        var searching = (DollSingerEnemyBrain)FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
+        searching.Action = PmcAction.Scavenge; searching.Cache = 4; searching.LootUntil = 20;
+        Check(PmcLootRules.SearchingCache(searching) && !PmcLootRules.SearchingCache(null),
+            "an active ordinary PMC search protects its selected cache");
+        var empty = RaidLootTable.Create(RaidLootProfile.Industrial, new Random(42));
+        empty.Items.RemoveAll(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root);
+        int emptyVersion = empty.Version;
+        var refill = new RaidLootRefillState(RaidLootProfile.Industrial);
+        Check(!refill.TryRefill(empty, 1, 300, 2, PmcLootRules.SearchingCache(searching), new Random(1)) &&
+            !refill.TryRefill(empty, 301, 300, 2, PmcLootRules.SearchingCache(searching), new Random(1)) &&
+            empty.Version == emptyVersion && refill.RefillCount == 0 && !RaidLootRefillState.HasContents(empty),
+            "an empty cache cannot refresh while a PMC search is still pending");
+        searching.Action = PmcAction.Engage;
+        Check(!PmcLootRules.SearchingCache(searching) &&
+            refill.TryRefill(empty, 302, 300, 2, PmcLootRules.SearchingCache(searching), new Random(1)) &&
+            empty.Version == emptyVersion + 1 && refill.RefillCount == 1 && RaidLootRefillState.HasContents(empty),
+            "after interruption the normal refill can proceed once");
+        searching.Action = PmcAction.Scavenge; searching.LootUntil = 0;
+        Check(!PmcLootRules.SearchingCache(searching), "approaching or finished searches do not reserve a cache");
+        searching.LootUntil = 10; searching.Cache = -1;
+        Check(!PmcLootRules.SearchingCache(searching), "a missing target cannot reserve a cache");
+        searching.Cache = 4; searching.ClashParticipantId = 1;
+        Check(!PmcLootRules.SearchingCache(searching), "bounty actors do not affect ordinary raid refill rules");
         return "PASS " + s_Checks + " PMC loot competition checks";
     }
 }
