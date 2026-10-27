@@ -209,18 +209,24 @@ public static class PmcLifeSupportChecks
             }
             Tick(1);
             var first = manager.GetComponentData<PredictedPlayerGhost>(npc);
-            if (!Near(first.Oxygen, 100 - 100f / 600) || !Near(inventory.Equipped("Helmet").SuitOxygen, first.Oxygen) ||
-                !Near(manager.GetComponentData<PredictedPlayerGhost>(clash).Oxygen, 100))
-                throw new InvalidOperationException("Server idle oxygen or bounty exclusion failed.");
+            if (!Near(first.Oxygen, 100 - 100f / 600) || !Near(first.Energy, 100 - 100f / 900) ||
+                !Near(first.Hydration, 100 - 100f / 720) || !Near(inventory.Equipped("Helmet").SuitOxygen, first.Oxygen) ||
+                !Near(manager.GetComponentData<PredictedPlayerGhost>(clash).Oxygen, 100) ||
+                !Near(manager.GetComponentData<PredictedPlayerGhost>(clash).Energy, 100))
+                throw new InvalidOperationException("Server idle survival or bounty exclusion failed.");
             manager.SetComponentData(npc, LocalTransform.FromPosition(origin + new float3(1, 0, 0)));
             Tick(2);
             var running = manager.GetComponentData<PredictedPlayerGhost>(npc);
-            if (!Near(running.Oxygen, first.Oxygen - 100f / 600 * 1.75f))
-                throw new InvalidOperationException("Server PMC movement did not consume sprint oxygen.");
+            if (!Near(running.Oxygen, first.Oxygen - 100f / 600 * 1.75f) ||
+                !Near(running.Energy, first.Energy - 100f / 900 * 1.75f) ||
+                !Near(running.Hydration, first.Hydration - 100f / 720 * 1.4f))
+                throw new InvalidOperationException("Server PMC movement did not consume sprint survival resources.");
             var tutorial = manager.CreateEntity(typeof(TutorialRaidMode));
             Tick(3);
-            if (!Near(manager.GetComponentData<PredictedPlayerGhost>(npc).Oxygen, running.Oxygen))
-                throw new InvalidOperationException("Tutorial unexpectedly simulated PMC oxygen.");
+            var tutorialHealth = manager.GetComponentData<PredictedPlayerGhost>(npc);
+            if (!Near(tutorialHealth.Oxygen, running.Oxygen) || !Near(tutorialHealth.Energy, running.Energy) ||
+                !Near(tutorialHealth.Hydration, running.Hydration))
+                throw new InvalidOperationException("Tutorial unexpectedly simulated PMC survival.");
             manager.DestroyEntity(tutorial);
             running.Oxygen = 0; running.HypoxiaSeconds = 8;
             EnergyShieldEquipment.Flush(ref running, inventory); manager.SetComponentData(npc, running);
@@ -240,7 +246,12 @@ public static class PmcLifeSupportChecks
             var recovered = manager.GetComponentData<PredictedPlayerGhost>(npc);
             if (!recovered.BreathableAir || !Near(recovered.Oxygen, 5) || !Near(recovered.CurrentHealth, hypoxic.CurrentHealth))
                 throw new InvalidOperationException("Server breathable-room recovery failed.");
-            return "PASS server PMC atmosphere, movement, hypoxia and mode exclusion checks";
+            recovered.Energy = 0; recovered.StarvationSeconds = 10;
+            manager.SetComponentData(npc, recovered); Tick(6);
+            var starving = manager.GetComponentData<PredictedPlayerGhost>(npc);
+            if (!Near(starving.CurrentHealth, recovered.CurrentHealth - .5f) || !Near((float)status.PmcStatusHealthDamage, 3.5f))
+                throw new InvalidOperationException("Server starvation damage or pressure accounting failed.");
+            return "PASS server PMC atmosphere, movement, nutrition, hypoxia and mode exclusion checks";
         }
         finally
         {

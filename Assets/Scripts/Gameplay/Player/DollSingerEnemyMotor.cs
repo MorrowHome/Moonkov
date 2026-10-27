@@ -29,9 +29,10 @@ namespace Unity.MP_FPS
             }
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
-            AdvanceObjective(brain, ref health, position, eye, map, now, dt);
+            AdvanceNutrition(brain, ref health, position, now);
             UpdateOxygenSupply(brain, ref health, position, now);
             UpdateShieldSupply(brain, ref health, position, now);
+            if (brain.NutritionUntil <= 0) AdvanceObjective(brain, ref health, position, eye, map, now, dt);
             // A timed search is stationary; re-pathing to the actor's own position
             // can fail and cancel an otherwise reachable corpse or drawer.
             if (brain.Action != PmcAction.Scavenge || brain.LootUntil <= 0)
@@ -43,7 +44,7 @@ namespace Unity.MP_FPS
             if (searching) move *= checkingCorner ? .45f : .7f;
             if (brain.IsPeeking) move *= .65f;
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
-                brain.HealUntil > 0 || brain.Interacting || searching && now < brain.SearchPauseUntil ||
+                brain.HealUntil > 0 || brain.NutritionUntil > 0 || brain.Interacting || searching && now < brain.SearchPauseUntil ||
                 HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
                     Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f) move = Vector3.zero;
 
@@ -100,7 +101,7 @@ namespace Unity.MP_FPS
             bool fighting = CanReturnFire(brain) && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
             input.SetFlag(PlayerInput.InputFlag.Aim, fighting && brain.Visible || checkingCorner);
             input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
-                brain.HealUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
+                brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
@@ -114,7 +115,7 @@ namespace Unity.MP_FPS
                     PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
                 brain.NextTacticalSwitch = now + 3;
             }
-            if (!switching && brain.LootUntil <= 0 && brain.HealUntil <= 0 && !brain.Interacting &&
+            if (!switching && brain.LootUntil <= 0 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
                 ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
@@ -148,7 +149,7 @@ namespace Unity.MP_FPS
         }
 
         private static bool CanReturnFire(DollSingerEnemyBrain brain) =>
-            brain.HealUntil <= 0 && !brain.Interacting &&
+            brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
             (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
              brain.Action == PmcAction.Cover && (!brain.HasCover || brain.IsPeeking || brain.CoverPhase == PmcCoverPhase.Returning) ||
              brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
@@ -182,6 +183,15 @@ namespace Unity.MP_FPS
                 EnergyShieldEquipment.Flush(ref health, brain.Inventory);
                 brain.NextDecision = 0;
             }
+        }
+
+        private void AdvanceNutrition(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
+        {
+            if (brain.NutritionUntil <= 0 && (now < brain.NextNutrition || !PmcNutrition.Low(health, PmcNutrition.UseThreshold))) return;
+            bool eligible = !PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold) &&
+                PmcResourceActions.SafeWindow(brain, health, brain.TutorialActor, SafeToTreat(brain, position, now),
+                    now, continuingNutrition: true, allowCriticalNutrition: true);
+            PmcNutrition.Advance(brain, ref health, position, eligible, now);
         }
 
         private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt) =>

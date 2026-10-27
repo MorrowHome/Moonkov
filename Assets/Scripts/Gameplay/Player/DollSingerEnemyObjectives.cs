@@ -73,7 +73,8 @@ namespace Unity.MP_FPS
                 .ThenBy(pair => pair.Key).Take(4).Select(pair => pair.Key).ToArray();
         }
 
-        private static float Value(InventoryItem item, bool needCells, bool needMedicine, bool needShield)
+        private static float Value(InventoryItem item, bool needCells, bool needMedicine, bool needShield,
+            bool needFood, bool needDrink, bool needOxygen)
         {
             var def = InventoryCatalog.Get(item?.Code);
             if (def == null || def.Kind == ItemKind.Root || MissionInventory.IsArtifact(item.Code)) return 0;
@@ -83,6 +84,9 @@ namespace Unity.MP_FPS
             if (def.Kind == ItemKind.Cell && needCells) priority += 1000;
             if (def.Kind == ItemKind.Medical && needMedicine) priority += 1000;
             if (needShield && PmcProtectionLoadout.CanUseLootedShield(item)) priority += 900;
+            var consumable = needFood || needDrink || needOxygen ? ConsumableCatalog.Get(item.Code) : null;
+            if (consumable != null && (needOxygen && consumable.Oxygen > 0 ||
+                needFood && consumable.Food || needDrink && !consumable.Food && consumable.Hydration > 0)) priority += 1000;
             return priority;
         }
 
@@ -104,12 +108,16 @@ namespace Unity.MP_FPS
 
         // All moves use the same versioned transaction as a player. The candidate list
         // holds IDs because a successful transaction replaces both inventory trees.
-        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache, bool includeNested = false, bool equipShield = false)
+        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache, bool includeNested = false,
+            bool equipShield = false, bool seekSurvivalSupplies = false)
         {
             if (inventory == null || cache == null || cache.Find(LootInventoryExchange.Root) == null) return 0;
             bool needCells = inventory.CellEnergy(accessibleOnly: true) < BatteryEnergy.Capacity * 2;
             bool needMedicine = inventory.Items.Where(inventory.MedicalAccessible).Sum(i => i.Quantity) < 2;
             bool needShield = equipShield && inventory.Equipped("Shield") == null;
+            bool needFood = seekSurvivalSupplies && !PmcNutrition.HasCarried(inventory, true);
+            bool needDrink = seekSurvivalSupplies && !PmcNutrition.HasCarried(inventory, false);
+            bool needOxygen = seekSurvivalSupplies && !PmcLifeSupport.HasCarried(inventory);
             var occupiedContainers = new HashSet<string>(cache.Items.Select(i => i.Parent));
             var byId = includeNested ? cache.Items.ToDictionary(i => i.Id) : null;
             bool InLootTree(InventoryItem item)
@@ -124,7 +132,7 @@ namespace Unity.MP_FPS
                 return false;
             }
             var candidates = cache.Items.Where(i => InLootTree(i) && !occupiedContainers.Contains(i.Id))
-                .Select(i => (item: i, value: Value(i, needCells, needMedicine, needShield))).Where(candidate => candidate.value > 0)
+                .Select(i => (item: i, value: Value(i, needCells, needMedicine, needShield, needFood, needDrink, needOxygen))).Where(candidate => candidate.value > 0)
                 .OrderByDescending(candidate => candidate.value).Select(candidate => candidate.item.Id).ToArray();
             int transfers = 0;
             foreach (string id in candidates)
@@ -317,7 +325,8 @@ namespace Unity.MP_FPS
                 if (loot != null && loot.Containers.TryGetValue(brain.Cache, out var cache))
                 {
                     bool equipShield = !TutorialRuntime.Enabled(EntityManager);
-                    transferred = PmcLootRules.TakeAvailable(brain.Inventory, cache, includeNested: corpse || ground, equipShield: equipShield);
+                    transferred = PmcLootRules.TakeAvailable(brain.Inventory, cache, includeNested: corpse || ground,
+                        equipShield: equipShield, seekSurvivalSupplies: equipShield);
                     if (equipShield) PmcProtectionLoadout.BindLootedShield(ref health, brain.Inventory);
                 }
                 PmcLootRules.RecordSearch(brain, drawer, ground, transferred);

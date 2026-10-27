@@ -87,9 +87,16 @@ namespace Unity.MP_FPS
                     brain.CachedOxygenSupply = OxygenRefillZone.SampleSupply(samplePosition, brain.CachedAtmosphere.Breathable);
                     brain.NextAtmosphereSample = now + .5;
                 }
-                PmcLifeSupport.Tick(ref health.ValueRW, brain.Inventory, TacticalStatus(tactical, entity),
+                var status = TacticalStatus(tactical, entity);
+                PmcLifeSupport.Tick(ref health.ValueRW, brain.Inventory, status,
                     brain.CachedAtmosphere, map.OxygenParameters, dt, tick, brain.CachedOxygenSupply,
                     health.ValueRO.ControllerState.MovementSpeed > .1f && moved, flush: sample);
+                var beforeNutrition = health.ValueRO;
+                RaidNutrition.Tick(ref health.ValueRW, dt, map.EnergyReserveSeconds, map.HydrationReserveSeconds,
+                    map.DigestionSeconds, map.NutritionGraceSeconds, map.StarvationDamagePerSecond,
+                    map.DehydrationDamagePerSecond, tick, health.ValueRO.ControllerState.MovementSpeed > .1f && moved);
+                PmcStatusDamage.Record(status, beforeNutrition, health.ValueRO);
+                if (!sample && health.ValueRO.CurrentHealth <= 0) EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);
             }
         }
     }

@@ -247,15 +247,18 @@ namespace Unity.MP_FPS
     public static class PmcResourceActions
     {
         public static bool SafeWindow(DollSingerEnemyBrain brain, in PredictedPlayerGhost health,
-            bool tutorial, bool safe, double now, bool allowCriticalOxygen = false)
+            bool tutorial, bool safe, double now, bool allowCriticalOxygen = false, bool continuingNutrition = false,
+            bool allowCriticalNutrition = false)
         {
-            bool urgent = allowCriticalOxygen && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
+            bool oxygenUrgent = allowCriticalOxygen && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
+            bool nutritionUrgent = allowCriticalNutrition && PmcNutrition.Low(health, PmcNutrition.DepartureThreshold);
             if (brain == null || brain.IsClashBot || tutorial || !safe || !double.IsFinite(now) ||
                 health.CurrentHealth <= 0 || RaidHealth.HandsBusy(health) || brain.Visible ||
                 brain.HazardDanger || brain.Grenade.Active(now) || brain.HealUntil > 0 || brain.Interacting ||
-                brain.LootUntil > 0 || brain.ExtractionProgress > 0 && !urgent || brain.Extracted) return false;
+                brain.LootUntil > 0 || brain.NutritionUntil > 0 && !continuingNutrition ||
+                brain.ExtractionProgress > 0 && !oxygenUrgent || brain.Extracted) return false;
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract;
-            bool recovering = urgent && !brain.IsPeeking && (brain.Action == PmcAction.Retreat ||
+            bool recovering = (oxygenUrgent || nutritionUrgent) && !brain.IsPeeking && (brain.Action == PmcAction.Retreat ||
                 brain.Action == PmcAction.Cover || brain.Action == PmcAction.Search ||
                 brain.Action == PmcAction.Investigate || brain.Action == PmcAction.HoldAngle);
             if (!passive && !recovering) return false;
@@ -369,6 +372,88 @@ namespace Unity.MP_FPS
         public bool Matches(int version) => m_Failed && m_Version == version;
         public void Record(int version) { m_Failed = true; m_Version = version; }
         public void Clear() { m_Failed = false; }
+    }
+
+    // Food and water use the player's real items, timing and inventory version.
+    // Starvation and hypoxia continue while the action is underway.
+    public static class PmcNutrition
+    {
+        public const float UseThreshold = 35, DangerThreshold = 20, DepartureThreshold = 10;
+
+        public static bool HasCarried(InventoryGraph inventory, bool food) => inventory != null && inventory.Items.Any(item =>
+        {
+            var definition = ConsumableCatalog.Get(item.Code);
+            return item.Quantity > 0 && definition != null && definition.Oxygen <= 0 && inventory.Carried(item) &&
+                (food ? definition.Food : !definition.Food && definition.Hydration > 0);
+        });
+
+        public static bool Low(in PredictedPlayerGhost health, float threshold) => health.ProtectionInitialized &&
+            health.BodyHealthInitialized && health.CurrentHealth > 0 &&
+            (health.Energy <= threshold || health.Hydration <= threshold);
+
+        public static InventoryItem Find(in PredictedPlayerGhost health, InventoryGraph inventory, bool food)
+        {
+            if (inventory == null) return null;
+            foreach (var item in inventory.Items)
+            {
+                var definition = ConsumableCatalog.Get(item.Code);
+                if (item.Quantity <= 0 || definition == null || definition.Oxygen > 0 ||
+                    !inventory.ConsumableAccessible(item) || (food ? !definition.Food : definition.Food || definition.Hydration <= 0) ||
+                    !RaidNutrition.CanConsume(health, definition)) continue;
+                return item;
+            }
+            return null;
+        }
+
+        public static InventoryItem Choose(in PredictedPlayerGhost health, InventoryGraph inventory)
+        {
+            if (health.Hydration <= UseThreshold)
+            {
+                var drink = Find(health, inventory, false);
+                if (drink != null) return drink;
+            }
+            return health.Energy <= UseThreshold ? Find(health, inventory, true) : null;
+        }
+
+        public static bool NeedsDeparture(in PredictedPlayerGhost health, InventoryGraph inventory) =>
+            health.ProtectionInitialized && health.BodyHealthInitialized && health.CurrentHealth > 0 &&
+            (health.Energy <= DepartureThreshold && Find(health, inventory, true) == null ||
+             health.Hydration <= DepartureThreshold && Find(health, inventory, false) == null);
+
+        public static void Advance(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health,
+            Vector3 position, bool eligible, double now)
+        {
+            if (brain == null || !double.IsFinite(now)) return;
+            if (brain.NutritionUntil > 0)
+            {
+                bool unchanged = brain.Inventory != null && brain.Inventory.Version == brain.NutritionVersion &&
+                    RaidHealth.SelfTreatmentDamageUnchanged(health, brain.NutritionDamageSequence, brain.NutritionShieldSequence) &&
+                    health.LastShotTick == brain.NutritionShot && health.LastGrenadeShotTick == brain.NutritionGrenade &&
+                    health.LastReloadTick == brain.NutritionReload && health.EquippedWeaponID == brain.NutritionWeapon &&
+                    (position - brain.NutritionOrigin).sqrMagnitude <= 1;
+                if (!eligible || !unchanged)
+                { Cancel(brain, now); return; }
+                if (now < brain.NutritionUntil) return;
+                RaidNutrition.Consume(ref health, brain.Inventory, brain.NutritionItemId, brain.NutritionVersion);
+                Cancel(brain, now); return;
+            }
+            if (!eligible || now < brain.NextNutrition) return;
+            var item = Choose(health, brain.Inventory);
+            if (item == null) { brain.NextNutrition = now + 1; return; }
+            var definition = ConsumableCatalog.Get(item.Code);
+            brain.NutritionItemId = item.Id; brain.NutritionVersion = brain.Inventory.Version;
+            brain.NutritionOrigin = position; brain.NutritionDamageSequence = health.NonPhysiologicalDamageSequence;
+            brain.NutritionShieldSequence = health.ShieldHitSequence; brain.NutritionShot = health.LastShotTick;
+            brain.NutritionGrenade = health.LastGrenadeShotTick; brain.NutritionReload = health.LastReloadTick;
+            brain.NutritionWeapon = health.EquippedWeaponID;
+            brain.NutritionUntil = now + (definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds);
+        }
+
+        private static void Cancel(DollSingerEnemyBrain brain, double now)
+        {
+            brain.NutritionUntil = 0; brain.NutritionItemId = null; brain.NextNutrition = now + 1;
+            brain.NextDecision = 0;
+        }
     }
 
     // An inaccessible backpack cell cannot be re-attempted every frame while
@@ -524,10 +609,16 @@ namespace Unity.MP_FPS
         public double NextTacticalSwitch;
         public double NextShieldSupplyCheck;
         public double NextOxygenSupplyCheck, NextAtmosphereSample;
+        public bool TutorialActor;
         public AtmosphereSample CachedAtmosphere;
         public float CachedOxygenSupply;
         public RaidSurvivalMotion OxygenMotion;
         public PmcOxygenFailure OxygenSupplyFailure;
+        public double NutritionUntil, NextNutrition;
+        public string NutritionItemId;
+        public int NutritionVersion;
+        public Vector3 NutritionOrigin;
+        public uint NutritionDamageSequence, NutritionShieldSequence, NutritionShot, NutritionGrenade, NutritionReload, NutritionWeapon;
         public double NextUnknownEvasion;
         public PmcGrenadeAwareness Grenade;
         public Vector3 GrenadePlanPosition;

@@ -274,7 +274,12 @@ namespace Unity.MP_FPS
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
             bool tutorial = TutorialRuntime.Enabled(EntityManager);
             bool suit = PmcLifeSupport.TryEquip(inventory, clash.HasValue, tutorial);
-            if (suit) inventory.AddSupply("oxygen_canister", 1, foundInRaid: true);
+            if (suit)
+            {
+                inventory.AddSupply("oxygen_canister", 1, foundInRaid: true);
+                inventory.AddSupply("ration", 1, foundInRaid: true);
+                inventory.AddSupply("water", 1, foundInRaid: true);
+            }
             bool shield = !clash.HasValue && PmcProtectionLoadout.TryEquip(inventory, false, tutorial, m_SpawnRandom.NextFloat());
             if (suit || shield)
             {
@@ -283,7 +288,7 @@ namespace Unity.MP_FPS
             }
             Vector3 raidExit = SelectRaidExit(map, position, out bool localExit);
             var brain = new DollSingerEnemyBrain { Inventory = inventory, RaidExit = raidExit, LocalRaidExit = localExit,
-                Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now,
+                Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now, TutorialActor = tutorial,
                 NextSense = now + (serial % 3) * .033, NextDecision = now + (serial % 3) * .067,
                 Aggression = .4f + ((serial - 1) % 3) * .2f, Caution = .8f - ((serial - 1) % 3) * .2f,
                 Random = new Unity.Mathematics.Random(m_SpawnRandom.NextUInt(1, uint.MaxValue)) };

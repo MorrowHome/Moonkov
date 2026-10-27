@@ -49,6 +49,7 @@ public static class DollSingerHumanlikeChecks
             CheckBackpackMedical(system, map);
             CheckShieldSupply(system, world);
             CheckLifeSupport(system, map, world);
+            CheckNutrition(system, map);
         }
         finally
         {
@@ -70,6 +71,62 @@ public static class DollSingerHumanlikeChecks
     };
 
     private delegate void ShieldSupplyTick(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now);
+
+    private static void CheckNutrition(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var tick = (ShieldSupplyTick)typeof(DollSingerEnemySystem).GetMethod("AdvanceNutrition", PrivateInstance)
+            .CreateDelegate(typeof(ShieldSupplyTick), system);
+        var brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false) &&
+            brain.Inventory.AddSupply("ration", 1, brain.Inventory.Equipped("Backpack").Id, true) == InventoryError.None &&
+            brain.Inventory.AddSupply("oxygen_canister", 1, InventoryCatalog.Pockets, true) == InventoryError.None,
+            "PMC nutrition fixture.");
+        var health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Energy = 20;
+        string ration = brain.Inventory.Items.First(item => item.Code == "ration").Id;
+        tick(brain, ref health, Vector3.zero, 10);
+        Require(brain.NutritionUntil == 13 && brain.Inventory.Find(ration) != null,
+            "A hungry safe PMC did not start its timed food action.");
+        brain.Visible = true;
+        tick(brain, ref health, Vector3.zero, 11);
+        Require(brain.NutritionUntil == 0 && brain.Inventory.Find(ration) != null,
+            "A new visible threat did not interrupt food without consuming it.");
+        brain.Visible = false; tick(brain, ref health, Vector3.zero, 12);
+        Require(brain.NutritionUntil == 15, "A safe PMC did not resume its food action.");
+        health.Oxygen = 0;
+        tick(brain, ref health, Vector3.zero, 13);
+        Require(brain.NutritionUntil == 0 && brain.Inventory.Find(ration) != null,
+            "Critical oxygen failed to interrupt eating.");
+        var oxygen = (ShieldSupplyTick)typeof(DollSingerEnemySystem).GetMethod("UpdateOxygenSupply", PrivateInstance)
+            .CreateDelegate(typeof(ShieldSupplyTick), system);
+        oxygen(brain, ref health, Vector3.zero, 13);
+        Require(health.Oxygen == 40 && brain.Inventory.Count("oxygen_canister", true) == 0,
+            "The interrupted PMC did not use its emergency oxygen first.");
+        tick(brain, ref health, Vector3.zero, 14);
+        tick(brain, ref health, Vector3.zero, 17);
+        Require(brain.Inventory.Find(ration) == null && health.Energy == 65,
+            "The PMC did not finish the actual food transaction after the oxygen emergency.");
+
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false), "Hungry departure fixture.");
+        health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Energy = 5;
+        var decision = Decide(system, brain, health, map, 10);
+        Require(brain.Leaving && decision.action == PmcAction.Extract,
+            "A PMC without food did not plan to leave before starvation.");
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Engage;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false) &&
+            brain.Inventory.AddSupply("ration", 1, InventoryCatalog.Pockets) == InventoryError.None,
+            "Threatened nutrition fixture.");
+        health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Energy = 5;
+        brain.Target = new Entity { Index = 1, Version = 1 }; brain.Visible = true; brain.Confidence = 1;
+        brain.Contacts.Add(brain.Target, new PmcContact { Confirmed = true, Visible = true, Confidence = 1 });
+        decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && decision.action == PmcAction.Retreat,
+            "A hungry PMC with food did not break contact before consuming it.");
+        brain.Visible = false; brain.Target = Entity.Null; brain.Action = PmcAction.Retreat;
+        tick(brain, ref health, Vector3.zero, 30);
+        Require(brain.NutritionUntil == 33 && brain.Inventory.Count("ration", true) == 1,
+            "A PMC at a safe withdrawal point did not start consuming its critical food supply.");
+    }
 
     private static void CheckLifeSupport(DollSingerEnemySystem system, MoonRaidMap map, World world)
     {
@@ -809,6 +866,26 @@ public static class DollSingerHumanlikeChecks
             Require(lootInput.LookYawPitchDegrees.x > 0 && lootInput.LookYawPitchDegrees.y > 0 &&
                 lootInput.MoveInput.x == 0 && lootInput.MoveInput.y == 0 && !lootInput.Shoot,
                 "A searching PMC failed to look toward its loot while remaining stationary.");
+
+            var eating = Brain(); eating.Inventory = InventoryGraph.Create(false); eating.Action = PmcAction.Scavenge;
+            Require(PmcLifeSupport.TryEquip(eating.Inventory, false, false) &&
+                eating.Inventory.AddSupply("ration", 1, eating.Inventory.Equipped("Backpack").Id) == InventoryError.None,
+                "Motor nutrition fixture.");
+            var eatingHealth = Health(); PmcProtectionLoadout.Initialize(ref eatingHealth, eating.Inventory); eatingHealth.Energy = 20;
+            eating.LastHealth = eatingHealth.CurrentHealth; eating.Cache = -1;
+            eating.NextDecision = eating.NextSense = eating.NextPath = eating.NextAimError = eating.NextNearbyLootScan = 100;
+            eating.Goal = eating.TacticalGoal = origin + Vector3.forward * 4;
+            eating.CornerCount = 2; eating.Corner = 1; eating.Corners[0] = origin; eating.Corners[1] = eating.Goal;
+            var foodInput = (PlayerInput)Call(system, "Think", new object[] { eating, actor,
+                Unity.Transforms.LocalTransform.FromPosition(origin), eatingHealth, map, 10d, 1f / 60 });
+            Require(eating.NutritionUntil == 13 && foodInput.MoveInput.x == 0 && foodInput.MoveInput.y == 0 &&
+                !foodInput.Sprint && !foodInput.Shoot && !foodInput.Reload && eating.Inventory.Count("ration", true) == 1,
+                "A PMC did not stay still and keep its item during timed food use.");
+            eating.Visible = true;
+            Call(system, "Think", new object[] { eating, actor,
+                Unity.Transforms.LocalTransform.FromPosition(origin), eatingHealth, map, 11d, 1f / 60 });
+            Require(eating.NutritionUntil == 0 && eating.Inventory.Count("ration", true) == 1,
+                "A visible threat did not cancel the motor's timed food action.");
 
             var property = typeof(WeaponManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             var previous = property.GetValue(null);

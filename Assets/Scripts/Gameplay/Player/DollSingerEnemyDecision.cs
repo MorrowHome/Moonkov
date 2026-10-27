@@ -42,7 +42,9 @@ namespace Unity.MP_FPS
             bool lowOxygen = !brain.IsClashBot && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
             bool canRefillOxygen = lowOxygen && health.HeadDomeEquipped && !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version) &&
                 PmcLifeSupport.HasCarried(brain.Inventory);
-            if (!brain.IsClashBot && (exhausted || lowOxygen && !canRefillOxygen ||
+            bool lowNutrition = !brain.IsClashBot && PmcNutrition.Low(health, PmcNutrition.DangerThreshold);
+            bool nutritionDeparture = lowNutrition && PmcNutrition.NeedsDeparture(health, brain.Inventory);
+            if (!brain.IsClashBot && (exhausted || lowOxygen && !canRefillOxygen || nutritionDeparture ||
                 lowHealth && !bleeding && !burning && (!needsHealing || !potentialMedical) ||
                 brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
                 map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
@@ -94,9 +96,9 @@ namespace Unity.MP_FPS
             // once sight is broken, instead of being stuck in Retreat until all memory expires.
             if (PmcUnknownAttack.NeedsEvasion(brain.IsClashBot, contact, brain.LastDamage, now))
                 Consider(PmcAction.Retreat, 105, "move to safety after an unseen attack");
-            if ((lowHealth || exhausted || lowOxygen || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
-                Consider(PmcAction.Retreat, 110, lowOxygen && !brain.Leaving ?
-                    "break contact to replenish oxygen" : "break contact to survive and extract");
+            if ((lowHealth || exhausted || lowOxygen || lowNutrition || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
+                Consider(PmcAction.Retreat, 110, (lowOxygen || lowNutrition) && !brain.Leaving ?
+                    "break contact to replenish survival supplies" : "break contact to survive and extract");
             if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))
                 Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
             if (canPrepareMedical && medical != null)
