@@ -17,6 +17,9 @@ public static class PmcNutritionChecks
     [MenuItem("Moonkov/AI/Check Food and Water Rules")]
     public static void RunFromEditor() => Debug.Log(Run());
 
+    [MenuItem("Moonkov/AI/Check Survival Item Conservation")]
+    public static void RunStressFromEditor() => Debug.Log(RunStress());
+
     public static string Run()
     {
         s_Checks = 0;
@@ -173,5 +176,91 @@ public static class PmcNutritionChecks
         Check(PmcLootRules.TakeAvailable(inventory, cache) == 1 && inventory.Count("data_drive", true) == 1 &&
             cache.Count("ration") == 1, "tutorial and other callers retain their existing loot priority");
         return "PASS " + s_Checks + " PMC food, water and interruption checks";
+    }
+
+    public static string RunStress()
+    {
+        s_Checks = 0;
+        int foodUsed = 0, drinkUsed = 0, oxygenUsed = 0, interrupted = 0;
+        for (int seed = 0; seed < 500; seed++)
+        {
+            var random = new System.Random(seed * 7907 + 31);
+            var inventory = InventoryGraph.Create(false);
+            Check(PmcLifeSupport.TryEquip(inventory, false, false) &&
+                inventory.AddSupply("oxygen_canister", 3, InventoryCatalog.Pockets, true) == InventoryError.None &&
+                inventory.AddSupply("ration", 3, inventory.Equipped("Backpack").Id, true) == InventoryError.None &&
+                inventory.AddSupply("water", 3, inventory.Equipped("Backpack").Id, true) == InventoryError.None,
+                "generated survival supplies must fit");
+            var health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health);
+            PmcProtectionLoadout.Initialize(ref health, inventory);
+            health.Energy = 20 + random.Next(16); health.Hydration = 20 + random.Next(16);
+            health.Oxygen = 10 + random.Next(26); health.Satiety = 0;
+            string suitId = inventory.Equipped("Helmet").Id;
+            var brain = (DollSingerEnemyBrain)FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
+            var status = new TacticalServerWorld.Status();
+            brain.Inventory = inventory; brain.Action = PmcAction.Scavenge; brain.LastDamage = -100;
+            brain.LastHealth = health.CurrentHealth; brain.SelfStatus = brain.ObservedSelfStatus = status;
+            int initialFoodUsed = foodUsed, initialDrinkUsed = drinkUsed, initialOxygenUsed = oxygenUsed;
+            for (int step = 1; step <= 90 && health.CurrentHealth > 0; step++)
+            {
+                bool moving = random.Next(3) != 0;
+                health.ControllerState.Sprinting = moving && random.Next(3) == 0;
+                var atmosphere = random.Next(8) == 0 ? new AtmosphereSample("room", 101.325f, .21f, true) : default;
+                PmcLifeSupport.Tick(ref health, inventory, status, atmosphere, OxygenParameters.Default, 1, (uint)step, 0, moving, flush: false);
+                var beforeNutrition = health;
+                RaidNutrition.Tick(ref health, 1, 900, 720, 600, 10, .5f, 1, (uint)step, moving);
+                PmcStatusDamage.Record(status, beforeNutrition, health);
+                bool shot = random.Next(12) == 0;
+                if (shot) RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1 + random.Next(5), (uint)step, RaidDamageKind.Bullet);
+                PmcCombatPressure.Update(brain, health, step, 1);
+                if (health.CurrentHealth <= 0) break;
+                bool safe = !shot && step - brain.LastDamage >= 3 && random.Next(6) != 0;
+                if (brain.NutritionUntil > 0 && random.Next(14) == 0)
+                    inventory.AddSupply("dust", 1, inventory.Equipped("Backpack").Id);
+                bool eligible = !PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold) &&
+                    PmcResourceActions.SafeWindow(brain, health, false, safe, step, continuingNutrition: true, allowCriticalNutrition: true);
+                int foodBefore = inventory.Count("ration", true), waterBefore = inventory.Count("water", true), version = inventory.Version;
+                double deadline = brain.NutritionUntil;
+                PmcNutrition.Advance(brain, ref health, Vector3.zero, eligible, step);
+                int foodAfter = inventory.Count("ration", true), waterAfter = inventory.Count("water", true);
+                int consumed = foodBefore - foodAfter + waterBefore - waterAfter;
+                Check(consumed >= 0 && consumed <= 1 && (consumed == 0 || eligible && deadline > 0 &&
+                    step >= deadline && inventory.Version == version + 1), "food may be consumed only once at a valid completion");
+                if (foodBefore > foodAfter) foodUsed++;
+                if (waterBefore > waterAfter) drinkUsed++;
+                if (deadline > 0 && brain.NutritionUntil == 0 && consumed == 0) interrupted++;
+                if (PmcLifeSupport.Low(health, PmcLifeSupport.RefillThreshold) &&
+                    PmcResourceActions.SafeWindow(brain, health, false, safe, step, allowCriticalOxygen: true))
+                {
+                    var bottle = PmcLifeSupport.FindAccessible(inventory);
+                    int oxygenBefore = inventory.Count("oxygen_canister", true);
+                    if (PmcLifeSupport.TryRefill(ref health, inventory, bottle))
+                    {
+                        oxygenUsed++;
+                        Check(inventory.Count("oxygen_canister", true) == oxygenBefore - 1,
+                            "each refill spends one real canister");
+                    }
+                }
+                Check(float.IsFinite(health.Energy) && health.Energy >= 0 && health.Energy <= 100 &&
+                    float.IsFinite(health.Hydration) && health.Hydration >= 0 && health.Hydration <= 100 &&
+                    float.IsFinite(health.Oxygen) && health.Oxygen >= 0 && health.Oxygen <= 100,
+                    "all survival reserves remain finite and bounded");
+                if (step % 15 == 0) Check(inventory.Validate() == InventoryError.None, "mixed actions leave a valid inventory");
+            }
+            EnergyShieldEquipment.Flush(ref health, inventory);
+            var corpse = LootInventoryExchange.DropOnDeath(inventory);
+            Check(corpse.Find(suitId) != null && Near(corpse.Find(suitId).SuitOxygen, health.Oxygen) &&
+                corpse.Count("ration") == 3 - (foodUsed - initialFoodUsed) &&
+                corpse.Count("water") == 3 - (drinkUsed - initialDrinkUsed) &&
+                corpse.Count("oxygen_canister") == 3 - (oxygenUsed - initialOxygenUsed) &&
+                corpse.Validate() == InventoryError.None, "death preserves the same suit and exactly the remaining supplies");
+            var player = InventoryGraph.Create(false);
+            Check(LootInventoryExchange.TryApply(player, corpse, new InventoryCommand { Operation = InventoryOperation.Move,
+                ExpectedVersion = player.Version, ItemId = suitId, Parent = InventoryCatalog.Equipment, Region = "Helmet" }, corpse.Version) == InventoryError.None &&
+                player.Find(suitId) != null && corpse.Find(suitId) == null && Near(player.Find(suitId).SuitOxygen, health.Oxygen),
+                "the player can recover the exact remaining suit resource without duplication");
+        }
+        return "PASS " + s_Checks + " checks across 500 mixed survival and corpse cycles; food=" + foodUsed +
+            ", water=" + drinkUsed + ", oxygen=" + oxygenUsed + ", interrupted=" + interrupted;
     }
 }
