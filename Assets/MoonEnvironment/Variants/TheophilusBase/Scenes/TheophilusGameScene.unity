@@ -1394813,6 +1394813,67 @@ MonoBehaviour:
     LocalPoint: {x: 0.9859638, y: -0.8673072, z: 0.061486565}
     Label: "L24 \xB7 \u751F\u6D3B\u7269\u8D44\u62BD\u5C49 30"
     Profile: 0
+--- !u!1001 &215636877
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1593.144
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 223.63614
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2156.6287
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.3173023
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.9483245
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 645116812612734367, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3871780168961599057, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_RequiresClearConnection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839928396985918264, guid: 32833d339873f5241995598788006710, type: 3}
+      propertyPath: m_Name
+      value: MC00 L22 Oxygen Supply
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 32833d339873f5241995598788006710, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1394855,3 +1394916,4 @@ SceneRoots:
   - {fileID: 1811984516}
   - {fileID: 8570449902494939484}
   - {fileID: 9178934233182326218}
+  - {fileID: 215636877}

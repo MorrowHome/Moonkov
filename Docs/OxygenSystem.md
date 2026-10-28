@@ -103,6 +103,14 @@ flowchart TD
 
 `Tools / Moonkov / Oxygen / Check External Supply Feedback` 提供定向检查。批处理通过 28 项新检查，以及原反馈 51 项和原氧气 46 项。音频检查覆盖状态条件、循环配置和资源绑定，没有进入 Play，不代表实际音源播放、听感或游戏画面验收。
 
+## 正式地图补氧站（2026-10-29）
+
+正式 `TheophilusGameScene` 在 MC00 采样任务附近放置一处 `MC00 L22 Oxygen Supply`。复用现有供氧站模型、气瓶、软管和标牌。站点位于原有可呼吸室内；房间本身只停止耗氧，玩家需靠近站点才会补充宇航服储气。供给为每秒 10 点。站点默认有电、气源不限量，尚未接入任务电网或有限库存。
+
+此实例启用 `OxygenRefillZone.ConfigureConnection`。采样位置到供气接口被 Default 或 Ground 层实体挡住时，不提供氧气。先检查小范围供给盒，再做一条物理线段检查；范围外不增加物理查询。原有区域默认不开启此选项，保持原规则。离开范围、无电或空气不适合呼吸时停止供气。供气速率继续由服务端应用，沿用已有充满倒计时和持续气流声。
+
+安装菜单为 `Tools / Moonkov / Oxygen / Install formal MC00 supply station`。仅允许已保存的正式场景和稳定编辑模式。候选点需有地板支撑、角色站立空间、现有空气和畅通接口，并避开任务交互位置。已有同名站点时只验证，不重复添加。检查入口为 `TheophilusOxygenStationAuthoring.RunBatch()`。保存后重开场景，验证真实供给、装备角色补氧、断电、离开、真空与临时实体遮挡，并执行原氧气规则检查。静态物理与规则检查不替代实际路线、画面、听感和战局验收。
+
 ## 后续扩展入口
 
 - 平衡：修改共享 `OxygenSettings`，或保留每张地图自己的 `MoonRaidMap` 参数。
