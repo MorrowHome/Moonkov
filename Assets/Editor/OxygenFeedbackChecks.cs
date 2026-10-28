@@ -154,7 +154,7 @@ public static class OxygenFeedbackChecks
         Check(view.Q<Label>("vitals-warning").text == "HYPOXIA", "Ongoing damage has a hypoxia warning");
         state.Oxygen = 40; state.BreathableAir = true; state.OxygenDrainPerSecond = 0; state.OxygenSupplyPerSecond = 5;
         view.Present(state);
-        Check(view.Q<Label>("vitals-warning").text == "OXYGEN REFILLING", "External refill is visible in existing status slot");
+        Check(view.Q<Label>("vitals-warning").text == "OXYGEN REFILLING / 00:12", "External refill and time to full are visible in existing status slot");
         Check(view.Q("vitals-reserve-0").Q<Label>().text == "O₂  40%", "Reserve retains exact percentage");
         state.OxygenSupplyPerSecond = 0; view.Present(state);
         Check(view.Q<Label>("vitals-warning").style.display == DisplayStyle.None, "Safe low reserve produces no false danger");

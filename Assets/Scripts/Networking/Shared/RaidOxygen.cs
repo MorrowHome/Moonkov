@@ -34,8 +34,27 @@ namespace Unity.MP_FPS
         public static float RemainingSeconds(in PredictedPlayerGhost state)
         {
             float netDrain = state.OxygenDrainPerSecond - state.OxygenSupplyPerSecond;
-            return state.BreathableAir || netDrain <= 0 ? float.PositiveInfinity : Mathf.Max(0, state.Oxygen) / netDrain;
+            return state.BreathableAir || !float.IsFinite(netDrain) || !float.IsFinite(state.Oxygen) || netDrain <= 0
+                ? float.PositiveInfinity : Mathf.Max(0, state.Oxygen) / netDrain;
         }
+
+        public static bool ReceivingExternalSupply(in PredictedPlayerGhost state) => CanRefill(state) &&
+            float.IsFinite(state.OxygenSupplyPerSecond) && state.OxygenSupplyPerSecond > 0 &&
+            float.IsFinite(state.OxygenDrainPerSecond) && state.OxygenDrainPerSecond >= 0;
+
+        public static float RefillSeconds(in PredictedPlayerGhost state)
+        {
+            if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(state.Oxygen) ||
+                state.ProtectionInitialized && !state.HeadDomeEquipped) return float.PositiveInfinity;
+            if (state.Oxygen >= Capacity) return 0;
+            float netSupply = state.OxygenSupplyPerSecond - state.OxygenDrainPerSecond;
+            return ReceivingExternalSupply(state) && float.IsFinite(netSupply) && netSupply > 0
+                ? (Capacity - Mathf.Max(0, state.Oxygen)) / netSupply : float.PositiveInfinity;
+        }
+
+        // Empty and full must remain distinct from a tiny positive or almost-full reserve.
+        public static int DisplayPercent(float oxygen) => !float.IsFinite(oxygen) ? -1 : oxygen <= 0 ? 0 :
+            oxygen >= Capacity ? 100 : Mathf.Clamp(Mathf.FloorToInt(oxygen), 1, 99);
 
         public static void Tick(ref PredictedPlayerGhost state, in AtmosphereSample atmosphere,
             in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true,bool? movingOverride=null)

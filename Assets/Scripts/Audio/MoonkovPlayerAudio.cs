@@ -25,6 +25,8 @@ namespace Unity.MP_FPS
         private float m_LastStepTime = -1, m_BreathAt, m_HeartAt;
         private OxygenBreath m_Breath;
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
+        private SoundSystem.SoundInfo m_OxygenSupplySound;
+        private float m_OxygenSupplyRetryAt;
         private float m_FallSpeed;
         private float m_HitAt;
         private readonly RaycastHit[] m_SurfaceHits = new RaycastHit[8];
@@ -122,6 +124,7 @@ namespace Unity.MP_FPS
                 m_BreathAt = Time.unscaledTime + 1.2f;
             }
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
+            if (owned || m_OxygenSupplySound != null) UpdateOxygenSupply(ghost, library, position, owned);
             // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
             {
@@ -228,9 +231,23 @@ namespace Unity.MP_FPS
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
+            system?.Stop(m_OxygenSupplySound, .12f); m_OxygenSupplySound = null; m_OxygenSupplyRetryAt = 0;
             system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);
             m_BreathSound = m_HeartSound = m_WallSound = m_MovementSound = m_StanceSound = null;
             m_Wall.Reset();
+        }
+        private void UpdateOxygenSupply(in PredictedPlayerGhost ghost, MoonkovAudioLibrary library, Vector3 position, bool owned)
+        {
+            // A loop represents current authoritative external flow, not a successful canister request.
+            if (!owned || !RaidOxygen.ReceivingExternalSupply(ghost))
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_OxygenSupplySound, .12f);
+                m_OxygenSupplySound = null; m_OxygenSupplyRetryAt = 0;
+                return;
+            }
+            if (m_OxygenSupplySound?.Handle?.IsValid() == true || Time.unscaledTime < m_OxygenSupplyRetryAt) return;
+            m_OxygenSupplySound = MoonkovAudio.PlayWeaponLayer(library.OxygenSupply, position, 1, 0);
+            m_OxygenSupplyRetryAt = Time.unscaledTime + .5f;
         }
         private static SoundSystem.SoundInfo LocalOrWorld(SoundDef sound, Vector3 position, bool owned, float gain = 1)
             => MoonkovAudio.PlayWeaponLayer(sound, position, gain, owned ? .08f : 1);

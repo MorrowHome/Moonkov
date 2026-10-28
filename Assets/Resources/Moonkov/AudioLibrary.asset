@@ -83,5 +83,6 @@ MonoBehaviour:
   ExtractStart: {fileID: 11400000, guid: c9a5cd419b5844e4aa91bc1d3ed3d190, type: 2}
   ExtractCancel: {fileID: 11400000, guid: c2197aa8a3f44492eb92eb8fb48854ff, type: 2}
   ExtractTick: {fileID: 11400000, guid: 28e7d4409b4994afcbe9b5b4ccc0e952, type: 2}
+  OxygenSupply: {fileID: 11400000, guid: 159b75ad441a3b94997ed895834cb52e, type: 2}
   ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}
   DeployConfirm: {fileID: 11400000, guid: cf73b4f8232750148bcd13ac5efe416a, type: 2}

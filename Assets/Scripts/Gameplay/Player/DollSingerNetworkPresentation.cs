@@ -389,6 +389,8 @@ namespace Unity.MP_FPS
             }
         }
 
+        private void OnDisable() => m_Audio?.Stop();
+
         public override void OnGhostPreDestroy()
         {
             m_LightPanel?.Dispose(); m_LightPanel = null;

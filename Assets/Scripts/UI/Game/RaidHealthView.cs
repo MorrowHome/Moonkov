@@ -93,7 +93,8 @@ namespace Unity.MP_FPS.Client
         }
         public static string OxygenTimeText(in PredictedPlayerGhost state)
         {
-            float remaining = RaidOxygen.RemainingSeconds(state);
+            float remaining = state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond && RaidOxygen.ReceivingExternalSupply(state)
+                ? RaidOxygen.RefillSeconds(state) : RaidOxygen.RemainingSeconds(state);
             if (float.IsPositiveInfinity(remaining)) return MoonkovLocalization.Text("NO NET DRAIN");
             int seconds = Mathf.CeilToInt(Mathf.Max(0, remaining));
             return MoonkovLocalization.Format($"{seconds / 60:00}:{seconds % 60:00}");

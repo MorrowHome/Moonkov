@@ -21,6 +21,7 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_OxygenLabel;
         private int m_LastOxygen = -1;
         private int m_LastGrace = -1;
+        private int m_LastOxygenSeconds = -1;
 
         public RaidVitalsMonitor(Action<BodyPart> select = null)
         {
@@ -54,7 +55,7 @@ namespace Unity.MP_FPS.Client
         {
             m_Body.Present(state, selected);
             var signal = RaidVitalSignal.Read(state); m_Wave.Present(signal);
-            int oxygen = signal.Ready && float.IsFinite(state.Oxygen) ? Mathf.CeilToInt(Mathf.Clamp(state.Oxygen, 0, 100)) : -1;
+            int oxygen = signal.Ready ? RaidOxygen.DisplayPercent(state.Oxygen) : -1;
             if (oxygen != m_LastOxygen)
             {
                 m_LastOxygen = oxygen;
@@ -70,15 +71,25 @@ namespace Unity.MP_FPS.Client
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity && state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
                 warning = "OXYGEN REFILLING";
             int grace = warning == "OXYGEN DEPLETED" ? Mathf.CeilToInt(state.OxygenGraceRemaining) : -1;
-            if (m_LastWarning == warning && m_LastGrace == grace) return;
+            float estimate = warning == "OXYGEN REFILLING" ? RaidOxygen.RefillSeconds(state) :
+                warning == "LOW OXYGEN" || warning == "CRITICAL OXYGEN" ? RaidOxygen.RemainingSeconds(state) : float.PositiveInfinity;
+            int seconds = float.IsFinite(estimate) && estimate >= 0 && estimate < int.MaxValue - 1024 ? Mathf.CeilToInt(estimate) : -1;
+            if (m_LastWarning == warning && m_LastGrace == grace && m_LastOxygenSeconds == seconds) return;
             m_LastWarning = warning;
             m_LastGrace = grace;
+            m_LastOxygenSeconds = seconds;
             m_Warning.style.display = string.IsNullOrEmpty(warning) ? DisplayStyle.None : DisplayStyle.Flex;
             m_Warning.style.color = signal.Critical ? DangerColor : warning == "OXYGEN REFILLING" ? SignalColor : WarningColor;
             if (grace >= 0)
             {
                 if (panel != null) MoonkovLocalization.Set(m_Warning, "OXYGEN DEPLETED / {0}s", grace);
                 else m_Warning.text = $"OXYGEN DEPLETED / {grace}s";
+            }
+            else if (seconds >= 0)
+            {
+                string clock = $"{seconds / 60:00}:{seconds % 60:00}";
+                if (panel != null) MoonkovLocalization.Set(m_Warning, "{0} / {1}", warning, clock);
+                else m_Warning.text = warning + " / " + clock;
             }
             else if (panel != null) MoonkovLocalization.Set(m_Warning, warning); else m_Warning.text = warning;
         }
