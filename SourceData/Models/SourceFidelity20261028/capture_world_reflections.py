@@ -94,7 +94,7 @@ radius=.05;bpy.ops.mesh.primitive_uv_sphere_add(segments=128,ring_count=64,radiu
 for poly in probe.data.polygons:poly.use_smooth=True
 mat=bpy.data.materials.new('Temporary_Perfect_Mirror');bsdf=next(n for n in mat.node_tree.nodes if n.type=='BSDF_PRINCIPLED');bsdf.inputs['Base Color'].default_value=(1,1,1,1);bsdf.inputs['Metallic'].default_value=1;bsdf.inputs['Roughness'].default_value=0;probe.data.materials.append(mat)
 camera_data=bpy.data.cameras.new('SourceRadianceCamera');camera=bpy.data.objects.new('SourceRadianceCamera',camera_data);scene.collection.objects.link(camera);camera_data.type='ORTHO';camera_data.ortho_scale=radius*2;camera_data.clip_start=.005;camera_data.clip_end=10000;scene.camera=camera
-scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=False;scene.cycles.use_adaptive_sampling=False;scene.cycles.seed=0;scene.cycles.sample_clamp_direct=0;scene.cycles.sample_clamp_indirect=0;scene.render.threads_mode='FIXED';scene.render.threads=4;scene.cycles.device='CPU'
+scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=False;scene.cycles.use_adaptive_sampling=False;scene.cycles.seed=0;scene.cycles.sample_clamp_direct=0;scene.cycles.sample_clamp_indirect=0;scene.render.threads_mode='AUTO';scene.cycles.device='CPU'
 sys.path.insert(0,str(ROOT))
 from cycles_device import configure_cycles_device
 configure_cycles_device(scene)

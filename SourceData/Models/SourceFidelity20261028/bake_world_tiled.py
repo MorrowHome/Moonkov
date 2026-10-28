@@ -27,6 +27,10 @@ if 'def surface_statistics(' not in helper_text:
 helper_text = helper_text.replace("[('Image',image),('Normal',normal),('Albedo',albedo)]",
                                   "[('Image',image),('Normal',normal)]")
 helper_text = helper_text.replace("'uv_layer':'SourceStaticBake'", "'uv_layer':'SupersampleBake'")
+helper_text = helper_text.replace("scene.render.threads_mode='FIXED';scene.render.threads=4",
+                                  "scene.render.threads_mode='AUTO'")
+helper_text = helper_text.replace("compositor.render.threads_mode='FIXED';compositor.render.threads=4",
+                                  "compositor.render.threads_mode='AUTO'")
 globals()['__file__'] = str(helper_path)
 exec(compile(helper_text, str(helper_path), 'exec'), globals())
 

@@ -49,7 +49,8 @@ def blender_job(script, arguments, log):
     command = [str(args.blender), '--background', str(prepared), '--python-exit-code', '10',
                '--python', str(ROOT / script), '--', *arguments]
     with log.open('a', encoding='utf-8') as stream:
-        subprocess.run(command, cwd=PROJECT, stdout=stream, stderr=subprocess.STDOUT, check=True)
+        subprocess.run(command, cwd=PROJECT, stdout=stream, stderr=subprocess.STDOUT, check=True,
+                       creationflags=getattr(subprocess, 'ABOVE_NORMAL_PRIORITY_CLASS', 0))
 
 try:
     verify_atlas(26)
