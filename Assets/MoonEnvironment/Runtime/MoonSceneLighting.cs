@@ -16,6 +16,11 @@ namespace Unity.MP_FPS.Moon
         [SerializeField] private Color ambientFill = Color.black;
         [Tooltip("Default environment reflection strength. Local room probes retain their own power-dependent intensity.")]
         [SerializeField, Range(0, 1)] private float environmentReflectionIntensity;
+        [SerializeField] private SourceWorldLightingData sourceStaticLighting;
+        private DefaultReflectionMode previousReflectionMode;
+        private Texture previousCustomReflection;
+        public bool UsesSourceStaticLighting => sourceStaticLighting;
+        public void ConfigureSourceStaticLighting(SourceWorldLightingData data) => sourceStaticLighting = data;
         public enum ClockMode { GameplayDay, MeanLunarOrbit }
         [Header("Sky time (existing server clock is the only time source)")]
         [SerializeField] private ClockMode clockMode = ClockMode.MeanLunarOrbit;
@@ -82,13 +87,15 @@ namespace Unity.MP_FPS.Moon
             previousAmbient = RenderSettings.ambientLight;
             previousAmbientIntensity = RenderSettings.ambientIntensity;
             previousReflections = RenderSettings.reflectionIntensity;
+            previousReflectionMode = RenderSettings.defaultReflectionMode;
+            previousCustomReflection = RenderSettings.customReflectionTexture;
             previousSun = RenderSettings.sun;
             previousFog = RenderSettings.fog;
             appliedPipeline = pipeline;
             if (adaptInteriorShadows && pipeline is UniversalRenderPipelineAsset sourcePipeline)
                 CreateInteriorPipeline(sourcePipeline);
             if (appliedPipeline) QualitySettings.renderPipeline = appliedPipeline;
-            if (spaceSkybox)
+            if (spaceSkybox && !sourceStaticLighting)
             {
                 runtimeSkybox = Instantiate(spaceSkybox);
                 runtimeSkybox.name = spaceSkybox.name + " (runtime)";
@@ -96,9 +103,14 @@ namespace Unity.MP_FPS.Moon
             }
             RenderSettings.skybox = runtimeSkybox;
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = ambientFill;
+            RenderSettings.ambientLight = sourceStaticLighting ? sourceStaticLighting.linearBackground.gamma : ambientFill;
             RenderSettings.ambientIntensity = 1;
-            RenderSettings.reflectionIntensity = environmentReflectionIntensity;
+            RenderSettings.reflectionIntensity = sourceStaticLighting ? 1 : environmentReflectionIntensity;
+            if (sourceStaticLighting)
+            {
+                RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+                RenderSettings.customReflectionTexture = sourceStaticLighting.fallbackReflection;
+            }
             RenderSettings.sun = sun;
             RenderSettings.fog = false;
             applied = true;
@@ -106,7 +118,7 @@ namespace Unity.MP_FPS.Moon
                     System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal,
                     out parsedEpoch))
                 parsedEpoch = new System.DateTime(2026, 10, 18, 0, 0, 0, System.DateTimeKind.Utc);
-            if (adaptExposure) exposure = new MoonCameraExposure(transform);
+            if (adaptExposure && !sourceStaticLighting) exposure = new MoonCameraExposure(transform);
             UpdateSky();
         }
 
@@ -114,8 +126,8 @@ namespace Unity.MP_FPS.Moon
         {
             if (applied)
             {
-                if (adaptExposure && exposure == null) exposure = new MoonCameraExposure(transform);
-                if (!adaptExposure && exposure != null) { exposure.Dispose(); exposure = null; }
+                if (adaptExposure && !sourceStaticLighting && exposure == null) exposure = new MoonCameraExposure(transform);
+                if ((!adaptExposure || sourceStaticLighting) && exposure != null) { exposure.Dispose(); exposure = null; }
                 exposure?.Tick(sun, maximumExposureEV, darkAdaptationSeconds, brightAdaptationSeconds, exposureOccluders);
                 // Support a runtime A/B toggle without ever writing to the shared asset.
                 if (adaptInteriorShadows && !runtimePipeline && pipeline is UniversalRenderPipelineAsset sourcePipeline &&
@@ -145,6 +157,7 @@ namespace Unity.MP_FPS.Moon
 
         public void ApplyTimeOfDay(double totalHours)
         {
+            if (sourceStaticLighting) return;
             if (!applied || !sun) return;
             if (clockMode == ClockMode.MeanLunarOrbit)
             {
@@ -226,6 +239,8 @@ namespace Unity.MP_FPS.Moon
             RenderSettings.ambientLight = previousAmbient;
             RenderSettings.ambientIntensity = previousAmbientIntensity;
             RenderSettings.reflectionIntensity = previousReflections;
+            RenderSettings.defaultReflectionMode = previousReflectionMode;
+            RenderSettings.customReflectionTexture = previousCustomReflection;
             RenderSettings.sun = previousSun;
             RenderSettings.fog = previousFog;
             if (runtimeSkybox) Destroy(runtimeSkybox);

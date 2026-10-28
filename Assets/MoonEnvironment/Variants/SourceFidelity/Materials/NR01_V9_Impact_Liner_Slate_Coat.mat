@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NR01_V9_Impact_Liner_Slate_Coat
+  m_Shader: {fileID: 4800000, guid: cbe6423d2e74644a8b154480d78c4837, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 278cf766d4da2483e99a5cb8f7b0d4d1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IrradianceMap:
+        m_Texture: {fileID: 2800000, guid: 6194f98979b014070b1fc64b79ec57a4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RadianceCube:
+        m_Texture: {fileID: 8900000, guid: 034b9f0c38ad141fc8dbb4cbb12a9605, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceMap:
+        m_Texture: {fileID: 2800000, guid: f2052fd6b962a47e5ad16c5192289cce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WorldNormalMap:
+        m_Texture: {fileID: 2800000, guid: 0ae2590362c054337960d9658f9542e0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BakeUVChannel: 0
+    - _CoatRoughness: 0.03
+    - _SourceIOR: 1.5
+    - _SpecularIORLevel: 0.32
+    - _SpecularSamples: 4
+    m_Colors:
+    - _Emission: {r: 0, g: 0, b: 0, a: 0}
+    - _ProbeBoxMax: {r: 0, g: 0, b: 0, a: 0}
+    - _ProbeBoxMin: {r: 0, g: 0, b: 0, a: 0}
+    - _ProbePosition: {r: 1998.4, g: 253.4, b: 2468, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

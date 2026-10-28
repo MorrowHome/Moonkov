@@ -1,0 +1,3791 @@
+{
+  "source_sha256": "2576f4ac6ba4b370843688fc28ace29e1169d594633102d13e0e59c64a6522cf",
+  "source_saved": false,
+  "visible_instances": 30395,
+  "unique_source_meshes": 21469,
+  "triangles": 4468902,
+  "area_m2_conservative": 20033511.497788094,
+  "rejected": {
+    "render_hidden_or_not_shown": 5,
+    "identical_duplicate": 633
+  },
+  "policy": "All static source lights; original MC00 control design abandoned by user. 128 texels/m manmade, 16 texels/m large ground, 4096 atlas, conservative 65% packing. Planner only; no bake or export yet. Scale surface estimate uses maximum pairwise scale product.",
+  "job_count_before_large_mesh_split": 2587,
+  "large_objects_requiring_split": [
+    {
+      "source": "B_Ring_Deck_00",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_01",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_02",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_03",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_04",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_05",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_06",
+      "area": 1075.8580322265625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_07",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_08",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_09",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_10",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_11",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_12",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_13",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_14",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_15",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_16",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_17",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_18",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_19",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_20",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_21",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_22",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_23",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_24",
+      "area": 1075.8580322265625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_25",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_26",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_27",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_28",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_29",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_30",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_31",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_32",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_33",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_34",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_35",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_36",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_37",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_38",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_39",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_40",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_41",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_42",
+      "area": 1075.8580322265625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_43",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_44",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_45",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_46",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_47",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_48",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_49",
+      "area": 1075.8582763671875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_50",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_51",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_52",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_53",
+      "area": 1075.858154296875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_54",
+      "area": 1075.8577880859375,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_55",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_56",
+      "area": 1075.857421875,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Deck_57",
+      "area": 1075.85791015625,
+      "required_side": 5208,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_0719",
+      "area": 2520.000331878673,
+      "required_side": 7970,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_Orange_0720",
+      "area": 720.0,
+      "required_side": 4261,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_0721",
+      "area": 2519.999668121349,
+      "required_side": 7970,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_Orange_0722",
+      "area": 720.0,
+      "required_side": 4261,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_0723",
+      "area": 2520.000160217285,
+      "required_side": 7970,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_Orange_0724",
+      "area": 720.000057220459,
+      "required_side": 4261,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_0725",
+      "area": 2520.0,
+      "required_side": 7970,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_Orange_0726",
+      "area": 720.0,
+      "required_side": 4261,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_0727",
+      "area": 2520.0,
+      "required_side": 7970,
+      "ground": false
+    },
+    {
+      "source": "B_RING_Transfer_Pod_Orange_0728",
+      "area": 720.0,
+      "required_side": 4261,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0088",
+      "area": 4058.7451171875,
+      "required_side": 10115,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0089",
+      "area": 2352.2398187255894,
+      "required_side": 7701,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0092",
+      "area": 916.1756190218512,
+      "required_side": 4806,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0095",
+      "area": 853.4520294295507,
+      "required_side": 4639,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0096",
+      "area": 2058.451171875,
+      "required_side": 7204,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0097",
+      "area": 2352.2398187255894,
+      "required_side": 7701,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0100",
+      "area": 698.4164166572154,
+      "required_side": 4196,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0103",
+      "area": 707.4087263615238,
+      "required_side": 4223,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0104",
+      "area": 2895.099609375,
+      "required_side": 8543,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0105",
+      "area": 2352.2398187255894,
+      "required_side": 7701,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0108",
+      "area": 788.7242549169696,
+      "required_side": 4459,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0111",
+      "area": 795.6781612705909,
+      "required_side": 4479,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0112",
+      "area": 2951.384765625,
+      "required_side": 8626,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0113",
+      "area": 2352.2398187255894,
+      "required_side": 7701,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0116",
+      "area": 816.1011596217922,
+      "required_side": 4536,
+      "ground": false
+    },
+    {
+      "source": "B_Ring_Buttress_0119",
+      "area": 856.9257602088765,
+      "required_side": 4648,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0198",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0241",
+      "area": 2000.220703125,
+      "required_side": 7101,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0242",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0279",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0317",
+      "area": 4581.66796875,
+      "required_side": 10747,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0318",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0361",
+      "area": 1750.1757202148438,
+      "required_side": 6642,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0362",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0399",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0437",
+      "area": 4420.3828125,
+      "required_side": 10556,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0438",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0481",
+      "area": 1524.4653625488281,
+      "required_side": 6199,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0482",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0519",
+      "area": 1045.4399697875979,
+      "required_side": 5134,
+      "ground": false
+    },
+    {
+      "source": "B_UNSURVEYED_FOOT_PAD_0523",
+      "area": 1633.5,
+      "required_side": 6417,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0528",
+      "area": 791.4111328125,
+      "required_side": 4467,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0532",
+      "area": 694.40185546875,
+      "required_side": 4184,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0540",
+      "area": 1804.5966796875,
+      "required_side": 6745,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0542",
+      "area": 1430.12548828125,
+      "required_side": 6004,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0554",
+      "area": 1228.95263671875,
+      "required_side": 5566,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0558",
+      "area": 863.08154296875,
+      "required_side": 4665,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0568",
+      "area": 1947.05419921875,
+      "required_side": 7006,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0570",
+      "area": 1965.95068359375,
+      "required_side": 7040,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0576",
+      "area": 987.7412109375,
+      "required_side": 4990,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0580",
+      "area": 1635.56103515625,
+      "required_side": 6421,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0582",
+      "area": 872.2880859375,
+      "required_side": 4690,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0592",
+      "area": 1139.76123046875,
+      "required_side": 5360,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0594",
+      "area": 1370.7861328125,
+      "required_side": 5879,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0604",
+      "area": 1159.89697265625,
+      "required_side": 5408,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0606",
+      "area": 729.3427734375,
+      "required_side": 4288,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0624",
+      "area": 789.6533203125,
+      "required_side": 4462,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0636",
+      "area": 931.587890625,
+      "required_side": 4846,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0640",
+      "area": 1011.72216796875,
+      "required_side": 5050,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0650",
+      "area": 821.759765625,
+      "required_side": 4552,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0654",
+      "area": 991.529296875,
+      "required_side": 5000,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0662",
+      "area": 1295.1298828125,
+      "required_side": 5714,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0666",
+      "area": 980.666015625,
+      "required_side": 4972,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0672",
+      "area": 699.36328125,
+      "required_side": 4199,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0676",
+      "area": 970.57177734375,
+      "required_side": 4947,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0688",
+      "area": 1344.56396484375,
+      "required_side": 5822,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0690",
+      "area": 1090.212890625,
+      "required_side": 5243,
+      "ground": false
+    },
+    {
+      "source": "B_CONCEPT_PIER_0698",
+      "area": 1085.37890625,
+      "required_side": 5231,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0162",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0169",
+      "area": 1711.492790222168,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0176",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0183",
+      "area": 1711.515380859375,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0190",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0199",
+      "area": 1711.492790222168,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0206",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0213",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0220",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0227",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0234",
+      "area": 1711.5097296244494,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0243",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0250",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0257",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0264",
+      "area": 1711.4985580444336,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Deck_0271",
+      "area": 1711.492790222168,
+      "required_side": 6569,
+      "ground": false
+    },
+    {
+      "source": "B_NORTH_TRANSFER_Terminal_0280",
+      "area": 3696.0,
+      "required_side": 9653,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0282",
+      "area": 1921.4975967407227,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0289",
+      "area": 1921.485930205341,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0296",
+      "area": 1921.514419555664,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0303",
+      "area": 1921.4975967407227,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0310",
+      "area": 1921.4975967407227,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0319",
+      "area": 1921.514419555664,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0326",
+      "area": 1921.4975967407227,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0333",
+      "area": 1921.485930205341,
+      "required_side": 6960,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0340",
+      "area": 1932.5647659301758,
+      "required_side": 6980,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0347",
+      "area": 1980.174934387207,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0354",
+      "area": 1980.1589126586914,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0363",
+      "area": 1980.1590728759766,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0370",
+      "area": 1980.147216796875,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0377",
+      "area": 1980.1754150390625,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0384",
+      "area": 1980.158592224121,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Deck_0391",
+      "area": 1980.1590728759766,
+      "required_side": 7065,
+      "ground": false
+    },
+    {
+      "source": "B_EAST_PROCESS_Terminal_0400",
+      "area": 3696.0,
+      "required_side": 9653,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0402",
+      "area": 1869.006536007364,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0409",
+      "area": 1869.0090994841012,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0416",
+      "area": 1868.9864144334424,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0423",
+      "area": 1869.0090994841012,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0430",
+      "area": 1868.9989113808333,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0439",
+      "area": 1868.9938788409745,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0446",
+      "area": 1868.9989113808333,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0453",
+      "area": 1869.0090994841012,
+      "required_side": 6864,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0460",
+      "area": 1871.4999030317558,
+      "required_side": 6869,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0467",
+      "area": 1936.3740921020508,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0474",
+      "area": 1936.379407584358,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0483",
+      "area": 1936.3886435637141,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0490",
+      "area": 1936.3740921020508,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0497",
+      "area": 1936.3790871498095,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0504",
+      "area": 1936.3790871498095,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Deck_0511",
+      "area": 1936.3790871498095,
+      "required_side": 6987,
+      "ground": false
+    },
+    {
+      "source": "B_SOUTH_RECOVERY_Terminal_0520",
+      "area": 3696.0,
+      "required_side": 9653,
+      "ground": false
+    },
+    {
+      "source": "B_R01_NORTH_RIM_Raised_Deck_0527",
+      "area": 40320.0,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_R02_NORTHEAST_RIM_Raised_Deck_0539",
+      "area": 40320.0,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_R03_EAST_RIM_Raised_Deck_0551",
+      "area": 40320.0,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_R04_SOUTHEAST_RIM_Raised_Deck_0563",
+      "area": 40320.00531005877,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_R05_SOUTH_RIM_Raised_Deck_0575",
+      "area": 40320.0,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_R06_SOUTHWEST_RIM_Raised_Deck_0587",
+      "area": 40320.00531005877,
+      "required_side": 31880,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_R07_WEST_PROCESS_Raised_Deck_0599",
+      "area": 32400.0,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_R08_NORTHWEST_RIM_Raised_Deck_0611",
+      "area": 32399.997940063477,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8449865349992,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9560379075401,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250047334522,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.118646974993,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.107897220168,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0933352458148,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.699922934255,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8449865349992,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9560379075401,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_R09_UPPER_RECOVERY_Raised_Deck_0623",
+      "area": 32400.0,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_M01_NORTH_SLOPE_Raised_Deck_0635",
+      "area": 32400.0,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_M02_EAST_SLOPE_Raised_Deck_0647",
+      "area": 32400.0,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_M03_SOUTH_SLOPE_Raised_Deck_0659",
+      "area": 32400.0,
+      "required_side": 28578,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 1096.0934190051241,
+      "required_side": 5257,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 1204.7000149928695,
+      "required_side": 5511,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 1130.8450729498984,
+      "required_side": 5339,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 1242.9561328895422,
+      "required_side": 5598,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Floor",
+      "area": 875.0250715995554,
+      "required_side": 4697,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 973.1187213370415,
+      "required_side": 4953,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_PressureRoof",
+      "area": 899.1079659265947,
+      "required_side": 4761,
+      "ground": false
+    },
+    {
+      "source": "B_M04_WEST_SLOPE_Raised_Deck_0671",
+      "area": 21060.0,
+      "required_side": 23040,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 784.7770649075363,
+      "required_side": 4448,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 862.5368289486549,
+      "required_side": 4663,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 809.6584304103201,
+      "required_side": 4518,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 889.9273080785795,
+      "required_side": 4737,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 696.7300785644878,
+      "required_side": 4191,
+      "ground": false
+    },
+    {
+      "source": "B_F01_LOW_RECEIVING_Raised_Deck_0683",
+      "area": 21060.0,
+      "required_side": 23040,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 809.6584304103201,
+      "required_side": 4518,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 889.9273080785795,
+      "required_side": 4737,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 696.7300785644878,
+      "required_side": 4191,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 784.7770649075363,
+      "required_side": 4448,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 862.5368289486549,
+      "required_side": 4663,
+      "ground": false
+    },
+    {
+      "source": "B_F02_LOW_PROCESS_Raised_Deck_0695",
+      "area": 21060.0,
+      "required_side": 23040,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 696.7300785644878,
+      "required_side": 4191,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 784.7770649075363,
+      "required_side": 4448,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 862.5368289486549,
+      "required_side": 4663,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 809.6584304103201,
+      "required_side": 4518,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 889.9273080785795,
+      "required_side": 4737,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Floor",
+      "area": 784.7770649075363,
+      "required_side": 4448,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB01_Foundation",
+      "area": 862.5368289486549,
+      "required_side": 4663,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Floor",
+      "area": 809.6584304103201,
+      "required_side": 4518,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB02_Foundation",
+      "area": 889.9273080785795,
+      "required_side": 4737,
+      "ground": false
+    },
+    {
+      "source": "B_SRC_EB07_Foundation",
+      "area": 696.7300785644878,
+      "required_side": 4191,
+      "ground": false
+    },
+    {
+      "source": "B_WEST_RING_ACCESS_BRIDGE_0526",
+      "area": 796.2956886291504,
+      "required_side": 4481,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_00_00",
+      "area": 820.4096374511719,
+      "required_side": 4548,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_00_01",
+      "area": 820.4096374511719,
+      "required_side": 4548,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_01_00",
+      "area": 1128.5455627441406,
+      "required_side": 5334,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_01_01",
+      "area": 1128.5315551757812,
+      "required_side": 5334,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_01_02",
+      "area": 1128.5496826171875,
+      "required_side": 5334,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_01_03",
+      "area": 1128.5309143066406,
+      "required_side": 5334,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_01_04",
+      "area": 1128.5455627441406,
+      "required_side": 5334,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_02_00",
+      "area": 1237.712328570342,
+      "required_side": 5586,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_02_01",
+      "area": 1237.7284418506315,
+      "required_side": 5586,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_02_02",
+      "area": 1237.712328570342,
+      "required_side": 5586,
+      "ground": false
+    },
+    {
+      "source": "D01_NORTH_RIM_LOGISTICS_TRANSFER_BAND_02_03",
+      "area": 1237.712328570342,
+      "required_side": 5586,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_00",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_01",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_02",
+      "area": 1119.983642578125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_CONCEPT_SUPPORT",
+      "area": 1268.2757263183594,
+      "required_side": 5655,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_03",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_04",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_05",
+      "area": 1119.983642578125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_06",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_CONCEPT_SUPPORT.001",
+      "area": 1529.3800964355469,
+      "required_side": 6209,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_00_07",
+      "area": 1119.9942626953125,
+      "required_side": 5314,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_00",
+      "area": 1239.5404357910156,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_01",
+      "area": 1239.5433831487026,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_02",
+      "area": 1239.5479431152344,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_CONCEPT_SUPPORT.002",
+      "area": 1450.5867004394531,
+      "required_side": 6047,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_03",
+      "area": 1239.5404357910156,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_04",
+      "area": 1239.5479431152344,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_05",
+      "area": 1239.5389886177145,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_06",
+      "area": 1239.5404357910156,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_CONCEPT_SUPPORT.003",
+      "area": 1058.2627258300781,
+      "required_side": 5165,
+      "ground": false
+    },
+    {
+      "source": "D02_EAST_SOUTH_PROCESS_TRANSFER_BAND_01_07",
+      "area": 1239.5479431152344,
+      "required_side": 5590,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_00_00",
+      "area": 927.1687316894531,
+      "required_side": 4835,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_00_01",
+      "area": 927.1687316894531,
+      "required_side": 4835,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_00_02",
+      "area": 927.166259765625,
+      "required_side": 4835,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_CONCEPT_SUPPORT",
+      "area": 938.9479064941406,
+      "required_side": 4865,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_01_00",
+      "area": 1219.4856262207031,
+      "required_side": 5545,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_01_01",
+      "area": 1219.4710882025265,
+      "required_side": 5545,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_01_02",
+      "area": 1219.4856262207031,
+      "required_side": 5545,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_01_03",
+      "area": 1219.4783935546875,
+      "required_side": 5545,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_01_04",
+      "area": 1219.4783935546875,
+      "required_side": 5545,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_02_00",
+      "area": 1156.0426025390625,
+      "required_side": 5399,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_02_01",
+      "area": 1156.0264892578125,
+      "required_side": 5399,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_02_02",
+      "area": 1156.0264892578125,
+      "required_side": 5399,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_CONCEPT_SUPPORT.002",
+      "area": 905.8274230957031,
+      "required_side": 4779,
+      "ground": false
+    },
+    {
+      "source": "D03_WEST_SERVICE_AND_RECOVERY_TRANSFER_BAND_02_03",
+      "area": 1156.0426025390625,
+      "required_side": 5399,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_00_00",
+      "area": 1154.4729309082031,
+      "required_side": 5395,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_00_01",
+      "area": 1154.4599304199219,
+      "required_side": 5395,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_00_02",
+      "area": 1154.4599304199219,
+      "required_side": 5395,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_CONCEPT_SUPPORT",
+      "area": 864.3370056152344,
+      "required_side": 4668,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_00_03",
+      "area": 1154.4729309082031,
+      "required_side": 5395,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_01_00",
+      "area": 1209.742145911323,
+      "required_side": 5523,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_01_01",
+      "area": 1209.7306823730469,
+      "required_side": 5523,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_01_02",
+      "area": 1209.7306823730469,
+      "required_side": 5523,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_CONCEPT_SUPPORT.001",
+      "area": 1295.3828430175781,
+      "required_side": 5715,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_01_03",
+      "area": 1209.742145911323,
+      "required_side": 5523,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_02_00",
+      "area": 868.5495698124396,
+      "required_side": 4679,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_02_01",
+      "area": 868.5573120117188,
+      "required_side": 4679,
+      "ground": false
+    },
+    {
+      "source": "D04_LOWER_RECEIVING_AND_TRANSFER_TRANSFER_BAND_02_02",
+      "area": 868.5495698124396,
+      "required_side": 4679,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_00",
+      "area": 4536.20458984375,
+      "required_side": 10694,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_01",
+      "area": 4009.197021484375,
+      "required_side": 10053,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_02",
+      "area": 3996.73876953125,
+      "required_side": 10038,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_03",
+      "area": 3498.501708984375,
+      "required_side": 9391,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_04",
+      "area": 3993.58984375,
+      "required_side": 10034,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_05",
+      "area": 3873.516845703125,
+      "required_side": 9882,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_06",
+      "area": 4010.35791015625,
+      "required_side": 10055,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_07",
+      "area": 4243.494140625,
+      "required_side": 10343,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_08",
+      "area": 3343.7841796875,
+      "required_side": 9181,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_09",
+      "area": 3901.69287109375,
+      "required_side": 9917,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_10",
+      "area": 3937.7724609375,
+      "required_side": 9963,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_SECTOR_11",
+      "area": 4325.83935546875,
+      "required_side": 10443,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_BEARING_00",
+      "area": 4581.7451171875,
+      "required_side": 10747,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_BEARING_01",
+      "area": 3457.271728515625,
+      "required_side": 9336,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_BEARING_02",
+      "area": 3980.44775390625,
+      "required_side": 10017,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_RING_BEARING_03",
+      "area": 3992.67529296875,
+      "required_side": 10032,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_TRANSFER_POD_00",
+      "area": 1396.6552734375,
+      "required_side": 5934,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_TRANSFER_POD_01",
+      "area": 1396.8182373046875,
+      "required_side": 5934,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_TRANSFER_POD_02",
+      "area": 1396.8048095703125,
+      "required_side": 5934,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_TRANSFER_POD_03",
+      "area": 1396.8173828125,
+      "required_side": 5934,
+      "ground": false
+    },
+    {
+      "source": "R2_MODULE_TRANSFER_POD_04",
+      "area": 1396.8232421875,
+      "required_side": 5934,
+      "ground": false
+    },
+    {
+      "source": "R3_ROLLED_STEEL_TOWER_FRAME",
+      "area": 1160.257568359375,
+      "required_side": 5408,
+      "ground": false
+    },
+    {
+      "source": "R6_T06_THICK_WALL_AND_ROOF_BACKING",
+      "area": 4232.56396484375,
+      "required_side": 10329,
+      "ground": false
+    },
+    {
+      "source": "R6_T06_LAYERED_CLADDING_PANELS",
+      "area": 2160.0703125,
+      "required_side": 7379,
+      "ground": false
+    },
+    {
+      "source": "R6_T06_PORTAL_FRAME_AND_BEARING_SHOES",
+      "area": 866.4937744140625,
+      "required_side": 4674,
+      "ground": false
+    },
+    {
+      "source": "R6_T06_LAYERED_EAVES_AND_ROOF_SERVICE",
+      "area": 1712.690185546875,
+      "required_side": 6571,
+      "ground": false
+    },
+    {
+      "source": "R9_P0197_SEGMENTED_CONCRETE_AND_ANCHOR_SHOES",
+      "area": 1460.2154541015625,
+      "required_side": 6067,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_THIN_DECK_AND_EDGE_RETURNS",
+      "area": 7445.4267578125,
+      "required_side": 13700,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_SOUTH_PRIMARY_TRUSS",
+      "area": 1588.794189453125,
+      "required_side": 6329,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_NORTH_PRIMARY_TRUSS",
+      "area": 1588.7943115234375,
+      "required_side": 6329,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_TRANSVERSE_FLOORBEAMS_AND_NODE_SEATS",
+      "area": 4055.88671875,
+      "required_side": 10112,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_TERTIARY_STRINGERS_AND_END_FRAMES",
+      "area": 3126.8974609375,
+      "required_side": 8878,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_LOWER_PLAN_TIES",
+      "area": 1032.918701171875,
+      "required_side": 5103,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_SUPPORT_01_SEGMENTED_PEDESTAL_AND_STEEL",
+      "area": 1342.1982421875,
+      "required_side": 5817,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_SUPPORT_02_SEGMENTED_PEDESTAL_AND_STEEL",
+      "area": 1727.9222412109375,
+      "required_side": 6600,
+      "ground": false
+    },
+    {
+      "source": "R11_F03_SUPPORT_04_SEGMENTED_PEDESTAL_AND_STEEL",
+      "area": 738.0751953125,
+      "required_side": 4314,
+      "ground": false
+    },
+    {
+      "source": "R18_09_Pipe_Handling_Terrace",
+      "area": 4831.5703125,
+      "required_side": 11036,
+      "ground": false
+    },
+    {
+      "source": "R18_10_Horizontal_Tubular_Storage_Racks",
+      "area": 2429.96435546875,
+      "required_side": 7827,
+      "ground": false
+    },
+    {
+      "source": "R18_13_Process_Equipment_Deck",
+      "area": 6708.84326171875,
+      "required_side": 13005,
+      "ground": false
+    },
+    {
+      "source": "R18_14_Return_Separation_Vessel_Skids",
+      "area": 1094.4893798828125,
+      "required_side": 5253,
+      "ground": false
+    },
+    {
+      "source": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "area": 683.8895263671875,
+      "required_side": 4152,
+      "ground": false
+    },
+    {
+      "source": "R18_19_Machinery_House_Foundation",
+      "area": 3376.21923828125,
+      "required_side": 9226,
+      "ground": false
+    },
+    {
+      "source": "R18_20_Hoist_Power_House_Panels_And_Service_Vents",
+      "area": 3314.052001953125,
+      "required_side": 9140,
+      "ground": false
+    },
+    {
+      "source": "R21_DISPLAY_TERRAIN_CUT_Theophilus_Background4km_HOLE_MATCH_512",
+      "area": 16828052.0,
+      "required_side": 81411,
+      "ground": true
+    },
+    {
+      "source": "R21_DISPLAY_TERRAIN_CUT_Theophilus_Shoulder512m_SERIALIZED_COMP",
+      "area": 268482.03125,
+      "required_side": 10284,
+      "ground": true
+    },
+    {
+      "source": "R21_02_Thick_Segmented_Shaft_Lining",
+      "area": 115048.90625,
+      "required_side": 6732,
+      "ground": true
+    },
+    {
+      "source": "R24_06_Shaft_Rim_Protective_Coping_And_Anchors",
+      "area": 1662.409912109375,
+      "required_side": 6474,
+      "ground": false
+    },
+    {
+      "source": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+      "area": 18743.1171875,
+      "required_side": 21736,
+      "ground": false
+    },
+    {
+      "source": "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+      "area": 1381.2952880859375,
+      "required_side": 5901,
+      "ground": false
+    },
+    {
+      "source": "R29_00_R21_04_Display_Remainder",
+      "area": 15732.8271484375,
+      "required_side": 19914,
+      "ground": false
+    },
+    {
+      "source": "R25_01_Descending_Throat_And_Split_Guide_Frame",
+      "area": 4630.7177734375,
+      "required_side": 10804,
+      "ground": false
+    },
+    {
+      "source": "R25_02_Three_Heavy_Guide_Jaws_And_Recesses",
+      "area": 2118.54052734375,
+      "required_side": 7308,
+      "ground": false
+    },
+    {
+      "source": "R38_01_Outer_Bearing_Saddles",
+      "area": 736.0735473632812,
+      "required_side": 4308,
+      "ground": false
+    },
+    {
+      "source": "R51_2_G2_Dispatch_High_Bay_Loading_Portal_1_Inset_Closed_Shutte",
+      "area": 681.5250334739685,
+      "required_side": 4145,
+      "ground": false
+    },
+    {
+      "source": "R51_2_G2_Dispatch_High_Bay_Loading_Portal_2_Inset_Closed_Shutte",
+      "area": 681.5250334739685,
+      "required_side": 4145,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Receiving_Hangar_Solid_Enclosure",
+      "area": 11681.712280273438,
+      "required_side": 17160,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Receiving_Hangar_Lower_Armored_Belt",
+      "area": 11532.240413818363,
+      "required_side": 17050,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Receiving_Hangar_Gabled_Roof",
+      "area": 4278.849609375,
+      "required_side": 10386,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Dispatch_High_Bay_Solid_Enclosure",
+      "area": 9951.188220977783,
+      "required_side": 15838,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Dispatch_High_Bay_Lower_Armored_Belt",
+      "area": 9821.040386352543,
+      "required_side": 15734,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Dispatch_High_Bay_Gabled_Roof",
+      "area": 3667.41650390625,
+      "required_side": 9615,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Cross_Wing_Solid_Enclosure",
+      "area": 6476.1402303358045,
+      "required_side": 12777,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Cross_Wing_Lower_Armored_Belt",
+      "area": 6326.640793762228,
+      "required_side": 12629,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Cross_Wing_Heavy_Flat_Roof",
+      "area": 6589.439663085941,
+      "required_side": 12888,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Cross_Wing_Process_Roof_Cassette",
+      "area": 808.7040848693869,
+      "required_side": 4515,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Cross_Wing_Process_Roof_Cassette.001",
+      "area": 808.7040848693869,
+      "required_side": 4515,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Solid_Cable_Trunk",
+      "area": 790.4004350661944,
+      "required_side": 4464,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Weather_Cap",
+      "area": 830.0005573272829,
+      "required_side": 4574,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Solid_Cable_Trunk.001",
+      "area": 790.4004350661944,
+      "required_side": 4464,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Weather_Cap.001",
+      "area": 830.0005573272829,
+      "required_side": 4574,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Solid_Cable_Trunk.002",
+      "area": 790.4004350661944,
+      "required_side": 4464,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Armored_Load_Transfer_Weather_Cap.002",
+      "area": 830.0005573272829,
+      "required_side": 4574,
+      "ground": false
+    },
+    {
+      "source": "R50_2_G2_Recovery_Receiver_Vessel",
+      "area": 963.730809211731,
+      "required_side": 4929,
+      "ground": false
+    },
+    {
+      "source": "R51_3_G3_North_Process_High_Bay_Integrated_Service_Head",
+      "area": 706.7999911308289,
+      "required_side": 4221,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_North_Process_High_Bay_Solid_Enclosure",
+      "area": 8594.30610072991,
+      "required_side": 14719,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_North_Process_High_Bay_Lower_Armored_Belt",
+      "area": 8493.841004333517,
+      "required_side": 14633,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_North_Process_High_Bay_Main_Roof",
+      "area": 8874.000663757324,
+      "required_side": 14956,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_North_Process_High_Bay_Long_Clerestory",
+      "area": 2042.8800086975098,
+      "required_side": 7176,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_North_Process_High_Bay_Monitor_Cap",
+      "area": 2227.680107116699,
+      "required_side": 7494,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_South_Reactor_Block_Solid_Enclosure",
+      "area": 9615.407493591309,
+      "required_side": 15569,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_South_Reactor_Block_Lower_Armored_Belt",
+      "area": 9480.240368041996,
+      "required_side": 15459,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_South_Reactor_Block_Heavy_Flat_Roof",
+      "area": 9771.840422973619,
+      "required_side": 15695,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_South_Reactor_Block_Process_Roof_Cassette",
+      "area": 1216.1663847290038,
+      "required_side": 5537,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_South_Reactor_Block_Process_Roof_Cassette.001",
+      "area": 1216.1663847290038,
+      "required_side": 5537,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inward_Maintenance_Wing_Solid_Enclosure",
+      "area": 5412.312698364258,
+      "required_side": 11681,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inward_Maintenance_Wing_Lower_Armored_Belt",
+      "area": 5357.040294799808,
+      "required_side": 11621,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inward_Maintenance_Wing_Heavy_Flat_Roof",
+      "area": 5591.039187011731,
+      "required_side": 11872,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inward_Maintenance_Wing_Process_Roof_Cassette",
+      "area": 684.2880337829592,
+      "required_side": 4154,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inward_Maintenance_Wing_Process_Roof_Cassette.001",
+      "area": 684.2880337829592,
+      "required_side": 4154,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Bulk_Process_Vessel_1_Vessel",
+      "area": 1201.5345153808594,
+      "required_side": 5504,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Bulk_Process_Vessel_2_Vessel",
+      "area": 1351.7263298034668,
+      "required_side": 5838,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Bulk_Process_Vessel_3_Vessel",
+      "area": 1501.9181442260742,
+      "required_side": 6153,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Outer_Process_Header_Transfer_Pipe",
+      "area": 842.4136133887876,
+      "required_side": 4609,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Outer_Process_Header_Transfer_Pipe.001",
+      "area": 842.4136133887876,
+      "required_side": 4609,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Outer_Process_Header_Transfer_Pipe.002",
+      "area": 842.4136133887876,
+      "required_side": 4609,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inner_Service_Spine_Weather_Cap",
+      "area": 686.1994888305526,
+      "required_side": 4159,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inner_Service_Spine_Weather_Cap.001",
+      "area": 686.1994888305526,
+      "required_side": 4159,
+      "ground": false
+    },
+    {
+      "source": "R50_3_G3_Inner_Service_Spine_Weather_Cap.002",
+      "area": 686.1994888305526,
+      "required_side": 4159,
+      "ground": false
+    },
+    {
+      "source": "R51_5_G5_Long_Sorting_Exchange_Upper_Structural_Fascia",
+      "area": 686.4000148773193,
+      "required_side": 4160,
+      "ground": false
+    },
+    {
+      "source": "R51_5_G5_Long_Sorting_Exchange_Upper_Structural_Fascia.001",
+      "area": 686.4000148773193,
+      "required_side": 4160,
+      "ground": false
+    },
+    {
+      "source": "R51_5_G5_Long_Sorting_Exchange_Stepped_Roof_Transfer_Duct",
+      "area": 1100.3758923568748,
+      "required_side": 5267,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Solid_Enclosure",
+      "area": 18029.15560913086,
+      "required_side": 21318,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Lower_Armored_Belt",
+      "area": 17853.891969983357,
+      "required_side": 21214,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Main_Roof",
+      "area": 18270.00120162964,
+      "required_side": 21460,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Long_Clerestory",
+      "area": 4249.1904673095705,
+      "required_side": 10350,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Monitor_Cap",
+      "area": 4633.5747796875075,
+      "required_side": 10808,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Monitor_Louver",
+      "area": 678.9120218353273,
+      "required_side": 4137,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Long_Sorting_Exchange_Monitor_Louver.001",
+      "area": 678.9120218353273,
+      "required_side": 4137,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Upper_Loading_Gallery_Solid_Enclosure",
+      "area": 4149.044174194336,
+      "required_side": 10227,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Upper_Loading_Gallery_Lower_Armored_Belt",
+      "area": 4094.6402398681676,
+      "required_side": 10160,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Upper_Loading_Gallery_Heavy_Flat_Roof",
+      "area": 4285.4394708252075,
+      "required_side": 10394,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Lower_Transfer_Store_Solid_Enclosure",
+      "area": 4149.031677246094,
+      "required_side": 10227,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Lower_Transfer_Store_Lower_Armored_Belt",
+      "area": 4094.6402398681676,
+      "required_side": 10160,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Lower_Transfer_Store_Gabled_Roof",
+      "area": 1586.564697265625,
+      "required_side": 6324,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Dry_Buffer_Vessel_Vessel",
+      "area": 826.0549793243408,
+      "required_side": 4564,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Sorting_Return_Header_Transfer_Pipe",
+      "area": 801.0256839566573,
+      "required_side": 4494,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Sorting_Return_Header_Transfer_Pipe.001",
+      "area": 801.0256839566573,
+      "required_side": 4494,
+      "ground": false
+    },
+    {
+      "source": "R50_5_G5_Sorting_Return_Header_Transfer_Pipe.002",
+      "area": 801.0256839566573,
+      "required_side": 4494,
+      "ground": false
+    },
+    {
+      "source": "R58R_G3_Independent_Two_Setback_Base_INCREMENT",
+      "area": 4954.140625,
+      "required_side": 11175,
+      "ground": false
+    },
+    {
+      "source": "R59_G2_Independent_Three_Stepped_Recess_Base_INCREMENT",
+      "area": 7378.82958984375,
+      "required_side": 13638,
+      "ground": false
+    },
+    {
+      "source": "R60_A01_Long_Wing_Individually_Grade_Fitted_Footing",
+      "area": 938.4617970906584,
+      "required_side": 4864,
+      "ground": false
+    },
+    {
+      "source": "R60_A01_Long_Wing_Walls_With_Two_Openings",
+      "area": 966.0639072618505,
+      "required_side": 4935,
+      "ground": false
+    },
+    {
+      "source": "R60_A02_Main_LowContour_Individually_Grade_Fitted_Footing",
+      "area": 1124.78662109375,
+      "required_side": 5325,
+      "ground": false
+    },
+    {
+      "source": "R60_A02_Main_LowContour_Walls_With_Two_Openings",
+      "area": 1031.6141357421875,
+      "required_side": 5100,
+      "ground": false
+    },
+    {
+      "source": "R60_A02_Main_HighContour_InnerTerrace_Walls_With_Two_Openings",
+      "area": 798.1941528320312,
+      "required_side": 4486,
+      "ground": false
+    },
+    {
+      "source": "R60_A02_Main_HighContour_OuterTerrace_Walls_With_Two_Openings",
+      "area": 798.1942138671875,
+      "required_side": 4486,
+      "ground": false
+    },
+    {
+      "source": "R60_A03_Back_Workshop_LowContour_Walls_With_Two_Openings",
+      "area": 847.80615234375,
+      "required_side": 4623,
+      "ground": false
+    },
+    {
+      "source": "R60_A03_Back_Workshop_HighContour_Walls_With_Two_Openings",
+      "area": 847.80615234375,
+      "required_side": 4623,
+      "ground": false
+    },
+    {
+      "source": "R60_A05_Main_High_Bay_Individually_Grade_Fitted_Footing",
+      "area": 1650.608154296875,
+      "required_side": 6451,
+      "ground": false
+    },
+    {
+      "source": "R60_A05_Main_High_Bay_Walls_With_Two_Openings",
+      "area": 1922.6641845703125,
+      "required_side": 6962,
+      "ground": false
+    },
+    {
+      "source": "R60_A06_Faceted_Pressure_House",
+      "area": 1615.9807643913082,
+      "required_side": 6383,
+      "ground": false
+    },
+    {
+      "source": "R60_B03_Main_Individually_Grade_Fitted_Footing",
+      "area": 1368.4796547603764,
+      "required_side": 5874,
+      "ground": false
+    },
+    {
+      "source": "R60_B03_Main_Walls_With_Two_Openings",
+      "area": 1110.6239572391496,
+      "required_side": 5291,
+      "ground": false
+    },
+    {
+      "source": "R60_B04_Narrow_Tower_Walls_With_Two_Openings",
+      "area": 875.3191616940967,
+      "required_side": 4698,
+      "ground": false
+    },
+    {
+      "source": "R60_C01_Main_LowContour_Individually_Grade_Fitted_Footing",
+      "area": 810.2965342644893,
+      "required_side": 4520,
+      "ground": false
+    },
+    {
+      "source": "R60_C01_Main_LowContour_Walls_With_Two_Openings",
+      "area": 1037.4539778883336,
+      "required_side": 5114,
+      "ground": false
+    },
+    {
+      "source": "R60_C01_Main_HighContour_Individually_Grade_Fitted_Footing",
+      "area": 795.095852482802,
+      "required_side": 4477,
+      "ground": false
+    },
+    {
+      "source": "R60_C01_Main_HighContour_Walls_With_Two_Openings",
+      "area": 1037.4525130447582,
+      "required_side": 5114,
+      "ground": false
+    },
+    {
+      "source": "R60_C02_Upper_Inspection_Walls_With_Two_Openings",
+      "area": 668.310791015625,
+      "required_side": 4105,
+      "ground": false
+    },
+    {
+      "source": "R60_C03_Main_InnerTerrace_Individually_Grade_Fitted_Footing",
+      "area": 1141.2628173828125,
+      "required_side": 5364,
+      "ground": false
+    },
+    {
+      "source": "R60_C03_Main_InnerTerrace_Walls_With_Two_Openings",
+      "area": 2542.221923828125,
+      "required_side": 8005,
+      "ground": false
+    },
+    {
+      "source": "R60_C03_Main_OuterTerrace_Individually_Grade_Fitted_Footing",
+      "area": 1094.2099609375,
+      "required_side": 5252,
+      "ground": false
+    },
+    {
+      "source": "R60_C03_Main_OuterTerrace_Walls_With_Two_Openings",
+      "area": 2542.22412109375,
+      "required_side": 8005,
+      "ground": false
+    },
+    {
+      "source": "R60_C04_Long_Wing_Individually_Grade_Fitted_Footing",
+      "area": 1284.68408203125,
+      "required_side": 5691,
+      "ground": false
+    },
+    {
+      "source": "R60_C04_Long_Wing_Walls_With_Two_Openings",
+      "area": 1201.823974609375,
+      "required_side": 5504,
+      "ground": false
+    },
+    {
+      "source": "R60_C07_Main_Individually_Grade_Fitted_Footing",
+      "area": 1563.0009765625,
+      "required_side": 6277,
+      "ground": false
+    },
+    {
+      "source": "R60_C07_Main_Walls_With_Two_Openings",
+      "area": 1876.463623046875,
+      "required_side": 6878,
+      "ground": false
+    },
+    {
+      "source": "R60_C08_Narrow_Tower_Walls_With_Two_Openings",
+      "area": 1866.299826347822,
+      "required_side": 6859,
+      "ground": false
+    },
+    {
+      "source": "R60_C09_Main_High_Bay_InnerTerrace_Individually_Grade_Fitted_Fo",
+      "area": 695.9312329333261,
+      "required_side": 4189,
+      "ground": false
+    },
+    {
+      "source": "R60_C09_Main_High_Bay_InnerTerrace_Walls_With_Two_Openings",
+      "area": 1279.6559295859333,
+      "required_side": 5680,
+      "ground": false
+    },
+    {
+      "source": "R60_C09_Main_High_Bay_OuterTerrace_Individually_Grade_Fitted_Fo",
+      "area": 740.051225420757,
+      "required_side": 4320,
+      "ground": false
+    },
+    {
+      "source": "R60_C09_Main_High_Bay_OuterTerrace_Walls_With_Two_Openings",
+      "area": 1279.6559295859333,
+      "required_side": 5680,
+      "ground": false
+    },
+    {
+      "source": "R60_C10_Long_Wing_LowContour_Walls_With_Two_Openings",
+      "area": 677.9981285334725,
+      "required_side": 4134,
+      "ground": false
+    },
+    {
+      "source": "R60_C10_Long_Wing_HighContour_Walls_With_Two_Openings",
+      "area": 677.9981285334725,
+      "required_side": 4134,
+      "ground": false
+    },
+    {
+      "source": "R60_C11_Main_LowContour_InnerTerrace_Walls_With_Two_Openings",
+      "area": 741.6017624377128,
+      "required_side": 4324,
+      "ground": false
+    },
+    {
+      "source": "R60_C11_Main_LowContour_OuterTerrace_Walls_With_Two_Openings",
+      "area": 741.6009079455762,
+      "required_side": 4324,
+      "ground": false
+    },
+    {
+      "source": "R60_C11_Main_HighContour_InnerTerrace_Walls_With_Two_Openings",
+      "area": 741.6017624377128,
+      "required_side": 4324,
+      "ground": false
+    },
+    {
+      "source": "R60_C11_Main_HighContour_OuterTerrace_Walls_With_Two_Openings",
+      "area": 741.6017624377128,
+      "required_side": 4324,
+      "ground": false
+    },
+    {
+      "source": "R60_C15_Main_LowContour_Individually_Grade_Fitted_Footing",
+      "area": 794.2850341796875,
+      "required_side": 4475,
+      "ground": false
+    },
+    {
+      "source": "R60_C15_Main_LowContour_Walls_With_Two_Openings",
+      "area": 722.1102294921875,
+      "required_side": 4267,
+      "ground": false
+    },
+    {
+      "source": "R60_C15_Main_HighContour_Individually_Grade_Fitted_Footing",
+      "area": 798.996826171875,
+      "required_side": 4488,
+      "ground": false
+    },
+    {
+      "source": "R60_C15_Main_HighContour_Walls_With_Two_Openings",
+      "area": 722.1101684570312,
+      "required_side": 4267,
+      "ground": false
+    },
+    {
+      "source": "R61_Tower_Small_Maintenance_Deck",
+      "area": 685.59912109375,
+      "required_side": 4158,
+      "ground": false
+    },
+    {
+      "source": "R61_Tower_Offset_Service_Core",
+      "area": 969.3402099609375,
+      "required_side": 4944,
+      "ground": false
+    },
+    {
+      "source": "R61_Tower_Flared_Receiving_Bin",
+      "area": 887.2066650390625,
+      "required_side": 4729,
+      "ground": false
+    },
+    {
+      "source": "R61_G5_Oblique_Material_Outfeed",
+      "area": 687.11083984375,
+      "required_side": 4162,
+      "ground": false
+    },
+    {
+      "source": "R61_Lower_Vault_Repair_Bay_Hollow_Shell_With_Entry",
+      "area": 922.987060546875,
+      "required_side": 4824,
+      "ground": false
+    },
+    {
+      "source": "R61_Main_Ground_Spine_Grade_Fitted_Ribbon",
+      "area": 4348.06298828125,
+      "required_side": 10469,
+      "ground": false
+    },
+    {
+      "source": "R61_Canopy_East_Bypass_Grade_Fitted_Ribbon",
+      "area": 2293.18896484375,
+      "required_side": 7603,
+      "ground": false
+    },
+    {
+      "source": "R61_Upper_Tower_Loop_Grade_Fitted_Ribbon",
+      "area": 3804.1435546875,
+      "required_side": 9793,
+      "ground": false
+    },
+    {
+      "source": "R61_Tower_Undercroft_Link_Grade_Fitted_Ribbon",
+      "area": 1510.6630859375,
+      "required_side": 6171,
+      "ground": false
+    },
+    {
+      "source": "R61_Upper_Service_Frontage_Grade_Fitted_Ribbon",
+      "area": 1109.3114013671875,
+      "required_side": 5288,
+      "ground": false
+    },
+    {
+      "source": "R62_Hall_Deck_Contact_Slab",
+      "area": 1253.4999252855778,
+      "required_side": 5622,
+      "ground": false
+    },
+    {
+      "source": "R62_Hall_Outer_Long_Wall",
+      "area": 700.5999338269248,
+      "required_side": 4203,
+      "ground": false
+    },
+    {
+      "source": "R62_Process_Contact_Slab",
+      "area": 877.6599818670729,
+      "required_side": 4704,
+      "ground": false
+    },
+    {
+      "source": "R62_Loading_Contact_Slab",
+      "area": 1105.2999829471082,
+      "required_side": 5279,
+      "ground": false
+    },
+    {
+      "source": "R64_Oval_Tank_Large_Body",
+      "area": 1885.177001953125,
+      "required_side": 6894,
+      "ground": false
+    },
+    {
+      "source": "R64_Oval_Tank_Low_Conical_Roof",
+      "area": 848.7393188476562,
+      "required_side": 4626,
+      "ground": false
+    },
+    {
+      "source": "R64_Horizontal_Pressure_Vessel",
+      "area": 666.1353759765625,
+      "required_side": 4098,
+      "ground": false
+    },
+    {
+      "source": "R64_North_Slope_Repair_Bay_Hollow_Enclosure",
+      "area": 825.36083984375,
+      "required_side": 4562,
+      "ground": false
+    },
+    {
+      "source": "R64_Continuous_Ground_Ribbon_Skin",
+      "area": 5034.568359375,
+      "required_side": 11266,
+      "ground": false
+    },
+    {
+      "source": "R01_A01_West_Repair_Hall_Floor",
+      "area": 1819.4266357421875,
+      "required_side": 6773,
+      "ground": false
+    },
+    {
+      "source": "R01_A01_West_Repair_Hall_Separate_Walls_And_Open_Portals",
+      "area": 3181.390625,
+      "required_side": 8955,
+      "ground": false
+    },
+    {
+      "source": "R01_A01_West_Repair_Hall_Removable_Roof",
+      "area": 2059.334228515625,
+      "required_side": 7205,
+      "ground": false
+    },
+    {
+      "source": "R01_A02_Offset_Parts_Store_Floor",
+      "area": 704.5567626953125,
+      "required_side": 4215,
+      "ground": false
+    },
+    {
+      "source": "R01_A02_Offset_Parts_Store_Separate_Walls_And_Open_Portals",
+      "area": 1104.735107421875,
+      "required_side": 5277,
+      "ground": false
+    },
+    {
+      "source": "R01_A02_Offset_Parts_Store_Removable_Roof",
+      "area": 768.6668090820312,
+      "required_side": 4402,
+      "ground": false
+    },
+    {
+      "source": "R01_B01_Dispatch_Workshop_Floor",
+      "area": 1707.9212646484375,
+      "required_side": 6562,
+      "ground": false
+    },
+    {
+      "source": "R01_B01_Dispatch_Workshop_Separate_Walls_And_Open_Portals",
+      "area": 2429.269775390625,
+      "required_side": 7826,
+      "ground": false
+    },
+    {
+      "source": "R01_B01_Dispatch_Workshop_Removable_Roof",
+      "area": 1806.467529296875,
+      "required_side": 6748,
+      "ground": false
+    },
+    {
+      "source": "R01_B02_Exchange_Control_Block_Floor",
+      "area": 1122.2442626953125,
+      "required_side": 5319,
+      "ground": false
+    },
+    {
+      "source": "R01_B02_Exchange_Control_Block_Separate_Walls_And_Open_Portals",
+      "area": 1699.882080078125,
+      "required_side": 6546,
+      "ground": false
+    },
+    {
+      "source": "R01_B02_Exchange_Control_Block_Removable_Roof",
+      "area": 1260.1707763671875,
+      "required_side": 5636,
+      "ground": false
+    },
+    {
+      "source": "R01_B03_Tall_Dispatch_Head_Separate_Walls_And_Open_Portals",
+      "area": 1805.934326171875,
+      "required_side": 6747,
+      "ground": false
+    },
+    {
+      "source": "R01_C01_Northwest_Freight_Hall_Floor",
+      "area": 2243.841064453125,
+      "required_side": 7521,
+      "ground": false
+    },
+    {
+      "source": "R01_C01_Northwest_Freight_Hall_Separate_Walls_And_Open_Portals",
+      "area": 3214.06982421875,
+      "required_side": 9001,
+      "ground": false
+    },
+    {
+      "source": "R01_C01_Northwest_Freight_Hall_Removable_Roof",
+      "area": 2416.1201171875,
+      "required_side": 7804,
+      "ground": false
+    },
+    {
+      "source": "R01_C02_Freight_Dispatch_Wing_Separate_Walls_And_Open_Portals",
+      "area": 1121.2060546875,
+      "required_side": 5317,
+      "ground": false
+    },
+    {
+      "source": "R01_C02_Freight_Dispatch_Wing_Removable_Roof",
+      "area": 680.5596923828125,
+      "required_side": 4142,
+      "ground": false
+    },
+    {
+      "source": "R01_C03_Twin_Open_Loading_Bays_Butterfly_Canopy",
+      "area": 698.766357421875,
+      "required_side": 4197,
+      "ground": false
+    },
+    {
+      "source": "R04_A01_Transit_Court_Thin_Clipped_Court_Deck",
+      "area": 1970.7451171875,
+      "required_side": 7049,
+      "ground": false
+    },
+    {
+      "source": "R04_B01_Loading_Court_Thin_Clipped_Court_Deck",
+      "area": 2138.3681640625,
+      "required_side": 7342,
+      "ground": false
+    },
+    {
+      "source": "R19_02_Sealed_Wellhead_Rotary_Table_And_BOP",
+      "area": 5940.07568359375,
+      "required_side": 12237,
+      "ground": false
+    },
+    {
+      "source": "R19_04_Equipment_Transfer_Beams_And_Winch_Cradles",
+      "area": 7512.9521484375,
+      "required_side": 13762,
+      "ground": false
+    },
+    {
+      "source": "R19_05_Twin_Large_Drawworks_Drums_And_Brakes",
+      "area": 4653.84130859375,
+      "required_side": 10831,
+      "ground": false
+    },
+    {
+      "source": "R19_06_Winch_Reduction_Gearboxes_And_Drive_Motors",
+      "area": 1649.497314453125,
+      "required_side": 6449,
+      "ground": false
+    },
+    {
+      "source": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "area": 4159.82568359375,
+      "required_side": 10240,
+      "ground": false
+    },
+    {
+      "source": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "area": 2579.0966796875,
+      "required_side": 8063,
+      "ground": false
+    },
+    {
+      "source": "R19_10_Tubular_Magazine_And_Handling_Rail",
+      "area": 7441.7705078125,
+      "required_side": 13696,
+      "ground": false
+    },
+    {
+      "source": "R19_11_Machine_Service_Walkways_And_Rails",
+      "area": 2826.86767578125,
+      "required_side": 8442,
+      "ground": false
+    },
+    {
+      "source": "R19_12_Wellhead_Process_Return_Pipework",
+      "area": 953.05224609375,
+      "required_side": 4902,
+      "ground": false
+    },
+    {
+      "source": "R19_13_Tubular_Feed_Catwalk_To_Central_Axis",
+      "area": 1496.1644287109375,
+      "required_side": 6142,
+      "ground": false
+    },
+    {
+      "source": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "area": 46841.8984375,
+      "required_side": 34362,
+      "ground": false
+    },
+    {
+      "source": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "area": 45034.24609375,
+      "required_side": 33692,
+      "ground": false
+    },
+    {
+      "source": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "area": 21136.095703125,
+      "required_side": 23082,
+      "ground": false
+    },
+    {
+      "source": "R20_06_NORTH_Radial_Arm_And_Bridge_End_Coupler",
+      "area": 9804.95703125,
+      "required_side": 15721,
+      "ground": false
+    },
+    {
+      "source": "R20_06_EAST_Radial_Arm_And_Bridge_End_Coupler",
+      "area": 9804.89453125,
+      "required_side": 15721,
+      "ground": false
+    },
+    {
+      "source": "R20_06_SOUTH_Radial_Arm_And_Bridge_End_Coupler",
+      "area": 9804.896484375,
+      "required_side": 15721,
+      "ground": false
+    },
+    {
+      "source": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "area": 28610.19921875,
+      "required_side": 26855,
+      "ground": false
+    },
+    {
+      "source": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "area": 16618.283203125,
+      "required_side": 20467,
+      "ground": false
+    },
+    {
+      "source": "R20_09_High_Crown_Sheaves_And_Armored_Head",
+      "area": 9247.015625,
+      "required_side": 15268,
+      "ground": false
+    },
+    {
+      "source": "R20_10_Routed_Hydraulics_Cable_Bundles_And_Service_Cassettes",
+      "area": 24818.64453125,
+      "required_side": 25012,
+      "ground": false
+    },
+    {
+      "source": "R20_11_Drawworks_Armor_And_Cable_Returns",
+      "area": 2589.911376953125,
+      "required_side": 8080,
+      "ground": false
+    },
+    {
+      "source": "R09_Approach_Continuous_Union_Floor",
+      "area": 697.6087036132812,
+      "required_side": 4194,
+      "ground": false
+    },
+    {
+      "source": "R12_Floor_A_Hall",
+      "area": 2511.0,
+      "required_side": 7956,
+      "ground": false
+    },
+    {
+      "source": "R12_Floor_B_Separator",
+      "area": 1007.6000366210938,
+      "required_side": 5040,
+      "ground": false
+    },
+    {
+      "source": "R12_Floor_C_Loading",
+      "area": 1504.60009765625,
+      "required_side": 6159,
+      "ground": false
+    },
+    {
+      "source": "R12_A_DeepFoldRoof_1",
+      "area": 857.3424682617188,
+      "required_side": 4649,
+      "ground": false
+    },
+    {
+      "source": "R12_A_DeepFoldRoof_2",
+      "area": 1235.2000732421875,
+      "required_side": 5580,
+      "ground": false
+    },
+    {
+      "source": "R12_A_DeepFoldRoof_3",
+      "area": 708.0777587890625,
+      "required_side": 4225,
+      "ground": false
+    },
+    {
+      "source": "R12_A_EastWall",
+      "area": 1022.5531005859375,
+      "required_side": 5077,
+      "ground": false
+    },
+    {
+      "source": "R12_C_DeepEighteenMetreLoadingCanopy",
+      "area": 1097.47705078125,
+      "required_side": 5260,
+      "ground": false
+    },
+    {
+      "source": "WC_A01_ROOF_FINISH_SKINS",
+      "area": 1995.2532958984375,
+      "required_side": 7092,
+      "ground": false
+    },
+    {
+      "source": "WC_B01_ROOF_FINISH_SKINS",
+      "area": 1774.9508056640625,
+      "required_side": 6689,
+      "ground": false
+    },
+    {
+      "source": "WC_C01_ROOF_FINISH_SKINS",
+      "area": 2366.6904296875,
+      "required_side": 7724,
+      "ground": false
+    },
+    {
+      "source": "MC_E PRIMARY OCCUPIED PLATE L0_00002",
+      "area": 1721.9244384765625,
+      "required_side": 6589,
+      "ground": false
+    },
+    {
+      "source": "MC_N PRIMARY OCCUPIED PLATE L0_00003",
+      "area": 2165.202880859375,
+      "required_side": 7388,
+      "ground": false
+    },
+    {
+      "source": "MC_W PRIMARY OCCUPIED PLATE L0_00001",
+      "area": 1778.4012451171875,
+      "required_side": 6696,
+      "ground": false
+    },
+    {
+      "source": "MC_E PRIMARY OCCUPIED PLATE L1_00013",
+      "area": 1691.536376953125,
+      "required_side": 6530,
+      "ground": false
+    }
+  ],
+  "estimated_uncompressed_half_hdr_gi_GiB": 323.375
+}

@@ -95,3 +95,8 @@ Assets/Audio/Moonkov/Airlock/SoundDefs/*.asset whitespace=-blank-at-eol
 
 # Preserve the exact hash-bound Unity mesh backup delivered with R22.
 SourceData/Models/RebuildR22FootAndRing/Resume20261022/R21RingCloneBefore.asset.txt whitespace=-blank-at-eol
+
+# Fixed source-world mesh, reflection and statistics payloads use binary assets.
+Assets/MoonEnvironment/Variants/SourceFidelity/World/Meshes/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/SourceFidelity/World/Lighting/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/SourceFidelity/World/Reflections/*.asset filter=lfs diff=lfs merge=lfs -text

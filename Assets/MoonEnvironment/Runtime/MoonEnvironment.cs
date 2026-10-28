@@ -26,6 +26,8 @@ namespace Unity.MP_FPS.Moon
         private bool[,] authoredHoles;
         private bool[,] completeHoles;
         private bool initialized;
+        [SerializeField] private bool sourceVisualsInstalled;
+        public void ConfigureSourceVisuals(bool value) => sourceVisualsInstalled = value;
 
         public bool Detailed { get; private set; } = true;
         public bool LunarLighting { get; private set; } = true;
@@ -37,7 +39,7 @@ namespace Unity.MP_FPS.Moon
 
         private void InitializeRuntime()
         {
-            if (initialized) return;
+            if (initialized || sourceVisualsInstalled) return;
             if (!surroundingTerrain || !detailRoot || !regolith || !sun || !spawnPoint)
             {
                 Debug.LogError("MoonEnvironment is missing required authoring references.", this);
@@ -156,6 +158,7 @@ namespace Unity.MP_FPS.Moon
 
         public void SetSun(float elevation)
         {
+            if (sourceVisualsInstalled) return;
             SunElevation = Mathf.Clamp(elevation, 0.1f, 89.9f);
             sun.transform.localRotation = Quaternion.Euler(SunElevation, 120, 0);
         }

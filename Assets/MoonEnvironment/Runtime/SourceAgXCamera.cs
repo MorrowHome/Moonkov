@@ -10,29 +10,37 @@ namespace Unity.MP_FPS.Moon
     public sealed class SourceAgXCamera : MonoBehaviour
     {
         [SerializeField] private Material displayTransform;
+        [SerializeField] private bool allowOverlay;
         private Camera owner;
         private DisplayPass pass;
 
-        public void Configure(Material material) { displayTransform = material; pass = null; }
+        public Material DisplayTransform => displayTransform;
+        public bool AllowsOverlay => allowOverlay;
+
+        public void Configure(Material material, bool applyToOverlay = false)
+        {
+            if (displayTransform == material && allowOverlay == applyToOverlay) return;
+            displayTransform = material; allowOverlay = applyToOverlay; pass = null;
+        }
 
         private void OnEnable()
         {
             owner = GetComponent<Camera>();
-            RenderPipelineManager.beginCameraRendering += Begin;
+            RenderPipelineManager.beginCameraRendering += Enqueue;
         }
 
         private void OnDisable()
         {
-            RenderPipelineManager.beginCameraRendering -= Begin;
+            RenderPipelineManager.beginCameraRendering -= Enqueue;
             pass = null;
         }
 
-        private void Begin(ScriptableRenderContext context, Camera camera)
+        internal void Enqueue(ScriptableRenderContext context, Camera camera)
         {
             if (camera != owner || !displayTransform || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return;
             if (!(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset pipeline)) return;
             var additional = camera.GetUniversalAdditionalCameraData();
-            if (additional.renderType == CameraRenderType.Overlay) return;
+            if (additional.renderType == CameraRenderType.Overlay && !allowOverlay) return;
             if (pass == null) pass = new DisplayPass(displayTransform);
             additional.scriptableRenderer.EnqueuePass(pass);
         }

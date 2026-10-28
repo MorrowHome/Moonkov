@@ -1,0 +1,59 @@
+#pragma kernel ConvertLatLong
+#pragma kernel Prefilter
+#pragma kernel SampleCube
+#pragma kernel ProjectTiles
+Texture2D<float4> _Panorama;
+SamplerState sampler_linear_repeat;
+TextureCube<float4> _Cube;
+SamplerState sampler_linear_clamp;
+RWTexture2DArray<float4> _Faces;
+StructuredBuffer<float4> _Directions;
+RWStructuredBuffer<float4> _Samples;
+RWStructuredBuffer<float4> _TileFull;
+RWStructuredBuffer<float4> _TileMasked;
+int _Size,_Calibration,_SampleCount,_PanoramaWidth,_PanoramaHeight,_DirectionCount;
+float _FaceYSign,_Roughness,_SunCosHalfAngle;
+float3 _SunDirection;
+float3 FaceDirection(uint face,float2 uv)
+{
+ float u=uv.x*2-1,v=(uv.y*2-1)*_FaceYSign;
+ if(face==0)return normalize(float3(1,v,-u));if(face==1)return normalize(float3(-1,v,u));
+ if(face==2)return normalize(float3(u,1,-v));if(face==3)return normalize(float3(u,-1,v));
+ if(face==4)return normalize(float3(u,v,1));return normalize(float3(-u,v,-1));
+}
+float2 PanoramaUV(float3 d){return float2(.5+atan2(d.x,d.z)/6.28318530718,.5+asin(clamp(d.y,-1,1))/3.14159265359);}
+[numthreads(8,8,1)]void ConvertLatLong(uint3 id:SV_DispatchThreadID)
+{
+ if(any(id.xy>=(uint)_Size)||id.z>=6)return;float3 d=FaceDirection(id.z,(id.xy+.5)/_Size);
+ float3 color=_Calibration!=0?.5+.5*d:_Panorama.SampleLevel(sampler_linear_repeat,PanoramaUV(d),0).rgb;
+ _Faces[id]=float4(color,1);
+}
+[numthreads(8,8,1)]void Prefilter(uint3 id:SV_DispatchThreadID)
+{
+ if(any(id.xy>=(uint)_Size)||id.z>=6)return;float3 n=FaceDirection(id.z,(id.xy+.5)/_Size);
+ float3 t=normalize(cross(abs(n.z)<.999?float3(0,0,1):float3(1,0,0),n)),b=cross(n,t);float alpha=max(_Roughness*_Roughness,.001);float3 sum=0;float weight=0;
+ [loop]for(uint i=0;i<(uint)_SampleCount;i++)
+ {
+  float2 xi=float2((i+.5)/_SampleCount,reversebits(i)*2.3283064365386963e-10);
+  float phi=6.28318530718*xi.x;float cosine=sqrt((1-xi.y)/(1+(alpha*alpha-1)*xi.y));float sine=sqrt(saturate(1-cosine*cosine));
+  float3 h=t*(cos(phi)*sine)+b*(sin(phi)*sine)+n*cosine;float3 l=reflect(-n,h);float nl=saturate(dot(n,l));
+  sum+=_Cube.SampleLevel(sampler_linear_clamp,l,0).rgb*nl;weight+=nl;
+ }
+ _Faces[id]=float4(sum/max(weight,.00001),1);
+}
+[numthreads(16,1,1)]void SampleCube(uint3 id:SV_DispatchThreadID)
+{
+ if(id.x<(uint)_DirectionCount)_Samples[id.x]=_Cube.SampleLevel(sampler_linear_clamp,normalize(_Directions[id.x].xyz),0);
+}
+groupshared float3 Full[64];groupshared float3 Masked[64];
+[numthreads(8,8,1)]void ProjectTiles(uint3 id:SV_DispatchThreadID,uint3 group:SV_GroupID,uint3 local:SV_GroupThreadID)
+{
+ uint index=local.y*8+local.x;float2 uv=(id.xy+.5)/float2(_PanoramaWidth,_PanoramaHeight);
+ float longitude=(uv.x-.5)*6.28318530718,latitude=(uv.y-.5)*3.14159265359;
+ float3 d=float3(cos(latitude)*sin(longitude),sin(latitude),cos(latitude)*cos(longitude));
+ float solidAngle=6.28318530718*3.14159265359/(_PanoramaWidth*_PanoramaHeight)*cos(latitude);
+ float3 radiance=_Panorama.Load(int3(id.xy,0)).rgb*solidAngle/3.14159265359;
+ Full[index]=radiance;Masked[index]=dot(d,_SunDirection)>_SunCosHalfAngle?0:radiance;GroupMemoryBarrierWithGroupSync();
+ [unroll]for(uint offset=32;offset>0;offset>>=1){if(index<offset){Full[index]+=Full[index+offset];Masked[index]+=Masked[index+offset];}GroupMemoryBarrierWithGroupSync();}
+ if(index==0){uint target=group.y*(_PanoramaWidth/8)+group.x;_TileFull[target]=float4(Full[0],1);_TileMasked[target]=float4(Masked[0],1);}
+}

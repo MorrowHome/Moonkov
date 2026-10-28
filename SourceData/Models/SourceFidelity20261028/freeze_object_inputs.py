@@ -63,4 +63,7 @@ def freeze_material(mat):
   elif node.type=='TEX_COORD':
    for name,attribute in [('Generated','SourceGenerated'),('Normal','SourceLocalNormal'),('UV','SourcePrimaryUV')]:replace(node.outputs[name],attribute)
    if node.outputs['Object'].is_linked and not node.object:replace(node.outputs['Object'],'SourceLocal')
-  elif node.type=='UVMAP' and not node.from_instancer:replace(node.outputs['UV'],'SourceUV_'+node.uv_map if node.uv_map else 'SourcePrimaryUV')
+  elif node.type=='UVMAP' and not node.from_instancer and node.uv_map!='SourceStaticBake':replace(node.outputs['UV'],'SourceUV_'+node.uv_map if node.uv_map else 'SourcePrimaryUV')
+  elif node.type in {'TEX_IMAGE','TEX_NOISE'} and not node.inputs['Vector'].is_linked:
+   attribute=tree.nodes.new('ShaderNodeAttribute');attribute.attribute_name='SourcePrimaryUV' if node.type=='TEX_IMAGE' else 'SourceGenerated'
+   tree.links.new(attribute.outputs['Vector'],node.inputs['Vector'])

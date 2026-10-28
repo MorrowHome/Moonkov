@@ -1,0 +1,67 @@
+
+
+void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
+{
+SourceClosure b0=SourceDefaultClosure(c);
+float3 v1=float3(dot(float4(c.position,1),float4(1.0,(-0.0),0.0,(-2183.0))),dot(float4(c.position,1),float4((-0.0),1.0,(-0.0),(-2596.0))),dot(float4(c.position,1),float4(0.0,(-0.0),1.0,(-296.554443))));
+float v2=(v1).z;
+float v3=SourceFBM(v1,0.0,4.30000019,2.0,0.629999995,2.0,false,true);
+float v4=(v3-0.5);
+float v5=(v4*0.239999995);
+float v6=(v2+v5);
+float v7=lerp(1.0,0.0,((saturate(SourceDivide((v6-0.119999997),(1.08000004-0.119999997))))*(saturate(SourceDivide((v6-0.119999997),(1.08000004-0.119999997))))*(3-2*(saturate(SourceDivide((v6-0.119999997),(1.08000004-0.119999997)))))));
+float v8=(v7*0.850000024);
+float v9=SourceFBM(v1,0.0,8.0,2.0,0.629999995,2.0,false,true);
+float v10=lerp(0.379999995,1.0,((saturate(SourceDivide((v9-0.119999997),(0.850000024-0.119999997))))*(saturate(SourceDivide((v9-0.119999997),(0.850000024-0.119999997))))*(3-2*(saturate(SourceDivide((v9-0.119999997),(0.850000024-0.119999997)))))));
+float v11=(v8*v10);
+float v12=lerp(0.0,1.0,((saturate(SourceDivide((v2-0.479999989),(0.529999971-0.479999989))))*(saturate(SourceDivide((v2-0.479999989),(0.529999971-0.479999989))))*(3-2*(saturate(SourceDivide((v2-0.479999989),(0.529999971-0.479999989)))))));
+float v13=lerp(1.0,0.0,((saturate(SourceDivide((v2-0.819999993),(0.870000005-0.819999993))))*(saturate(SourceDivide((v2-0.819999993),(0.870000005-0.819999993))))*(3-2*(saturate(SourceDivide((v2-0.819999993),(0.870000005-0.819999993)))))));
+float v14=(v12*v13);
+float v15=SourceFBM(v1,0.0,3.5,2.0,0.629999995,2.0,false,true);
+float v16=lerp(0.0,1.0,((saturate(SourceDivide((v15-0.360000014),(0.699999988-0.360000014))))*(saturate(SourceDivide((v15-0.360000014),(0.699999988-0.360000014))))*(3-2*(saturate(SourceDivide((v15-0.360000014),(0.699999988-0.360000014)))))));
+float v17=(v14*v16);
+float v18=SourceFBM(v1,0.0,24.0,3.0,0.629999995,2.0,false,true);
+float v19=lerp(0.0,1.0,((saturate(SourceDivide((v18-0.400000006),(0.670000017-0.400000006))))*(saturate(SourceDivide((v18-0.400000006),(0.670000017-0.400000006))))*(3-2*(saturate(SourceDivide((v18-0.400000006),(0.670000017-0.400000006)))))));
+float v20=(v17*v19);
+float v21=SourceFBM(v1,0.0,0.839999974,2.0,0.629999995,2.0,false,true);
+float v22=lerp(0.0,1.0,((saturate(SourceDivide((v21-0.180000007),(0.819999993-0.180000007))))*(saturate(SourceDivide((v21-0.180000007),(0.819999993-0.180000007))))*(3-2*(saturate(SourceDivide((v21-0.180000007),(0.819999993-0.180000007)))))));
+float4 v23=lerp(float4(0.170000002,0.189999998,0.189999998,1.0),float4(0.230000004,0.25,0.239999995,1.0),saturate(v22));
+float4 v24=lerp(v23,float4(0.25,0.270000011,0.264999986,1.0),saturate(v20));
+float4 v25=lerp(v24,float4(0.289999992,0.280000001,0.245000005,1.0),saturate(v11));
+b0.baseColor=(v25).xyz;
+float4 v27=lerp(float4(0.74000001,0.74000001,0.74000001,1.0),float4(0.74000001,0.74000001,0.74000001,1.0),saturate(v20));
+float v28=(1.0-v11);
+float v29=(SourceLuminance((v27).xyz)*v28);
+b0.metallic=v29;
+float v31=SourceFBM(v1,0.0,34.0,2.0,0.629999995,2.0,false,true);
+float v32=lerp(0.409999996,0.569999993,((saturate(SourceDivide((v31-0.180000007),(0.819999993-0.180000007))))*(saturate(SourceDivide((v31-0.180000007),(0.819999993-0.180000007))))*(3-2*(saturate(SourceDivide((v31-0.180000007),(0.819999993-0.180000007)))))));
+float3 v33=(v1*float3(260.0,260.0,3.5));
+float v34=SourceFBM(v33,0.0,1.0,2.0,0.629999995,2.0,false,true);
+float v35=(v34-0.5);
+float v36=(v35*0.100000001);
+float v37=(v32+v36);
+float4 v38=lerp(float4(v37,v37,v37,1),float4(0.430000007,0.430000007,0.430000007,1.0),saturate(v20));
+float4 v39=lerp(v38,float4(0.899999976,0.899999976,0.899999976,1.0),saturate(v11));
+b0.roughness=SourceLuminance((v39).xyz);
+b0.ior=1.48000002;
+b0.specular=0.5;
+b0.coat=0.0;
+b0.coatRoughness=0.0299999993;
+b0.transmission=0.0;
+b0.alpha=1.0;
+b0.anisotropy=0.0;
+b0.anisotropicRotation=0.0;
+float v49=SourceFBM(v1,0.0,230.0,1.0,0.629999995,2.0,false,true);
+float v50=(v49*0.000549999997);
+float v51=(v34*0.000280000007);
+float v52=(v50+v51);
+float v53=(v20*0.000699999975);
+float v54=(v52-v53);
+float v55=(v11*v31);
+float v56=(v55*0.000850000011);
+float v57=(v54+v56);
+float3 v58=SourceBump(c.normal,v57,0.519999981,1.0,c.position,false);
+b0.normal=v58;
+b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
+a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
+}

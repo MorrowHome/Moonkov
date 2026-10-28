@@ -1,0 +1,41 @@
+TEXTURE2D(_SourceTex0);
+TEXTURE2D(_SourceTex1);
+TEXTURE2D(_SourceTex2);
+TEXTURE2D(_SourceTex3);
+TEXTURE2D(_SourceTex4);
+SAMPLER(sampler_SourceTex0);
+SAMPLER(sampler_SourceTex1);
+void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
+{
+SourceClosure b0=SourceDefaultClosure(c);
+float3 v1=float3(c.uv1,0);
+float4 v2=SAMPLE_TEXTURE2D(_SourceTex0,sampler_SourceTex0,(v1).xy);
+float v3=(v2).g;
+float v4=c.viewDistance;
+float v5=lerp(0.0,1.0,((saturate(SourceDivide((v4-18.0),(75.0-18.0))))*(saturate(SourceDivide((v4-18.0),(75.0-18.0))))*(3-2*(saturate(SourceDivide((v4-18.0),(75.0-18.0)))))));
+float3 v6=float3(c.uv0,0);
+float4 v7=SAMPLE_TEXTURE2D(_SourceTex1,sampler_SourceTex1,(v6).xy);
+float4 v8=lerp(v7,float4(0.0990583599,0.100624479,0.095541589,1.0),saturate(v5));
+float4 v9=SAMPLE_TEXTURE2D(_SourceTex2,sampler_SourceTex1,(v6).xy);
+float4 v10=lerp(v9,float4(0.16666159,0.167941958,0.155849725,1.0),saturate(v5));
+float4 v11=lerp(v8,v10,saturate(v3));
+b0.baseColor=(v11).xyz;
+b0.metallic=0.0;
+float v14=(SAMPLE_TEXTURE2D(_SourceTex3,sampler_SourceTex1,(v6).xy)).a;
+float v15=(1.0-v14);
+b0.roughness=v15;
+b0.ior=1.5;
+b0.specular=0.25;
+b0.coat=0.0;
+b0.coatRoughness=0.0299999993;
+b0.transmission=0.0;
+b0.alpha=1.0;
+b0.anisotropy=0.0;
+b0.anisotropicRotation=0.0;
+float4 v25=SAMPLE_TEXTURE2D(_SourceTex4,sampler_SourceTex1,(v6).xy);
+float v26=lerp(0.800000012,0.0,saturate(SourceDivide((v4-18.0),(75.0-18.0))));
+float3 v27=SourceTangentNormal(c.normal,(v25).rgb,v26,c.position,c.uv0,c.tangent);
+b0.normal=v27;
+b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
+a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
+}

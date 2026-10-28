@@ -1,0 +1,14 @@
+SourceMaterialNodes.hlsl is an HLSL adaptation of the source-compatible
+Perlin gradients, dimensional normalization, fBm and Jenkins hashes from
+Blender Cycles. Changes: HLSL types and intrinsics, loop-based corner
+summation, graph compiler integration and material-context interfaces.
+
+Noise: Copyright 2009-2010 Sony Pictures Imageworks Inc., et al.
+Copyright 2011-2022 Blender Foundation. BSD-3-Clause.
+Hash and fBm: Copyright 2011-2022 Blender Foundation. Apache-2.0.
+
+Source references:
+https://github.com/blender/blender/blob/main/intern/cycles/kernel/svm/noise.h
+https://github.com/blender/blender/blob/main/intern/cycles/kernel/svm/fractal_noise.h
+https://github.com/blender/blender/blob/main/intern/cycles/kernel/svm/noisetex.h
+https://github.com/blender/blender/blob/main/intern/cycles/util/hash.h
