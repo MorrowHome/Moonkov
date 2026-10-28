@@ -116,6 +116,7 @@ public static class LR06DiagnoseDisplayLighting
                 if (changed) renderer.sharedMaterials = slots;
             }
             Capture("08_same_with_msaa2", 2);
+            Capture("09_same_with_msaa4", 4);
             var report = new { status = "temporary_diagnostics_not_saved", cameraPosition = new[]{1840,255,2255}, cameraTarget = new[]{1873,240,2298},
                 width = 960, height = 600, fov = camera.fieldOfView, cameraPostProcessing = additional.renderPostProcessing,
                 originalAmbient = new[]{originalAmbient.r, originalAmbient.g, originalAmbient.b}, ambientMode = originalMode.ToString(),
