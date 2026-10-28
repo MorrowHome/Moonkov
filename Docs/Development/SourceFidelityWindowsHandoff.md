@@ -30,7 +30,12 @@
 - 已安装 RobLe3 的 `blender-rendering`、`blender-uv-texturing`，以及它们依赖的 `text-to-blender` 和 `reference-look-calibration`。位置为用户 `.codex/skills`。Skill 下一轮可用；Codex 原生 MCP 工具需重启应用加载。不要自动重启 Codex。
 - 后续复用已有 Blender 桥接实例。长时间烘焙可继续使用命令行断点脚本，避免超过 MCP 的单次调用超时。不要把已启动的长任务重复提交。
 - 已用 4070 SUPER 的 OPTIX 完成同镜头 7 个通道的真实场景诊断。纯颜色和 AO 未出现面板大块脏斑；直接显示旧 irradiance 已复现。图在 `LocalData/SourceFidelity20261028/World/WindowsChannels`。
-- 前景面板约 1.83 平方米，旧 4096 图集只给它约 11×27 像素。原始 irradiance 噪声被放成大块，降噪后仍有模糊斑。接下来只提高这块面板的 UV 密度，保持原灯光和 128 samples 验证，再决定整图图集划分。此项还没有完成修复。
+- 前景面板约 1.83 平方米，旧 4096 图集只给它约 11×27 像素。原始 irradiance 噪声被放成大块，降噪后仍有模糊斑。
+- 2026-10-29 局部对照：同一实例、同一光照、128 samples，256 小图比 32 小图平整。低密度增加到 8192 samples 仍有斑块。高密度先降噪再缩图仍保留改善。结果在 `World/DensityPilot`。
+- 整张图集离线 8192、128 samples、缩回 4096，用时约 132 秒，仍有可见色斑，不能作为修复交付。结果在 `World/SupersamplePilot`。
+- 保留原 UV，在图集 26 的 `[3440,976,80,80]` 像素区域按 1024 离线烘焙，再缩回 80，面板表面色斑明显减轻。结果在 `World/RoiPilot`。这只确认局部方法；不是整图验收。
+- 新增 `bake_world_tiled.py`。在 `PreparedWorldResolved.blend` 中运行，参数 `-- --atlas=26`。默认 64 块、8 倍离线密度、128 samples、运行时图仍为 4096。每块保留 8 个运行时像素的重叠区，降噪后裁边。保留原 AO UV；降噪不使用伪对象 ID 作为 Albedo。
+- 分块结果独立写入 `World/TiledQuality_s128_x8`。每块完成后原子写入配置标记，包含源、准备文件和 helper 哈希。中断后同命令续跑。全部完成后仍须检查接缝、亮度及统计数据，再决定替换旧 Bakes。不要直接安装进正式场景。
 - `050a6e4a` 的 LFS 对象已上传。分支推送被远端 `develop` 的新增提交拒绝。保留本地提交，不强推；后续先检查远端新提交，再安排串行整合。
 
 ## 用户已确定的目标
