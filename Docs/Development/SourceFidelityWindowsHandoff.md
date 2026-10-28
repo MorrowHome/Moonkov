@@ -50,17 +50,23 @@
 
 ### 当前接入门槛：室内灯光版本与覆盖
 
+- 用户已明确指定通过云端《核实 Moonkov Windows 接入状态》（durable，`01a183d1-2a75-75f3-9985-fcf044034014`）传话。该对话本轮主动转来制作侧交接；完整预烘焙实现说明和精确站位已成功回传。不要再要求用户提供本体入口，也不要重复直发未注册的主会话。
+- 本次目标是表面光照图集、空间反射场及动态角色受光的 Blender 预计算接入。MC00 自主实时灯控已废案，不以 118 灯／135 按钮的自主运行时接入为目标。旧源、灯壳、锚点及回退保留，不因此删除或要求重做实时灯方案。旧锚点仅可用于受验证的源身份定位；哪些真实固定灯作为烘焙输入须按实际照明方案明确。
+
 - 2026-10-29 用户指出 `World/IndoorQualityReview/view_433_tiled_minus3ev.png` 太黑，并问是否全开室内灯再烘焙。这是 -3EV 的纯 irradiance 图，不是最终画面，但不能用曝光解释所有缺光。原流程只复制源场景未 `hide_render` 的 Light，没有逐房间全灯开启验收。
 - 已分别只读核对原始权威 blend 与 `PreparedWorldResolved.blend`：两者均有 406 个直接 Light，404 个功率大于零且未 `hide_render`，依赖图均为 406 个，无实例 Light。截图位置 Unity `(1630.303833,221.136154,2149.770996)` 附近最近的非太阳 Light 约 136 米，在 WC 区。此处现成 Light 没有在准备时丢失；网格自发光和灯具覆盖仍需核对，不能直接宣称整个房间没有任何发光源。
 - 审计结果为 `LocalData/SourceFidelity20261028/InteriorLightAudit_canonical.json` 和 `_prepared.json`。此前称“源参考”的图多为准备世界的源材质渲染，不能代替权威原 blend 的完整灯光验收。
 - 三张新室内图和 461 个有效反射已完成。Windows Unity cubemap 轴向与均匀场检查通过，面 Y 符号实际校准仍为 -1。新室内图和统计已成对开始导入，但发现上述问题后已停止在 `phase=4,index=37,running=false`。正式场景未安装。不得在灯光覆盖和版本未确认前恢复导入或安装。
 - 用户明确要求联系负责建模的云端 Dot，同步当前地图/光照处理并提醒此前改灯要求。已向云端聊天《定位 Moonkov 本地对话》（durable，`01a17bf1-1d6c-76f7-8750-d429248b0018`）发送完整交接；已确认新一轮处于 active。重点询问当前输入 SHA 是否落后于其改灯/v8 版本，以及可核对的最新 blend 或最小灯光增量。不要擅自联系本地 DOT01 或其他聊天。
 - 如果补灯或更改功率，旧反射仅按源哈希和位置命中仍可能误用旧照明。须给新灯光状态建立明确版本/哈希并使受影响缓存失效，不能直接把现有 461 个文件视为新照明完成。先确定实际灯光增量及影响范围，再安排必要重算。
-- 后续回执澄清：《定位 Moonkov 本地对话》是接入代理，不是建模作者。它确认旧 `2576f4ac…6522cf` 未含后续增量。另一只读代理《核实 Moonkov Windows 接入状态》的原始委托指向云端建模源会话 `01a17199-4fa6-72b8-aee2-2ecd8e092033`。对该源会话的直接发送返回 `thread not found`，不能声称建模作者本人已收到交接。当前可见列表和浏览器也未提供其本体入口，需要准确聊天链接/标题或可用的父任务回传渠道。
+- 历史路由核对：《定位 Moonkov 本地对话》是接入代理，不是建模作者。它确认旧 `2576f4ac…6522cf` 未含后续增量。另一代理《核实 Moonkov Windows 接入状态》的原始委托指向云端建模源会话 `01a17199-4fa6-72b8-aee2-2ecd8e092033`。对该主会话直发返回 `thread not found`。现已由用户明确指定《核实 Moonkov Windows 接入状态》作为传话渠道，且向此渠道的回传已成功，不再要求用户提供主会话入口。
 - 已通过 Google Drive 连接器取得新版私有 V2 包，保存到 `E:/Download/Moonkov_Cloud_Handoff_20261029_V2/handoff_v2.zip`。23263504 字节，SHA `bf58983b34f8a4d0d50768025788aa3a3d2565f8e6fff6f05c566871db873adb`，36 个条目，CRC 全通过，展开约 23.9 MB。仅在独立 `Expanded` 目录读取，未运行包内内容或接入模型。
 - V2 根 README 明确：完整地图是 v10 WS01，SHA `d161ecbb928dbd64551f8e1c03ea0990c1dd78482569ad2e2d358a96b6dc6150`；此 ZIP 不是完整地图。它复用旧 LR07–09、MC01、LF01、CE01、GT01 交接，新增 PR01 四个 AREA、WS01 四个 AREA 的参数及八个 diffuser 的 OBJECT slot 0 暖色覆盖。原 118 灯锚点仍为 EMPTY，不自动变成 Blender Light。WS01 只针对局部台阶和到达可读性，明确不保证全楼梯连续充分照明；不能宣称解决所有 MC00/L14 暗区。
 - 八灯精确参数在 `Expanded/04_PR01_WS01_PARAMETERS/PARAMETERS.json`，diffuser 身份/共享材质保护在 `DIFFUSER_OBJECT_OVERRIDES.json`。Blender 瓦数不能直接当 Unity intensity。只按验证后的源世界矩阵转换一次，不额外套锚点或 FBX 基底。当前旧源尚未应用此增量；应用前必须核对源对象/mesh/槽/材质和原 EMPTY 的精确身份，保留原控制映射和原共享 LD2，不能猜配或修改整楼共享材质。
 - 已在原始旧 blend 做八套对象的只读基础预检：对象/mesh 名、类型、父级、集合、材质槽、DATA 槽及原 EMPTY 类型均与清单一致，24 个新灯/灯数据/局部材质标识均不存在。结果 `LocalData/SourceFidelity20261028/V2BindingPreflight.json`。但包内明确使用上游 Blender 4.3.2 历史审计序列器，本地没有该序列器或等价源字节证明，完整网格/法线/材质固定字段指纹尚未复现。基础匹配不等于可应用；未改源文件、未创建灯、未修改材质。不要重复本轮基础预检。
+- 制作侧最新完整源已到 v11 TW01：`Moonkov_WH01_HU01_LR09_MC01_LF01_CE01_GT01_PR01_WS01_TW01_G3_End_Transom_CANDIDATE.blend`，341792799 字节，SHA `6f97818ed1a99cbff21285a6b5d18d49b52901c22915739918a42684e972c79f`，云端 Library 身份 `libfile_aa9d2bf57d4c8191b69120c4964618dd`。本地尚未取得完整字节。V2 仅覆盖至 v10；v11 额外的 TW01 是 G3 端窗对象级自发光材质覆盖，不在 V2 内。不能把 Library ID 当成本地已下载或 Page ID。
+- 已只读定位暗图：向下 1.5 米确实命中 `L14_Stair_Intermediate_Landing_Continuous_Walk_Deck`，地板 Blender 世界点 `(1630.303833,2149.770996,219.636154)`。视线中心实际命中 `MC_E pressure panel L1 S11 panel_01035`，约 4.932 米；左为 `MC_E continuous deck post_04271`，右为 `MC_E pressure panel L1 S11 stow channel removable front_01027`，下为 `panel_01034`。因此是 L14 平台朝 MC_E L1 S11，不是 WS01 西楼梯正面。报告为 `LocalData/SourceFidelity20261028/DarkViewSourceLocation.json`。旧 BakePlan 的 instance 数字仅作本版本定位，不作跨版本身份。
+- 制作侧明确已采用灯范围：CE01 为北侧 DUST CYCLE 气闸到 L0 首廊两盏 AREA，GT01 为 G03 接收桌 taskbar 一盏，PR01 公共路线到 TRANSFER_HUB 四盏，WS01 西楼梯 L0–L1 四盏；并未承诺上述 MC_E/L14 站位足量照明。WC01、CM01、LR10/MR01/MR02 未采用，不接入。等待该站位的照明预期、可读取完整 v11 或相对旧源的严格兼容增量；不恢复暂停导入或修改正式场景。
 
 - 完整接入正式游戏。不能停在局部演示。
 - 优先还原候选 Blender 的材质、面积灯、反弹光和反射。
