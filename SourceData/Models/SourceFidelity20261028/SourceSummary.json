@@ -1,0 +1,87 @@
+{
+  "source_file": "Moonkov_WH01_HU01_LR06_SR01_L23_Removed_Components_CANDIDATE.blend",
+  "source_sha256": "2576f4ac6ba4b370843688fc28ace29e1169d594633102d13e0e59c64a6522cf",
+  "blender": "5.2.2 LTS",
+  "source_saved": false,
+  "render": {
+    "engine": "CYCLES",
+    "samples": 64,
+    "denoise": false,
+    "view_transform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposure": 0.0,
+    "gamma": 1.0,
+    "diffuse_bounces": 4,
+    "glossy_bounces": 4,
+    "max_bounces": 3
+  },
+  "summary": {
+    "object_count": 22186,
+    "used_materials": 476,
+    "light_types": {
+      "SUN": 2,
+      "AREA": 398,
+      "SPOT": 6
+    },
+    "node_types": {
+      "ShaderNodeBsdfPrincipled": 426,
+      "ShaderNodeOutputMaterial": 476,
+      "ShaderNodeTexNoise": 586,
+      "ShaderNodeNewGeometry": 184,
+      "ShaderNodeValToRGB": 152,
+      "ShaderNodeMapRange": 555,
+      "ShaderNodeBump": 224,
+      "ShaderNodeVectorMath": 443,
+      "ShaderNodeSeparateXYZ": 154,
+      "ShaderNodeMath": 2044,
+      "ShaderNodeMixRGB": 376,
+      "ShaderNodeUVMap": 73,
+      "ShaderNodeTexImage": 277,
+      "ShaderNodeNormalMap": 93,
+      "ShaderNodeSeparateColor": 62,
+      "ShaderNodeTexCoord": 102,
+      "ShaderNodeCombineXYZ": 4,
+      "ShaderNodeTexWhiteNoise": 2,
+      "ShaderNodeCombineColor": 1,
+      "ShaderNodeAmbientOcclusion": 22,
+      "ShaderNodeObjectInfo": 8,
+      "ShaderNodeCameraData": 7,
+      "ShaderNodeGroup": 59,
+      "NodeFrame": 10,
+      "ShaderNodeAttribute": 20,
+      "ShaderNodeMixShader": 9,
+      "ShaderNodeBsdfTransparent": 5,
+      "ShaderNodeFresnel": 1,
+      "ShaderNodeLightPath": 1
+    },
+    "view_dependent_materials": [
+      "R27S_Compacted_WorldContinuous_PBR",
+      "R27S_DustyClasts_WorldContinuous_PBR",
+      "R27S_FineDust_WorldContinuous_PBR",
+      "R37_West_Seam_Compacted_WorldContinuous_PBR",
+      "R37_West_Seam_DustyClasts_WorldContinuous_PBR",
+      "R37_West_Seam_FineDust_WorldContinuous_PBR",
+      "R8_Reference_DEM_TwoLayer_Regolith",
+      "WC_M150_CLEAR_NONEMISSIVE_ROOFLIGHT"
+    ],
+    "missing_external_images": []
+  },
+  "material_special_cases": {
+    "transmission": [
+      "L14_CAND_Laminated_Pressure_Glass",
+      "LD2_Glass_ClearPartition",
+      "LD2_Glass_SmokedPressureViewport",
+      "RB11_G01_Clear_Glass_Local_Refraction"
+    ],
+    "camera_or_light_path": [
+      "R27S_Compacted_WorldContinuous_PBR",
+      "R27S_DustyClasts_WorldContinuous_PBR",
+      "R27S_FineDust_WorldContinuous_PBR",
+      "R37_West_Seam_Compacted_WorldContinuous_PBR",
+      "R37_West_Seam_DustyClasts_WorldContinuous_PBR",
+      "R37_West_Seam_FineDust_WorldContinuous_PBR",
+      "R8_Reference_DEM_TwoLayer_Regolith",
+      "WC_M150_CLEAR_NONEMISSIVE_ROOFLIGHT"
+    ]
+  }
+}
