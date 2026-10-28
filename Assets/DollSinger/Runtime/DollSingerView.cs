@@ -85,6 +85,14 @@ public class DollSingerView : MonoBehaviour
     [Tooltip("Minimum forward chest clearance when looking down. Never pulls the animated eye backwards.")]
     [Range(0.04f, 0.2f)] public float lookDownBodyClearance = 0.075f;
 
+    [Header("First person motion")]
+    [Tooltip("Retained sideways, vertical and forward gait motion. The animated rhythm stays intact.")]
+    public Vector3 firstPersonMotionScale = new Vector3(.2f, .35f, .35f);
+    [Min(.02f)] public float firstPersonMotionSmoothing = .22f;
+    private readonly DollSingerCameraMotion cameraMotion = new DollSingerCameraMotion();
+    private Transform motionAnchor;
+    private Vector3 eyeMotionOffset;
+
     [Header("First person gesture presentation")]
     [Tooltip("Presentation FOV for ordinary weapon gestures. The sniper follows the player camera's zoom.")]
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
@@ -299,6 +307,7 @@ public class DollSingerView : MonoBehaviour
 
     public void SetFirstPerson(bool enabled)
     {
+        if (firstPerson != enabled) { cameraMotion.Reset(); eyeMotionOffset = Vector3.zero; }
         firstPerson = enabled;
         if (!enabled) SetGestureHandsActive(false);
         if (input) input.SetLeanEnabled(enabled);
@@ -363,6 +372,7 @@ public class DollSingerView : MonoBehaviour
         currentDistance = Mathf.SmoothDamp(currentDistance, targetDistance,
             ref distanceVelocity, zoomSmoothTime);
 
+        UpdateFirstPersonMotion(Time.deltaTime);
         // First person rides the head bone so the camera follows head animation; the pivot
         // rotation itself comes from DollSingerMovement.CameraRotation().
         Vector3 pivot = player.transform.position;
@@ -447,12 +457,28 @@ public class DollSingerView : MonoBehaviour
             transform.rotation = transform.rotation * Quaternion.Euler(0f, 0f, roll);
     }
 
+    private void UpdateFirstPersonMotion(float deltaTime)
+    {
+        if (!firstPerson || !movement || !motionAnchor)
+        {
+            cameraMotion.Reset(); eyeMotionOffset = Vector3.zero;
+            return;
+        }
+        Quaternion body = player.transform.rotation;
+        Vector3 animated = Quaternion.Inverse(body) * (motionAnchor.position - player.transform.position - movement.NeckLeanOffset);
+        bool walking = movement.m_Grounded && movement.Stance == DollSingerStance.Standing && movement.CurrentSpeed > .15f;
+        // The neck's origin carries gait translation. Its rotation and the eye offset
+        // remain immediate, so looking up/down and Q/E do not acquire filter lag.
+        eyeMotionOffset = body * cameraMotion.Step(animated, walking, aimBlend,
+            firstPersonMotionScale, firstPersonMotionSmoothing, deltaTime);
+    }
+
     private Vector3 GetFirstPersonEyePosition()
     {
         Vector3 up = player.transform.up;
         Vector3 horizontalLook = Vector3.ProjectOnPlane(transform.forward, up).normalized;
         if (horizontalLook.sqrMagnitude < 0.01f) horizontalLook = player.transform.forward;
-        Vector3 eye = eyeAnchor.TransformPoint(eyeLocalOffset) + horizontalLook * firstPersonEyeForward;
+        Vector3 eye = eyeAnchor.TransformPoint(eyeLocalOffset) + horizontalLook * firstPersonEyeForward + eyeMotionOffset;
         float down = Mathf.Clamp01(Vector3.Dot(transform.forward, -up));
         float clearanceBlend = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 0.95f, down));
         if (chestAnchor && clearanceBlend > 0f)
@@ -481,6 +507,8 @@ public class DollSingerView : MonoBehaviour
     {
         eyeAnchor = null;
         chestAnchor = null;
+        motionAnchor = null;
+        cameraMotion.Reset(); eyeMotionOffset = Vector3.zero;
         eyeLocalOffset = Vector3.zero;
         if (!character) return;
 
@@ -491,6 +519,7 @@ public class DollSingerView : MonoBehaviour
             head = animator.GetBoneTransform(HumanBodyBones.Head);
             chestAnchor = animator.GetBoneTransform(HumanBodyBones.UpperChest)
                 ?? animator.GetBoneTransform(HumanBodyBones.Chest);
+            motionAnchor = animator.GetBoneTransform(HumanBodyBones.Neck);
             eyeLeft = animator.GetBoneTransform(HumanBodyBones.LeftEye);
             eyeRight = animator.GetBoneTransform(HumanBodyBones.RightEye);
         }
@@ -502,6 +531,7 @@ public class DollSingerView : MonoBehaviour
         if (!eyeLeft || !eyeRight) FindBonePair(character.transform, "Eye_L", "Eye_R", ref eyeLeft, ref eyeRight);
 
         eyeAnchor = head ? head : (eyeLeft ? eyeLeft : character.transform);
+        if (!motionAnchor) motionAnchor = eyeAnchor;
 
         Vector3 worldEye;
         if (eyeLeft && eyeRight) worldEye = (eyeLeft.position + eyeRight.position) * 0.5f;
@@ -755,6 +785,8 @@ public class DollSingerView : MonoBehaviour
         shadowBlendWeights = null;
         eyeAnchor = null;
         chestAnchor = null;
+        motionAnchor = null;
+        cameraMotion.Reset(); eyeMotionOffset = Vector3.zero;
     }
 
     private static void DestroyRuntime(Object target)

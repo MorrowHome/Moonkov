@@ -12,12 +12,53 @@
 
 `DollSingerFirstPersonBody` 在绑定角色时处理本人副本。`DollSingerTorsoClearance` 缓存表面和权重。逐帧不创建自碰撞体，不 BakeMesh，不重建网格。没有新增运行时相机或包。
 
+## 走跑运动
+
+视点仍由真实动画驱动。以颈骨原点提取步态平移，减小它相对缓慢参考位置的偏差。保留头颈旋转、眼睛偏移和步态周期。
+
+- 只在站立、接地且速度超过 0.15 m/s 时启用减幅。
+- 停步、离地和低姿态时，在 0.12 s 内回到原始跟随。
+- 根节点位移、鼠标转向和 Q/E 侧身直接通过。侧身位移不进入步态滤波。
+- 举枪时进一步减小步态平移。原地呼吸和角色姿态继续沿用动画。
+- 切换视角、绑定新角色和大幅位姿跳变时清空旧状态。
+
+`DollSingerView` 的参数：
+
+| 字段 | 默认值 | 作用 |
+| --- | --- | --- |
+| `firstPersonMotionScale` | X=0.20，Y=0.35，Z=0.35 | 保留的步态偏差。依次为左右、上下、前后 |
+| `firstPersonMotionSmoothing` | 0.22 s | 参考位置跟随慢速姿态变化的时间 |
+| `lookDownBodyClearance` | 0.075 m | 低头时眼位在胸前的最小间隙，只向前修正 |
+
+这些保留系数不是最终画面总摆幅的直接百分比。慢速参考位置也会移动。新增字段有代码默认值，现有角色预制体无需重写。
+
+## 测量
+
+同一批动画、角色和 16:9 投影。数值为最高点减最低点，单位 cm。走跑在片段循环稳定后采样。原值来自[前次调查](FirstPersonCameraAudit-20261028.md)。它们不是正式战局帧时或主观舒适度评分。
+
+| 角色 | 走路上下，原值 → 新值 | 跑步上下，原值 → 新值 | 跑步左右，原值 → 新值 |
+| --- | ---: | ---: | ---: |
+| DollSinger | 5.42 → 2.75 | 9.90 → 4.53 | 8.17 → 3.16 |
+| 初音 | 6.45 → 3.26 | 10.24 → 4.73 | 11.08 → 4.81 |
+| 诗岸 | 6.14 → 3.13 | 9.99 → 4.63 | 9.96 → 3.93 |
+
+默认片段中，上下总行程大致减半。左右运动也降低，但仍保留动作节奏。
+
 ## 验证
 
-Unity 编译通过。三个角色通过 1,962 组动作与投影姿态、17,658 条真实近裁面射线检查。低头射线命中胸部 25 次。原网格和形变索引保留检查通过。中央投影与开火手部投影回归通过。
+Unity 编译通过。三个角色通过 1,962 组动作与投影姿态、17,658 条真实近裁面射线检查。低头射线命中胸部 25 次。原网格和形变索引保留检查通过。
 
-入口为 `MoonkovFirstPersonCameraChecks.RunReport()`、`MoonkovViewInteractionChecks.CheckCamera()` 和 `WeaponFramingChecks.Run()`。
+30/60/144 Hz 减幅、举枪、停步与重新绑定检查通过。中央射线、共享投影、精细输入和开火手部投影检查通过。
 
-MMD 导入模型可能带 100 倍 Renderer 缩放。独立几何参照使用 `BakeMesh(mesh, true)`。默认烘焙再乘 Renderer Transform 会得到错误的 100 倍查询几何。
+没有进行正式战局试玩、联机验收或平台构建。未将这次片段测量当作帧时性能测试。
 
-本地图片和验收输出在 `Library/BuildValidation/CameraFix20261028/`，不入 Git。没有进行正式战局试玩、联机验收或平台构建。
+验证入口：
+
+- `MoonkovFirstPersonCameraChecks.RunReport()`：三个角色的动作、低头、自由观察、近裁面和宽高比检查。用真实烘焙网格做射线参照。
+- `MoonkovFirstPersonCameraChecks.CheckMotion()`：30/60/144 Hz、举枪、停步、重新绑定和减幅边界。
+- `MoonkovViewInteractionChecks.CheckCamera()`：中央射线、共享投影、实际倍率和精细输入。
+- `WeaponFramingChecks.Run()`：开火过程中手部投影保持稳定。
+
+MMD 导入模型可能带 100 倍 Renderer 缩放。此处的独立几何参照使用 `BakeMesh(mesh, true)`。默认烘焙再乘 Renderer Transform 会得到错误的 100 倍查询几何。
+
+本地图片、采样和验收输出在 `Library/BuildValidation/CameraFix20261028/`，不入 Git。最终主观晃动强度仍可按实际试玩反馈微调。

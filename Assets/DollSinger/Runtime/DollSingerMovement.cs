@@ -119,6 +119,7 @@ namespace Unity.MP_FPS.DollSinger {
         private Vector3 m_PelvisToSpine;
         private Vector3 m_ChestToHead;
         private Vector3 m_AppliedLeanOffset;
+        private Vector3 m_AppliedNeckLeanOffset;
         private static readonly RaycastHit[] s_LeanHits = new RaycastHit[32];
 
         // player
@@ -197,6 +198,7 @@ namespace Unity.MP_FPS.DollSinger {
         public float LeanShift => Vector3.Dot(LeanOffset, transform.right);
         public float LeanAmount => IsFirstPersonView ? m_LeanState : 0f;
         public Vector3 LeanOffset => IsFirstPersonView ? m_AppliedLeanOffset : Vector3.zero;
+        public Vector3 NeckLeanOffset => IsFirstPersonView ? m_AppliedNeckLeanOffset : Vector3.zero;
 
         public Vector3 GetLeanOffset(float amount, Quaternion bodyRotation)
         {
@@ -452,6 +454,7 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void LateUpdate() {
             m_AppliedLeanOffset = Vector3.zero;
+            m_AppliedNeckLeanOffset = Vector3.zero;
             StabilizeHeadLook();
             if (!IsFirstPersonView || m_Stance == DollSingerStance.Prone) m_LeanState = m_LeanTarget = 0f;
             else ApplyBodyLean();
@@ -487,6 +490,7 @@ namespace Unity.MP_FPS.DollSinger {
             if (Mathf.Abs(LeanAmount) < 0.0001f) return;
             Transform leanReference = m_HeadBone ? m_HeadBone : m_ChestBone ? m_ChestBone : m_SpineBone;
             Vector3 headBeforePosition = leanReference.position;
+            Vector3 neckBeforePosition = m_NeckBone ? m_NeckBone.position : headBeforePosition;
             Quaternion headBeforeLean = m_HeadBone ? m_HeadBone.rotation : Quaternion.identity;
             Vector3 leftFootPosition = m_LeftFoot ? m_LeftFoot.position : Vector3.zero;
             Vector3 rightFootPosition = m_RightFoot ? m_RightFoot.position : Vector3.zero;
@@ -518,6 +522,7 @@ namespace Unity.MP_FPS.DollSinger {
                 m_HeadBone.rotation = Quaternion.AngleAxis(LeanRoll, look * Vector3.forward) * headBeforeLean;
             }
             m_AppliedLeanOffset = leanReference.position - headBeforePosition;
+            m_AppliedNeckLeanOffset = (m_NeckBone ? m_NeckBone.position : leanReference.position) - neckBeforePosition;
         }
 
         // Two-bone IK compensates the pelvis roll without translating bones or dragging

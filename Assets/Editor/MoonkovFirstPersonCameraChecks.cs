@@ -13,7 +13,7 @@ public static class MoonkovFirstPersonCameraChecks
     private static void Require(bool condition, string message) { if (!condition) throw new Exception(message); }
 
     [MenuItem("Tools/Moonkov/Check First Person Camera")]
-    public static void Run() => Debug.Log(RunReport());
+    public static void Run() => Debug.Log(RunReport() + "\n" + CheckMotion());
 
     public static string RunReport()
     {
@@ -137,4 +137,42 @@ public static class MoonkovFirstPersonCameraChecks
             + " downward chest hits across three characters; world mesh and shape indices preserved. No Play/network session.";
     }
 
+    public static string CheckMotion()
+    {
+        var type = typeof(DollSingerView).Assembly.GetType("Unity.MP_FPS.DollSinger.DollSingerCameraMotion", true);
+        var step = type.GetMethod("Step"); var reset = type.GetMethod("Reset");
+        var spans = new System.Collections.Generic.List<float>();
+        foreach (int hz in new[] { 30, 60, 144 })
+        foreach (float aim in new[] { 0f, 1f })
+        {
+            var motion = Activator.CreateInstance(type);
+            float min = float.PositiveInfinity, max = float.NegativeInfinity;
+            for (int i = 0; i < hz * 6; i++)
+            {
+                float t = i / (float)hz;
+                var input = new Vector3(Mathf.Sin(t * Mathf.PI * 3) * .05f, 1.4f + Mathf.Sin(t * Mathf.PI * 6) * .05f, .03f);
+                var offset = (Vector3)step.Invoke(motion, new object[] { input, true, aim, new Vector3(.2f, .35f, .35f), .22f, 1f / hz });
+                Require(Mathf.Abs(offset.x) <= .0451f && Mathf.Abs(offset.y) <= .0551f, "Unbounded gait correction");
+                if (i > hz * 2) { min = Mathf.Min(min, input.y + offset.y); max = Mathf.Max(max, input.y + offset.y); }
+            }
+            float span = max - min;
+            Require(span > .015f && span < .06f, "Gait erased or not reduced: " + hz + "Hz span=" + span);
+            spans.Add(span);
+            var stationary = new Vector3(0, 1.4f, 0);
+            Vector3 remaining = Vector3.zero;
+            for (int i = 0; i < hz; i++) remaining = (Vector3)step.Invoke(motion,
+                new object[] { stationary, false, aim, new Vector3(.2f, .35f, .35f), .22f, 1f / hz });
+            Require(remaining.sqrMagnitude < 1e-9f, "Stopping retained a camera offset");
+            reset.Invoke(motion, null);
+            var first = (Vector3)step.Invoke(motion, new object[] { stationary, true, aim, Vector3.one, .22f, 1f / hz });
+            Require(first == Vector3.zero, "Rebinding/teleport retained motion state");
+        }
+        for (int aim = 0; aim < 2; aim++)
+        {
+            var values = new[] { spans[aim], spans[2 + aim], spans[4 + aim] };
+            Require(values.Max() / values.Min() < 1.15f, "Gait reduction depends excessively on frame rate");
+        }
+        Require(spans[1] < spans[0], "ADS did not reduce gait");
+        return "PASS motion: 30/60/144 Hz, retained rhythm with reduced translation, lower ADS motion, stop/rebind reset and finite bounds.";
+    }
 }
