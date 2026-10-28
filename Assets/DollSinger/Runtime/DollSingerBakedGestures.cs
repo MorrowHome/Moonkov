@@ -72,8 +72,15 @@ namespace Unity.MP_FPS.DollSinger
             rightIndex = hierarchy["人指１.R"]; rightIndexTip = hierarchy["人指先.R"];
         }
 
-        public bool IsFiring(int weapon, float shotAge) => weapon >= 1 && weapon <= library.motions.Length &&
-            shotAge >= 0 && shotAge < library.motions[weapon - 1].fireSeconds;
+        public bool IsFiring(int weapon, float shotAge, float releaseSeconds = 0) => weapon >= 1 && weapon <= library.motions.Length &&
+            shotAge >= 0 && shotAge < (releaseSeconds > 0 ? releaseSeconds : library.motions[weapon - 1].fireSeconds);
+
+        // Keep the first 80 ms exactly as authored. Only the recovery changes length.
+        public static float ShotSampleTime(float age, float authoredSeconds, float releaseSeconds)
+        {
+            if (releaseSeconds <= 0 || age <= .08f || authoredSeconds <= .08f) return age;
+            return .08f + (age - .08f) * (authoredSeconds - .08f) / Mathf.Max(.01f, releaseSeconds - .08f);
+        }
 
         // Extra MMD bones are not necessarily written by the Humanoid Animator.
         // Restore before animation evaluation so aim-out, pitch and re-enable cannot accumulate a previous bake.
@@ -87,10 +94,11 @@ namespace Unity.MP_FPS.DollSinger
         }
 
         public void Apply(int weapon, float blend, float shotAge, bool reloading, float reloadProgress,
-            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f, int burstIndex = 0)
+            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f, int burstIndex = 0, float releaseSeconds = 0)
         {
             if (blend <= .0001f || weapon < 1 || weapon > library.motions.Length) { initialized = false; return; }
             Motion motion = library.motions[weapon - 1];
+            shotAge = ShotSampleTime(shotAge, motion.fireSeconds, releaseSeconds);
             Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
             if (motion.aimPoses != null && motion.aimPoses.Length > 0 && aimDirection.sqrMagnitude > .001f)

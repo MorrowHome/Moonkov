@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "licenses": [
+    "Assets/Audio/Moonkov/Licenses/FreeFirearmSoundLibrary.md",
+    "Existing project shotgun recordings retain their original license."
+  ],
+  "rifle_unchanged": true,
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/RevolverBody1.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Smith & Wesson 642/V_27P.wav",
+      "source_start_seconds": 0.805125,
+      "source_sha256": "dc9a11f7e6544139f38cadccf3373fed733f2e000caca1b2328575293838fc58",
+      "sha256": "a321ee4c129ffa60b8e12ca446811c0e1c36786a24d1ae8f360024be19552af0",
+      "role": "near report",
+      "seconds": 0.34,
+      "peak": 0.86,
+      "rms_dbfs": -25.445615925509184,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/RevolverTail.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Smith & Wesson 642/V_27P.wav",
+      "source_start_seconds": 0.850125,
+      "source_sha256": "dc9a11f7e6544139f38cadccf3373fed733f2e000caca1b2328575293838fc58",
+      "sha256": "ca7735f29f452948f345f358cdaf3eac5552398d47531501cd0b4acf522323e1",
+      "role": "natural recorded tail",
+      "seconds": 0.62,
+      "peak": 0.62,
+      "rms_dbfs": -26.067376882714285,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/RevolverBody2.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Smith & Wesson 642/V_27P.wav",
+      "source_start_seconds": 6.218417,
+      "source_sha256": "dc9a11f7e6544139f38cadccf3373fed733f2e000caca1b2328575293838fc58",
+      "sha256": "aa5400d5775b2d4b7c5b33ab6a0ee512ee68f327536603d0f5155e2ea569f785",
+      "role": "near report",
+      "seconds": 0.34,
+      "peak": 0.86,
+      "rms_dbfs": -26.386615794488733,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/RevolverBody3.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Smith & Wesson 642/V_22P.wav",
+      "source_start_seconds": 0.672625,
+      "source_sha256": "2ddbaff76737abe2b9af2a13eb5f00056364c0a0de170b8c19bddfb5c4058f25",
+      "sha256": "7e42d39e54eb05c8357d131e35c8781a5e3edbb50b11e64bf1c2b77ba41bc5ac",
+      "role": "near report",
+      "seconds": 0.34,
+      "peak": 0.86,
+      "rms_dbfs": -20.845452797997673,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/ShotgunBody1.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_start_seconds": 0.0,
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "f89fbe562667dfafa77ead811756363fc8454e8f4fd1e4031178ffa9c99ecc5b",
+      "role": "near report",
+      "seconds": 0.28,
+      "peak": 0.86,
+      "rms_dbfs": -11.42961926462483,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/ShotgunTail.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_start_seconds": 0.045,
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "f79afdf0c21c097c89ba50003817f982b43bc6b54812d096b159a448fdc6686f",
+      "role": "natural recorded tail",
+      "seconds": 0.52,
+      "peak": 0.6199999999999999,
+      "rms_dbfs": -18.017608342779678,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/ShotgunBody2.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-002.wav",
+      "source_start_seconds": 0.003042,
+      "source_sha256": "f0816694757a2214158f3e3669827fdcaffdf6896ac850e436598e8333b3d968",
+      "sha256": "f6c8e8644e63f07b8bc1d5de3c8d00a2a8f4ade4d6703aecc670b7bf8b46a6cd",
+      "role": "near report",
+      "seconds": 0.28,
+      "peak": 0.86,
+      "rms_dbfs": -12.316273788567338,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/ShotgunBody3.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-003.wav",
+      "source_start_seconds": 0.005562,
+      "source_sha256": "e62877a5c0b69b47dd228e995a1bddb4422e84bd2eb2a358e9df85508814fae3",
+      "sha256": "d06ff13e43b623560f68710ccb24827e4792bf75b0595c0df951e3765c6cd0ed",
+      "role": "near report",
+      "seconds": 0.28,
+      "peak": 0.86,
+      "rms_dbfs": -12.400187262686433,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/SniperBody1.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Mosin Nagant/M_26P.wav",
+      "source_start_seconds": 1.137438,
+      "source_sha256": "51261c62c8c1dce64cd700e948dda4794473797753457621b480eff54ba30445",
+      "sha256": "a678c31c6e00f9f57b0b9c62bb1a515c1e6d919586f0b1cc40ae2527abceea14",
+      "role": "near report",
+      "seconds": 0.58,
+      "peak": 0.86,
+      "rms_dbfs": -24.50389956737564,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/SniperTail.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Mosin Nagant/M_26P.wav",
+      "source_start_seconds": 1.182438,
+      "source_sha256": "51261c62c8c1dce64cd700e948dda4794473797753457621b480eff54ba30445",
+      "sha256": "18b0642f4b9ed3c3f6fdd6b95bb167bc38f51964faaaef3496634c1abefe20bc",
+      "role": "natural recorded tail",
+      "seconds": 1.4,
+      "peak": 0.62,
+      "rms_dbfs": -27.312534405212222,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/SniperBody2.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Mosin Nagant/M_26P.wav",
+      "source_start_seconds": 6.104417,
+      "source_sha256": "51261c62c8c1dce64cd700e948dda4794473797753457621b480eff54ba30445",
+      "sha256": "29bb6aa51467eda8a2f6514cfc18796c2cea75e917b775c4d23816c9745c8dbb",
+      "role": "near report",
+      "seconds": 0.58,
+      "peak": 0.86,
+      "rms_dbfs": -24.421004195358115,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponCharacter/SniperBody3.wav",
+      "source": "LocalData/ShootingAV/Sources/Prepared SFX Library/Mosin Nagant/M_26P.wav",
+      "source_start_seconds": 10.742396,
+      "source_sha256": "51261c62c8c1dce64cd700e948dda4794473797753457621b480eff54ba30445",
+      "sha256": "eec2e8828346471a8c01f1ff1d07f13666e202f06bc37e4a91e470f11759fac1",
+      "role": "near report",
+      "seconds": 0.58,
+      "peak": 0.8599999999999999,
+      "rms_dbfs": -23.708891704638756,
+      "processing": "Original playback rate; DC/highpass and low shelf; natural report decay; 0.25ms onset and ending fade; peak normalized; mono PCM16 48kHz"
+    }
+  ]
+}

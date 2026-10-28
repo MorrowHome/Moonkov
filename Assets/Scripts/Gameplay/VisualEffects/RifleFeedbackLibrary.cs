@@ -8,6 +8,11 @@ namespace Unity.MP_FPS
     {
         public SoundDef FireBody, FireSnap, FireTail;
         public SoundDef RockImpact, MetalImpact, BodyImpact, HitConfirm, KillConfirm;
+        [Header("Per-weapon shot response (zero keeps the existing response)")]
+        [Min(0f)] public float RecoilPitch, RecoilYaw, GestureReleaseSeconds;
+        [Range(0f, 1f)] public float RecoilReturnFraction = 1f;
+        [Min(0f)] public float RecoilHoldSeconds;
+        [Min(.1f)] public float RecoilSettleSpeed = 13f;
         [Header("Shot mix")]
         [Range(.01f, .15f)] public float BodyCrossfade = .045f;
         [Range(.01f, .2f)] public float TailCrossfade = .09f;

@@ -9,6 +9,8 @@ namespace Unity.MP_FPS
     public struct HaloRecoilResponse
     {
         private float pending, recoverable, age, recoveryDelay, recoveryRate;
+        private float returnFraction, pendingYaw, recoverableYaw;
+        private uint sequence;
         public float Remaining => pending + recoverable;
         public static float KickDegrees(uint weapon) => weapon switch
         {
@@ -25,6 +27,7 @@ namespace Unity.MP_FPS
         };
         public void Kick(uint weapon, float magnification, float shotInterval = .35f, bool aiming = true)
         {
+            returnFraction = 1;
             float scale = aiming ? 1f / Mathf.Clamp(magnification, 1f, 12f) : 1f;
             float strength = aiming ? 1f : 2.8f;
             pending += Mathf.Min(KickDegrees(weapon) * scale * strength, Mathf.Max(0, (aiming ? 3f : 9f) * scale - Remaining));
@@ -35,19 +38,48 @@ namespace Unity.MP_FPS
             recoveryRate = aiming ? 13f : 4f;
             age = 0;
         }
+
+        public void Kick(uint weapon, float magnification, float shotInterval, bool aiming, HaloWeaponFeedbackProfile profile)
+        {
+            if (profile == null || profile.RecoilPitch <= 0)
+            { Kick(weapon, magnification, shotInterval, aiming); return; }
+            float scale = aiming ? 1f / Mathf.Clamp(magnification, 1f, 12f) : 1f;
+            float strength = aiming ? 1f : 2.8f;
+            float limit = (aiming ? Mathf.Max(3, profile.RecoilPitch * 2) : 12) * scale;
+            pending += Mathf.Min(profile.RecoilPitch * scale * strength, Mathf.Max(0, limit - Remaining));
+            // A small repeatable side impulse, rather than random camera vibration.
+            pendingYaw += profile.RecoilYaw * scale * (aiming ? 1 : 1.5f) * ((++sequence & 1) == 0 ? -.65f : 1);
+            returnFraction = Mathf.Clamp01(profile.RecoilReturnFraction);
+            recoveryDelay = Mathf.Max(0, profile.RecoilHoldSeconds);
+            recoveryRate = Mathf.Max(.1f, profile.RecoilSettleSpeed);
+            age = 0;
+        }
         public void Apply(ref float pitch, float downwardInput, float deltaTime)
         {
             if (deltaTime <= 0) return;
             // Only retain recovery for movement that actually passed the pitch limit.
             float kick = Mathf.Min(pending, Mathf.Max(0, pitch + 80f));
-            pending = 0; pitch -= kick; recoverable += kick;
+            pending = 0; pitch -= kick; recoverable += kick * returnFraction;
             recoverable = Mathf.Max(0, recoverable - Mathf.Max(0, downwardInput));
             float previous = age; age += deltaTime;
             float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previous - recoveryDelay);
             float recovery = recoverable * (1f - Mathf.Exp(-recoveryRate * recoveryTime));
             recoverable -= recovery; pitch = Mathf.Min(80f, pitch + recovery);
         }
-        public void Reset() { pending = recoverable = age = recoveryDelay = 0; recoveryRate = 13; }
+        public void Apply(ref float2 look, float2 playerDelta, float deltaTime)
+        {
+            if (deltaTime <= 0) return;
+            float previousAge = age;
+            Apply(ref look.y, playerDelta.y, deltaTime);
+            look.x += pendingYaw; recoverableYaw += pendingYaw * returnFraction; pendingYaw = 0;
+            if (playerDelta.x * recoverableYaw < 0)
+                recoverableYaw = Mathf.MoveTowards(recoverableYaw, 0, Mathf.Abs(playerDelta.x));
+            float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previousAge - recoveryDelay);
+            float recovery = recoverableYaw * (1 - Mathf.Exp(-recoveryRate * recoveryTime));
+            recoverableYaw -= recovery; look.x -= recovery;
+        }
+        public void Reset()
+        { pending = recoverable = age = recoveryDelay = pendingYaw = recoverableYaw = 0; recoveryRate = 13; returnFraction = 1; sequence = 0; }
     }
 
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>

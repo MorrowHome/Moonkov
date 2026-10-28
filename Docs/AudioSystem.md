@@ -295,6 +295,16 @@ flowchart LR
 
 目前 TerrainCollider 使用月壤脚步，其余可行走地面碰撞体使用金属脚步；落地采用月壤冲击，弹丸采用金属冲击。石块、其他地材和精确表面材质映射，以及遮挡、舱室混响，尚未实现。距离和立体声已接入，但不是完整声学模拟。独立 `DollSingerDemo` 场景没有 GameManager，仍保留原有独立角色流程；本次交付入口为 MainMenu 与网络战局。
 
+## 2026-10-28 左轮、霰弹与精确光环枪响
+
+只替换武器 ID 3、4、5 的主枪响与余响。红色基础步枪已获用户认可，保留原声音。每把使用三条主枪响和一条自然余响，保持原播放速度，继续走 SFX 和原音源池。近场主层为 -5.5、-5、-4.5 dB，余响为 -18、-18、-16 dB。少量音高变化限制在 ±6 音分。
+
+生成入口是 `Tools/Audio/build_weapon_character_audio.py`。安装入口是 `MoonkovWeaponCharacterSetup.Install()`。来源、裁切点和校验值在 `Assets/Audio/Moonkov/WeaponCharacterSources.json`，没有改动旧枪响素材。12 个新片段为单声道 48 kHz PCM16，预先解压加载，新增约 1.18 MB 解压内存。
+
+新片段关闭导入 Normalize，保留主枪响与余响的电平比例。该设置没有公开的 `AudioImporter` 属性。安装器沿用 [Unity Inspector 的 `m_Normalize` 序列化字段](https://github.com/Unity-Technologies/UnityCsReference/blob/master/Modules/AssetPipelineEditor/ImportSettings/AudioImporterInspector.cs)，检查器复读导入后的 PCM 峰值。
+
+实际音源播放、SFX 路由、原调、轮换和回收已在单一 Editor 的隔离预览中验证。该预览固定为 2D，不能据此宣称远近听感完成。离线新旧对比、反馈配置和验收边界见[枪械节奏与射击反馈](HuntInspiredGunplay.md)。
+
 ## 2026-10-24 气闸门可听度修正
 
 门机从 -12 dB 调至 -5 dB，锁定/解锁从 -12 dB 调至 -3 dB。近场范围从 1 m 扩至 3.5 m；门机听距从 14 m 扩至 28 m，锁闩扩至 22 m；三条声音设置 Interaction 角色、70 优先级和每配置 8 个并发上限。`AirlockAudioAssetTools.TuneDoors()` 可重现配置，正式 TheophilusGameScene 引用的也是这组 SoundDef。

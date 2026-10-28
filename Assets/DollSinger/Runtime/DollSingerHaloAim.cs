@@ -198,6 +198,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         {
             if (!networkControlled) localArsenal?.CancelBurst();
             gestureShotTime = float.NegativeInfinity;
+            GestureReleaseSeconds = 0;
             gestureReframeUntil = Time.time + gestureTransitionSeconds + .04f;
             localPendingShot = false;
         }
@@ -226,6 +227,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public uint LightingSettings { get; set; }
     public float AimBlend => aimBlend;
     public float AdsBlend => adsBlend;
+    public float GestureReleaseSeconds { get; set; }
     // Only the locally owned network presentation installs this. Remote replicas
     // continue to use synchronized state; the blend still advances once per Update.
     public System.Func<bool> OwnedAimIntent { get; set; }
@@ -495,7 +497,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (ArsenalVisual) { reload = ArsenalVisual.IsReloading; progress = ArsenalVisual.ReloadProgress; }
         Vector3 direction = networkControlled ? networkDirection : playerCamera ? playerCamera.transform.forward : transform.forward;
         float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
-        bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction, burstIndex: gestureBurstIndex);
+        bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction,
+            burstIndex: gestureBurstIndex, releaseSeconds: GestureReleaseSeconds);
     }
 
     private void LateUpdate() {
@@ -516,7 +519,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (centred && view.GestureHandsActive)
         {
             view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil,
-                bakedGestures != null && bakedGestures.IsFiring((int)visualWeapon, Time.time - gestureShotTime));
+                bakedGestures != null && bakedGestures.IsFiring((int)visualWeapon, Time.time - gestureShotTime, GestureReleaseSeconds));
         }
         Vector3 headPosition = head.position + transform.up * IdleHeadHeight +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;

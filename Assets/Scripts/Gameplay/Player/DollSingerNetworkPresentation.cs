@@ -80,7 +80,7 @@ namespace Unity.MP_FPS
         {
             if (blocked || !m_OwnedAlive || !WeaponHandsAvailable || m_Input.LightAdjusting || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
                 (m_View.IsFirstPerson && m_Input.AltHeld)) m_Recoil.Reset();
-            else m_Recoil.Apply(ref look.y, -m_Input.Look.y * m_View.AimLookSensitivity, Time.deltaTime);
+            else m_Recoil.Apply(ref look, new float2(m_Input.Look.x, -m_Input.Look.y) * m_View.AimLookSensitivity, Time.deltaTime);
             if (m_Input.LightAdjusting)
             {
                 m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.LightPreviewAiming;
@@ -344,15 +344,16 @@ namespace Unity.MP_FPS
                 if (shotState.EquippedWeaponID != weaponId) return;
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
+                var profile = m_WeaponFeedback?.ForWeapon(weaponId);
+                m_Halo.GestureReleaseSeconds = profile?.GestureReleaseSeconds ?? 0;
                 if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive &&
                     m_Input.CanReadPlayerInput && WeaponHandsAvailable && !m_Input.LightAdjusting)
                 {
                     float interval = weapon == null ? .35f :
                         (weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs) * RaidHealth.HandlingMultiplier(shotState);
-                    m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification, interval, m_OwnedAiming);
+                    m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification, interval, m_OwnedAiming, profile);
                 }
-                if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
-                var profile = m_WeaponFeedback?.ForWeapon(weaponId);
                 if (weaponId == DollSingerWeapons.Halo || profile != null)
                 {
                     bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime < Mathf.Max(.15f, (weapon?.CooldownInMs ?? .1f) * 1.5f);
