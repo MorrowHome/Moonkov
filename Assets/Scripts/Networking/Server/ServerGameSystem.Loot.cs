@@ -260,6 +260,10 @@ namespace Unity.MP_FPS
                 inventory.RefreshMedical(ref health,accessible,position,SystemAPI.Time.ElapsedTime);
                 if(accessible)SystemAPI.SetComponent(player,health);
             }
+            var actionPlayer=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+            if(SystemAPI.Exists(actionPlayer) && SystemAPI.HasComponent<PredictedPlayerGhost>(actionPlayer))
+                SystemAPI.GetComponentRW<PredictedPlayerGhost>(actionPlayer).ValueRW.ConsumingSupply=
+                    session.Phase==RaidPhase.Active && inventory.MedicalItemId!=null && inventory.MedicalIsConsumable;
             if(inventory.DissectingLootId>=0)
             {
                 int id=inventory.DissectingLootId;

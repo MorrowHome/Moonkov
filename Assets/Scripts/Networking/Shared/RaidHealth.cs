@@ -208,7 +208,15 @@ namespace Unity.MP_FPS
         }
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
-            => TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
+            {
+            constants=TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
+            if(state.ConsumingSupply)
+            {
+                constants.Walk.Speed=Mathf.Min(constants.Walk.Speed,RaidNutrition.SupplyUseMaxSpeed);
+                constants.Sprint.Speed=Mathf.Min(constants.Sprint.Speed,RaidNutrition.SupplyUseMaxSpeed);
+            }
+            return constants;
+        }
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
         public static bool HandsBusy(in PredictedPlayerGhost state) => state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
         // Self-treatment can continue through physiological damage, but not a new
@@ -236,7 +244,7 @@ namespace Unity.MP_FPS
             }
             if(state.ClashEnabled && state.ClashDarkSight)
             {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);}
-            if (!RaidNutrition.CanSprint(state))
+            if (state.ConsumingSupply || !RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;
         }

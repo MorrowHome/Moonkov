@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
     {
         public const float Capacity = 100, LowThreshold = 25, FullThreshold = 85;
         public const float FoodUseSeconds = 3, DrinkUseSeconds = 2;
+        public const float SupplyUseMaxSpeed = 1.5f;
         public static void Initialize(ref PredictedPlayerGhost state)
         {
             state.Energy = state.Hydration = Capacity; state.Satiety = 25;

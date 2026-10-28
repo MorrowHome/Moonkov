@@ -95,14 +95,13 @@ public static class RaidNutritionActionChecks
         actor.RefreshMedical(ref health, true, origin, 10);
         Check(!actor.ActionPending && !actor.MedicalIsConsumable && actor.Graph.Count("ration", true) == 2 && health.Energy == 40, "Cancelled food remains carried");
 
-        for (int interruption = 0; interruption < 11; interruption++)
+        for (int interruption = 1; interruption < 11; interruption++)
         {
             actor = Actor("ration", out health, out id);
             Check(actor.BeginConsumable(health, id, actor.Graph.Version, origin, 0) == InventoryError.None, "Interruption setup");
             var position = origin; bool accessible = true;
             switch (interruption)
             {
-                case 0: position.x += .76f; break;
                 case 1: RaidHealth.Damage(ref health,BodyPart.RightArm,1,health.LastHitTick+1); break;
                 case 2: health.ShieldHitSequence++; break;
                 case 3: health.LastShotTick++; break;
@@ -118,6 +117,26 @@ public static class RaidNutritionActionChecks
             Check(!actor.ActionPending && actor.Error != InventoryError.None && actor.Graph.Count("ration", true) == 2 && health.Energy == 40,
                 "Interruption must not grant or consume food: " + interruption);
         }
+
+        foreach(string code in new[]{"ration","water"})
+        {
+            actor=Actor(code,out health,out id);
+            Check(actor.BeginConsumable(health,id,actor.Graph.Version,origin,0)==InventoryError.None,"Moving supply starts");
+            actor.RefreshMedical(ref health,true,origin+new float3(10,0,0),.5);
+            Check(actor.ActionPending && actor.Graph.Count(code,true)==2,"Walking cannot cancel or consume supply early");
+            actor.RefreshMedical(ref health,true,origin+new float3(20,0,0),actor.MedicalUntil);
+            Check(!actor.ActionPending && actor.Error==InventoryError.None && actor.Graph.Count(code,true)==1,"Moving supply completes exactly once");
+        }
+        var constants=new FirstPersonController.ControllerConsts {
+            Walk=new FirstPersonController.ControllerConsts.StateConsts {Speed=4},
+            Sprint=new FirstPersonController.ControllerConsts.StateConsts {Speed=6}};
+        health=default;health.ConsumingSupply=true;
+        var limited=RaidHealth.Movement(health,constants);
+        Check(limited.Walk.Speed==RaidNutrition.SupplyUseMaxSpeed && limited.Sprint.Speed==RaidNutrition.SupplyUseMaxSpeed,"Food and drink cap predicted and server movement");
+        var input=default(PlayerInput);input.SetFlag(PlayerInput.InputFlag.Sprint,true);
+        Check(!RaidHealth.RestrictInput(health,input).Sprint,"Supply use disables sprint input");
+        health.ConsumingSupply=false;
+        Check(RaidHealth.Movement(health,constants).Sprint.Speed==6,"Normal speed returns after supply use");
 
         actor = Actor("ration", out health, out id);
         Check(actor.Graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None, "Create medicine");

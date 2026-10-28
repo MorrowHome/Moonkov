@@ -123,6 +123,7 @@ namespace Unity.MP_FPS
                                 inventory.Error=inventory.BeginConsumable(ghost.ValueRO,itemId,r.ExpectedVersion,usePosition,SystemAPI.Time.ElapsedTime);
                                 if(inventory.Error==InventoryError.None)
                                 {
+                                    ghost.ValueRW.ConsumingSupply=true;
                                     RaidConsumableAcoustics.Mark(ref ghost.ValueRW);
                                     CancelManualMission(ref state,connection,"任务操作中断：开始使用补给；维修或下载进度未完成。");
                                 }

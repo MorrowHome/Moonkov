@@ -225,7 +225,7 @@ namespace Unity.MP_FPS
         {
             if(MedicalItemId==null)return;
             string reason=!accessible ? "治疗中断：玩家死亡、断线或战局已结束。" :
-                Unity.Mathematics.math.distancesq(position,MedicalOrigin)>ItemActionMovementLimit*ItemActionMovementLimit ? "治疗中断：移动超过允许范围。" :
+                !MedicalIsConsumable && Unity.Mathematics.math.distancesq(position,MedicalOrigin)>ItemActionMovementLimit*ItemActionMovementLimit ? "治疗中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=MedicalDamageSequence ||
                     health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
