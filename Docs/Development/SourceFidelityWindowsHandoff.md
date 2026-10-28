@@ -39,7 +39,8 @@
 - 分块预览必须先保存为线性 EXR，再重新加载用于渲染。临时预览直接修改内存贴图时显示过假方块，不能据此作废正确断点。第 14 块与同范围单独重烘的缩图结果相符，平均绝对误差约 `2.6e-6`。已落盘重载的部分预览在 `World/TiledPartialPreview`；其中仍有未重烘区域，不代表最终结果。
 - 图集 26 已完成 64 块、拼接和统计输出。候选仍在独立目录，未替换旧 Bakes。`World/Tiled26Review` 有同镜头新旧结果、256 samples 的源漫反射参考和报告。前景面板的大块色斑明显减轻，当前视角未见明显分块网格。源参考仍有采样噪声，数值差异不能作为最终画质评分：前景区域 RMSE 约 `0.619→0.541`，大面板约 `0.599→0.588`。其他角度、Unity 压缩和正式场景仍未验收。
 - 新增 `run_world_quality.py`，用普通 Python 和参数 `--blender 实际路径` 运行。它先核对已完成的 26，再串行处理室内图集 24、25，随后补齐有效反射。每个 Blender 子进程带 Python 错误退出码；失败即停止队列。输出仍是候选，不自动导入或安装。
-- 队列状态为 `World/WindowsQualityQueue.json`。总日志为 `LocalData/SourceFidelity20261028/WindowsQualityQueue.log`，子日志为 `TiledQuality24.log`、`TiledQuality25.log`、`WindowsReflections.log`。进程存在且状态正常就等待，不另开同一任务。当前已开始 24。
+- 队列状态为 `World/WindowsQualityQueue.json`。首次总日志为 `LocalData/SourceFidelity20261028/WindowsQualityQueue.log`，恢复日志为 `WindowsQualityQueueRecovery.log` 及 `.stderr.log`。子日志为 `TiledQuality24.log`、`TiledQuality25.log`、`WindowsReflections.log`。实际阶段以状态和子日志为准。
+- 长队列用 `Start-Process -WindowStyle Hidden` 启动独立 Python 进程并重定向日志。仅状态文件写着 baking 不能证明仍在运行；也要确认队列和 Blender 子进程存在。曾出现两者退出但没有正常结束标记的情况，不能只等待。恢复前先排除已有进程，再同命令续跑。已完整且配置匹配的图集会直接跳过；部分图集按分块断点继续。
 - 用户已明确允许 GPU 持续跑，画质优先。名为“继续 Blender 源外观烘焙与 Unity 接入”的本聊天后续唤醒已启用，每 10 分钟检查并推进下一阶段；正常计算时保持安静。收口后停用。不要重复创建同一后续任务或重复启动烘焙。
 - `9caa6029` 已将分块脚本和诊断结论提交并推送到 `origin/develop`。恢复快照 `050a6e4a` 也已在远端。此前的推送拒绝已不再是当前阻塞。
 

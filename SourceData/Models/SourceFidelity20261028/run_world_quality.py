@@ -54,6 +54,10 @@ def blender_job(script, arguments, log):
 try:
     verify_atlas(26)
     for index in (24, 25):
+        if (quality / f'Irradiance_{index:03d}.json').is_file():
+            verify_atlas(index)
+            state('atlas_ready', atlas=index, resumed=True)
+            continue
         state('baking', atlas=index)
         blender_job('bake_world_tiled.py', [f'--atlas={index}'],
                     WORK.parent / f'TiledQuality{index}.log')
