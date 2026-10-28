@@ -213,6 +213,7 @@ namespace Unity.MP_FPS
                                 SystemAPI.GetComponent<PredictedPlayerGhost>(player),
                                 caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds,
                                 caches.RefillGeneration(r.LootId),caches.Containers[r.LootId].Children(LootInventoryExchange.Root).Count());
+                            inventory.NextLootNoiseAt=System.Math.Max(inventory.NextLootNoiseAt,SystemAPI.Time.ElapsedTime+RaidLootAcoustics.SearchInterval);
                         }
                         if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
@@ -277,6 +278,12 @@ namespace Unity.MP_FPS
                     health=SystemAPI.GetComponent<PredictedPlayerGhost>(player);
                 }
                 inventory.RefreshDissection(LootContainers(ref state),accessible,position,health,SystemAPI.Time.ElapsedTime);
+            }
+            if(SystemAPI.Exists(actionPlayer) && SystemAPI.HasComponent<PredictedPlayerGhost>(actionPlayer))
+            {
+                var audioState=SystemAPI.GetComponentRW<PredictedPlayerGhost>(actionPlayer);
+                RaidLootAcoustics.RefreshSearch(ref audioState.ValueRW,inventory.DissectingLootId>=0,
+                    SystemAPI.Time.ElapsedTime,ref inventory.NextLootNoiseAt);
             }
             if(inventory.OpenedLootId<0 || session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
             if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session)) return;

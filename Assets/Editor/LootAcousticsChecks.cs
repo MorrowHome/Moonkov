@@ -14,6 +14,30 @@ using Object = UnityEngine.Object;
 
 public static partial class AlienEnemyChecks
 {
+    public static string CheckSearchCadence()
+    {
+        int count=0;
+        void Check(bool value,string message){if(!value)throw new InvalidOperationException(message);count++;}
+        var player=new PredictedPlayerGhost {CurrentHealth=100};double next=RaidLootAcoustics.SearchInterval;
+        RaidLootAcoustics.Mark(ref player);
+        RaidLootAcoustics.RefreshSearch(ref player,true,.1,ref next);
+        Check(player.LootSearching && player.LootSearchSequence==1,"Accepted opening must not play twice");
+        for(int n=1;n<=4;n++)
+        {
+            double deadline=next;
+            RaidLootAcoustics.RefreshSearch(ref player,true,deadline-.001,ref next);
+            Check(player.LootSearchSequence==(uint)n,"Repeated frames cannot accelerate search audio");
+            RaidLootAcoustics.RefreshSearch(ref player,true,deadline,ref next);
+            Check(player.LootSearchSequence==(uint)(n+1),"Long searches must keep producing rummage audio");
+        }
+        uint sequence=player.LootSearchSequence;
+        RaidLootAcoustics.RefreshSearch(ref player,false,next+5,ref next);
+        Check(!player.LootSearching && player.LootSearchSequence==sequence,"Completion and cancellation stop search cues");
+        player.CurrentHealth=0;RaidLootAcoustics.RefreshSearch(ref player,true,next+10,ref next);
+        Check(!player.LootSearching && player.LootSearchSequence==sequence,"Death cannot leave searching audio active");
+        return $"PASS: {count} ongoing search audio checks";
+    }
+
     public static string RunLootPlayback()
     {
         if (!EditorApplication.isPlaying || !GameManager.Instance) throw new InvalidOperationException("Use initialized Play mode.");

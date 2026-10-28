@@ -6,7 +6,8 @@ namespace Unity.MP_FPS
     // Observes rendered client state, outside the prediction replay loop.
     public sealed class MoonkovPlayerAudio
     {
-        private bool m_Initialized;
+        private bool m_Initialized, m_WasLootSearching;
+        private SoundSystem.SoundInfo m_LootSound;
         private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
         private readonly MoonkovPainAudio m_Pain = new MoonkovPainAudio();
         private SoundSystem.SoundInfo m_PainSound, m_GroanSound;
@@ -49,7 +50,7 @@ namespace Unity.MP_FPS
                 m_Initialized = true;
                 m_JumpTick = ghost.LastJumpTick;
                 m_LandTick = ghost.LastLandTick; m_ImpactTick = ghost.LastImpactTick;
-                m_LootSequence = ghost.LootSearchSequence;
+                m_LootSequence = ghost.LootSearchSequence;m_WasLootSearching=ghost.LootSearching;
                 m_ConsumableSequence = ghost.ConsumableUseSequence;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
                 m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
@@ -71,8 +72,17 @@ namespace Unity.MP_FPS
             }
             if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
             if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, .7f);
-            if (NewTick(ghost.LootSearchSequence, ref m_LootSequence))
-                LocalOrWorld(library.LootSearchWorld, position, owned, owned ? .65f : 1);
+            bool searchEnded=m_WasLootSearching && !ghost.LootSearching;
+            if(searchEnded)
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_LootSound,.08f);m_LootSound=null;
+            }
+            m_WasLootSearching=ghost.LootSearching;
+            if (NewTick(ghost.LootSearchSequence, ref m_LootSequence) && !searchEnded && ghost.CurrentHealth>0)
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_LootSound,.04f);
+                m_LootSound=LocalOrWorld(library.LootSearchWorld,position,owned);
+            }
             if (NewTick(ghost.ConsumableUseSequence, ref m_ConsumableSequence) && !owned && ghost.CurrentHealth > 0)
                 LocalOrWorld(library.Cloth, position, false);
             if (NewTick(ghost.LastLandTick, ref m_LandTick))
@@ -202,6 +212,7 @@ namespace Unity.MP_FPS
         public void Stop()
         {
             var system = GameManager.Instance?.SoundSystem;
+            system?.Stop(m_LootSound,.08f);m_LootSound=null;m_WasLootSearching=false;
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;

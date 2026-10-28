@@ -1,10 +1,18 @@
 namespace Unity.MP_FPS
 {
-    // Both the real player and PMC scavengers produce one authoritative cue.
+    // Opening and searching use the same authoritative hearing and playback events.
     public static class RaidLootAcoustics
     {
         public const float HearingRange = 10f;
         public const double MinimumInterval = .8;
+        public const double SearchInterval = 1.2;
+
+        public static void RefreshSearch(ref PredictedPlayerGhost player,bool searching,double now,ref double nextSoundAt)
+        {
+            player.LootSearching=searching && player.CurrentHealth>0;
+            if(!player.LootSearching || now<nextSoundAt)return;
+            Mark(ref player);nextSoundAt=now+SearchInterval;
+        }
 
         public static void Mark(ref PredictedPlayerGhost player)
         {
