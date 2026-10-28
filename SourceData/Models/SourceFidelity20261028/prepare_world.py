@@ -7,6 +7,7 @@ ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];sys.path.in
 from material_bake_nodes import flatten
 from freeze_object_inputs import add_attribute,object_random,freeze_material
 from prepared_light_transport import PreparedLightTransport,TRANSPORT_VERSION
+from prepared_material_bindings import replace_materials_preserving_indices,MATERIAL_BINDING_VERSION
 OUT=PROJECT/'LocalData/SourceFidelity20261028/World';OUT.mkdir(parents=True,exist_ok=True)
 contract=json.loads((ROOT/'SourceSummary.json').read_text());assert hashlib.sha256(pathlib.Path(bpy.data.filepath).read_bytes()).hexdigest()==contract['source_sha256']
 plan=json.loads((PROJECT/'LocalData/SourceFidelity20261028/BakePlan.json').read_text())
@@ -21,6 +22,7 @@ else:stage=bpy.data.scenes.new('SourceWorldStatic');stage.world=source_scene.wor
 if resumed:
  prior=json.loads((OUT/'PreparedWorldProgress.json').read_text())
  if prior.get('source_sha256')!=contract['source_sha256']:raise ValueError('Prepared checkpoint source mismatch')
+ if prior.get('materialBindingVersion')!=MATERIAL_BINDING_VERSION:raise ValueError('Legacy prepared checkpoint lost polygon material indices; use a fresh isolated candidate workspace')
  if prior.get('transportVersion')!=TRANSPORT_VERSION:raise ValueError('Legacy prepared checkpoint lacks receiver-link partitioning; use a fresh isolated candidate workspace')
 transport=PreparedLightTransport(source_scene,stage,bpy.context.view_layer,resumed=resumed)
 stage.render.engine='CYCLES'
@@ -119,10 +121,10 @@ for job in jobs:
  objects=[];original_rows=[]
  for row in job['rows']:
   mesh=cache[row['source']].copy();matrix=Matrix(row['matrix']);obj=bpy.data.objects.new(f'SRC_{row["id"]:05d}',mesh);stage.collection.objects.link(obj)
-  source_material_names=row['materials'];mesh.materials.clear()
+  source_material_names=row['materials']
   for name in source_material_names:
    if name is None:raise ValueError('Missing source material '+row['source'])
-   mesh.materials.append(materials[name])
+  replace_materials_preserving_indices(mesh,[materials[name] for name in source_material_names])
   # Stable, locally centered volume test; never measure tiny panels at km offsets.
   bm=bmesh.new();bm.from_mesh(mesh);bm.faces.ensure_lookup_table();seen=set()
   for face in bm.faces:
@@ -194,7 +196,7 @@ for job in jobs:
   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');assert bpy.ops.uv.smart_project(island_margin=4/side,area_weight=.5,correct_aspect=True,scale_to_bounds=True)=={'FINISHED'};bpy.ops.object.mode_set(mode='OBJECT')
  joined.data.calc_loop_triangles()
  report.append({'id':job['id'],'object':joined.name,'size':side,'density':job['density'],'area_conservative':job['area'],'triangles':len(joined.data.loop_triangles),'source_objects':original_rows})
- progress_path.write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
+ progress_path.write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'materialBindingVersion':MATERIAL_BINDING_VERSION,'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
  bpy.data.libraries.write(str(checkpoint),{stage},fake_user=True,compress=True)
  print('WORLD_ATLAS_PREPARED',job['id'],'of',len(jobs),'objects',len(objects),'triangles',len(joined.data.loop_triangles),'size',side,'elapsed',round(time.monotonic()-start,1),flush=True)
  # Release original mesh cache copies after their final instance has been staged.
@@ -206,6 +208,6 @@ if len(report)!=len(jobs):
  print('WORLD_PREPARATION_PARTIAL',len(report),'of',len(jobs),flush=True)
  raise SystemExit(0)
 # A temporary project is the checkpoint for baking; it is not the canonical asset.
-(OUT/'PreparedWorld.json').write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'source_saved':False,'atlas_count':len(report),'triangles':sum(x['triangles'] for x in report),'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
+(OUT/'PreparedWorld.json').write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'materialBindingVersion':MATERIAL_BINDING_VERSION,'source_saved':False,'atlas_count':len(report),'triangles':sum(x['triangles'] for x in report),'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
 bpy.data.libraries.write(str(OUT/'PreparedWorld.blend'),{stage},fake_user=True,compress=True)
 print('WORLD_PREPARATION_COMPLETE',len(report),round(time.monotonic()-start,1),flush=True)

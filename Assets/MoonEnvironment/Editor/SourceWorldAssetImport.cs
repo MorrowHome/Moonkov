@@ -21,7 +21,7 @@ namespace Unity.MP_FPS.Moon.Editor
     [Serializable] public sealed class SourceChunk
     { public int id, atlas, material, vertices, indices, bytes; public string file; public Vector3 position; }
     [Serializable] public sealed class SourceGeometryManifest
-    { public string sourceSha256; public int triangles, vertices, atlasCount; public SourceChunk[] chunks; public int[] materialIds; }
+    { public string sourceSha256; public int triangles, vertices, atlasCount, materialBindingVersion; public SourceChunk[] chunks; public int[] materialIds; }
     [Serializable] public sealed class SourceReflectionPlan
     { public string sourceSha256, lightingRevision; public Vector3 towardSun; public Color sunColor; public float sunEnergy, sunAngle; public SourceReflectionJob[] probes; }
     [Serializable] public sealed class SourceReflectionJob

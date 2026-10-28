@@ -38,7 +38,7 @@ namespace Unity.MP_FPS.Moon.Editor
             var data = AssetDatabase.LoadAssetAtPath<SourceWorldLightingData>(SourceWorldAssetImport.DataPath);
             if (!data || !data.characterProbes || !data.reflections || data.reflections.cubemaps.Any(c => !c) ||
                 data.irradiance == null || data.irradiance.Length != manifest.atlases.Length ||
-                geometry.atlasCount != manifest.atlases.Length || data.irradiance.Any(t => !t))
+                geometry.atlasCount != manifest.atlases.Length || geometry.materialBindingVersion != 1 || data.irradiance.Any(t => !t))
                 throw new InvalidOperationException("All source world assets must finish importing before formal installation.");
             if (data.sourceSha256 != manifest.sourceSha256 || geometry.sourceSha256 != data.sourceSha256) throw new InvalidOperationException("Source provenance mismatch.");
             var materials = manifest.materials.ToDictionary(m => m.id, m => AssetDatabase.LoadAssetAtPath<Material>(m.asset));

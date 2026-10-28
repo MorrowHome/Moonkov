@@ -4,6 +4,7 @@ The binary payload is imported once by the Editor, not parsed during gameplay.
 import bpy,numpy as np,pathlib,json,struct,time,math
 ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];WORK=PROJECT/'LocalData/SourceFidelity20261028/World';OUT=WORK/'Geometry';OUT.mkdir(parents=True,exist_ok=True)
 world=json.loads((WORK/'PreparedWorld.json').read_text());compiled=json.loads((ROOT/'MaterialIR/CompiledMaterials.json').read_text());rows={r['id']:r for r in compiled['materials']};scene=next(s for s in bpy.data.scenes if s.name.startswith('SourceWorldStatic'));manifest=[];start=time.monotonic()
+if world.get('materialBindingVersion')!=1:raise ValueError('Prepared polygon material bindings are not certified; do not export legacy slot-zero meshes')
 
 def attribute(mesh,name,count,size=3):
  a=mesh.attributes.get(name);output=np.zeros((count,size),dtype=np.float32)
@@ -51,7 +52,7 @@ for atlas in world['atlases']:
   with path.open('wb') as stream:stream.write(b'SMW1');stream.write(struct.pack('<II',len(vertices),len(indices)));stream.write(vertices.tobytes());stream.write(indices.tobytes())
   manifest.append({'id':part,'atlas':atlas['id'],'material':material_id,'position':{'x':float(center[0]),'y':float(center[1]),'z':float(center[2])},'vertices':len(vertices),'indices':len(indices),'file':str(path.relative_to(PROJECT)),'bytes':path.stat().st_size})
  print('SOURCE_MESH_ATLAS_EXPORTED',atlas['id'],'chunks',len(manifest),'elapsed',round(time.monotonic()-start,1),flush=True)
-result={'sourceSha256':world['source_sha256'],'triangles':sum(r['indices']//3 for r in manifest),'vertices':sum(r['vertices'] for r in manifest),'chunks':manifest,'materialIds':sorted({r['material'] for r in manifest}),'atlasCount':len(world['atlases'])}
+result={'sourceSha256':world['source_sha256'],'materialBindingVersion':world['materialBindingVersion'],'triangles':sum(r['indices']//3 for r in manifest),'vertices':sum(r['vertices'] for r in manifest),'chunks':manifest,'materialIds':sorted({r['material'] for r in manifest}),'atlasCount':len(world['atlases'])}
 (WORK/'WorldGeometry.json').write_text(json.dumps(result,indent=2));print('FULL_WORLD_GEOMETRY_EXPORTED',len(manifest),result['triangles'],result['vertices'],round(time.monotonic()-start,1),flush=True)
 
 # Validate the actual float32 runtime payload after the axis conversion.
