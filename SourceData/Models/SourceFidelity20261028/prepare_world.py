@@ -6,6 +6,7 @@ from mathutils import Vector,Matrix
 ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];sys.path.insert(0,str(ROOT))
 from material_bake_nodes import flatten
 from freeze_object_inputs import add_attribute,object_random,freeze_material
+from prepared_light_transport import PreparedLightTransport,TRANSPORT_VERSION
 OUT=PROJECT/'LocalData/SourceFidelity20261028/World';OUT.mkdir(parents=True,exist_ok=True)
 contract=json.loads((ROOT/'SourceSummary.json').read_text());assert hashlib.sha256(pathlib.Path(bpy.data.filepath).read_bytes()).hexdigest()==contract['source_sha256']
 plan=json.loads((PROJECT/'LocalData/SourceFidelity20261028/BakePlan.json').read_text())
@@ -17,14 +18,18 @@ if resumed:
  with bpy.data.libraries.load(str(checkpoint),link=False) as (src,dst):dst.scenes=['SourceWorldStatic']
  stage=dst.scenes[0]
 else:stage=bpy.data.scenes.new('SourceWorldStatic');stage.world=source_scene.world.copy()
+if resumed:
+ prior=json.loads((OUT/'PreparedWorldProgress.json').read_text())
+ if prior.get('source_sha256')!=contract['source_sha256']:raise ValueError('Prepared checkpoint source mismatch')
+ if prior.get('transportVersion')!=TRANSPORT_VERSION:raise ValueError('Legacy prepared checkpoint lacks receiver-link partitioning; use a fresh isolated candidate workspace')
+transport=PreparedLightTransport(source_scene,stage,bpy.context.view_layer,resumed=resumed)
 stage.render.engine='CYCLES'
 for key in ['samples','max_bounces','diffuse_bounces','glossy_bounces','transmission_bounces','transparent_max_bounces','sample_clamp_direct','sample_clamp_indirect']:
  if hasattr(source_scene.cycles,key):setattr(stage.cycles,key,getattr(source_scene.cycles,key))
 stage.cycles.samples=128;stage.cycles.use_denoising=False;stage.render.threads_mode='FIXED';stage.render.threads=4
 stage.view_settings.view_transform=source_scene.view_settings.view_transform;stage.view_settings.look=source_scene.view_settings.look
-for obj in source_scene.objects:
- if not resumed and obj.type=='LIGHT' and not obj.hide_render:
-  light=bpy.data.objects.new('SOURCE_'+obj.name,obj.data.copy());stage.collection.objects.link(light);light.matrix_world=obj.matrix_world.copy()
+if not resumed:
+ for obj in transport.lights:transport.copy_light(obj,stage)
 # Shader graphs are frozen on copies only.
 materials={};refs={}
 for name,row in material_rows.items():
@@ -84,9 +89,9 @@ rows=plan['objects'];buckets=collections.defaultdict(list)
 for row in rows:
  terrain='DISPLAY_TERRAIN_CUT' in row['source'];indoor=row['source'].startswith(('MC_','MC00','NR01','L14','LD2'))
  row['density']=.5 if terrain and 'Background4km' in row['source'] else 4 if terrain else 16 if indoor else 8
- row['terrain']=terrain;buckets[(row['density'],terrain)].append(row)
+ row['terrain']=terrain;buckets[(row['density'],terrain,transport.signature(row['source']))].append(row)
 jobs=[]
-for (density,terrain),bucket in sorted(buckets.items()):
+for (density,terrain,link_signature),bucket in sorted(buckets.items()):
  bucket.sort(key=lambda r:(r['cell'][0],r['cell'][1],r['cell'][2],r['source'],r['id']))
  current=[];area=0;tris=0;capacity=4096**2*.65/density**2
  for row in bucket:
@@ -96,10 +101,12 @@ for (density,terrain),bucket in sorted(buckets.items()):
  if current:jobs.append({'id':len(jobs),'rows':current,'area':area,'triangles':tris,'density':density})
 print('WORLD_JOB_PLAN',len(jobs),sum(j['triangles'] for j in jobs),flush=True)
 (OUT/'JobPlan.json').write_text(json.dumps({'source_sha256':contract['source_sha256'],'jobs':jobs},indent=2))
+only_atlas=next((int(a.split('=',1)[1]) for a in sys.argv if a.startswith('--only-atlas=')),None)
+if only_atlas is not None and only_atlas not in {j['id'] for j in jobs}:raise ValueError('Unknown bounded atlas job')
 # Cache evaluated meshes while the original dependency graph is still active.
 cache={}
 prepared_ids={int(o['source_atlas_id']) for o in stage.objects if 'source_atlas_id' in o}
-for number,name in enumerate(sorted({r['source'] for j in jobs if j['id'] not in prepared_ids for r in j['rows']})):
+for number,name in enumerate(sorted({r['source'] for j in jobs if j['id'] not in prepared_ids and (only_atlas is None or j['id']==only_atlas) for r in j['rows']})):
  evaluated=bpy.data.objects[name].evaluated_get(dg);cache[name]=bpy.data.meshes.new_from_object(evaluated,preserve_all_data_layers=True,depsgraph=dg)
  if number%2000==0:print('EVALUATED_MESHES',number,'seconds',round(time.monotonic()-start,1),flush=True)
 bpy.context.window.scene=stage
@@ -107,6 +114,7 @@ progress_path=OUT/'PreparedWorldProgress.json'
 previous=json.loads(progress_path.read_text()) if resumed and progress_path.exists() else {}
 report=previous.get('atlases',[]);normal_fixes=previous.get('normal_components_corrected',0);degenerate_removed=0
 for job in jobs:
+ if only_atlas is not None and job['id']!=only_atlas:continue
  if job['id'] in prepared_ids:continue
  objects=[];original_rows=[]
  for row in job['rows']:
@@ -175,6 +183,7 @@ for job in jobs:
  if len(objects)>1:assert bpy.ops.object.join()=={'FINISHED'}
  joined=bpy.context.object;joined.name=f'SourceAtlas_{job["id"]:03d}';uv=joined.data.uv_layers.new(name='SourceStaticBake');joined.data.uv_layers.active=uv;uv.active_render=True
  joined['source_atlas_id']=job['id'];joined['source_density']=job['density']
+ transport.bind_receiver(joined,[row['source'] for row in job['rows']])
  side=min(4096,max(2048 if len(objects)>800 else 512,2**math.ceil(math.log2(max(1,math.sqrt(job['area']/.65)*job['density'])))))
  joined['source_bake_size']=side
  if len(job['rows'])==1 and job['rows'][0]['terrain']:
@@ -185,14 +194,18 @@ for job in jobs:
   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');assert bpy.ops.uv.smart_project(island_margin=4/side,area_weight=.5,correct_aspect=True,scale_to_bounds=True)=={'FINISHED'};bpy.ops.object.mode_set(mode='OBJECT')
  joined.data.calc_loop_triangles()
  report.append({'id':job['id'],'object':joined.name,'size':side,'density':job['density'],'area_conservative':job['area'],'triangles':len(joined.data.loop_triangles),'source_objects':original_rows})
- progress_path.write_text(json.dumps({'source_sha256':contract['source_sha256'],'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
+ progress_path.write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
  bpy.data.libraries.write(str(checkpoint),{stage},fake_user=True,compress=True)
  print('WORLD_ATLAS_PREPARED',job['id'],'of',len(jobs),'objects',len(objects),'triangles',len(joined.data.loop_triangles),'size',side,'elapsed',round(time.monotonic()-start,1),flush=True)
  # Release original mesh cache copies after their final instance has been staged.
  remaining={r['source'] for j in jobs[job['id']+1:] for r in j['rows']}
  for name in list(cache):
   if name not in remaining:bpy.data.meshes.remove(cache.pop(name))
+# A bounded diagnostic must never publish a complete-world marker.
+if len(report)!=len(jobs):
+ print('WORLD_PREPARATION_PARTIAL',len(report),'of',len(jobs),flush=True)
+ raise SystemExit(0)
 # A temporary project is the checkpoint for baking; it is not the canonical asset.
-(OUT/'PreparedWorld.json').write_text(json.dumps({'source_sha256':contract['source_sha256'],'source_saved':False,'atlas_count':len(report),'triangles':sum(x['triangles'] for x in report),'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
+(OUT/'PreparedWorld.json').write_text(json.dumps({'source_sha256':contract['source_sha256'],'transportVersion':TRANSPORT_VERSION,'source_saved':False,'atlas_count':len(report),'triangles':sum(x['triangles'] for x in report),'normal_components_corrected':normal_fixes,'atlases':report},indent=2))
 bpy.data.libraries.write(str(OUT/'PreparedWorld.blend'),{stage},fake_user=True,compress=True)
 print('WORLD_PREPARATION_COMPLETE',len(report),round(time.monotonic()-start,1),flush=True)

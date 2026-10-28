@@ -34,11 +34,12 @@ namespace Unity.MP_FPS.Moon.Editor
         public static void Install()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Install in Edit Mode.");
+            var geometry = SourceWorldAssetImport.Geometry; var manifest = SourceWorldAssetImport.Manifest;
             var data = AssetDatabase.LoadAssetAtPath<SourceWorldLightingData>(SourceWorldAssetImport.DataPath);
             if (!data || !data.characterProbes || !data.reflections || data.reflections.cubemaps.Any(c => !c) ||
-                data.irradiance == null || data.irradiance.Length != 27 || data.irradiance.Any(t => !t))
+                data.irradiance == null || data.irradiance.Length != manifest.atlases.Length ||
+                geometry.atlasCount != manifest.atlases.Length || data.irradiance.Any(t => !t))
                 throw new InvalidOperationException("All source world assets must finish importing before formal installation.");
-            var geometry = SourceWorldAssetImport.Geometry; var manifest = SourceWorldAssetImport.Manifest;
             if (data.sourceSha256 != manifest.sourceSha256 || geometry.sourceSha256 != data.sourceSha256) throw new InvalidOperationException("Source provenance mismatch.");
             var materials = manifest.materials.ToDictionary(m => m.id, m => AssetDatabase.LoadAssetAtPath<Material>(m.asset));
             if (materials.Values.Any(m => !m || !m.shader || !m.shader.isSupported)) throw new InvalidOperationException("A source material is unavailable.");

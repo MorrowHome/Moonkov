@@ -23,6 +23,9 @@
 - 审阅包已上传到原私有 Drive 目录，文件 ID `16BaWCTtBkg3gvybC3XhUSAdAgOPbXqjY`，1482022 字节，SHA `0fa42f403b4e29ccc5df304f0aa4d31e1f17510602d914331a66592746c96448`。元数据确认 shared=false、仅 owner。包含已有三张对比图、完整材质上下文、实际 mask 裁切、Report 与限制说明。relay 主动发消息仍有 idle AbsolutePathBuf 问题，不把上传成功说成制作侧已经看图；其可读取本地回执和私有目录。
 - 已开始隔离静态输入准备，根为 `LocalData/SourceFidelity20261028/V11L14StaticStage`。仅镜像现有 Python 管线脚本，生成该候选的源契约、BakePlan、MaterialIR 和材质翻译。状态 `StaticPreparationQueue.json`。所有输出留在镜像根，不改真实 SourceSummary、Assets、旧 World 或正式场景，不启动全场烘焙；正常进程不要重复启动。
 - Blender 5.2 的灯始终使用节点。新灯检查中性默认 Emission 白色/Strength 1、两节点单链接和无动画，保留 normalize=true、exposure=0、温度关闭。不能把 4.3 的 use_nodes=false 按字面套入 5.2，也不能为补偿迁移擅改功率。依据为 [Normalize 说明](https://developer.blender.org/docs/release_notes/4.5/rendering/)和[灯节点迁移](https://projects.staging.blender.org/blender/blender/commit/74c44d8cc7a42164e42c9220a189050bb932db98)。编辑模式切换后按名称重新取 UV，不能继续读旧 RNA 句柄。5.2 合成器 Object Index 输出名和 ID Mask 的 Index/Anti-Alias 输入须按当前 API 使用。
+- 准备链已补齐灯对象 ray visibility，并按实际 Light Linking 集合成员状态分组后合批。五盏 NR01 灯引用三个 receiver 集合；不能把受光集合扩大到整张合并网格。`prepared_light_transport.py` 克隆原集合层级及对象/子集合 INCLUDE/EXCLUDE 状态，拒绝合并不同成员身份；非空关联的实例器当前明确拒绝，不猜映射。30,403 个源实例静态关系逐项通过，得到 4 类成员签名、30 个图集任务。正式安装器按真实 manifest 数量校验，不再写死 27。
+- 最小 OptiX 场景实际回归通过：原/准备场景的包含面均值同为 1.007494，排除面和集合外面均为 0。八项 ray flags 相同，混合成员合并被拒绝，嵌套 INCLUDE/EXCLUDE 保留。该测试不打开地图、不改正式资产。真实源另做一个有界准备：第 27 任务，66 个源实例、11,424 三角形、1024 UV 图集；保存重开验证源实例 ID、425 灯 ray flags/关联根以及“不发布完整世界标记”通过。报告在 `TransportRegression/Report.json` 和镜像根 `BoundedTransportCold.json`。
+- `prepare_world.py -- --only-atlas=编号` 只准备指定图集，断点仍可继续。部分完成只写 Progress，不写完整 PreparedWorld 标记；旧版未分组断点或源 SHA 不符时拒绝续跑。当前镜像只完成 1/30，不可当完整准备世界。生产 UV 验证下一步先定位第 24 任务的接收面与相邻边界，估算最小图块，不直接全图重烘。该任务有 3791 源实例、223344 三角形；准备 UV 与烘焙整张图集是不同步骤。
 
 用户最新要求是转到 Windows 开发。不要继续在 Mac 后台启动整图烘焙。交接时没有本任务的 Blender 渲染或临时防休眠进程。
 
