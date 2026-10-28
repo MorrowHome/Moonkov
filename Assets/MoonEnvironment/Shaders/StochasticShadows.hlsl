@@ -7,6 +7,7 @@
 
 #if defined(_MOON_STOCHASTIC_SHADOWS)
 float4 _MoonStochasticShadowParams; // radius in atlas texels, pixel size, shadow taps, light selection probability
+float4 _MoonLightingNoiseParams; // direct variation, indirect variation, temporal seed, reserved
 static float2 moonShadowPixel = 0;
 
 void MoonSetShadowPixel(float2 pixel) { moonShadowPixel = floor(pixel / max(_MoonStochasticShadowParams.y, 1)); }
@@ -90,17 +91,30 @@ void MoonSetShadowPixel(float2 pixel) { }
 #undef MainLightShadow
 #undef AdditionalLightShadow
 
-bool MoonSelectLight(float seed)
+float MoonLightingRandom(uint seed)
 {
     // Each light gets an independent, single-pixel Bernoulli sample. Material
     // textures, GI, emission and fog are evaluated for EVERY surface pixel.
     // Integer avalanche hash avoids the visible diagonal pattern of ordered noise.
-    uint state = (uint)moonShadowPixel.x * 1973u + (uint)moonShadowPixel.y * 9277u + (uint)seed * 26699u + 911u;
+    uint state = (uint)moonShadowPixel.x * 1973u + (uint)moonShadowPixel.y * 9277u + seed * 26699u + 911u
+        + (uint)_MoonLightingNoiseParams.z * 104729u;
     state = (state ^ (state >> 16)) * 0x7feb352du;
     state = (state ^ (state >> 15)) * 0x846ca68bu;
     state ^= state >> 16;
-    float noise = (state & 0x00ffffffu) * (1.0 / 16777216.0);
-    return noise < _MoonStochasticShadowParams.w;
+    return (state & 0x00ffffffu) * (1.0 / 16777216.0);
+}
+
+bool MoonSelectLight(float seed)
+{
+    return MoonLightingRandom((uint)seed) < _MoonStochasticShadowParams.w;
+}
+
+half MoonLightingVariation(uint seed, half strength)
+{
+    UNITY_BRANCH if (strength <= 0) return 1;
+    // Triangular distribution has zero mean and stays bounded. Unlike roulette,
+    // every lit pixel retains light; emission, alpha and fog never acquire grain.
+    return 1 + strength * (MoonLightingRandom(seed) + MoonLightingRandom(seed + 7919u) - 1);
 }
 
 Light MoonSampleMainLight() { return GetMainLight(); }
@@ -108,7 +122,14 @@ Light MoonSampleMainLight(float4 coord) { return GetMainLight(coord); }
 Light MoonSampleMainLight(float4 coord, float3 position, half4 mask) { return GetMainLight(coord, position, mask); }
 Light MoonSampleMainLight(InputData data, half4 mask, AmbientOcclusionFactor ao)
 {
-    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1) return GetMainLight(data, mask, ao);
+    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1)
+    {
+        Light light = GetMainLight(data, mask, ao);
+        #if !defined(LIGHTMAP_SHADOW_MIXING) || defined(SHADOWS_SHADOWMASK)
+            light.color *= MoonLightingVariation(101u, _MoonLightingNoiseParams.x);
+        #endif
+        return light;
+    }
     // Subtractive GI needs a deterministic input. Main-light cookies use
     // implicit texture derivatives, so also preserve that path outside roulette.
     #if (defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK)) || defined(_LIGHT_COOKIES)
@@ -130,7 +151,12 @@ Light MoonSampleAdditionalLight(uint index, float3 position) { return GetAdditio
 Light MoonSampleAdditionalLight(uint index, float3 position, half4 mask) { return GetAdditionalLight(index, position, mask); }
 Light MoonSampleAdditionalLight(uint index, InputData data, half4 mask, AmbientOcclusionFactor ao)
 {
-    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1) return GetAdditionalLight(index, data, mask, ao);
+    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1)
+    {
+        Light light = GetAdditionalLight(index, data, mask, ao);
+        light.color *= MoonLightingVariation(index + 211u, _MoonLightingNoiseParams.x);
+        return light;
+    }
     // Reject before shadow/cookie fetches. No implicit-derivative material
     // texture sampling is hidden in this divergent branch (cookies use LOD 0).
     UNITY_BRANCH if (!MoonSelectLight(index + 1))
@@ -148,10 +174,24 @@ Light MoonSampleAdditionalLight(uint index, InputData data, half4 mask, AmbientO
 #define GetAdditionalLight MoonSampleAdditionalLight
 #endif
 
+// Include stock GI first, then redirect only Lighting.hlsl's PBR call. Preserve
+// probe blending, occlusion and clear coat; this invents no indirect light.
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/BRDF.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/GlobalIllumination.hlsl"
+#if defined(_MOON_STOCHASTIC_SHADOWS)
+half3 MoonNoisyGlobalIllumination(BRDFData brdf, BRDFData coat, float coatMask,
+    half3 bakedGI, half occlusion, float3 positionWS, half3 normalWS, half3 viewDirectionWS, float2 screenUV)
+{
+    half3 gi = GlobalIllumination(brdf, coat, coatMask, bakedGI, occlusion, positionWS, normalWS, viewDirectionWS, screenUV);
+    return gi * MoonLightingVariation(313u, _MoonLightingNoiseParams.y);
+}
+#define GlobalIllumination MoonNoisyGlobalIllumination
+#endif
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 // Do not leak remapping into other includes or passes.
 #if defined(_MOON_STOCHASTIC_SHADOWS)
 #undef GetMainLight
 #undef GetAdditionalLight
+#undef GlobalIllumination
 #endif
 #endif

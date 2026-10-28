@@ -1,5 +1,20 @@
 # 随机灯光采样实验
 
+## 2026-10-28 稳定细颗粒版本
+
+- 新场景：`Assets/MoonEnvironment/Variants/LR06FullPreview/Scenes/LR06_LowSample_Display.unity`。只用于效果对照，没有替换正式地图。
+- 使用现有显示网格和灯光。降低平坦环境补光。没有还原源面积灯、反弹光、AgX 或全部程序材质，不能称为 Blender 还原完成。
+- 相机上的 `MoonStochasticLighting` 使用 `lightSamplingProbability=1`、`directNoise=0.38`、`indirectNoise=0.7`、`grainPixels=1`、`noiseUpdatesPerSecond=0`。直接光和间接光分别加入有界、均值为 1 的亮度变化。静止时图案固定，不做时域累积。
+- 这是光照层面的美术近似。它没有减少直接灯样本，也没有计算真实路径。不要沿用下方旧方案的性能收益来描述它。屏幕固定图案在移动时仍会滑过物体；不是贴在世界表面的污渍。
+- 发光、透明、天空和 UI 不加颗粒。`Low Sample Lit` 复用 URP 17.5 的 Lit 输入和深度等通道。已有三种环境 Shader 继续支持相同相机参数。
+- `MoonLowSampleMaterialScope` 只转换指定层级下的普通不透明 Lit 材质。按原材质共享临时副本，不逐帧搜索或分配。关闭时恢复原引用。编辑器保存场景前恢复原材质，保存后重新应用，避免把临时引用写入场景。
+- `Tools / Moon Environment / Blender Look / Render map comparison` 使用真实 LR06 显示场景输出同机位对照。原场景必须先关闭。结果在忽略目录 `LocalData/BlenderLookStudy`。`Enable on selected camera` 可设置相机参数；普通 Lit 材质还需在环境层级使用材质范围组件并指定 `MoonEnvironment/Low Sample Lit`。
+- 对照统一使用 4 倍 MSAA。几何边缘需要抗锯齿，不能为了颗粒关闭它。表面内部仍保留单像素光照变化。
+
+验证：单 Editor、Apple M5。443 种普通 Lit 材质兼容转换。保存重开后有 1389 个材质槽参与。关闭、重开组件和再次保存均恢复正确。关闭相机效果时，转换 Shader 与原 Lit 的截图逐字节相同。固定相机连续两帧相同。四种参与 Shader 的当前编译错误为 0。旧灯光与阴影回归通过。未验证正式游戏、Windows 或 Player 构建。
+
+源文件和差异说明见 [Blender 与 Unity 对照](BlenderUnityLook.md)。
+
 2026-10-27。目标是减少一部分光照采样，并让受光表面保留细颗粒。不是胶片噪点后处理，也不是 Cycles 路径追踪。
 
 ## 当前实现
