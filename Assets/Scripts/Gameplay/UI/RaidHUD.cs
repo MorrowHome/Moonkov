@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
         private VisualElement m_OxygenPanel, m_OxygenFill;
         private bool m_HealthSelected;
         private float m_NextOxygenAlert;
+        private readonly MoonkovOxygenFeedback m_OxygenFeedback = new MoonkovOxygenFeedback();
         private EntityQuery m_InventoryQuery;
         private uint m_InventorySequence, m_InventoryRequestId;
         private readonly MoonkovActionAudio m_InventoryAudio = new MoonkovActionAudio();
@@ -35,7 +36,7 @@ namespace Unity.MP_FPS
         private int m_DissectingLootId=-1;
         private float m_DissectionEndsAt;
         private bool m_DissectionInterrupted;
-        private bool m_MedicalActive, m_ConsumableActive, m_ConsumableFood;
+        private bool m_MedicalActive, m_ConsumableActive, m_ConsumableFood, m_ConsumableOxygen;
         private float m_MedicalEndsAt, m_ActionDuration, m_ActionFeedbackUntil;
         private string m_ActionFeedback;
         private Client.RaidTimedActionView m_ActionView;
@@ -139,7 +140,7 @@ namespace Unity.MP_FPS
             m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart, ConsumeSupply);
             m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
             m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
-            m_HealthSelected = false; m_NextOxygenAlert = 0;
+            m_HealthSelected = false; m_NextOxygenAlert = 0; m_OxygenFeedback.Reset();
             m_OxygenWarning = m_Root.Q<Label>("raidOxygenWarning");
             m_OxygenPanel = m_Root.Q("raidOxygenPanel"); m_OxygenFill = m_Root.Q("raidOxygenFill");
             m_OxygenReserve = m_Root.Q<Label>("raidOxygenReserve"); m_OxygenTime = m_Root.Q<Label>("raidOxygenTime");
@@ -238,6 +239,9 @@ namespace Unity.MP_FPS
             var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
             bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
             m_OxygenWarning.style.display = DisplayStyle.None; // Keep the existing alert cadence below, without a second overlay.
+            if (!oxygenReady) m_OxygenFeedback.Reset();
+            bool suitAlert = oxygenReady && m_OxygenFeedback.Observe(player, Time.unscaledTime);
+            if (suitAlert) MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.SuitWarning, Vector3.zero, 1, 0);
             if (!warning) { m_NextOxygenAlert = 0; return; }
             bool critical = (oxygenWarning && player.Oxygen <= 10) || (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
             m_OxygenWarning.EnableInClassList("oxygen-critical", critical);
@@ -246,11 +250,11 @@ namespace Unity.MP_FPS
             string nutritionText = Client.RaidHealthView.EffectText(otherEffects);
             if (!string.IsNullOrEmpty(nutritionText)) text += (text.Length > 0 ? "\n" : "") + nutritionText;
             MoonkovLocalization.Set(m_OxygenWarning, text);
-            bool alert = oxygenWarning ||
+            bool alert = !oxygenWarning &&
                 (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving | SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
             if (alert && Time.unscaledTime >= m_NextOxygenAlert)
             {
-                MoonkovAudio.Play(oxygenWarning ? MoonkovAudio.Library?.SuitWarning : MoonkovAudio.Library?.Notification, Vector3.zero); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
+                MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
             }
         }
 
@@ -282,7 +286,7 @@ namespace Unity.MP_FPS
         }
         private void ResetTimedAction()
         {
-            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=false; m_DissectingLootId=-1; m_ActionFeedbackUntil=0; m_ActionFeedback=null;
+            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false; m_DissectingLootId=-1; m_ActionFeedbackUntil=0; m_ActionFeedback=null;
             m_ActionAccepted=m_ActionCancelPending=m_ActionFailed=false; m_ActionRequestId=0;
             m_ProgressTacticalRequest=0;m_ProgressTacticalDuration=0;
             m_CloseLootWhenIdle=false;
@@ -293,7 +297,7 @@ namespace Unity.MP_FPS
             m_ActionFeedback=null; m_ActionFeedbackUntil=0; m_ActionFailed=false;
         }
         private string TimedActionBusyText()
-            => TimedActionActive ? m_ConsumableActive ? (m_ConsumableFood ? "EAT" : "DRINK") : m_MedicalActive ? "TREATING" : "SEARCHING" : "USING ITEM";
+            => TimedActionActive ? m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") : m_MedicalActive ? "TREATING" : "SEARCHING" : "USING ITEM";
         private void PresentTimedAction()
         {
             if(m_ActionView==null)return;
@@ -304,7 +308,7 @@ namespace Unity.MP_FPS
             float remaining=(m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt)-Time.unscaledTime;
             m_ActionView.Present(active,m_ActionAccepted,m_ActionCancelPending,m_MedicalActive,remaining,m_ActionDuration,
                 Time.unscaledTime<m_ActionFeedbackUntil ? m_ActionFeedback : null,m_ActionFailed,visible,m_InventoryVisible,
-                m_ConsumableActive ? (m_ConsumableFood ? "EAT" : "DRINK") : null);
+                m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") : null);
             if(active && visible && !ChatInputBlocked && Keyboard.current!=null && Keyboard.current.xKey.wasPressedThisFrame)CancelTimedAction();
         }
         private void SetInventory(bool visible)
@@ -713,7 +717,7 @@ namespace Unity.MP_FPS
             m_HealthSelected=false;m_EquipmentHost.style.display=DisplayStyle.Flex;m_HealthHost.style.display=DisplayStyle.None;
             m_EquipmentTab.EnableInClassList("raid-tab-active",true);m_HealthTab.EnableInClassList("raid-tab-active",false);
             bool dissect=bags.Bags.TryGetValue(id,out var remains) && remains.RequiresDissection;
-            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=false;m_DissectingLootId=id;
+            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_DissectingLootId=id;
             m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
             m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
             string opening=dissect ? "SEARCHING" :
@@ -741,7 +745,7 @@ namespace Unity.MP_FPS
             if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>(TimedActionActive ? m_ActionDuration+5 : 5))
             {
                 bool timedOut=TimedActionActive;
-                m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=false;m_ActionCancelPending=false;
+                m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_ActionCancelPending=false;
                 if(timedOut) {m_ActionFeedback="ACTION INTERRUPTED";m_ActionFailed=true;m_ActionFeedbackUntil=Time.unscaledTime+3;}
                 m_InventoryAudio.Reset(); MoonkovAudio.Error();
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
@@ -764,6 +768,7 @@ namespace Unity.MP_FPS
                     m_ActionAccepted=true;
                     m_MedicalActive=true;m_MedicalEndsAt=Time.unscaledTime+inventory.MedicalRemaining;
                     m_ConsumableActive=inventory.MedicalIsConsumable;
+                    m_ConsumableOxygen=m_ConsumableActive && Inventory.ConsumableCatalog.Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Oxygen>0;
                     m_ConsumableFood=m_ConsumableActive && Inventory.ConsumableCatalog.Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Food==true;
                     m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.MedicalRemaining);
                     string action=TimedActionBusyText();
@@ -801,7 +806,7 @@ namespace Unity.MP_FPS
                 {
                     m_DissectionInterrupted=m_DissectingLootId>=0 && inventory.Error==Inventory.InventoryError.Inaccessible;
                     m_ActionCancelPending=false;
-                    m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
+                    m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 }
                 MoonkovLocalization.Set(m_InventoryTitle, RaidFurnitureLoot.IsFurniture(inventory.LootId) ? "抽屉搜刮 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
                     : IsDroppedLoot(inventory.LootId) ? "地面丢弃物 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
@@ -895,12 +900,13 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
             {
                 TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.Equipment :
-                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : MoonkovAudio.Library?.Consume);
+                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : MoonkovAudio.Library?.Consume,
+                    oxygenSupply ? MoonkovAudio.Library?.Equipment : null);
                 m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
-                if(!shieldSupply && !oxygenSupply)
+                if(!shieldSupply)
                 {
-                    BeginTimedAction();m_MedicalActive=m_ConsumableActive=true;m_ConsumableFood=definition.Food;
-                    m_ActionDuration=definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+                    BeginTimedAction();m_MedicalActive=m_ConsumableActive=true;m_ConsumableFood=definition.Food;m_ConsumableOxygen=oxygenSupply;
+                    m_ActionDuration=oxygenSupply ? RaidOxygenConsumables.UseSeconds : definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
                     m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
                 }
             }
@@ -928,7 +934,7 @@ namespace Unity.MP_FPS
             {
                 BeginTimedAction();
                 TrackInventoryAudio(MoonkovAudio.Library?.Medical, MoonkovAudio.Library?.Consume);
-                m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=false;
+                m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
                 m_ActionDuration=MoonRaidMap.Active.MedicalSeconds;m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container."); }

@@ -21,8 +21,9 @@ namespace Unity.MP_FPS.Client
             float danger = RaidHealth.DangerFraction(state);
             bool hypoxic = needsAir && state.Oxygen <= 0;
             bool critical = downed || danger < .35f || hypoxic || needsAir && state.Oxygen <= 10 || state.Energy <= 0 || state.Hydration <= 0;
-            string warning = downed ? "VITALS CRITICAL" : hypoxic ? "HYPOXIA" : danger < .35f ? "VITALS CRITICAL" :
+            string warning = downed ? "VITALS CRITICAL" : hypoxic ? state.OxygenGraceRemaining > 0 ? "OXYGEN DEPLETED" : "HYPOXIA" : danger < .35f ? "VITALS CRITICAL" :
                 state.Hydration <= 0 ? "DEHYDRATED" : state.Energy <= 0 ? "STARVING" :
+                needsAir && state.Oxygen <= RaidOxygen.CriticalThreshold ? "CRITICAL OXYGEN" :
                 needsAir && state.Oxygen <= 25 ? "LOW OXYGEN" : state.Hydration <= 25 ? "THIRSTY" : state.Energy <= 25 ? "HUNGRY" :
                 state.TacticalPoisonSeconds > 0 ? "POISONED" : "";
             float stress = Mathf.Clamp01(1 - danger);

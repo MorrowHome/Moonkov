@@ -18,6 +18,9 @@ namespace Unity.MP_FPS.Client
         private readonly int[] m_Counts = { -1, -1, -1, -1 };
         private readonly Color[] m_Colors = new Color[4];
         private string m_LastWarning;
+        private readonly Label m_OxygenLabel;
+        private int m_LastOxygen = -1;
+        private int m_LastGrace = -1;
 
         public RaidVitalsMonitor(Action<BodyPart> select = null)
         {
@@ -38,6 +41,7 @@ namespace Unity.MP_FPS.Client
             {
                 var row = new VisualElement { name = "vitals-reserve-" + i, pickingMode = PickingMode.Ignore }; row.AddToClassList("vitals-reserve"); signals.Add(row);
                 var label = new Label(captions[i]) { pickingMode = PickingMode.Ignore }; label.AddToClassList("vitals-reserve-label"); row.Add(label);
+                if (i == 0) m_OxygenLabel = label;
                 var cells = new VisualElement { pickingMode = PickingMode.Ignore }; cells.AddToClassList("vitals-cells"); row.Add(cells);
                 m_Reserves[i] = new VisualElement[12];
                 for (int c = 0; c < 12; c++)
@@ -50,16 +54,33 @@ namespace Unity.MP_FPS.Client
         {
             m_Body.Present(state, selected);
             var signal = RaidVitalSignal.Read(state); m_Wave.Present(signal);
+            int oxygen = signal.Ready && float.IsFinite(state.Oxygen) ? Mathf.CeilToInt(Mathf.Clamp(state.Oxygen, 0, 100)) : -1;
+            if (oxygen != m_LastOxygen)
+            {
+                m_LastOxygen = oxygen;
+                if (panel != null && oxygen >= 0) MoonkovLocalization.Set(m_OxygenLabel, "O₂  {0}%", oxygen);
+                else m_OxygenLabel.text = oxygen < 0 ? "O₂" : $"O₂  {oxygen}%";
+            }
             bool needsAir = RaidOxygen.NeedsSuitAir(state);
-            Reserve(0, state.Oxygen, signal.Ready, needsAir && state.Oxygen <= 10 ? DangerColor : state.Oxygen <= 25 ? WarningColor : SignalColor);
+            Reserve(0, state.Oxygen, signal.Ready, needsAir && state.Oxygen <= 10 ? DangerColor : needsAir && state.Oxygen <= 25 ? WarningColor : SignalColor);
             Reserve(1, state.Energy, signal.Ready, state.Energy <= 0 ? DangerColor : state.Energy <= 25 ? WarningColor : SignalColor);
             Reserve(2, state.Hydration, signal.Ready, state.Hydration <= 0 ? DangerColor : state.Hydration <= 25 ? WarningColor : SignalColor);
             Reserve(3, state.Satiety, signal.Ready, state.Satiety >= RaidNutrition.FullThreshold ? WarningColor : SignalColor);
-            if (m_LastWarning == signal.Warning) return;
-            m_LastWarning = signal.Warning;
-            m_Warning.style.display = string.IsNullOrEmpty(signal.Warning) ? DisplayStyle.None : DisplayStyle.Flex;
-            m_Warning.style.color = signal.Critical ? DangerColor : WarningColor;
-            if (panel != null) MoonkovLocalization.Set(m_Warning, signal.Warning); else m_Warning.text = signal.Warning;
+            string warning = signal.Warning;
+            if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity && state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
+                warning = "OXYGEN REFILLING";
+            int grace = warning == "OXYGEN DEPLETED" ? Mathf.CeilToInt(state.OxygenGraceRemaining) : -1;
+            if (m_LastWarning == warning && m_LastGrace == grace) return;
+            m_LastWarning = warning;
+            m_LastGrace = grace;
+            m_Warning.style.display = string.IsNullOrEmpty(warning) ? DisplayStyle.None : DisplayStyle.Flex;
+            m_Warning.style.color = signal.Critical ? DangerColor : warning == "OXYGEN REFILLING" ? SignalColor : WarningColor;
+            if (grace >= 0)
+            {
+                if (panel != null) MoonkovLocalization.Set(m_Warning, "OXYGEN DEPLETED / {0}s", grace);
+                else m_Warning.text = $"OXYGEN DEPLETED / {grace}s";
+            }
+            else if (panel != null) MoonkovLocalization.Set(m_Warning, warning); else m_Warning.text = warning;
         }
 
         private void Reserve(int index, float value, bool ready, Color color)

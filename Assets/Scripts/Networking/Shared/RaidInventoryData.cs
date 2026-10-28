@@ -209,14 +209,17 @@ namespace Unity.MP_FPS
         public InventoryError BeginConsumable(in PredictedPlayerGhost health,string id,int version,
             Unity.Mathematics.float3 origin,double now)
         {
+            if(Graph==null)return InventoryError.Invalid;
             if(ActionPending || RaidHealth.HandsBusy(health))return InventoryError.Inaccessible;
             // Validate without granting resources or consuming a stack before the deadline.
-            var probe=health;var error=RaidNutrition.Consume(ref probe,Graph.Clone(),id,version);
+            bool oxygen=ConsumableCatalog.Get(Graph.Find(id)?.Code)?.Oxygen>0;
+            var probe=health;var copy=Graph.Clone();
+            var error=oxygen ? RaidOxygenConsumables.Consume(ref probe,copy,id,version) : RaidNutrition.Consume(ref probe,copy,id,version);
             if(error!=InventoryError.None)return error;
             var definition=ConsumableCatalog.Get(Graph.Find(id).Code);
             CancelActions();
             StartItemAction(health,id,version,origin,now,
-                definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds,true);
+                oxygen ? RaidOxygenConsumables.UseSeconds : definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds,true);
             return InventoryError.None;
         }
         private void StartItemAction(in PredictedPlayerGhost health,string id,int version,Unity.Mathematics.float3 origin,
@@ -241,7 +244,8 @@ namespace Unity.MP_FPS
             if(Graph.Version!=MedicalVersion)reason="治疗中断：库存已变化，请重新选择物品。";
             if(reason==null && now<MedicalUntil)return;
             var id=MedicalItemId;bool consumable=MedicalIsConsumable;MedicalItemId=null;MedicalIsConsumable=false;LastSentVersion=-1;
-            Error=reason==null ? consumable ? RaidNutrition.Consume(ref health,Graph,id,MedicalVersion) : RaidHealth.UseMedical(ref health,Graph,id,MedicalVersion,MedicalPart) :
+            bool oxygen=consumable && ConsumableCatalog.Get(Graph.Find(id)?.Code)?.Oxygen>0;
+            Error=reason==null ? consumable ? oxygen ? RaidOxygenConsumables.Consume(ref health,Graph,id,MedicalVersion) : RaidNutrition.Consume(ref health,Graph,id,MedicalVersion) : RaidHealth.UseMedical(ref health,Graph,id,MedicalVersion,MedicalPart) :
                 Graph.Version!=MedicalVersion ? InventoryError.Stale : InventoryError.Inaccessible;
             if(consumable)
                 ActionFeedback=reason!=null ? reason.Replace("治疗中断", "使用中断")+" 未消耗物品。" :

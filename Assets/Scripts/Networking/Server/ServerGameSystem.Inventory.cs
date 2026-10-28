@@ -116,8 +116,6 @@ namespace Unity.MP_FPS
                             var item = inventory.Graph.Find(itemId);
                             if(item?.Code=="cells")
                                 inventory.Error=EnergyShieldInventory.Recharge(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion);
-                            else if(ConsumableCatalog.Get(item?.Code)?.Oxygen>0)
-                                inventory.Error=RaidOxygenConsumables.Consume(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion);
                             else if(TryGetLivingPosition(ref state,player,out var usePosition))
                             {
                                 inventory.Error=inventory.BeginConsumable(ghost.ValueRO,itemId,r.ExpectedVersion,usePosition,SystemAPI.Time.ElapsedTime);

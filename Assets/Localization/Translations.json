@@ -1,4 +1,8 @@
 {
+  "CRITICAL OXYGEN": "氧气告急",
+  "OXYGEN DEPLETED": "氧气耗尽",
+  "OXYGEN DEPLETED / {0}s": "氧气耗尽 / {0}秒",
+  "OXYGEN REFILLING": "正在补氧",
   "CHAT ALL": "全局",
   "Join a team to use team chat.": "加入队伍后可使用队伍聊天。",
   "Enter a message.": "请输入消息。",

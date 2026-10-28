@@ -6,6 +6,7 @@ namespace Unity.MP_FPS
     public static class RaidOxygenConsumables
     {
         public const string CanisterCode = "oxygen_canister";
+        public const float UseSeconds = 2;
 
         public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition definition) =>
             definition != null && float.IsFinite(definition.Oxygen) && definition.Oxygen > 0 && RaidOxygen.CanRefill(state);

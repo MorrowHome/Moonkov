@@ -23,7 +23,7 @@ namespace Unity.MP_FPS
         private UnityEngine.CharacterController m_Capsule;
         private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound, m_ReloadSound;
         private float m_LastStepTime = -1, m_BreathAt, m_HeartAt;
-        private bool m_WasSealed, m_BreathEffort;
+        private OxygenBreath m_Breath;
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
         private float m_FallSpeed;
         private float m_HitAt;
@@ -57,7 +57,7 @@ namespace Unity.MP_FPS
                 m_ConsumableSequence = ghost.ConsumableUseSequence;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
                 m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
-                m_WasSealed = !ghost.BreathableAir;
+                m_Breath = MoonkovOxygenFeedback.Breath(ghost);
                 m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 return; // A late join must not replay historical events.
@@ -125,22 +125,23 @@ namespace Unity.MP_FPS
             // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
             {
-                bool sealedSuit = !ghost.BreathableAir;
-                bool effort = ghost.ControllerState.Sprinting || ghost.CurrentHealth < ghost.MaxHealth * .35f ||
-                    sealedSuit && ghost.Oxygen <= 10;
-                if (sealedSuit != m_WasSealed || effort != m_BreathEffort)
+                var breath = MoonkovOxygenFeedback.Breath(ghost);
+                if (breath.Audible != m_Breath.Audible || breath.Interval != m_Breath.Interval)
                 {
                     GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .3f);
                     m_BreathSound = null;
                     m_BreathAt = Time.unscaledTime + .45f;
-                    m_WasSealed = sealedSuit; m_BreathEffort = effort;
+                    m_Breath = breath;
                 }
                 if (Time.unscaledTime >= m_BreathAt)
                 {
-                    if (sealedSuit || effort)
+                    // Keep one breath emitter even if a clip outlasts its cadence.
+                    GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .08f);
+                    m_BreathSound = null;
+                    if (breath.Audible)
                         m_BreathSound = MoonkovAudio.PlayWeaponLayer(library.SuitBreath, position,
-                            effort ? 1f : .65f, 0, effort ? 180 : -15);
-                    m_BreathAt = Time.unscaledTime + (effort ? 3.2f : 4.1f);
+                            breath.Volume, 0, breath.Pitch);
+                    m_BreathAt = Time.unscaledTime + (breath.Audible ? breath.Interval : 4.1f);
                 }
                 if (ghost.CurrentHealth < ghost.MaxHealth * .28f && Time.unscaledTime >= m_HeartAt)
                 {

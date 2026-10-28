@@ -5703,6 +5703,18 @@ MonoBehaviour:
     m_Localized: CARRIED {0:0.0} / {1:0} KG / HEAVY
     m_Metadata:
       m_Items: []
+  - m_Id: 7695186409566208
+    m_Localized: OXYGEN DEPLETED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7695186443120640
+    m_Localized: OXYGEN DEPLETED / {0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7695186443120641
+    m_Localized: OXYGEN REFILLING
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

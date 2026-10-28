@@ -301,7 +301,7 @@ namespace Unity.MP_FPS
                     GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked),
                 HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
             });
-            bool hideWeapon = downed || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
+            bool hideWeapon = downed || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(!hideWeapon && (owned ? m_OwnedAiming : state.Aiming),
