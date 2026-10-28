@@ -212,7 +212,7 @@ namespace Unity.MP_FPS
                             inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
                                 SystemAPI.GetComponent<PredictedPlayerGhost>(player),
                                 caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds,
-                                caches.RefillGeneration(r.LootId),caches.Containers[r.LootId].Children(LootInventoryExchange.Root).Count());
+                                caches.RefillGeneration(r.LootId),caches.Containers[r.LootId].Children(LootInventoryExchange.Root).Count(),caches.Containers[r.LootId]);
                             inventory.NextLootNoiseAt=System.Math.Max(inventory.NextLootNoiseAt,SystemAPI.Time.ElapsedTime+RaidLootAcoustics.SearchInterval);
                         }
                         if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
@@ -233,11 +233,10 @@ namespace Unity.MP_FPS
                         inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;
                         UpdateInventoryProtection(ref state,connection);
                         bool chargeBlocked=ReloadWeaponMoveBlocked(ref state,connection,r.Operation,r.ItemId.ToString(),r.Parent.ToString(),r.Region.ToString());
-                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || inventory.ActionPending || chargeBlocked || inventory.OpenedLootId!=r.LootId ||
-                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || caches.RequiresDissection(r.LootId) ||
-                            !caches.Containers.TryGetValue(r.LootId,out var cache)
+                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || chargeBlocked ||
+                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO)
                             ? InventoryError.Inaccessible
-                            : LootInventoryExchange.TryApply(inventory.Graph,cache,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
+                            : inventory.TryLootMove(caches,r.LootId,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
                                 X=r.X,Y=r.Y,Rotated=r.Rotated,Quantity=r.Quantity},r.ExpectedLootVersion);
                         if(chargeBlocked)inventory.ActionFeedback="充能中不能移动当前武器。";

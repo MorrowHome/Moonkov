@@ -75,7 +75,7 @@ namespace Unity.MP_FPS
                         inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;inventory.Error=InventoryError.Inaccessible;
                         var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                         if(session.ValueRO.Phase==RaidPhase.Active && r.RaidId==session.ValueRO.RaidId && r.RaidId==inventory.RaidId &&
-                            !inventory.ActionPending && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
+                            !inventory.InventoryMoveBlocked && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
                             BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out var position))
                         {
                             UpdateInventoryProtection(ref state,connection);
@@ -181,7 +181,7 @@ namespace Unity.MP_FPS
                         inventory.RequestId = r.RequestId;inventory.ActionFeedback=null;
                         UpdateInventoryProtection(ref state,connection);
                         bool chargeBlocked=ReloadWeaponMoveBlocked(ref state,connection,r.Operation,r.ItemId.ToString(),r.Parent.ToString(),r.Region.ToString());
-                        inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId || inventory.ActionPending ||
+                        inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId || inventory.InventoryMoveBlocked ||
                             SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) || chargeBlocked ||
                             (BountyClashRuntime.Enabled(state.EntityManager) && (!SystemAPI.HasComponent<JoinedClient>(connection) ||
                                 !BountyClashRuntime.CanAct(state.EntityManager,SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity))) ? InventoryError.Inaccessible
@@ -237,7 +237,7 @@ namespace Unity.MP_FPS
             if (inventory.LastSentVersion == inventory.Graph.Version && inventory.LastSentLootVersion==lootVersion) return;
             inventory.LastSentVersion = inventory.Graph.Version; inventory.Sequence++;
             inventory.LastSentLootVersion=lootVersion;
-            var visible=cache!=null && searchTotal>=0 ? LootInventoryExchange.SearchPreview(cache,inventory.SearchRevealed) : cache;
+            var visible=cache!=null && searchTotal>=0 ? inventory.SearchPreview(cache) : cache;
             var snapshot=visible==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,visible);
             RaidCorpseRecord corpse = null;
             if (cache != null && searchTotal<0) LootContainers(ref state).DeathBags.TryGetValue(inventory.OpenedLootId, out corpse);

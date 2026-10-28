@@ -13,6 +13,52 @@ public static class RaidSearchActionChecks
         if (!condition) throw new InvalidOperationException(message);
     }
 
+    public static string CheckConcurrentMoves()
+    {
+        s_Checks=0;
+        var cache=InventoryGraph.Create(false,false);cache.Items.Add(new InventoryItem {Id="loot",Code="loot"});
+        foreach(var code in new[]{"dust","alloy","cells"})Check(cache.AddSupply(code,1,"loot",true)==InventoryError.None,"Concurrent fixture supply");
+        var order=cache.Children("loot").Select(i=>i.Id).ToArray();
+        var caches=new RaidLootContainers();caches.Containers.Add(0,cache);
+        var actor=new RaidInventoryState {Graph=InventoryGraph.Create(false)};
+        var health=new PredictedPlayerGhost {CurrentHealth=100};
+        actor.BeginDissection(0,0,float3.zero,health,2,searchItems:3,searchCache:cache);
+        InventoryCommand Take(string id)
+        {
+            var joined=LootInventoryExchange.Snapshot(actor.Graph,cache);
+            var command=joined.PlanQuickMove(id,"pockets") ?? joined.PlanQuickMove(id,actor.Graph.Equipped("Backpack").Id);
+            command.ExpectedVersion=actor.Graph.Version;return command;
+        }
+        Check(actor.TryLootMove(caches,0,Take(order[0]),cache.Version)==InventoryError.Inaccessible,"Grey footprint ID cannot be taken early");
+        actor.RefreshDissection(caches,true,float3.zero,health,2.01);
+        double until=actor.DissectionUntil;
+        Check(actor.TryLootMove(caches,0,Take(order[0]),cache.Version)==InventoryError.None,"First discovered item can be taken while searching");
+        Check(actor.Graph.Find(order[0])!=null && cache.Find(order[0])==null && actor.DissectingLootId==0 && actor.DissectionUntil==until,"Pickup preserves identity and ongoing search deadline");
+        Check(!actor.SearchPreview(cache).Children("loot").Any(),"Removing a discovered item cannot reveal the next index");
+        actor.RefreshDissection(caches,true,float3.zero,health,3.99);
+        Check(actor.SearchPreview(cache).Find(order[1])==null,"Second item still needs its own full timer");
+        var pack=actor.Graph.Equipped("Backpack");
+        var organize=actor.Graph.PlanQuickMove(order[0],pack.Id);organize.ExpectedVersion=actor.Graph.Version;
+        Check(actor.TryLootMove(caches,0,organize,cache.Version)==InventoryError.None && actor.Graph.Find(order[0]).Parent==pack.Id,"Own backpack can be organized during search");
+        var hiddenTarget=new InventoryCommand {ExpectedVersion=actor.Graph.Version,Operation=InventoryOperation.Merge,ItemId=order[0],TargetId=order[2]};
+        Check(actor.TryLootMove(caches,0,hiddenTarget,cache.Version)==InventoryError.Inaccessible,"Hidden merge targets remain inaccessible");
+        var hiddenParent=new InventoryCommand {ExpectedVersion=actor.Graph.Version,ItemId=order[0],Parent=order[2],Region="main"};
+        Check(actor.TryLootMove(caches,0,hiddenParent,cache.Version)==InventoryError.Inaccessible,"Hidden target containers remain inaccessible");
+        actor.RefreshDissection(caches,true,float3.zero,health,4.01);
+        Check(actor.SearchPreview(cache).Find(order[1])!=null && actor.SearchPreview(cache).Find(order[2])==null,"Search follows original IDs after a pickup");
+        var stale=Take(order[1]);stale.ExpectedVersion--;
+        Check(actor.TryLootMove(caches,0,stale,cache.Version)==InventoryError.Stale && cache.Find(order[1])!=null,"Stale move cannot duplicate or consume discovered loot");
+        Check(actor.TryLootMove(caches,0,Take(order[1]),cache.Version)==InventoryError.None,"Next discovered item can also be taken");
+        var deposit=LootInventoryExchange.Snapshot(actor.Graph,cache).PlanQuickMove(order[0],"loot");deposit.ExpectedVersion=actor.Graph.Version;
+        Check(actor.TryLootMove(caches,0,deposit,cache.Version)==InventoryError.None && actor.SearchPreview(cache).Find(order[0])!=null,"Own deposited items remain known during search");
+        Check(actor.SearchPreview(cache).Find(order[2])==null && actor.DissectionUntil==until,"Depositing does not reveal or delay hidden items");
+        actor.CloseLoot();
+        Check(actor.Graph.Find(order[1])!=null && cache.Find(order[1])==null && !actor.SearchedLoot.Contains(0),"Cancel keeps already transferred items without completing search");
+        actor.TacticalPending=true;actor.OpenedLootId=0;
+        Check(actor.TryLootMove(caches,0,Take(order[2]),cache.Version)==InventoryError.Inaccessible,"Tactical actions still block inventory moves");
+        return $"PASS: {s_Checks} concurrent search / inventory checks";
+    }
+
     public static string Run()
     {
         s_Checks = 0;

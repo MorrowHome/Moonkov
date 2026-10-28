@@ -276,6 +276,8 @@ public static class MoonkovRaidActionChecks
             var closingTool=Actor(out var toolInventory);toolInventory.TacticalPending=true;toolInventory.OpenedLootId=0;
             Request(world,closingTool,new RaidLootOpenRpc {RaidId=7,RequestId=1,LootId=-1});Process(world,handle,"HandleLootRequests");
             Check(toolInventory.TacticalPending && toolInventory.OpenedLootId<0,"Closing loot RPC cancelled a tactical tool");
+            var concurrent=Actor(out var concurrentInventory);
+            CheckConcurrentSearchRequests(world,handle,concurrent,concurrentInventory,caches,origin);
             Debug.Log($"Raid server request checks passed: {s_Count} assertions for actual handlers, server clock/cancel/replay, wrong raid/source/dead/disconnect/stale drops, server placement, range/wall/search gates, re-open and competing pickup.");
         }
         finally
@@ -290,6 +292,46 @@ public static class MoonkovRaidActionChecks
             UnityEngine.Object.DestroyImmediate(go);
         }
     }
+    private static void CheckConcurrentSearchRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,
+        RaidLootContainers caches,float3 origin)
+    {
+        int id=RaidLootContainers.FirstMissionCacheId+2;
+        var cache=InventoryGraph.Create(false,false);cache.Items.Add(new InventoryItem {Id="loot",Code="loot"});
+        foreach(var code in new[]{"dust","data_drive","cells"})Check(cache.AddSupply(code,1,"loot",true)==InventoryError.None,"Concurrent RPC fixture");
+        var order=cache.Children("loot").Select(i=>i.Id).ToArray();
+        caches.Containers.Add(id,cache);caches.MissionCaches.Add(id,origin+new float3(0,.25f,2));
+        world.SetTime(new TimeData(200,.02f));
+        Request(world,connection,new RaidLootOpenRpc {RaidId=7,RequestId=1,LootId=id});Process(world,handle,"HandleLootRequests");
+        var medicine=inventory.Graph.Items.Single(i=>i.Code=="medkit");
+        Request(world,connection,new RaidInventoryMoveRpc {RaidId=7,RequestId=2,ExpectedVersion=inventory.Graph.Version,
+            ItemId=medicine.Id,Parent="pockets",Region="4"});Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.None && inventory.DissectingLootId==id && inventory.Graph.Find(medicine.Id).Region=="4","Own inventory RPC must work during search");
+        void Move(uint request,string item,string region)
+        {
+            Request(world,connection,new RaidLootMoveRpc {RaidId=7,RequestId=request,LootId=id,ExpectedVersion=inventory.Graph.Version,
+                ExpectedLootVersion=cache.Version,ItemId=item,Parent="pockets",Region=region});Process(world,handle,"HandleLootRequests");
+        }
+        Move(3,order[0],"2");
+        Check(inventory.Error==InventoryError.Inaccessible && cache.Find(order[0])!=null,"Unknown loot RPC remains rejected");
+        Refresh(world,handle,connection,202);
+        double deadline=inventory.DissectionUntil;
+        Move(4,order[0],"2");
+        Check(inventory.Error==InventoryError.None && inventory.Graph.Find(order[0])!=null && inventory.DissectingLootId==id && inventory.DissectionUntil==deadline,
+            "Discovered pickup RPC must preserve the ongoing search");
+        Check(inventory.SearchPreview(cache).Find(order[1])==null,"Pickup RPC cannot disclose the next hidden item");
+        Move(5,medicine.Id,"1");
+        Check(inventory.Error==InventoryError.None && inventory.Graph.Find(medicine.Id).Region=="1","Own moves routed through an open loot RPC must work");
+        Refresh(world,handle,connection,204);
+        Move(6,order[1],"3");
+        Check(inventory.Error==InventoryError.None && inventory.Graph.Find(order[1])!=null && cache.Find(order[2])!=null,"Second discovery can be taken before the final item");
+        int version=inventory.Graph.Version;Move(6,order[1],"3");
+        Check(inventory.Graph.Version==version,"Replayed partial pickup must not duplicate inventory");
+        Request(world,connection,new RaidLootOpenRpc {RaidId=7,RequestId=7,LootId=-1});Process(world,handle,"HandleLootRequests");
+        Check(!inventory.ActionPending && inventory.Graph.Find(order[0])!=null && inventory.Graph.Find(order[1])!=null && !inventory.SearchedLoot.Contains(id),
+            "Closing the searching container retains already taken items");
+        caches.Containers.Remove(id);caches.MissionCaches.Remove(id);
+    }
+
     private static void CheckNutritionRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory)
     {
         var em=world.EntityManager;var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;

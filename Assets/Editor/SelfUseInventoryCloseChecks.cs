@@ -97,7 +97,18 @@ public static class SelfUseInventoryCloseChecks
                 if(duration!=2 || Math.Abs(requestedAt-UnityEngine.Time.unscaledTime)>.01 || Math.Abs(ends-UnityEngine.Time.unscaledTime-inventory.DissectionRemaining)>.01)
                     throw new InvalidOperationException("Each item must reset halo duration, deadline and timeout activity");
             }
-            return "PASS: 3 repeated interrupted receipts and independent item halo / timeout updates";
+            if(typeof(Unity.MP_FPS.Client.ContainerInventoryView).GetField("m_ReadOnlyReason",flags).GetValue(view)!=null)
+                throw new InvalidOperationException("Searching must leave carried and discovered items interactive");
+            Set("m_InventoryRequestPending",true);Set("m_InventoryRequestId",5u);
+            typeof(Unity.MP_FPS.Client.ContainerInventoryView).GetField("m_Busy",flags).SetValue(view,true);
+            inventory.RequestId=4;inventory.Sequence++;update.Invoke(hud,null);
+            if(!view.Busy || !(bool)typeof(RaidHUD).GetField("m_InventoryRequestPending",flags).GetValue(hud))
+                throw new InvalidOperationException("Search progress cannot acknowledge an unrelated in-flight move");
+            inventory.RequestId=5;inventory.Sequence++;update.Invoke(hud,null);
+            if(view.Busy || (bool)typeof(RaidHUD).GetField("m_InventoryRequestPending",flags).GetValue(hud) ||
+                (int)typeof(RaidHUD).GetField("m_DissectingLootId",flags).GetValue(hud)!=0)
+                throw new InvalidOperationException("Move acknowledgement must unlock inventory without ending search");
+            return "PASS: repeated interruptions, independent item progress, unlocked search inventory and separate move receipts";
         }
         finally
         {

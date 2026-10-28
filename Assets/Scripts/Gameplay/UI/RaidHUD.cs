@@ -315,8 +315,8 @@ namespace Unity.MP_FPS
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
             {
                 if(!TimedActionActive && !QuickTacticalActionPending)return;
-                if(!m_MedicalActive && !QuickTacticalActionPending)CancelTimedAction();
             }
+            if(!visible && m_DissectingLootId>=0)CancelTimedAction();
             if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending)) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             if(visible)m_CloseLootWhenIdle=false;
             else if(m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)
@@ -755,7 +755,7 @@ namespace Unity.MP_FPS
             {
                 m_InventorySequence=inventory.Sequence;
                 var cue = m_InventoryAudio.Observe(inventory.RaidId, inventory.RequestId,
-                    inventory.MedicalItemId != null || inventory.DissectingLootId >= 0,
+                    inventory.MedicalItemId != null || inventory.DissectingLootId >= 0 && m_LootOpenPending,
                     inventory.Error != Inventory.InventoryError.None, MoonkovAudio.Library?.Error);
                 MoonkovAudio.PlayWeaponLayer(cue, Vector3.zero, 1, 0);
                 if((inventory.MedicalItemId!=null || inventory.DissectingLootId>=0) && inventory.RequestId<m_ActionRequestId)return;
@@ -777,10 +777,15 @@ namespace Unity.MP_FPS
                     m_DissectingLootId=inventory.DissectingLootId;
                     m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
                     m_ActionDuration=inventory.SearchItemSeconds>0 ? inventory.SearchItemSeconds : Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
-                    m_InventoryRequestedAt=Time.unscaledTime;
-                    m_InventoryView.Present(inventory.Graph,operationCompleted:false,lootId:inventory.LootId,
+                    bool moveAcknowledged=!m_InventoryRequestPending || inventory.RequestId>=m_InventoryRequestId;
+                    bool requestFinished=m_InventoryRequestPending && moveAcknowledged;
+                    if(moveAcknowledged && !m_ActionCancelPending){m_InventoryRequestPending=false;m_InventoryRequestedAt=Time.unscaledTime;}
+                    m_LootOpenPending=false;
+                    m_InventoryView.SetReadOnly(m_ActionCancelPending ? "SEARCHING" : null);
+                    string moveError=requestFinished && inventory.Error!=Inventory.InventoryError.None ?
+                        MoonkovLocalization.Format($"Inventory: {inventory.Error}") : null;
+                    m_InventoryView.Present(inventory.Graph,moveError,operationCompleted:moveAcknowledged && !m_ActionCancelPending,lootId:inventory.LootId,
                         droppedItem:IsDroppedLoot(inventory.LootId),searchTotal:inventory.SearchTotal,searchFootprints:inventory.SearchFootprints);
-                    m_InventoryView.SetReadOnly("SEARCHING");
                     return;
                 }
                 bool wasTimed=TimedActionActive;

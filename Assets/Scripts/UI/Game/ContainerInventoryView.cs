@@ -58,7 +58,8 @@ namespace Unity.MP_FPS.Client
         private int m_CorpseCharacterIndex = -1;
         private IReadOnlyDictionary<string,string> m_CorpseEquipmentSlots;
         private int m_RenderedVersion = int.MinValue;
-        private string m_RenderedLayout;
+        private string m_RenderedLayout, m_DeferredLayout;
+        private IVisualElementScheduledItem m_DeferredRender;
         private int m_EscapeHandledFrame = -1;
         public VisualElement Element => m_Root;
         public bool Busy => m_Busy;
@@ -208,8 +209,16 @@ namespace Unity.MP_FPS.Client
             m_CorpseCharacterIndex = corpseCharacterIndex;
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
             if (operationCompleted) m_Busy = false;
-            if (changed) { CancelDrag(); Render(); m_RenderedLayout=layout; }
-            else RefreshSnapshotValues();
+            if(changed && m_Drag!=null && m_Drag.CanRetain(graph))
+            {
+                m_DeferredLayout=layout;
+                RefreshSnapshotValues();
+            }
+            else if(changed)
+            {
+                m_DeferredLayout=null;CancelDrag();Render();m_RenderedLayout=layout;
+            }
+            else {m_DeferredLayout=null;RefreshSnapshotValues();}
             m_RenderedVersion=graph?.Version ?? -1;
             if (m_PortraitShowing)
             {
@@ -556,6 +565,13 @@ namespace Unity.MP_FPS.Client
                 error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString()); return; }
             m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); RefreshWorkshop(); m_Send(command);
         }
+        private void FlushDeferredLayout()
+        {
+            if(m_DeferredLayout==null || m_Disposed || m_Drag!=null)return;
+            string layout=m_DeferredLayout;m_DeferredLayout=null;
+            Render();m_RenderedLayout=layout;
+            if(m_PortraitShowing){PresentOperatorPortrait();PresentCorpsePortrait();}
+        }
         public void CancelDrag() => m_Drag?.Cancel();
         private void FocusChanged(bool focused) { if (!focused) CancelDrag(); }
         public bool Escape()
@@ -574,6 +590,7 @@ namespace Unity.MP_FPS.Client
         private void Key(KeyDownEvent evt) => HandleKey(evt);
         public void Dispose()
         {
+            m_DeferredRender?.Pause();m_DeferredLayout=null;
             if (m_Disposed) return;
             if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged -= PortraitCharacterChanged;
             Suspend(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
@@ -591,6 +608,12 @@ namespace Unity.MP_FPS.Client
             private IVisualElementScheduledItem m_Scroll;
             public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
             { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
+            public bool CanRetain(InventoryGraph graph)
+            {
+                var current=m_Item==null ? null : graph?.Find(m_Item.Id);
+                return current!=null && current.Parent==m_Item.Parent && current.Region==m_Item.Region &&
+                    current.X==m_Item.X && current.Y==m_Item.Y && current.Rotated==m_Item.Rotated;
+            }
             public void RefreshItem() { if (m_Item != null) m_Item = m_View.m_Graph.Find(m_Item.Id); }
             protected override void RegisterCallbacksOnTarget()
             { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); target.RegisterCallback<PointerCancelEvent>(Cancelled); target.RegisterCallback<DetachFromPanelEvent>(Detached); }
@@ -712,6 +735,11 @@ namespace Unity.MP_FPS.Client
                 m_Active=false; if (m_View.m_Drag==this) m_View.m_Drag=null;
                 m_View.m_Ghost.style.display=DisplayStyle.None; m_View.m_Preview.style.display=DisplayStyle.None;
                 foreach (var targetGrid in m_View.m_Grids) { targetGrid.Element.RemoveFromClassList("inventory-drop-valid"); targetGrid.Element.RemoveFromClassList("inventory-drop-invalid"); }
+                if(m_View.m_DeferredLayout!=null)
+                {
+                    m_View.m_DeferredRender?.Pause();
+                    m_View.m_DeferredRender=m_View.m_Root.schedule.Execute(m_View.FlushDeferredLayout);
+                }
             }
         }
     }

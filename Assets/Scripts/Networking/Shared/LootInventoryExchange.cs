@@ -34,11 +34,13 @@ namespace Unity.MP_FPS.Inventory
             joined.Items.AddRange(cache.Items.Where(i=>i.Id==Root || cache.RootOf(i.Id)==Root).Select(i=>i.Clone()));
             return joined;
         }
-        // Only disclosed item trees cross the wire. Hidden item names and sizes stay server-side.
+        // Only discovered item trees enter the inventory graph; grey footprints are sent separately.
         public static InventoryGraph SearchPreview(InventoryGraph cache,int revealed)
+            => SearchPreview(cache,cache.Children(Root).Take(Math.Max(0,revealed)).Select(i=>i.Id));
+        public static InventoryGraph SearchPreview(InventoryGraph cache,System.Collections.Generic.IEnumerable<string> revealed)
         {
             var visible=cache.Clone();
-            var ids=new System.Collections.Generic.HashSet<string>(cache.Children(Root).Take(Math.Max(0,revealed)).Select(i=>i.Id));
+            var ids=new System.Collections.Generic.HashSet<string>(revealed);
             for(int depth=0;depth<InventoryCatalog.MaxDepth;depth++)
                 foreach(var item in cache.Items)
                     if(item.Parent!=null && ids.Contains(item.Parent))ids.Add(item.Id);

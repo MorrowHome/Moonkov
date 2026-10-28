@@ -179,13 +179,14 @@ namespace Unity.MP_FPS
         public readonly System.Collections.Generic.List<int> RemovedSearches = new System.Collections.Generic.List<int>();
         public bool TacticalPending;
         public bool ActionPending => TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
+        public bool InventoryMoveBlocked => TacticalPending || MedicalItemId!=null;
         public void CloseLoot()
         {
             // Closing a view owns the search, not an unrelated self-use action.
             if(DissectingLootId>=0)
             {
                 DissectingLootId=-1;
-                ActionFeedback="已取消搜索；未获取物品。";
+                ActionFeedback="已取消搜索。";
             }
             OpenedLootId=-1;LastSentVersion=LastSentLootVersion=-1;
         }
@@ -250,19 +251,58 @@ namespace Unity.MP_FPS
         }
         public double DissectionUntil, DissectionStartedAt;
         public int SearchRevealed, SearchItemCount;
+        private readonly List<string> m_SearchOrder=new List<string>();
+        private readonly HashSet<string> m_SearchKnown=new HashSet<string>();
+        private bool m_SearchOrderInitialized;
+        private void EnsureSearchOrder(InventoryGraph cache)
+        {
+            if(!m_SearchOrderInitialized)
+            {
+                m_SearchOrder.AddRange(cache.Children(LootInventoryExchange.Root).Select(i=>i.Id));
+                m_SearchOrderInitialized=true;
+            }
+            for(int n=0;n<System.Math.Min(SearchRevealed,m_SearchOrder.Count);n++)m_SearchKnown.Add(m_SearchOrder[n]);
+        }
+        public InventoryGraph SearchPreview(InventoryGraph cache)
+        {
+            EnsureSearchOrder(cache);
+            return LootInventoryExchange.SearchPreview(cache,m_SearchKnown);
+        }
+        public InventoryError TryLootMove(RaidLootContainers caches,int id,InventoryCommand command,int expectedCacheVersion)
+        {
+            bool searching=DissectingLootId>=0 && DissectingLootId==id;
+            if(InventoryMoveBlocked || (!searching && OpenedLootId!=id) || (!searching && caches.RequiresDissection(id)) ||
+                !caches.Containers.TryGetValue(id,out var cache))return InventoryError.Inaccessible;
+            HashSet<string> hidden=null;
+            if(searching)
+            {
+                var visible=SearchPreview(cache);
+                var joined=LootInventoryExchange.Snapshot(Graph,visible);
+                // Validate every referenced identity; knowing a grey footprint ID grants no item access.
+                if(joined.Find(command.ItemId)==null || (!string.IsNullOrEmpty(command.Parent) && joined.Find(command.Parent)==null) ||
+                    (!string.IsNullOrEmpty(command.TargetId) && joined.Find(command.TargetId)==null))return InventoryError.Inaccessible;
+                hidden=new HashSet<string>(cache.Children(LootInventoryExchange.Root).Where(i=>visible.Find(i.Id)==null).Select(i=>i.Id));
+            }
+            var error=LootInventoryExchange.TryApply(Graph,cache,command,expectedCacheVersion);
+            if(error==InventoryError.None && searching)
+                foreach(var item in cache.Children(LootInventoryExchange.Root))if(!hidden.Contains(item.Id))m_SearchKnown.Add(item.Id);
+            return error;
+        }
         public float SearchSecondsPerItem;
         public float SearchItemRemaining(double now) => (float)System.Math.Max(0,
             System.Math.Min(DissectionUntil,DissectionStartedAt+(SearchRevealed+1)*SearchSecondsPerItem)-now);
         public Unity.Mathematics.float3 DissectionOrigin;
         public int DissectionGeneration;
         public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
-        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0,int searchItems=1)
+        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0,int searchItems=1,InventoryGraph searchCache=null)
         {
             if(RaidHealth.HandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;
             SearchSecondsPerItem=System.Math.Max(.1f,seconds);SearchItemCount=System.Math.Max(1,searchItems);
             DissectionUntil=now+SearchSecondsPerItem*SearchItemCount;
             DissectionStartedAt=now;SearchRevealed=0;
+            m_SearchOrder.Clear();m_SearchKnown.Clear();m_SearchOrderInitialized=false;
+            if(searchCache!=null)EnsureSearchOrder(searchCache);
             DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageSequence=health.NonPhysiologicalDamageSequence;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
             DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
@@ -280,14 +320,15 @@ namespace Unity.MP_FPS
                 health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
             if(reason==null && now<DissectionUntil)
             {
-                int total=caches.Containers.TryGetValue(DissectingLootId,out var cache) ? cache.Children(LootInventoryExchange.Root).Count() : 0;
-                int revealed=System.Math.Min(total,(int)System.Math.Max(0,(now-DissectionStartedAt)/SearchSecondsPerItem));
+                caches.Containers.TryGetValue(DissectingLootId,out var cache);
+                int revealed=System.Math.Min(SearchItemCount,(int)System.Math.Max(0,(now-DissectionStartedAt)/SearchSecondsPerItem));
                 if(revealed!=SearchRevealed){SearchRevealed=revealed;LastSentVersion=-1;}
+                if(cache!=null)EnsureSearchOrder(cache);
                 return;
             }
             int id=DissectingLootId;DissectingLootId=-1;LastSentVersion=-1;
             Error=reason==null ? InventoryError.None : InventoryError.Inaccessible;
-            ActionFeedback=reason==null ? "搜索完成。" : reason+" 未获取物品。";
+            ActionFeedback=reason==null ? "搜索完成。" : reason;
             if(reason==null)
             {
                 if(caches.RequiresDissection(id))caches.Containers[id].Version++;
