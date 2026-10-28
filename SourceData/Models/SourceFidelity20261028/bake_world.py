@@ -6,11 +6,9 @@ ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];OUT=PROJECT
 report=json.loads((OUT/'PreparedWorld.json').read_text());scene=next(s for s in bpy.data.scenes if s.name.startswith('SourceWorldStatic'));bpy.context.window.scene=scene
 scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.use_denoising=False;scene.cycles.use_adaptive_sampling=False
 scene.render.threads_mode='FIXED';scene.render.threads=4
-try:
- prefs=bpy.context.preferences.addons['cycles'].preferences;prefs.compute_device_type='METAL';prefs.refresh_devices()
- for d in prefs.devices:d.use=d.type=='METAL'
- if any(d.use for d in prefs.devices):scene.cycles.device='GPU'
-except Exception as exc:print('GPU_FALLBACK',exc,flush=True)
+sys.path.insert(0,str(ROOT))
+from cycles_device import configure_cycles_device
+configure_cycles_device(scene)
 scene.render.bake.use_clear=True;scene.render.bake.use_selected_to_active=False;scene.render.bake.margin=12
 scene.render.image_settings.file_format='OPEN_EXR';scene.render.image_settings.color_depth='16';scene.render.image_settings.color_mode='RGBA';scene.render.image_settings.exr_codec='ZIP'
 start=time.monotonic();results=[]

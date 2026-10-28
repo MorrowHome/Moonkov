@@ -10,6 +10,29 @@
 
 用户最新要求是转到 Windows 开发。不要继续在 Mac 后台启动整图烘焙。交接时没有本任务的 Blender 渲染或临时防休眠进程。
 
+## Windows 接续状态（2026-10-28）
+
+- 项目为 `E:/UnityProjects/FPS_Template`，继续使用 `develop`。恢复前工作区干净。传输快照已单独提交为 `050a6e4a`。
+- 传输包内清单的 7680 个文件均通过大小和 SHA-256 校验。恢复 3741 个项目文件。生成文本仅清理行尾空白；二进制数据不变。
+- 忽略的中间数据已移到项目 `LocalData/SourceFidelity20261028`。恢复阶段 4、索引 103 的暂停状态，没有继续导入。
+- 原始候选 blend 留在 `E:/Download/Moonkov_SourceFidelity_Windows_20261028.zip/Extracted/ExternalSource`。不要复制进 Assets。
+- 本机显卡为 RTX 4070 SUPER，显存 12 GB，驱动 610.74。同版 Unity 位于 `D:/Unity/Editor/6000.5.10f1/Editor/Unity.exe`。本次未启动 Editor。
+- 旧 Blender `D:/Blender51/blender.exe` 为 5.1.1。读取准备文件会提示版本过旧，禁止用它重算源数据。
+- 已从 Blender 官方下载并校验 5.2.2 便携版，路径为 `D:/_DevTools/Blender/blender-5.2.2-windows-x64/blender.exe`。默认场景的 OPTIX 渲染小样通过：64×64、8 samples，渲染约 2.85 秒。该计时不代表整图速度。
+- 同版 Blender 能读取 `PreparedWorldResolved.blend`。已显式选择 `SourceWorldStatic`。176 个图像数据块没有缺失外部文件。检查没有保存源文件。
+- 整图烘焙与反射脚本改用 `cycles_device.py`。Windows 自动选择 OPTIX，未发现设备时尝试 CUDA。没有 GPU 就报错；只有显式设置 `SOURCE_CYCLES_BACKEND=CPU` 才允许 CPU。
+- `inspect_gpu.py` 提供独立小样本检查。使用 `--background --factory-startup --python`，追加 `-- --render-probe` 可渲染 64×64、8 samples 的默认场景。输出在 `LocalData/SourceFidelity20261028/WindowsGpu`。它不加载源世界。
+- 本次接续不代表脏斑、完整反射、Windows Shader 编译或正式安装通过。继续前仍须按下文定位脏斑，并验证导入器补丁。
+
+## Blender 工具（2026-10-29）
+
+- 已按用户要求安装 ahujasid `mcp-for-blender` 2.2.6。Codex 全局服务名为 `blender`，使用现有 uvx，连接本机 `127.0.0.1:9876`。Blender 5.2 的 `blender_mcp` 插件已启用。实际 MCP 握手和场景读取通过。当前桥接实例为空场景，不是正式源世界。
+- 已安装 RobLe3 的 `blender-rendering`、`blender-uv-texturing`，以及它们依赖的 `text-to-blender` 和 `reference-look-calibration`。位置为用户 `.codex/skills`。Skill 下一轮可用；Codex 原生 MCP 工具需重启应用加载。不要自动重启 Codex。
+- 后续复用已有 Blender 桥接实例。长时间烘焙可继续使用命令行断点脚本，避免超过 MCP 的单次调用超时。不要把已启动的长任务重复提交。
+- 已用 4070 SUPER 的 OPTIX 完成同镜头 7 个通道的真实场景诊断。纯颜色和 AO 未出现面板大块脏斑；直接显示旧 irradiance 已复现。图在 `LocalData/SourceFidelity20261028/World/WindowsChannels`。
+- 前景面板约 1.83 平方米，旧 4096 图集只给它约 11×27 像素。原始 irradiance 噪声被放成大块，降噪后仍有模糊斑。接下来只提高这块面板的 UV 密度，保持原灯光和 128 samples 验证，再决定整图图集划分。此项还没有完成修复。
+- `050a6e4a` 的 LFS 对象已上传。分支推送被远端 `develop` 的新增提交拒绝。保留本地提交，不强推；后续先检查远端新提交，再安排串行整合。
+
 ## 用户已确定的目标
 
 - 完整接入正式游戏。不能停在局部演示。
@@ -22,9 +45,9 @@
 
 ## 仓库和文件转移
 
-当前工作分支为 `develop`。交接检查时 HEAD 为 `8ca5826d`，这是其他事项的提交。外观还原已有提交包括 `a5fe636e`、`ceae0d49`。本轮新增的大量外观代码、生成资产和实验仍未提交，不能只拉取 Git 就认为数据齐了。
+当前工作分支为 `develop`。交接检查时 HEAD 为 `8ca5826d`，这是其他事项的提交。外观还原已有提交包括 `a5fe636e`、`ceae0d49`。Mac 交接时新增的大量外观代码、生成资产和实验尚未提交。Windows 已用 `050a6e4a` 保存传输快照。LocalData 仍被忽略，不能只拉取 Git 就认为断点数据齐了。
 
-工作区还有其他聊天的动作、音频、字体等修改。不要全量暂存，不要回滚它们，不要覆盖 Windows 的未提交工作。不要自动切分支。main 只由用户管理。
+Mac 交接时工作区还有其他聊天的动作、音频、字体等修改。Windows 恢复后也可能有其他聊天并行改动。不要全量暂存，不要回滚它们，不要覆盖 Windows 的未提交工作。不要自动切分支。main 只由用户管理。
 
 配套传输包：Mac 的 `Downloads/Moonkov_SourceFidelity_Windows_20261028.zip`。包内是本任务文件快照，不是完整 Unity 项目。包含原始候选 blend（`ExternalSource`）、相关代码、生成资产、诊断图和被 Git 忽略的断点数据。先解压到独立目录，比较差异后再接入 Windows 的 Moonkov 仓库。不要直接覆盖已有工作区。
 
@@ -154,7 +177,7 @@ Unity 项目版本为 `6000.5.10f1`（`3bd4f66ad299`）。优先安装同一版�
 
 1. 确认台式机项目路径、分支和未提交状态。
 2. 检查 Blender 版本、NVIDIA 驱动和 OptiX 设备。
-3. 当前 `bake_world.py` 和 `capture_world_reflections.py` 的设备选择仍写死 METAL。Windows 上会落回 CPU。必须先改为经过检查的 OPTIX/CUDA 选择，打印实际 GPU 名称。不能直接照抄 Mac 命令重跑。
+3. `bake_world.py` 和 `capture_world_reflections.py` 已共用跨平台设备选择。Windows 优先 OPTIX，其次 CUDA。启动时打印真实 GPU 名称；没有 GPU 就停止。不要直接照抄 LocalData 中的 Mac 临时命令。
 4. 原始脚本多用项目相对路径。LocalData 的历史临时脚本有 Mac 绝对路径和旧 PID，必须改写，不可直接执行。
 5. 先做短样本，确认 GPU 确实工作、输出哈希/位置正确，再跑整图。
 
@@ -164,7 +187,7 @@ GPU 检查示例：
 & "实际的Blender路径\blender.exe" -b --factory-startup --python "inspect_gpu.py"
 ```
 
-检查脚本在 Mac 的 `LocalData/SourceFidelity20261028/RenderWorker`。先报告检测结果，不要安装远程服务或更改防火墙来猜连接方式。
+Windows 检查脚本为 `SourceData/Models/SourceFidelity20261028/inspect_gpu.py`。便携版与 OPTIX 小样已通过。不需要远程服务或防火墙改动。
 
 ## 最终正式接入顺序
 

@@ -20,8 +20,12 @@
 
 ## 整图静态外观还原（转 Windows，未完成）
 
+- 2026-10-29 已安装并验证 Blender MCP 2.2.6，以及渲染、UV 和共享入口四个 Skill。Codex 原生 MCP 需重启加载，不要自动重启应用。Windows 同镜头通道已复现旧 irradiance 的脏斑，前景面板只有约 11×27 个光照像素；下一步做局部 UV 密度对照，不能直接重算整图。详见 Windows 外观交接。
+
+- Windows 已恢复传输包。7680 个文件通过清单哈希，3741 个项目文件已接入，LocalData 断点已搬入当前项目。整图脚本已改为 OPTIX 优先，禁止静默回退 CPU。本次没有启动 Unity、恢复导入或安装正式场景。已单独准备官方 Blender 5.2.2 便携版，4070 SUPER 的 OPTIX 小样通过；准备文件没有缺失外部图像。旧版 5.1.1 不能用于正式重算。Windows 路径与后续命令见下方接续文档。
+
 - 用户允许全部固定照明预计算，旧 MC00 自主灯控可废弃。画面优先，仍需实时游戏。2026-10-28 用户改为转到 RTX 4070 Super 的 Windows 台式机开发。
-- 完整续接入口为 [Windows 外观交接](Docs/Development/SourceFidelityWindowsHandoff.md)。必须先读。Git 拉取不包含忽略的 LocalData，本轮大量代码和资产仍未提交，需要另转快照。
+- 完整续接入口为 [Windows 外观交接](Docs/Development/SourceFidelityWindowsHandoff.md)。必须先读。Windows 已将代码和资产快照提交为 `050a6e4a`。Git 拉取仍不包含忽略的 LocalData，需要单独转移断点。
 - 已生成整图 3318 块、375 种实际使用材质、27 张光照图。477 个 Shader 检查通过。正式游戏场景尚未执行安装。当前画面有脏斑，128 spp、关闭噪点和镜面反射都没有根治，不能当成最终效果。
 - 当前运行资源的图集 26 与统计数组第 26 层为 128 spp 实验；主 Bakes 目录仍为 16 spp。需统一数据。有效反射为 128/461，另有 9 个旧位置缓存。导入器停在阶段 4、索引 103，完成标记并发读取修复尚待回归。
 - 本任务 Blender 渲染和临时防休眠已停止。不要再启动 Mac 整图重算。Windows 不使用鼠标操控 Unity，只保留一个 Editor。

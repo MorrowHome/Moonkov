@@ -95,11 +95,9 @@ for poly in probe.data.polygons:poly.use_smooth=True
 mat=bpy.data.materials.new('Temporary_Perfect_Mirror');bsdf=next(n for n in mat.node_tree.nodes if n.type=='BSDF_PRINCIPLED');bsdf.inputs['Base Color'].default_value=(1,1,1,1);bsdf.inputs['Metallic'].default_value=1;bsdf.inputs['Roughness'].default_value=0;probe.data.materials.append(mat)
 camera_data=bpy.data.cameras.new('SourceRadianceCamera');camera=bpy.data.objects.new('SourceRadianceCamera',camera_data);scene.collection.objects.link(camera);camera_data.type='ORTHO';camera_data.ortho_scale=radius*2;camera_data.clip_start=.005;camera_data.clip_end=10000;scene.camera=camera
 scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=False;scene.cycles.use_adaptive_sampling=False;scene.cycles.seed=0;scene.cycles.sample_clamp_direct=0;scene.cycles.sample_clamp_indirect=0;scene.render.threads_mode='FIXED';scene.render.threads=4;scene.cycles.device='CPU'
-try:
- prefs=bpy.context.preferences.addons['cycles'].preferences;prefs.compute_device_type='METAL';prefs.refresh_devices()
- for d in prefs.devices:d.use=d.type=='METAL'
- if any(d.use for d in prefs.devices):scene.cycles.device='GPU'
-except Exception:pass
+sys.path.insert(0,str(ROOT))
+from cycles_device import configure_cycles_device
+configure_cycles_device(scene)
 scene.render.use_persistent_data=True
 resolution=1024;scene.render.resolution_x=resolution;scene.render.resolution_y=resolution;scene.render.resolution_percentage=100;scene.render.use_compositing=False;scene.render.image_settings.file_format='OPEN_EXR';scene.render.image_settings.color_mode='RGBA';scene.render.image_settings.color_depth='16';scene.render.image_settings.exr_codec='ZIP'
 w,h=2048,1024;u,v=np.meshgrid((np.arange(w)+.5)/w,(np.arange(h)+.5)/h);phi=(u-.5)*2*np.pi;theta=(1-v)*np.pi;rx=np.sin(theta)*np.sin(phi);ry=np.sin(theta)*np.cos(phi);rz=np.cos(theta)
