@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Moon
             public float[] sphericalHarmonics, characterSphericalHarmonics;
         }
         public string sourceSha256;
+        public string lightingRevision;
         public Cubemap[] cubemaps;
         public Probe[] probes;
     }

@@ -69,7 +69,11 @@ try:
             or plan.get('boundsVersion') != 2):
         raise ValueError('Reflection plan is not the reviewed source/position/bounds version')
     blender_job('capture_world_reflections.py', ['--resolved'], WORK.parent / 'WindowsReflections.log')
+    from reflection_capture_contract import capture_ready
+    plan = json.loads((WORK / 'WorldReflectionPlan.json').read_text())
     for probe in plan['probes']:
+        if not capture_ready(PROJECT, probe, source_hash, plan.get('lightingRevision')):
+            raise ValueError(f'Stale/incomplete reflection lighting {probe["id"]}')
         path = PROJECT / probe['file']
         row = json.loads(path.with_suffix('.json').read_text())
         if not path.is_file() or row.get('sourceSha256') != source_hash:

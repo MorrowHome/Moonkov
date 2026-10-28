@@ -5,10 +5,14 @@ lights, emission and bounce context remain visible to its glossy rays.
 import bpy,pathlib,json,hashlib,numpy as np,math,time,sys
 from mathutils import Vector,Matrix
 ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];WORK=PROJECT/'LocalData/SourceFidelity20261028/World';OUT=WORK/'Reflections';OUT.mkdir(parents=True,exist_ok=True)
-source=json.loads((ROOT/'SourceSummary.json').read_text());assert '--resolved' in sys.argv or hashlib.sha256(pathlib.Path(bpy.data.filepath).read_bytes()).hexdigest()==source['source_sha256']
+sys.path.insert(0,str(ROOT))
+from reflection_capture_contract import file_sha256,lighting_revision,capture_ready
+input_blend_sha=file_sha256(bpy.data.filepath)
+source=json.loads((ROOT/'SourceSummary.json').read_text());assert '--resolved' in sys.argv or input_blend_sha==source['source_sha256']
 if '--resolved' in sys.argv:
  assert json.loads((WORK/'ResolvedMaterials.json').read_text())['sourceSha256']==source['source_sha256']
  manifest=json.loads((WORK/'WorldReflectionPlan.json').read_text());rows=manifest['probes'];probes=[{'p':Vector((r['position']['x'],r['position']['z'],r['position']['y']))} for r in rows]
+ assert manifest['sourceSha256']==source['source_sha256'],'Reflection plan belongs to another source'
  scene=next(s for s in bpy.data.scenes if s.name.startswith('SourceWorldStatic'));bpy.context.window.scene=scene
  print('RESOLVED_WORLD_REFLECTION_PLAN',len(rows),flush=True)
 else:
@@ -82,6 +86,22 @@ else:
  manifest={'boundsVersion':2,'positionVersion':3,'sourceSha256':source['source_sha256'],'towardSun':xyz(toward_sun),'sunColor':{'r':float(sun.data.color[0]),'g':float(sun.data.color[1]),'b':float(sun.data.color[2]),'a':1},'sunEnergy':float(sun.data.energy),'sunAngle':float(sun.data.angle),'probes':rows}
  (WORK/'WorldReflectionPlan.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2));print('WORLD_REFLECTION_PLAN',len(rows),'area_spot_sources',sum(o.data.type in {'AREA','SPOT'} for o in lights),flush=True)
 verification=next((int(a.split('=',1)[1]) for a in sys.argv if a.startswith('--verify-probe=')),None)
+external_images={}
+for image in bpy.data.images:
+ if image.source=='FILE' and image.filepath and not image.packed_file:
+  image_path=pathlib.Path(bpy.path.abspath(image.filepath,library=image.library)).resolve()
+  external_images[str(image_path)]=file_sha256(image_path)
+profile={'captureScriptSha256':file_sha256(__file__),'contractSha256':file_sha256(ROOT/'reflection_capture_contract.py'),'externalImages':external_images,
+ 'blender':bpy.app.version_string,'samples':32,'resolution':1024,'hemispheres':2,'seed':0,
+ 'maxBounces':scene.cycles.max_bounces,'diffuseBounces':scene.cycles.diffuse_bounces,'glossyBounces':scene.cycles.glossy_bounces,
+ 'transmissionBounces':scene.cycles.transmission_bounces,'volumeBounces':scene.cycles.volume_bounces,'transparentBounces':scene.cycles.transparent_max_bounces}
+profile['sunProjection']={k:manifest[k] for k in ['towardSun','sunAngle']}
+revision=lighting_revision(source['source_sha256'],input_blend_sha,profile)
+manifest['lightingRevision']=revision;manifest['inputBlendSha256']=input_blend_sha;manifest['captureProfile']=profile
+if verification is None:
+ revision_out=OUT/revision;revision_out.mkdir(parents=True,exist_ok=True)
+ for row in rows:row['file']=str((revision_out/f"Probe_{row['id']:03d}.exr").relative_to(PROJECT))
+ temporary=WORK/'WorldReflectionPlan.json.tmp';temporary.write_text(json.dumps(manifest,ensure_ascii=False,indent=2));temporary.replace(WORK/'WorldReflectionPlan.json')
 if verification is not None:
  rows=[dict(rows[verification])];probes=[probes[verification]]
  target=WORK/'ReflectionVerification';target.mkdir(parents=True,exist_ok=True)
@@ -110,20 +130,21 @@ limit=next((int(a.split('=',1)[1]) for a in sys.argv if a.startswith('--limit-ne
 start=time.monotonic()
 for row,definition in zip(rows,probes):
  path=PROJECT/row['file'];stamp=path.with_suffix('.json')
- if path.exists() and stamp.exists():
-  cached=json.loads(stamp.read_text())
-  if cached.get('sourceSha256')==source['source_sha256'] and max(abs(cached['position'][k]-row['position'][k]) for k in 'xyz')<.0001:
-   print('REFLECTION_RESUME',row['id'],flush=True);continue
+ if capture_ready(PROJECT,row,source['source_sha256'],revision):
+  print('REFLECTION_RESUME',row['id'],flush=True);continue
  if limit is not None and captured>=limit:break
  p=definition['p'];probe.location=p;panorama=np.empty((h,w,4),dtype=np.float32)
  for half,incoming in enumerate([1,-1]):
   camera.location=p+Vector((0,-incoming*.25,0));camera.rotation_euler=(p-camera.location).to_track_quat('-Z','Y').to_euler();scene.render.filepath=str(OUT/f'CurrentMirror_{half}.exr');bpy.ops.render.render(write_still=True)
   im=bpy.data.images.load(scene.render.filepath,check_existing=False);im.colorspace_settings.name='Non-Color';pixels=np.empty(resolution*resolution*4,dtype=np.float32);im.pixels.foreach_get(pixels);pixels=pixels.reshape(resolution,resolution,4);x0,y0,x1,y1,fx,fy=projection[half]
   values=(pixels[y0,x0]*(1-fx)+pixels[y0,x1]*fx)*(1-fy)+(pixels[y1,x0]*(1-fx)+pixels[y1,x1]*fx)*fy;mask=ry<=0 if half==0 else ry>0;panorama[mask]=values[mask];bpy.data.images.remove(im)
- image=bpy.data.images.new('SourceProbeRadiance',w,h,alpha=True,float_buffer=True);image.colorspace_settings.name='Non-Color';image.pixels.foreach_set(panorama.ravel());image.save_render(str(path),scene=scene);bpy.data.images.remove(image)
+ assert np.isfinite(panorama).all(),'Non-finite source reflection'
+ image=bpy.data.images.new('SourceProbeRadiance',w,h,alpha=True,float_buffer=True);image.colorspace_settings.name='Non-Color';image.pixels.foreach_set(panorama.ravel());temporary_image=path.with_name(path.stem+'.tmp.exr');image.save_render(str(temporary_image),scene=scene);bpy.data.images.remove(image);temporary_image.replace(path)
  captured+=1
+ row['lightingRevision']=revision;row['inputBlendSha256']=input_blend_sha
+ row['radianceSha256']=file_sha256(path)
  row['maximumRadiance']=float(panorama[:,:,:3].max());row['samples']=32;row['hemispheres']=2;row['sourceSha256']=source['source_sha256'];temporary=stamp.with_suffix('.json.tmp');temporary.write_text(json.dumps(row,ensure_ascii=False,indent=2));temporary.replace(stamp);print('WORLD_REFLECTION_CAPTURED',row['id'],'of',len(rows),'peak',round(row['maximumRadiance'],3),'elapsed',round(time.monotonic()-start,1),flush=True)
-if verification is None and all((PROJECT/r['file']).exists() and (PROJECT/r['file']).with_suffix('.json').exists() for r in rows):
+if verification is None and all(capture_ready(PROJECT,r,source['source_sha256'],revision) for r in rows):
  manifest=json.loads((WORK/'WorldReflectionPlan.json').read_text())
  (WORK/'WorldReflections.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2));print('ALL_SOURCE_REFLECTIONS_COMPLETE',len(rows),round(time.monotonic()-start,1),flush=True)
-else:print('SOURCE_REFLECTION_VERIFICATION_COMPLETE',verification,round(time.monotonic()-start,1),flush=True)
+else:print('SOURCE_REFLECTION_PARTIAL' if verification is None else 'SOURCE_REFLECTION_VERIFICATION_COMPLETE',verification,round(time.monotonic()-start,1),flush=True)

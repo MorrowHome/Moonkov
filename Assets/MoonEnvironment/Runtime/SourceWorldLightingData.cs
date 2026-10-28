@@ -8,6 +8,7 @@ namespace Unity.MP_FPS.Moon
     public sealed class SourceWorldLightingData : ScriptableObject
     {
         public string sourceSha256;
+        public string statisticsRevision, characterProbeRevision;
         public Texture2D[] irradiance;
         public Texture2DArray surfaceStatistics;
         public LightProbes characterProbes;

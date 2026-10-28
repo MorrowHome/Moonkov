@@ -23,9 +23,9 @@ namespace Unity.MP_FPS.Moon.Editor
     [Serializable] public sealed class SourceGeometryManifest
     { public string sourceSha256; public int triangles, vertices, atlasCount; public SourceChunk[] chunks; public int[] materialIds; }
     [Serializable] public sealed class SourceReflectionPlan
-    { public string sourceSha256; public Vector3 towardSun; public Color sunColor; public float sunEnergy, sunAngle; public SourceReflectionJob[] probes; }
+    { public string sourceSha256, lightingRevision; public Vector3 towardSun; public Color sunColor; public float sunEnergy, sunAngle; public SourceReflectionJob[] probes; }
     [Serializable] public sealed class SourceReflectionJob
-    { public int id, importance; public Vector3 position, boxMin, boxMax; public bool sunVisible; public string label, file; }
+    { public int id, importance; public Vector3 position, boxMin, boxMax; public bool sunVisible; public string label, file, sourceSha256, lightingRevision; }
     [Serializable] internal sealed class SourceImportState { public int phase, index; public bool running; public string error; }
 
     /// <summary>Bounded Editor imports with a durable checkpoint, without changing active scenes.</summary>
@@ -87,8 +87,7 @@ namespace Unity.MP_FPS.Moon.Editor
                         var captureText = File.ReadAllText(Path.ChangeExtension(reflectionFile, ".json"));
                         if (string.IsNullOrWhiteSpace(captureText) || !captureText.TrimEnd().EndsWith("}")) return;
                         var captured = JsonUtility.FromJson<SourceReflectionJob>(captureText);
-                        if (captured == null) return;
-                        if ((captured.position - plan.probes[state.index].position).sqrMagnitude > .000001f) return;
+                        if (!CaptureMatches(plan, plan.probes[state.index], captured)) return;
                         ImportReflection(state.index); Advance(plan.probes.Length); break;
                     case 5:
                         BuildLightingData(); state.phase = 6; state.index = 0; state.running = false; Save();
@@ -175,16 +174,29 @@ namespace Unity.MP_FPS.Moon.Editor
             }
         }
         private static bool reflectionConversionValidated;
+        public static bool CaptureMatches(SourceReflectionPlan plan, SourceReflectionJob expected, SourceReflectionJob captured)
+        {
+            return captured != null && !string.IsNullOrEmpty(plan.lightingRevision) &&
+                captured.sourceSha256 == plan.sourceSha256 && captured.lightingRevision == plan.lightingRevision &&
+                captured.id == expected.id && (captured.position - expected.position).sqrMagnitude < .00000001f;
+        }
         private static void ImportReflection(int index)
         {
             if (!reflectionConversionValidated) { SourceWorldCubeBuilder.ValidateConversion(); reflectionConversionValidated = true; }
             var plan = JsonUtility.FromJson<SourceReflectionPlan>(File.ReadAllText(Work + "WorldReflectionPlan.json")); var job = plan.probes[index];
+            if (string.IsNullOrEmpty(plan.lightingRevision) || plan.sourceSha256 != Manifest.sourceSha256)
+                throw new InvalidDataException("Reflection lighting revision/source is missing or stale.");
             if (!File.Exists(job.file)) throw new InvalidOperationException("Missing completed source reflection: " + job.file);
             Ensure(ReflectionPath); var data = AssetDatabase.LoadAssetAtPath<SourceWorldReflectionData>(ReflectionPath);
             if (!data)
             {
-                data = ScriptableObject.CreateInstance<SourceWorldReflectionData>(); data.sourceSha256 = plan.sourceSha256;
-                data.cubemaps = new Cubemap[plan.probes.Length]; data.probes = new SourceWorldReflectionData.Probe[plan.probes.Length]; AssetDatabase.CreateAsset(data, ReflectionPath);
+                data = ScriptableObject.CreateInstance<SourceWorldReflectionData>(); AssetDatabase.CreateAsset(data, ReflectionPath);
+            }
+            if (data.sourceSha256 != plan.sourceSha256 || data.lightingRevision != plan.lightingRevision ||
+                data.cubemaps == null || data.probes == null || data.cubemaps.Length != plan.probes.Length || data.probes.Length != plan.probes.Length)
+            {
+                data.sourceSha256 = plan.sourceSha256; data.lightingRevision = plan.lightingRevision;
+                data.cubemaps = new Cubemap[plan.probes.Length]; data.probes = new SourceWorldReflectionData.Probe[plan.probes.Length];
             }
             if (data.cubemaps[index] && data.probes[index] != null && (data.probes[index].position - job.position).sqrMagnitude < .000001f)
             {
@@ -194,7 +206,7 @@ namespace Unity.MP_FPS.Moon.Editor
             }
             string probePath = Root + "Reflections/Probe_" + index.ToString("000") + ".asset";
             var stored = AssetDatabase.LoadAssetAtPath<SourceWorldReflectionData>(probePath);
-            if (stored && stored.cubemaps != null && stored.cubemaps.Length == 1 && stored.cubemaps[0] && stored.probes != null && stored.probes.Length == 1 && stored.probes[0] != null && (stored.probes[0].position - job.position).sqrMagnitude < .000001f)
+            if (stored && stored.sourceSha256 == plan.sourceSha256 && stored.lightingRevision == plan.lightingRevision && stored.cubemaps != null && stored.cubemaps.Length == 1 && stored.cubemaps[0] && stored.probes != null && stored.probes.Length == 1 && stored.probes[0] != null && (stored.probes[0].position - job.position).sqrMagnitude < .000001f)
             { data.cubemaps[index] = stored.cubemaps[0]; data.probes[index] = stored.probes[0]; data.probes[index].boxMin = job.boxMin; data.probes[index].boxMax = job.boxMax; EditorUtility.SetDirty(data); AssetDatabase.SaveAssetIfDirty(data); return; }
             string input = Root + "Reflections/Input_" + index.ToString("000") + ".exr"; Copy(job.file, input, Root + "Reflections/Input_000.exr", 2048);
             var importer = (TextureImporter)AssetImporter.GetAtPath(input);
@@ -207,11 +219,15 @@ namespace Unity.MP_FPS.Moon.Editor
             var panorama = AssetDatabase.LoadAssetAtPath<Texture2D>(input);
             SourceWorldCubeBuilder.Project(panorama, plan.towardSun, plan.sunAngle, out var full, out var masked);
             var cube = SourceWorldCubeBuilder.Build(panorama); cube.name = "SourceReflection_" + index.ToString("000");
-            stored = ScriptableObject.CreateInstance<SourceWorldReflectionData>(); stored.sourceSha256 = plan.sourceSha256; AssetDatabase.CreateAsset(stored, probePath); AssetDatabase.AddObjectToAsset(cube, stored);
+            if (!stored) { stored = ScriptableObject.CreateInstance<SourceWorldReflectionData>(); AssetDatabase.CreateAsset(stored, probePath); }
+            var previousCubes = stored.cubemaps;
+            stored.sourceSha256 = plan.sourceSha256; stored.lightingRevision = plan.lightingRevision; AssetDatabase.AddObjectToAsset(cube, stored);
             data.cubemaps[index] = cube; data.probes[index] = new SourceWorldReflectionData.Probe
             { position = job.position, boxMin = job.boxMin, boxMax = job.boxMax, importance = job.importance, sunVisible = job.sunVisible,
                 sphericalHarmonics = SourceWorldCubeBuilder.Pack(full), characterSphericalHarmonics = SourceWorldCubeBuilder.Pack(masked) };
             stored.cubemaps = new[] { cube }; stored.probes = new[] { data.probes[index] };
+            if (previousCubes != null) foreach (var previousCube in previousCubes)
+                if (previousCube && AssetDatabase.GetAssetPath(previousCube) == probePath) UnityEngine.Object.DestroyImmediate(previousCube, true);
             EditorUtility.SetDirty(stored); AssetDatabase.SaveAssetIfDirty(stored);
             EditorUtility.SetDirty(data); AssetDatabase.SaveAssetIfDirty(data); Resources.UnloadAsset(panorama);
         }
@@ -272,16 +288,26 @@ namespace Unity.MP_FPS.Moon.Editor
             data.sourceSha256 = Manifest.sourceSha256; data.irradiance = Manifest.atlases.Select(a => AssetDatabase.LoadAssetAtPath<Texture2D>(a.assetIrradiance)).ToArray();
             data.displayTransform = AssetDatabase.LoadAssetAtPath<Material>("Assets/MoonEnvironment/Variants/SourceFidelity/Materials/SourceAgX.mat");
             var plan = JsonUtility.FromJson<SourceReflectionPlan>(File.ReadAllText(Work + "WorldReflectionPlan.json")); data.towardSun = plan.towardSun; data.linearSunColor = plan.sunColor; data.sourceSunEnergy = plan.sunEnergy;
-            if (!data.surfaceStatistics) BuildStatistics(data);
+            string statisticsRevision = Manifest.sourceSha256 + ":BC5-v1:" + string.Join(";", Manifest.atlases.Select(a =>
+                a.id + ":" + AssetDatabase.GetAssetDependencyHash(a.assetStatistics).ToString()));
+            if (!data.surfaceStatistics || data.statisticsRevision != statisticsRevision)
+            { BuildStatistics(data); data.statisticsRevision = statisticsRevision; }
             EditorUtility.SetDirty(data); AssetDatabase.SaveAssetIfDirty(data); return data;
         }
         private static void BuildLightingData()
         {
             var data = PrepareStaticLightingData();
             data.reflections = AssetDatabase.LoadAssetAtPath<SourceWorldReflectionData>(ReflectionPath);
-            if (!data.reflections || data.reflections.cubemaps.Any(c => !c)) throw new InvalidOperationException("The complete source reflection field is required.");
+            var plan = JsonUtility.FromJson<SourceReflectionPlan>(File.ReadAllText(Work + "WorldReflectionPlan.json"));
+            if (!data.reflections || string.IsNullOrEmpty(plan.lightingRevision) || data.reflections.lightingRevision != plan.lightingRevision ||
+                data.reflections.sourceSha256 != Manifest.sourceSha256 || data.reflections.cubemaps == null || data.reflections.probes == null ||
+                data.reflections.cubemaps.Length != plan.probes.Length || data.reflections.probes.Length != plan.probes.Length ||
+                data.reflections.cubemaps.Any(c => !c) || data.reflections.probes.Any(p => p == null))
+                throw new InvalidOperationException("The complete current source reflection field is required.");
             data.fallbackReflection = data.reflections.cubemaps[0];
-            if (!data.characterProbes) BuildCharacterProbes(data);
+            string characterRevision = "character-v1:" + data.reflections.lightingRevision + ":" + AssetDatabase.GetAssetDependencyHash(ReflectionPath);
+            if (!data.characterProbes || data.characterProbeRevision != characterRevision)
+            { BuildCharacterProbes(data); data.characterProbeRevision = characterRevision; }
             EditorUtility.SetDirty(data); AssetDatabase.SaveAssetIfDirty(data);
         }
         private static void BuildStatistics(SourceWorldLightingData data)
@@ -305,7 +331,9 @@ namespace Unity.MP_FPS.Moon.Editor
                     }
                     finally { UnityEngine.Object.DestroyImmediate(pixels); RenderTexture.ReleaseTemporary(target); Resources.UnloadAsset(source); }
                 }
-                array.Apply(false, false); AssetDatabase.AddObjectToAsset(array, data); data.surfaceStatistics = array;
+                array.Apply(false, false); AssetDatabase.AddObjectToAsset(array, data);
+                var old = data.surfaceStatistics; data.surfaceStatistics = array;
+                if (old && AssetDatabase.GetAssetPath(old) == DataPath) UnityEngine.Object.DestroyImmediate(old, true);
             }
             catch { UnityEngine.Object.DestroyImmediate(array); throw; }
             finally { RenderTexture.active = previous; GL.sRGBWrite = previousSRGB; }
@@ -339,7 +367,10 @@ namespace Unity.MP_FPS.Moon.Editor
             var previous = LightmapSettings.lightProbes;
             try { LightmapSettings.lightProbes = copy; LightProbes.Tetrahedralize(); }
             finally { LightmapSettings.lightProbes = previous; }
-            AssetDatabase.AddObjectToAsset(copy, data); data.characterProbes = copy;
+            AssetDatabase.AddObjectToAsset(copy, data);
+            var old = data.characterProbes; data.characterProbes = copy;
+            if (old && AssetDatabase.GetAssetPath(old) == DataPath)
+            { if (LightmapSettings.lightProbes == old) LightmapSettings.lightProbes = copy; UnityEngine.Object.DestroyImmediate(old, true); }
         }
     }
 }
