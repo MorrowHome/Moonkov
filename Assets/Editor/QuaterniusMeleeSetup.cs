@@ -31,8 +31,8 @@ public static class QuaterniusMeleeSetup
 
     public static void Import()
     {
-        ImportOne(Source, new[] { "Melee_Hook", "Melee_Hook_Rec", "Sword_Heavy_Combo", "Sword_Regular_A", "Sword_Regular_B", "Sword_Regular_C", "Sword_Regular_A_Rec" });
-        ImportOne(BoxingSource, new[] { "Punch_Cross", "Punch_Jab", "Sword_Idle", "Sword_Attack" });
+        ImportOne(Source, new[] { "Melee_Hook", "Melee_Hook_Rec", "Sword_Heavy_Combo", "Sword_Regular_A", "Sword_Regular_B", "Sword_Regular_C", "Sword_Regular_A_Rec", "Consume", "Chest_Open" });
+        ImportOne(BoxingSource, new[] { "Punch_Cross", "Punch_Jab", "Sword_Idle", "Sword_Attack", "Interact", "PickUp_Table" });
     }
     private static void ImportOne(string path, string[] takes)
     {
@@ -42,7 +42,14 @@ public static class QuaterniusMeleeSetup
         importer.animationType = ModelImporterAnimationType.Human;
         importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
         importer.animationCompression = ModelImporterAnimationCompression.Off;
-        importer.clipAnimations = importer.defaultClipAnimations.Where(c => takes.Any(t => c.name == t || c.name.EndsWith("|" + t))).ToArray();
+        var existing = importer.clipAnimations.ToDictionary(c => c.name);
+        importer.clipAnimations = importer.defaultClipAnimations.Where(c => takes.Any(t => c.name == t || c.name.EndsWith("|" + t)))
+            .Select(c =>
+            {
+                var authored = existing.TryGetValue(c.name, out var previous) ? previous : c;
+                if (c.name.EndsWith("|Consume") || c.name.EndsWith("|PickUp_Table")) authored.mirror = true;
+                return authored;
+            }).ToArray();
         if (importer.clipAnimations.Length != takes.Length) throw new InvalidOperationException("Source takes missing: " + path);
         var mapping = new Dictionary<HumanBodyBones, string>
         {

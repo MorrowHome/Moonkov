@@ -1,0 +1,8 @@
+{
+  "sourceSha256": "5f747c027c1f17a5b3c147bad5d23a15502adb2b6daeb7fa028264a0c0212368",
+  "result": "PASS",
+  "boneFrames": 724,
+  "propSamples": 2172,
+  "maximumPositionMetres": 0.000247218406176555,
+  "maximumRotationDegrees": 4.140582133719097e-05
+}

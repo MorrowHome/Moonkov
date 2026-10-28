@@ -98,6 +98,8 @@ public class DollSingerView : MonoBehaviour
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
     private DollSingerFirstPersonHands gestureHands;
     private bool meleeHandsActive;
+    private bool actionHandsActive;
+    public float ActionInjectionPitch { get; set; } = 25;
     // Temporary deployment camera shares the owner mesh cutout near the eye.
     public Camera TransitionCamera { get; set; }
     public Camera GestureCamera => gestureHands?.Camera;
@@ -118,6 +120,14 @@ public class DollSingerView : MonoBehaviour
         Vector3 offset = weapon == MeleeWeaponKind.EnergySword ? new Vector3(0, .14f, -.38f) :
             weapon == MeleeWeaponKind.Dagger ? new Vector3(0, .08f, -.28f) : new Vector3(0, .06f, -.16f);
         gestureHands?.PresentMelee(meleeHandsActive, camera, poseBlend, offset);
+    }
+    public void SetActionHandsActive(bool active, float blend, bool injecting = false)
+    {
+        if (!active && !actionHandsActive) return;
+        actionHandsActive = active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled;
+        // One fixed perspective for the entire action, including the held prop.
+        // Re-fitting animated hand bounds would make the prop breathe in size.
+        gestureHands?.PresentAction(actionHandsActive, camera, blend, injecting, ActionInjectionPitch);
     }
 
     // Finish raising the gesture before zooming. Reverse the same timeline

@@ -13,4 +13,6 @@ Author: Quaternius. License: CC0 1.0; the original license is included in `Licen
 - The 60 Hz bake includes -70°, 0° and +70° aim poses, preserves character-specific bones and grip metadata, and changes rotations rather than bone scale.
 - Runtime retimes authored windup, contact and recovery to the shared server melee rules. Damage, stamina, cancellation and recovery remain server-owned; imported animation events and root motion never apply damage or move the player.
 
+Survival actions also import Chest_Open, Consume, Interact and PickUp_Table. `RaidActionAnimationSetup.BakeAll()` only bakes the legacy seed and refuses to overwrite reviewed Blender libraries. Final playback comes from `SurvivalActions.blend` through `export_survival_runtime.py` and `build_survival_runtime.py`. Consume and PickUp_Table are mirrored for right-hand inventory props. Existing melee trims are retained when importing these additional takes. See `Docs/Development/SurvivalActions.md` for contact, foley and validation.
+
 Validation is limited to compilation, exact-rig sampling, and native previews. Packed-game feel, first-person composition and combat balance require a new build acceptance pass.

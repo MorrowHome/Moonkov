@@ -32,6 +32,12 @@ MonoBehaviour:
   Consume: {fileID: 11400000, guid: 90d6d70b5efa4907970c2856d18083a9, type: 2}
   PlayerPain: {fileID: 11400000, guid: 0a75118876143417eac2caab872f7a30, type: 2}
   PlayerGroan: {fileID: 11400000, guid: 70d513a3113764267af7f42935730751, type: 2}
+  EatBite: {fileID: 11400000, guid: 77f595e3c92344b21bfa9012656428fc, type: 2}
+  DrinkSip: {fileID: 11400000, guid: 2fefe6e5226474c37ab5d16a824a21a4, type: 2}
+  BottleOpen: {fileID: 11400000, guid: 972caf442ba0e416b819e0144439d5b7, type: 2}
+  PacketOpen: {fileID: 11400000, guid: b5230c28999704fe8952751085ed1a45, type: 2}
+  InjectorCap: {fileID: 11400000, guid: d31839efa80654309afa545eea4b4a3b, type: 2}
+  InjectorPress: {fileID: 11400000, guid: 82cd3f9ded7f8412782160ad0d040909, type: 2}
   Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
   Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
   LootSearchWorld: {fileID: 11400000, guid: a05f97827eaa46feaefe1e2ed7f6f5ca, type: 2}
