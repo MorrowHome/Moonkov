@@ -34,6 +34,17 @@ namespace Unity.MP_FPS.Inventory
             joined.Items.AddRange(cache.Items.Where(i=>i.Id==Root || cache.RootOf(i.Id)==Root).Select(i=>i.Clone()));
             return joined;
         }
+        // Only disclosed item trees cross the wire. Hidden item names and sizes stay server-side.
+        public static InventoryGraph SearchPreview(InventoryGraph cache,int revealed)
+        {
+            var visible=cache.Clone();
+            var ids=new System.Collections.Generic.HashSet<string>(cache.Children(Root).Take(Math.Max(0,revealed)).Select(i=>i.Id));
+            for(int depth=0;depth<InventoryCatalog.MaxDepth;depth++)
+                foreach(var item in cache.Items)
+                    if(item.Parent!=null && ids.Contains(item.Parent))ids.Add(item.Id);
+            visible.Items.RemoveAll(i=>InventoryCatalog.Get(i.Code).Kind!=ItemKind.Root && !ids.Contains(i.Id));
+            return visible;
+        }
         // Build and validate the new owner before clearing the dead player's graph. Only
         // direct equipment/pocket items move; descendants retain their exact placements.
         public static InventoryGraph DropOnDeath(InventoryGraph carried)

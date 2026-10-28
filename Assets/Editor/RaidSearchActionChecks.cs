@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.Mathematics;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
@@ -31,6 +32,51 @@ public static class RaidSearchActionChecks
         Check(actor.DissectingLootId == 0 && actor.OpenedLootId == -1 && !actor.SearchedLoot.Contains(0), "Search cannot reveal contents early");
         actor.RefreshDissection(caches, true, origin, health, 12);
         Check(actor.OpenedLootId == 0 && actor.SearchedLoot.Contains(0) && !actor.NeedsSearch(caches, 0), "Search opens and remembers the completed container");
+
+        var previewActor = new RaidInventoryState();
+        previewActor.BeginDissection(0, 0, origin, health, 2);
+        int total = caches.Containers[0].Children(LootInventoryExchange.Root).Count();
+        Check(previewActor.SearchRevealed == 0, "New search starts with every item hidden");
+        var emptyPreview = LootInventoryExchange.SearchPreview(caches.Containers[0], 0);
+        Check(emptyPreview.Children(LootInventoryExchange.Root).Count() == 0 && emptyPreview.Validate() == InventoryError.None, "Initial preview contains only the empty container");
+        var carried = InventoryGraph.Create(false);
+        string owned = carried.Equipped("Backpack").Id;
+        for (int n = 1; n < total; n++)
+        {
+            previewActor.LastSentVersion = carried.Version;
+            previewActor.RefreshDissection(caches, true, origin, health, (n + .01) * 2 / total);
+            var visible = LootInventoryExchange.SearchPreview(caches.Containers[0], previewActor.SearchRevealed);
+            Check(visible.Children(LootInventoryExchange.Root).Count() == n && previewActor.LastSentVersion == -1, "Each discovered item schedules a fresh snapshot");
+            Check(visible.Validate() == InventoryError.None && previewActor.OpenedLootId == -1, "Partial preview is valid and cannot be transferred early");
+            var joined = LootInventoryExchange.Snapshot(carried, visible);
+            Check(joined.Equipped("Backpack")?.Id == owned && joined.Validate() == InventoryError.None, "Carried equipment survives each discovery");
+            string json = RaidInventoryTransport.EncodeSnapshot(joined, 0, visible.Version, 0, 1, searchTotal: total);
+            var decoded = Newtonsoft.Json.JsonConvert.DeserializeObject<RaidInventorySnapshot>(json);
+            Check(decoded.SearchTotal == total && decoded.Graph.Children(LootInventoryExchange.Root).Count() == n, "Transport carries total plus disclosed items only");
+            var client = new RaidInventoryClientState();
+            int chunks = (json.Length + RaidInventoryTransport.ChunkCharacters - 1) / RaidInventoryTransport.ChunkCharacters;
+            for (int index = chunks - 1; index >= 0; index--)
+                client.Receive(new RaidInventoryChunkV2Rpc { RaidId = 1, Sequence = 1, Count = chunks, Index = index,
+                    Json = json.Substring(index * RaidInventoryTransport.ChunkCharacters, Math.Min(RaidInventoryTransport.ChunkCharacters, json.Length - index * RaidInventoryTransport.ChunkCharacters)) }, RaidInventoryTransport.Decode);
+            Check(client.SearchTotal == total && client.DissectingLootId == 0 && client.Graph?.Equipped("Backpack")?.Id == owned,
+                "Chunk reassembly keeps partial loot and carried equipment together");
+        }
+        previewActor.CloseLoot();
+        Check(previewActor.DissectingLootId == -1 && !previewActor.SearchedLoot.Contains(0), "Closing partial search does not mark it complete");
+        previewActor.BeginDissection(0, 5, origin, health, 2);
+        Check(previewActor.SearchRevealed == 0, "Restart cannot reuse the previous preview count");
+        previewActor.RefreshDissection(caches, true, origin, health, 7);
+        Check(previewActor.OpenedLootId == 0 && previewActor.SearchedLoot.Contains(0), "Final item waits for the completion receipt");
+
+        var nested = InventoryGraph.Create(false, false);
+        nested.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+        var pack = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "small_pack", Parent = LootInventoryExchange.Root, Region = "main" };
+        nested.Items.Add(pack);
+        nested.AddSupply("data_drive", 1, pack.Id, true);
+        var hiddenPack = LootInventoryExchange.SearchPreview(nested, 0);
+        var foundPack = LootInventoryExchange.SearchPreview(nested, 1);
+        Check(hiddenPack.Count("data_drive") == 0 && foundPack.Count("data_drive") == 1 && foundPack.Validate() == InventoryError.None,
+            "A discovered container keeps its valid item tree without leaking it early");
 
         var remembered = new RaidInventoryState();
         remembered.BeginDissection(1, 0, origin, health, 2);

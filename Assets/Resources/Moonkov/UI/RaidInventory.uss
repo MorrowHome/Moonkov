@@ -70,3 +70,7 @@
 .inventory-raid .field-corpse-model { background-image: url("FieldOperatorPortrait.png"); -unity-background-scale-mode: scale-to-fit; }
 .inventory-view.inventory-raid .field-corpse-body-slot { position: absolute; margin: 0; padding: 4px; background-color: rgba(15,23,22,0.84); }
 .inventory-raid .field-corpse-body-slot .inventory-slot-label, .inventory-raid .field-corpse-body-slot .inventory-slot-item { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.inventory-raid .field-search-count { font-size: 14px; color: #eeeee6; margin-bottom: 8px; }
+.inventory-raid .field-search-pending { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; }
+.inventory-raid .field-search-unknown { width: 44px; height: 44px; margin: 0 4px 4px 0; border-width: 1px; border-color: #414b4e; background-color: #191f21; color: #b3bcb9; font-size: 14px; -unity-text-align: middle-center; }

@@ -325,7 +325,7 @@ namespace Unity.MP_FPS
                 else RequestLoot(-1);
             }
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (visible) { UpdateInventoryView(); if(!m_LootOpenPending && !m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
+            if (visible) { UpdateInventoryView(); if(!m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
@@ -718,7 +718,10 @@ namespace Unity.MP_FPS
             m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
             string opening=dissect ? "SEARCHING" :
                 RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
-            m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
+            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            var carried=inventory.Graph?.Clone();
+            carried?.Items.RemoveAll(item=>item.Id==Inventory.LootInventoryExchange.Root || inventory.Graph.RootOf(item.Id)==Inventory.LootInventoryExchange.Root);
+            m_LootOpenPending=true;m_InventoryView.Present(carried,opening,operationCompleted:false);
             m_InventoryView.SetReadOnly(opening);SetInventory(true);
         }
         private bool RequestLoot(int lootId)
@@ -774,7 +777,8 @@ namespace Unity.MP_FPS
                     m_DissectingLootId=inventory.DissectingLootId;
                     m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
                     m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
-                    m_InventoryView.Present(null,"SEARCHING",operationCompleted:false);
+                    m_InventoryView.Present(inventory.Graph,operationCompleted:false,lootId:inventory.LootId,
+                        droppedItem:IsDroppedLoot(inventory.LootId),searchTotal:inventory.SearchTotal);
                     m_InventoryView.SetReadOnly("SEARCHING");
                     return;
                 }

@@ -17,10 +17,10 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null,bool medicalIsConsumable=false) => Newtonsoft.Json.JsonConvert.SerializeObject(
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null,bool medicalIsConsumable=false,int searchTotal=-1) => Newtonsoft.Json.JsonConvert.SerializeObject(
             new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
                 DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,MedicalIsConsumable=medicalIsConsumable,ActionFeedback=actionFeedback,
-                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result},
+                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result,SearchTotal=searchTotal},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
     }
     public sealed class RaidInventorySnapshot
@@ -32,6 +32,7 @@ namespace Unity.MP_FPS
         public Dictionary<string,string> CorpseEquipmentSlots;
         public int DissectingLootId=-1;
         public float DissectionRemaining;
+        public int SearchTotal=-1;
         public string MedicalItemId;
         public float MedicalRemaining;
         public bool MedicalIsConsumable;
@@ -240,7 +241,8 @@ namespace Unity.MP_FPS
             else ActionFeedback=reason!=null ? reason+" 未消耗医疗物品。" :
                 Error==InventoryError.None ? "治疗完成。" : "治疗失败：目标或物品状态已变化，未消耗物品。";
         }
-        public double DissectionUntil;
+        public double DissectionUntil, DissectionStartedAt;
+        public int SearchRevealed;
         public Unity.Mathematics.float3 DissectionOrigin;
         public int DissectionGeneration;
         public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
@@ -248,6 +250,7 @@ namespace Unity.MP_FPS
         {
             if(RaidHealth.HandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
+            DissectionStartedAt=now;SearchRevealed=0;
             DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageSequence=health.NonPhysiologicalDamageSequence;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
             DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
@@ -263,7 +266,13 @@ namespace Unity.MP_FPS
                 health.NonPhysiologicalDamageSequence!=DissectionDamageSequence || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
                 health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
                 health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
-            if(reason==null && now<DissectionUntil)return;
+            if(reason==null && now<DissectionUntil)
+            {
+                int total=caches.Containers.TryGetValue(DissectingLootId,out var cache) ? cache.Children(LootInventoryExchange.Root).Count() : 0;
+                int revealed=(int)(total*System.Math.Clamp((now-DissectionStartedAt)/(DissectionUntil-DissectionStartedAt),0,1));
+                if(revealed!=SearchRevealed){SearchRevealed=revealed;LastSentVersion=-1;}
+                return;
+            }
             int id=DissectingLootId;DissectingLootId=-1;LastSentVersion=-1;
             Error=reason==null ? InventoryError.None : InventoryError.Inaccessible;
             ActionFeedback=reason==null ? "搜索完成。" : reason+" 未获取物品。";
@@ -419,6 +428,7 @@ namespace Unity.MP_FPS
         public Dictionary<string,string> CorpseEquipmentSlots;
         public int DissectingLootId=-1;
         public float DissectionRemaining;
+        public int SearchTotal=-1;
         public string MedicalItemId;
         public float MedicalRemaining;
         public bool MedicalIsConsumable;
@@ -446,6 +456,7 @@ namespace Unity.MP_FPS
                 CorpseCharacterIndex=snapshot?.CorpseCharacterIndex ?? -1; CorpseEquipmentSlots=snapshot?.CorpseEquipmentSlots;
                 DissectingLootId=snapshot?.DissectingLootId ?? -1;
                 DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
+                SearchTotal=snapshot?.SearchTotal ?? -1;
                 MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;MedicalIsConsumable=snapshot?.MedicalIsConsumable ?? false;ActionFeedback=snapshot?.ActionFeedback;
                 Result = snapshot?.Result != null && snapshot.Result.Valid(chunk.RaidId) ? snapshot.Result : null;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;

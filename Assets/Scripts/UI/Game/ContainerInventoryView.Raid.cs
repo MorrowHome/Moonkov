@@ -192,6 +192,17 @@ namespace Unity.MP_FPS.Client
             bool corpse = !m_DroppedItem && m_LootId >= RaidLootContainers.FirstDeathBagId && m_LootId < RaidLootContainers.FirstMissionCacheId;
             MoonkovLocalization.Set(title, RaidFurnitureLoot.IsFurniture(m_LootId) ? "抽屉搜刮" : corpse ? "尸体搜刮" : m_DroppedItem ? "地面物品" : m_LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽" : "物资容器");
             MoonkovLocalization.Set(caption, RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : "");
+            if(m_SearchTotal>=0)
+            {
+                int found=m_Graph.Children(loot.Id).Count();
+                var count=Text(m_LootPane,"", "field-search-count");
+                count.name="lootSearchCount";
+                MoonkovLocalization.Set(count, $"{found} / {m_SearchTotal}");
+                var pending=new VisualElement();pending.AddToClassList("field-search-pending");m_LootPane.Add(pending);
+                for(int n=found;n<m_SearchTotal;n++)Text(pending,"?","field-search-unknown");
+                AddContainer(m_LootPane,loot,"可搜刽物品",compact:true);
+                return;
+            }
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
             if (GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex))

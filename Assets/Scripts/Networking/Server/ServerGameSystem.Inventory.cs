@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -223,17 +224,26 @@ namespace Unity.MP_FPS
             var inventory = GetRaidInventory(ref state, connection);
             InventoryGraph cache=null;
             if(inventory.OpenedLootId>=0)LootContainers(ref state).Containers.TryGetValue(inventory.OpenedLootId,out cache);
+            int viewing=inventory.OpenedLootId;
+            int searchTotal=-1;
+            if(inventory.DissectingLootId>=0 && LootContainers(ref state).Containers.TryGetValue(inventory.DissectingLootId,out var searching))
+            {
+                viewing=inventory.DissectingLootId;
+                searchTotal=searching.Children(LootInventoryExchange.Root).Count();
+                cache=searching;
+            }
             int lootVersion=cache?.Version ?? 0;
             if (inventory.LastSentVersion == inventory.Graph.Version && inventory.LastSentLootVersion==lootVersion) return;
             inventory.LastSentVersion = inventory.Graph.Version; inventory.Sequence++;
             inventory.LastSentLootVersion=lootVersion;
-            var snapshot=cache==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,cache);
+            var visible=cache!=null && searchTotal>=0 ? LootInventoryExchange.SearchPreview(cache,inventory.SearchRevealed) : cache;
+            var snapshot=visible==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,visible);
             RaidCorpseRecord corpse = null;
-            if (cache != null) LootContainers(ref state).DeathBags.TryGetValue(inventory.OpenedLootId, out corpse);
-            var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
+            if (cache != null && searchTotal<0) LootContainers(ref state).DeathBags.TryGetValue(inventory.OpenedLootId, out corpse);
+            var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : viewing,lootVersion,
                 inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
                 inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback,
-                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result,inventory.MedicalIsConsumable);
+                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result,inventory.MedicalIsConsumable,searchTotal);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

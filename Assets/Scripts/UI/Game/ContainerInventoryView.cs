@@ -50,6 +50,7 @@ namespace Unity.MP_FPS.Client
         private IVisualElementScheduledItem m_QuickTransferPump;
         private bool m_ProcessingQuickTransfer, m_QuickTransferSpaceBlocked;
         private string m_ReadOnlyReason;
+        private int m_SearchTotal=-1;
         private string m_SelectedItemId;
         private int m_LootId=-1;
         private bool m_DroppedItem;
@@ -187,7 +188,7 @@ namespace Unity.MP_FPS.Client
                 case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
         }
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false,
-            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null)
+            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null, int searchTotal=-1)
         {
             if (m_Disposed) return;
             if (graph == null || m_LootId != lootId || operationCompleted && message != null) ClearQuickTransfers();
@@ -198,8 +199,9 @@ namespace Unity.MP_FPS.Client
             }
             string layout = LayoutKey(graph);
             bool corpseSlotsChanged = !SameCorpseSlots(m_CorpseEquipmentSlots, corpseEquipmentSlots);
-            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex || corpseSlotsChanged;
+            bool changed = m_SearchTotal!=searchTotal || m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex || corpseSlotsChanged;
             bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
+            m_SearchTotal=searchTotal;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             m_CorpseCharacterIndex = corpseCharacterIndex;
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -294,7 +296,7 @@ namespace Unity.MP_FPS.Client
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
-            if (item?.Code == "stash" || item?.Code == "loot" && !compact)
+            if (item?.Code == "stash" || item?.Code == "loot" && (!compact || m_SearchTotal>=0))
                 group.Q("containerTitle").style.display = DisplayStyle.None;
             if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK" || title == "保险箱"))
                 AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
