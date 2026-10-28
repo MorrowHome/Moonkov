@@ -18,6 +18,9 @@ MonoBehaviour:
   CooldownInMs: 0.55
   EquipTime: 0.27
   Damage: 22
+  DamageFalloffStart: 12
+  DamageFalloffEnd: 38
+  MinimumDamageFraction: 0.15
   Automatic: 0
   BurstCount: 1
   BurstInterval: 0.085

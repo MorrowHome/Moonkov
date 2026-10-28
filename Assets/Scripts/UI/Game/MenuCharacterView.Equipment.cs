@@ -113,8 +113,7 @@ namespace Unity.MP_FPS.Client
                 snapshot.EquippedModules, snapshot.CurrentAmmo, weapon?.MagazineSize ?? 0);
             SelectMeleeSnapshot(snapshot);
             m_EquipmentReloading = snapshot.ControllerState.IsReloadingState && weapon != null;
-            m_EquipmentReloadProgress = m_EquipmentReloading ? Mathf.Clamp01(1f - snapshot.ReloadTimer /
-                Mathf.Max(.01f, weapon.ReloadTime * RaidHealth.HandlingMultiplier(snapshot))) : 0;
+            m_EquipmentReloadProgress = HaloReload.Progress(snapshot, weapon);
             m_EquipmentReloadTarget = snapshot.ReloadTargetAmmo;
             m_EquipmentShotTick = snapshot.LastShotTick; m_EquipmentReloadTick = snapshot.LastReloadTick;
             m_EquipmentBurstIndex = snapshot.BurstSequence;

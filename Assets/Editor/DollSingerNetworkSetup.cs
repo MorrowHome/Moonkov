@@ -134,7 +134,9 @@ public static class DollSingerNetworkSetup
             halo = UnityEngine.Object.Instantiate(registry.Weapons[0]);
             halo.name = "HaloWeapon";
             halo.WeaponName = "Halo";
-            halo.Damage = 32;
+            halo.Damage = 45;
+            halo.CooldownInMs = .16f; halo.ReloadTime = 2.6f;
+            MoonkovGunplaySetup.ConfigureRange(halo, DollSingerWeapons.Halo);
             halo.WeaponFireSfx = null;
             halo.WeaponReloadSfx = null;
             halo.MuzzleFlashVfxPrefab = default;

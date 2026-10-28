@@ -15,14 +15,17 @@ MonoBehaviour:
   WeaponName: Halo
   Type: 1
   ReticleType: 0
-  CooldownInMs: 0.1
+  CooldownInMs: 0.16
   EquipTime: 0.22
-  Damage: 32
+  Damage: 45
+  DamageFalloffStart: 40
+  DamageFalloffEnd: 160
+  MinimumDamageFraction: 0.55
   Automatic: 1
   AutoReloadWhenEmpty: 0
   HitscanRange: 1000
   MagazineSize: 30
-  ReloadTime: 2
+  ReloadTime: 2.6
   EnergyPerRound: 3
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:

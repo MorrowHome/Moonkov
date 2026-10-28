@@ -1,6 +1,6 @@
 # 武器伤害基线（2026-10-22）
 
-`feat/weapon-balance` 从 `feat/subspace-equipment` 的 `11a09dbc` 分出。本次数值提交仅修改武器伤害及对应创建默认值，未合入 develop；复用现有武器、身体部位和护盾系统。
+以下是 2026-10-22 的历史基线。当时 `feat/weapon-balance` 从 `feat/subspace-equipment` 的 `11a09dbc` 分出。2026-10-28 的当前参数和距离衰减见[枪械节奏第一版](HuntInspiredGunplay.md)。
 
 ## 调整目标
 

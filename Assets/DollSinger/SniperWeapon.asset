@@ -15,14 +15,17 @@ MonoBehaviour:
   WeaponName: Halo Sniper
   Type: 1
   ReticleType: 0
-  CooldownInMs: 1.4
+  CooldownInMs: 1.6
   EquipTime: 0.34
   Damage: 190
+  DamageFalloffStart: 100
+  DamageFalloffEnd: 320
+  MinimumDamageFraction: 0.75
   Automatic: 0
   AutoReloadWhenEmpty: 1
   HitscanRange: 1000
   MagazineSize: 5
-  ReloadTime: 3
+  ReloadTime: 3.8
   EnergyPerRound: 18
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:

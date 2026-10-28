@@ -15,15 +15,18 @@ MonoBehaviour:
   WeaponName: Halo Revolver
   Type: 1
   ReticleType: 0
-  CooldownInMs: 0.75
+  CooldownInMs: 0.85
   EquipTime: 0.18
-  Damage: 60
+  Damage: 70
+  DamageFalloffStart: 20
+  DamageFalloffEnd: 100
+  MinimumDamageFraction: 0.4
   Automatic: 0
   AutoReloadWhenEmpty: 1
   HitscanRange: 1000
   MagazineSize: 6
+  ReloadTime: 3.6
   EnergyPerRound: 1
-  ReloadTime: 0.75
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:
       m_AssetGUID: 83a79bf5320972c46ae675e08e77534b

@@ -38,6 +38,7 @@ public static class HaloArsenalSetup
             data.AutoReloadWhenEmpty=true;data.ShowProjectileBody=true;data.Type=WeaponType.Projectile;
             data.ProjectileLifetime=entry.BlastRadius>0?6:4;data.ProjectileRadius=entry.BlastRadius>0?.055f:.009f;
             data.Behavior=entry.BlastRadius>0?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage;data.AoeRadius=entry.BlastRadius>0?entry.BlastRadius:3.5f;
+            MoonkovGunplaySetup.ConfigureRange(data,entry.Id);
             EditorUtility.SetDirty(data);
             while(registry.Weapons.Count<=entry.Id)registry.Weapons.Add(null);registry.Weapons[(int)entry.Id]=data;
             var root=new GameObject(title+" Halo");

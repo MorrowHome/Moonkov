@@ -49,7 +49,7 @@ namespace Unity.MP_FPS
                 var weapon=WeaponManager.Instance.WeaponRegistry.GetWeaponData(player.EquippedWeaponID,player.EquippedModules);
                 if(weapon!=null)
                 {
-                    float duration=weapon.ReloadTime*RaidHealth.HandlingMultiplier(player);
+                    float duration=HaloReload.Total(player,weapon);
                     ShowProgress(DollSingerWeapons.IsHalo(player.EquippedWeaponID) ? "CHARGING" : "RELOADING",
                         1-player.ReloadTimer/Mathf.Max(.01f,duration),player.ReloadTimer,true,false,false);return true;
                 }

@@ -22,7 +22,7 @@ public static class MoonkovReloadIdentityChecks
             foreach (var clip in sound.Clips)
             {
                 Require(clip && clips.Add(clip), "Shared recording: " + name);
-                Require(Mathf.Abs(clip.length - weapon.ReloadTime) < .001f, "Reload duration mismatch: " + name);
+                Require(Mathf.Abs(clip.length - sound.Clips[0].length) < .001f, "Reload bank window mismatch: " + name);
                 Require(clip.frequency == 48000 && clip.channels == 1 && clip.loadType == AudioClipLoadType.DecompressOnLoad, "Import: " + name);
                 clip.LoadAudioData(); var samples = new float[clip.samples]; Require(clip.GetData(samples, 0), "Unreadable PCM");
                 float peak = 0;
@@ -31,7 +31,7 @@ public static class MoonkovReloadIdentityChecks
             }
             foreach (float modifier in new[] { 1f, .6f, .45f, 1.35f, 1.8f })
             {
-                float remaining = weapon.ReloadTime * modifier;
+                float remaining = sound.Clips[0].length * modifier;
                 float rate = Mathf.Pow(2, MoonkovReloadAudio.PitchForDuration(sound, remaining) / 1200);
                 Require(Mathf.Abs(sound.Clips[0].length / rate - remaining) < .002f, "Modified reload timing: " + name);
             }
@@ -58,7 +58,7 @@ public static class MoonkovReloadIdentityChecks
                     float rate = i % 2 == 0 ? 1 : 1 / .6f;
                     var info = new SoundSystem.SoundInfo { SoundDefinition = weapon.WeaponReloadSfx, Position = Vector3.zero,
                         SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(weapon.WeaponReloadSfx)
-                        { SpatialBlend = .08f, BasePitchInCents = MoonkovReloadAudio.PitchForDuration(weapon.WeaponReloadSfx, weapon.ReloadTime / rate) } };
+                        { SpatialBlend = .08f, BasePitchInCents = MoonkovReloadAudio.PitchForDuration(weapon.WeaponReloadSfx, weapon.WeaponReloadSfx.Clips[0].length / rate) } };
                     Require(system.PlayEmitter(info, 1), "Cannot play " + name);
                     var source = info.Handle.Emitter.ActiveSoundGameObjects[0].m_AudioSource;
                     Require(source.isPlaying && source.clip != previous, "Repeated adjacent reload: " + name);

@@ -24,9 +24,9 @@ public static class HaloModuleChecks
         var focus=registry.GetWeaponData(DollSingerWeapons.Shotgun,(byte)HaloModule.FocusLens);
         var fan=registry.GetWeaponData(DollSingerWeapons.Shotgun,(byte)HaloModule.FanArray);
         var marked=registry.GetWeaponData(DollSingerWeapons.Shotgun,(byte)(HaloModule.ChargeBridge|HaloModule.HitMarker));
-        Check(capacitor.MagazineSize==6 && Mathf.Approximately(capacitor.ReloadTime,2.7f),"capacitor tradeoff");
-        Check(bridge.EnergyPerRound==18 && Mathf.Approximately(bridge.ReloadTime,1.2f),"bridge tradeoff");
-        Check(focus.MagazineSize==3 && Mathf.Approximately(focus.SpreadDegrees,2.25f),"focus tradeoff");
+        Check(capacitor.MagazineSize==6 && Mathf.Approximately(capacitor.ReloadTime,baseShotgun.ReloadTime*1.35f),"capacitor tradeoff");
+        Check(bridge.EnergyPerRound==18 && Mathf.Approximately(bridge.ReloadTime,baseShotgun.ReloadTime*.6f),"bridge tradeoff");
+        Check(focus.MagazineSize==3 && Mathf.Approximately(focus.SpreadDegrees,baseShotgun.SpreadDegrees*.45f),"focus tradeoff");
         Check(fan.PelletCount==12 && Mathf.Approximately(fan.Damage*fan.PelletCount,baseShotgun.Damage*baseShotgun.PelletCount),"fan total damage");
         Check(marked.EnergyPerRound==23 && baseShotgun.MagazineSize==4 && baseShotgun.PelletCount==8,"combined energy rounds up and asset unchanged");
         Vector3 first=WeaponSpread.Direction(Vector3.forward,fan,3,120);

@@ -45,6 +45,9 @@ namespace Unity.MP_FPS
             bool cry = m_Pain.Observe(ghost.LastImpactTick, ghost.CurrentHealth > 0, Time.unscaledTime);
             var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
                 ghost.ControllerState.IsReloadingState, ghost.CurrentHealth > 0);
+            var reloadWeapon = WeaponManager.Instance ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules) : null;
+            bool stagedReload = reloadWeapon && DollSingerWeapons.IsHalo(ghost.EquippedWeaponID);
+            var reloadPhase = m_Reload.ObservePhase(ghost, reloadWeapon);
             if (!m_Initialized)
             {
                 m_Initialized = true;
@@ -64,7 +67,14 @@ namespace Unity.MP_FPS
                 GameManager.Instance?.SoundSystem?.Stop(m_ReloadSound, .08f);
                 m_ReloadSound = null;
             }
-            if ((reload & ReloadAudioEvent.Start) != 0)
+            if (stagedReload && reloadPhase != ReloadSoundPhase.None)
+            {
+                var window = MoonkovReloadAudio.Window(reloadWeapon.WeaponReloadSfx, reloadPhase);
+                GameManager.Instance?.SoundSystem?.Stop(m_ReloadSound, .015f);
+                m_ReloadSound = MoonkovAudio.PlayWeaponLayer(reloadWeapon.WeaponReloadSfx, position, 1,
+                    owned ? .08f : 1, 0, window.x, window.y);
+            }
+            else if (!stagedReload && (reload & ReloadAudioEvent.Start) != 0)
             {
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
                 m_ReloadSound = MoonkovAudio.PlayWeaponLayer(weapon?.WeaponReloadSfx, position, 1, owned ? .08f : 1,

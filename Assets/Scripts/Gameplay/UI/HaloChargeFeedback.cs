@@ -64,7 +64,7 @@ namespace Unity.MP_FPS
             if (player.ControllerState.IsReloadingState)
             {
                 m_AttemptAt = float.NegativeInfinity;
-                float duration = Mathf.Max(.01f, weapon.ReloadTime * RaidHealth.HandlingMultiplier(player));
+                float duration = HaloReload.Total(player, weapon);
                 return new HaloChargeStatus(HaloChargeNotice.Charging, player.ReloadTargetAmmo, capacity,
                     Mathf.Max(0, player.ReloadTimer), Mathf.Clamp01(1 - player.ReloadTimer / duration));
             }

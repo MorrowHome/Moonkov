@@ -314,7 +314,7 @@ namespace Unity.MP_FPS
                 ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1) : DollSingerHaloAim.HaloWeapon.None;
             if (hideWeapon) haloWeapon = DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
-                state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime * RaidHealth.HandlingMultiplier(ghost)) : 0f,
+                state.IsReloadingState, HaloReload.Progress(ghost, weapon),
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
             if (Role == MultiplayerRole.ClientOwned)
             {

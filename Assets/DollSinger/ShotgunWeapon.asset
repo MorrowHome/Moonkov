@@ -18,11 +18,14 @@ MonoBehaviour:
   CooldownInMs: 0.8
   EquipTime: 0.28
   Damage: 18
+  DamageFalloffStart: 7
+  DamageFalloffEnd: 24
+  MinimumDamageFraction: 0.06
   Automatic: 0
   AutoReloadWhenEmpty: 1
   HitscanRange: 1000
   MagazineSize: 4
-  ReloadTime: 2
+  ReloadTime: 3.4
   EnergyPerRound: 12
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:
@@ -71,7 +74,7 @@ MonoBehaviour:
   AoeRadius: 5
   ProjectileSpeed: 240
   PelletCount: 8
-  SpreadDegrees: 5
+  SpreadDegrees: 3
   ProjectileGravity: 1.62
   ProjectileRadius: 0.005
   ProjectileLifetime: 1

@@ -42,10 +42,11 @@ public static class HaloWeaponSetup
         {
             shotgun = UnityEngine.Object.Instantiate(registry.GetWeaponData(DollSingerWeapons.Halo));
             shotgun.name = "ShotgunWeapon"; shotgun.WeaponName = "Halo Shotgun";
-            shotgun.MagazineSize = 4; shotgun.CooldownInMs = .8f; shotgun.ReloadTime = 2f;
+            shotgun.MagazineSize = 4; shotgun.CooldownInMs = .8f; shotgun.ReloadTime = 3.4f;
             shotgun.EnergyPerRound = 12;
             shotgun.Automatic = false; shotgun.AutoReloadWhenEmpty = true;
-            shotgun.Damage = 18; shotgun.PelletCount = 8; shotgun.SpreadDegrees = 5f;
+            shotgun.Damage = 18; shotgun.PelletCount = 8; shotgun.SpreadDegrees = 3f;
+            MoonkovGunplaySetup.ConfigureRange(shotgun, DollSingerWeapons.Shotgun);
             shotgun.ProjectileSpeed = 240f; shotgun.ProjectileLifetime = 1f;
             var template = registry.GetWeaponData(1);
             shotgun.WeaponFireSfx = template.WeaponFireSfx; shotgun.WeaponReloadSfx = template.WeaponReloadSfx;

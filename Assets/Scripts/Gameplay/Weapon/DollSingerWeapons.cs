@@ -89,6 +89,7 @@ namespace Unity.MP_FPS
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
                 state.CurrentAmmo = Ammo(active, graph, registry); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
                 state.ControllerState.IsReloadingState = false;
+                state.ReloadDuration = 0;
                 HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
             }
         }
@@ -123,6 +124,7 @@ namespace Unity.MP_FPS
         {
             state.ControllerState.IsReloadingState = false;
             state.ReloadTimer = 0f;
+            state.ReloadDuration = 0f;
             if (magazineSize>0) state.CurrentAmmo = Mathf.Max(state.CurrentAmmo, Mathf.Min(state.ReloadTargetAmmo, magazineSize));
             state.ReloadTargetAmmo = 0;
         }

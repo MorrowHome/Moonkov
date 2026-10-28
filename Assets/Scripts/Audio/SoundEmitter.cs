@@ -23,6 +23,9 @@ public class SoundEmitter
     {
         // Null uses the asset's spatialization; weapon ownership may override one playback.
         public float? SpatialBlend;
+        // Optional clip window for timed weapon mechanisms. Null keeps the bank defaults.
+        public float? StartOffsetFraction;
+        public float? StopAfterSeconds;
         public float BasePitchInCents;  // Copied from SoundDef to allow user to override if required
         public float VolumeScale;       // Copied from SoundDef
         public float BaseLowPassCutoff; // Copied from SoundDef
@@ -70,6 +73,8 @@ public class SoundEmitter
     public void CopyOverrideDataFromSoundDef(SoundDef soundDef)
     {
         SoundDefOverrideInfo.SpatialBlend = null;
+        SoundDefOverrideInfo.StartOffsetFraction = null;
+        SoundDefOverrideInfo.StopAfterSeconds = null;
         SoundDefOverrideInfo.BasePitchInCents = soundDef.BasePitchInCents;
         SoundDefOverrideInfo.VolumeScale = soundDef.VolumeScale;
         SoundDefOverrideInfo.BaseLowPassCutoff = soundDef.BaseLowPassCutoff;

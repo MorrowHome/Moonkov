@@ -216,9 +216,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                                 predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize)
                             {
-                                predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
-                                predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO);
-                                predictedPlayer.ValueRW.ReloadTargetAmmo = weaponData.MagazineSize;
+                                HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, weaponData.MagazineSize);
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
 

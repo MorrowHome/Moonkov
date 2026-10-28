@@ -377,9 +377,7 @@ namespace Unity.MP_FPS
                         if (HaloModuleFire.ReadyToReload(ref predictedPlayer.ValueRW,wantsToReload || mustReload,weaponData.MagazineSize) &&
                             TryReserveHaloEnergy(entity, predictedPlayer.ValueRO.EquippedWeaponID, weaponData, predictedPlayer.ValueRO.CurrentAmmo, out int targetAmmo))
                         {
-                            predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
-                            predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO);
-                            predictedPlayer.ValueRW.ReloadTargetAmmo = targetAmmo;
+                            HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, targetAmmo);
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 
@@ -435,7 +433,8 @@ namespace Unity.MP_FPS
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,BountyClashDamage.Capture(World,entity),
-                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet,(float3)hit.point);
+                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),
+                                                    Ballistics.DamageAtDistance(weaponData, hit.distance),serverTick,RaidDamageKind.Bullet,(float3)hit.point);
                                                 if (RaidHealth.ImpactFlags(healthBeforeDamage, targetPredictedPlayer.ValueRO) != 0 &&
                                                     ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
                                                     VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);

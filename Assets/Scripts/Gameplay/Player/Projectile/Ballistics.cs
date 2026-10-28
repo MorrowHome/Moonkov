@@ -5,6 +5,18 @@ namespace Unity.MP_FPS
 {
     public static class Ballistics
     {
+        // Use the same release origin for players and AI. Range never increases damage,
+        // and old definitions without a falloff interval retain their original behavior.
+        public static float DamageAtDistance(WeaponData weapon, float distance)
+        {
+            if (!weapon) return 0;
+            if (weapon.Behavior == ProjectileBehavior.AreaOfEffect ||
+                weapon.DamageFalloffEnd <= weapon.DamageFalloffStart) return weapon.Damage;
+            float fraction = Mathf.InverseLerp(weapon.DamageFalloffStart, weapon.DamageFalloffEnd,
+                Mathf.Max(0, distance));
+            return weapon.Damage * Mathf.Lerp(1, Mathf.Clamp01(weapon.MinimumDamageFraction), fraction);
+        }
+
         public static Vector3 Position(Vector3 origin, Vector3 velocity, float gravity, float age) =>
             origin + velocity * age + Vector3.down * (0.5f * gravity * age * age);
 

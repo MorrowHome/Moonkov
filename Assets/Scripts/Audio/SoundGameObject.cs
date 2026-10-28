@@ -359,6 +359,7 @@ public class SoundGameObject
 
         // Set start sample offset position
         float startPercentOffset = Random.Range(soundDef.StartStopInfo.StartOffsetPercentMin, soundDef.StartStopInfo.StartOffsetPercentMax) / 100.0f;
+        startPercentOffset = Mathf.Clamp(soundDefOverrideData.StartOffsetFraction ?? startPercentOffset, 0, .999f);
         m_AudioSource.timeSamples = (int)((float)m_AudioSource.clip.samples * startPercentOffset);
         m_AudioSource.dopplerLevel = soundDef.DistanceInfo.DopplerScale;
 
@@ -381,11 +382,12 @@ public class SoundGameObject
         // Start sample with delay if required
         // If we also have a stopDelay time (stop the audioSource after n seconds), use PlayScheduled and SetScheduledEndTime
         float delay = Random.Range(soundDef.StartStopInfo.DelayMin, soundDef.StartStopInfo.DelayMax);
-        if (soundDef.StartStopInfo.StopDelay > 0)
+        float stopAfter = soundDefOverrideData.StopAfterSeconds ?? soundDef.StartStopInfo.StopDelay;
+        if (stopAfter > 0)
         {
             double startTime = AudioSettings.dspTime;
             startTime += delay;
-            double endTime = startTime + soundDef.StartStopInfo.StopDelay;
+            double endTime = startTime + stopAfter;
             m_PendingStartDsp = startTime;
             m_AudioSource.PlayScheduled(startTime);
             m_AudioSource.SetScheduledEndTime(endTime);

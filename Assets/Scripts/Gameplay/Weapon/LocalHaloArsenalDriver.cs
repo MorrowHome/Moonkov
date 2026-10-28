@@ -31,11 +31,11 @@ namespace Unity.MP_FPS
             if(state.ControllerState.IsReloadingState)
             {state.ReloadTimer=Mathf.Max(0,state.ReloadTimer-deltaTime);if(state.ReloadTimer==0)DollSingerWeapons.CompleteReload(ref state,weapon);}
             if(!state.ControllerState.IsReloadingState&&(reload||state.CurrentAmmo==0)&&battery.TryRecharge(state.CurrentAmmo,weapon.MagazineSize,weapon.EnergyPerRound,out int target))
-            {state.ControllerState.IsReloadingState=true;state.ReloadTimer=weapon.ReloadTime;state.ReloadTargetAmmo=target;reloadTick++;HaloModuleFire.Reset(ref state);}
+            {HaloReload.Begin(ref state,weapon,target);reloadTick++;HaloModuleFire.Reset(ref state);}
             bool fired=HaloModuleFire.TryFire(ref state,weapon,weapon.Automatic||weapon.BurstCount>1?held:pressed,aiming,false);
             if(fired){state.CurrentAmmo--;shotTick++;HaloModuleFire.CommitShot(ref state,weapon,deltaTime);}
             halo.SetNetworkWeapon(gesture,state.CurrentAmmo,state.ControllerState.IsReloadingState,
-                state.ControllerState.IsReloadingState?1-state.ReloadTimer/weapon.ReloadTime:0,shotTick,reloadTick,state.ReloadTargetAmmo,0,weapon.MagazineSize,state.BurstSequence);
+                HaloReload.Progress(state,weapon),shotTick,reloadTick,state.ReloadTargetAmmo,0,weapon.MagazineSize,state.BurstSequence);
             return fired;
         }
     }

@@ -30,6 +30,12 @@ namespace Unity.MP_FPS
         public float EquipTime = 0.22f;
 
         public float Damage = 15f;
+        [Header("Damage over distance")]
+        [Min(0f)] public float DamageFalloffStart;
+        [Min(0f), Tooltip("Zero preserves full damage at every distance. Does not affect explosions.")]
+        public float DamageFalloffEnd;
+        [Range(0f, 1f)] public float MinimumDamageFraction = 1f;
+
         public bool Automatic = true;
         [Range(1, 8)] public int BurstCount = 1;
         [Min(.01f)] public float BurstInterval = .085f;
