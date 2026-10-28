@@ -42,6 +42,7 @@
 - 队列状态为 `World/WindowsQualityQueue.json`。首次总日志为 `LocalData/SourceFidelity20261028/WindowsQualityQueue.log`，恢复日志为 `WindowsQualityQueueRecovery.log` 及 `.stderr.log`。子日志为 `TiledQuality24.log`、`TiledQuality25.log`、`WindowsReflections.log`。实际阶段以状态和子日志为准。
 - 长队列用 `Start-Process -WindowStyle Hidden` 启动独立 Python 进程并重定向日志。仅状态文件写着 baking 不能证明仍在运行；也要确认队列和 Blender 子进程存在。曾出现两者退出但没有正常结束标记的情况，不能只等待。恢复前先排除已有进程，再同命令续跑。已完整且配置匹配的图集会直接跳过；部分图集按分块断点继续。
 - 用户进一步要求满速持续运行，烘焙后继续导入 Unity 并完成正式场景，整体完成后再通知。只在必须用户处理的阻塞时提前打扰。队列及当前 Blender 进程已设为 AboveNormal；新子进程也使用该优先级。分块脚本的新执行和反射采集改用自动 CPU 线程数，解除旧的 4 线程限制；当前已载入的烘焙不为此中断。OptiX、原采样和原光照保持，反射复用场景缓存。GPU 在 CPU 降噪和文件处理期间可能降低占用，不能据瞬时利用率判断停工。
+- 新增只读 `audit_world_duplicate_triangles.py`。它按 1 mm 坐标网格检查 4451542 个运行时三角形，跨 chunk 核对实际量化顶点，未修改几何。报告为 `World/DuplicateTriangleAudit.json`：同向重合候选 35347 组，反向候选 15741 组。它只检查相同顶点三元组；不覆盖任意共面重叠。候选也可能包括细小面量化、材质叠层或双面结构，不能批量删面。正式安装前仍需筛选真实同向重复并核对材质和表面输入。
 - 用户已明确允许 GPU 持续跑，画质优先。名为“继续 Blender 源外观烘焙与 Unity 接入”的本聊天后续唤醒已启用，每 10 分钟检查并推进下一阶段；正常计算时保持安静。收口后停用。不要重复创建同一后续任务或重复启动烘焙。
 - `9caa6029` 已将分块脚本和诊断结论提交并推送到 `origin/develop`。恢复快照 `050a6e4a` 也已在远端。此前的推送拒绝已不再是当前阻塞。
 
