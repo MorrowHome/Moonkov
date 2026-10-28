@@ -27,6 +27,7 @@ namespace Unity.MP_FPS
         private Vector3 m_OwnedAimPoint;
         private MoonkovPlayerAudio m_Audio;
         private DollSingerMeleePresentation m_Melee;
+        private RaidActionPresentation m_Action;
         private EnergyShieldPresentation m_Protection;
         private Animator m_PresentationAnimator;
         public DollSingerMeleePresentation MeleePresentation => m_Melee;
@@ -216,6 +217,11 @@ namespace Unity.MP_FPS
                 if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();
                 m_Melee.Configure(m_PresentationAnimator, m_View, m_Halo);
                 m_Melee.ResetPresentation();
+                m_Action = m_Model.GetComponent<RaidActionPresentation>();
+                if (!m_Action) m_Action = m_Model.gameObject.AddComponent<RaidActionPresentation>();
+                string rig = name.Contains("HatsuneMiku") ? "HatsuneMiku" : name.Contains("Shian") ? "Shian" : "DollSinger";
+                m_Action.Configure(m_PresentationAnimator, m_View, m_Halo, rig);
+                m_Action.ResetPresentation();
                 m_Protection = m_Model.GetComponent<EnergyShieldPresentation>();
                 if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
                 m_Protection.ResetPresentation();
@@ -287,6 +293,8 @@ namespace Unity.MP_FPS
             var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
             var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
             bool owned = Role == MultiplayerRole.ClientOwned;
+            if (m_Action) m_Action.Present(ghost, owned, owned && m_View.IsFirstPerson,
+                downed || ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen));
             if (m_Protection) m_Protection.Present(ghost, owned, owned && m_View.IsFirstPerson, owned ? m_View.camera : null);
             PresentMelee(new MeleeViewState
             {
@@ -297,11 +305,11 @@ namespace Unity.MP_FPS
                 Epoch = ghost.MeleeEpoch,
                 Alive = ghost.CurrentHealth > 0 && !downed, IsOwner = owned,
                 FirstPerson = owned && m_View.IsFirstPerson, AttackDirection = viewRotation * Vector3.forward,
-                Suppressed = ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
+                Suppressed = ghost.ClashDarkSight || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
                     GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked),
                 HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
             });
-            bool hideWeapon = downed || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
+            bool hideWeapon = downed || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(!hideWeapon && (owned ? m_OwnedAiming : state.Aiming),
@@ -392,6 +400,7 @@ namespace Unity.MP_FPS
             m_Linked = false;
             m_Recoil.Reset();
             if (m_Melee) m_Melee.ResetPresentation();
+            if (m_Action) m_Action.ResetPresentation();
             if (m_Protection) m_Protection.DisposePresentation();
             m_Halo.OwnedAimIntent = null;
             m_Halo.OwnedReadyIntent = null;

@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-28",
+  "sourceSha256": "5f747c027c1f17a5b3c147bad5d23a15502adb2b6daeb7fa028264a0c0212368",
+  "anatomicalContactVersion": 2,
+  "result": "PASS",
+  "editIntegrationChecks": 2495,
+  "serverAuthorityChecks": 174,
+  "playerLoopChecks": 175,
+  "productionRigs": [
+    "DollSinger",
+    "HatsuneMiku",
+    "Shian"
+  ],
+  "actions": [
+    "Search",
+    "Eat",
+    "Drink",
+    "Inject"
+  ],
+  "nativeArmSurfaceDistances": [
+    {
+      "rig": "DollSinger",
+      "code": "medkit",
+      "surfaceError": 0.00246157846
+    },
+    {
+      "rig": "HatsuneMiku",
+      "code": "medkit",
+      "surfaceError": 0.000999807
+    },
+    {
+      "rig": "Shian",
+      "code": "medkit",
+      "surfaceError": 0.0009876986
+    }
+  ],
+  "runtimeSamples": [
+    {
+      "rig": "DollSinger",
+      "action": "Search",
+      "frame": 9170,
+      "phase": 0.20724614,
+      "screenshot": "LocalData/Actions/Runtime/DollSinger-Search.png"
+    },
+    {
+      "rig": "DollSinger",
+      "action": "Eat",
+      "frame": 9246,
+      "phase": 0.5425474,
+      "screenshot": "LocalData/Actions/Runtime/DollSinger-Eat.png"
+    },
+    {
+      "rig": "DollSinger",
+      "action": "Drink",
+      "frame": 9332,
+      "phase": 0.5418226,
+      "screenshot": "LocalData/Actions/Runtime/DollSinger-Drink.png"
+    },
+    {
+      "rig": "DollSinger",
+      "action": "Inject",
+      "frame": 9415,
+      "phase": 0.59222573,
+      "screenshot": "LocalData/Actions/Runtime/DollSinger-Inject.png"
+    },
+    {
+      "rig": "HatsuneMiku",
+      "action": "Search",
+      "frame": 9511,
+      "phase": 0.208905533,
+      "screenshot": "LocalData/Actions/Runtime/HatsuneMiku-Search.png"
+    },
+    {
+      "rig": "HatsuneMiku",
+      "action": "Eat",
+      "frame": 9612,
+      "phase": 0.5430522,
+      "screenshot": "LocalData/Actions/Runtime/HatsuneMiku-Eat.png"
+    },
+    {
+      "rig": "HatsuneMiku",
+      "action": "Drink",
+      "frame": 9715,
+      "phase": 0.5435087,
+      "screenshot": "LocalData/Actions/Runtime/HatsuneMiku-Drink.png"
+    },
+    {
+      "rig": "HatsuneMiku",
+      "action": "Inject",
+      "frame": 9802,
+      "phase": 0.592054069,
+      "screenshot": "LocalData/Actions/Runtime/HatsuneMiku-Inject.png"
+    },
+    {
+      "rig": "Shian",
+      "action": "Search",
+      "frame": 9876,
+      "phase": 0.178722382,
+      "screenshot": "LocalData/Actions/Runtime/Shian-Search.png"
+    },
+    {
+      "rig": "Shian",
+      "action": "Eat",
+      "frame": 9942,
+      "phase": 0.542398632,
+      "screenshot": "LocalData/Actions/Runtime/Shian-Eat.png"
+    },
+    {
+      "rig": "Shian",
+      "action": "Drink",
+      "frame": 10028,
+      "phase": 0.542441845,
+      "screenshot": "LocalData/Actions/Runtime/Shian-Drink.png"
+    },
+    {
+      "rig": "Shian",
+      "action": "Inject",
+      "frame": 10116,
+      "phase": 0.5930802,
+      "screenshot": "LocalData/Actions/Runtime/Shian-Inject.png"
+    }
+  ],
+  "sourceRoundTrip": {
+    "sourceSha256": "5f747c027c1f17a5b3c147bad5d23a15502adb2b6daeb7fa028264a0c0212368",
+    "result": "PASS",
+    "boneFrames": 724,
+    "propSamples": 2172,
+    "maximumPositionMetres": 0.000247218406176555,
+    "maximumRotationDegrees": 4.140582133719097e-05
+  },
+  "validationScope": "Single existing Unity Editor; isolated MainMenu fixture; production Animator, twist followers, aiming component, skinned meshes, owner/observer cameras and pooled recorded AudioSources. No raid, multiplayer or Player build acceptance."
+}

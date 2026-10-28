@@ -1,0 +1,440 @@
+{
+  "sourceSha256": "5f747c027c1f17a5b3c147bad5d23a15502adb2b6daeb7fa028264a0c0212368",
+  "motions": [
+    {
+      "rig": "DollSinger",
+      "items": [],
+      "action": "Search",
+      "maximumWristBendDegrees": 41.43433316658158
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_raw_meat"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 26.690055687800964
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_neural_core"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 27.193589693004572
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "vitality_shot",
+        "stamina_shot",
+        "antidote_shot",
+        "medkit"
+      ],
+      "action": "Inject",
+      "maximumWristBendDegrees": 51.28811074066175
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "ration"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 31.45721334424999
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "water"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 64.46128255836769
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "energy_gel"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 40.19486539778345
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "protein_bar"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 35.83978818182905
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "electrolyte"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 40.19486539778345
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_silk_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 31.747853299586108
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_adrenal_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 30.876658679981176
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_nutrient_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 33.47772539478478
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_contractile_heart"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 30.813167793191163
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_venom_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 30.813167793191173
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_regen_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 26.98118312728062
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_gel_bladder"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 28.688697419831072
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_root_nodule"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 29.32434973586306
+    },
+    {
+      "rig": "DollSinger",
+      "items": [
+        "alien_neural_ganglion"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 26.539201136007684
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [],
+      "action": "Search",
+      "maximumWristBendDegrees": 50.188190990652515
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_raw_meat"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 35.64339103324057
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_neural_core"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 36.026210702407994
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "vitality_shot",
+        "stamina_shot",
+        "antidote_shot",
+        "medkit"
+      ],
+      "action": "Inject",
+      "maximumWristBendDegrees": 66.75038533517086
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "ration"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 41.27969782977576
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "water"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 66.24671592958406
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "energy_gel"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 40.280940143003576
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "protein_bar"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 40.269148708032766
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "electrolyte"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 40.280940143003576
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_silk_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 37.6894171918619
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_adrenal_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 37.37114882589992
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_nutrient_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 38.31419315043702
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_contractile_heart"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 37.34788608137305
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_venom_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 37.34788608137305
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_regen_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 35.922855775287196
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_gel_bladder"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 36.566570634291594
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_root_nodule"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 36.80069153445188
+    },
+    {
+      "rig": "HatsuneMiku",
+      "items": [
+        "alien_neural_ganglion"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 35.556584883588336
+    },
+    {
+      "rig": "Shian",
+      "items": [],
+      "action": "Search",
+      "maximumWristBendDegrees": 54.29137882133427
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_raw_meat"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 32.16834781024376
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_neural_core"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 32.37896597222348
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "vitality_shot",
+        "stamina_shot",
+        "antidote_shot",
+        "medkit"
+      ],
+      "action": "Inject",
+      "maximumWristBendDegrees": 67.62486186547476
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "ration"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 42.4657255352404
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "water"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 71.33803569706673
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "energy_gel"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 37.600869088534715
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "protein_bar"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 36.5060740074708
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "electrolyte"
+      ],
+      "action": "Drink",
+      "maximumWristBendDegrees": 37.600869088534715
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_silk_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 34.99974299862857
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_adrenal_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 34.25370476536529
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_nutrient_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 36.49117250902178
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_contractile_heart"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 34.20044554293991
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_venom_gland"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 34.20044554293991
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_regen_sac"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 32.27918657221683
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_gel_bladder"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 33.081012989552654
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_root_nodule"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 33.37251283482088
+    },
+    {
+      "rig": "Shian",
+      "items": [
+        "alien_neural_ganglion"
+      ],
+      "action": "Eat",
+      "maximumWristBendDegrees": 32.16834781024376
+    }
+  ]
+}

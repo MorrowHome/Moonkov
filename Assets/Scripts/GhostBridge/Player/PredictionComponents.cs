@@ -64,6 +64,12 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool TacticalSprintExhausted;
     [GhostField(Quantization = 100)] public float CarriedWeight;
     [GhostField] public bool ConsumingSupply;
+    // Presentation only. Inventory and tactical systems retain all use/consumption authority.
+    [GhostField] public byte HandAction;
+    [GhostField] public uint HandActionSequence;
+    [GhostField] public Unity.Collections.FixedString64Bytes HandActionItem;
+    [GhostField(Quantization = 100)] public float HandActionRemaining, HandActionDuration;
+    [GhostField(Quantization = 1000)] public float3 HandActionTarget;
     [GhostField] public bool ShieldEquipped, HeadDomeEquipped, ShieldRegenerating;
     [GhostField] public byte SubspaceBackpack; // Equipped inventory: 0 none, 1 light, 2 expedition, 3 cargo, 4 scout.
     [GhostField] public bool HeadDomeStandard;

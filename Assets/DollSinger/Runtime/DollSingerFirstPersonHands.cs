@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.DollSinger
         private readonly SkinnedMeshRenderer renderer;
         private readonly SkinnedMeshRenderer source;
         private readonly Mesh armMesh;
+        private readonly Mesh actionBodyMesh;
         private readonly List<Camera> stack;
         private readonly Transform[] rightHandBones, leftHandBones;
         private readonly Transform leftIndexTip, rightIndexTip, leftThumbTip, rightThumbTip;
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS.DollSinger
         public DollSingerFirstPersonHands(SkinnedMeshRenderer source, Mesh body, Camera owner, Animator animator)
         {
             this.source = source;
+            actionBodyMesh = body;
             int layer = LayerMask.NameToLayer("FirstPersonOverlay");
             if (layer < 0 || !owner || !animator || !animator.isHuman) return;
             var data = owner.GetUniversalAdditionalCameraData();
@@ -115,9 +117,11 @@ namespace Unity.MP_FPS.DollSinger
 
         public bool StableFraming { get; set; }
 
-        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0)
+        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0, bool includeBody = false)
         {
             if (!Camera) return;
+            var mesh = includeBody ? actionBodyMesh : armMesh;
+            if (renderer.sharedMesh != mesh) renderer.sharedMesh = mesh;
             if (meleeMode) reframe = true;
             meleeMode = false;
             float presentationBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
@@ -258,6 +262,24 @@ namespace Unity.MP_FPS.DollSinger
             Camera.ResetProjectionMatrix();
             Camera.transform.localRotation = Quaternion.identity;
             Camera.transform.localPosition = offset * Mathf.SmoothStep(0, 1, blend);
+        }
+
+        public void PresentAction(bool active, Camera owner, float blend, bool injecting, float injectionPitch)
+        {
+            float weight = Mathf.SmoothStep(0, 1, blend);
+            Present(active, injecting ? Mathf.Lerp(65, injectionPitch > 60 ? 85 : 75, weight) : 65, owner, false, blend, 0, injecting);
+            meleeMode = true;
+            // Use the existing stable aiming perspective. Contact belongs to
+            // the offline pose, never to camera distortion or wrist IK.
+            if (Camera)
+            {
+                Camera.ResetProjectionMatrix();
+                Camera.transform.localRotation = injecting ? Quaternion.Slerp(Quaternion.identity, Quaternion.Euler(injectionPitch, 0, 0), weight) : Quaternion.identity;
+                // Injection shows the connected body from the eye. A backwards
+                // arm-only camera would reveal the open shoulder cutouts.
+                var offset = injecting ? new Vector3(0, 0, .01f) : new Vector3(0, -.08f, -.14f);
+                Camera.transform.localPosition = offset * weight;
+            }
         }
 
         private void CenterViewfinder()

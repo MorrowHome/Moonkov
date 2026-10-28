@@ -1,0 +1,115 @@
+{
+  "processing": "Recorded foley; mono PCM16/48kHz; remove DC; trim leading silence; 8ms/55ms edge fades; -3.74dBFS peak. Runtime sound banks apply restrained gains.",
+  "sources": [
+    {
+      "author": "Tito / StarNinjas",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/content/7-eating-crunches",
+      "file": "crunch_-_tito.zip"
+    },
+    {
+      "author": "qubodup",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/content/liquid-bottle-drink-set",
+      "file": "qubodup-bottle-and-drink-sounds.7z"
+    },
+    {
+      "author": "Vinrax",
+      "license": "CC-BY-3.0",
+      "url": "https://opengameart.org/content/pickupplastic-sound",
+      "file": "Vinrax-Pickup.wav"
+    },
+    {
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/node/21999",
+      "file": "Kenney-MetalClick.ogg / Kenney-HandleLeather.ogg"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/EatBite1.wav",
+      "source": "crunch.1.ogg",
+      "source_sha256": "a9d01831fab133074ea09718de803c717f47be0fa18630a0d4fe082ba0a5fcf8",
+      "seconds": 0.6,
+      "sha256": "d2e65c211b12e31b454565dc7f98ba7a2ce0a7824f045dc6dd3f9dcfc0eddaff"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/DrinkSip1.wav",
+      "source": "swallow-01.flac",
+      "source_sha256": "46e6bbb47d2572b1f2d7155e18906ee736454c7145252d8427c2c1c1125478d3",
+      "seconds": 0.3408,
+      "sha256": "eb249637ff3f74100c0678f26a4bd7e1ff0b85189ece484a77210520670af8cb"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/BottleOpen1.wav",
+      "source": "bottle-open-01.flac",
+      "source_sha256": "586eae2702ef3a82f40cb5446b93722a839881b22b4677edda515938cc78b160",
+      "seconds": 0.4369,
+      "sha256": "04bf7ef2a7840112653b8b2cd202ab4697f3d6c4d83ab8c920ac81a76811d95b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/EatBite2.wav",
+      "source": "crunch.2.ogg",
+      "source_sha256": "83e949e73b98455ab8b7375e9848e177f907e22c15f61328ad96a5cb6d134995",
+      "seconds": 0.6,
+      "sha256": "fafdf6c5b11f5ea471fb8d787cea5b2fd6aa45915fc7aee455407a4ccc0d1281"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/DrinkSip2.wav",
+      "source": "swallow-02.flac",
+      "source_sha256": "14420b7483ae41ec55852598bacc02640b3c3ceca056ad8009ae8383afbfd418",
+      "seconds": 0.65,
+      "sha256": "2e033309753a5c8ebad066bd03321a9605f027d49db0ac67e8133f5c565733b0"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/BottleOpen2.wav",
+      "source": "bottle-open-02.flac",
+      "source_sha256": "b7dba18118bc0bfa83399992e66c8c7c3b658c82930e5a557da1604fd26abeed",
+      "seconds": 0.358,
+      "sha256": "5ee3de4d94cccb45cda97279d47b81fdb5702bf5e22f710a596a9786a8a78b20"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/EatBite3.wav",
+      "source": "crunch.3.ogg",
+      "source_sha256": "a24b3e10c6085662eed6ac9f34e133b4d2e645d67121ecdc1d9e66dc279e828d",
+      "seconds": 0.6,
+      "sha256": "7d53ebbb327ba1dd04cf7dc0ee3a30505f3a70e85ef4ba4bbc6b6b8976e07df3"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/DrinkSip3.wav",
+      "source": "swallow-03.flac",
+      "source_sha256": "b31f41a16daa67b8d4a3f7c47bd2a12542afddec6c90a6f5b5db9533389f080b",
+      "seconds": 0.4615,
+      "sha256": "1b8031f114325b4557dc25f50272f9bb64ce9cd6b084756cb537e836576e2bbf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/BottleOpen3.wav",
+      "source": "bottle-open-03.flac",
+      "source_sha256": "14243d4d58e96e2001e806c3af7f0f87a3faff535693b85060f8d005fb716880",
+      "seconds": 0.7,
+      "sha256": "dd862468b4ab7b173c9adb30613fb53d385c6206a9acec2333a9f2a117af5e7f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/PacketOpen1.wav",
+      "source": "Vinrax-Pickup.wav",
+      "source_sha256": "f00774f1e203782277378dde07666c3f893da2db7411cd1e601e7996faa896f6",
+      "seconds": 0.3048,
+      "sha256": "7dea0828150a438dfee13b75a66aab18ab71a0721c0d63a30c4053296c720272"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/InjectorCap1.wav",
+      "source": "Kenney-MetalClick.ogg",
+      "source_sha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3",
+      "seconds": 0.22,
+      "sha256": "5bc13bacb674c43117233dc8ce0fc4243176072616c93bd8afb5948d88bce989"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Actions/InjectorPress1.wav",
+      "source": "Kenney-HandleLeather.ogg",
+      "source_sha256": "ae3cbf695aa0a8b98b5a80a835be5a3ccbd5446a24db2235cd4c3cd6fc92ed96",
+      "seconds": 0.3167,
+      "sha256": "91069e033be7cbdd81992b32cf1a13b5d424a8201e661c0e73379c4069006737"
+    }
+  ]
+}
