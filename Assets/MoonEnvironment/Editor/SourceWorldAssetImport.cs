@@ -245,15 +245,25 @@ namespace Unity.MP_FPS.Moon.Editor
         }
         private static void ImportMeshAtlas(int atlas)
         {
+            if (Geometry.sourceSha256 != Manifest.sourceSha256) throw new InvalidDataException("Geometry belongs to another source.");
+            var chunks = Geometry.chunks.Where(c => c.atlas == atlas).ToArray();
+            string revision;
+            using (var hash = System.Security.Cryptography.SHA256.Create())
+            {
+                var inputs = new List<string> { Geometry.sourceSha256, "mesh-layout-v1" };
+                foreach (var chunk in chunks)
+                    using (var stream = File.OpenRead(chunk.file)) inputs.Add(chunk.id + ":" + BitConverter.ToString(hash.ComputeHash(stream)));
+                revision = Hash128.Compute(string.Join(";", inputs)).ToString();
+            }
             string path = Root + "Meshes/Atlas_" + atlas.ToString("000") + ".asset"; Ensure(path);
             var bundle = AssetDatabase.LoadAssetAtPath<SourceWorldMeshBundle>(path);
             if (!bundle) { bundle = ScriptableObject.CreateInstance<SourceWorldMeshBundle>(); AssetDatabase.CreateAsset(bundle, path); }
+            if (bundle.geometryRevision == revision && bundle.meshes != null && bundle.meshes.Length == chunks.Length && bundle.meshes.All(m => m)) return;
             var existing = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Mesh>().ToDictionary(m => m.name);
             var meshes = new List<Mesh>();
-            foreach (var chunk in Geometry.chunks.Where(c => c.atlas == atlas))
+            foreach (var chunk in chunks)
             {
                 string name = "SourceMesh_" + chunk.id.ToString("00000");
-                if (existing.TryGetValue(name, out var ready)) { meshes.Add(ready); continue; }
                 byte[] bytes = File.ReadAllBytes(chunk.file);
                 if (bytes.Length != 12 + chunk.vertices * 136 + chunk.indices * 4 || bytes[0] != 'S' || bytes[1] != 'M') throw new InvalidDataException(chunk.file);
                 var vertices = new float[chunk.vertices * 34]; var indices = new uint[chunk.indices];
@@ -264,7 +274,9 @@ namespace Unity.MP_FPS.Moon.Editor
                     int offset = v * 34; var local = new Vector3(vertices[offset], vertices[offset + 1], vertices[offset + 2]); minimum = Vector3.Min(minimum, local); maximum = Vector3.Max(maximum, local);
 
                 }
-                var mesh = new Mesh { name = name, indexFormat = IndexFormat.UInt32 };
+                bool reused = existing.TryGetValue(name, out var mesh);
+                if (reused) mesh.Clear(); else mesh = new Mesh { name = name };
+                mesh.indexFormat = IndexFormat.UInt32;
                 mesh.SetVertexBufferParams(chunk.vertices,
                     new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
                     new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
@@ -277,9 +289,10 @@ namespace Unity.MP_FPS.Moon.Editor
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord5, VertexAttributeFormat.Float32, 4));
                 mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length); mesh.SetIndexBufferParams(indices.Length, IndexFormat.UInt32); mesh.SetIndexBufferData(indices, 0, 0, indices.Length);
                 mesh.subMeshCount = 1; mesh.SetSubMesh(0, new SubMeshDescriptor(0, indices.Length, MeshTopology.Triangles)); mesh.bounds = new Bounds((minimum + maximum) * .5f, maximum - minimum);
-                AssetDatabase.AddObjectToAsset(mesh, bundle); meshes.Add(mesh);
+                if (!reused) AssetDatabase.AddObjectToAsset(mesh, bundle);
+                EditorUtility.SetDirty(mesh); meshes.Add(mesh);
             }
-            bundle.meshes = meshes.ToArray(); EditorUtility.SetDirty(bundle); AssetDatabase.SaveAssetIfDirty(bundle);
+            bundle.meshes = meshes.ToArray(); bundle.geometryRevision = revision; EditorUtility.SetDirty(bundle); AssetDatabase.SaveAssetIfDirty(bundle);
         }
         public static SourceWorldLightingData PrepareStaticLightingData()
         {

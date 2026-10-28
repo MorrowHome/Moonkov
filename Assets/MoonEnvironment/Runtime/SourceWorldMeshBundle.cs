@@ -6,6 +6,7 @@ namespace Unity.MP_FPS.Moon
     [PreferBinarySerialization]
     public sealed class SourceWorldMeshBundle : ScriptableObject
     {
+        public string geometryRevision;
         public Mesh[] meshes;
     }
 }
