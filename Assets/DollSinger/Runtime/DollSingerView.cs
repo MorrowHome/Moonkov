@@ -82,7 +82,7 @@ public class DollSingerView : MonoBehaviour
     public float lookTargetDistance = 12f;
     [Tooltip("Moves the eye outside the neck opening as the view pitches down, in world metres.")]
     [Range(0f, 0.15f)] public float firstPersonEyeForward = 0.015f;
-    [Tooltip("Maximum eye distance ahead of the chest when looking down. Keeps the torso in view.")]
+    [Tooltip("Minimum forward chest clearance when looking down. Never pulls the animated eye backwards.")]
     [Range(0.04f, 0.2f)] public float lookDownBodyClearance = 0.075f;
 
     [Header("First person gesture presentation")]
@@ -458,18 +458,16 @@ public class DollSingerView : MonoBehaviour
         if (chestAnchor && clearanceBlend > 0f)
         {
             float forwardDistance = Vector3.Dot(eye - chestAnchor.position, horizontalLook);
-            // Keep the near plane outside the neckline, but bring the eye back over the
-            // chest. A 20 cm forward push made the downward view skip the torso entirely.
-            float minimum = Mathf.Max(0.04f, firstPersonNearClip + 0.01f);
-            float desired = Mathf.Clamp(forwardDistance, minimum, Mathf.Max(minimum, lookDownBodyClearance));
-            // Bring the eye back over the chest without adding height for framing.
-            desired = Mathf.Lerp(desired, minimum, clearanceBlend);
-            eye += horizontalLook * ((desired - forwardDistance) * clearanceBlend);
+            // Keep the natural forward eye position. Pulling it back over the neck
+            // exposed the cutout and then made the old height guard lift the camera.
+            float minimum = Mathf.Max(firstPersonNearClip + 0.01f, lookDownBodyClearance);
+            eye += horizontalLook * (Mathf.Max(0f, minimum - forwardDistance) * clearanceBlend);
         }
-        // Head rotation and landing/sprint animation can put even the real eye inside
-        // the neckline. Enforce clearance at every pitch, after look-down framing.
+        Quaternion look = transform.rotation;
+        if (firstPerson && movement) look *= Quaternion.Euler(0, 0, movement.LeanRoll);
+        // Only visible surfaces near the eye/near plane constrain the viewpoint.
         return torsoClearance != null ? torsoClearance.KeepAboveTorso(eye, up,
-            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f) : eye;
+            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f, look, !GestureHandsActive) : eye;
     }
 
     /// <summary>
@@ -538,12 +536,12 @@ public class DollSingerView : MonoBehaviour
         thirdPersonMaterials = bodyRenderer.sharedMaterials;
         thirdPersonMesh = bodyRenderer.sharedMesh;
         var animator = character.GetComponentInChildren<Animator>();
-        if (animator && animator.isHuman)
-            torsoClearance = new DollSingerTorsoClearance(bodyRenderer, animator);
         thirdPersonShadowMode = bodyRenderer.shadowCastingMode;
         thirdPersonForceRenderingOff = bodyRenderer.forceRenderingOff;
         firstPersonMesh = BuildFirstPersonMesh(thirdPersonMesh, bodyRenderer.bones, thirdPersonMaterials);
         if (!firstPersonMesh) return;
+        if (animator && animator.isHuman)
+            torsoClearance = new DollSingerTorsoClearance(bodyRenderer, animator, firstPersonMesh);
         gestureHands = new DollSingerFirstPersonHands(bodyRenderer, firstPersonMesh, camera, character.GetComponent<Animator>());
 
         var shadowObject = new GameObject("FirstPersonFullShadow (Runtime)");
@@ -615,6 +613,8 @@ public class DollSingerView : MonoBehaviour
             }
             copy.SetTriangles(kept, s, false);
         }
+        var animator = player ? player.GetComponentInChildren<Animator>() : null;
+        DollSingerFirstPersonBody.CloseNeck(copy, source, bones, animator);
         copy.bounds = source.bounds;
         return copy;
     }
@@ -626,8 +626,8 @@ public class DollSingerView : MonoBehaviour
         // back hair — and the scalp skin (toufa.p) also drives a fine net shell that lives
         // in the *Dress* submesh (19020 verts, 95% of it) and renders as the grid-looking
         // hair net. None of these can be hidden by material swapping alone.
-        // 頭/首 are deliberately NOT matched: those are face/neck skin, the face is already
-        // hidden per material and dropping the neck leaves a hole when looking down.
+        // Neck surfaces are closed separately in the owner mesh. Dropping the whole
+        // bone group would also remove the triangles needed to seal its base.
         return boneName.StartsWith("toushi") || boneName.StartsWith("toufa")
             || boneName.StartsWith("liuhai") || boneName.StartsWith("cefa")
             || boneName.StartsWith("houfa");

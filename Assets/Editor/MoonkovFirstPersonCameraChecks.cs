@@ -6,112 +6,135 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
-/// <summary>Offline skin/near-plane checks; does not start Play or alter the open scene.</summary>
+/// <summary>Isolated owner-mesh, actual near-plane and animated-motion checks. Never opens Play.</summary>
 public static class MoonkovFirstPersonCameraChecks
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+    private static void Require(bool condition, string message) { if (!condition) throw new Exception(message); }
 
     [MenuItem("Tools/Moonkov/Check First Person Camera")]
     public static void Run() => Debug.Log(RunReport());
 
     public static string RunReport()
     {
-        if (EditorApplication.isPlayingOrWillChangePlaymode)
-            throw new InvalidOperationException("Run camera checks in Edit Mode.");
-        int cases = 0, oldIntersections = 0;
-        float minimumGap = float.PositiveInfinity;
-        foreach (var path in new[] { "Assets/HatsuneMiku/Prefabs/HatsuneMikuPlayer.prefab",
-            "Assets/DollSinger/Prefabs/DollSingerPlayer.prefab" })
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run camera checks in Edit Mode.");
+        int cases = 0, rays = 0, chestHits = 0;
+        bool backfaces = Physics.queriesHitBackfaces;
+        Physics.queriesHitBackfaces = true;
+        try
         {
-            var scene = EditorSceneManager.NewPreviewScene();
-            var baked = new Mesh();
-            GameObject root = null;
-            try
+            foreach (var path in new[] { "Assets/HatsuneMiku/Prefabs/HatsuneMikuPlayer.prefab",
+                "Assets/DollSinger/Prefabs/DollSingerPlayer.prefab", "Assets/Shian/Prefabs/ShianPlayer.prefab" })
             {
-                root = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path), scene);
-                foreach (var b in root.GetComponentsInChildren<MonoBehaviour>(true)) b.enabled = false;
-                foreach (var c in root.GetComponentsInChildren<Camera>(true)) c.enabled = false;
-                var animator = root.GetComponentInChildren<Animator>();
-                var clips = animator.runtimeAnimatorController.animationClips.Distinct()
-                    .Where(c => new[] { "run", "jump", "land", "fall", "crouch", "prone" }
-                        .Any(s => c.name.ToLowerInvariant().Contains(s))).ToArray();
-                animator.runtimeAnimatorController = null;
-                animator.Rebind();
-                var transforms = root.GetComponentsInChildren<Transform>(true);
-                var positions = transforms.Select(t => t.localPosition).ToArray();
-                var rotations = transforms.Select(t => t.localRotation).ToArray();
-                var scales = transforms.Select(t => t.localScale).ToArray();
-                var view = root.GetComponentInChildren<DollSingerView>(true);
-                var type = typeof(DollSingerView);
-                type.GetMethod("ResolveEyeAnchor", Private).Invoke(view, new object[] { root });
-                var renderer = (SkinnedMeshRenderer)type.GetMethod("FindBodyRenderer", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new object[] { root });
-                var safetyField = type.GetField("torsoClearance", Private);
-                var safety = Activator.CreateInstance(safetyField.FieldType, renderer, animator);
-                var solve = type.GetMethod("GetFirstPersonEyePosition", Private);
-                var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
-                var head = animator.GetBoneTransform(HumanBodyBones.Head);
-                Quaternion headBind = Quaternion.Inverse(root.transform.rotation) * head.rotation;
-                var torso = new[] { animator.GetBoneTransform(HumanBodyBones.Chest),
-                    animator.GetBoneTransform(HumanBodyBones.UpperChest), neck }.Where(t => t).ToArray();
-                var bones = renderer.bones;
-                bool Torso(int index) => torso.Contains(bones[index]);
-                var indices = renderer.sharedMesh.boneWeights.Select((w, i) => new {
-                    Index = i, Weight = (Torso(w.boneIndex0) ? w.weight0 : 0)
-                        + (Torso(w.boneIndex1) ? w.weight1 : 0) + (Torso(w.boneIndex2) ? w.weight2 : 0)
-                        + (Torso(w.boneIndex3) ? w.weight3 : 0) }).Where(w => w.Weight >= .5f).Select(w => w.Index).ToArray();
-                if (indices.Length == 0 || clips.Length == 0) throw new Exception("Missing torso or movement clips: " + path);
-                view.camera.aspect = 16f / 9f;
-                foreach (var clip in clips)
-                foreach (float time in new[] { 0f, .25f, .5f, .75f, 1f })
+                var scene = EditorSceneManager.NewPreviewScene();
+                var baked = new Mesh(); GameObject root = null; DollSingerView view = null;
+                try
                 {
-                    for (int i = 0; i < transforms.Length; i++)
+                    root = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path), scene);
+                    foreach (var b in root.GetComponentsInChildren<MonoBehaviour>(true)) b.enabled = false;
+                    foreach (var c in root.GetComponentsInChildren<Camera>(true)) c.enabled = false;
+                    var animator = root.GetComponentInChildren<Animator>();
+                    var clips = animator.runtimeAnimatorController.animationClips.Distinct().Where(c => new[] {
+                        "Unarmed_Idle", "Walk_N", "DollSinger_Run_N_RelaxedFingers", "JumpLand", "Crouch_Idle", "Prone_Crawl" }.Contains(c.name)).ToArray();
+                    animator.runtimeAnimatorController = null; animator.Rebind();
+                    view = root.GetComponentInChildren<DollSingerView>(true);
+                    var type = typeof(DollSingerView);
+                    var renderer = (SkinnedMeshRenderer)type.GetMethod("FindBodyRenderer", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { root });
+                    var source = renderer.sharedMesh; var original = source.vertices;
+                    view.BindPlayer(root, true); view.SetFirstPerson(true);
+                    var owner = (Mesh)type.GetField("firstPersonMesh", Private).GetValue(view);
+                    Require(owner && owner != source && owner.vertexCount == source.vertexCount, "Missing owner mesh: " + path);
+                    Require(owner.blendShapeCount == source.blendShapeCount && source.vertices.SequenceEqual(original), "World mesh or blend shape indexing changed: " + path);
+                    renderer.sharedMesh = owner;
+                    var transforms = root.GetComponentsInChildren<Transform>(true);
+                    var positions = transforms.Select(t => t.localPosition).ToArray();
+                    var rotations = transforms.Select(t => t.localRotation).ToArray();
+                    var scales = transforms.Select(t => t.localScale).ToArray();
+                    var head = animator.GetBoneTransform(HumanBodyBones.Head);
+                    Quaternion headBind = Quaternion.Inverse(root.transform.rotation) * head.rotation;
+                    var solve = type.GetMethod("GetFirstPersonEyePosition", Private);
+                    var collider = renderer.gameObject.AddComponent<MeshCollider>();
+                    void Pose(AnimationClip clip, float phase, float pitch, float yaw)
                     {
-                        transforms[i].SetLocalPositionAndRotation(positions[i], rotations[i]);
-                        transforms[i].localScale = scales[i];
-                    }
-                    clip.SampleAnimation(root, clip.length * time);
-                    foreach (float pitch in new[] { -60f, 0f, 45f, 85f })
-                    foreach (float yaw in new[] { -70f, 0f, 70f })
-                    {
-                        view.transform.rotation = root.transform.rotation * Quaternion.Euler(pitch, yaw, 0);
-                        // Movement.StabilizeHeadLook writes the head before View.LateUpdate.
-                        head.rotation = view.transform.rotation * headBind;
-                        // Independent Unity skinning oracle, including imported FBX scales.
-                        renderer.BakeMesh(baked, true);
-                        var vertices = baked.vertices;
-                        float top = indices.Max(i => Vector3.Dot(renderer.transform.TransformPoint(vertices[i]), root.transform.up));
-                        safetyField.SetValue(view, null);
-                        var oldEye = (Vector3)solve.Invoke(view, null);
-                        safetyField.SetValue(view, safety);
-                        var eye = (Vector3)solve.Invoke(view, null);
-                        float halfHeight = view.firstPersonNearClip * Mathf.Tan(view.firstPersonFieldOfView * .5f * Mathf.Deg2Rad);
-                        foreach (float roll in new[] { -15f, 0f, 15f })
+                        for (int i = 0; i < transforms.Length; i++)
                         {
-                            Quaternion look = view.transform.rotation * Quaternion.Euler(0, 0, roll);
-                            foreach (float x in new[] { -1f, 1f })
-                            foreach (float y in new[] { -1f, 1f })
-                            {
-                                var corner = look * new Vector3(x * halfHeight * view.camera.aspect, y * halfHeight, view.firstPersonNearClip);
-                                float gap = Vector3.Dot(eye + corner, root.transform.up) - top;
-                                minimumGap = Mathf.Min(minimumGap, gap);
-                                if (Vector3.Dot(oldEye + corner, root.transform.up) < top) oldIntersections++;
-                                if (gap < .014f) throw new Exception(path + " " + clip.name + " t=" + time + " pitch=" + pitch + " gap=" + gap);
-                            }
+                            transforms[i].SetLocalPositionAndRotation(positions[i], rotations[i]);
+                            transforms[i].localScale = scales[i];
                         }
+                        clip.SampleAnimation(root, clip.length * phase);
+                        view.transform.rotation = root.transform.rotation * Quaternion.Euler(pitch, yaw, 0);
+                        head.rotation = view.transform.rotation * headBind;
+                        // Imported MMD renderers carry 100x scale. Unity's scaled bake
+                        // matches their actual rendered mesh in the renderer's space.
+                        collider.sharedMesh = null; renderer.BakeMesh(baked, true); collider.sharedMesh = baked;
+                        Physics.SyncTransforms();
+                    }
+                    void CheckPlane(Quaternion rotation, string label)
+                    {
+                        view.transform.rotation = rotation;
+                        Vector3 eye = (Vector3)solve.Invoke(view, null);
+                        float h = view.firstPersonNearClip * Mathf.Tan(view.firstPersonFieldOfView * .5f * Mathf.Deg2Rad);
+                        for (int x = -1; x <= 1; x++)
+                        for (int y = -1; y <= 1; y++)
+                        {
+                            Vector3 offset = rotation * new Vector3(x * h * view.camera.aspect, y * h, view.firstPersonNearClip);
+                            var ray = new Ray(eye, offset.normalized);
+                            Require(!collider.Raycast(ray, out var hit, offset.magnitude + .002f),
+                                "Near plane intersects owner body: " + label + " ray=" + x + "," + y + " distance=" + hit.distance);
+                            rays++;
+                        }
+                        Require(float.IsFinite(eye.x) && float.IsFinite(eye.y) && float.IsFinite(eye.z), "Nonfinite eye: " + label);
                         cases++;
                     }
+                    view.camera.aspect = 16f / 9;
+                    foreach (var clip in clips)
+                    foreach (float time in new[] { 0f, .33f, .66f })
+                    foreach (float pitch in new[] { -60f, 0f, 45f, 80f })
+                    foreach (float yaw in new[] { -70f, 0f, 70f })
+                    {
+                        Pose(clip, time, pitch, yaw);
+                        Quaternion look = view.transform.rotation;
+                        foreach (float roll in new[] { -15f, 0f, 15f })
+                            CheckPlane(look * Quaternion.Euler(0, 0, roll), path + "/" + clip.name + "/" + pitch + "/" + yaw + "/" + roll);
+                    }
+                    var idle = clips.First(c => c.name == "Unarmed_Idle");
+                    foreach (float fov in new[] { 40f, 75f, 100f })
+                    foreach (float aspect in new[] { 16f / 9, 21f / 9 })
+                    {
+                        Pose(idle, .25f, 80, 0); view.firstPersonFieldOfView = fov; view.camera.aspect = aspect;
+                        CheckPlane(view.transform.rotation, path + "/projection/" + fov + "/" + aspect);
+                    }
+                    view.firstPersonFieldOfView = 75; view.camera.aspect = 16f / 9;
+                    Pose(idle, .25f, 80, 0);
+                    var position = (Vector3)solve.Invoke(view, null);
+                    int visibleChest = 0;
+                    var chest = animator.GetBoneTransform(HumanBodyBones.UpperChest) ?? animator.GetBoneTransform(HumanBodyBones.Chest);
+                    var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+                    for (int x = -1; x <= 1; x++)
+                    for (int y = 0; y < 5; y++)
+                    {
+                        // A ray fan through the lower/central image must see actual chest skin/clothing.
+                        Vector3 direction = view.transform.rotation * new Vector3(x * .25f, -.6f + y * .2f, 1);
+                        if (!collider.Raycast(new Ray(position, direction.normalized), out var hit, 1.2f)) continue;
+                        float height = Vector3.Dot(hit.point - chest.position, root.transform.up);
+                        if (height >= -.05f && hit.point.y <= neck.position.y + .025f) visibleChest++;
+                    }
+                    Require(visibleChest >= 3, "Chest absent from downward image: " + path + " hits=" + visibleChest);
+                    chestHits += visibleChest;
+                    view.SetFirstPerson(false);
+                    type.GetMethod("SetCameraMesh", Private).Invoke(view, new object[] { false });
+                }
+                finally
+                {
+                    if (view) view.BindPlayer(null, true);
+                    if (root) UnityEngine.Object.DestroyImmediate(root);
+                    UnityEngine.Object.DestroyImmediate(baked); EditorSceneManager.ClosePreviewScene(scene);
                 }
             }
-            finally
-            {
-                if (root) UnityEngine.Object.DestroyImmediate(root);
-                UnityEngine.Object.DestroyImmediate(baked);
-                EditorSceneManager.ClosePreviewScene(scene);
-            }
         }
-        return "First person camera checks passed: " + cases + " animated look poses; minimum near-plane/torso height gap="
-            + minimumGap.ToString("F4") + "m; previous unsafe near-plane corners=" + oldIntersections
-            + ". No Play or network session started; visual framing still needs player acceptance.";
+        finally { Physics.queriesHitBackfaces = backfaces; }
+        return "PASS owner camera: " + cases + " animated/projection poses, " + rays + " actual near-plane rays, " + chestHits
+            + " downward chest hits across three characters; world mesh and shape indices preserved. No Play/network session.";
     }
+
 }
