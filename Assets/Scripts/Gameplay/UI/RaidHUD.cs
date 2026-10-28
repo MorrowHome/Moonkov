@@ -822,7 +822,8 @@ namespace Unity.MP_FPS
                 if (missionCache && acknowledged && inventory.Error == Inventory.InventoryError.Inaccessible)
                     MissionNotice(m_MissionSnapshot.Phase == Missions.MissionPhase.Expired ? "回收窗口已关闭 · 本批未撤出的产物失效，普通搜刮与撤离仍可继续。" : inventoryMessage);
                 if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
-                if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))
+                // A self-use failure can be repeated by protection snapshots. It is not a close command.
+                if(inventory.LootId<0 && wasOpen)
                 {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}
                 else if(m_InventoryVisible && !m_HealthSelected && inventory.LootId<0 && !m_LootOpenPending)m_InventoryView.Show();
             }

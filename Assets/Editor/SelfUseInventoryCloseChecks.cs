@@ -55,4 +55,41 @@ public static class SelfUseInventoryCloseChecks
         Check(!actor.ActionPending && actor.Graph.Count("medkit")==2,"Movement still interrupts treatment without consuming medicine");
         return $"PASS: {count} inventory-close / self-use checks.";
     }
+    public static string CheckReopen()
+    {
+        const System.Reflection.BindingFlags flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+        var go=new UnityEngine.GameObject("Inventory interrupted receipt check");go.SetActive(false);
+        var hud=go.AddComponent<RaidHUD>();
+        using var world=new Unity.Entities.World("Inventory repeated interruption fixture");
+        var entity=world.EntityManager.CreateEntity();
+        var inventory=new RaidInventoryClientState {Graph=InventoryGraph.Create(false),RaidId=7,Error=InventoryError.Inaccessible,ActionFeedback="使用中断：受到攻击。 未消耗物品。"};
+        world.EntityManager.AddComponentObject(entity,inventory);
+        var query=world.EntityManager.CreateEntityQuery(typeof(RaidInventoryClientState));
+        var root=new UnityEngine.UIElements.VisualElement();
+        using var view=new Unity.MP_FPS.Client.ContainerInventoryView(root,false,_=>{});
+        var healthView=new Unity.MP_FPS.Client.RaidHealthView(root,_=>{});
+        void Set(string field,object value)=>typeof(RaidHUD).GetField(field,flags).SetValue(hud,value);
+        bool Visible()=>(bool)typeof(RaidHUD).GetField("m_InventoryVisible",flags).GetValue(hud);
+        var update=typeof(RaidHUD).GetMethod("UpdateInventoryView",flags);
+        try
+        {
+            Set("m_World",world);Set("m_InventoryQuery",query);
+            Set("m_Snapshot",new RaidSnapshotV2Rpc {RaidId=7,Phase=RaidPhase.Active});
+            Set("m_InventoryView",view);Set("m_HealthView",healthView);
+            Set("m_Inventory",root);Set("m_InventoryTitle",new UnityEngine.UIElements.Label());
+            for(uint sequence=1;sequence<=3;sequence++)
+            {
+                inventory.Sequence=sequence;Set("m_InventoryVisible",true);
+                update.Invoke(hud,null);
+                if(!Visible())throw new InvalidOperationException("Repeated interrupted receipt closes the reopened carried inventory");
+            }
+            return "PASS: carried inventory stays open across 3 repeated interrupted receipts";
+        }
+        finally
+        {
+            Set("m_World",null);Set("m_InventoryView",null);Set("m_HealthView",null);
+            query.Dispose();healthView.Dispose();UnityEngine.Object.DestroyImmediate(go);
+        }
+    }
+
 }
