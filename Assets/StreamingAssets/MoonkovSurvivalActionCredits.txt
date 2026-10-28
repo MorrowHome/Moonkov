@@ -1,0 +1,42 @@
+Moonkov survival action animation and foley credits
+
+Medical syringe healing FPS Animation
+Author: BURNER (Alexander_Ovelar)
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Original: https://sketchfab.com/3d-models/medical-syringe-healing-fps-animation-8de32be8633a4c87ba7ed1d125b45ec9
+Public redistribution: https://huggingface.co/datasets/allenai/objaverse
+Objaverse: Deitke et al., A Universe of Annotated 3D Objects (2022).
+Changes: sampled the original performance, trimmed its 150 ms lead-in, retargeted it to Moonkov's three character skeletons, and adapted contact to Moonkov's inventory injectors. Source meshes are not used in the player.
+
+Universal Animation Library 1 and 2
+Author: Quaternius
+License: CC0 1.0
+https://quaternius.com/packs/universalanimationlibrary.html
+https://quaternius.com/packs/universalanimationlibrary2.html
+Changes: mirrored Consume and PickUp_Table for right-hand use, retargeted upper-body motions, and adapted prop contact and timing.
+
+7 Eating Crunches
+Author: Tito / StarNinjas
+License: CC0 1.0
+https://opengameart.org/content/7-eating-crunches
+Changes: mono conversion, silence trimming, short fades and gain adjustment.
+
+Liquid Bottle Drink Set
+Author: qubodup
+License: CC0 1.0
+https://opengameart.org/content/liquid-bottle-drink-set
+Changes: mono conversion, silence trimming, short fades and gain adjustment.
+
+Pickup/plastic Sound
+Author: Vinrax
+License: Creative Commons Attribution 3.0 Unported
+https://creativecommons.org/licenses/by/3.0/
+https://opengameart.org/content/pickupplastic-sound
+Changes: mono conversion, silence trimming, short fades and gain adjustment.
+
+50 RPG sound effects
+Author: Kenney
+License: CC0 1.0
+https://opengameart.org/node/21999
+Changes: short metal fastening and leather handling excerpts, mono conversion and gain adjustment.

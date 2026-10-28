@@ -1,0 +1,94 @@
+{
+  "source": "ArtSource/DollSinger/SurvivalActions.blend",
+  "sha256": "5f747c027c1f17a5b3c147bad5d23a15502adb2b6daeb7fa028264a0c0212368",
+  "rig": "DollSinger",
+  "frameRate": 60,
+  "framesPerAction": 181,
+  "geometryFramesPerAction": 13,
+  "sourceOnly": true,
+  "unityIntegrationValidated": false,
+  "otherCharacterRigsValidated": false,
+  "acceptedWarnings": [
+    "手持物品不放在地面。",
+    "薄壁相向表面是包装内外壁。",
+    "允许最多 3 毫米的手指软组织接触压缩。"
+  ],
+  "assets": {
+    "ration_Sealed": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "asset lowest point z=0.9103 (not resting on ground plane z=0)"
+      ],
+      "triangles": 3896
+    },
+    "ration_Opened": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "asset lowest point z=0.9104 (not resting on ground plane z=0)"
+      ],
+      "triangles": 6996
+    },
+    "water_Body": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "asset lowest point z=1.2166 (not resting on ground plane z=0)"
+      ],
+      "triangles": 2976
+    },
+    "water_Cap": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "asset lowest point z=1.0668 (not resting on ground plane z=0)"
+      ],
+      "triangles": 508
+    },
+    "ration_TearStrip": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "hidden back-to-back faces: ration_TearStrip (94 pairs) - delete to save tris",
+        "asset lowest point z=0.9078 (not resting on ground plane z=0)"
+      ],
+      "triangles": 996
+    },
+    "medkit_assembly": {
+      "pass": true,
+      "errors": [],
+      "warnings": [
+        "asset lowest point z=-0.0584 (not resting on ground plane z=0)"
+      ],
+      "triangles": 4654
+    }
+  },
+  "motions": {
+    "Search": {
+      "maximumFkErrorMetres": 1.282906903425016e-06,
+      "maximumJointStepDegrees": 5.86529517615422,
+      "sampledSurfaceIntersections": {},
+      "maximumFingerContactDepthMetres": 0,
+      "loopSeamDegrees": 4.999813305004754
+    },
+    "Eat": {
+      "maximumFkErrorMetres": 1.45490591405435e-06,
+      "maximumJointStepDegrees": 19.188467076856192,
+      "sampledSurfaceIntersections": {},
+      "maximumFingerContactDepthMetres": 0
+    },
+    "Drink": {
+      "maximumFkErrorMetres": 1.530818969922473e-06,
+      "maximumJointStepDegrees": 30.219236246805124,
+      "sampledSurfaceIntersections": {},
+      "maximumFingerContactDepthMetres": 0.002199664246290922
+    },
+    "Inject": {
+      "maximumFkErrorMetres": 1.3035109619936346e-06,
+      "maximumJointStepDegrees": 26.19026987240739,
+      "sampledSurfaceIntersections": {},
+      "maximumFingerContactDepthMetres": 0.0018140535103157163
+    }
+  }
+}

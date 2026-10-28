@@ -276,7 +276,7 @@ class Retargeter:
     def bind_delta(self, name, source_world):
         return qnorm(qmul(qmul(source_world[name], qinverse(self.source.r[name])), self.target.r[name]))
 
-    def arm(self, side, wrist, guide, world, starts):
+    def arm(self, side, wrist, guide, world, starts, previous=None, anatomical_wrist_limit=None, elbow_max_y=None, pose_penalty=None):
         """Target elbow-circle solve; share roll between elbow and wrist twist."""
         t = self.target
         upper, lower, h, twist, upper_twist = (named(b, side) for b in ("腕", "ひじ", "手首", "手捩", "腕捩"))
@@ -315,6 +315,20 @@ class Retargeter:
             applied = twist_q if raw <= 105 else qslerp(IDENTITY, twist_q, 105 / raw)
             wrist_angle = qangle(qmul(world[h], qinverse(qmul(applied, expected))))
             score = (wrist_angle / 55) ** 4 + (raw / 105) ** 4 + .4 * (degrees / 50) ** 2
+            if anatomical_wrist_limit is not None:
+                palm_forward = unit(qrotate(qmul(world[h], qinverse(t.r[h])), sub(t.p[named("中指１", side)], t.p[h])))
+                bend_degrees = math.degrees(math.acos(max(-1, min(1, dot(l, palm_forward)))))
+                score += (max(0, bend_degrees - anatomical_wrist_limit) / 10) ** 4
+            if elbow_max_y is not None:
+                score += (max(0, elbow[1] - elbow_max_y) / .01) ** 4
+            if pose_penalty is not None:
+                score += pose_penalty(elbow, wrist)
+            if previous:
+                # Moving contacts need temporal coherence between equivalent
+                # elbow-circle solutions. Static aiming retains its original score.
+                candidate_lower = qmul(qslerp(IDENTITY, applied, .5), base_lower)
+                score += 1.5 * (qangle(qmul(upper_rot, qinverse(previous[upper]))) / 20) ** 2
+                score += 1.5 * (qangle(qmul(candidate_lower, qinverse(previous[lower]))) / 20) ** 2
             if best is None or score < best[0]:
                 best = (score, upper_rot, base_lower, applied)
         _, upper_rot, base_lower, roll = best
