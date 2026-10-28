@@ -150,6 +150,8 @@ Editor：
 
 ## Windows GPU 运行前
 
+Unity 项目版本为 `6000.5.10f1`（`3bd4f66ad299`）。优先安装同一版本，避免接手时顺带升级项目。
+
 1. 确认台式机项目路径、分支和未提交状态。
 2. 检查 Blender 版本、NVIDIA 驱动和 OptiX 设备。
 3. 当前 `bake_world.py` 和 `capture_world_reflections.py` 的设备选择仍写死 METAL。Windows 上会落回 CPU。必须先改为经过检查的 OPTIX/CUDA 选择，打印实际 GPU 名称。不能直接照抄 Mac 命令重跑。
