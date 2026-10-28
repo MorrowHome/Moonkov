@@ -60,6 +60,7 @@
 - 已通过 Google Drive 连接器取得新版私有 V2 包，保存到 `E:/Download/Moonkov_Cloud_Handoff_20261029_V2/handoff_v2.zip`。23263504 字节，SHA `bf58983b34f8a4d0d50768025788aa3a3d2565f8e6fff6f05c566871db873adb`，36 个条目，CRC 全通过，展开约 23.9 MB。仅在独立 `Expanded` 目录读取，未运行包内内容或接入模型。
 - V2 根 README 明确：完整地图是 v10 WS01，SHA `d161ecbb928dbd64551f8e1c03ea0990c1dd78482569ad2e2d358a96b6dc6150`；此 ZIP 不是完整地图。它复用旧 LR07–09、MC01、LF01、CE01、GT01 交接，新增 PR01 四个 AREA、WS01 四个 AREA 的参数及八个 diffuser 的 OBJECT slot 0 暖色覆盖。原 118 灯锚点仍为 EMPTY，不自动变成 Blender Light。WS01 只针对局部台阶和到达可读性，明确不保证全楼梯连续充分照明；不能宣称解决所有 MC00/L14 暗区。
 - 八灯精确参数在 `Expanded/04_PR01_WS01_PARAMETERS/PARAMETERS.json`，diffuser 身份/共享材质保护在 `DIFFUSER_OBJECT_OVERRIDES.json`。Blender 瓦数不能直接当 Unity intensity。只按验证后的源世界矩阵转换一次，不额外套锚点或 FBX 基底。当前旧源尚未应用此增量；应用前必须核对源对象/mesh/槽/材质和原 EMPTY 的精确身份，保留原控制映射和原共享 LD2，不能猜配或修改整楼共享材质。
+- 已在原始旧 blend 做八套对象的只读基础预检：对象/mesh 名、类型、父级、集合、材质槽、DATA 槽及原 EMPTY 类型均与清单一致，24 个新灯/灯数据/局部材质标识均不存在。结果 `LocalData/SourceFidelity20261028/V2BindingPreflight.json`。但包内明确使用上游 Blender 4.3.2 历史审计序列器，本地没有该序列器或等价源字节证明，完整网格/法线/材质固定字段指纹尚未复现。基础匹配不等于可应用；未改源文件、未创建灯、未修改材质。不要重复本轮基础预检。
 
 - 完整接入正式游戏。不能停在局部演示。
 - 优先还原候选 Blender 的材质、面积灯、反弹光和反射。
