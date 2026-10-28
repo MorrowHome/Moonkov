@@ -34,8 +34,10 @@ public static class RaidSearchActionChecks
         Check(actor.OpenedLootId == 0 && actor.SearchedLoot.Contains(0) && !actor.NeedsSearch(caches, 0), "Search opens and remembers the completed container");
 
         var previewActor = new RaidInventoryState();
-        previewActor.BeginDissection(0, 0, origin, health, 2);
         int total = caches.Containers[0].Children(LootInventoryExchange.Root).Count();
+        previewActor.BeginDissection(0, 0, origin, health, 2, searchItems:total);
+        previewActor.RefreshDissection(caches,true,origin,health,1);
+        Check(previewActor.SearchRevealed==0 && previewActor.SearchItemRemaining(1)==1,"First item gets its own full timer");
         Check(previewActor.SearchRevealed == 0, "New search starts with every item hidden");
         var emptyPreview = LootInventoryExchange.SearchPreview(caches.Containers[0], 0);
         Check(emptyPreview.Children(LootInventoryExchange.Root).Count() == 0 && emptyPreview.Validate() == InventoryError.None, "Initial preview contains only the empty container");
@@ -44,13 +46,14 @@ public static class RaidSearchActionChecks
         for (int n = 1; n < total; n++)
         {
             previewActor.LastSentVersion = carried.Version;
-            previewActor.RefreshDissection(caches, true, origin, health, (n + .01) * 2 / total);
+            previewActor.RefreshDissection(caches, true, origin, health, n * 2 + .01);
             var visible = LootInventoryExchange.SearchPreview(caches.Containers[0], previewActor.SearchRevealed);
+            Check(Math.Abs(previewActor.SearchItemRemaining(n*2+.01)-1.99)<.01,"Halo timer restarts for each item");
             Check(visible.Children(LootInventoryExchange.Root).Count() == n && previewActor.LastSentVersion == -1, "Each discovered item schedules a fresh snapshot");
             Check(visible.Validate() == InventoryError.None && previewActor.OpenedLootId == -1, "Partial preview is valid and cannot be transferred early");
             var joined = LootInventoryExchange.Snapshot(carried, visible);
             Check(joined.Equipped("Backpack")?.Id == owned && joined.Validate() == InventoryError.None, "Carried equipment survives each discovery");
-            string json = RaidInventoryTransport.EncodeSnapshot(joined, 0, visible.Version, 0, 1, searchTotal: total);
+            string json = RaidInventoryTransport.EncodeSnapshot(joined, 0, visible.Version, 0, 1, searchTotal: total, searchFootprints:new System.Collections.Generic.List<RaidSearchFootprint> {new RaidSearchFootprint {Id="hidden",Region="main",X=2,Y=1,Width=2,Height=3}},searchItemSeconds:2);
             var decoded = Newtonsoft.Json.JsonConvert.DeserializeObject<RaidInventorySnapshot>(json);
             Check(decoded.SearchTotal == total && decoded.Graph.Children(LootInventoryExchange.Root).Count() == n, "Transport carries total plus disclosed items only");
             var client = new RaidInventoryClientState();
@@ -58,14 +61,14 @@ public static class RaidSearchActionChecks
             for (int index = chunks - 1; index >= 0; index--)
                 client.Receive(new RaidInventoryChunkV2Rpc { RaidId = 1, Sequence = 1, Count = chunks, Index = index,
                     Json = json.Substring(index * RaidInventoryTransport.ChunkCharacters, Math.Min(RaidInventoryTransport.ChunkCharacters, json.Length - index * RaidInventoryTransport.ChunkCharacters)) }, RaidInventoryTransport.Decode);
-            Check(client.SearchTotal == total && client.DissectingLootId == 0 && client.Graph?.Equipped("Backpack")?.Id == owned,
+            Check(client.SearchItemSeconds==2 && client.SearchFootprints?[0].Width==2 && client.SearchFootprints[0].Height==3 && client.SearchTotal == total && client.DissectingLootId == 0 && client.Graph?.Equipped("Backpack")?.Id == owned,
                 "Chunk reassembly keeps partial loot and carried equipment together");
         }
         previewActor.CloseLoot();
         Check(previewActor.DissectingLootId == -1 && !previewActor.SearchedLoot.Contains(0), "Closing partial search does not mark it complete");
-        previewActor.BeginDissection(0, 5, origin, health, 2);
+        previewActor.BeginDissection(0, 5, origin, health, 2, searchItems:total);
         Check(previewActor.SearchRevealed == 0, "Restart cannot reuse the previous preview count");
-        previewActor.RefreshDissection(caches, true, origin, health, 7);
+        previewActor.RefreshDissection(caches, true, origin, health, 5+2*total);
         Check(previewActor.OpenedLootId == 0 && previewActor.SearchedLoot.Contains(0), "Final item waits for the completion receipt");
 
         var nested = InventoryGraph.Create(false, false);

@@ -367,7 +367,10 @@ public static class MoonkovRaidActionChecks
         health=em.GetComponentData<PredictedPlayerGhost>(player);health.LastShotTick++;em.SetComponentData(player,health);
         Refresh(world,handle,connection,8);
         Check(inventory.OpenedLootId<0 && !inventory.SearchedLoot.Contains(id),"Shooting during search revealed loot");
-        open.RequestId=4;Request(world,connection,open);Process(world,handle,"HandleLootRequests");Refresh(world,handle,connection,10);
+        open.RequestId=4;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        Refresh(world,handle,connection,10);
+        Check(inventory.SearchRevealed==1 && inventory.OpenedLootId<0 && inventory.SearchItemRemaining(10)==2,"Search RPC must reveal one item and restart its timer");
+        Refresh(world,handle,connection,inventory.DissectionUntil);
         Check(inventory.OpenedLootId==id && inventory.SearchedLoot.Contains(id),"Safe search did not recover after interruptions");
         Request(world,connection,new RaidLootOpenRpc {RaidId=7,RequestId=5,LootId=-1});Process(world,handle,"HandleLootRequests");
         var cache=caches.Containers[id];cache.Items.RemoveAll(item=>InventoryCatalog.Get(item.Code).Kind!=ItemKind.Root);cache.Version++;
@@ -375,7 +378,7 @@ public static class MoonkovRaidActionChecks
         Check(!refill.TryRefill(cache,10,1,1,false,random) && refill.TryRefill(cache,11,1,1,false,random),"Refill RPC fixture");
         world.SetTime(new TimeData(11,.02f));open.RequestId=6;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
         Check(inventory.DissectingLootId==id && inventory.OpenedLootId<0,"Refilled cache reopened without searching");
-        Refresh(world,handle,connection,13);
+        Refresh(world,handle,connection,inventory.DissectionUntil);
         Check(inventory.OpenedLootId==id && !inventory.NeedsSearch(caches,id),"Refilled cache search did not complete");
         inventory.OpenedLootId=-1;inventory.ClearSearchRecords();
         health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.ShieldEquipped=false;em.SetComponentData(player,health);
@@ -386,6 +389,7 @@ public static class MoonkovRaidActionChecks
             health=em.GetComponentData<PredictedPlayerGhost>(player);RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,tick);
             em.SetComponentData(player,health);Refresh(world,handle,connection,14+tick*.5);
         }
+        Refresh(world,handle,connection,inventory.DissectionUntil);
         Check(inventory.OpenedLootId==id && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<hp,
             "Starvation damage interrupted search RPC");
         inventory.OpenedLootId=-1;inventory.ClearSearchRecords();
@@ -403,6 +407,7 @@ public static class MoonkovRaidActionChecks
             health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.TickOxygen(ref health,false,.5f,600,0,0,3,tick);
             em.SetComponentData(player,health);Refresh(world,handle,connection,18+(tick-70)*.5);
         }
+        Refresh(world,handle,connection,inventory.DissectionUntil);
         Check(inventory.OpenedLootId==id && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<hp,
             "Hypoxia damage interrupted search RPC");
         caches.Containers.Remove(id);caches.MissionCaches.Remove(id);caches.RefillStates.Remove(id);inventory.OpenedLootId=-1;

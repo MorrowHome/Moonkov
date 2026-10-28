@@ -17,11 +17,16 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null,bool medicalIsConsumable=false,int searchTotal=-1) => Newtonsoft.Json.JsonConvert.SerializeObject(
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null,bool medicalIsConsumable=false,int searchTotal=-1,List<RaidSearchFootprint> searchFootprints=null,float searchItemSeconds=0) => Newtonsoft.Json.JsonConvert.SerializeObject(
             new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
                 DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,MedicalIsConsumable=medicalIsConsumable,ActionFeedback=actionFeedback,
-                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result,SearchTotal=searchTotal},
+                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result,SearchTotal=searchTotal,SearchFootprints=searchFootprints,SearchItemSeconds=searchItemSeconds},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
+    }
+    public sealed class RaidSearchFootprint
+    {
+        public string Id, Region;
+        public int X, Y, Width, Height;
     }
     public sealed class RaidInventorySnapshot
     {
@@ -33,6 +38,8 @@ namespace Unity.MP_FPS
         public int DissectingLootId=-1;
         public float DissectionRemaining;
         public int SearchTotal=-1;
+        public List<RaidSearchFootprint> SearchFootprints;
+        public float SearchItemSeconds;
         public string MedicalItemId;
         public float MedicalRemaining;
         public bool MedicalIsConsumable;
@@ -242,14 +249,19 @@ namespace Unity.MP_FPS
                 Error==InventoryError.None ? "治疗完成。" : "治疗失败：目标或物品状态已变化，未消耗物品。";
         }
         public double DissectionUntil, DissectionStartedAt;
-        public int SearchRevealed;
+        public int SearchRevealed, SearchItemCount;
+        public float SearchSecondsPerItem;
+        public float SearchItemRemaining(double now) => (float)System.Math.Max(0,
+            System.Math.Min(DissectionUntil,DissectionStartedAt+(SearchRevealed+1)*SearchSecondsPerItem)-now);
         public Unity.Mathematics.float3 DissectionOrigin;
         public int DissectionGeneration;
         public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
-        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0)
+        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0,int searchItems=1)
         {
             if(RaidHealth.HandsBusy(health))return false;
-            CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
+            CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;
+            SearchSecondsPerItem=System.Math.Max(.1f,seconds);SearchItemCount=System.Math.Max(1,searchItems);
+            DissectionUntil=now+SearchSecondsPerItem*SearchItemCount;
             DissectionStartedAt=now;SearchRevealed=0;
             DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageSequence=health.NonPhysiologicalDamageSequence;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
@@ -269,7 +281,7 @@ namespace Unity.MP_FPS
             if(reason==null && now<DissectionUntil)
             {
                 int total=caches.Containers.TryGetValue(DissectingLootId,out var cache) ? cache.Children(LootInventoryExchange.Root).Count() : 0;
-                int revealed=(int)(total*System.Math.Clamp((now-DissectionStartedAt)/(DissectionUntil-DissectionStartedAt),0,1));
+                int revealed=System.Math.Min(total,(int)System.Math.Max(0,(now-DissectionStartedAt)/SearchSecondsPerItem));
                 if(revealed!=SearchRevealed){SearchRevealed=revealed;LastSentVersion=-1;}
                 return;
             }
@@ -429,6 +441,8 @@ namespace Unity.MP_FPS
         public int DissectingLootId=-1;
         public float DissectionRemaining;
         public int SearchTotal=-1;
+        public List<RaidSearchFootprint> SearchFootprints;
+        public float SearchItemSeconds;
         public string MedicalItemId;
         public float MedicalRemaining;
         public bool MedicalIsConsumable;
@@ -457,6 +471,7 @@ namespace Unity.MP_FPS
                 DissectingLootId=snapshot?.DissectingLootId ?? -1;
                 DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
                 SearchTotal=snapshot?.SearchTotal ?? -1;
+                SearchFootprints=snapshot?.SearchFootprints;SearchItemSeconds=snapshot?.SearchItemSeconds ?? 0;
                 MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;MedicalIsConsumable=snapshot?.MedicalIsConsumable ?? false;ActionFeedback=snapshot?.ActionFeedback;
                 Result = snapshot?.Result != null && snapshot.Result.Valid(chunk.RaidId) ? snapshot.Result : null;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;

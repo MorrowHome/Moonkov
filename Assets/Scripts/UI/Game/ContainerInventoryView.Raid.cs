@@ -194,13 +194,7 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(caption, RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : "");
             if(m_SearchTotal>=0)
             {
-                int found=m_Graph.Children(loot.Id).Count();
-                var count=Text(m_LootPane,"", "field-search-count");
-                count.name="lootSearchCount";
-                MoonkovLocalization.Set(count, $"{found} / {m_SearchTotal}");
-                var pending=new VisualElement();pending.AddToClassList("field-search-pending");m_LootPane.Add(pending);
-                for(int n=found;n<m_SearchTotal;n++)Text(pending,"?","field-search-unknown");
-                AddContainer(m_LootPane,loot,"可搜刽物品",compact:true);
+                AddContainer(m_LootPane,loot,"可搜刽物品");
                 return;
             }
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }

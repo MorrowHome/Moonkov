@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -211,7 +212,7 @@ namespace Unity.MP_FPS
                             inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
                                 SystemAPI.GetComponent<PredictedPlayerGhost>(player),
                                 caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds,
-                                caches.RefillGeneration(r.LootId));
+                                caches.RefillGeneration(r.LootId),caches.Containers[r.LootId].Children(LootInventoryExchange.Root).Count());
                         }
                         if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;

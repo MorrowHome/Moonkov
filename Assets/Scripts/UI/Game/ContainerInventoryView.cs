@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.Client
         private bool m_ProcessingQuickTransfer, m_QuickTransferSpaceBlocked;
         private string m_ReadOnlyReason;
         private int m_SearchTotal=-1;
+        private IReadOnlyList<RaidSearchFootprint> m_SearchFootprints;
         private string m_SelectedItemId;
         private int m_LootId=-1;
         private bool m_DroppedItem;
@@ -188,7 +189,7 @@ namespace Unity.MP_FPS.Client
                 case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
         }
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false,
-            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null, int searchTotal=-1)
+            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null, int searchTotal=-1,IReadOnlyList<RaidSearchFootprint> searchFootprints=null)
         {
             if (m_Disposed) return;
             if (graph == null || m_LootId != lootId || operationCompleted && message != null) ClearQuickTransfers();
@@ -198,10 +199,11 @@ namespace Unity.MP_FPS.Client
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
             string layout = LayoutKey(graph);
+            if(searchFootprints!=null)layout+="/search/"+string.Join(";",searchFootprints.Select(f=>$"{f.Id}:{f.Region}:{f.X}:{f.Y}:{f.Width}:{f.Height}"));
             bool corpseSlotsChanged = !SameCorpseSlots(m_CorpseEquipmentSlots, corpseEquipmentSlots);
             bool changed = m_SearchTotal!=searchTotal || m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex || corpseSlotsChanged;
             bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
-            m_SearchTotal=searchTotal;
+            m_SearchTotal=searchTotal;m_SearchFootprints=searchFootprints;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             m_CorpseCharacterIndex = corpseCharacterIndex;
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -341,6 +343,19 @@ namespace Unity.MP_FPS.Client
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
                         () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
                     visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, displayed[entry.Id], grid.Cell);
+                }
+                if(item.Id==LootInventoryExchange.Root && m_SearchFootprints!=null)
+                {
+                    bool current=true;
+                    foreach(var footprint in m_SearchFootprints)
+                    {
+                        if(m_Graph.Find(footprint.Id)!=null)continue;
+                        var block=new VisualElement {name="inventoryUnknown"+footprint.Id,pickingMode=PickingMode.Ignore};
+                        block.AddToClassList("field-search-hidden");block.EnableInClassList("field-search-current",current);current=false;
+                        block.style.left=footprint.X*grid.Cell;block.style.top=footprint.Y*grid.Cell;
+                        block.style.width=footprint.Width*grid.Cell;block.style.height=footprint.Height*grid.Cell;
+                        visual.Add(block);
+                    }
                 }
             }
         }

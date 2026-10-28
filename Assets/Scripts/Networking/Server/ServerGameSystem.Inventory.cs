@@ -242,9 +242,15 @@ namespace Unity.MP_FPS
             RaidCorpseRecord corpse = null;
             if (cache != null && searchTotal<0) LootContainers(ref state).DeathBags.TryGetValue(inventory.OpenedLootId, out corpse);
             var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : viewing,lootVersion,
-                inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
+                inventory.DissectingLootId,inventory.SearchItemRemaining(SystemAPI.Time.ElapsedTime),
                 inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback,
-                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result,inventory.MedicalIsConsumable,searchTotal);
+                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result,inventory.MedicalIsConsumable,searchTotal,
+                searchTotal<0 ? null : cache.Children(LootInventoryExchange.Root).Select(item=>
+                {
+                    var definition=InventoryCatalog.Get(item.Code);
+                    return new RaidSearchFootprint {Id=item.Id,Region=item.Region,X=item.X,Y=item.Y,
+                        Width=item.Rotated ? definition.Height : definition.Width,Height=item.Rotated ? definition.Width : definition.Height};
+                }).ToList(),searchTotal<0 ? 0 : inventory.SearchSecondsPerItem);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

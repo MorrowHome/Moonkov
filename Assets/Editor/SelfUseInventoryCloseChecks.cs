@@ -83,7 +83,21 @@ public static class SelfUseInventoryCloseChecks
                 update.Invoke(hud,null);
                 if(!Visible())throw new InvalidOperationException("Repeated interrupted receipt closes the reopened carried inventory");
             }
-            return "PASS: carried inventory stays open across 3 repeated interrupted receipts";
+            inventory.Graph=LootInventoryExchange.Snapshot(inventory.Graph,LootInventoryExchange.SearchPreview(LootInventoryExchange.CreateCache(0),0));
+            inventory.Error=InventoryError.None;inventory.LootId=0;inventory.DissectingLootId=0;inventory.SearchTotal=2;inventory.SearchItemSeconds=2;
+            Set("m_InventoryRequestPending",true);Set("m_ActionDuration",20f);
+            for(int item=0;item<2;item++)
+            {
+                Set("m_InventoryRequestedAt",UnityEngine.Time.unscaledTime-1);
+                inventory.Sequence++;inventory.DissectionRemaining=item==0 ? 1 : 2;
+                update.Invoke(hud,null);
+                float duration=(float)typeof(RaidHUD).GetField("m_ActionDuration",flags).GetValue(hud);
+                float requestedAt=(float)typeof(RaidHUD).GetField("m_InventoryRequestedAt",flags).GetValue(hud);
+                float ends=(float)typeof(RaidHUD).GetField("m_DissectionEndsAt",flags).GetValue(hud);
+                if(duration!=2 || Math.Abs(requestedAt-UnityEngine.Time.unscaledTime)>.01 || Math.Abs(ends-UnityEngine.Time.unscaledTime-inventory.DissectionRemaining)>.01)
+                    throw new InvalidOperationException("Each item must reset halo duration, deadline and timeout activity");
+            }
+            return "PASS: 3 repeated interrupted receipts and independent item halo / timeout updates";
         }
         finally
         {

@@ -776,9 +776,10 @@ namespace Unity.MP_FPS
                     m_ActionAccepted=true;
                     m_DissectingLootId=inventory.DissectingLootId;
                     m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
-                    m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
+                    m_ActionDuration=inventory.SearchItemSeconds>0 ? inventory.SearchItemSeconds : Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
+                    m_InventoryRequestedAt=Time.unscaledTime;
                     m_InventoryView.Present(inventory.Graph,operationCompleted:false,lootId:inventory.LootId,
-                        droppedItem:IsDroppedLoot(inventory.LootId),searchTotal:inventory.SearchTotal);
+                        droppedItem:IsDroppedLoot(inventory.LootId),searchTotal:inventory.SearchTotal,searchFootprints:inventory.SearchFootprints);
                     m_InventoryView.SetReadOnly("SEARCHING");
                     return;
                 }
