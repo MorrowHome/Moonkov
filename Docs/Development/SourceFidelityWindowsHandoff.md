@@ -6,7 +6,7 @@
 
 任务没有完成。正式游戏场景尚未安装新世界。当前截图不能作为最终画面。
 
-旧源的三张室内高密度图集和 461 个反射候选已完成。Unity 导入暂停在阶段 4、索引 37。云端 v11 完整源已下载核验，但相同站位的正常曝光源参考仍近黑。正在对齐 L14 固定照明修正；不重复旧烘焙，不把未解决暗区的候选安装进正式场景。
+旧源的三张室内高密度图集和 461 个反射候选已完成。Unity 导入暂停在阶段 4、索引 37。v11 原源仍暗；独立 L14 400W 单灯候选已通过冷验和单接收面复现。完整材质仍暗且有采样噪声，区域覆盖和正式接入未通过。不要把局部候选安装进正式场景。
 
 ### 2026-10-29 当前接续门槛
 
@@ -18,6 +18,11 @@
 - 定向 Python 缓存回归通过。Unity C# 编译通过，内存构造检查确认拒绝旧照明、接受匹配照明、拒绝错误源 SHA。未恢复导入，未实际重建正式统计数组或角色探针，未安装场景；这些仍须随新照明输入验收。
 - v11 包含几何变化，旧导入器只按 `SourceMesh_数字` 名称跳过已有网格，会留下旧几何。现改为每图集核对源 SHA 和每个二进制块的 SHA；变化时原地更新 Mesh，保留现有子资产引用。成功后才记录版本。此修改只编译，尚未导入 v11 网格；必须在实际接入时核对新导出与网格结果。
 - v11 外部依赖冷读预检通过。201 个文件类图像都有打包数据或可读外部文件，没有缺失图像或链接库；图像内容指纹在 `LocalData/SourceFidelity20261028/V11DependencyPreflight.json`。源未保存，未重渲暗视角。后续实际导出仍需按采用材质筛选，不把 201 直接当运行时贴图数。
+- L14 差量包已核验：`E:/Download/Moonkov_L14_BakeCandidate/candidate.zip`，586519 字节，SHA `291eda37d3b7720755dcedb2556a818b56e9ac021842bf50f9b53a4f3c61396c`，9 项内部 SHA 通过。只在隔离 v11 副本增加一盏 400W AREA。候选为 `LocalData/SourceFidelity20261028/L14SingleLightCandidate/V11_L14_400W_Candidate.blend`，SHA `392b805dfbdd553dd1a18ed9e6d0de9015d49e12ee054e5787ed63912833b495`。冷验 425 灯，原有数据语义无变化。153 个 packed 图像只因另存位置改变相对路径字符串；按解析后绝对路径和原打包字节 SHA 核对一致。
+- 单面复现范围只有 `MC_E pressure panel L1 S11 panel_01035`，临时诊断 UV、1024、128 spp，OptiX。对照为相同相机的 256 spp 源漫反射通道。21336 个目标像素的均值差 0.307%，像素 RMSE 0.02821；8/16/32 像素块均值 RMSE 为 0.003035/0.001447/0.000761。目视轮廓和大尺度梯度相符，双方仍有明显独立采样颗粒。不能据均值宣称最终噪声、跨块接缝、所有边缘漏光、全区覆盖或反射/角色 SH 合格。报告、真实 mask 裁切与离线差分在 `L14SingleLightCandidate/LocalBake`，未重复烘焙正确结果。
+- 审阅包已上传到原私有 Drive 目录，文件 ID `16BaWCTtBkg3gvybC3XhUSAdAgOPbXqjY`，1482022 字节，SHA `0fa42f403b4e29ccc5df304f0aa4d31e1f17510602d914331a66592746c96448`。元数据确认 shared=false、仅 owner。包含已有三张对比图、完整材质上下文、实际 mask 裁切、Report 与限制说明。relay 主动发消息仍有 idle AbsolutePathBuf 问题，不把上传成功说成制作侧已经看图；其可读取本地回执和私有目录。
+- 已开始隔离静态输入准备，根为 `LocalData/SourceFidelity20261028/V11L14StaticStage`。仅镜像现有 Python 管线脚本，生成该候选的源契约、BakePlan、MaterialIR 和材质翻译。状态 `StaticPreparationQueue.json`。所有输出留在镜像根，不改真实 SourceSummary、Assets、旧 World 或正式场景，不启动全场烘焙；正常进程不要重复启动。
+- Blender 5.2 的灯始终使用节点。新灯检查中性默认 Emission 白色/Strength 1、两节点单链接和无动画，保留 normalize=true、exposure=0、温度关闭。不能把 4.3 的 use_nodes=false 按字面套入 5.2，也不能为补偿迁移擅改功率。依据为 [Normalize 说明](https://developer.blender.org/docs/release_notes/4.5/rendering/)和[灯节点迁移](https://projects.staging.blender.org/blender/blender/commit/74c44d8cc7a42164e42c9220a189050bb932db98)。编辑模式切换后按名称重新取 UV，不能继续读旧 RNA 句柄。5.2 合成器 Object Index 输出名和 ID Mask 的 Index/Anti-Alias 输入须按当前 API 使用。
 
 用户最新要求是转到 Windows 开发。不要继续在 Mac 后台启动整图烘焙。交接时没有本任务的 Blender 渲染或临时防休眠进程。
 
