@@ -194,6 +194,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     var commandInput = commands[i];
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRW.InputIndex, out var input))
                     {
+                        input = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
                         predictedPlayer.ValueRW.LocalLookYawPitchDegrees = input.LookYawPitchDegrees;
 
                         bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
@@ -205,8 +206,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
                             predictedPlayer.ValueRW.AimPoint = aimPoint;
                             bool wantsToReload = input.Reload;
-                            bool wantsToShoot = !switchedWeapon && input.Shoot &&
-                                (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim);
+                            bool wantsToShoot = !switchedWeapon && input.Shoot && !input.FireSuppressed;
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
@@ -222,11 +222,19 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
 
-                            if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
+                            if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, dt / commands.Length))
                             {
                                 HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, dt);
                                 predictedPlayer.ValueRW.CurrentAmmo--;
                                 predictedPlayer.ValueRW.LastShotTick = commandInput.Tick.TickIndexForValidTick;
+
+                                bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
+                                if (weaponData.Type == WeaponType.Hitscan)
+                                {
+                                    shotRay = new Ray(shotRay.origin, WeaponSpread.Direction(shotRay.direction, weaponData, 0,
+                                        commandInput.Tick.TickIndexForValidTick, aimed));
+                                    aimPoint = shotRay.GetPoint(weaponData.HitscanRange);
+                                }
 
                                 float3 eyePosition = shotRay.origin;
                                 float3 aimDirection = shotRay.direction;
@@ -255,7 +263,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 {
                                     for (int pellet = 0; pellet < Mathf.Clamp(weaponData.PelletCount, 1, 32); pellet++)
                                     {
-                                        var spawnRotation = Quaternion.LookRotation(WeaponSpread.Direction(shotRay.direction, weaponData, pellet, commandInput.Tick.TickIndexForValidTick));
+                                        var spawnRotation = Quaternion.LookRotation(WeaponSpread.Direction(shotRay.direction, weaponData, pellet, commandInput.Tick.TickIndexForValidTick, aimed));
                                         controllerLink.Controller.SpawnPredictedProjectile(
                                             commandInput.Tick.TickIndexForValidTick,
                                             predictedPlayer.ValueRO.EquippedWeaponID,

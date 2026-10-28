@@ -21,7 +21,8 @@ public partial class ClientInputSenderSystem : SystemBase
         if (tick.IsValid)
         {
             var previousTick = m_PreviouslySentTick;
-            var inProgressCommandInput = RaidHUD.ChatInputBlocked ? default : m_InProgressCommandInput;
+            bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
+            var inProgressCommandInput = blocked ? default : m_InProgressCommandInput;
             var bufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>();
 
             foreach (var (input, entity)
@@ -57,7 +58,7 @@ public partial class ClientInputSenderSystem : SystemBase
                     if (buffer.GetDataAtTick(tick, out var existingCommandData)
                         && existingCommandData.Tick == tick)
                     {
-                        if (RaidHUD.ChatInputBlocked) existingCommandData.SetFrom(in input.ValueRO);
+                        if (blocked) existingCommandData.SetFrom(in input.ValueRO);
                         else existingCommandData.UpdateFrom(in input.ValueRO);
                         buffer.AddCommandData(existingCommandData);
                     }

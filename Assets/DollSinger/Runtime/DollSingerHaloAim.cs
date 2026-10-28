@@ -10,6 +10,7 @@ namespace Unity.MP_FPS.DollSinger
 public sealed class DollSingerHaloAim : MonoBehaviour {
     // Keep the idle plane above the character's tall hair bow.
     public const float IdleHeadHeight = .44f;
+    public const float RaiseSeconds = .28f, LowerSeconds = .24f, HipFireHoldSeconds = 1.1f;
     public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo, Tempest, Nocturne }
     [Header("Standalone demo equipment (network equipment comes from inventory)")]
     public HaloWeapon localPrimary = HaloWeapon.Rifle;
@@ -32,8 +33,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public LineRenderer beamCore;
 
     [Header("Timing")]
-    [Min(0.01f)] public float aimInSeconds = 0.28f;
-    [Min(0.01f)] public float aimOutSeconds = 0.24f;
+    [Min(0.01f)] public float aimInSeconds = RaiseSeconds;
+    [Min(0.01f)] public float aimOutSeconds = LowerSeconds;
     [Min(1f)] public float boltSpeed = 38f;
     [Min(0.05f)] public float boltLength = 0.30f;
     [Tooltip("Laser trail duration for network projectiles; length follows the actual ballistic speed.")]
@@ -122,6 +123,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public DollSingerView view;
     [SerializeField] private bool networkControlled;
     private bool networkAiming;
+    private bool networkReadying;
     private Vector3 networkDirection = Vector3.forward;
     private Vector3 networkAimPoint;
     private DollSingerMovement thirdPerson;
@@ -139,6 +141,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public bool OwnsHandPose => isActiveAndEnabled && (ExternalHandPoseActive || visualWeapon != HaloWeapon.None && (wantsAim || aimBlend > .001f));
     private int aimLayerIndex = -1;
     private float aimBlend;
+    private float adsBlend, localHipReadyUntil;
+    private bool localPendingShot;
+    public float HandlingMultiplier { get; set; } = 1f;
     private HaloBoltPool boltPool;
     private HaloDischargeVisual discharge;
     private float nextLocalShotTime;
@@ -194,6 +199,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             if (!networkControlled) localArsenal?.CancelBurst();
             gestureShotTime = float.NegativeInfinity;
             gestureReframeUntil = Time.time + gestureTransitionSeconds + .04f;
+            localPendingShot = false;
         }
         visualWeapon = weapon;
         foreach (var visual in arsenalVisuals) if (visual) visual.SetEquipped(visual.weapon == weapon);
@@ -219,18 +225,21 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     public uint LightingSettings { get; set; }
     public float AimBlend => aimBlend;
+    public float AdsBlend => adsBlend;
     // Only the locally owned network presentation installs this. Remote replicas
     // continue to use synchronized state; the blend still advances once per Update.
     public System.Func<bool> OwnedAimIntent { get; set; }
+    public System.Func<bool> OwnedReadyIntent { get; set; }
     public float ScopeMagnification => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.scopeMagnification : ArsenalVisual ? ArsenalVisual.magnification : 0;
     private int LocalAmmo(HaloWeapon weapon) => (int)weapon >= 5 ? localArsenal?.Ammo(weapon) ?? 0 : weapon == HaloWeapon.Rifle ? localRifleAmmo : weapon == HaloWeapon.Shotgun ? localShotgunAmmo : weapon == HaloWeapon.Sniper ? localSniperAmmo : localRevolverAmmo;
     public int AimLayerIndex => aimLayerIndex;
 
-    public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint, bool lightEnabled = true)
+    public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint, bool lightEnabled = true, bool readying = false)
     {
         networkControlled = true;
         haloLightEnabled = lightEnabled;
         networkAiming = aiming;
+        networkReadying = readying;
         networkDirection = direction.normalized;
         networkAimPoint = aimPoint;
     }
@@ -314,13 +323,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private void Update() {
         if (ExternalHandPoseActive)
         {
-            wantsAim = false; aimBlend = 0;
+            wantsAim = false; aimBlend = adsBlend = 0;
             if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0);
             if (hasAimBlendParameter) animator.SetFloat(AimBlendId, 0);
             if (view) { view.SetAimBlend(0); view.SetWeaponAimMagnification(1); }
             return;
         }
         if (networkControlled && OwnedAimIntent != null) networkAiming = OwnedAimIntent();
+        if (networkControlled && OwnedReadyIntent != null) networkReadying = OwnedReadyIntent();
         if (aimBlend > 0 || wantsAim) bakedGestures?.RestoreBeforeAnimation();
         if (discharge) discharge.Step(Time.deltaTime);
         if (!networkControlled && !input) return;
@@ -345,8 +355,16 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         bool aimingInput = manualAim;
 #endif
         bool wasAiming = wantsAim;
-        wantsAim = visualWeapon != HaloWeapon.None && (networkControlled ? networkAiming :
-            thirdPerson && thirdPerson.enabled && playerCamera && aimingInput);
+        if (!networkControlled && input.CanReadPlayerInput && !(thirdPerson && thirdPerson.IsFreeLooking))
+        {
+            if (input.FirePressed && aimBlend < 1f - .00001f && LocalAmmo(visualWeapon) > 0 &&
+                localReloadRemaining <= 0 && !(localArsenal?.Reloading ?? false)) localPendingShot = true;
+            if (input.FireHeld || input.FirePressed) localHipReadyUntil = Time.time + HipFireHoldSeconds;
+        }
+        else if (!networkControlled) { localPendingShot = false; localHipReadyUntil = 0; }
+        bool readying = networkControlled ? networkAiming || networkReadying :
+            thirdPerson && thirdPerson.enabled && playerCamera && (aimingInput || Time.time < localHipReadyUntil || localPendingShot);
+        wantsAim = visualWeapon != HaloWeapon.None && readying;
         if (wantsAim && !wasAiming) gestureReframeUntil = Time.time + aimInSeconds + .04f;
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
         if (!networkControlled && input && input.enabled)
@@ -355,7 +373,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             if (input.LightPressed) haloLightEnabled = !haloLightEnabled;
         }
         aimBlend = Mathf.MoveTowards(aimBlend, wantsAim ? 1f : 0f,
-            Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
+            Time.deltaTime / ((wantsAim ? aimInSeconds : aimOutSeconds) * Mathf.Max(1, HandlingMultiplier)));
+        adsBlend = Mathf.MoveTowards(adsBlend, visualWeapon != HaloWeapon.None && aimingInput ? 1f : 0f,
+            Time.deltaTime / ((aimingInput ? aimInSeconds : aimOutSeconds) * Mathf.Max(1, HandlingMultiplier)));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, bakedGestures != null ? 0f : aimBlend);
         if (hasAimBlendParameter) animator.SetFloat(AimBlendId, aimBlend);
         // Network presentation runs before this Update and otherwise forwards
@@ -363,7 +383,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         // before DollSingerView.LateUpdate, including for network-owned players.
         if (view && view.isActiveAndEnabled && view.player == gameObject)
         {
-            view.SetAimBlend(aimBlend);
+            view.SetAimBlend(adsBlend);
+            view.SetWeaponPoseBlend(aimBlend);
             view.SetWeaponAimMagnification(ScopeMagnification);
         }
         if (ArsenalVisual) ArsenalVisual.SetAimBlend(DollSingerView.AimPoseBlend(aimBlend));
@@ -386,9 +407,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             }
             if (ArsenalVisual)
             {
-                if (localArsenal != null && localArsenal.Step(this, visualWeapon, input.FireHeld, input.FirePressed,
-                    input.ReloadPressed, wantsAim && aimBlend > .65f, Time.deltaTime))
-                { gestureShotTime = Time.time; PlayDischarge(); FireCosmeticBolt(); }
+                if (localArsenal != null && localArsenal.Step(this, visualWeapon, input.FireHeld || localPendingShot, input.FirePressed || localPendingShot,
+                    input.ReloadPressed, wantsAim && aimBlend >= 1f - .00001f, Time.deltaTime))
+                { localPendingShot = false; gestureShotTime = Time.time; PlayDischarge(); FireCosmeticBolt(); }
                 weaponAmmo = LocalAmmo(visualWeapon);
                 return;
             }
@@ -417,8 +438,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                     (input.ReloadPressed || localSniperAmmo == 0)) localReloadRemaining = localSniperReloadTime;
                 fire = input.FirePressed && localSniperAmmo > 0 && localReloadRemaining == 0;
             }
-            if (wantsAim && aimBlend > 0.65f && fire && Time.time >= nextLocalShotTime)
+            if (localPendingShot && localReloadRemaining <= 0 && LocalAmmo(visualWeapon) > 0) fire = true;
+            if (wantsAim && aimBlend >= 1f - .00001f && fire && Time.time >= nextLocalShotTime)
             {
+                localPendingShot = false;
                 nextLocalShotTime = Time.time + (revolverEquipped ? localRevolverShotInterval : visualWeapon == HaloWeapon.Shotgun ? .8f : visualWeapon == HaloWeapon.Sniper ? 1.4f : localShotInterval);
                 if (revolverEquipped)
                 {
@@ -653,7 +676,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         gestureShotTime = float.NegativeInfinity; gestureTickInitialized = false;
         wantsAim = false;
         if (view) view.SetGestureHandsActive(false);
-        aimBlend = 0f;
+        aimBlend = adsBlend = 0f;
+        localHipReadyUntil = 0; localPendingShot = false;
         nextLocalShotTime = 0;
         if (thirdPerson) thirdPerson.IsLocallyAiming = false;
         if (animator && aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0f);

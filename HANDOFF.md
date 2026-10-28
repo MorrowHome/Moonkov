@@ -334,6 +334,16 @@
 - `MoonkovDistressAudioSetup.Install()` 绑定呻吟资源；`MoonkovDistressAudioChecks.Run()` 检查持续状态、冷却、恢复和死亡。
 - 回归入口为 `MoonkovPainAudioChecks.Run()` 和 `MoonkovDamageAudioChecks.Run()`；隔离播放检查为 `MoonkovPainAudioChecks.CheckPlayback()`。
 
+## 腰射与举枪前摇
+
+2026-10-28。左键可以直接腰射。右键单独控制开镜。不要再用 `Aim` 同时表示镜头放大和手势就绪。
+
+- `HaloModuleFire` 的输入重载供预测和服务端共用。举枪需 0.28 秒，再同时检查拔枪与射击冷却。操控状态会延长前摇。单点只记住一发；自动、半自动和点射保留各自规则。停火后保持举枪 1.1 秒，再用 0.24 秒收起。
+- `DollSingerHaloAim.AimBlend` 表示光环和手势；`AdsBlend` 表示开镜。`DollSingerView.SetWeaponPoseBlend` 单独控制手部呈现。腰射保留原 FOV 和鼠标灵敏度。开镜与腰射互切时不重新收放手。
+- 腰射散布半角为 `max(6°, 原散布 × 2.5)`，上限 30°。命中扫描和投射物都使用 `WeaponSpread` 的确定性方向。开镜散布沿用原值。腰射单发后坐为原值的 2.8 倍，累计上限 9°，回稳指数为 4；开镜仍为 3° 限幅和指数 13。松开右键不清空尚未回稳的后坐。
+- `FireHeld` 保留半自动持键状态。`FireSuppressed` 清除被菜单、聊天、自由观察、暗视和其他手部动作打断的待发射击。合并旧输入时也要执行这条规则。新增 Ghost 状态与输入标志后，两端需要一起重新编译。
+- `MoonkovHipFireChecks.Run()` 检查前摇、单点、持键、切换、充能衔接、散布、回稳与两种视角。原射击、瞄准输入、模块和武器身份检查通过。单 Editor 的离线展示场已检查真实手势与镜头：默认腰射 FOV 75°，普通开镜约 59.2°。本地截图与记录在忽略目录 `LocalData/HipFire`。未做正式战局、联机、构建或帧时验收。
+
 ## 第一人称射击手感
 
 2026-10-25。用户以《猎杀：对决》的中央准星视角为参考。保留角色动画带动的镜头晃动，不移动眼睛，不改偏下准星。

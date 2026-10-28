@@ -116,6 +116,8 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public uint EquippedWeaponID;
     [GhostField] public float WeaponCooldown;   // Elapsed firing time, including fractional tick remainder.
     [GhostField] public float WeaponEquipRemaining, FireBufferRemaining;
+    [GhostField] public float WeaponRaiseProgress, HipFireHoldRemaining;
+    [GhostField] public bool HaloPendingShot;
     // Slot recovery survives switching so drawing a weapon cannot bypass its firing interval.
     [GhostField] public float PrimaryFireRecovery, SecondaryFireRecovery, PistolFireRecovery;
     

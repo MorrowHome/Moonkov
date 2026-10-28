@@ -74,7 +74,14 @@ public partial class ClientInputReaderSystem : SystemBase
             movementInput.ValueRW = new ClientMovementInput();
 
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
-            if (blocked && _dollSingerInput == null) continue;
+            if (blocked && _dollSingerInput == null)
+            {
+                var suppressed = new PlayerInput();
+                suppressed.SetFlag(PlayerInput.InputFlag.FireSuppressed, true);
+                input.ValueRW.SetInput(0, suppressed);
+                movementInput.ValueRW.SetInput(0, suppressed);
+                continue;
+            }
 
             if (_dollSingerInput != null)
             {
@@ -94,7 +101,11 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canRead && playerInput.Aim &&
+                bool canFire = canRead && _dollSingerPresentation.WeaponHandsAvailable &&
+                    !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && !playerInput.FreeLooking;
+                playerInput.SetFlag(PlayerInput.InputFlag.FireSuppressed, !canFire);
+                playerInput.SetFlag(PlayerInput.InputFlag.FireHeld, canFire && _dollSingerInput.FireHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canFire &&
                     (weapon != null && !weapon.Automatic && weapon.BurstCount <= 1 ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
@@ -153,6 +164,7 @@ public partial class ClientInputReaderSystem : SystemBase
     {
         playerInput.SetFlag(PlayerInput.InputFlag.Jump, controls.Player.Jump.triggered);
         playerInput.SetFlag(PlayerInput.InputFlag.Shoot, controls.FPS.ShootSingle.IsPressed());
+        playerInput.SetFlag(PlayerInput.InputFlag.FireHeld, controls.FPS.ShootSingle.IsPressed());
         playerInput.SetFlag(PlayerInput.InputFlag.Reload, controls.FPS.Reload.triggered);
     }
 }

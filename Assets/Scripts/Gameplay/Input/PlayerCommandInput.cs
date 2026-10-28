@@ -19,7 +19,9 @@ public struct PlayerInput
         HaloLightDisabled = 1 << 9,
         Crouch = 1 << 10,
         Prone = 1 << 11,
-        Tiptoe = 1 << 12
+        Tiptoe = 1 << 12,
+        FireHeld = 1 << 13,
+        FireSuppressed = 1 << 14
     }
 
     public float2 MoveInput;
@@ -47,6 +49,8 @@ public struct PlayerInput
 
     public bool Jump => (InputFlags & (uint)InputFlag.Jump) != 0;
     public bool Shoot => (InputFlags & (uint)InputFlag.Shoot) != 0;
+    public bool FireHeld => (InputFlags & (uint)InputFlag.FireHeld) != 0;
+    public bool FireSuppressed => (InputFlags & (uint)InputFlag.FireSuppressed) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
@@ -75,7 +79,8 @@ public struct PlayerInput
         var result = this;
         const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
-            InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe);
+            InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
+            InputFlag.FireHeld | InputFlag.FireSuppressed);
         result.InputFlags &= knownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
@@ -91,12 +96,18 @@ public struct PlayerInput
             result.LookYawPitchDegrees = float2.zero;
             result.MoveInput = float2.zero;
             result.SetFlag(InputFlag.Shoot, false);
+            result.SetFlag(InputFlag.FireSuppressed, true);
         }
         result.FreeLookOffset = math.all(math.isfinite(FreeLookOffset))
             ? math.clamp(FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f)) : float2.zero;
         result.Lean = math.isfinite(Lean) ? math.clamp(Lean, -1f, 1f) : 0f;
         result.AimPoint = math.all(math.isfinite(AimPoint)) && math.isfinite(math.lengthsq(AimPoint))
             ? AimPoint : float3.zero;
+        if (result.FireSuppressed)
+        {
+            result.SetFlag(InputFlag.Shoot, false);
+            result.SetFlag(InputFlag.FireHeld, false);
+        }
         return result;
     }
 
@@ -135,6 +146,11 @@ public struct PlayerInput
             SetFlag(InputFlag.ThirdPerson, bufferedThirdPerson);
         }
         InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
+        if (FireSuppressed)
+        {
+            SetFlag(InputFlag.Shoot, false);
+            SetFlag(InputFlag.FireHeld, false);
+        }
     }
 }
 

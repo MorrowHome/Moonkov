@@ -371,8 +371,7 @@ namespace Unity.MP_FPS
                         var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
                         predictedPlayer.ValueRW.AimPoint = aimPoint;
                         bool wantsToReload = input.Reload;
-                        bool wantsToShoot = !switchedWeapon && input.Shoot &&
-                            (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim);
+                        bool wantsToShoot = !switchedWeapon && input.Shoot && !input.FireSuppressed;
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                         if (HaloModuleFire.ReadyToReload(ref predictedPlayer.ValueRW,wantsToReload || mustReload,weaponData.MagazineSize) &&
@@ -384,11 +383,19 @@ namespace Unity.MP_FPS
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 
-                        if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
+                        if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, deltaTime))
                         {
                             HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, deltaTime);
                             predictedPlayer.ValueRW.CurrentAmmo--;
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
+
+                            bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
+                            if (weaponData.Type == WeaponType.Hitscan)
+                            {
+                                shotRay = new Ray(shotRay.origin, WeaponSpread.Direction(shotRay.direction, weaponData, 0,
+                                    commandInput.Tick.TickIndexForValidTick, aimed));
+                                aimPoint = shotRay.GetPoint(weaponData.HitscanRange);
+                            }
 
                             var shooterNetworkId = ghostOwnerLookup[entity].NetworkId;
                             float3 eyePosition = shotRay.origin;
@@ -472,7 +479,7 @@ namespace Unity.MP_FPS
                                     {
                                         for (int pellet = 0; pellet < Mathf.Clamp(weaponData.PelletCount, 1, 32); pellet++)
                                         {
-                                            Vector3 pelletDirection = WeaponSpread.Direction(aimDirection, weaponData, pellet, commandInput.Tick.TickIndexForValidTick);
+                                            Vector3 pelletDirection = WeaponSpread.Direction(aimDirection, weaponData, pellet, commandInput.Tick.TickIndexForValidTick, aimed);
                                             Quaternion spawnRotation = Quaternion.LookRotation(pelletDirection);
                                             projectileSpawnList.Add(new ProjectileSpawnData
                                             {

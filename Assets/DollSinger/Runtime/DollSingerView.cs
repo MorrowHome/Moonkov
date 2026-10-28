@@ -100,7 +100,7 @@ public class DollSingerView : MonoBehaviour
         if (gestureHands != null) gestureHands.StableFraming = stableFraming;
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
             viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
-            AimPoseBlend(aimBlend), verticalOffset);
+            AimPoseBlend(weaponPoseBlend), verticalOffset);
     }
     public void SetMeleeHandsActive(bool active, float poseBlend, MeleeWeaponKind weapon)
     {
@@ -151,6 +151,7 @@ public class DollSingerView : MonoBehaviour
     private float distanceVelocity;
     private float viewBlend;
     private float aimBlend;
+    private float weaponPoseBlend;
     private float weaponAimMagnification;
     private float presentedWeaponMagnification = 1.75f;
     public float TargetAimMagnification => weaponAimMagnification > 0
@@ -228,7 +229,7 @@ public class DollSingerView : MonoBehaviour
         appliedFirstPerson = false;
         networkLookDriven = false;
         viewBlend = 0f;
-        aimBlend = 0f;
+        aimBlend = weaponPoseBlend = 0f;
         weaponAimMagnification = 0;
         presentedWeaponMagnification = Mathf.Clamp(aimMagnification, 1f, 3f);
         lastRenderedLeanOffset = Vector3.zero;
@@ -246,7 +247,8 @@ public class DollSingerView : MonoBehaviour
             -thirdPersonRestPosition.z, minThirdPersonDistance, maxThirdPersonDistance);
     }
 
-    public void SetAimBlend(float blend) => aimBlend = Mathf.Clamp01(blend);
+    public void SetAimBlend(float blend) { aimBlend = Mathf.Clamp01(blend); weaponPoseBlend = aimBlend; }
+    public void SetWeaponPoseBlend(float blend) => weaponPoseBlend = Mathf.Clamp01(blend);
     public void SetWeaponAimMagnification(float value) => weaponAimMagnification = value > 0 ? Mathf.Clamp(value, 1f, 12f) : 0;
 
     /// <summary>Keep the owned view independent of network prediction rotating its character parent.</summary>
@@ -774,7 +776,7 @@ public class DollSingerView : MonoBehaviour
         appliedFirstPerson = false;
         networkLookDriven = false;
         viewBlend = 0f;
-        aimBlend = 0f;
+        aimBlend = weaponPoseBlend = 0f;
         lastRenderedLeanOffset = Vector3.zero;
         if (!camera || !cameraDefaultsCaptured) return;
         camera.transform.localPosition = thirdPersonRestPosition;

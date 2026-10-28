@@ -240,10 +240,12 @@ namespace Unity.MP_FPS
                     HaloLightingSettings=Unity.MP_FPS.DollSinger.HaloLighting.Sanitize(input.HaloLightingSettings) };
                 blocked.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,!input.HaloLightEnabled);
                 blocked.SetFlag(PlayerInput.InputFlag.ThirdPerson,input.ThirdPerson);
+                blocked.SetFlag(PlayerInput.InputFlag.FireSuppressed,true);
                 blocked.SetStance(state.ClashLife==ClashLife.Downed ? Unity.MP_FPS.DollSinger.DollSingerStance.Prone : input.Stance);return blocked;
             }
             if(state.ClashEnabled && state.ClashDarkSight)
-            {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);}
+            {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);
+                input.SetFlag(PlayerInput.InputFlag.FireHeld,false);input.SetFlag(PlayerInput.InputFlag.FireSuppressed,true);}
             if (state.ConsumingSupply || !RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;

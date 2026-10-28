@@ -1,4 +1,5 @@
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -14,6 +15,7 @@ namespace Unity.MP_FPS
             state.BurstSequence = 0;
             state.BurstTriggerHeld = false;
             state.FireBufferRemaining = 0;
+            state.HaloPendingShot = false;
         }
 
         public static void AdvanceTimers(ref PredictedPlayerGhost state, float deltaTime)
@@ -37,6 +39,7 @@ namespace Unity.MP_FPS
         public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon)
         {
             Reset(ref state);
+            state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
             state.ReloadQueued=false;
             if (weapon == null) { state.WeaponEquipRemaining = 0; state.WeaponCooldown = 0; return; }
             float recovery = state.EquippedWeaponSlot == 1 ? state.PrimaryFireRecovery :
@@ -60,6 +63,43 @@ namespace Unity.MP_FPS
             }
             bool queued=state.ReloadQueued;state.ReloadQueued=false;
             return requested || queued;
+        }
+
+        // Aim controls the lens. Hip fire and ADS must both raise the halo and hands.
+        // Store one click through that windup, separately from the short cooldown buffer.
+        public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, in PlayerInput input, bool switched, float deltaTime)
+        {
+            bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
+            bool blocked = input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
+            if (blocked)
+            {
+                Reset(ref state);
+                state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
+                return false;
+            }
+            if (!halo) return TryFire(ref state, weapon, input.Shoot, input.Aim, switched);
+
+            float step = Mathf.Max(0, deltaTime);
+            bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
+            if (input.Aim || input.FireHeld || input.Shoot || state.BurstRemaining > 0)
+                state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
+            else state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
+
+            bool reloadEnding = state.ControllerState.IsReloadingState && state.ReloadTimer <= InputBufferSeconds;
+            if (!wasReady && input.Shoot && (!state.ControllerState.IsReloadingState || reloadEnding) &&
+                (state.CurrentAmmo > 0 || reloadEnding))
+                state.HaloPendingShot = true;
+            bool raised = input.Aim || state.HipFireHoldRemaining > 0 || state.HaloPendingShot;
+            state.WeaponRaiseProgress = Mathf.MoveTowards(state.WeaponRaiseProgress, raised ? 1 : 0,
+                step / ((raised ? DollSingerHaloAim.RaiseSeconds : DollSingerHaloAim.LowerSeconds) * RaidHealth.HandlingMultiplier(state)));
+            if (state.ControllerState.IsReloadingState && !reloadEnding) state.HaloPendingShot = false;
+            if (state.WeaponRaiseProgress < 1f - .00001f || state.WeaponEquipRemaining > 0) return false;
+
+            bool trigger = input.Shoot || state.HaloPendingShot;
+            state.HaloPendingShot = false;
+            bool fired = TryFire(ref state, weapon, trigger, true, false);
+            if (fired) state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
+            return fired;
         }
 
         public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, bool trigger, bool aiming, bool switched)
