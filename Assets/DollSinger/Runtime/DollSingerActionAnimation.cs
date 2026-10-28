@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.DollSinger
 {
-    public enum HandAction { None, Search, Eat, Drink, Inject, Treat }
+    public enum HandAction { None, Search, Eat, Drink, Inject, Treat, RefillOxygen }
 
     /// <summary>Authored motions retargeted offline to each production skeleton.</summary>
     public sealed class DollSingerActionAnimation

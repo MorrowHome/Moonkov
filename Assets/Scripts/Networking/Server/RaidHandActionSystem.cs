@@ -91,11 +91,13 @@ namespace Unity.MP_FPS
             if (supply)
             {
                 var definition = ConsumableCatalog.Get(code);
+                if (definition?.Oxygen > 0) return HandAction.RefillOxygen;
                 return definition?.Food == true ? HandAction.Eat : definition?.Hydration > 0 ? HandAction.Drink : HandAction.Treat;
             }
             return code == "medkit" || code == "vitality_shot" || code == "stamina_shot" || code == "antidote_shot" ? HandAction.Inject : HandAction.Treat;
         }
-        private static float UseSeconds(string code) => ConsumableCatalog.Get(code)?.Food == true ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+        private static float UseSeconds(string code) => ConsumableCatalog.Get(code)?.Oxygen > 0 ? RaidOxygenConsumables.UseSeconds :
+            ConsumableCatalog.Get(code)?.Food == true ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
         public static void Publish(ref PredictedPlayerGhost health, HandAction action, string code, float remaining, float duration)
         {
             if (remaining <= 0 || duration <= 0) action = HandAction.None;

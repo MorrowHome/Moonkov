@@ -18,7 +18,7 @@ public static class SurvivalActionChecks {
  var anatomy=new System.Collections.Generic.List<object>();
  foreach(var code in new[]{"ration","energy_gel","protein_bar","alien_raw_meat"})Check(RaidHandActionSystem.Kind(code,true)==HandAction.Eat,"Food classification: "+code);
  foreach(var code in new[]{"water","electrolyte"})Check(RaidHandActionSystem.Kind(code,true)==HandAction.Drink,"Drink classification");
- foreach(var code in new[]{"oxygen_canister","oxygen_reserve"})Check(RaidHandActionSystem.Kind(code,true)==HandAction.Treat,"Oxygen is not a drink");
+ foreach(var code in new[]{"oxygen_canister","oxygen_reserve"})Check(RaidHandActionSystem.Kind(code,true)==HandAction.RefillOxygen,"Oxygen uses a dedicated refill take");
  foreach(var code in new[]{"medkit","vitality_shot","stamina_shot","antidote_shot"})Check(RaidHandActionSystem.Kind(code,false)==HandAction.Inject,"Injector classification");
  var sequence=new PredictedPlayerGhost(); RaidHandActionSystem.Publish(ref sequence,HandAction.Eat,"ration",3,3);uint first=sequence.HandActionSequence;
  RaidHandActionSystem.Publish(ref sequence,HandAction.Eat,"ration",2.9f,3);Check(sequence.HandActionSequence==first,"Refresh restarted action");

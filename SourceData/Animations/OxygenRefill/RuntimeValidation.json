@@ -1,0 +1,42 @@
+{
+  "sourceSha256": "06428b7c68ed2d7d65a79093fb58369cee828729d6aa4aeb99d8538852fb8710",
+  "savedPoseMaxErrorMm": 0.00041729903116644756,
+  "motions": [
+    {
+      "rig": "DollSinger",
+      "code": "oxygen_canister",
+      "minimumFingerAxisClearanceMm": 5.102183667842146,
+      "maximumWristDegrees": 45.32172023761961
+    },
+    {
+      "rig": "DollSinger",
+      "code": "oxygen_reserve",
+      "minimumFingerAxisClearanceMm": 5.1027763868152425,
+      "maximumWristDegrees": 48.31257128270898
+    },
+    {
+      "rig": "HatsuneMiku",
+      "code": "oxygen_canister",
+      "minimumFingerAxisClearanceMm": 3.2326147673695447,
+      "maximumWristDegrees": 58.38407453467548
+    },
+    {
+      "rig": "HatsuneMiku",
+      "code": "oxygen_reserve",
+      "minimumFingerAxisClearanceMm": 3.222597557220333,
+      "maximumWristDegrees": 62.370152443727406
+    },
+    {
+      "rig": "Shian",
+      "code": "oxygen_canister",
+      "minimumFingerAxisClearanceMm": 6.999970008455196,
+      "maximumWristDegrees": 55.99340245723888
+    },
+    {
+      "rig": "Shian",
+      "code": "oxygen_reserve",
+      "minimumFingerAxisClearanceMm": 6.999978006433503,
+      "maximumWristDegrees": 61.330228821836286
+    }
+  ]
+}

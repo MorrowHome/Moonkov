@@ -67,9 +67,9 @@ for rig_name in ('DollSinger','HatsuneMiku','Shian'):
  if rig_name not in selected:continue
  r=Rig(json.loads((ROOT/f'Tools/Blender/{rig_name}Bind.json').read_text()));solver=Retargeter(SR,r);names=solver.arm_tracks;scale=solver.scale;chest=r.p['上半身2'];schest=SR.p['上半身2'];cal=next(x for x in CAL['rigs'] if x['rig']==rig_name);geometry=next(x for x in GEO['rigs'] if x['rig']==rig_name);spad=GEO['rigs'][0]['palmPad'];pad=geometry['palmPad'];map_point=lambda p:add(chest,mul(sub(p,schest),scale));output=[]
  existing=json.loads((ROOT/f'Assets/Resources/Moonkov/Actions/{rig_name}.json').read_text());oldnames=existing['bones']
- # Preserve unrelated treatment references. They are not regenerated from the old fitter.
+ # Preserve treatment references and independently authored oxygen takes.
  for old in existing['motions']:
-  if old['action']!='Treat':continue
+  if old['action'] not in ('Treat','RefillOxygen'):continue
   m=copy.deepcopy(old);m['rotations']=[v for f in range(m['frames']) for n in names for v in old['rotations'][(f*len(oldnames)+oldnames.index(n))*4:(f*len(oldnames)+oldnames.index(n)+1)*4]];output.append(m)
  entries=[{'code':'','action':'Search'}]+[p for p in GEO['props'] if p['action'] in ('Eat','Drink','Inject')];groups={}
  for item in entries:

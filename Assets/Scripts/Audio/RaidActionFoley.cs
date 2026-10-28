@@ -32,13 +32,14 @@ namespace Unity.MP_FPS
             }
             if (Crossed(1, openMarker>0?openMarker:.08f))
             {
-                var sound = kind == HandAction.Inject ? library.InjectorCap :
+                var sound = kind == HandAction.RefillOxygen ? library.Equipment : kind == HandAction.Inject ? library.InjectorCap :
                     kind == HandAction.Drink && code == "water" ? library.BottleOpen :
                     kind == HandAction.Eat && !code.StartsWith("alien_", System.StringComparison.Ordinal) ||
                     kind == HandAction.Drink || kind == HandAction.Treat && code != "oxygen_canister" && code != "oxygen_reserve" ? library.PacketOpen : null;
                 openSound = MoonkovAudio.PlayWeaponLayer(sound, position, 1, owner ? 0 : 1);
             }
             if(kind==HandAction.Drink&&code=="water"&&Crossed(4,.74f))closeSound=MoonkovAudio.PlayWeaponLayer(library.BottleOpen,position,1,owner?0:1);
+            if(kind==HandAction.RefillOxygen&&Crossed(4,.82f))closeSound=MoonkovAudio.PlayWeaponLayer(library.Equipment,position,.7f,owner?0:1);
             if (Crossed(2, Mathf.Clamp(contact, .28f, .72f)))
             {
                 var sound = kind == HandAction.Eat ? library.EatBite : kind == HandAction.Drink ? library.DrinkSip :
