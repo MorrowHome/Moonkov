@@ -15,6 +15,22 @@ parser.add_argument('--scale', type=int, default=8)
 parser.add_argument('--tiles', type=int, default=8)
 parser.add_argument('--samples', type=int, default=128)
 args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+# Optional production scheduling policy: keep sample density while avoiding
+# many tiny GPU submissions. Existing checkpoints retain their actual tile count.
+policy_path = PROJECT / 'LocalData/SourceFidelity20261028/World/TileExecutionPolicy.json'
+if policy_path.exists():
+    policy = json.loads(policy_path.read_text())
+    if args.atlas >= policy['minimumAtlas'] and args.scale <= 2:
+        world = json.loads((policy_path.parent / 'PreparedWorld.json').read_text())
+        side = next(a['size'] for a in world['atlases'] if a['id'] == args.atlas)
+        target = policy['targetBakeSide']
+        if target < 1024 or target > 4096:
+            raise ValueError('Tile scheduling target outside supported bounds')
+        tiles = 1
+        while (side // tiles + 16) * args.scale > target and tiles < 16:
+            tiles *= 2
+        args.tiles = tiles
+        print('TILED_EXECUTION_POLICY', args.atlas, 'tiles', tiles, 'scale', args.scale, flush=True)
 if not (1 <= args.scale <= 16 and 1 <= args.tiles <= 16 and args.samples > 0):
     raise ValueError('Invalid scale, tile count or sample count')
 
