@@ -288,6 +288,9 @@ namespace Unity.MP_FPS.DollSinger
                 // arm-only camera would reveal the open shoulder cutouts.
                 var offset = injecting ? new Vector3(0, 0, .01f) : new Vector3(0, -.08f, -.14f);
                 Camera.transform.localPosition = offset * weight;
+                // Miku injects the exposed upper arm; the stock eye can enter the
+                // raised palm. Lift only this cosmetic lens, keeping the body connected.
+                if (injecting && injectionPitch > 60) Camera.transform.position += bodyUp * (.16f * weight);
             }
         }
 

@@ -11,7 +11,7 @@
 
 动作先裁掉 150 毫秒的准备段。该段的右臂几乎完全伸直，会使肘部平面退化。最终动作在正式角色的 Blender 源中重做。保留源动作作为参考，按实际针筒、手部骨长和裸露前臂重新处理路径、握持、针帽与接触。
 
-正式制作源是 `ArtSource/DollSinger/SurvivalActions.blend`。源文件和检查方法见 [生存动作](../../../Docs/Development/SurvivalActions.md)。新源尚未回灌 Unity。
+正式制作源是 `ArtSource/DollSinger/SurvivalActions.blend`。已通过第二版运行时动作库接入 Unity。源文件和检查方法见 [生存动作](../../../Docs/Development/SurvivalActions.md)。不要重跑下方旧原型流程覆盖它。
 
 以下是旧原型的研究流程，不能用于覆盖新 Blender 源：
 
