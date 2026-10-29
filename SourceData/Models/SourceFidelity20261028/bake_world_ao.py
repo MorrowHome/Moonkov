@@ -2,18 +2,16 @@
 Global AO sees the full prepared world. Local AO keeps original instances separate.
 Only AO-tagged texels update the red statistics channel; measured variance stays intact.
 """
-import bpy,pathlib,json,time,numpy as np,zlib,struct
+import bpy,pathlib,json,time,numpy as np,zlib,struct,sys
 ROOT=pathlib.Path(__file__).resolve().parent;PROJECT=ROOT.parents[2];WORK=PROJECT/'LocalData/SourceFidelity20261028/World';BAKES=WORK/'Bakes'
+sys.path.insert(0,str(ROOT))
+from cycles_device import configure_cycles_device
 ir=json.loads((ROOT/'MaterialIR/MaterialIR.json').read_text());compiled=json.loads((ROOT/'MaterialIR/CompiledMaterials.json').read_text());ids={r['id']:r['name'] for r in compiled['materials']}
 ao_by_id={i:next(n for n in ir['materials'][name]['nodes'] if n['type']=='AMBIENT_OCCLUSION') for i,name in ids.items() if any(n['type']=='AMBIENT_OCCLUSION' for n in ir['materials'][name]['nodes'])}
 local_ids={i for i,n in ao_by_id.items() if n['only_local']};global_ids=set(ao_by_id)-local_ids
 world=json.loads((WORK/'PreparedWorld.json').read_text());stage=next(s for s in bpy.data.scenes if s.name.startswith('SourceWorldStatic'));bpy.context.window.scene=stage
-stage.render.engine='CYCLES';stage.cycles.samples=1;stage.cycles.device='CPU';stage.render.threads_mode='FIXED';stage.render.threads=4
-try:
- prefs=bpy.context.preferences.addons['cycles'].preferences;prefs.compute_device_type='METAL';prefs.refresh_devices()
- for d in prefs.devices:d.use=d.type=='METAL'
- if any(d.use for d in prefs.devices):stage.cycles.device='GPU'
-except Exception:pass
+stage.render.engine='CYCLES';stage.cycles.samples=1;stage.render.threads_mode='AUTO'
+configure_cycles_device(stage)
 
 def png(path,array):
  h,w,_=array.shape;rows=np.empty((h,w*4+1),dtype=np.uint8);rows[:,0]=0;rows[:,1:]=array[::-1].reshape(h,-1)
