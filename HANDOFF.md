@@ -28,6 +28,8 @@
 
 ## 整图静态外观还原（Windows，未完成）
 
+- 用户开始游戏，已明确暂停重任务并保存检查点。本任务 Python 队列和 Blender 均已退出，自动唤醒为 PAUSED，不自动恢复。AO、材质解析、完整几何均保留；光照 atlas0–15 完成，atlas16 的 0–3 块完成，共 4/16。设置和恢复入口在 `LocalData/SourceFidelity20261028/V11L14IntegrationStage/GamingPauseCheckpoint.json`。用户要求继续后再启动原 `run_full_lighting_integration.py`，保留 `TileExecutionPolicy.json` 和 helper，按原哈希跳过已完成图集/图块。正式场景仍未安装。
+
 - 用户指出 GPU 未满载。普通 x1/x2 图集原先固定 64 块，CPU 降噪与文件处理频繁插在 GPU 调用之间。已为尚未开始的 atlas≥16 加 `TileExecutionPolicy.json`：目标块边长上限 2200，按尺寸选择 1/2/4/8/16 的分块数，128 samples 与离线密度不变；典型 4096/x2 从 64 块变为 16 块。室内 x8 不变，正在运行的 atlas15 不中断，旧图块不重算。策略写入实际 checkpoint 配置；后续复跑需保留该策略。这里只通过语法与四组分块算术检查，吞吐提升尚待实际日志确认，不能宣称 GPU 已满载。
 
 - 用户再次明确尚未开始游戏，要求立即恢复满速，把新版整图光照烘焙完并安装正式场景。此指令优先于此前限载和候选阶段等待。独立隐藏队列为 `LocalData/SourceFidelity20261028/run_full_lighting_integration.py`，工作根仍是 `V11L14IntegrationStage`，状态 `FullLightingQueue.json`。顺序为真实源 AO、解析原材质、30 图集分块光照、当前源反射和包围盒。128 samples，室内 density≥16 用 x8、普通建筑 x2、远景地形 x1，运行时尺寸保持。重任务串行、OptiX、AboveNormal；当前正确进程不要重启。临时统计占位图只为 AO 输入，最终必须由实测统计覆盖，不能直接导入占位图。空间不足 4 GiB 会停在断点，不删除旧成果。整个队列结束仍须实际 Unity 导入、角色 SH 和正式场景检查，不算自动交付。
