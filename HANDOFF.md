@@ -28,6 +28,10 @@
 
 ## 整图静态外观还原（Windows，未完成）
 
+- 用户指出 GPU 未满载。普通 x1/x2 图集原先固定 64 块，CPU 降噪与文件处理频繁插在 GPU 调用之间。已为尚未开始的 atlas≥16 加 `TileExecutionPolicy.json`：目标块边长上限 2200，按尺寸选择 1/2/4/8/16 的分块数，128 samples 与离线密度不变；典型 4096/x2 从 64 块变为 16 块。室内 x8 不变，正在运行的 atlas15 不中断，旧图块不重算。策略写入实际 checkpoint 配置；后续复跑需保留该策略。这里只通过语法与四组分块算术检查，吞吐提升尚待实际日志确认，不能宣称 GPU 已满载。
+
+- 用户再次明确尚未开始游戏，要求立即恢复满速，把新版整图光照烘焙完并安装正式场景。此指令优先于此前限载和候选阶段等待。独立隐藏队列为 `LocalData/SourceFidelity20261028/run_full_lighting_integration.py`，工作根仍是 `V11L14IntegrationStage`，状态 `FullLightingQueue.json`。顺序为真实源 AO、解析原材质、30 图集分块光照、当前源反射和包围盒。128 samples，室内 density≥16 用 x8、普通建筑 x2、远景地形 x1，运行时尺寸保持。重任务串行、OptiX、AboveNormal；当前正确进程不要重启。临时统计占位图只为 AO 输入，最终必须由实测统计覆盖，不能直接导入占位图。空间不足 4 GiB 会停在断点，不删除旧成果。整个队列结束仍须实际 Unity 导入、角色 SH 和正式场景检查，不算自动交付。
+
 - 新镜像的 30 图集几何和 UV 已全部准备并导出。材质绑定版本 1、灯传输版本 1、源 SHA 均匹配隔离候选。导出 3359 块，4454864 个运行时三角形；原有修复器去掉 10770 个零面积三角形并修复 38 个未定义法线。结果仍在 `V11L14IntegrationStage`，未改正式 Assets，不能称正式安装。后续 AO 脚本已接统一 `cycles_device`，Windows 不再尝试 Metal 后静默退回 CPU；无 GPU 会报错，CPU 只允许显式覆盖。此处只做语法检查，尚未运行新整图 AO。
 
 - 用户醒后要求优先完整地图接入，停止围绕单面反复试验。已通过 Unity Pipeline 连接用户打开的图形 Editor，并打开正式场景，没有另开 Editor。场景仍无 `Source World Static`，尚未安装。现于独立 `LocalData/SourceFidelity20261028/V11L14IntegrationStage` 准备完整 30 图集几何和 UV，使用已修复的材质绑定与灯关联代码。状态看 `GeometryPreparationQueue.json`，日志看 `PrepareFullGeometry.log`。已安排隐藏串行导出队列：等待完整准备标记，通过源 SHA、30 图集及两个版本字段核对后，自动执行二进制导出和原有退化三角修复；结果看 `GeometryExportQueue.json` 与 `ExportFullGeometry.log`。这两步不烘焙、不改正式 Assets；不要重复启动，也不要续用旧缺材质版本的 2/30 缓存。
