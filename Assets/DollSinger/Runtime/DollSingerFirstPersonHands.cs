@@ -12,7 +12,8 @@ namespace Unity.MP_FPS.DollSinger
         public Camera Camera { get; }
         public Mesh BodyWithoutArms { get; }
         public bool Active { get; private set; }
-        public bool HideOwnerBody => Active;
+        public bool HideOwnerBody => Active && (!actionMode || actionIncludesBody);
+        private bool actionMode, actionIncludesBody;
         private readonly SkinnedMeshRenderer renderer;
         private readonly SkinnedMeshRenderer source;
         private readonly Mesh armMesh;
@@ -120,6 +121,7 @@ namespace Unity.MP_FPS.DollSinger
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0, bool includeBody = false)
         {
             if (!Camera) return;
+            actionMode = false;
             var mesh = includeBody ? actionBodyMesh : armMesh;
             if (renderer.sharedMesh != mesh) renderer.sharedMesh = mesh;
             if (meleeMode) reframe = true;
@@ -264,17 +266,24 @@ namespace Unity.MP_FPS.DollSinger
             Camera.transform.localPosition = offset * Mathf.SmoothStep(0, 1, blend);
         }
 
-        public void PresentAction(bool active, Camera owner, float blend, bool injecting, float injectionPitch)
+        public void PresentAction(bool active, Camera owner, float blend, bool injecting, float injectionPitch, Vector3 bodyUp)
         {
             float weight = Mathf.SmoothStep(0, 1, blend);
-            Present(active, injecting ? Mathf.Lerp(65, injectionPitch > 60 ? 85 : 75, weight) : 65, owner, false, blend, 0, injecting);
+            Present(active, injecting ? Mathf.Lerp(65, injectionPitch > 60 ? 95 : 75, weight) : 65, owner, false, blend, 0, injecting);
+            actionMode = true;
+            actionIncludesBody = injecting;
             meleeMode = true;
             // Use the existing stable aiming perspective. Contact belongs to
             // the offline pose, never to camera distortion or wrist IK.
             if (Camera)
             {
                 Camera.ResetProjectionMatrix();
-                Camera.transform.localRotation = injecting ? Quaternion.Slerp(Quaternion.identity, Quaternion.Euler(injectionPitch, 0, 0), weight) : Quaternion.identity;
+                // Measure the calibrated pitch from the body horizon, rather than
+                // adding it to the player's look. World camera and aim never turn.
+                Vector3 forward = Vector3.ProjectOnPlane(owner.transform.forward, bodyUp);
+                if (forward.sqrMagnitude < .001f) forward = Vector3.ProjectOnPlane(owner.transform.up, bodyUp);
+                Quaternion target = Quaternion.LookRotation(forward.normalized, bodyUp) * Quaternion.Euler(injectionPitch, 0, 0);
+                Camera.transform.rotation = injecting ? Quaternion.Slerp(owner.transform.rotation, target, weight) : owner.transform.rotation;
                 // Injection shows the connected body from the eye. A backwards
                 // arm-only camera would reveal the open shoulder cutouts.
                 var offset = injecting ? new Vector3(0, 0, .01f) : new Vector3(0, -.08f, -.14f);

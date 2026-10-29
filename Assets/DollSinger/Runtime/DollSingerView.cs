@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 namespace Unity.MP_FPS.DollSinger
@@ -127,7 +128,8 @@ public class DollSingerView : MonoBehaviour
         actionHandsActive = active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled;
         // One fixed perspective for the entire action, including the held prop.
         // Re-fitting animated hand bounds would make the prop breathe in size.
-        gestureHands?.PresentAction(actionHandsActive, camera, blend, injecting, ActionInjectionPitch);
+        gestureHands?.PresentAction(actionHandsActive, camera, blend, injecting, ActionInjectionPitch,
+            player ? player.transform.up : Vector3.up);
     }
 
     // Finish raising the gesture before zooming. Reverse the same timeline
@@ -184,6 +186,7 @@ public class DollSingerView : MonoBehaviour
     private DollSingerThirdPersonCamera thirdPersonRig;
 
     private const string HairMaterialName = "Hair";
+    private static int? firstPersonIgnoredLayers;
     // "Hair" is the scalp/bangs/side-hair submesh only. The twin-tails are skinned to the
     // shuangmawei bones and live in the DressDetail/InnerDress submeshes, so hiding this
     // submesh clears the view without losing the tails behind the camera.
@@ -502,8 +505,16 @@ public class DollSingerView : MonoBehaviour
         Quaternion look = transform.rotation;
         if (firstPerson && movement) look *= Quaternion.Euler(0, 0, movement.LeanRoll);
         // Only visible surfaces near the eye/near plane constrain the viewpoint.
-        return torsoClearance != null ? torsoClearance.KeepAboveTorso(eye, up,
+        eye = torsoClearance != null ? torsoClearance.KeepAboveTorso(eye, up,
             firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f, look, !GestureHandsActive) : eye;
+        if (!firstPerson) return eye;
+        // The controller protects the body axis, but the animated eye and look-down
+        // offset can extend beyond it. Sweep from that axis before rendering the world.
+        Vector3 origin = player.transform.position + up * Vector3.Dot(eye - player.transform.position, up);
+        int ignoredLayers = firstPersonIgnoredLayers ??= LayerMask.GetMask("ServerPlayer", "ClientPlayer", "FirstPersonOverlay");
+        return DollSingerEyeClearance.Constrain(player.scene.GetPhysicsScene(), origin, eye, player.transform.root,
+            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f,
+            cameraObstacleLayers & ~ignoredLayers);
     }
 
     /// <summary>
