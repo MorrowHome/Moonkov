@@ -52,6 +52,7 @@ namespace Unity.MP_FPS.UI
             {
                 m_LocalPlayerQuery = m_EntityManager.CreateEntityQuery(
                     ComponentType.ReadOnly<PredictedPlayerGhost>(),
+                    ComponentType.ReadOnly<LocalTransform>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>()
                 );
                 m_ClashQuery = m_EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
@@ -105,9 +106,9 @@ namespace Unity.MP_FPS.UI
                 RespawnCamera.gameObject.SetActive(!alive);
                 if (alive)
                 {
-                    var player = m_LocalPlayerQuery.GetSingletonEntity();
-                    if (m_EntityManager.HasComponent<LocalTransform>(player))
-                    { m_LastRaidPosition = m_EntityManager.GetComponentData<LocalTransform>(player).Position; m_HasLastRaidPosition = true; }
+                    // Typed singleton reads respect the enabled local-owner filter.
+                    m_LastRaidPosition = m_LocalPlayerQuery.GetSingleton<LocalTransform>().Position;
+                    m_HasLastRaidPosition = true;
                 }
                 if (!alive)
                 {
