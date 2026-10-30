@@ -162,7 +162,10 @@ namespace Unity.MP_FPS
                         var health=SystemAPI.GetComponentRW<PredictedPlayerGhost>(actor.Entity);
                         EnergyShieldEquipment.Flush(ref health.ValueRW,actor.Inventory);
                     }
-                    LootContainers(ref state).Drop(actor.Inventory, position, rotation, GameSettings.DollSingerCharacterIndex, SystemAPI.Time.ElapsedTime);
+                    int characterIndex = SystemAPI.HasComponent<DollSingerEnemy>(actor.Entity)
+                        ? GameSettings.NormalizeCharacterIndex(SystemAPI.GetComponent<DollSingerEnemy>(actor.Entity).CharacterIndex)
+                        : GameSettings.DollSingerCharacterIndex;
+                    LootContainers(ref state).Drop(actor.Inventory, position, rotation, characterIndex, SystemAPI.Time.ElapsedTime);
                 }
                 ecb.DestroyEntity(actor.Entity);
             }

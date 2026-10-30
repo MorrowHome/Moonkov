@@ -1,5 +1,11 @@
 # DollSinger PMC raid actors
 
+2026-10-31。普通战局与赏金模式的 PMC 共用洛天依、初音未来、诗岸三种正式角色预制体。每组三名打乱顺序，各用一次；角色不固定绑定 AI 性格。地图缺少某个角色时，只从可用角色中选择；没有可用角色时不生成。
+
+角色编号只保存在服务端 PMC 组件中。普通死亡与赏金最终死亡都将该编号写入尸体记录，使尸体和装备预览对应生前角色。没有新增 Ghost 字段或改变玩家选角。
+
+单 Editor 编译与 105 项角色轮换检查通过。覆盖每组三种角色、打乱顺序、地图重置和全部缺失预制体组合。未进入 Play；实际生成、交火和尸体观感尚未试玩。
+
 The DollSinger actors are independent raiders with supplies, finite ammunition
 and an extraction objective. They use the same player ghost, movement controller,
 weapon cooldowns, reload cost, ballistics, health and death inventory as humans.

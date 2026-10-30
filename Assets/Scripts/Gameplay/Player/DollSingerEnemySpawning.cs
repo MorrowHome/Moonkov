@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         private readonly List<Vector3> m_SpawnExitSamples = new List<Vector3>(RaidExtractionRules.MaxExits);
         private readonly NavMeshPath m_SpawnPath = new NavMeshPath();
         private Unity.Mathematics.Random m_SpawnRandom;
+        private readonly PmcCharacterRoster m_Characters = new PmcCharacterRoster();
         private bool m_PopulationStarted;
         private int m_InitialRemaining, m_ReinforcementsRemaining, m_SpawnSerial;
         private double m_PopulationStartedAt, m_NextPopulationCheck, m_NextInitialAttempt, m_NextReinforcement;
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS
         private void ResetPopulation()
         {
             m_PopulationStarted = false;
+            m_Characters.Reset();
             m_InitialRemaining = m_ReinforcementsRemaining = m_SpawnSerial = 0;
             m_PopulationStartedAt = m_NextPopulationCheck = m_NextInitialAttempt = m_NextReinforcement = 0;
             m_NextBuild = m_NextTargets = 0;
@@ -119,14 +121,15 @@ namespace Unity.MP_FPS
 
         private int SpawnBatch(MoonRaidMap map, int count, double now)
         {
-            var prefab = SystemAPI.GetSingleton<PlayerEntityPrefabs>().DollSingerEntityPrefab;
-            if (prefab == Entity.Null || WeaponManager.Instance?.WeaponRegistry == null) return 0;
+            var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
+            if (WeaponManager.Instance?.WeaponRegistry == null) return 0;
             UnityEngine.Physics.SyncTransforms();
             int spawned = 0;
             for (int i = 0; i < count; i++)
             {
                 if (!TryChooseSpawn(map, out var position)) break;
-                SpawnActor(map, prefab, position, now);
+                if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out int characterIndex)) break;
+                SpawnActor(map, prefab, position, now, characterIndex);
                 // Reserve immediately: the new ghost's GameObject does not exist until the bridge updates.
                 m_SpawnObservers.Add(new RaidSpawnObserver { Position = position, CheckVisibility = false });
                 spawned++;
@@ -237,7 +240,7 @@ namespace Unity.MP_FPS
             return chosen;
         }
 
-        private Entity SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now, ClashBotSpawnRequest? clash = null)
+        private Entity SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now, int characterIndex, ClashBotSpawnRequest? clash = null)
         {
             var player = EntityManager.Instantiate(prefab);
             var input = EntityManager.CreateEntity(typeof(PredictedClientInput));
@@ -266,7 +269,7 @@ namespace Unity.MP_FPS
             EntityManager.AddComponentData(player, new PlayerCharacterInitialized());
             EntityManager.SetComponentEnabled<PlayerCharacterInitialized>(player, false);
             EntityManager.AddComponentData(player, new PlayerClientCommandInputLookup { ClientCommandInputEntity = input });
-            EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input });
+            EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input, CharacterIndex = characterIndex });
             var inventory = InventoryGraph.Create(stash: false);
             inventory.Equipped("Primary").LoadedAmmo = ammo;
             // A finite raid loadout; unused medicine remains in the normal death inventory.

@@ -54,6 +54,7 @@ namespace Unity.MP_FPS
                 m_NextTargets = 0;
                 m_ClashNavChecked = m_ClashNavReady = false;
                 m_SpawnRandom = new Unity.Mathematics.Random(unchecked((uint)Math.Max(1, registry.Epoch * 977 + 17)));
+                m_Characters.Reset();
             }
             if (m_ClashArena == null) m_ClashArena = BountyClashArenaSettings.Active?.Definition;
             if (m_ClashArena == null)
@@ -107,8 +108,8 @@ namespace Unity.MP_FPS
         private void SpawnClashRequests(MoonRaidMap map, ClashBotRegistry registry, double now)
         {
             if (registry.PendingSpawns.Count == 0) return;
-            var prefab = SystemAPI.GetSingleton<PlayerEntityPrefabs>().DollSingerEntityPrefab;
-            if (prefab == Entity.Null || WeaponManager.Instance?.WeaponRegistry == null) return;
+            var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
+            if (WeaponManager.Instance?.WeaponRegistry == null) return;
             foreach (var request in registry.PendingSpawns.ToArray())
             {
                 if (request.Epoch != registry.Epoch || registry.IsRegistered(request.ParticipantId)) continue;
@@ -121,7 +122,8 @@ namespace Unity.MP_FPS
                     Debug.LogError("[Clash AI] Spawn clearance rejected for participant " + request.ParticipantId + " at " + point);
                     return;
                 }
-                var entity = SpawnActor(map, prefab, point, now, request);
+                if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out int characterIndex)) return;
+                var entity = SpawnActor(map, prefab, point, now, characterIndex, request);
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 var input = EntityManager.GetComponentData<DollSingerEnemy>(entity).InputEntity;
                 if (!registry.Register(request, entity, input, brain.Inventory))

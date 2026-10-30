@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
     public struct DollSingerEnemy : IComponentData
     {
         public Entity InputEntity;
+        public int CharacterIndex;
     }
 
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -162,7 +163,7 @@ namespace Unity.MP_FPS
                     // Lethal damage may arrive after the last protection update.
                     // The actual remaining charge must follow the item into the corpse.
                     EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);
-                    DropCorpse(brain, pose.ValueRO, now);
+                    DropCorpse(brain, pose.ValueRO, now, enemy.ValueRO.CharacterIndex);
                     RetireEnemy(entity, brain);
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
                     deaths.DestroyEntity(entity);
@@ -426,7 +427,7 @@ namespace Unity.MP_FPS
 
         private static float HorizontalDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;
 
-        private void DropCorpse(DollSingerEnemyBrain brain, LocalTransform pose, double now)
+        private void DropCorpse(DollSingerEnemyBrain brain, LocalTransform pose, double now, int characterIndex)
         {
             Vector3 position = pose.Position;
             Quaternion rotation = pose.Rotation;
@@ -436,7 +437,7 @@ namespace Unity.MP_FPS
                 rotation = Quaternion.FromToRotation(Vector3.up, ground.normal) * rotation;
             }
             var loot = EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
-            loot.Drop(brain.Inventory, position, rotation, 2, now);
+            loot.Drop(brain.Inventory, position, rotation, GameSettings.NormalizeCharacterIndex(characterIndex), now);
         }
     }
 }
