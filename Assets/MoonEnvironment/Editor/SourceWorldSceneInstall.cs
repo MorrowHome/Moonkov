@@ -81,14 +81,18 @@ namespace Unity.MP_FPS.Moon.Editor
                         serialized.ApplyModifiedPropertiesWithoutUndo(); EditorUtility.SetDirty(behaviour);
                     }
                 // Retired controllers restore old renderers when disabled. Hide after that.
-                if (VisualRoots.Contains(root.name))
+                bool retainedTerrain = root.GetComponent<MoonEnvironment>() != null;
+                if (VisualRoots.Contains(root.name) || retainedTerrain)
                 {
                     foreach (var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                     {
                         if (protectedRenderers.Contains(renderer)) continue;
-                        renderer.forceRenderingOff = true; renderer.enabled = false; renderer.sharedMaterials = Array.Empty<Material>(); EditorUtility.SetDirty(renderer);
+                        renderer.forceRenderingOff = true; renderer.enabled = false;
+                        // Keep the retained DEM and scatter assets available for collision and rollback.
+                        if (!retainedTerrain) renderer.sharedMaterials = Array.Empty<Material>();
+                        EditorUtility.SetDirty(renderer);
                         if (PrefabUtility.IsPartOfPrefabInstance(renderer)) PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
-                        var filter = renderer.GetComponent<MeshFilter>();
+                        var filter = retainedTerrain ? null : renderer.GetComponent<MeshFilter>();
                         if (filter) { filter.sharedMesh = null; EditorUtility.SetDirty(filter); if (PrefabUtility.IsPartOfPrefabInstance(filter)) PrefabUtility.RecordPrefabInstancePropertyModifications(filter); }
                     }
                     foreach (var terrain in root.GetComponentsInChildren<Terrain>(true)) { terrain.drawHeightmap = false; terrain.drawTreesAndFoliage = false; EditorUtility.SetDirty(terrain); }

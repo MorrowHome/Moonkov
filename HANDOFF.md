@@ -31,6 +31,8 @@
 
 ## 整图静态外观还原（Windows，已安装，本地提交完成）
 
+- 2026-10-30 用户发现月表重叠。安装器原先漏掉 `MoonEnvironment` 根，旧近景地形、原生 DEM 和 6000 个旧碎石渲染器仍与新版源月表同时显示。已只关闭旧层显示；原 DEM、网格、材质和碰撞保留。检查为旧地形绘制 2→0、旧碎石显示 6000→0、新源显示 3359，16126 个碰撞体及启用状态不变。原场景备份 `World/TheophilusGameScene.before-surface-visibility-fix.unity`，回执 `World/SurfaceVisibilityFix.txt`。未开新局、未截图或重烘。
+
 - 本次地图任务明确只做小步本地提交，禁止自动推送；此范围指令优先于通用推送约定。一次误启动的 `git push origin develop` 已于北京时间 2026-10-30 11:38:50 停止，退出码 -1。LFS 日志末行为 1/1008、403 MB；远端 develop 经 `ls-remote` 实查仍为 `35aeb991`，分支未更新。未回滚或改写历史，禁止重试。自动唤醒 `blender-unity` 已删除。详情见 `World/PushCancellationReceipt.json`。
 
 - 正式离线行走暴露旧 `RespawnScreen` 的 enableable 查询异常，基线为 `72dd505d`，并非新版几何改动。已独立提交 `1658dad5`：查询直接读取本地角色 `LocalTransform`，保留启用状态过滤，不分配逐帧临时数组。当前 Editor 编译及本地归属、禁用排除、归属切换三项 ECS 定向检查通过。没有再开第二局，也未替并行交互任务运行被拒检查。正式安装资源提交为 `6798052a`，保存后重开校验修正为 `aeee1857`。
