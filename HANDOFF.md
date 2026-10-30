@@ -31,6 +31,8 @@
 
 ## 整图静态外观还原（Windows，已安装，本地提交完成）
 
+- URP 反射图集警告不能只看日志尾部。已有历史堆栈同时含 SceneView 和 Game 渲染栈，尚未定位到具体玩法相机。当前 458 张反射均为 512／BC6H／10 mip，457 个非零重要性探针，无缺图。此版本 URP 为每个 512 面分配 2048 基块和七级 mip，64 个需要约 3.58 亿图素，超过本机 16384² 图集约 2.68 亿图素；不能靠面尺寸直觉估容量。原反射、分辨率和布局保持，未采用临时 20 探针选择实验。一次有界 Game 观察未取得有效帧回执，已清理临时相机、恢复 457 探针和全局光照状态；不能称 Game 问题已解决。证据见 `World/ReflectionAtlasDiagnostic.json`。
+
 - 2026-10-30 用户发现月表重叠。安装器原先漏掉 `MoonEnvironment` 根，旧近景地形、原生 DEM 和 6000 个旧碎石渲染器仍与新版源月表同时显示。已只关闭旧层显示；原 DEM、网格、材质和碰撞保留。检查为旧地形绘制 2→0、旧碎石显示 6000→0、新源显示 3359，16126 个碰撞体及启用状态不变。原场景备份 `World/TheophilusGameScene.before-surface-visibility-fix.unity`，回执 `World/SurfaceVisibilityFix.txt`。未开新局、未截图或重烘。
 
 - 本次地图任务明确只做小步本地提交，禁止自动推送；此范围指令优先于通用推送约定。一次误启动的 `git push origin develop` 已于北京时间 2026-10-30 11:38:50 停止，退出码 -1。LFS 日志末行为 1/1008、403 MB；远端 develop 经 `ls-remote` 实查仍为 `35aeb991`，分支未更新。未回滚或改写历史，禁止重试。自动唤醒 `blender-unity` 已删除。详情见 `World/PushCancellationReceipt.json`。
