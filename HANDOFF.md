@@ -29,7 +29,9 @@
 - 源文件 6 组交互物件几何检查通过。724 帧骨架往返与 52 帧蒙皮抽查通过，接触压缩最多约 2.2 毫米。源检查见 `BlenderValidation.json`。Unity 接入完成 2495 项编辑检查、174 项服务端检查和 175 项实际播放检查。包含启用的瞄准组件、保存骨旋转、三套蒙皮、真实音源、重复快照、相机和清理。针尖距实际手臂表面约 1–2.5 毫米。摘要见 `SourceData/Animations/Survival/RuntimeValidation.json`。未做正式战局、联机或 Player 构建验收。
 - 运行时检查必须在指定游戏相机的 `endCameraRendering` 回调内采样。SceneView 重绘也会发出渲染回调。普通 await 恢复时可能处在 Update 与 LateUpdate 之间，不能据此判断骨架被覆盖。短音效按实际 AudioSource 播放记录检查。
 
-## 整图静态外观还原（Windows，已安装，收尾中）
+## 整图静态外观还原（Windows，已安装，本地提交完成）
+
+- 本次地图任务明确只做小步本地提交，禁止自动推送；此范围指令优先于通用推送约定。一次误启动的 `git push origin develop` 已于北京时间 2026-10-30 11:38:50 停止，退出码 -1。LFS 日志末行为 1/1008、403 MB；远端 develop 经 `ls-remote` 实查仍为 `35aeb991`，分支未更新。未回滚或改写历史，禁止重试。自动唤醒 `blender-unity` 已删除。详情见 `World/PushCancellationReceipt.json`。
 
 - 正式离线行走暴露旧 `RespawnScreen` 的 enableable 查询异常，基线为 `72dd505d`，并非新版几何改动。已独立提交 `1658dad5`：查询直接读取本地角色 `LocalTransform`，保留启用状态过滤，不分配逐帧临时数组。当前 Editor 编译及本地归属、禁用排除、归属切换三项 ECS 定向检查通过。没有再开第二局，也未替并行交互任务运行被拒检查。正式安装资源提交为 `6798052a`，保存后重开校验修正为 `aeee1857`。
 
