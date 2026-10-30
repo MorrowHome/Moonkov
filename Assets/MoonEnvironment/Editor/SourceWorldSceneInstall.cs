@@ -22,7 +22,10 @@ namespace Unity.MP_FPS.Moon.Editor
             "Theophilus_A_Start", "R35_FROM_R29_DISPLAY_ROOT", "B_CENTRAL_DESCENT_TOWER_DETAIL_R10",
             "B_RADIAL_SUPPORT_0197_DETAIL_R9", "B_WEST_TRANSFER_06_DETAIL_R6", "MC00_ROOT_Standard_YUp_Frame",
             "R29_FROM_R24_FINAL_DISPLAY_ROOT", "R36R38_FROM_R35_DISPLAY_ROOT", "R21_OPEN_SHAFT_WITH_R20_MECHANICAL_ROOT",
-            "R7_A_START_SAMPLE_SERVICE_ROOT", "R24_HERO_FINISH_DISPLAY_ROOT", "R21_RETAINED_R18_R19_ROOT"
+            "R7_A_START_SAMPLE_SERVICE_ROOT", "R24_HERO_FINISH_DISPLAY_ROOT", "R21_RETAINED_R18_R19_ROOT",
+            "MOONKOV_ENTRY_STATIC_VISUAL_ROOT", "B_RING_CONCEPT_ROOT", "B_WEST_PASSIVE_STAIR_ACCESS_R3",
+            "Theophilus Visual Pass 01", "REBUILD_R08_DISPLAY_ROOT", "REBUILD_R09_R18_DISPLAY_ROOT",
+            "REBUILD_R19_ADDITIVE_DISPLAY_ROOT", "R23_Ring01_Joint_DisplayOnly"
         };
         private static readonly HashSet<string> RetiredControllers = new HashSet<string>
         {
@@ -81,22 +84,7 @@ namespace Unity.MP_FPS.Moon.Editor
                         serialized.ApplyModifiedPropertiesWithoutUndo(); EditorUtility.SetDirty(behaviour);
                     }
                 // Retired controllers restore old renderers when disabled. Hide after that.
-                bool retainedTerrain = root.GetComponent<MoonEnvironment>() != null;
-                if (VisualRoots.Contains(root.name) || retainedTerrain)
-                {
-                    foreach (var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
-                    {
-                        if (protectedRenderers.Contains(renderer)) continue;
-                        renderer.forceRenderingOff = true; renderer.enabled = false;
-                        // Keep the retained DEM and scatter assets available for collision and rollback.
-                        if (!retainedTerrain) renderer.sharedMaterials = Array.Empty<Material>();
-                        EditorUtility.SetDirty(renderer);
-                        if (PrefabUtility.IsPartOfPrefabInstance(renderer)) PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
-                        var filter = retainedTerrain ? null : renderer.GetComponent<MeshFilter>();
-                        if (filter) { filter.sharedMesh = null; EditorUtility.SetDirty(filter); if (PrefabUtility.IsPartOfPrefabInstance(filter)) PrefabUtility.RecordPrefabInstancePropertyModifications(filter); }
-                    }
-                    foreach (var terrain in root.GetComponentsInChildren<Terrain>(true)) { terrain.drawHeightmap = false; terrain.drawTreesAndFoliage = false; EditorUtility.SetDirty(terrain); }
-                }
+                HideLegacyVisuals(root, protectedRenderers);
                 foreach (var light in root.GetComponentsInChildren<Light>(true))
                     if (light != sun) { light.enabled = false; light.cullingMask = 0; EditorUtility.SetDirty(light); }
                 foreach (var probe in root.GetComponentsInChildren<ReflectionProbe>(true)) { probe.enabled = false; EditorUtility.SetDirty(probe); }
@@ -133,12 +121,47 @@ namespace Unity.MP_FPS.Moon.Editor
             lightingSettings.FindProperty("pipeline").objectReferenceValue = pipeline;
             lightingSettings.FindProperty("adaptInteriorShadows").boolValue = false;
             lightingSettings.ApplyModifiedPropertiesWithoutUndo(); lighting.ConfigureSourceStaticLighting(data); EditorUtility.SetDirty(lighting);
-            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+            Undo.FlushUndoRecordObjects(); EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
             // Saving large lighting sub-assets can replace their managed wrappers.
             // Validate the serialized scene references after those imports complete.
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             Validate();
+        }
+        private static int HideLegacyVisuals(GameObject root, HashSet<MeshRenderer> protectedRenderers)
+        {
+            if (!VisualRoots.Contains(root.name) && !root.GetComponent<MoonEnvironment>()) return 0;
+            int changed = 0;
+            foreach (var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if (protectedRenderers.Contains(renderer) || !renderer.enabled) continue;
+                Undo.RecordObject(renderer, "Hide retained world display");
+                // Retain geometry/material references and all collision and gameplay components.
+                renderer.forceRenderingOff = true; renderer.enabled = false; EditorUtility.SetDirty(renderer); changed++;
+                if (PrefabUtility.IsPartOfPrefabInstance(renderer)) PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
+            }
+            foreach (var terrain in root.GetComponentsInChildren<Terrain>(true))
+            {
+                if (!terrain.drawHeightmap && !terrain.drawTreesAndFoliage) continue;
+                Undo.RecordObject(terrain, "Hide retained DEM display");
+                terrain.drawHeightmap = false; terrain.drawTreesAndFoliage = false; EditorUtility.SetDirty(terrain);
+                if (PrefabUtility.IsPartOfPrefabInstance(terrain)) PrefabUtility.RecordPrefabInstancePropertyModifications(terrain);
+            }
+            return changed;
+        }
+        [MenuItem("Tools/Moon Environment/Source World/Hide duplicate legacy world visuals")]
+        public static void HideDuplicateLegacyVisuals()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Preserve the current Play session.");
+            var scene = SceneManager.GetSceneByPath(ScenePath);
+            if (!scene.IsValid() || !scene.isLoaded || scene.isDirty) throw new InvalidOperationException("Open the saved formal scene first; preserve unsaved edits.");
+            if (!scene.GetRootGameObjects().Any(r => r.name == RootName)) throw new InvalidOperationException("Install the source world before retiring legacy displays.");
+            string backup = SourceWorldAssetImport.Work + "TheophilusGameScene.before-legacy-visual-fix.unity";
+            if (!File.Exists(backup)) File.Copy(ScenePath, backup);
+            var roots = scene.GetRootGameObjects(); var protectedRenderers = GameplayRenderers(roots);
+            int changed = roots.Sum(r => HideLegacyVisuals(r, protectedRenderers));
+            Undo.FlushUndoRecordObjects(); EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+            Validate(); Debug.Log("Retired legacy world displays: " + changed + "; collision, gameplay and retained assets preserved.");
         }
         private static HashSet<MeshRenderer> GameplayRenderers(GameObject[] roots)
         {
@@ -146,7 +169,7 @@ namespace Unity.MP_FPS.Moon.Editor
             foreach (var component in roots.SelectMany(r => r.GetComponentsInChildren<MonoBehaviour>(true)))
             {
                 if (!component) continue;
-                if (component.GetType().Name == "AirlockButton")
+                if (component.GetType().Name == "AirlockButton" || component.GetType().Name == "RaidMissionDevice" || component.GetType().Name == "OxygenRefillZone")
                     foreach (var renderer in component.GetComponentsInChildren<MeshRenderer>(true)) result.Add(renderer);
                 if (component.GetType().Name != "AirlockController") continue;
                 var serialized = new SerializedObject(component);
@@ -191,6 +214,12 @@ namespace Unity.MP_FPS.Moon.Editor
             if (!scene.IsValid() || !scene.isLoaded) throw new InvalidOperationException("Open the formal game scene to validate.");
             var root = scene.GetRootGameObjects().Single(r => r.name == RootName); var owner = root.GetComponent<SourceWorldLighting>();
             var geometry = SourceWorldAssetImport.Geometry; var data = owner.Data;
+            var protectedRenderers = GameplayRenderers(scene.GetRootGameObjects());
+            var legacy = scene.GetRootGameObjects().Where(r => r != root).SelectMany(r => r.GetComponentsInChildren<MeshRenderer>(true))
+                .Where(r => r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff && r.sharedMaterials.Any(m => m) && !protectedRenderers.Contains(r)).ToArray();
+            if (legacy.Length != 0) throw new InvalidOperationException("Legacy world displays still visible: " + string.Join(", ", legacy.Take(8).Select(r => r.name)));
+            if (scene.GetRootGameObjects().Where(r => r != root).SelectMany(r => r.GetComponentsInChildren<Terrain>(true)).Any(t => t.enabled && t.gameObject.activeInHierarchy && t.drawHeightmap))
+                throw new InvalidOperationException("Retained DEM is still drawing over the source world.");
             if (owner.Bindings.Length != geometry.chunks.Length || owner.Bindings.Any(b => !b.renderer || !b.renderer.sharedMaterial || !b.renderer.GetComponent<MeshFilter>().sharedMesh))
                 throw new InvalidOperationException("Incomplete formal source world bindings.");
             if (root.GetComponentsInChildren<ReflectionProbe>(true).Length != data.reflections.probes.Count(p => p.importance != 0)) throw new InvalidOperationException("Incomplete formal reflections.");
