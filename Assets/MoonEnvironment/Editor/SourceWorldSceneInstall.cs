@@ -130,7 +130,11 @@ namespace Unity.MP_FPS.Moon.Editor
             lightingSettings.FindProperty("adaptInteriorShadows").boolValue = false;
             lightingSettings.ApplyModifiedPropertiesWithoutUndo(); lighting.ConfigureSourceStaticLighting(data); EditorUtility.SetDirty(lighting);
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
-            AssetDatabase.SaveAssets(); Validate();
+            AssetDatabase.SaveAssets();
+            // Saving large lighting sub-assets can replace their managed wrappers.
+            // Validate the serialized scene references after those imports complete.
+            EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            Validate();
         }
         private static HashSet<MeshRenderer> GameplayRenderers(GameObject[] roots)
         {
