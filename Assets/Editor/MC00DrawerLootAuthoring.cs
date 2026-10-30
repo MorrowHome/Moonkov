@@ -90,6 +90,9 @@ public static class MC00DrawerLootAuthoring
         }
         if (entries.Count == 0) throw new InvalidOperationException("No reachable drawer bodies found.");
         var furniture = map.GetComponent<RaidFurnitureLoot>();
+        var supplyCaches = furniture ? furniture.Drawers.Where(d => d != null && d.SupplyCache).ToArray()
+            : Array.Empty<RaidFurnitureLoot.Drawer>();
+        entries.AddRange(supplyCaches);
         if (!furniture) furniture = Undo.AddComponent<RaidFurnitureLoot>(map.gameObject);
         var fields = new SerializedObject(furniture);
         var drawers = fields.FindProperty("m_Drawers");
@@ -101,11 +104,12 @@ public static class MC00DrawerLootAuthoring
             item.FindPropertyRelative("LocalPoint").vector3Value = entries[i].LocalPoint;
             item.FindPropertyRelative("Label").stringValue = entries[i].Label;
             item.FindPropertyRelative("Profile").enumValueIndex = (int)entries[i].Profile;
+            item.FindPropertyRelative("SupplyCache").boolValue = entries[i].SupplyCache;
         }
         fields.ApplyModifiedProperties();
         EditorSceneManager.MarkSceneDirty(map.gameObject.scene);
         EditorSceneManager.SaveScene(map.gameObject.scene);
-        Debug.Log($"MC00 drawer loot: {entries.Count}/{bodies.Length} reachable containers. Skipped: {string.Join(", ", skipped)}");
+        Debug.Log($"MC00 drawer loot: {entries.Count - supplyCaches.Length}/{bodies.Length} reachable drawers; {supplyCaches.Length} route caches preserved. Skipped: {string.Join(", ", skipped)}");
     }
 
     [MenuItem("Tools/Moonkov/Check MC00 Drawer Loot")]

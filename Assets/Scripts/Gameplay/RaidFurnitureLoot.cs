@@ -1,4 +1,5 @@
 using System;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -9,12 +10,14 @@ namespace Unity.MP_FPS
         // Separate from ordinary cache masks, corpse IDs and mission output epochs.
         public const int FirstId = 1500000000;
         private int m_WorldMask;
+        private RaidSupplyCacheVisuals m_SupplyVisuals;
         [Serializable] public sealed class Drawer
         {
             public Transform Target;
             public Vector3 LocalPoint;
             public string Label;
             public RaidLootProfile Profile = RaidLootProfile.Industrial;
+            public bool SupplyCache;
             public Vector3 Position => Target ? Target.TransformPoint(LocalPoint) : default;
         }
 
@@ -22,6 +25,12 @@ namespace Unity.MP_FPS
         public static RaidFurnitureLoot Active { get; private set; }
         public Drawer[] Drawers => m_Drawers;
         public static bool IsFurniture(int id) => id >= FirstId;
+        public static bool IsSupplyCache(int id)
+        {
+            int index = id - FirstId;
+            return Active && index >= 0 && index < Active.m_Drawers.Length && Active.m_Drawers[index] != null &&
+                Active.m_Drawers[index].SupplyCache;
+        }
         public static string NameFor(int id)
         {
             int index = id - FirstId;
@@ -32,6 +41,22 @@ namespace Unity.MP_FPS
         private void OnEnable() { m_WorldMask = LayerMask.GetMask("Default", "Ground"); Active = this; }
         private void OnDisable() { if (Active == this) Active = null; }
 
+        private void Start()
+        {
+            if (!ClientServerBootstrap.HasClientWorlds || !Array.Exists(m_Drawers, d => d != null && d.SupplyCache)) return;
+            m_SupplyVisuals = new RaidSupplyCacheVisuals(Shader.Find("Universal Render Pipeline/Lit"), m_Drawers.Length);
+            for (int i = 0; i < m_Drawers.Length; i++)
+            {
+                var drawer = m_Drawers[i];
+                if (drawer == null || !drawer.SupplyCache || !drawer.Target) continue;
+                // These one-shot scene containers do not use the ordinary-cache stock bitmask.
+                var visual = m_SupplyVisuals.Create(drawer.Target, drawer.Position, i, showInventoryIndicator: false);
+                visual.transform.rotation = drawer.Target.rotation;
+            }
+        }
+
+        private void OnDestroy() { m_SupplyVisuals?.Dispose(); }
+
         public void Initialize(RaidLootContainers caches)
         {
             for (int i = 0; i < m_Drawers.Length; i++)
@@ -40,7 +65,8 @@ namespace Unity.MP_FPS
                 if (drawer == null || !drawer.Target) continue;
                 int id = FirstId + i;
                 if (caches.Containers.ContainsKey(id)) continue;
-                caches.Containers.Add(id, RaidLootTable.CreateDrawer(drawer.Profile, caches.LootRandom));
+                caches.Containers.Add(id, drawer.SupplyCache ? RaidLootTable.Create(drawer.Profile, caches.LootRandom) :
+                    RaidLootTable.CreateDrawer(drawer.Profile, caches.LootRandom));
                 caches.FurnitureCaches.Add(id, drawer.Position);
             }
         }

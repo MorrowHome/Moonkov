@@ -83,7 +83,7 @@ namespace Unity.MP_FPS
             m_Indicator = light.Build("Raid supply cache / shared status inset");
         }
 
-        public GameObject Create(Transform parent, Vector3 position, int index)
+        public GameObject Create(Transform parent, Vector3 position, int index, bool showInventoryIndicator = true)
         {
             var root = new GameObject("Supply cache " + (index + 1).ToString("00"));
             root.transform.SetParent(parent, false); root.transform.position = position;
@@ -91,6 +91,7 @@ namespace Unity.MP_FPS
             var body = root.AddComponent<MeshRenderer>();
             body.sharedMaterials = m_Finishes;
             body.shadowCastingMode = ShadowCastingMode.On;
+            if (!showInventoryIndicator) return root;
             var inset = new GameObject("Cache status inset"); inset.transform.SetParent(root.transform, false);
             inset.AddComponent<MeshFilter>().sharedMesh = m_Indicator;
             var indicator = inset.AddComponent<MeshRenderer>();

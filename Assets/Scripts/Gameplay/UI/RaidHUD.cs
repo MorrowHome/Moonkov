@@ -721,7 +721,7 @@ namespace Unity.MP_FPS
             m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
             m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
             string opening=dissect ? "SEARCHING" :
-                RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+                RaidFurnitureLoot.IsSupplyCache(id) ? "正在搜索补给箱…" : RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             var carried=inventory.Graph?.Clone();
             carried?.Items.RemoveAll(item=>item.Id==Inventory.LootInventoryExchange.Root || inventory.Graph.RootOf(item.Id)==Inventory.LootInventoryExchange.Root);
