@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/339"
 {
- Properties { _SourceTex0("Source R8_Rough_Exposed_Steel_BaseColor.png",2D)="white" {}
-_SourceTex1("Source R8_Rough_Exposed_Steel_MetallicGloss.png",2D)="white" {}
-_SourceTex2("Source R8_Rough_Exposed_Steel_Normal_OpenGL.png",2D)="white" {} }
+ Properties { _SourceTex0("Source R8_Matte_Deck_Plates_BaseColor.png",2D)="white" {}
+_SourceTex1("Source R8_Matte_Deck_Plates_MetallicGloss.png",2D)="white" {}
+_SourceTex2("Source R8_Matte_Deck_Plates_Normal_OpenGL.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

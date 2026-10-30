@@ -1,6 +1,6 @@
 Shader "MoonEnvironment/Source/130"
 {
- Properties { _SourceTex0("Source MC_L2_Directory_BaseColor",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

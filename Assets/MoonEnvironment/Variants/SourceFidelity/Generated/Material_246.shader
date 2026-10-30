@@ -1,8 +1,6 @@
 Shader "MoonEnvironment/Source/246"
 {
- Properties { _SourceTex0("Source R4_Mineral_Support_Surface_BaseColor.png",2D)="white" {}
-_SourceTex1("Source R4_Mineral_Support_Surface_MetallicGloss.png",2D)="white" {}
-_SourceTex2("Source R4_Mineral_Support_Surface_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

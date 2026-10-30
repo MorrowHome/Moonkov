@@ -1,8 +1,6 @@
 Shader "MoonEnvironment/Source/245"
 {
- Properties { _SourceTex0("Source R4_GrayWhite_Modular_Panels_BaseColor.png",2D)="white" {}
-_SourceTex1("Source R4_GrayWhite_Modular_Panels_MetallicGloss.png",2D)="white" {}
-_SourceTex2("Source R4_GrayWhite_Modular_Panels_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

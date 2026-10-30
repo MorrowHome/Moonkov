@@ -2,29 +2,28 @@
 
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
-float v0=c.attributes0.x;
-float3 v1=c.position;
-float v2=SourceFBM(v1,0.0,0.340000004,3.0,0.649999976,2.0,false,true);
-float v3=lerp(0.620000005,1.0,saturate(SourceDivide((v2-0.25),(0.75-0.25))));
-float v4=(v0*v3);
-SourceClosure b5=SourceDefaultClosure(c);
-float v6=c.attributes0.y;
-float4 v7=((v2)<=0.879999995?lerp(float4(0.154799998,0.15264,0.143279999,1.0),float4(0.253699988,0.250160009,0.234819993,1.0),saturate((v2-0.119999997)/0.759999998)):float4(0.253699988,0.250160009,0.234819993,1.0));
-float4 v8=lerp(v7,float4(0.245000005,0.241999999,0.226999998,1.0),saturate(v6));
-b5.baseColor=(v8).xyz;
-b5.metallic=0.0;
-b5.roughness=0.939999998;
-b5.ior=1.5;
-b5.specular=0.5;
-b5.coat=0.0;
-b5.coatRoughness=0.0299999993;
-b5.transmission=0.0;
-b5.alpha=1.0;
-b5.anisotropy=0.0;
-b5.anisotropicRotation=0.0;
-float v20=SourceFBM(v1,0.0,58.0,2.0,0.5,2.0,false,true);
-float3 v21=SourceBump(c.normal,v20,0.239999995,0.00899999961,c.position,false);
-b5.normal=v21;
-b5.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
-a=b5; b=b5; factor=0; a.alpha*=(1*v4); b.alpha*=(1*v4);
+SourceClosure b0=SourceDefaultClosure(c);
+float v1=c.attributes0.x;
+float v2=lerp(0.560000002,0.0,saturate(SourceDivide((v1-0.0199999996),(0.74000001-0.0199999996))));
+float3 v3=c.position;
+float v4=SourceFBM(v3,0.0,1.79999995,3.0,0.5,2.0,false,true);
+float v5=(v2*v4);
+float4 v6=((v4)<=0.829999983?lerp(float4(0.203349993,0.207499996,0.192560002,1.0),float4(0.267049998,0.272500008,0.252880007,1.0),saturate((v4-0.180000007)/0.649999976)):float4(0.267049998,0.272500008,0.252880007,1.0));
+float4 v7=lerp(v6,float4(0.234999999,0.226999998,0.204999998,1.0),saturate(v5));
+b0.baseColor=(v7).xyz;
+b0.metallic=0.0;
+b0.roughness=0.920000017;
+b0.ior=1.5;
+b0.specular=0.5;
+b0.coat=0.0;
+b0.coatRoughness=0.0299999993;
+b0.transmission=0.0;
+b0.alpha=1.0;
+b0.anisotropy=0.0;
+b0.anisotropicRotation=0.0;
+float v19=SourceFBM(v3,0.0,39.0,2.0,0.5,2.0,false,true);
+float3 v20=SourceBump(c.normal,v19,0.219999999,0.0120000001,c.position,false);
+b0.normal=v20;
+b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
+a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
 }

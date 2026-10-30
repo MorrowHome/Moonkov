@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/189"
 {
- Properties {  }
+ Properties { _SourceTex0("Source R14_Exposed_Alloy_BaseColor",2D)="white" {}
+_SourceTex1("Source R14_Exposed_Alloy_ORM",2D)="white" {}
+_SourceTex2("Source R14_Exposed_Alloy_Normal",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

@@ -3,15 +3,11 @@
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-float3 v1=float3(dot(float4(c.position,1),float4(0.965925872,(-0.258819073),0.0,(-1048.17224))),dot(float4(c.position,1),float4(0.258819073,0.965925872,(-0.0),(-2637.14575))),dot(float4(c.position,1),float4(0.0,(-0.0),1.0,(-216.300018))));
-float v2=SourceFBM(v1,0.0,0.310000002,2.0,0.5,2.0,false,true);
-float v3=lerp(0.0,1.0,saturate(SourceDivide((v2-0.200000003),(0.800000012-0.200000003))));
-float4 v4=lerp(float4(0.189999998,0.211999997,0.196999997,1.0),float4(0.25,0.263000011,0.231999993,1.0),saturate(v3));
-b0.baseColor=(v4).xyz;
-b0.metallic=0.119999997;
-b0.roughness=0.779999971;
+b0.baseColor=(float4(0.104999997,0.109999999,0.103,1.0)).xyz;
+b0.metallic=0.0;
+b0.roughness=0.970000029;
 b0.ior=1.5;
-b0.specular=0.5;
+b0.specular=0.200000003;
 b0.coat=0.0;
 b0.coatRoughness=0.0299999993;
 b0.transmission=0.0;

@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/343"
 {
- Properties {  }
+ Properties { _SourceTex0("Source R8_Restrained_Safety_Ochre_BaseColor.png",2D)="white" {}
+_SourceTex1("Source R8_Restrained_Safety_Ochre_MetallicGloss.png",2D)="white" {}
+_SourceTex2("Source R8_Dark_Protective_Steel_Normal_OpenGL.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

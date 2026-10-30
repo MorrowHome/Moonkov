@@ -1,8 +1,6 @@
 Shader "MoonEnvironment/Source/475"
 {
- Properties { _SourceTex0("Source WQ_Surface_BaseColor.png",2D)="white" {}
-_SourceTex1("Source WQ_Surface_ORM.png",2D)="white" {}
-_SourceTex2("Source WQ_Surface_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

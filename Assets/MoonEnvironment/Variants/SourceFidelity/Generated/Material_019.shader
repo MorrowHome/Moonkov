@@ -1,7 +1,6 @@
 Shader "MoonEnvironment/Source/019"
 {
- Properties { _SourceTex0("Source R8_OffWhite_Ceramic_Coat_MetallicGloss.png.001",2D)="white" {}
-_SourceTex1("Source R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png.001",2D)="white" {} }
+ Properties { _SourceTex0("Source R8_Dark_Protective_Steel_MetallicGloss.png.001",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/073"
 {
- Properties {  }
+ Properties { _SourceTex0("Source LD2_Seal_Elastomer_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source Compact_1500150af78eb9_ORM.png",2D)="white" {}
+_SourceTex2("Source Compact_db1bf151bf2b72_Normal.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

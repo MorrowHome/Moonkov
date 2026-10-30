@@ -1,7 +1,6 @@
 Shader "MoonEnvironment/Source/038"
 {
- Properties { _SourceTex0("Source G03_Receiving_UseAtlas_BaseColor.png",2D)="white" {}
-_SourceTex1("Source G03_Receiving_UseAtlas_ORM.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

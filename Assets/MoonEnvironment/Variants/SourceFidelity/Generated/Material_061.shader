@@ -1,14 +1,16 @@
 Shader "MoonEnvironment/Source/061"
 {
- Properties {  }
+ Properties { _SourceTex0("Source LD2_Brushed_Aluminium_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source LD2_Brushed_Aluminium_ORM.png.001",2D)="white" {}
+_SourceTex2("Source LD2_Anodized_DarkAlloy_Normal.png",2D)="white" {} }
  SubShader
  {
- Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent"}
+ Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}
  Pass
  {
  Name "SourceMaterial" Tags {"LightMode"="UniversalForwardOnly"}
- Cull Off ZWrite Off
- Blend One OneMinusSrcAlpha
+ Cull Off ZWrite On
+
  HLSLPROGRAM
  #pragma target 4.5
  #pragma vertex SourceVert
@@ -19,7 +21,7 @@ Shader "MoonEnvironment/Source/061"
  #define _CLUSTER_LIGHT_LOOP 1
  #define _ADDITIONAL_LIGHTS 1
  #define _ADDITIONAL_LIGHT_SHADOWS 1
- #define _SOURCE_TRANSMISSION 1
+
  #include "../../../Shaders/SourceWorldSurface.hlsl"
  #include "Material_061.hlsl"
  half4 SourceFrag(SourceVaryings i,FRONT_FACE_TYPE facing:FRONT_FACE_SEMANTIC):SV_Target
@@ -37,6 +39,18 @@ Shader "MoonEnvironment/Source/061"
  float opacity=lerp(a.alpha,b.alpha,saturate(factor));clip(opacity-.001);
  return half4(color*opacity,opacity);
  }
+ ENDHLSL
+ }
+ Pass
+ {
+ Name "ShadowCaster" Tags {"LightMode"="ShadowCaster"}
+ ZWrite On ZTest LEqual ColorMask 0 Cull Off
+ HLSLPROGRAM
+ #pragma target 4.5
+ #pragma vertex SourceShadowVert
+ #pragma fragment SourceDepthFrag
+ #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+ #include "../../../Shaders/SourceWorldDepth.hlsl"
  ENDHLSL
  }
 

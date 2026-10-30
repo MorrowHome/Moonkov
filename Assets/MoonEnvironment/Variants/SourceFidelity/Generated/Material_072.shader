@@ -1,7 +1,7 @@
 Shader "MoonEnvironment/Source/072"
 {
- Properties { _SourceTex0("Source LD2_Wayfinding_DesaturatedTeal_BaseColor.png.001",2D)="white" {}
-_SourceTex1("Source Compact_f4710eb51a0d94_ORM.png",2D)="white" {}
+ Properties { _SourceTex0("Source LD2_Safety_MutedOchre_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source Compact_c3327fe88ca43f_ORM.png",2D)="white" {}
 _SourceTex2("Source Compact_75066932c53291_Normal.png",2D)="white" {} }
  SubShader
  {

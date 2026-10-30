@@ -1,6 +1,6 @@
 Shader "MoonEnvironment/Source/203"
 {
- Properties {  }
+ Properties { _SourceTex0("Source R8_Matte_Deck_Plates_MetallicGloss.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

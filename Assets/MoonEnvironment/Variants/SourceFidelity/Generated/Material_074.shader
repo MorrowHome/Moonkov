@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/074"
 {
- Properties {  }
+ Properties { _SourceTex0("Source LD2_Structure_GraphiteCoat_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source Compact_9969fc184c9600_ORM.png",2D)="white" {}
+_SourceTex2("Source Compact_75066932c53291_Normal.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

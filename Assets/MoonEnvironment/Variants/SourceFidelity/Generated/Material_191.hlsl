@@ -1,12 +1,19 @@
-
-
+TEXTURE2D(_SourceTex0);
+TEXTURE2D(_SourceTex1);
+TEXTURE2D(_SourceTex2);
+SAMPLER(sampler_SourceTex0);
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-b0.baseColor=(float4(0.0799999982,0.0920000002,0.101000004,1.0)).xyz;
-b0.metallic=0.0;
-b0.roughness=0.600000024;
-b0.ior=1.48000002;
+float3 v1=float3(c.uv0,0);
+float4 v2=SAMPLE_TEXTURE2D(_SourceTex0,sampler_SourceTex0,(v1).xy);
+b0.baseColor=(v2).xyz;
+float4 v4=SAMPLE_TEXTURE2D(_SourceTex1,sampler_SourceTex0,(v1).xy);
+float v5=(v4).b;
+b0.metallic=v5;
+float v7=(v4).g;
+b0.roughness=v7;
+b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;
 b0.coatRoughness=0.0299999993;
@@ -14,6 +21,9 @@ b0.transmission=0.0;
 b0.alpha=1.0;
 b0.anisotropy=0.0;
 b0.anisotropicRotation=0.0;
+float4 v17=SAMPLE_TEXTURE2D(_SourceTex2,sampler_SourceTex0,(v1).xy);
+float3 v18=SourceTangentNormal(c.normal,(v17).rgb,1.0,c.position,c.uv0,c.tangent);
+b0.normal=v18;
 b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
 a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
 }

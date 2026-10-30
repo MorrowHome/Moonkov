@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/191"
 {
- Properties {  }
+ Properties { _SourceTex0("Source R14_Orange_Coating_BaseColor",2D)="white" {}
+_SourceTex1("Source R14_Orange_Coating_ORM",2D)="white" {}
+_SourceTex2("Source R14_Orange_Coating_Normal",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

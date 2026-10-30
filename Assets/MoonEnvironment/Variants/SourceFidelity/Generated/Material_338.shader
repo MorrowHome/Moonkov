@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/338"
 {
- Properties { _SourceTex0("Source R8_Restrained_Safety_Ochre_BaseColor.png.001",2D)="white" {}
-_SourceTex1("Source R8_Restrained_Safety_Ochre_MetallicGloss.png.001",2D)="white" {}
-_SourceTex2("Source R8_Dark_Protective_Steel_Normal_OpenGL.png.001",2D)="white" {} }
+ Properties { _SourceTex0("Source R8_GrayWhite_Panel_Cladding_BaseColor.png",2D)="white" {}
+_SourceTex1("Source R8_GrayWhite_Panel_Cladding_MetallicGloss.png",2D)="white" {}
+_SourceTex2("Source R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

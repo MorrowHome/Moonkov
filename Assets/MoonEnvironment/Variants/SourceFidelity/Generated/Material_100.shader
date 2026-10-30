@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/100"
 {
- Properties {  }
+ Properties { _SourceTex0("Source LD2_Brushed_Aluminium_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source LD2_Brushed_Aluminium_ORM.png.001",2D)="white" {}
+_SourceTex2("Source LD2_Anodized_DarkAlloy_Normal.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

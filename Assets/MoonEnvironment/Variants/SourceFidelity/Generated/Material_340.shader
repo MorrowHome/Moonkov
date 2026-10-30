@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/340"
 {
- Properties { _SourceTex0("Source R5_PH_Concrete008_Neutral_BaseColor_2k.png",2D)="white" {}
-_SourceTex1("Source R5_PH_Concrete008_MetallicGloss_2k.png",2D)="white" {}
-_SourceTex2("Source R5_PH_Concrete008_NormalGL_2k.png",2D)="white" {} }
+ Properties { _SourceTex0("Source R8_OffWhite_Ceramic_Coat_BaseColor.png",2D)="white" {}
+_SourceTex1("Source R8_OffWhite_Ceramic_Coat_MetallicGloss.png",2D)="white" {}
+_SourceTex2("Source R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

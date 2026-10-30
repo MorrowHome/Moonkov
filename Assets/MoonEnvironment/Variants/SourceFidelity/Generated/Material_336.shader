@@ -1,10 +1,6 @@
 Shader "MoonEnvironment/Source/336"
 {
- Properties { _SourceTex0("Source R8_Regolith_Global_Control_0_4096.png",2D)="white" {}
-_SourceTex1("Source R8_Regolith_LowTone_BaseColor.png",2D)="white" {}
-_SourceTex2("Source R8_Regolith_HighTone_BaseColor.png",2D)="white" {}
-_SourceTex3("Source R8_Regolith_TerrainMask.png",2D)="white" {}
-_SourceTex4("Source R8_Regolith_3p7m_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

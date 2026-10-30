@@ -1,7 +1,6 @@
 Shader "MoonEnvironment/Source/086"
 {
- Properties { _SourceTex0("Source MC106_back_pad_BaseColor",2D)="white" {}
-_SourceTex1("Source MC106_back_pad_Normal",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

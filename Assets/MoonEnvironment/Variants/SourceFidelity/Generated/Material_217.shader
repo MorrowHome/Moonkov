@@ -1,9 +1,16 @@
 Shader "MoonEnvironment/Source/217"
 {
- Properties { _SourceTex0("Source R29_PBR_77d3504e740300a5_sRGB",2D)="white" {}
-_SourceTex1("Source R29_PBR_8d08a031ee9b3fb9_Linear",2D)="white" {}
-_SourceTex2("Source R29_PBR_b748b9b36b251a1f_Linear",2D)="white" {}
-_SourceTex3("Source R29_PBR_e5f18076473ccf09_Linear",2D)="white" {} }
+ Properties { _SourceTex0("Source R26S_World_Edge_Transition_Mask.png",2D)="white" {}
+_SourceTex1("Source R27_Regolith_World64m_BaseColor.png",2D)="white" {}
+_SourceTex2("Source R27_Regolith_Macro256m.png",2D)="white" {}
+_SourceTex3("Source R26_Regolith_Compacted_BaseColor.png",2D)="white" {}
+_SourceTex4("Source R26_Regolith_Macro32m.png",2D)="white" {}
+_SourceTex5("Source R27_Regolith_World64m_Roughness.png",2D)="white" {}
+_SourceTex6("Source R26_Regolith_Compacted_Roughness.png",2D)="white" {}
+_SourceTex7("Source R26_Regolith_Compacted_Height16.png",2D)="white" {}
+_SourceTex8("Source R27_Regolith_World64m_Height16.png",2D)="white" {}
+_SourceTex9("Source R26_Regolith_Compacted_Normal_OpenGL.png",2D)="white" {}
+_SourceTex10("Source R26_Regolith_Micro025m_Normal_OpenGL.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

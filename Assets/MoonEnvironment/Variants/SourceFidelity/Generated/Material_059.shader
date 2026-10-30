@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/059"
 {
- Properties { _SourceTex0("Source Compact_8409ea197419cf_BaseColor.png",2D)="white" {}
-_SourceTex1("Source Compact_d0c8a724c4a08b_ORM.png",2D)="white" {}
-_SourceTex2("Source Compact_a3740a41928db0_Normal.png",2D)="white" {} }
+ Properties { _SourceTex0("Source LD2_Brushed_Aluminium_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source L22_Desk_Satin_ORM.png",2D)="white" {}
+_SourceTex2("Source LD2_Anodized_DarkAlloy_Normal.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

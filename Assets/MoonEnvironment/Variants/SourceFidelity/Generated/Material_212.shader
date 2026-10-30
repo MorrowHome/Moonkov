@@ -1,16 +1,6 @@
 Shader "MoonEnvironment/Source/212"
 {
- Properties { _SourceTex0("Source R26S_World_Edge_Transition_Mask.png",2D)="white" {}
-_SourceTex1("Source R27_Regolith_World64m_BaseColor.png",2D)="white" {}
-_SourceTex2("Source R27_Regolith_Macro256m.png",2D)="white" {}
-_SourceTex3("Source R26_Regolith_DustyClasts_BaseColor.png",2D)="white" {}
-_SourceTex4("Source R26_Regolith_Macro32m.png",2D)="white" {}
-_SourceTex5("Source R27_Regolith_World64m_Roughness.png",2D)="white" {}
-_SourceTex6("Source R26_Regolith_DustyClasts_Roughness.png",2D)="white" {}
-_SourceTex7("Source R26_Regolith_Compacted_Height16.png",2D)="white" {}
-_SourceTex8("Source R27_Regolith_World64m_Height16.png",2D)="white" {}
-_SourceTex9("Source R26_Regolith_DustyClasts_Normal_OpenGL.png",2D)="white" {}
-_SourceTex10("Source R26_Regolith_Micro025m_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

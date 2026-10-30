@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/067"
 {
- Properties { _SourceTex0("Source LD2_Raw_StainlessSteel_BaseColor.png.001",2D)="white" {}
-_SourceTex1("Source LD2_Raw_StainlessSteel_ORM.png.001",2D)="white" {}
-_SourceTex2("Source LD2_Anodized_DarkAlloy_Normal.png",2D)="white" {} }
+ Properties { _SourceTex0("Source LD2_Hull_CeramicPaint_BaseColor.png.001",2D)="white" {}
+_SourceTex1("Source Compact_c3327fe88ca43f_ORM.png",2D)="white" {}
+_SourceTex2("Source Compact_75066932c53291_Normal.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

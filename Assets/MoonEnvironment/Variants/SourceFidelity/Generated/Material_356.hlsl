@@ -3,13 +3,12 @@
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-float3 v1=c.local;
-float v2=SourceFBM(v1,0.0,0.360000014,2.0,0.579999983,2.0,false,true);
-float4 v3=((v2)<=0.829999983?lerp(float4(0.328000009,0.341939986,0.318980008,1.0),float4(0.439999998,0.458700001,0.427899987,1.0),saturate((v2-0.180000007)/0.649999976)):float4(0.439999998,0.458700001,0.427899987,1.0));
+float3 v1=c.position;
+float v2=SourceFBM(v1,0.0,1.60000002,3.0,0.5,2.0,false,true);
+float4 v3=((v2)<=0.800000012?lerp(float4(0.0622499995,0.107900001,0.1162,1.0),float4(0.0810000002,0.140400007,0.151199996,1.0),saturate((v2-0.219999999)/0.580000013)):float4(0.0810000002,0.140400007,0.151199996,1.0));
 b0.baseColor=(v3).xyz;
-b0.metallic=0.280000001;
-float v6=lerp(0.714999974,0.824999988,saturate(SourceDivide((v2-0.0),(1.0-0.0))));
-b0.roughness=v6;
+b0.metallic=0.300000012;
+b0.roughness=0.319999993;
 b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;
@@ -18,9 +17,9 @@ b0.transmission=0.0;
 b0.alpha=1.0;
 b0.anisotropy=0.0;
 b0.anisotropicRotation=0.0;
-float v16=SourceFBM(v1,0.0,125.0,2.0,0.5,2.0,false,true);
-float3 v17=SourceBump(c.normal,v16,0.159999996,0.00079999998,c.position,false);
-b0.normal=v17;
+float v15=SourceFBM(v1,0.0,45.0,2.0,0.5,2.0,false,true);
+float3 v16=SourceBump(c.normal,v15,0.100000001,0.00899999961,c.position,false);
+b0.normal=v16;
 b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
 a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
 }

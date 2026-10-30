@@ -5,8 +5,8 @@ void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosur
 SourceClosure b0=SourceDefaultClosure(c);
 float3 v1=c.position;
 float v2=(v1).z;
-float v3=lerp(0.5,0.0,saturate(SourceDivide((v2-204.690796),(206.140793-204.690796))));
-float3 v4=(v1-float3(1725.0,2177.0,204.690796));
+float v3=lerp(0.5,0.0,saturate(SourceDivide((v2-199.431458),(200.881454-199.431458))));
+float3 v4=(v1-float3(1718.0,2090.0,199.431458));
 float v5=SourceFBM(v4,0.0,0.720000029,3.0,0.699999988,2.0,false,true);
 float v6=SourceFBM(v4,0.0,8.5,2.0,0.5,2.0,false,true);
 float v7=(v5*v6);

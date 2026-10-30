@@ -5,10 +5,10 @@ void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosur
 SourceClosure b0=SourceDefaultClosure(c);
 float3 v1=c.position;
 float v2=SourceFBM(v1,0.0,7.0,2.4000001,0.5,2.0,false,true);
-float4 v3=((v2)<=0.800000012?lerp(float4(0.0249600001,0.0311999992,0.0296400003,1.0),float4(0.0361599997,0.0452000014,0.0429399982,1.0),saturate((v2-0.200000003)/0.600000009)):float4(0.0361599997,0.0452000014,0.0429399982,1.0));
+float4 v3=((v2)<=0.800000012?lerp(float4(0.499199986,0.507000029,0.413399994,1.0),float4(0.723200023,0.734499991,0.59890002,1.0),saturate((v2-0.200000003)/0.600000009)):float4(0.723200023,0.734499991,0.59890002,1.0));
 b0.baseColor=(v3).xyz;
-b0.metallic=0.300000012;
-b0.roughness=0.800000012;
+b0.metallic=0.100000001;
+b0.roughness=0.790000021;
 b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;

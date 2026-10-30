@@ -1,6 +1,6 @@
 Shader "MoonEnvironment/Source/470"
 {
- Properties { _SourceTex0("Source Compact_75066932c53291_Normal.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

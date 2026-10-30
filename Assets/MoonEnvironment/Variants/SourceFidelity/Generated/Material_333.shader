@@ -1,8 +1,6 @@
 Shader "MoonEnvironment/Source/333"
 {
- Properties { _SourceTex0("Source R8_Matte_Deck_Plates_BaseColor.png",2D)="white" {}
-_SourceTex1("Source R8_Matte_Deck_Plates_MetallicGloss.png",2D)="white" {}
-_SourceTex2("Source R8_Matte_Deck_Plates_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

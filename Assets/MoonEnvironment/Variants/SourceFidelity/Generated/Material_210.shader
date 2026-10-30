@@ -1,9 +1,6 @@
 Shader "MoonEnvironment/Source/210"
 {
- Properties { _SourceTex0("Source R29_PBR_bf80b31eca6dbb1a_sRGB",2D)="white" {}
-_SourceTex1("Source R29_PBR_5797ec72901b46d4_Linear",2D)="white" {}
-_SourceTex2("Source R29_PBR_755d0dc342bf5e96_Linear",2D)="white" {}
-_SourceTex3("Source R29_PBR_e5f18076473ccf09_Linear",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

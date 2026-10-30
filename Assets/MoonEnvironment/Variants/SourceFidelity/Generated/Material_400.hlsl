@@ -5,13 +5,13 @@ void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosur
 SourceClosure b0=SourceDefaultClosure(c);
 float3 v1=c.position;
 float v2=(v1).z;
-float v3=lerp(0.349999994,0.0,saturate(SourceDivide((v2-205.100006),(206.550003-205.100006))));
-float3 v4=(v1-float3(1736.5,2235.0,205.100006));
+float v3=lerp(0.349999994,0.0,saturate(SourceDivide((v2-199.431458),(200.881454-199.431458))));
+float3 v4=(v1-float3(1724.0,2122.5,199.431458));
 float v5=SourceFBM(v4,0.0,0.720000029,3.0,0.699999988,2.0,false,true);
 float v6=SourceFBM(v4,0.0,8.5,2.0,0.5,2.0,false,true);
 float v7=(v5*v6);
 float v8=lerp(0.0,0.280000001,saturate(SourceDivide((v7-0.360000014),(0.479999989-0.360000014))));
-float4 v9=((v5)<=0.800000012?lerp(float4(0.280800015,0.324000001,0.309599996,1.0),float4(0.436800003,0.504000008,0.481599987,1.0),saturate((v5-0.230000004)/0.570000008)):float4(0.436800003,0.504000008,0.481599987,1.0));
+float4 v9=((v5)<=0.800000012?lerp(float4(0.331200004,0.316799998,0.259200007,1.0),float4(0.515200019,0.492799997,0.403200001,1.0),saturate((v5-0.230000004)/0.570000008)):float4(0.515200019,0.492799997,0.403200001,1.0));
 float4 v10=lerp(v9,float4(0.104999997,0.125,0.119000003,1.0),saturate(v8));
 float4 v11=lerp(v10,float4(0.239999995,0.228,0.197999999,1.0),saturate(v3));
 b0.baseColor=(v11).xyz;

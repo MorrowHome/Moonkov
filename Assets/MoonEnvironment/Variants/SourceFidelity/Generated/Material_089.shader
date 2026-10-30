@@ -1,7 +1,7 @@
 Shader "MoonEnvironment/Source/089"
 {
- Properties { _SourceTex0("Source MC106_fitted_seat_cushion_BaseColor",2D)="white" {}
-_SourceTex1("Source MC106_fitted_seat_cushion_Normal",2D)="white" {} }
+ Properties { _SourceTex0("Source MC106_back_pad_BaseColor",2D)="white" {}
+_SourceTex1("Source MC106_back_pad_Normal",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

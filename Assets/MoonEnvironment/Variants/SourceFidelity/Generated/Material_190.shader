@@ -1,7 +1,8 @@
 Shader "MoonEnvironment/Source/190"
 {
- Properties { _SourceTex0("Source R19_CoatedPanel_Roughness_Linear",2D)="white" {}
-_SourceTex1("Source R19_CoatedPanel_Normal_OpenGL",2D)="white" {} }
+ Properties { _SourceTex0("Source R14_Mineral_Sill_BaseColor",2D)="white" {}
+_SourceTex1("Source R14_Mineral_Sill_ORM",2D)="white" {}
+_SourceTex2("Source R14_Mineral_Sill_Normal",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

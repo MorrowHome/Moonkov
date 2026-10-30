@@ -1,6 +1,6 @@
 Shader "MoonEnvironment/Source/175"
 {
- Properties { _SourceTex0("Source R8_Rough_Exposed_Steel_Normal_OpenGL.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

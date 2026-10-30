@@ -1,8 +1,6 @@
 Shader "MoonEnvironment/Source/095"
 {
- Properties { _SourceTex0("Source LD2_Hull_CeramicPaint_BaseColor.png.001",2D)="white" {}
-_SourceTex1("Source Compact_c3327fe88ca43f_ORM.png",2D)="white" {}
-_SourceTex2("Source Compact_75066932c53291_Normal.png",2D)="white" {} }
+ Properties {  }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

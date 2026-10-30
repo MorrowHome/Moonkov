@@ -3,12 +3,9 @@
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-float3 v1=c.local;
-float v2=SourceFBM(v1,0.0,0.800000012,2.0,0.5,2.0,false,true);
-float4 v3=((v2)<=1.0?lerp(float4(0.299199998,0.351999998,0.334399998,1.0),float4(0.360399991,0.423999995,0.402799994,1.0),saturate((v2-0.0)/1.0)):float4(0.360399991,0.423999995,0.402799994,1.0));
-b0.baseColor=(v3).xyz;
-b0.metallic=0.680000007;
-b0.roughness=0.5;
+b0.baseColor=(float4(0.209999993,0.204999998,0.180000007,1.0)).xyz;
+b0.metallic=0.0;
+b0.roughness=0.970000029;
 b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;
@@ -17,9 +14,10 @@ b0.transmission=0.0;
 b0.alpha=1.0;
 b0.anisotropy=0.0;
 b0.anisotropicRotation=0.0;
-float v15=SourceFBM(v1,0.0,95.0,2.0,0.5,2.0,false,true);
-float3 v16=SourceBump(c.normal,v15,0.119999997,0.000600000028,c.position,false);
-b0.normal=v16;
+float3 v12=c.local;
+float v13=SourceFBM(v12,0.0,5.0,2.0,0.5,2.0,false,true);
+float3 v14=SourceBump(c.normal,v13,0.200000003,0.0549999997,c.position,false);
+b0.normal=v14;
 b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
 a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
 }

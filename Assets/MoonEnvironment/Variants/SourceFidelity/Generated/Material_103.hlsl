@@ -3,9 +3,9 @@
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-b0.baseColor=(float4(0.579999983,0.600000024,0.569999993,1.0)).xyz;
-b0.metallic=0.829999983;
-b0.roughness=0.219999999;
+b0.baseColor=(float4(0.0363064855,0.048897326,0.0508760884,1.0)).xyz;
+b0.metallic=0.0;
+b0.roughness=0.639999986;
 b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;

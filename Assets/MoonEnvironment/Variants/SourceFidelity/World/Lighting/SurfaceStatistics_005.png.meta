@@ -31,7 +31,7 @@ TextureImporter:
   cubemapConvolution: 0
   seamlessCubemap: 0
   textureFormat: 1
-  maxTextureSize: 2048
+  maxTextureSize: 4096
   textureSettings:
     serializedVersion: 2
     filterMode: 1
@@ -82,7 +82,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -112,6 +112,6 @@ TextureImporter:
     nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData: 2576f4ac6ba4b370843688fc28ace29e1169d594633102d13e0e59c64a6522cf:v2:2198737:639287754201402698
+  userData: 392b805dfbdd553dd1a18ed9e6d0de9015d49e12ee054e5787ed63912833b495:v2:2873549:639288915013485099
   assetBundleName: 
   assetBundleVariant: 

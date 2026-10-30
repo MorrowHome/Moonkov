@@ -1,6 +1,8 @@
 Shader "MoonEnvironment/Source/346"
 {
- Properties {  }
+ Properties { _SourceTex0("Source R5_PH_Concrete008_Neutral_BaseColor_2k.png",2D)="white" {}
+_SourceTex1("Source R5_PH_Concrete008_MetallicGloss_2k.png",2D)="white" {}
+_SourceTex2("Source R5_PH_Concrete008_NormalGL_2k.png",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

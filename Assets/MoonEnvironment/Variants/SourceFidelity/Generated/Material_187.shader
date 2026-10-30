@@ -1,8 +1,8 @@
 Shader "MoonEnvironment/Source/187"
 {
- Properties { _SourceTex0("Source R19_CoatedPanel_BaseColor_sRGB",2D)="white" {}
-_SourceTex1("Source R19_CoatedPanel_Roughness_Linear",2D)="white" {}
-_SourceTex2("Source R19_CoatedPanel_Normal_OpenGL",2D)="white" {} }
+ Properties { _SourceTex0("Source R14_Coated_Steel_BaseColor",2D)="white" {}
+_SourceTex1("Source R14_Coated_Steel_ORM",2D)="white" {}
+_SourceTex2("Source R14_Coated_Steel_Normal",2D)="white" {} }
  SubShader
  {
  Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry"}

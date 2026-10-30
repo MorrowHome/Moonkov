@@ -3,16 +3,18 @@
 void EvaluateSourceMaterial(SourceContext c,out SourceClosure a,out SourceClosure b,out float factor)
 {
 SourceClosure b0=SourceDefaultClosure(c);
-float v1=c.attributes0.x;
-float v2=lerp(0.560000002,0.0,saturate(SourceDivide((v1-0.0199999996),(0.74000001-0.0199999996))));
-float3 v3=c.position;
-float v4=SourceFBM(v3,0.0,1.79999995,3.0,0.5,2.0,false,true);
-float v5=(v2*v4);
-float4 v6=((v4)<=0.829999983?lerp(float4(0.203349993,0.207499996,0.192560002,1.0),float4(0.267049998,0.272500008,0.252880007,1.0),saturate((v4-0.180000007)/0.649999976)):float4(0.267049998,0.272500008,0.252880007,1.0));
-float4 v7=lerp(v6,float4(0.234999999,0.226999998,0.204999998,1.0),saturate(v5));
-b0.baseColor=(v7).xyz;
-b0.metallic=0.0;
-b0.roughness=0.920000017;
+float3 v1=c.position;
+float3 v2=(v1-float3(1731.0,2321.0,219.224365));
+float v3=SourceFBM(v2,0.0,0.720000029,3.0,0.699999988,2.0,false,true);
+float v4=SourceFBM(v2,0.0,8.5,2.0,0.5,2.0,false,true);
+float v5=(v3*v4);
+float v6=lerp(0.0,0.0799999982,saturate(SourceDivide((v5-0.360000014),(0.479999989-0.360000014))));
+float4 v7=((v3)<=0.800000012?lerp(float4(0.180000007,0.208800003,0.2016,1.0),float4(0.280000001,0.324800014,0.313600004,1.0),saturate((v3-0.230000004)/0.570000008)):float4(0.280000001,0.324800014,0.313600004,1.0));
+float4 v8=lerp(v7,float4(0.104999997,0.125,0.119000003,1.0),saturate(v6));
+b0.baseColor=(v8).xyz;
+b0.metallic=0.449999988;
+float v11=lerp(0.579999983,0.779999971,saturate(SourceDivide((v3-0.150000006),(0.850000024-0.150000006))));
+b0.roughness=v11;
 b0.ior=1.5;
 b0.specular=0.5;
 b0.coat=0.0;
@@ -21,9 +23,9 @@ b0.transmission=0.0;
 b0.alpha=1.0;
 b0.anisotropy=0.0;
 b0.anisotropicRotation=0.0;
-float v19=SourceFBM(v3,0.0,39.0,2.0,0.5,2.0,false,true);
-float3 v20=SourceBump(c.normal,v19,0.219999999,0.0120000001,c.position,false);
-b0.normal=v20;
+float v21=SourceFBM(v2,0.0,65.0,2.0,0.5,2.0,false,true);
+float3 v22=SourceBump(c.normal,v21,0.150000006,0.00899999961,c.position,false);
+b0.normal=v22;
 b0.emission=(float4(1.0,1.0,1.0,1.0)).xyz*0.0;
 a=b0; b=b0; factor=0; a.alpha*=1; b.alpha*=1;
 }
