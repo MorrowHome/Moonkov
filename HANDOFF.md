@@ -31,7 +31,13 @@
 
 ## 整图静态外观还原（Windows，未完成）
 
-- 用户开始游戏，已明确暂停重任务并保存检查点。本任务 Python 队列和 Blender 均已退出，自动唤醒为 PAUSED，不自动恢复。AO、材质解析、完整几何均保留；光照 atlas0–15 完成，atlas16 的 0–3 块完成，共 4/16。设置和恢复入口在 `LocalData/SourceFidelity20261028/V11L14IntegrationStage/GamingPauseCheckpoint.json`。用户要求继续后再启动原 `run_full_lighting_integration.py`，保留 `TileExecutionPolicy.json` 和 helper，按原哈希跳过已完成图集/图块。正式场景仍未安装。
+- 用户授权磁盘不足时自行清理。Unity 曾在反射 index347 因 E 盘写满停止，已归档旧版离线缓存和初次传输 ZIP 到 D 盘，再从原导入断点继续，未重烘。旧主 `World` 的 `Bakes/Geometry/Reflections/TiledQuality_s128_x8` 与三份旧准备 blend 在 `D:/MoonkovBakeArchive/LegacyWorld_20261030`；7909545519 字节传输 ZIP 在 `D:/MoonkovBakeArchive/Moonkov_SourceFidelity_Windows_20261028.zip`，迁移后大小相同。原始解压源和当前 `V11L14IntegrationStage` 未动；当前清单全部引用新镜像，已核无旧缓存路径。恢复记录为 `LocalData/SourceFidelity20261028/DiskRecoveryArchive.json`。历史说明中的旧缓存路径现指 D 盘归档，需回看旧版时按该记录恢复。
+
+- 新版 30 图集、458 反射及包围盒处理全部完成。发布预览核对源、材质版本、文件和反射 SHA 通过，随后已正式发布主导入清单并启动 Unity 资产导入。实际使用 386 材质、112 贴图、3359 几何块；保留原源 488 材质翻译集。当前看主 `World/AssetImport.state.json`，不得再执行 `--publish` 复位正在运行的队列。Unity CLI 在本次操作中出现长延迟，部分调用先报超时但后来实际执行；必须先看状态避免重复启动。官方 Unity MCP 的 `GetState` 可正常读取。正式场景仍待资产导入、统计/SH 完成后安装。
+
+- 新版 30 张图集光照已全部完成，队列正在采集同源 458 个空间反射，正常时不重启。后续自动修正包围盒，再用 `LocalData/SourceFidelity20261028/publish_full_world_inputs.py` 发布经过版本检查的实际项目输入。该脚本已写好，只做过语法检查，须等 `FullLightingQueue.json` 为 `lighting_and_reflections_ready_for_unity` 才运行；默认只生成发布预览，加 `--publish` 才切换主导入清单并复位旧导入状态。原清单和状态先备份，几何/光照继续引用沙箱文件，贴图引用已验证静态镜像，生成材质按实际用量更新。正式安装仍未完成。
+
+- 2026-10-30 用户明确继续。已恢复原 `run_full_lighting_integration.py`，自动唤醒为 ACTIVE。恢复起点为 atlas0–15 完成、atlas16 的 0–3 块完成，共 4/16。原 AO、材质解析、完整几何、`TileExecutionPolicy.json` 和 helper 均保留，按原哈希跳过完成项。新启动日志为 `V11L14IntegrationStage/FullLightingResume.log` 与 `.stderr.log`；实际状态仍看 `FullLightingQueue.json`。历史游戏暂停快照 `GamingPauseCheckpoint.json` 只供追溯，不代表当前仍暂停。正式场景仍未安装。
 
 - 用户指出 GPU 未满载。普通 x1/x2 图集原先固定 64 块，CPU 降噪与文件处理频繁插在 GPU 调用之间。已为尚未开始的 atlas≥16 加 `TileExecutionPolicy.json`：目标块边长上限 2200，按尺寸选择 1/2/4/8/16 的分块数，128 samples 与离线密度不变；典型 4096/x2 从 64 块变为 16 块。室内 x8 不变，正在运行的 atlas15 不中断，旧图块不重算。策略写入实际 checkpoint 配置；后续复跑需保留该策略。这里只通过语法与四组分块算术检查，吞吐提升尚待实际日志确认，不能宣称 GPU 已满载。
 
@@ -436,3 +442,10 @@
 - Unity 新版程序集编译通过。六组射击/视角/受伤检查及第一人称身体遮挡检查通过。异形检查覆盖十种实体和液体形态，并与无受伤对照体比较命中体。蜘蛛三帧已目视检查。未做实战、联机、构建或帧时验收。人形敌人受伤动画不在这轮改动内。
 - 本机自动刷新关闭时，先显式刷新并等待真正的编译和域重载。`recompile_status` 的 triggered 不能视为新版已加载；核对实际加载的参数后再运行检查。
 - 详细参数、验证边界及本地图片入口见 `Docs/HaloWeaponFeedback.md`。
+
+
+## 交互首段重做（2026-10-29，待场景验收）
+
+- 门控、设施与普通搜刮按同一瞄准规则选目标。点按、长按和铭牌查看分别处理。长按继续使用原 Begin/Renew/Cancel，捕获原设备与版本，松键前不重复触发。
+- 配电 A 首次打开铭牌，再选离散线路。查看不提交配电。供电与库存成功仍以原服务端回包为准。登记和双柜完成各播放一次现有沈禾回应。未发现设备不显示精确方向。
+- 没有保存正式场景，没有改旧存档、库存协议、地图烘焙、相机或消耗品表现。独立程序集编译已通过；Editor 导入、原生界面与代表性首段试玩未完成。接入、验证边界和上游许可见 [交互首段](Docs/Development/InteractionExperience.md)。
