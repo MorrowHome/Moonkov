@@ -176,16 +176,17 @@ public static class HaloArsenalValidation
             }
             var alien=Victim("Alien without GhostOwner",new Vector3(1,0,0),scene,null);
             var pmc=Victim("PMC with body health",new Vector3(-1,0,0),scene,2,true);
-            var shooter=Victim("Shooter immunity",new Vector3(0,1,0),scene,1);
+            var shooter=Victim("Shooter self damage",new Vector3(0,1,0),scene,1);
             var hidden=Victim("Victim behind wall",new Vector3(0,0,2.5f),scene,3);
             var isolated=Victim("Victim in another physics scene",new Vector3(1,0,0),other,4);
             var wall=new GameObject("Occluding wall");SceneManager.MoveGameObjectToScene(wall,scene);wall.transform.position=new Vector3(0,0,1.7f);wall.AddComponent<BoxCollider>().size=new Vector3(1,2,.15f);
             Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);other.GetPhysicsScene().Simulate(.02f);
             var weapon=registry.GetWeaponData(11);int count=ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,weapon.Damage,1,123,out byte flags);
-            Require(count==2&&flags==1,"AOE victim count/flags: "+count+" "+flags);
+            Require(count==3&&flags==1,"AOE victim count/flags: "+count+" "+flags);
             Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth,1000-weapon.Damage),"AOE alien damage or duplicate collider");
             Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(pmc).CurrentHealth,440-weapon.Damage),"AOE body damage conservation");
-            foreach(var entity in new[]{shooter,hidden,isolated})Require(manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth==1000,"AOE immunity/occlusion/world isolation");
+            Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(shooter).CurrentHealth,1000-weapon.Damage),"AOE shooter takes own blast");
+            foreach(var entity in new[]{hidden,isolated})Require(manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth==1000,"AOE occlusion/world isolation");
             ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,2000,1,124,out flags);
             Require(flags==3&&manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth==0,"AOE lethal flags");
             Require(ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,weapon.Damage,1,125,out flags)==0,"AOE dead victims ignored");
@@ -205,10 +206,10 @@ public static class HaloArsenalValidation
             manager.SetComponentData(shielded,shield);Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);
             count=ProjectileBlast.Apply(world,scene.GetPhysicsScene(),new Vector3(30,0,0),3,40,teamSource,127,out flags);
             shield=manager.GetComponentData<PredictedPlayerGhost>(shielded);
-            Require(count==1&&flags==1&&shield.CurrentHealth==440&&shield.ShieldCharge==60,
+            Require(count==1&&flags==1&&shield.CurrentHealth==440&&Mathf.Abs(shield.ShieldCharge-(100-ProjectileBlast.DamageAt(40,3,.8f)))<.001f,
                 "Fully shielded blast should still report a real impact");
             RaycastHit[] hits=new RaycastHit[16];Require(Ballistics.Sweep(scene.GetPhysicsScene(),new Vector3(0,0,1.3f),new Vector3(0,0,2.1f),.055f,EnergyGrenadePhysics.HitMask,null,ref hits,out var hit)&&hit.collider.gameObject==wall,"Sundown swept collision with thin wall");
-            Report.Add("Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes "+weapon.Damage+" total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.");
+            Report.Add("Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC and shooter take "+weapon.Damage+" core damage, wall occlusion and cross-scene isolation respected, shield damage falls off with surface distance, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.");
         }
         finally
         {
@@ -265,7 +266,8 @@ public static class HaloArsenalValidation
                 float health=manager.GetComponentData<PredictedPlayerGhost>(target).CurrentHealth;
                 Require(Mathf.Abs(health-(1000-weapon.Damage*weapon.PelletCount))<.01f,entry.Code+" actual server projectile damage: "+health);
                 float splash=1000-manager.GetComponentData<PredictedPlayerGhost>(flankEntity).CurrentHealth;
-                Require(Mathf.Abs(splash-(entry.BlastRadius>0?weapon.Damage*weapon.PelletCount:0))<.01f,entry.Code+" off-ray splash damage: "+splash);
+                Require(entry.BlastRadius>0 ? splash>0&&splash<=weapon.Damage*weapon.PelletCount+.01f : splash==0,entry.Code+" off-ray splash damage: "+splash);
+                if(entry.Id==DollSingerWeapons.Tempest)Require(splash<weapon.Damage*weapon.PelletCount,"Tempest off-ray splash must fall off");
                 Report.Add(entry.Code+": real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = "+(1000-health)+" from "+weapon.PelletCount+" projectile(s). Fixture supplies spawn data, not a network transport.");
                 if(entry.BlastRadius>0)Report.Add(entry.Code+": a separate victim outside the projectile ray received "+splash+" actual splash damage inside radius "+entry.BlastRadius+" m.");
             }
