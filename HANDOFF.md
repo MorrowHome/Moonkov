@@ -29,15 +29,16 @@
 - 源文件 6 组交互物件几何检查通过。724 帧骨架往返与 52 帧蒙皮抽查通过，接触压缩最多约 2.2 毫米。源检查见 `BlenderValidation.json`。Unity 接入完成 2495 项编辑检查、174 项服务端检查和 175 项实际播放检查。包含启用的瞄准组件、保存骨旋转、三套蒙皮、真实音源、重复快照、相机和清理。针尖距实际手臂表面约 1–2.5 毫米。摘要见 `SourceData/Animations/Survival/RuntimeValidation.json`。未做正式战局、联机或 Player 构建验收。
 - 运行时检查必须在指定游戏相机的 `endCameraRendering` 回调内采样。SceneView 重绘也会发出渲染回调。普通 await 恢复时可能处在 Update 与 LateUpdate 之间，不能据此判断骨架被覆盖。短音效按实际 AudioSource 播放记录检查。
 
-## 整图静态外观还原（Windows，未完成）
+## 整图静态外观还原（Windows，已安装，收尾中）
 
-- 用户授权磁盘不足时自行清理。Unity 曾在反射 index347 因 E 盘写满停止，已归档旧版离线缓存和初次传输 ZIP 到 D 盘，再从原导入断点继续，未重烘。旧主 `World` 的 `Bakes/Geometry/Reflections/TiledQuality_s128_x8` 与三份旧准备 blend 在 `D:/MoonkovBakeArchive/LegacyWorld_20261030`；7909545519 字节传输 ZIP 在 `D:/MoonkovBakeArchive/Moonkov_SourceFidelity_Windows_20261028.zip`，迁移后大小相同。原始解压源和当前 `V11L14IntegrationStage` 未动；当前清单全部引用新镜像，已核无旧缓存路径。恢复记录为 `LocalData/SourceFidelity20261028/DiskRecoveryArchive.json`。历史说明中的旧缓存路径现指 D 盘归档，需回看旧版时按该记录恢复。
+- 正式离线行走暴露旧 `RespawnScreen` 的 enableable 查询异常，基线为 `72dd505d`，并非新版几何改动。已独立提交 `1658dad5`：查询直接读取本地角色 `LocalTransform`，保留启用状态过滤，不分配逐帧临时数组。当前 Editor 编译及本地归属、禁用排除、归属切换三项 ECS 定向检查通过。没有再开第二局，也未替并行交互任务运行被拒检查。正式安装资源提交为 `6798052a`，保存后重开校验修正为 `aeee1857`。
 
-- 新版 30 图集、458 反射及包围盒处理全部完成。发布预览核对源、材质版本、文件和反射 SHA 通过，随后已正式发布主导入清单并启动 Unity 资产导入。实际使用 386 材质、112 贴图、3359 几何块；保留原源 488 材质翻译集。当前看主 `World/AssetImport.state.json`，不得再执行 `--publish` 复位正在运行的队列。Unity CLI 在本次操作中出现长延迟，部分调用先报超时但后来实际执行；必须先看状态避免重复启动。官方 Unity MCP 的 `GetState` 可正常读取。正式场景仍待资产导入、统计/SH 完成后安装。
+- 新版整图已装入正式 `TheophilusGameScene`。保存后重新打开场景，安装检查通过：3359 几何块、4454864 三角形、386 材质、30 光照图集、458 反射、7227 角色 SH 探针、16126 碰撞体。任务站五个锚点和五个设备引用完整。一次隔离离线局已用真实 KCC 输入走过出生点、入口、楼梯、两处配电站位、取样机，并沿楼梯返回室外。运行时 30 lightmaps 和 7227 SH 探针生效。诊断占用了战局时间，返回途中计时结束，未验收完整撤离结算；不重跑同等路线。
+- `AssetImport.state.json` 已为 phase6、running=false、error 空。不要重烘、重发布、复位或重导入。大光照子资源保存后可能替换托管对象，旧引用会显示空字段；正式安装器保存后重新打开已保存场景，再校验持久引用，避免把旧托管包装误判成丢失产物。
+- 用户已授权磁盘不足时自行清理。当前两个 Stage 已迁到 `D:/MoonkovBakeArchive/` 同名目录，E 原路径为 NTFS Junction。`.git/lfs` 已迁到 `D:/GitLfsStorage/FPS_Template/lfs`，E 原路径同样为 Junction，迁前迁后均为 41323321921 字节。Git LFS 配置、跟踪规则、源文件、产物和断点保留；不删 Library。E 盘恢复约 38.9 GiB。旧 World 缓存和传输 ZIP 的归档位置见 `LocalData/SourceFidelity20261028/DiskRecoveryArchive.json`。
+- Unity 原生磁盘警告或保存失败框会阻塞主线程，状态仍可能显示 running。先核磁盘及确切原生弹窗；空间恢复后，只确认对应的 OK 或 Try Again。不要无限重复 MCP/CLI，不用鼠标，不强杀共享 Editor。
 
-- 新版 30 张图集光照已全部完成，队列正在采集同源 458 个空间反射，正常时不重启。后续自动修正包围盒，再用 `LocalData/SourceFidelity20261028/publish_full_world_inputs.py` 发布经过版本检查的实际项目输入。该脚本已写好，只做过语法检查，须等 `FullLightingQueue.json` 为 `lighting_and_reflections_ready_for_unity` 才运行；默认只生成发布预览，加 `--publish` 才切换主导入清单并复位旧导入状态。原清单和状态先备份，几何/光照继续引用沙箱文件，贴图引用已验证静态镜像，生成材质按实际用量更新。正式安装仍未完成。
-
-- 2026-10-30 用户明确继续。已恢复原 `run_full_lighting_integration.py`，自动唤醒为 ACTIVE。恢复起点为 atlas0–15 完成、atlas16 的 0–3 块完成，共 4/16。原 AO、材质解析、完整几何、`TileExecutionPolicy.json` 和 helper 均保留，按原哈希跳过完成项。新启动日志为 `V11L14IntegrationStage/FullLightingResume.log` 与 `.stderr.log`；实际状态仍看 `FullLightingQueue.json`。历史游戏暂停快照 `GamingPauseCheckpoint.json` 只供追溯，不代表当前仍暂停。正式场景仍未安装。
+- 2026-10-30 用户明确继续。已恢复原 `run_full_lighting_integration.py`，自动唤醒为 ACTIVE。恢复起点为 atlas0–15 完成、atlas16 的 0–3 块完成，共 4/16。原 AO、材质解析、完整几何、`TileExecutionPolicy.json` 和 helper 均保留，按原哈希跳过完成项。新启动日志为 `V11L14IntegrationStage/FullLightingResume.log` 与 `.stderr.log`；实际状态仍看 `FullLightingQueue.json`。历史游戏暂停快照 `GamingPauseCheckpoint.json` 只供追溯，不代表当前仍暂停。该句为恢复时快照；当前安装状态见本节首条。
 
 - 用户指出 GPU 未满载。普通 x1/x2 图集原先固定 64 块，CPU 降噪与文件处理频繁插在 GPU 调用之间。已为尚未开始的 atlas≥16 加 `TileExecutionPolicy.json`：目标块边长上限 2200，按尺寸选择 1/2/4/8/16 的分块数，128 samples 与离线密度不变；典型 4096/x2 从 64 块变为 16 块。室内 x8 不变，正在运行的 atlas15 不中断，旧图块不重算。策略写入实际 checkpoint 配置；后续复跑需保留该策略。这里只通过语法与四组分块算术检查，吞吐提升尚待实际日志确认，不能宣称 GPU 已满载。
 
