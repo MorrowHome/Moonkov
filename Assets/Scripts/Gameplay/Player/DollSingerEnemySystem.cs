@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
     [UpdateBefore(typeof(ServerPlayerMovementSystem))]
     public partial class DollSingerEnemySystem : SystemBase
     {
+        private static readonly Unity.Profiling.ProfilerMarker s_DropProfile = new("Moonkov.Pmc.DropCorpse");
         private struct Target
         {
             public Entity Entity;
@@ -404,6 +405,8 @@ namespace Unity.MP_FPS
             }
         }
 
+        private static readonly Unity.Profiling.ProfilerMarker s_ProbePathProfile = new("Moonkov.Pmc.ProbePath");
+
         private static void PathFailure(DollSingerEnemyBrain brain, Vector3 goal, double now)
         {
             brain.PathFailed = true;
@@ -429,6 +432,7 @@ namespace Unity.MP_FPS
 
         private void DropCorpse(DollSingerEnemyBrain brain, LocalTransform pose, double now, int characterIndex)
         {
+            using var profile = s_DropProfile.Auto();
             Vector3 position = pose.Position;
             Quaternion rotation = pose.Rotation;
             if (UnityEngine.Physics.Raycast(position + Vector3.up, Vector3.down, out var ground, 4, s_WorldMask, QueryTriggerInteraction.Ignore))

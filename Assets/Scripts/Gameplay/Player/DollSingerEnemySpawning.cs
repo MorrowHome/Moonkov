@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
 {
     public partial class DollSingerEnemySystem
     {
+        private static readonly Unity.Profiling.ProfilerMarker s_SpawnProfile = new("Moonkov.Pmc.SpawnBatch");
         private readonly List<RaidSpawnObserver> m_SpawnObservers = new List<RaidSpawnObserver>();
         private readonly List<Vector3> m_SpawnExitSamples = new List<Vector3>(RaidExtractionRules.MaxExits);
         private readonly NavMeshPath m_SpawnPath = new NavMeshPath();
@@ -121,6 +122,7 @@ namespace Unity.MP_FPS
 
         private int SpawnBatch(MoonRaidMap map, int count, double now)
         {
+            using var profile = s_SpawnProfile.Auto();
             var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
             if (WeaponManager.Instance?.WeaponRegistry == null) return 0;
             UnityEngine.Physics.SyncTransforms();

@@ -6,9 +6,11 @@ namespace Unity.MP_FPS
 {
     public partial class DollSingerEnemySystem
     {
+        private static readonly Unity.Profiling.ProfilerMarker s_ThinkProfile = new("Moonkov.Pmc.Think");
         private PlayerInput Think(Unity.Entities.Entity self, DollSingerEnemyBrain brain, PlayerGhost ghost, LocalTransform pose,
             ref PredictedPlayerGhost health, MoonRaidMap map, double now, float dt)
         {
+            using var profile = s_ThinkProfile.Auto();
             Vector3 position = pose.Position;
             Vector3 eye = ghost.ShotOrigin.position;
             brain.SelfStatus = null;

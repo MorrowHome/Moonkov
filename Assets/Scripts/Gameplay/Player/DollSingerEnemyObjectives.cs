@@ -192,6 +192,20 @@ namespace Unity.MP_FPS
     public partial class DollSingerEnemySystem
     {
         private readonly List<RaidSpawnObserver> m_LocalExitObservers = new List<RaidSpawnObserver>();
+        private readonly List<CachePathCandidate> m_CachePaths = new List<CachePathCandidate>(64);
+
+        private struct CachePathCandidate : IComparable<CachePathCandidate>
+        {
+            public int Index;
+            public Vector3 Position;
+            public float LowerBound;
+
+            public int CompareTo(CachePathCandidate other)
+            {
+                int order = LowerBound.CompareTo(other.LowerBound);
+                return order != 0 ? order : Index.CompareTo(other.Index);
+            }
+        }
 
         private bool LocalExitObserved(Vector3 position, PhysicsScene scene)
         {
@@ -227,8 +241,10 @@ namespace Unity.MP_FPS
             return EntityManager.HasComponent<RaidLootContainers>(entity) ? EntityManager.GetComponentObject<RaidLootContainers>(entity) : null;
         }
 
+        private static readonly Unity.Profiling.ProfilerMarker s_SelectCacheProfile = new("Moonkov.Pmc.SelectCache");
         private Vector3 SelectCache(DollSingerEnemyBrain brain, Vector3 position, MoonRaidMap map)
         {
+            using var profile = s_SelectCacheProfile.Auto();
             var loot = PmcLootContainers();
             if (brain.Cache >= 0)
             {
@@ -238,16 +254,33 @@ namespace Unity.MP_FPS
                 brain.LootUntil = 0; brain.NextPath = 0;
             }
             float best = float.MaxValue;
+            m_CachePaths.Clear();
+            bool hasStart = NavMesh.SamplePosition(position, out var start, 3, m_Filter);
             for (int i = 0; i < map.LootPositions.Length; i++)
             {
                 if (brain.VisitedCaches.Contains(i)) continue;
-                if (!NavMesh.SamplePosition(map.LootPositions[i], out var sample, 3, m_Filter) ||
-                    !CompletePath(brain, position, sample.position, out float length))
+                if (!NavMesh.SamplePosition(map.LootPositions[i], out var sample, 3, m_Filter))
+                { brain.VisitedCaches.Add(i); continue; }
+                float bound = (i * 7 + brain.Seed * 11) % 13;
+                if (hasStart) bound += Vector3.Distance(start.position, sample.position);
+                if (brain.Target != Entity.Null && HorizontalDistance(sample.position, brain.LastSeen) < 12) bound += 25;
+                m_CachePaths.Add(new CachePathCandidate { Index = i, Position = sample.position, LowerBound = bound });
+            }
+            m_CachePaths.Sort();
+            foreach (var candidate in m_CachePaths)
+            {
+                // A route cannot be shorter than the straight line between its snapped
+                // endpoints. Visit promising caches first, then stop once even that lower
+                // bound loses. Keep padding for large-world floating-point roundoff.
+                if (candidate.LowerBound > best + .05f) break;
+                int i = candidate.Index;
+                if (!CompletePath(brain, position, candidate.Position, out float length))
                 { brain.VisitedCaches.Add(i); continue; }
                 // Different route preferences distribute independent raiders across the map.
                 float value = length + (i * 7 + brain.Seed * 11) % 13;
-                if (brain.Target != Unity.Entities.Entity.Null && HorizontalDistance(sample.position, brain.LastSeen) < 12) value += 25;
-                if (value >= best) continue;
+                if (brain.Target != Entity.Null && HorizontalDistance(candidate.Position, brain.LastSeen) < 12) value += 25;
+                // Sorting must retain the original index-order tie break.
+                if (value > best || value == best && i > brain.Cache) continue;
                 best = value; brain.Cache = i; brain.CacheApproachKnown = false;
             }
             foreach (int id in PmcLootRules.NearbyDrawers(loot, position, brain.VisitedCaches))

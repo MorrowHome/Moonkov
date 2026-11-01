@@ -424,6 +424,7 @@ namespace Unity.MP_FPS
 
         private bool CompletePath(DollSingerEnemyBrain brain, Vector3 position, Vector3 goal, out float length)
         {
+            using var profile = s_ProbePathProfile.Auto();
             length = 0;
             if (!NavMesh.SamplePosition(position, out var start, 3, m_Filter) ||
                 !NavMesh.CalculatePath(start.position, goal, m_Filter, brain.ProbePath) ||
