@@ -43,7 +43,7 @@ namespace Unity.MP_FPS
             [GhostField] public AlienImpactKind ImpactKind;
         }
         [SerializeField] private AlienCreatureProfile profile;
-        [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant rigs update at 30/15 Hz; zero disables the budget. Server simulation is unchanged.")]
+        [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant visible rigs update at 30/15 Hz, distant off-screen rigs at 5 Hz; zero disables the budget. Server simulation is unchanged.")]
         private float presentationDistance = 60;
         private AlienCreatureBody m_Body;
         private Entity m_Target;
@@ -70,7 +70,11 @@ namespace Unity.MP_FPS
         private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new List<ProceduralAlienEnemy>();
         private float m_NextLod;
         private bool m_Liquid;
-        private float m_PresentationElapsed, m_NextPresentation;
+        private float m_PresentationElapsed, m_NextPresentation, m_LastPresentationInterval;
+        private static readonly Plane[] s_PresentationFrustum = new Plane[6];
+        private static Camera s_PresentationCamera;
+        private static Matrix4x4 s_PresentationMatrix;
+        private static int s_PresentationFrame = -1;
         public AlienCreatureProfile Profile => profile;
         public AlienCreatureBody Body => m_Body;
         public Vector3 AimPoint => m_Body != null ? m_Body.AimPoint : transform.position;
@@ -79,7 +83,7 @@ namespace Unity.MP_FPS
         public uint AttackCount => m_Attacks;
         public uint DamageCount => m_Hits;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() { s_ClientAliens.Clear(); }
+        private static void ResetStatics() { s_ClientAliens.Clear(); s_PresentationCamera = null; s_PresentationFrame = -1; }
 
         public override void OnGhostLinked()
         {
@@ -356,6 +360,9 @@ namespace Unity.MP_FPS
             m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);
             float interval = !Application.isPlaying || m_Liquid ? 0 : PresentationInterval(Camera.main, transform.position,
                 presentationDistance * Mathf.Max(1, m_Body.Scale));
+            // Turning back toward a distant rig must not wait for its old off-screen deadline.
+            immediate |= interval < m_LastPresentationInterval;
+            m_LastPresentationInterval = interval;
             if (!immediate && interval > 0 && Time.unscaledTime < m_NextPresentation) return;
             m_NextPresentation = Time.unscaledTime + interval;
             float presentationDt = Mathf.Min(m_PresentationElapsed, .1f);
@@ -377,7 +384,19 @@ namespace Unity.MP_FPS
                 Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
             float near = fullRateDistance * zoom;
             float squared = (position - viewer.transform.position).sqrMagnitude;
-            return squared <= near * near ? 0 : squared <= near * near * 4 ? 1f / 30 : 1f / 15;
+            if (squared <= near * near) return 0;
+            var matrix = viewer.projectionMatrix * viewer.worldToCameraMatrix;
+            if (s_PresentationCamera != viewer || s_PresentationFrame != Time.frameCount || s_PresentationMatrix != matrix)
+            {
+                GeometryUtility.CalculateFrustumPlanes(matrix, s_PresentationFrustum);
+                s_PresentationCamera = viewer; s_PresentationFrame = Time.frameCount; s_PresentationMatrix = matrix;
+            }
+            // Generous bounds retain tall/long rigs at the image edge. This only budgets
+            // client posing; sensing, server hitboxes, attack events and sound still update.
+            float radius = Mathf.Max(8f, fullRateDistance * .25f);
+            foreach (var plane in s_PresentationFrustum)
+                if (plane.GetDistanceToPoint(position) < -radius) return 1f / 5;
+            return squared <= near * near * 4 ? 1f / 30 : 1f / 15;
         }
         private bool WantsLiquid()
         {

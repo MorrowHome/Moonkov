@@ -52,12 +52,20 @@ public static class MoonkovAlienPerformanceChecks
     {
         var camera = new GameObject("Budget fixture camera").AddComponent<Camera>();
         camera.fieldOfView = 45;
+        camera.aspect = 1;
         var method = typeof(ProceduralAlienEnemy).GetMethod("PresentationInterval", BindingFlags.Static | BindingFlags.NonPublic);
         float Interval(float distance, float budget = 60, Camera viewer = null) =>
             (float)method.Invoke(null, new object[] { viewer ? viewer : camera, Vector3.forward * distance, budget });
         Require(Interval(60) == 0, "Near rigs must update every frame.");
         Require(Mathf.Approximately(Interval(61), 1f / 30), "Middle rigs must use 30 Hz.");
         Require(Mathf.Approximately(Interval(121), 1f / 15), "Distant rigs must use 15 Hz.");
+        camera.transform.rotation = Quaternion.Euler(0, 180, 0);
+        Require(Mathf.Approximately(Interval(121), 1f / 5), "Off-screen distant rigs must use 5 Hz.");
+        Require(Interval(60) == 0, "Nearby rigs retain full rate even behind the viewer.");
+        camera.transform.rotation = Quaternion.identity;
+        Require(Mathf.Approximately(Interval(121), 1f / 15), "Turning back must restore the visible budget in the same frame.");
+        Require(Mathf.Approximately((float)method.Invoke(null, new object[] { camera, new Vector3(55, 0, 121), 60f }), 1f / 15),
+            "A rig's body must remain visible when its centre is just outside the frustum.");
         Require(Interval(1000, 0) == 0, "Zero budget must disable throttling.");
         camera.fieldOfView = 15;
         Require(Interval(180) == 0, "A magnified distant rig must regain full rate.");
