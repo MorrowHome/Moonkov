@@ -31,6 +31,8 @@ namespace Unity.MP_FPS
         private EnergyShieldPresentation m_Protection;
         private Animator m_PresentationAnimator;
         private float m_AuthoredSpringDistance = float.NaN;
+        private AnimatorCullingMode? m_AuthoredAnimationCulling;
+        private readonly System.Collections.Generic.Dictionary<SkinnedMeshRenderer, bool> m_AuthoredOffscreenSkinning = new();
         public DollSingerMeleePresentation MeleePresentation => m_Melee;
         public Animator PresentationAnimator => m_PresentationAnimator;
         private uint m_LastShotEffectTick;
@@ -224,6 +226,7 @@ namespace Unity.MP_FPS
                         : m_AuthoredSpringDistance;
                 }
                 m_PresentationAnimator = m_Model.GetComponent<Animator>();
+                ConfigureClientAnimationBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
                 m_Melee = m_Model.GetComponent<DollSingerMeleePresentation>();
                 if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();
                 m_Melee.Configure(m_PresentationAnimator, m_View, m_Halo);
@@ -243,6 +246,23 @@ namespace Unity.MP_FPS
         public void PresentMelee(in MeleeViewState state)
         {
             if (m_Linked && Role != MultiplayerRole.Server && m_Melee) m_Melee.SetPresentation(state);
+        }
+
+        private void ConfigureClientAnimationBudget(bool budget)
+        {
+            // Keep animation state advancing, but do not skin invisible remote
+            // avatars or write their cosmetic IK bones. Server simulation is separate.
+            if (m_PresentationAnimator)
+            {
+                m_AuthoredAnimationCulling ??= m_PresentationAnimator.cullingMode;
+                m_PresentationAnimator.cullingMode = budget ? AnimatorCullingMode.CullUpdateTransforms : m_AuthoredAnimationCulling.Value;
+            }
+            foreach (var renderer in m_Model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {
+                if (!m_AuthoredOffscreenSkinning.TryGetValue(renderer, out bool authored))
+                    m_AuthoredOffscreenSkinning.Add(renderer, authored = renderer.updateWhenOffscreen);
+                renderer.updateWhenOffscreen = !budget && authored;
+            }
         }
 
         public Camera ActivateOwnedView()
