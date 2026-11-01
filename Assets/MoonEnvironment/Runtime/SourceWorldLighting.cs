@@ -23,6 +23,7 @@ namespace Unity.MP_FPS.Moon
         private Texture previousStatistics;
         private float previousStatisticsEnabled, previousSpecularSamples, previousDiffuseSamples;
         private bool applied;
+        private SourceWorldReflectionBudget reflectionBudget;
         private static SourceWorldLighting owner;
         private readonly Dictionary<Camera, CameraState> cameras = new Dictionary<Camera, CameraState>();
         private static readonly int Statistics = Shader.PropertyToID("_SourceAOAtlases");
@@ -84,6 +85,7 @@ namespace Unity.MP_FPS.Moon
             Shader.SetGlobalTexture(Statistics, data.surfaceStatistics); Shader.SetGlobalFloat(StatisticsEnabled, 1);
             Shader.SetGlobalFloat(SpecularSamples, data.specularSamples); Shader.SetGlobalFloat(DiffuseSamples, data.diffuseSamples);
             applied = true; owner = this;
+            reflectionBudget = new SourceWorldReflectionBudget(GetComponentsInChildren<ReflectionProbe>(true), SystemInfo.maxTextureSize);
             RenderPipelineManager.beginCameraRendering += PrepareCamera;
         }
 
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS.Moon
             if (!Application.IsPlaying(gameObject) && camera.gameObject.scene != gameObject.scene) return;
             int subjects = LayerMask.GetMask("UI", "ServerPlayer", "ClientPlayer", "FirstPersonOverlay");
             if ((camera.cullingMask & ~subjects) == 0) return;
+            reflectionBudget.Prepare(camera, Time.frameCount, Time.unscaledTimeAsDouble);
             Camera displayCamera = camera;
             int ui = LayerMask.GetMask("UI");
             var stack = additional.cameraStack;
@@ -149,6 +152,7 @@ namespace Unity.MP_FPS.Moon
         {
             if (!applied) return;
             RenderPipelineManager.beginCameraRendering -= PrepareCamera;
+            reflectionBudget?.Restore(); reflectionBudget = null;
             foreach (var pair in cameras)
             {
                 if (!pair.Key) continue;

@@ -108,7 +108,7 @@ namespace Unity.MP_FPS.Moon.Editor
                 }
                 cube.Apply(false, false);
                 EditorUtility.CompressCubemapTexture(cube, TextureFormat.BC6H, TextureCompressionQuality.Best);
-                cube.Apply(false, false); return cube;
+                cube.Apply(false, false); SourceWorldRuntimeAssets.SetReadable(cube, false); return cube;
             }
             catch { UnityEngine.Object.DestroyImmediate(cube); throw; }
         }

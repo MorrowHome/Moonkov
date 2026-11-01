@@ -275,7 +275,7 @@ namespace Unity.MP_FPS.Moon.Editor
 
                 }
                 bool reused = existing.TryGetValue(name, out var mesh);
-                if (reused) mesh.Clear(); else mesh = new Mesh { name = name };
+                if (reused) { SourceWorldRuntimeAssets.SetReadable(mesh, true); mesh.Clear(); } else mesh = new Mesh { name = name };
                 mesh.indexFormat = IndexFormat.UInt32;
                 mesh.SetVertexBufferParams(chunk.vertices,
                     new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
@@ -289,6 +289,7 @@ namespace Unity.MP_FPS.Moon.Editor
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord5, VertexAttributeFormat.Float32, 4));
                 mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length); mesh.SetIndexBufferParams(indices.Length, IndexFormat.UInt32); mesh.SetIndexBufferData(indices, 0, 0, indices.Length);
                 mesh.subMeshCount = 1; mesh.SetSubMesh(0, new SubMeshDescriptor(0, indices.Length, MeshTopology.Triangles)); mesh.bounds = new Bounds((minimum + maximum) * .5f, maximum - minimum);
+                SourceWorldRuntimeAssets.SetReadable(mesh, false);
                 if (!reused) AssetDatabase.AddObjectToAsset(mesh, bundle);
                 EditorUtility.SetDirty(mesh); meshes.Add(mesh);
             }
@@ -344,7 +345,7 @@ namespace Unity.MP_FPS.Moon.Editor
                     }
                     finally { UnityEngine.Object.DestroyImmediate(pixels); RenderTexture.ReleaseTemporary(target); Resources.UnloadAsset(source); }
                 }
-                array.Apply(false, false); AssetDatabase.AddObjectToAsset(array, data);
+                array.Apply(false, false); SourceWorldRuntimeAssets.SetReadable(array, false); AssetDatabase.AddObjectToAsset(array, data);
                 var old = data.surfaceStatistics; data.surfaceStatistics = array;
                 if (old && AssetDatabase.GetAssetPath(old) == DataPath) UnityEngine.Object.DestroyImmediate(old, true);
             }
