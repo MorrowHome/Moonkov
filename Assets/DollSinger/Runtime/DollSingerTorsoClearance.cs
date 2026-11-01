@@ -13,6 +13,8 @@ internal sealed class DollSingerTorsoClearance
     private readonly Transform[] bones;
     private readonly Matrix4x4[] bindPoses, skinMatrices;
     private readonly bool[] usedBones;
+    private readonly Bounds[] boneBounds;
+    private readonly float minWeightSum, maxWeightSum;
 
     public DollSingerTorsoClearance(SkinnedMeshRenderer renderer, Animator animator, Mesh visibleMesh = null)
     {
@@ -21,6 +23,8 @@ internal sealed class DollSingerTorsoClearance
         bindPoses = mesh.bindposes;
         skinMatrices = new Matrix4x4[bones.Length];
         usedBones = new bool[bones.Length];
+        boneBounds = new Bounds[bones.Length];
+        float minimumSum = float.PositiveInfinity, maximumSum = 0f;
         var torso = new HashSet<Transform> {
             animator.GetBoneTransform(HumanBodyBones.Chest),
             animator.GetBoneTransform(HumanBodyBones.UpperChest),
@@ -65,6 +69,8 @@ internal sealed class DollSingerTorsoClearance
         weights = influences.ToArray();
         triangles = faces.ToArray();
         armFaces = arms.ToArray();
+        minWeightSum = minimumSum;
+        maxWeightSum = maximumSum;
 
         float TorsoWeight(int index, float weight) => weight > 0f && torso.Contains(bones[index]) ? weight : 0f;
         float ArmWeight(int index, float weight) => armBones[index] ? weight : 0f;
@@ -75,12 +81,19 @@ internal sealed class DollSingerTorsoClearance
                 remap[index] = points.Count;
                 points.Add(sourceVertices[index]); influences.Add(sourceWeights[index]);
                 var w = sourceWeights[index];
-                Use(w.boneIndex0, w.weight0); Use(w.boneIndex1, w.weight1);
-                Use(w.boneIndex2, w.weight2); Use(w.boneIndex3, w.weight3);
+                float sum = w.weight0 + w.weight1 + w.weight2 + w.weight3;
+                minimumSum = Mathf.Min(minimumSum, sum); maximumSum = Mathf.Max(maximumSum, sum);
+                Use(w.boneIndex0, w.weight0, sourceVertices[index]); Use(w.boneIndex1, w.weight1, sourceVertices[index]);
+                Use(w.boneIndex2, w.weight2, sourceVertices[index]); Use(w.boneIndex3, w.weight3, sourceVertices[index]);
             }
             faces.Add(remap[index]);
         }
-        void Use(int index, float weight) { if (weight > 0f) usedBones[index] = true; }
+        void Use(int index, float weight, Vector3 point)
+        {
+            if (weight <= 0f) return;
+            if (usedBones[index]) boneBounds[index].Encapsulate(point);
+            else { boneBounds[index] = new Bounds(point, Vector3.zero); usedBones[index] = true; }
+        }
     }
 
     public Vector3 KeepAboveTorso(Vector3 eye, Vector3 up, float nearClip, float verticalFov, float aspect, Quaternion look, bool includeArms = true)
@@ -104,6 +117,11 @@ internal sealed class DollSingerTorsoClearance
         minX -= padding; maxX += padding; minZ -= padding; maxZ += padding;
         for (int i = 0; i < bones.Length; i++)
             if (usedBones[i]) skinMatrices[i] = bones[i].localToWorldMatrix * bindPoses[i];
+        // A skinned point is a positive weighted sum of bone-transformed points.
+        // Their bounds enclose it, including small deviations from a unit weight sum.
+        // Usually the whole upper body is below the near plane: avoid skinning every
+        // vertex in that case. Ambiguous poses still use the original triangle test.
+        if (UpperBodyTop(up) + padding + .002f <= Vector3.Dot(eye, up) + nearBottom) return eye;
         for (int i = 0; i < vertices.Length; i++)
         {
             var w = weights[i];
@@ -128,5 +146,24 @@ internal sealed class DollSingerTorsoClearance
 
     private Vector3 Skin(int index, float weight, Vector3 point) => weight > 0f
         ? skinMatrices[index].MultiplyPoint3x4(point) * weight : Vector3.zero;
+
+    private float UpperBodyTop(Vector3 up)
+    {
+        float minimum = float.PositiveInfinity, maximum = float.NegativeInfinity;
+        for (int i = 0; i < bones.Length; i++)
+        {
+            if (!usedBones[i]) continue;
+            var matrix = skinMatrices[i];
+            var bounds = boneBounds[i];
+            float centre = Vector3.Dot(matrix.MultiplyPoint3x4(bounds.center), up);
+            var extents = bounds.extents;
+            float radius = Mathf.Abs(up.x * matrix.m00 + up.y * matrix.m10 + up.z * matrix.m20) * extents.x
+                + Mathf.Abs(up.x * matrix.m01 + up.y * matrix.m11 + up.z * matrix.m21) * extents.y
+                + Mathf.Abs(up.x * matrix.m02 + up.y * matrix.m12 + up.z * matrix.m22) * extents.z;
+            minimum = Mathf.Min(minimum, centre - radius); maximum = Mathf.Max(maximum, centre + radius);
+        }
+        return Mathf.Max(Mathf.Max(minimum * minWeightSum, minimum * maxWeightSum),
+            Mathf.Max(maximum * minWeightSum, maximum * maxWeightSum));
+    }
 }
 }
