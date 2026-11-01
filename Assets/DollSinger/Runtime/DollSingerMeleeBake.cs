@@ -23,9 +23,11 @@ namespace Unity.MP_FPS.DollSinger
             public Vector3 gripPosition;
             public Clip[] clips;
         }
-        private static TextAsset cachedAsset;
-        private static string cachedText;
-        private static Library cachedLibrary;
+        private sealed class Cached { public int Hash; public Library Data; }
+        private static readonly Dictionary<TextAsset, Cached> Libraries = new Dictionary<TextAsset, Cached>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetCache() => Libraries.Clear();
         private readonly Library library;
         private readonly Dictionary<int, Clip> clips = new Dictionary<int, Clip>();
         private readonly Transform[] bones;
@@ -41,13 +43,19 @@ namespace Unity.MP_FPS.DollSinger
         public DollSingerMeleeBake(Animator animator, TextAsset asset)
         {
             if (!animator || !asset) throw new ArgumentException("Melee requires an Animator and independent baked library.");
-            string text = asset.text;
-            if (cachedAsset != asset || cachedText != text || cachedLibrary == null)
+            bool reload = !Libraries.TryGetValue(asset, out var cached);
+#if UNITY_EDITOR
+            // Match the action/weapon libraries: edit previews notice imports,
+            // while runtime actors share immutable samples per exact rig.
+            if (!reload && !Application.isPlaying) reload = cached.Hash != asset.text.GetHashCode();
+#endif
+            if (reload)
             {
-                cachedLibrary = JsonUtility.FromJson<Library>(text);
-                cachedAsset = asset; cachedText = text;
+                string text = asset.text;
+                cached = new Cached { Hash = text.GetHashCode(), Data = JsonUtility.FromJson<Library>(text) };
+                Libraries[asset] = cached;
             }
-            library = cachedLibrary;
+            library = cached.Data;
             if (library == null || library.version != 1 || library.bones == null || library.clips == null)
                 throw new InvalidOperationException("Unsupported melee bake.");
             var hierarchy = new Dictionary<string, Transform>();

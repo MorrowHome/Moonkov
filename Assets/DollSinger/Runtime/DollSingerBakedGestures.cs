@@ -28,9 +28,11 @@ namespace Unity.MP_FPS.DollSinger
             public Quaternion chestBindRotation;
             public Motion[] motions;
         }
-        private static TextAsset cachedAsset;
-        private static Library cachedLibrary;
-        private static string cachedText;
+        private sealed class Cached { public int Hash; public Library Data; }
+        private static readonly Dictionary<TextAsset, Cached> Libraries = new Dictionary<TextAsset, Cached>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetCache() => Libraries.Clear();
         private readonly Library library;
         private readonly Transform[] bones;
         private readonly Quaternion[] previous, target, bindRotation;
@@ -47,14 +49,19 @@ namespace Unity.MP_FPS.DollSinger
         {
             body = animator.transform;
             movement = animator.GetComponent<DollSingerMovement>();
-            string text = asset.text;
-            if (cachedAsset != asset || cachedLibrary == null || cachedText != text)
+            bool reload = !Libraries.TryGetValue(asset, out var cached);
+#if UNITY_EDITOR
+            // Previews may reimport a bake without reloading the domain. In a raid,
+            // each immutable exact-rig library is parsed once, even as rigs alternate.
+            if (!reload && !Application.isPlaying) reload = cached.Hash != asset.text.GetHashCode();
+#endif
+            if (reload)
             {
-                cachedLibrary = JsonUtility.FromJson<Library>(text);
-                cachedText = text;
-                cachedAsset = asset;
+                string text = asset.text;
+                cached = new Cached { Hash = text.GetHashCode(), Data = JsonUtility.FromJson<Library>(text) };
+                Libraries[asset] = cached;
             }
-            library = cachedLibrary;
+            library = cached.Data;
             if (library.version != 1 || library.bones == null || library.motions.Length < 4)
                 throw new InvalidOperationException("Unsupported Blender gesture bake.");
             var hierarchy = new Dictionary<string, Transform>();
