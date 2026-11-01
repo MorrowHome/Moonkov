@@ -38,6 +38,7 @@ public static class MoonkovAlienPerformanceChecks
             CheckDistanceBudget();
             CheckMeshTransforms();
             CheckSpringCapsules();
+            CheckSpringSpheres();
             CheckGpuSplats();
             return $"Alien performance: PASS ({assertions} assertions; near/scope/opt-out, transformed mesh equivalence, GPU accumulation/clear).";
         }
@@ -169,6 +170,39 @@ public static class MoonkovAlienPerformanceChecks
             start.position = new Vector3(.3f, -1, 0); end.position = new Vector3(.3f, 1, 0);
             direction = (Vector3)resolve.Invoke(null, new object[] { Vector3.zero, initial, .3f, samples });
             Require(Vector3.Distance(direction, initial) > .01f, "A simulated proxy must observe writes after the snapshot.");
+        }
+        finally { Object.DestroyImmediate(owner); }
+    }
+
+    private static void CheckSpringSpheres()
+    {
+        var owner = new GameObject("Hand sphere snapshot fixture");
+        var spring = owner.AddComponent<SecondaryBoneSpring>();
+        var hand = new GameObject("Hand").transform; hand.SetParent(owner.transform, false);
+        var source = new[] { new SecondaryBoneSpring.BoneSphere { bone = hand, radius = .1f } };
+        var capture = typeof(SecondaryBoneSpring).GetMethod("CaptureSpheres", BindingFlags.NonPublic | BindingFlags.Instance);
+        var resolve = typeof(SecondaryBoneSpring).GetMethod("ResolveCollisions", BindingFlags.NonPublic | BindingFlags.Static);
+        var field = typeof(SecondaryBoneSpring).GetField("m_SkirtSpheres", BindingFlags.NonPublic | BindingFlags.Instance);
+        Vector3 Solve() => (Vector3)resolve.Invoke(null, new object[] {
+            Vector3.zero, Vector3.right, Vector3.right, 1f, field.GetValue(spring), 0f });
+        bool Live() { var sample = ((Array)field.GetValue(spring)).GetValue(0); return (bool)sample.GetType().GetField("liveQuery").GetValue(sample); }
+        try
+        {
+            hand.position = new Vector3(.4f, .05f, 0);
+            capture.Invoke(spring, new object[] { source });
+            Require(!Live(), "Independent hands must share a frame snapshot.");
+            var pushed = Solve();
+            Require(Mathf.Abs(pushed.magnitude - 1f) < .00001f && Vector3.Distance(pushed, Vector3.right) > .01f,
+                "A cached hand must move the skirt segment without changing its length.");
+            hand.position = Vector3.up * 2;
+            Require(Solve() == pushed, "Independent hands must retain the captured position within a step.");
+            capture.Invoke(spring, new object[] { source });
+            Require(Solve() == Vector3.right, "The next frame must observe hand movement.");
+            Field<System.Collections.Generic.HashSet<Transform>>(spring, "m_BoundBones").Add(hand);
+            field.SetValue(spring, null); capture.Invoke(spring, new object[] { source });
+            Require(Live(), "A hand on a simulated bone must keep live queries.");
+            hand.position = new Vector3(.4f, .05f, 0);
+            Require(Solve() == pushed, "Simulated hands must observe writes after capture.");
         }
         finally { Object.DestroyImmediate(owner); }
     }

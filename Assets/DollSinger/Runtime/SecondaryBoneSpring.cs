@@ -127,6 +127,11 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private Transform m_SkirtCenter;
     private Transform[] m_OuterSkirtRoots;
     private Transform[][] m_OuterSkirtChains;
+    private Vector3[][] m_OuterSkirtPositions;
+    private float[][] m_OuterSkirtHeights;
+    private int[] m_OuterSkirtPointCounts;
+    private Vector3 m_OuterSkirtCenter, m_OuterSkirtUp;
+    private bool m_OuterSkirtDirty;
     private SkirtHandAvoidance m_HandAvoidance;
     private Vector3 m_LastRootPosition;
     private Vector3 m_LastRootVelocity;
@@ -137,6 +142,7 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private bool m_DistanceSuspended;
     private float m_NextDistanceCheck;
     private WorldCapsule[] m_HairCapsules, m_SkirtCapsules, m_FrontCapsules;
+    private WorldSphere[] m_SkirtSpheres;
     public float AirflowBlend => m_AirflowBlend;
 
     private struct WorldCapsule {
@@ -144,6 +150,12 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         public bool liveQuery, valid;
         public Vector3 start, axis;
         public float axisLengthSq, safeRadius;
+    }
+
+    private struct WorldSphere {
+        public BoneSphere source;
+        public bool liveQuery, valid;
+        public Vector3 position;
     }
 
     private sealed class SpringJoint {
@@ -154,12 +166,14 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         public Vector3 velocity;
         public float airflowPhase;
         public bool requiresRestPoseForQueries;
+        public bool changesOuterSkirt;
     }
 
     private void OnEnable() {
         m_DistanceSuspended = false;
         m_NextDistanceCheck = 0f;
         m_HairCapsules = m_SkirtCapsules = m_FrontCapsules = null;
+        m_SkirtSpheres = null;
         m_Hair.Clear();
         m_Skirt.Clear();
         m_Chest.Clear();
@@ -197,14 +211,21 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         m_SkirtCenter = null;
         m_OuterSkirtRoots = null;
         m_OuterSkirtChains = null;
+        m_OuterSkirtPositions = null;
+        m_OuterSkirtHeights = null;
+        m_OuterSkirtPointCounts = null;
+        m_OuterSkirtDirty = true;
         if (!separateInnerSkirt) return;
         var avoidance = GetComponent<SkirtHandAvoidance>();
         if (!avoidance || !avoidance.skirtCenter || avoidance.outerSkirtRoots == null) return;
         m_SkirtCenter = avoidance.skirtCenter;
         m_OuterSkirtRoots = avoidance.outerSkirtRoots;
-        // Cache topology only: the outer skirt moves during each spring step,
-        // so collision samples must still read its current world positions.
+        // Cache topology. Position snapshots are invalidated whenever a solved
+        // bone can move the outer skirt, including between joints in one step.
         m_OuterSkirtChains = new Transform[m_OuterSkirtRoots.Length][];
+        m_OuterSkirtPositions = new Vector3[m_OuterSkirtRoots.Length][];
+        m_OuterSkirtHeights = new float[m_OuterSkirtRoots.Length][];
+        m_OuterSkirtPointCounts = new int[m_OuterSkirtRoots.Length];
         for (int i = 0; i < m_OuterSkirtRoots.Length; i++) {
             var chain = new List<Transform>();
             var bone = m_OuterSkirtRoots[i];
@@ -214,6 +235,8 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                 chain.Add(bone);
             }
             m_OuterSkirtChains[i] = chain.ToArray();
+            m_OuterSkirtPositions[i] = new Vector3[chain.Count];
+            m_OuterSkirtHeights[i] = new float[chain.Count];
         }
         foreach (var joint in m_Skirt) {
             bool outer = false;
@@ -255,18 +278,19 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                 if (joints == m_Skirt && m_FrontSkirtBones.Contains(joint.bone))
                     depends |= CapsulesDependOn(frontSkirtBodyColliders, joint.bone);
             }
-            if (joints == m_Skirt && m_InnerSkirtBones.Contains(joint.bone) &&
-                m_OuterSkirtChains != null) {
-                depends |= PositionDependsOn(m_SkirtCenter, joint.bone);
+            if (m_OuterSkirtChains != null) {
+                bool changesOuter = transform.IsChildOf(joint.bone) || PositionDependsOn(m_SkirtCenter, joint.bone);
                 foreach (var chain in m_OuterSkirtChains) {
                     if (chain.Length < 2) continue;
                     foreach (var endpoint in chain)
                         if (PositionDependsOn(endpoint, joint.bone)) {
-                            depends = true;
+                            changesOuter = true;
                             break;
                         }
-                    if (depends) break;
+                    if (changesOuter) break;
                 }
+                joint.changesOuterSkirt = changesOuter;
+                if (joints == m_Skirt && m_InnerSkirtBones.Contains(joint.bone)) depends |= changesOuter;
             }
             joint.requiresRestPoseForQueries = depends;
         }
@@ -474,12 +498,13 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         CaptureCapsules(hairBodyColliders, ref m_HairCapsules);
         CaptureCapsules(skirtBodyColliders, ref m_SkirtCapsules);
         CaptureCapsules(frontSkirtBodyColliders, ref m_FrontCapsules);
+        CaptureSpheres(skirtColliders);
         for (int i = 0; i < steps; i++) {
             Simulate(m_Hair, stepTime, hairDamping, hairStiffness, hairGravity, rootSpeed,
                 maxBendAngle, maxBendAngle, 1f, null, m_HairCapsules, hairAirFlutter,
                 hairAirLift, hairAirMaxBendAngle, 0.96f);
             Simulate(m_Skirt, stepTime, skirtDamping, skirtStiffness, skirtGravity, rootSpeed,
-                skirtMaxBendAngle, skirtCollisionMaxBendAngle, 1f, skirtColliders,
+                skirtMaxBendAngle, skirtCollisionMaxBendAngle, 1f, m_SkirtSpheres,
                 m_SkirtCapsules, skirtAirFlutter, skirtAirLift, skirtAirMaxBendAngle, 0.45f);
             Simulate(m_Chest, stepTime, effectiveChestDamping, chestStiffness, chestGravity, rootSpeed,
                 chestMaxBendAngle, chestMaxBendAngle, m_ChestAmplitude, null, null,
@@ -490,8 +515,9 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private void Simulate(List<SpringJoint> joints, float dt, float damping,
         float stiffness, float gravity, float rootSpeed, float bendLimit, float collisionBendLimit,
         float motionAmplitude,
-        BoneSphere[] colliders, WorldCapsule[] bodyColliders, float airFlutter,
+        WorldSphere[] colliders, WorldCapsule[] bodyColliders, float airFlutter,
         float airLift, float airBendLimit, float airVertical) {
+        if (joints == m_Skirt) m_OuterSkirtDirty = true;
         // Inspector damping is calibrated at 60 FPS; convert it to this step's
         // duration so high frame rates do not make the spring overdamped.
         float retainedVelocity = Mathf.Pow(Mathf.Clamp01(damping), dt * 60f);
@@ -513,7 +539,10 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                 (1f - Mathf.Max(frontCover, innerSkirtBone ? handCover : 0f));
             float maxBendRad = Mathf.Lerp(bendLimit, airBendLimit, jointAirflow) * Mathf.Deg2Rad;
             var restRotation = parent.rotation * joint.restLocalRotation;
-            if (joint.requiresRestPoseForQueries) bone.rotation = restRotation;
+            if (joint.requiresRestPoseForQueries) {
+                bone.rotation = restRotation;
+                if (joint.changesOuterSkirt) m_OuterSkirtDirty = true;
+            }
             Vector3 origin = bone.position;
             // FBX armatures can have an imported 100x parent scale. TransformVector
             // includes that scale without resetting the bone and dirtying its
@@ -593,6 +622,7 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                     Mathf.Clamp01(motionAmplitude));
             Vector3 newTip = origin + direction;
             bone.rotation = Quaternion.FromToRotation(restDirection, visibleDirection) * restRotation;
+            if (joint.changesOuterSkirt) m_OuterSkirtDirty = true;
             // A collision can move the tip outward instantly. Drop velocity
             // aimed back into that obstacle so it does not re-enter next frame.
             Vector3 correction = newTip - next;
@@ -635,6 +665,41 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         }
     }
 
+    private void CaptureSpheres(BoneSphere[] sources) {
+        if (sources == null) { m_SkirtSpheres = null; return; }
+        bool rebuild = m_SkirtSpheres == null || m_SkirtSpheres.Length != sources.Length;
+        if (rebuild) m_SkirtSpheres = new WorldSphere[sources.Length];
+        for (int i = 0; i < sources.Length; i++) {
+            ref var sample = ref m_SkirtSpheres[i];
+            var source = sources[i];
+            if (rebuild || sample.source.bone != source.bone) {
+                sample.liveQuery = false;
+                foreach (var bone in m_BoundBones)
+                    if (bone && source.bone && source.bone.IsChildOf(bone)) { sample.liveQuery = true; break; }
+            }
+            sample.source = source;
+            sample.valid = source.bone && source.radius > 0f;
+            if (sample.valid && !sample.liveQuery) sample.position = source.bone.position;
+        }
+    }
+
+    private void CaptureOuterSkirt() {
+        m_OuterSkirtCenter = m_SkirtCenter.position;
+        m_OuterSkirtUp = transform.up;
+        for (int chain = 0; chain < m_OuterSkirtChains.Length; chain++) {
+            int count = 0;
+            foreach (var bone in m_OuterSkirtChains[chain]) {
+                if (!bone) break;
+                Vector3 position = bone.position;
+                m_OuterSkirtPositions[chain][count] = position;
+                m_OuterSkirtHeights[chain][count] = Vector3.Dot(position - m_OuterSkirtCenter, m_OuterSkirtUp);
+                count++;
+            }
+            m_OuterSkirtPointCounts[chain] = count;
+        }
+        m_OuterSkirtDirty = false;
+    }
+
     private static Vector3 ResolveCapsuleCollisions(Vector3 origin, Vector3 direction,
         float length, WorldCapsule[] colliders) {
         if (colliders == null) return direction;
@@ -670,8 +735,9 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private Vector3 KeepInnerSkirtInsideOuter(Vector3 origin, Vector3 direction,
         float length, float handCover) {
         if (!m_SkirtCenter || m_OuterSkirtChains == null) return direction;
-        Vector3 center = m_SkirtCenter.position;
-        Vector3 up = transform.up;
+        if (m_OuterSkirtDirty) CaptureOuterSkirt();
+        Vector3 center = m_OuterSkirtCenter;
+        Vector3 up = m_OuterSkirtUp;
         Vector3 tip = origin + direction;
         Vector3 radial = Vector3.ProjectOnPlane(tip - center, up);
         float radius = radial.magnitude;
@@ -680,15 +746,12 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         float height = Vector3.Dot(tip - center, up);
         float bestAlignment = Mathf.Lerp(0.8f, 0.5f, handCover);
         float outerRadius = 0f;
-        foreach (var chain in m_OuterSkirtChains) {
-            for (int i = 0; i + 1 < chain.Length; i++) {
-                var bone = chain[i];
-                var child = chain[i + 1];
-                if (!bone || !child) break;
-                Vector3 topPosition = bone.position;
-                Vector3 bottomPosition = child.position;
-                float top = Vector3.Dot(topPosition - center, up);
-                float bottom = Vector3.Dot(bottomPosition - center, up);
+        for (int chain = 0; chain < m_OuterSkirtChains.Length; chain++) {
+            for (int i = 0; i + 1 < m_OuterSkirtPointCounts[chain]; i++) {
+                Vector3 topPosition = m_OuterSkirtPositions[chain][i];
+                Vector3 bottomPosition = m_OuterSkirtPositions[chain][i + 1];
+                float top = m_OuterSkirtHeights[chain][i];
+                float bottom = m_OuterSkirtHeights[chain][i + 1];
                 bool withinHeight = height <= Mathf.Max(top, bottom) &&
                     height >= Mathf.Min(top, bottom);
                 if (withinHeight || handCover > 0.001f) {
@@ -733,12 +796,12 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     }
 
     private static Vector3 ResolveCollisions(Vector3 origin, Vector3 restDirection,
-        Vector3 direction, float length, BoneSphere[] colliders, float padding) {
+        Vector3 direction, float length, WorldSphere[] colliders, float padding) {
         foreach (var collider in colliders) {
-            if (!collider.bone || collider.radius <= 0f) continue;
-            Vector3 toCenter = collider.bone.position - origin;
+            if (!collider.valid) continue;
+            Vector3 toCenter = (collider.liveQuery ? collider.source.bone.position : collider.position) - origin;
             float centerDistance = toCenter.magnitude;
-            float radius = collider.radius + padding;
+            float radius = collider.source.radius + padding;
             if (centerDistance <= radius + 0.0001f) continue;
 
             // The cloth follows the entire bone from origin to tip. Checking
