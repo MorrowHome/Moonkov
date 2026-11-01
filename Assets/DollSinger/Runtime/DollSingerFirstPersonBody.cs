@@ -7,7 +7,16 @@ namespace Unity.MP_FPS.DollSinger
 /// <summary>Closes the owner-only neckline; the world mesh and its shadow stay intact.</summary>
 internal static class DollSingerFirstPersonBody
 {
-    public static void CloseNeck(Mesh owner, Mesh source, Transform[] bones, Animator animator)
+    public static void ClearMorphPayload(Mesh owner, Mesh source)
+    {
+        owner.ClearBlendShapes();
+        var zero = new Vector3[owner.vertexCount];
+        for (int shape = 0; shape < source.blendShapeCount; shape++)
+            for (int frame = 0; frame < source.GetBlendShapeFrameCount(shape); frame++)
+                owner.AddBlendShapeFrame(source.GetBlendShapeName(shape), source.GetBlendShapeFrameWeight(shape, frame), zero, null, null);
+    }
+
+    public static void CloseNeck(Mesh owner, Mesh source, Transform[] bones, Animator animator, bool preserveMorphs = true)
     {
         if (!owner || !source || !animator || !animator.isHuman) return;
         int neck = Array.IndexOf(bones, animator.GetBoneTransform(HumanBodyBones.Neck));
@@ -57,7 +66,7 @@ internal static class DollSingerFirstPersonBody
         if (normals.Length == vertices.Length) owner.normals = normals;
         if (tangents.Length == vertices.Length) owner.tangents = tangents;
         // Facial morphs must not open the sealed boundary. Preserve every shape index.
-        if (source.blendShapeCount > 0)
+        if (preserveMorphs && source.blendShapeCount > 0)
         {
             var delta = new Vector3[vertices.Length];
             var deltaNormal = new Vector3[vertices.Length];

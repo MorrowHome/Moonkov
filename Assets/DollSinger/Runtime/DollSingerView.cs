@@ -23,6 +23,9 @@ public class DollSingerView : MonoBehaviour
 
     public GameObject player;
     public bool followPlayerRotation = true;
+    // Owner-camera copies can retain the morph slots without their duplicate
+    // expression data. The shared world mesh keeps its complete expressions.
+    public bool SimplifyFirstPersonMorphs { get; set; }
 
     [Header("Local player view")]
     [Tooltip("Switches between third and first person. Tick it in the Play-mode Inspector " +
@@ -642,6 +645,7 @@ public class DollSingerView : MonoBehaviour
 
         var copy = Instantiate(source);
         copy.name = source.name + " (FirstPerson camera only)";
+        if (SimplifyFirstPersonMorphs) DollSingerFirstPersonBody.ClearMorphPayload(copy, source);
 
         var kept = new System.Collections.Generic.List<int>();
         for (int s = 0; s < source.subMeshCount; s++)
@@ -665,7 +669,7 @@ public class DollSingerView : MonoBehaviour
             copy.SetTriangles(kept, s, false);
         }
         var animator = player ? player.GetComponentInChildren<Animator>() : null;
-        DollSingerFirstPersonBody.CloseNeck(copy, source, bones, animator);
+        DollSingerFirstPersonBody.CloseNeck(copy, source, bones, animator, !SimplifyFirstPersonMorphs);
         copy.bounds = source.bounds;
         return copy;
     }

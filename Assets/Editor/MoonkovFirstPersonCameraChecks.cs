@@ -15,6 +15,67 @@ public static class MoonkovFirstPersonCameraChecks
     [MenuItem("Tools/Moonkov/Check First Person Camera")]
     public static void Run() => Debug.Log(RunReport() + "\n" + CheckMotion());
 
+    public static string CheckCompactOwnerMorphs()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit Mode.");
+        long originalBytes = 0, compactBytes = 0;
+        int shapes = 0;
+        foreach (var path in new[] { "Assets/HatsuneMiku/Prefabs/HatsuneMikuPlayer.prefab",
+            "Assets/DollSinger/Prefabs/DollSingerPlayer.prefab", "Assets/Shian/Prefabs/ShianPlayer.prefab" })
+        {
+            var scene = EditorSceneManager.NewPreviewScene();
+            Mesh original = null, compact = null;
+            try
+            {
+                var root = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path), scene);
+                foreach (var behaviour in root.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
+                var renderer = root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(r => r.sharedMesh ? r.sharedMesh.vertexCount : 0).First();
+                var view = root.GetComponentInChildren<DollSingerView>(true);
+                if (!view) view = root.AddComponent<DollSingerView>();
+                view.player = root;
+                var source = renderer.sharedMesh;
+                var vertices = source.vertices;
+                int sourceShapes = source.blendShapeCount;
+                var build = typeof(DollSingerView).GetMethod("BuildFirstPersonMesh", Private);
+                object[] args = { source, renderer.bones, renderer.sharedMaterials };
+                view.SimplifyFirstPersonMorphs = false;
+                original = (Mesh)build.Invoke(view, args);
+                view.SimplifyFirstPersonMorphs = true;
+                compact = (Mesh)build.Invoke(view, args);
+                Require(original.vertices.SequenceEqual(compact.vertices) && original.normals.SequenceEqual(compact.normals) &&
+                    original.tangents.SequenceEqual(compact.tangents) && original.boneWeights.SequenceEqual(compact.boneWeights), "Compact owner changed base geometry: " + path);
+                Require(original.bindposes.SequenceEqual(compact.bindposes) && original.uv.SequenceEqual(compact.uv), "Compact owner changed binding/UV: " + path);
+                Require(original.subMeshCount == compact.subMeshCount && compact.blendShapeCount == sourceShapes, "Compact owner lost material or morph slots: " + path);
+                for (int sub = 0; sub < original.subMeshCount; sub++)
+                    Require(original.GetTriangles(sub).SequenceEqual(compact.GetTriangles(sub)), "Compact owner changed visible triangles: " + path);
+                var delta = new Vector3[compact.vertexCount];
+                for (int shape = 0; shape < sourceShapes; shape++)
+                {
+                    Require(compact.GetBlendShapeName(shape) == source.GetBlendShapeName(shape) &&
+                        compact.GetBlendShapeFrameCount(shape) == source.GetBlendShapeFrameCount(shape), "Morph slots no longer match observer mesh");
+                    for (int frame = 0; frame < source.GetBlendShapeFrameCount(shape); frame++)
+                    {
+                        Require(compact.GetBlendShapeFrameWeight(shape, frame) == source.GetBlendShapeFrameWeight(shape, frame), "Morph frame weights changed");
+                        compact.GetBlendShapeFrameVertices(shape, frame, delta, null, null);
+                        Require(delta.All(v => v == Vector3.zero), "Compact owner retained duplicate morph payload");
+                    }
+                }
+                Require(source.blendShapeCount == sourceShapes && source.vertices.SequenceEqual(vertices), "Source character mesh was modified");
+                shapes += sourceShapes;
+                originalBytes += UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(original);
+                compactBytes += UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(compact);
+            }
+            finally
+            {
+                if (original) UnityEngine.Object.DestroyImmediate(original);
+                if (compact) UnityEngine.Object.DestroyImmediate(compact);
+                EditorSceneManager.ClosePreviewScene(scene);
+            }
+        }
+        Require(compactBytes < originalBytes, "Compact owner meshes did not reduce native memory");
+        return $"Compact owner meshes: PASS (3 characters, {shapes} morph slots, unchanged base geometry and world meshes; {originalBytes / 1048576.0:F1} -> {compactBytes / 1048576.0:F1} MiB for one copy per character).";
+    }
+
     public static string RunReport()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run camera checks in Edit Mode.");
