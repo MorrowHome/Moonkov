@@ -25,6 +25,8 @@ namespace Unity.MP_FPS.Moon
         private Texture previousStatistics;
         private float previousStatisticsEnabled, previousSpecularSamples, previousDiffuseSamples;
         private bool applied;
+        private int previousTextureMipmapLimit;
+        private bool textureBudgetApplied;
         private SourceWorldReflectionBudget reflectionBudget;
         private static SourceWorldLighting owner;
         private readonly Dictionary<Camera, CameraState> cameras = new Dictionary<Camera, CameraState>();
@@ -87,6 +89,9 @@ namespace Unity.MP_FPS.Moon
             }
             Shader.SetGlobalTexture(Statistics, data.surfaceStatistics); Shader.SetGlobalFloat(StatisticsEnabled, 1);
             bool runtime = Application.IsPlaying(gameObject);
+            previousTextureMipmapLimit = QualitySettings.globalTextureMipmapLimit;
+            textureBudgetApplied = runtime;
+            if (runtime) QualitySettings.globalTextureMipmapLimit = Mathf.Max(previousTextureMipmapLimit, SourceWorldRuntimeQuality.TextureMipmapLimit);
             Shader.SetGlobalFloat(SpecularSamples, runtime ? 1 : data.specularSamples);
             Shader.SetGlobalFloat(DiffuseSamples, runtime ? 0 : data.diffuseSamples);
             applied = true; owner = this;
@@ -183,6 +188,8 @@ namespace Unity.MP_FPS.Moon
             Shader.SetGlobalTexture(Statistics, previousStatistics); Shader.SetGlobalFloat(StatisticsEnabled, previousStatisticsEnabled);
             Shader.SetGlobalFloat(SpecularSamples, previousSpecularSamples); Shader.SetGlobalFloat(DiffuseSamples, previousDiffuseSamples);
             previousMaps = null; previousProbes = null; previousStatistics = null;
+            if (textureBudgetApplied) QualitySettings.globalTextureMipmapLimit = previousTextureMipmapLimit;
+            textureBudgetApplied = false;
             applied = false; if (owner == this) owner = null;
         }
     }

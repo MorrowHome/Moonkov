@@ -417,6 +417,10 @@ namespace Unity.MP_FPS
                 ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
                 await WaitForPlayerConnectionAsync(cancellationToken);
                 await ScenesLoader.LoadGameplayAsync(null, client);
+                // Scene unload does not release unused asset payloads. Reclaim them
+                // while loading, before preparing the new raid's resident resources.
+                await Resources.UnloadUnusedAssets();
+                cancellationToken.ThrowIfCancellationRequested();
                 await PrepareCharacterResourcesAsync(client, cancellationToken);
                 foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>(FindObjectsSortMode.None))
                     await lighting.PrepareResourcesAsync(cancellationToken);

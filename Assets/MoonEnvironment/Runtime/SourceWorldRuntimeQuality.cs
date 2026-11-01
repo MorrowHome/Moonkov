@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Moon
     public static class SourceWorldRuntimeQuality
     {
         public const float RenderScale = .5f;
+        public const int TextureMipmapLimit = 1;
         public const float ViewDistance = 75f;
         public const float SecondaryMotionDistance = 12f;
         public const float FullRateCreatureDistance = 12f;
