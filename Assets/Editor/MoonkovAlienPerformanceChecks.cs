@@ -62,7 +62,8 @@ public static class MoonkovAlienPerformanceChecks
         Require(Mathf.Approximately(Interval(121), 1f / 15), "Distant rigs must use 15 Hz.");
         camera.transform.rotation = Quaternion.Euler(0, 180, 0);
         Require(Mathf.Approximately(Interval(121), 1f / 5), "Off-screen distant rigs must use 5 Hz.");
-        Require(Interval(60) == 0, "Nearby rigs retain full rate even behind the viewer.");
+        Require(Mathf.Approximately(Interval(60), 1f / 5), "Hidden rigs outside immediate reach must use 5 Hz.");
+        Require(Interval(8) == 0, "Rigs within immediate reach retain full rate behind the viewer.");
         camera.transform.rotation = Quaternion.identity;
         Require(Mathf.Approximately(Interval(121), 1f / 15), "Turning back must restore the visible budget in the same frame.");
         Require(Mathf.Approximately((float)method.Invoke(null, new object[] { camera, new Vector3(55, 0, 121), 60f }), 1f / 15),

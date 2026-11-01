@@ -43,7 +43,7 @@ namespace Unity.MP_FPS
             [GhostField] public AlienImpactKind ImpactKind;
         }
         [SerializeField] private AlienCreatureProfile profile;
-        [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant visible rigs update at 30/15 Hz, distant off-screen rigs at 5 Hz; zero disables the budget. Server simulation is unchanged.")]
+        [SerializeField, Min(0), Tooltip("Full-rate visible client rig distance at 45-degree FOV. Distant visible rigs update at 30/15 Hz. Fully off-screen rigs beyond 8 metres use 5 Hz; zero disables the budget. Server simulation is unchanged.")]
         private float presentationDistance = 60;
         private AlienCreatureBody m_Body;
         private Entity m_Target;
@@ -384,7 +384,7 @@ namespace Unity.MP_FPS
                 Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
             float near = fullRateDistance * zoom;
             float squared = (position - viewer.transform.position).sqrMagnitude;
-            if (squared <= near * near) return 0;
+            if (squared <= Mathf.Min(near * near, 8f * 8f)) return 0;
             var matrix = viewer.projectionMatrix * viewer.worldToCameraMatrix;
             if (s_PresentationCamera != viewer || s_PresentationFrame != Time.frameCount || s_PresentationMatrix != matrix)
             {
@@ -396,6 +396,7 @@ namespace Unity.MP_FPS
             float radius = Mathf.Max(8f, fullRateDistance * .25f);
             foreach (var plane in s_PresentationFrustum)
                 if (plane.GetDistanceToPoint(position) < -radius) return 1f / 5;
+            if (squared <= near * near) return 0;
             return squared <= near * near * 4 ? 1f / 30 : 1f / 15;
         }
         private bool WantsLiquid()
