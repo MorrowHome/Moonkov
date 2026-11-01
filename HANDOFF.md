@@ -1,5 +1,13 @@
 # 项目交接
 
+## 引擎路线评估（2026-11-02）
+
+- 用户确认目标为画质与性能平衡，1440p 稳定 60 帧。评估暂以 Windows、RTX 4070 SUPER 为参照。最低配置和是否接受超分尚未确定。
+- 基于 `104bf8a8` 的代码、资产和已有记录评估。没有进行当前 Windows Player 与 UE 的同场景对照。10 月中旬旧 Editor 数据不能代表新版整图性能；加载资源载荷也不能直接换算帧率。
+- UE 可复用原始模型、贴图、音频和部分动画。现有 Entities／NetCode／GhostBridge、UI Toolkit 和 URP 源材质链需重新实现或适配。独立 ASP.NET 后端可继续使用，但游戏服进程调度、客户端协议和共享规则需另行接入。不能把导入地图当作迁移完成。
+- 当前建议先测正式 Windows 包，再处理已定位的加载、材质或渲染成本。若继续评估 UE，先做 1–2 人周的代表区域样板，覆盖室外、室内金属反射、楼梯、玻璃和角色。保持视角、内容与内部渲染分辨率可比，关闭帧生成，分别记录画面、CPU／GPU 帧耗时、尾部卡顿和内存。此为评估建议，尚未执行迁移或样板。
+- UE 的 Lumen、Nanite 和 World Partition 提供相关工具，但仍需材质重建、合理拆分与加载配置。当前源网格按材质和 64／256 米空间块合并，不应原样假定符合 Lumen 室内表面缓存要求。依据：[官方迁移说明](https://dev.epicgames.com/documentation/en-us/unreal-engine/migrating-assets-from-unity-to-unreal-engine)、[Lumen 技术说明](https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-technical-details-in-unreal-engine)。
+
 ## Windows 加载地图资源优化（2026-11-02）
 
 - 用户确认卡在点击进入对局后、加载地图时，并授权直接优化，不以取得 Windows 日志为前提。Unity `6000.5.10f1`、URP `17.5.0`。已改资源可读设置和运行时反射预算；Windows 打包后的实际加载表现仍待验证，不能宣称所有未响应原因均已排除。
