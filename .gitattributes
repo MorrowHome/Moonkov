@@ -76,6 +76,8 @@ Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/*.asset filter=lfs di
 Assets/MoonEnvironment/Variants/MC00BakedBuilding/States/*/Probes.asset filter=lfs diff=lfs merge=lfs -text
 # Lighting Data Assets contain binary bake results referenced by saved scenes.
 **/LightingData.asset filter=lfs diff=lfs merge=lfs -text
+# Occlusion visibility tables are bulk bake data as well.
+**/OcclusionCullingData.asset filter=lfs diff=lfs merge=lfs -text
 
 # Unity serializes empty values with trailing spaces. Preserve its generated format.
 *.meta whitespace=-blank-at-eol

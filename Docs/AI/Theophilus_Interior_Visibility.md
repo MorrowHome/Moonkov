@@ -1,5 +1,7 @@
 # MC00 室外显示裁剪
 
+当前状态：2026-11-02，旧显示层已由 Source World 替换，下面的区域显示控制器已停用。正式地图现使用与 MainMenu、Persistents 共同烘焙的原生遮挡数据。当前配置和重烘焙要求见 `HANDOFF.md`。以下保留为旧方案记录。
+
 2026-10-15。直接修改正式 `TheophilusGameScene`，针对用户报告的 Play CPU 瓶颈。
 
 ## 当前证据

@@ -101,7 +101,9 @@ namespace Unity.MP_FPS.Moon.Editor
                 renderer.lightmapIndex = chunk.atlas; renderer.lightmapScaleOffset = new Vector4(1, 1, 0, 0);
                 renderer.lightProbeUsage = LightProbeUsage.Off; renderer.reflectionProbeUsage = ReflectionProbeUsage.BlendProbes;
                 // Preserve the source payload and spatial chunk boundaries; no Unity static batching copies.
-                GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.OccludeeStatic);
+                bool opaque = renderer.sharedMaterial.GetTag("RenderType", false, "") == "Opaque" && renderer.sharedMaterial.renderQueue <= 2500;
+                GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.OccludeeStatic |
+                    (opaque ? StaticEditorFlags.OccluderStatic : 0));
                 bindings.Add(new SourceWorldLighting.RendererBinding { renderer = renderer, atlas = chunk.atlas });
             }
             var probeRoot = new GameObject("Source room reflections"); probeRoot.transform.SetParent(sourceRoot.transform, false);
