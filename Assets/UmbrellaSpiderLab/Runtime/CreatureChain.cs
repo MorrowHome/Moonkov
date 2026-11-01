@@ -65,7 +65,13 @@ namespace Unity.MP_FPS.SpiderLab
         public void TickSuction(SurfaceMotor.Pose head, CreatureChainSettings s, float phase,
             float drive, float dt, bool detached, float bodyHeight = SurfaceMotor.Height)
         {
-            Tick(head, s, true, drive, dt, 0, detached, bodyHeight);
+            // Suction builds every ring again below. Keep the wave/history state,
+            // but do not solve and sweep an ordinary body that will be discarded.
+            Push(head);
+            m_Drive = Mathf.MoveTowards(m_Drive, Mathf.Clamp01(drive), dt * 3);
+            m_Phase = Mathf.Repeat(m_Phase + dt * s.waveFrequency * Mathf.PI * 2 * Mathf.Clamp01(drive), Mathf.PI * 2);
+            MaximumBend = 0; BodySweepsBlocked = SelfSeparations = 0;
+            m_HasPrevious = false;
             bool holding = phase < .58f;
             if (!m_SuckerInitialized || detached)
             {
@@ -99,6 +105,7 @@ namespace Unity.MP_FPS.SpiderLab
             {
                 Vector3 direction = Centres[Mathf.Max(0, i - 1)] - Centres[Mathf.Min(Rings - 1, i + 1)];
                 Tangents[i] = direction.sqrMagnitude > .00001f ? direction.normalized : head.Forward;
+                if (i > 0) MaximumBend = Mathf.Max(MaximumBend, Vector3.Angle(Tangents[i - 1], Tangents[i]));
             }
         }
 
