@@ -33,28 +33,15 @@ namespace Unity.MP_FPS
                 var mesh=renderer.sharedMesh;if(!mesh||renderer.name.Contains("Runtime"))continue;
                 var bones=renderer.bones;int neck=Array.IndexOf(bones,m_Neck),head=Array.IndexOf(bones,m_Head);
                 if(neck<0||head<0)continue;
-                var weights=mesh.boneWeights;if(weights.Length!=mesh.vertexCount)continue;
-                // Body skin only: neck jewellery and shoulder fabric must not enlarge the fit.
-                bool[] skin=new bool[mesh.vertexCount];bool hasSkin=false;
-                var materials=renderer.sharedMaterials;
-                for(int sub=0;sub<Mathf.Min(mesh.subMeshCount,materials.Length);sub++)
-                {
-                    string name=materials[sub]?materials[sub].name:"";
-                    if(!name.Equals("Body",StringComparison.OrdinalIgnoreCase)&&name.IndexOf("Skin",StringComparison.OrdinalIgnoreCase)<0)continue;
-                    foreach(int index in mesh.GetTriangles(sub))skin[index]=true;
-                    hasSkin=true;
-                }
-                var vertices=mesh.vertices;var bind=mesh.bindposes;var matrices=new Matrix4x4[bones.Length];
+                var data=EnergyShieldFittingData.For(renderer);
+                var weights=data.Weights;if(weights.Length!=mesh.vertexCount)continue;
+                var vertices=data.Vertices;var bind=data.Bindposes;var matrices=new Matrix4x4[bones.Length];
                 if(bind.Length!=bones.Length)continue;
                 for(int i=0;i<bones.Length;i++)if(bones[i])matrices[i]=bones[i].localToWorldMatrix*bind[i];
                 Quaternion inverse=Quaternion.Inverse(frame);
-                for(int i=0;i<vertices.Length;i++)
+                foreach(int i in data.Neck(neck,head))
                 {
-                    if(hasSkin&&!skin[i])continue;
                     var w=weights[i];
-                    float influence=NeckWeight(w.boneIndex0,w.weight0,neck,head)+NeckWeight(w.boneIndex1,w.weight1,neck,head)+
-                        NeckWeight(w.boneIndex2,w.weight2,neck,head)+NeckWeight(w.boneIndex3,w.weight3,neck,head);
-                    if(influence<.7f)continue;
                     Vector3 v=vertices[i];
                     Vector3 world=matrices[w.boneIndex0].MultiplyPoint3x4(v)*w.weight0+matrices[w.boneIndex1].MultiplyPoint3x4(v)*w.weight1+
                         matrices[w.boneIndex2].MultiplyPoint3x4(v)*w.weight2+matrices[w.boneIndex3].MultiplyPoint3x4(v)*w.weight3;
@@ -74,8 +61,6 @@ namespace Unity.MP_FPS
             m_CollarOffset=anchor.InverseTransformPoint(center);
             m_CollarLocalFrame=Quaternion.Inverse(anchor.rotation)*frame;
         }
-        private static float NeckWeight(int index,float weight,int neck,int head)=>index==neck||index==head?weight:0;
-
         private void BuildCollar(Material material,Material indicator)
         {
             Color navy=new Color(.055f,.075f,.15f),gold=new Color(.83f,.65f,.32f),lavender=new Color(.51f,.43f,.76f);

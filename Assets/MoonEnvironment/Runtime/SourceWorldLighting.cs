@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.Moon
 {
     /// <summary>One fixed-lighting owner for the formal source world. Restores borrowed state on unload.</summary>
     [DefaultExecutionOrder(100), DisallowMultipleComponent]
-    public sealed class SourceWorldLighting : MonoBehaviour
+    public sealed partial class SourceWorldLighting : MonoBehaviour
     {
         [Serializable] public struct RendererBinding
         {
@@ -50,7 +50,7 @@ namespace Unity.MP_FPS.Moon
 
         public void Configure(SourceWorldLightingData lighting, RendererBinding[] renderers)
         {
-            Restore(); data = lighting; bindings = renderers ?? Array.Empty<RendererBinding>();
+            Restore(); resourcesPrepared = false; data = lighting; bindings = renderers ?? Array.Empty<RendererBinding>();
             if (isActiveAndEnabled && Application.IsPlaying(gameObject)) Apply();
         }
 

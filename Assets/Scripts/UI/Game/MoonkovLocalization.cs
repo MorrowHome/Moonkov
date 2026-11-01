@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
@@ -17,6 +20,7 @@ namespace Unity.MP_FPS
         private static readonly Dictionary<TextElement, Binding> s_Bindings = new Dictionary<TextElement, Binding>();
         private static LocalizedAsset<FontAsset> s_Font;
         private static FontAsset s_CurrentFont;
+        private static FontAsset s_PreparedFont;
         private static bool s_Initialized;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -25,7 +29,7 @@ namespace Unity.MP_FPS
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Dispose();
             s_Bindings.Clear();
             if (s_Font != null) s_Font.AssetChanged -= FontChanged;
-            s_Font = null; s_CurrentFont = null; s_Initialized = false;
+            s_Font = null; s_CurrentFont = null; s_PreparedFont = null; s_Initialized = false;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -41,6 +45,28 @@ namespace Unity.MP_FPS
         {
             s_CurrentFont = font;
             foreach (var binding in s_Bindings.Values) ApplyFont(binding.Element);
+        }
+
+        public static async Task PrepareGameplayFontAsync(CancellationToken cancellationToken)
+        {
+            Initialize();
+            if (s_Font == null) return;
+            await LocalizationSettings.InitializationOperation.Task;
+            cancellationToken.ThrowIfCancellationRequested();
+            var font = await s_Font.LoadAssetAsync().Task;
+            if (!font || font == s_PreparedFont) return;
+            var table = await LocalizationSettings.StringDatabase.GetTableAsync(Strings).Task;
+            cancellationToken.ThrowIfCancellationRequested();
+            var text = new StringBuilder();
+            for (char c = ' '; c <= '~'; c++) text.Append(c);
+            if (table != null)
+                foreach (var entry in table.Values)
+                    text.Append(entry.LocalizedValue);
+            // Populate the existing dynamic atlas while the loading screen is
+            // visible. Keep the asset's font features; unknown names use fallback.
+            font.TryAddCharacters(text.ToString(), out _);
+            await Awaitable.NextFrameAsync(cancellationToken);
+            s_PreparedFont = font;
         }
 
         private static void ApplyFont(TextElement element)

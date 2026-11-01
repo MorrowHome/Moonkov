@@ -26,20 +26,14 @@ namespace Unity.MP_FPS
             foreach(var renderer in GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {
                 var mesh=renderer.sharedMesh;if(!mesh || renderer.name.Contains("Runtime"))continue;
-                var bones=renderer.bones;var bind=mesh.bindposes;var weights=mesh.boneWeights;
+                var data=EnergyShieldFittingData.For(renderer);
+                var bones=renderer.bones;var bind=data.Bindposes;var weights=data.Weights;
                 if(bind.Length!=bones.Length || weights.Length!=mesh.vertexCount)continue;
-                var accepted=new bool[mesh.vertexCount];var materials=renderer.sharedMaterials;
-                for(int sub=0;sub<Mathf.Min(materials.Length,mesh.subMeshCount);sub++)
-                {
-                    string name=materials[sub]?materials[sub].name:"";
-                    if(!name.Equals("Body",StringComparison.OrdinalIgnoreCase) && name.IndexOf("Dress",StringComparison.OrdinalIgnoreCase)<0)continue;
-                    foreach(int i in mesh.GetTriangles(sub))accepted[i]=true;
-                }
                 var matrices=new Matrix4x4[bones.Length];for(int i=0;i<bones.Length;i++)if(bones[i])matrices[i]=bones[i].localToWorldMatrix*bind[i];
-                var vertices=mesh.vertices;var inverse=Quaternion.Inverse(frame);
-                for(int i=0;i<vertices.Length;i++)
+                var vertices=data.Vertices;var inverse=Quaternion.Inverse(frame);
+                foreach(int i in data.Torso)
                 {
-                    if(!accepted[i])continue;var w=weights[i];var v=vertices[i];
+                    var w=weights[i];var v=vertices[i];
                     Vector3 world=matrices[w.boneIndex0].MultiplyPoint3x4(v)*w.weight0+matrices[w.boneIndex1].MultiplyPoint3x4(v)*w.weight1+
                         matrices[w.boneIndex2].MultiplyPoint3x4(v)*w.weight2+matrices[w.boneIndex3].MultiplyPoint3x4(v)*w.weight3;
                     Vector3 local=inverse*(world-center);

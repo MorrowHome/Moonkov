@@ -147,6 +147,7 @@ namespace Unity.MP_FPS
         async Task StartMainMenuAsync(CancellationToken cancellationToken)
         {
             DestroyLocalSimulationWorld();
+            EnergyShieldFittingData.Clear();
             var clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
             await ScenesLoader.LoadMenuPreviewAsync(clientWorld);
             GameSettings.Instance.MainMenuSceneLoaded = true;
@@ -416,6 +417,10 @@ namespace Unity.MP_FPS
                 ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
                 await WaitForPlayerConnectionAsync(cancellationToken);
                 await ScenesLoader.LoadGameplayAsync(null, client);
+                await PrepareCharacterResourcesAsync(client, cancellationToken);
+                foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>(FindObjectsSortMode.None))
+                    await lighting.PrepareResourcesAsync(cancellationToken);
+                await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
                 // Large maps can take longer than the ticket's 60-second lifetime.
                 // Issue only after local scene loading, just before the join RPC.
                 if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)
