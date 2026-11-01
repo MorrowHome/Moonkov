@@ -45,20 +45,20 @@ namespace Unity.MP_FPS.Moon.Editor
                 SourceWorldRuntimeQuality.Configure(runtime);
                 Require(authored.renderScale == 1 && authored.msaaSampleCount == 4 && authored.shadowDistance == 1800,
                     "The runtime quality budget modified the authored pipeline.");
-                Require(runtime.renderScale <= .67f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
+                Require(runtime.renderScale == .5f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
                     "The baked-world runtime budget was not applied.");
-                Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 75, false) == 100,
+                Require(SourceWorldRuntimeQuality.FarClip(2000, SourceWorldRuntimeQuality.ViewDistance, 75, false) == 75,
                     "Ordinary field of view must use the world range budget.");
                 float zoomFov = 2 * Mathf.Atan(Mathf.Tan(37.5f * Mathf.Deg2Rad) / 4) * Mathf.Rad2Deg;
-                Require(Mathf.Abs(SourceWorldRuntimeQuality.FarClip(2000, 100, zoomFov, false) - 400) < .001f,
+                Require(Mathf.Abs(SourceWorldRuntimeQuality.FarClip(2000, SourceWorldRuntimeQuality.ViewDistance, zoomFov, false) - 300) < .001f,
                     "A four-times sight must retain four-times viewing distance.");
-                Require(SourceWorldRuntimeQuality.FarClip(250, 100, zoomFov, false) == 250,
+                Require(SourceWorldRuntimeQuality.FarClip(250, SourceWorldRuntimeQuality.ViewDistance, zoomFov, false) == 250,
                     "Zoom must respect a shorter authored camera limit.");
                 Require(SourceWorldRuntimeQuality.FarClip(2000, 0, 75, false) == 2000,
                     "Zero budget must preserve the authored view distance.");
                 Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 75, true) == 2000,
                     "Orthographic cameras must retain their authored range.");
-                Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 100, false) == 100,
+                Require(SourceWorldRuntimeQuality.FarClip(2000, SourceWorldRuntimeQuality.ViewDistance, 100, false) == 75,
                     "A wider player field of view must not shorten nearby visibility.");
             }
             finally

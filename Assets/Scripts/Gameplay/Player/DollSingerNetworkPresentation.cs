@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
         private RaidActionPresentation m_Action;
         private EnergyShieldPresentation m_Protection;
         private Animator m_PresentationAnimator;
+        private float m_AuthoredSpringDistance = float.NaN;
         public DollSingerMeleePresentation MeleePresentation => m_Melee;
         public Animator PresentationAnimator => m_PresentationAnimator;
         private uint m_LastShotEffectTick;
@@ -212,6 +213,16 @@ namespace Unity.MP_FPS
             }
             if (Role != MultiplayerRole.Server)
             {
+                var springs = m_Model.GetComponent<SecondaryBoneSpring>();
+                if (springs)
+                {
+                    if (float.IsNaN(m_AuthoredSpringDistance)) m_AuthoredSpringDistance = springs.simulationDistance;
+                    springs.simulationDistance = Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active
+                        ? m_AuthoredSpringDistance > 0
+                            ? Mathf.Min(m_AuthoredSpringDistance, Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance)
+                            : Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance
+                        : m_AuthoredSpringDistance;
+                }
                 m_PresentationAnimator = m_Model.GetComponent<Animator>();
                 m_Melee = m_Model.GetComponent<DollSingerMeleePresentation>();
                 if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();

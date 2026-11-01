@@ -383,6 +383,8 @@ namespace Unity.MP_FPS
             float zoom = Mathf.Max(1, Mathf.Tan(22.5f * Mathf.Deg2Rad) /
                 Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
             float near = fullRateDistance * zoom;
+            if (Moon.SourceWorldRuntimeQuality.Active)
+                near = Mathf.Min(near, Moon.SourceWorldRuntimeQuality.FullRateCreatureDistance * zoom);
             float squared = (position - viewer.transform.position).sqrMagnitude;
             if (squared <= Mathf.Min(near * near, 8f * 8f)) return 0;
             var matrix = viewer.projectionMatrix * viewer.worldToCameraMatrix;

@@ -6,8 +6,10 @@ namespace Unity.MP_FPS.Moon
     /// <summary>Runtime budget for the fixed, baked world. Authoring assets stay unchanged.</summary>
     public static class SourceWorldRuntimeQuality
     {
-        public const float RenderScale = 2f / 3f;
-        public const float ViewDistance = 100f;
+        public const float RenderScale = .5f;
+        public const float ViewDistance = 75f;
+        public const float SecondaryMotionDistance = 12f;
+        public const float FullRateCreatureDistance = 12f;
         private static UniversalRenderPipelineAsset s_RuntimePipeline;
 
         public static bool Active => Application.isPlaying && s_RuntimePipeline &&
