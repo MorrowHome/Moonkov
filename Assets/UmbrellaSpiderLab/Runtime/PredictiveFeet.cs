@@ -178,6 +178,8 @@ namespace Unity.MP_FPS.SpiderLab
             }
             // Rotate priority each beat. An unavailable candidate never prevents another leg stepping.
             int first = Mathf.FloorToInt(m_Clock / duration) % Count;
+            bool urgentPredicted = false;
+            SurfaceMotor.Pose urgentSurface = default, urgentLanding = default, urgentSupportEnd = default;
             for (int pass = 0; pass < 2; pass++)
             for (int offset = 0; offset < Count; offset++)
             {
@@ -196,9 +198,18 @@ namespace Unity.MP_FPS.SpiderLab
                 bool support = foot.State == ContactState.Recovery || SupportDistributedWithout(i, urgent ? 2 : 4);
                 if (!support) foot.PlanningIssue = "support distribution";
                 float stepTime = urgent ? Mathf.Min(.095f, duration * .65f) : duration;
-                var stepSurface = urgent ? motor.Predict(input, speed, yaw, stepTime) : landingSurface;
-                var stepLanding = urgent ? PredictBody(stepSurface, targetLean, stepTime) : landing;
-                var stepSupportEnd = urgent ? PredictBody(motor.Predict(input, speed, yaw, stepTime + supportTime), targetLean, stepTime + supportTime) : supportEnd;
+                // Every urgent foot has the same horizon and unchanged motor state.
+                // Reuse this tick's value-copy prediction; contact tests remain per leg.
+                if (urgent && !urgentPredicted)
+                {
+                    urgentSurface = motor.Predict(input, speed, yaw, stepTime);
+                    urgentLanding = PredictBody(urgentSurface, targetLean, stepTime);
+                    urgentSupportEnd = PredictBody(motor.Predict(input, speed, yaw, stepTime + supportTime), targetLean, stepTime + supportTime);
+                    urgentPredicted = true;
+                }
+                var stepSurface = urgent ? urgentSurface : landingSurface;
+                var stepLanding = urgent ? urgentLanding : landing;
+                var stepSupportEnd = urgent ? urgentSupportEnd : supportEnd;
                 if (!support || !FindContact(stepLanding, stepSupportEnd, i, foot.Normal, out var contact, foot, stepSurface))
                 {
                     foot.FailedTime += dt;
