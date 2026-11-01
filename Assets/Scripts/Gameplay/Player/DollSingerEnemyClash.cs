@@ -98,7 +98,7 @@ namespace Unity.MP_FPS
                 var ghost = link.LinkedInstance ? link.LinkedInstance.GetComponent<PlayerGhost>() : null;
                 if (!ghost || !ghost.ShotOrigin) continue;
                 var health = EntityManager.GetComponentData<PredictedPlayerGhost>(agent.Entity);
-                input.Input = Think(agent.Brain, ghost, EntityManager.GetComponentData<LocalTransform>(agent.Entity),
+                input.Input = Think(agent.Entity, agent.Brain, ghost, EntityManager.GetComponentData<LocalTransform>(agent.Entity),
                     ref health, map, now, (float)SystemAPI.Time.DeltaTime);
                 EntityManager.SetComponentData(agent.Entity, input);
                 EntityManager.SetComponentData(agent.Entity, health);

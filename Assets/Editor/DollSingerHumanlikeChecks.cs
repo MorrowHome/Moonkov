@@ -804,6 +804,7 @@ public static class DollSingerHumanlikeChecks
         var source = new GameObject("Temporary PMC return-fire source") { hideFlags = HideFlags.HideInHierarchy };
         var target = new GameObject("Temporary PMC sight target") { hideFlags = HideFlags.HideInHierarchy };
         var wall = new GameObject("Temporary PMC sight blocker") { hideFlags = HideFlags.HideInHierarchy };
+        var previousTactical = typeof(DollSingerEnemySystem).GetField("m_TacticalWorld", PrivateInstance).GetValue(system);
         try
         {
             // No player prefab, nav bake or connection: exercise the real motor and sight query.
@@ -815,6 +816,13 @@ public static class DollSingerHumanlikeChecks
             var entity = world.EntityManager.CreateEntity();
             world.EntityManager.AddComponentObject(entity, new GhostGameObjectLink { LinkedInstance = linked });
             var actor = source.AddComponent<PlayerGhost>();
+            var self = world.EntityManager.CreateEntity();
+            var tactical = new TacticalServerWorld();
+            var selfStatus = new TacticalServerWorld.Status();
+            tactical.Statuses[self] = selfStatus;
+            tactical.Statuses[entity] = new TacticalServerWorld.Status { Fire = 100 };
+            typeof(DollSingerEnemySystem).GetField("m_TacticalWorld", PrivateInstance).SetValue(system, tactical);
+            Require(actor.GhostGameObject == null, "The new-actor fixture must precede GameObject linking.");
             var eye = new GameObject("Temporary shot origin").transform; eye.SetParent(source.transform, false); eye.localPosition = Vector3.up * 1.15f;
             typeof(PlayerGhost).GetField("<ShotOrigin>k__BackingField", PrivateInstance).SetValue(actor, eye);
             wall.transform.position = origin + Vector3.forward * 6 + Vector3.up;
@@ -832,8 +840,11 @@ public static class DollSingerHumanlikeChecks
                 brain.Goal = brain.TacticalGoal = origin - Vector3.forward * 3;
                 brain.CornerCount = 2; brain.Corner = 1; brain.Corners[0] = origin; brain.Corners[1] = brain.Goal;
                 if (heal) { brain.HealUntil = 15; brain.Interacting = true; }
-                return (PlayerInput)Call(system, "Think", new object[] { brain, actor,
+                var result = (PlayerInput)Call(system, "Think", new object[] { self, brain, actor,
                     Unity.Transforms.LocalTransform.FromPosition(origin), health, map, 10d, 1f / 60 });
+                Require(ReferenceEquals(brain.SelfStatus, selfStatus),
+                    "An unlinked actor failed to read its own ECS status or borrowed the target's status.");
+                return result;
             }
             var retreat = Input(PmcAction.Retreat);
             Require(retreat.Aim && retreat.Shoot && !retreat.Sprint && retreat.MoveInput.y < 0,
@@ -861,7 +872,7 @@ public static class DollSingerHumanlikeChecks
             looting.LootLookPoint = origin + Vector3.right * 3; looting.LastHealth = lootingHealth.CurrentHealth;
             looting.NextDecision = looting.NextSense = looting.NextPath = looting.NextAimError = looting.NextNearbyLootScan = 100;
             looting.Goal = looting.TacticalGoal = origin;
-            var lootInput = (PlayerInput)Call(system, "Think", new object[] { looting, actor,
+            var lootInput = (PlayerInput)Call(system, "Think", new object[] { self, looting, actor,
                 Unity.Transforms.LocalTransform.FromPosition(origin), lootingHealth, map, 10d, 1f / 60 });
             Require(lootInput.LookYawPitchDegrees.x > 0 && lootInput.LookYawPitchDegrees.y > 0 &&
                 lootInput.MoveInput.x == 0 && lootInput.MoveInput.y == 0 && !lootInput.Shoot,
@@ -876,13 +887,13 @@ public static class DollSingerHumanlikeChecks
             eating.NextDecision = eating.NextSense = eating.NextPath = eating.NextAimError = eating.NextNearbyLootScan = 100;
             eating.Goal = eating.TacticalGoal = origin + Vector3.forward * 4;
             eating.CornerCount = 2; eating.Corner = 1; eating.Corners[0] = origin; eating.Corners[1] = eating.Goal;
-            var foodInput = (PlayerInput)Call(system, "Think", new object[] { eating, actor,
+            var foodInput = (PlayerInput)Call(system, "Think", new object[] { self, eating, actor,
                 Unity.Transforms.LocalTransform.FromPosition(origin), eatingHealth, map, 10d, 1f / 60 });
             Require(eating.NutritionUntil == 13 && foodInput.MoveInput.x == 0 && foodInput.MoveInput.y == 0 &&
                 !foodInput.Sprint && !foodInput.Shoot && !foodInput.Reload && eating.Inventory.Count("ration", true) == 1,
                 "A PMC did not stay still and keep its item during timed food use.");
             eating.Visible = true;
-            Call(system, "Think", new object[] { eating, actor,
+            Call(system, "Think", new object[] { self, eating, actor,
                 Unity.Transforms.LocalTransform.FromPosition(origin), eatingHealth, map, 11d, 1f / 60 });
             Require(eating.NutritionUntil == 0 && eating.Inventory.Count("ration", true) == 1,
                 "A visible threat did not cancel the motor's timed food action.");
@@ -905,7 +916,7 @@ public static class DollSingerHumanlikeChecks
                 brain.LastSeen = target.transform.position; brain.VisibleSince = 8; brain.LastSeenTime = 10;
                 brain.LastHealth = health.CurrentHealth; brain.NextDecision = brain.NextSense = brain.NextPath = brain.NextAimError = 100;
                 brain.Goal = brain.TacticalGoal = origin;
-                PlayerInput Think(double now) => (PlayerInput)Call(system, "Think", new object[] { brain, actor,
+                PlayerInput Think(double now) => (PlayerInput)Call(system, "Think", new object[] { self, brain, actor,
                     Unity.Transforms.LocalTransform.FromPosition(origin), health, map, now, 1f / 60 });
                 var close = Think(10);
                 Require(close.EquipRevolver && !close.Shoot && !close.Reload && brain.NextTacticalSwitch == 13 &&
@@ -926,6 +937,7 @@ public static class DollSingerHumanlikeChecks
         }
         finally
         {
+            typeof(DollSingerEnemySystem).GetField("m_TacticalWorld", PrivateInstance).SetValue(system, previousTactical);
             Object.DestroyImmediate(source); Object.DestroyImmediate(target); Object.DestroyImmediate(wall);
             UnityEngine.Physics.SyncTransforms();
             UnityEngine.SceneManagement.SceneManager.SetActiveScene(original);

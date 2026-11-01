@@ -174,7 +174,7 @@ namespace Unity.MP_FPS
                 if (link.LinkedInstance == null) continue;
                 var ghost = link.LinkedInstance.GetComponent<PlayerGhost>();
                 if (ghost == null) continue;
-                input.ValueRW.Input = Think(brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
+                input.ValueRW.Input = Think(entity, brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
                     (float)SystemAPI.Time.DeltaTime);
                 if (brain.Extracted)
                 {

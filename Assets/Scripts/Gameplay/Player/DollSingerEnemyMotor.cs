@@ -6,13 +6,15 @@ namespace Unity.MP_FPS
 {
     public partial class DollSingerEnemySystem
     {
-        private PlayerInput Think(DollSingerEnemyBrain brain, PlayerGhost ghost, LocalTransform pose,
+        private PlayerInput Think(Unity.Entities.Entity self, DollSingerEnemyBrain brain, PlayerGhost ghost, LocalTransform pose,
             ref PredictedPlayerGhost health, MoonRaidMap map, double now, float dt)
         {
             Vector3 position = pose.Position;
             Vector3 eye = ghost.ShotOrigin.position;
             brain.SelfStatus = null;
-            if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(ghost.GhostGameObject.LinkedEntity, out var status))
+            // The ECS actor exists before the spawned GameObject finishes linking.
+            // Use the query's identity rather than reading the not-yet-bound behaviour.
+            if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(self, out var status))
                 brain.SelfStatus = status;
             brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now && brain.SelfStatus.Fire <= now &&
                 (brain.SelfStatus.Poison <= now || brain.SelfStatus.Antidote > now);
