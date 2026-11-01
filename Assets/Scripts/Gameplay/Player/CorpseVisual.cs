@@ -22,10 +22,15 @@ namespace Unity.MP_FPS
         private static readonly int s_GroundMask=LayerMask.GetMask("Default","Ground");
         private double m_Start;
         private float m_InitialAge,m_End;
+        private const int MaxSpringStepsPerSample = 4;
+        private static readonly Unity.Profiling.ProfilerMarker s_SpawnProfile = new("Moonkov.Corpse.Spawn");
+        private static readonly Unity.Profiling.ProfilerMarker s_SampleProfile = new("Moonkov.Corpse.SampleAge");
+        private static readonly Unity.Profiling.ProfilerMarker s_GroundProfile = new("Moonkov.Corpse.GroundFit");
         public bool Settled {get;private set;}
         public float FinishAge => m_End+(m_HairSpring!=null ? 3f : 0f);
         public static CorpseVisual Spawn(Transform parent,CorpsePresentationSettings settings,RaidCorpseRpc corpse)
         {
+            using var profile=s_SpawnProfile.Auto();
             if(settings==null || settings.Death==null || settings.CharacterVisuals==null || corpse.CharacterIndex<0 ||
                 corpse.CharacterIndex>=settings.CharacterVisuals.Length || settings.CharacterVisuals[corpse.CharacterIndex]==null)
                 throw new InvalidOperationException("Corpse presentation assets are missing. Run Tools/Moonkov/Build Corpse Presentation.");
@@ -74,6 +79,7 @@ namespace Unity.MP_FPS
         public void SampleAge(float age)
         {
             if(Settled)return;
+            using var profile=s_SampleProfile.Auto();
             if(!m_BodySettled)
             {
                 m_Model.position-=Vector3.up*m_GroundLift;m_GroundLift=0;
@@ -86,15 +92,18 @@ namespace Unity.MP_FPS
             float targetAge=Mathf.Clamp(age,0,FinishAge);
             if(m_HairSpring!=null)
             {
-                // A late join warms only the bounded settling window, never the whole raid age.
+                // A late corpse can have several seconds of settling to reconstruct.
+                // Spread that cosmetic work across frames instead of blocking a game frame.
                 float remaining=Mathf.Max(0,targetAge-m_LastAge);
-                while(remaining>.00001f)
+                int steps=0;
+                while(remaining>.00001f && steps++<MaxSpringStepsPerSample)
                 {
                     float step=Mathf.Min(1f/60f,remaining);m_HairSpring.SimulatePresentation(step);remaining-=step;
                 }
+                m_LastAge=targetAge-remaining;
             }
-            m_LastAge=targetAge;
-            if(age<FinishAge)return;
+            else m_LastAge=targetAge;
+            if(age<FinishAge || m_LastAge+.00001f<targetAge)return;
             if(m_HairSpring!=null)
             {
                 m_Model.position-=Vector3.up*m_GroundLift;m_GroundLift=0;
@@ -110,6 +119,7 @@ namespace Unity.MP_FPS
         }
         private void FitFinalMeshToGround()
         {
+            using var profile=s_GroundProfile.Auto();
             // Bake once at the final pose. Renderer bounds include unused animation space,
             // while bone centres do not account for the thickness of the visible body.
             var mesh=new Mesh();var vertices=new System.Collections.Generic.List<Vector3>();
@@ -120,12 +130,15 @@ namespace Unity.MP_FPS
                     if(!renderer.enabled || !renderer.gameObject.activeInHierarchy)continue;
                     renderer.BakeMesh(mesh,true);mesh.GetVertices(vertices);
                     var bounds=mesh.bounds;var bottom=new Vector3[64];var occupied=new bool[64];
+                    var localToWorld=renderer.transform.localToWorldMatrix;
                     foreach(var vertex in vertices)
                     {
                         int x=Mathf.Clamp((int)((vertex.x-bounds.min.x)/Mathf.Max(.0001f,bounds.size.x)*8),0,7);
                         int z=Mathf.Clamp((int)((vertex.z-bounds.min.z)/Mathf.Max(.0001f,bounds.size.z)*8),0,7);
-                        int cell=z*8+x;var point=renderer.transform.TransformPoint(vertex);
-                        if(!occupied[cell] || point.y<bottom[cell].y){occupied[cell]=true;bottom[cell]=point;}
+                        int cell=z*8+x;
+                        float worldY=localToWorld.m10*vertex.x+localToWorld.m11*vertex.y+localToWorld.m12*vertex.z+localToWorld.m13;
+                        if(!occupied[cell] || worldY<bottom[cell].y)
+                        {occupied[cell]=true;bottom[cell]=localToWorld.MultiplyPoint3x4(vertex);}
                     }
                     for(int i=0;i<64;i++)if(occupied[i])IncludeGroundContact(bottom[i]);
                 }

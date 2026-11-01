@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -26,7 +27,7 @@ public static class MoonkovCorpseChecks
             for(int i=0;i<settings.CharacterVisuals.Length;i++)
             {
                 var prefab=settings.CharacterVisuals[i];
-                Require(System.Array.TrueForAll(prefab.GetComponentsInChildren<MonoBehaviour>(true),b=>b is SecondaryBoneSpring) && prefab.GetComponentsInChildren<Collider>(true).Length==0,
+                Require(System.Array.TrueForAll(prefab.GetComponentsInChildren<MonoBehaviour>(true),b=>b is SecondaryBoneSpring || b is HumanoidTwistFollowers) && prefab.GetComponentsInChildren<Collider>(true).Length==0,
                     "Corpse retained gameplay scripts or colliders.");
                 var rpc=new RaidCorpseRpc {LootId=24+i,Version=1,CharacterIndex=i,Position=new float3(10000,0,0),Rotation=quaternion.identity};
                 var body=CorpseVisual.Spawn(holder.transform,settings,rpc);
@@ -35,9 +36,17 @@ public static class MoonkovCorpseChecks
                 var head=animator.GetBoneTransform(HumanBodyBones.Head);
                 var start=hips.position;
                 var spring=body.GetComponentInChildren<SecondaryBoneSpring>(true);
-                var hairStart=spring!=null ? spring.hairRoots[0].localRotation : Quaternion.identity;
+                var hair=spring!=null ? spring.hairRoots.Where(r=>r).SelectMany(r=>r.GetComponentsInChildren<Transform>(true)).Distinct().ToArray() : Array.Empty<Transform>();
+                var hairStart=hair.Select(b=>b.localRotation).ToArray();
                 body.SampleAge(body.FinishAge+1);
-                if(spring!=null)Require(Quaternion.Angle(hairStart,spring.hairRoots[0].localRotation)>5f,"Corpse hair remained rigid.");
+                if(spring!=null)
+                {
+                    float simulated=(float)typeof(CorpseVisual).GetField("m_LastAge",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(body);
+                    Require(!body.Settled && simulated<=4f/60f+.00001f,
+                        "A delayed corpse simulated its entire hair backlog in one sample.");
+                }
+                Settle(body,body.FinishAge+1);
+                if(spring!=null)Require(hair.Where((b,index)=>Quaternion.Angle(hairStart[index],b.localRotation)>5f).Any(),"Corpse hair remained rigid.");
                 var end=hips.position;var endHead=head.position;
                 RequireAboveFloor(body,Vector3.zero,Vector3.up);
                 Require(body.Settled && !animator.enabled && end.y<start.y-.3f && endHead.y<.8f,
@@ -47,6 +56,7 @@ public static class MoonkovCorpseChecks
                 rpc.Age=body.FinishAge+5;
                 var late=CorpseVisual.Spawn(holder.transform,settings,rpc);
                 var lateAnimator=late.GetComponentInChildren<Animator>();
+                Settle(late,rpc.Age);
                 Require(late.Settled && Vector3.Distance(lateAnimator.GetBoneTransform(HumanBodyBones.Hips).position,end)<.001f,
                     "Late join replayed death or changed final pose.");
                 UnityEngine.Object.DestroyImmediate(body.gameObject);UnityEngine.Object.DestroyImmediate(late.gameObject);
@@ -54,13 +64,19 @@ public static class MoonkovCorpseChecks
                 var planePoint=floor.transform.position+floor.transform.up*.1f;
                 Physics.SyncTransforms();rpc.Position=planePoint;rpc.Rotation=floor.transform.rotation;
                 var slope=CorpseVisual.Spawn(holder.transform,settings,rpc);
+                Settle(slope,rpc.Age);
                 RequireAboveFloor(slope,planePoint,floor.transform.up);
                 UnityEngine.Object.DestroyImmediate(slope.gameObject);
                 floor.transform.rotation=Quaternion.identity;Physics.SyncTransforms();
             }
         }
         finally {UnityEngine.Object.DestroyImmediate(holder);EditorSceneManager.ClosePreviewScene(scene);}
-        Debug.Log("Corpse checks passed: all three models clear flat/sloped ground, hold the final pose, stop animation work and reconstruct the pose for late joiners.");
+        Debug.Log("Corpse checks passed: all models clear flat/sloped ground, hold the final pose, stop animation work and reconstruct late poses with bounded hair work.");
+    }
+    private static void Settle(CorpseVisual corpse,float age)
+    {
+        for(int frame=0;frame<600 && !corpse.Settled;frame++)corpse.SampleAge(age);
+        Require(corpse.Settled,"The bounded corpse catch-up did not finish.");
     }
     private static void RequireAboveFloor(CorpseVisual corpse,Vector3 point,Vector3 normal)
     {
