@@ -166,10 +166,15 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1, ushort modules = 0, int magazineSize = 4, int burstIndex = 0)
     {
-        if (!rifleModules && rifleVisual) rifleModules = CreateModuleVisual(rifleVisual.transform, true);
-        if (!shotgunModules && shotgunVisual) shotgunModules = CreateModuleVisual(shotgunVisual.transform, false);
-        if (!revolverModules && revolverVisual) revolverModules = CreateModuleVisual(revolverVisual.transform, false);
-        if (!sniperModules && sniperVisual) sniperModules = CreateModuleVisual(sniperVisual.transform, true);
+        // Most spawned actors have no modifications. Build only the equipped
+        // weapon's needed layer; retain it so later swaps reuse the same objects.
+        if (modules != 0)
+        {
+            if (weapon == HaloWeapon.Rifle && !rifleModules && rifleVisual) rifleModules = CreateModuleVisual(rifleVisual.transform, true);
+            if (weapon == HaloWeapon.Shotgun && !shotgunModules && shotgunVisual) shotgunModules = CreateModuleVisual(shotgunVisual.transform, false);
+            if (weapon == HaloWeapon.Revolver && !revolverModules && revolverVisual) revolverModules = CreateModuleVisual(revolverVisual.transform, false);
+            if (weapon == HaloWeapon.Sniper && !sniperModules && sniperVisual) sniperModules = CreateModuleVisual(sniperVisual.transform, true);
+        }
         if (rifleVisual) rifleVisual.SetMagazineCapacity(weapon == HaloWeapon.Rifle ? magazineSize : RifleHaloVisual.Capacity);
         if (shotgunVisual) shotgunVisual.SetModuleProfile(weapon == HaloWeapon.Shotgun ? modules : (ushort)0, weapon == HaloWeapon.Shotgun ? magazineSize : 4);
         gestureBurstIndex = burstIndex;
