@@ -33,13 +33,23 @@ namespace Unity.MP_FPS
             if (!m_Contact.collider) return false;
             // A denied ray budget or movement beyond the sampled wall must not sustain phantom friction.
             if (m_ContactAge > .25f ||
-                (m_Contact.collider.ClosestPoint(center) - center).sqrMagnitude > (reach + .025f) * (reach + .025f) ||
+                !ContactWithinReach(center, reach + .025f) ||
                 Vector3.ProjectOnPlane(displacement, m_Contact.normal).sqrMagnitude < displacement.sqrMagnitude * .16f)
             { Reset(); return false; }
             m_Slip += Vector3.ProjectOnPlane(displacement, m_Contact.normal).magnitude;
             if (m_Slip < (m_Touched ? .32f : .065f) || Time.time < m_NextSound) return false;
             contact = m_Contact; m_Touched = true; m_Slip = 0; m_NextSound = Time.time + .48f;
             return true;
+        }
+
+        private bool ContactWithinReach(Vector3 center, float reach)
+        {
+            var collider = m_Contact.collider;
+            if (collider is not MeshCollider { convex: false } && collider is not TerrainCollider)
+                return (collider.ClosestPoint(center) - center).sqrMagnitude <= reach * reach;
+            // ClosestPoint does not support concave geometry. Confirm the cached
+            // face directly; its bounds alone would keep scraping across openings.
+            return TakeRays(1) && collider.Raycast(new Ray(center, -m_Contact.normal), out _, reach);
         }
 
         private static bool TakeRays(int count)

@@ -37,6 +37,7 @@ public static class MoonkovAudioDetailChecks
         Require(library.AlienIdle.MaxVoices == 3 && library.AlienIdle.Role == SoundDef.MixRole.Ambience &&
             library.AlienIdle.Priority > library.AlienWarning.Priority, "Idle voice competes with attack telegraphs");
         CheckContact();
+        CheckConcaveContact();
         Debug.Log("Audio detail assets, budgets and wall/support geometry checks passed.");
     }
     public static string CheckAttachedTeardown()
@@ -100,5 +101,61 @@ public static class MoonkovAudioDetailChecks
             Require(!new MoonkovSurfaceFoley().TrySlide(actor.transform, origin, Vector3.forward, .4f, 1, out _), "Stalled frame scraped");
         }
         finally { UnityEngine.Object.DestroyImmediate(actor); UnityEngine.Object.DestroyImmediate(wall); }
+    }
+
+    public static string CheckConcaveContact()
+    {
+        Require(!EditorApplication.isPlaying, "Use Edit mode.");
+        var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+        var actor = new GameObject("Concave wall audio fixture");
+        var wall = new GameObject("Concave wall with opening");
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(actor, scene);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(wall, scene);
+        var mesh = new Mesh();
+        var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+        var rays = typeof(MoonkovSurfaceFoley).GetField("s_Rays", flags);
+        var frame = typeof(MoonkovSurfaceFoley).GetField("s_Frame", flags);
+        var contact = typeof(MoonkovSurfaceFoley).GetField("m_Contact", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        object oldRays = rays.GetValue(null), oldFrame = frame.GetValue(null);
+        bool nativeError = false;
+        void Log(string message, string stack, LogType type) { nativeError |= message.Contains("Physics.ClosestPoint"); }
+        void Budget() { frame.SetValue(null, Time.frameCount); rays.SetValue(null, 0); }
+        Application.logMessageReceived += Log;
+        try
+        {
+            mesh.vertices = new[] { new Vector3(0,-1,-2), new Vector3(0,-1,-.5f), new Vector3(0,1,-.5f), new Vector3(0,1,-2),
+                new Vector3(0,-1,.5f), new Vector3(0,-1,2), new Vector3(0,1,2), new Vector3(0,1,.5f) };
+            mesh.triangles = new[] { 0,1,2,0,2,3,4,5,6,4,6,7 };
+            var collider = wall.AddComponent<MeshCollider>(); collider.sharedMesh = mesh; collider.convex = false;
+            wall.transform.position = Vector3.right * .3f;
+            Physics.SyncTransforms(); scene.GetPhysicsScene().Simulate(.02f);
+            Vector3 center = Vector3.back, slide = Vector3.forward;
+            Budget();
+            var foley = new MoonkovSurfaceFoley();
+            Require(!foley.TrySlide(actor.transform, center, slide * .03f, .4f, .016f, out _), "Concave contact sounded before enough slip");
+            Require(foley.TrySlide(actor.transform, center, slide * .04f, .4f, .016f, out var hit) && hit.collider == collider,
+                "Concave wall slide did not sound");
+            foreach (var away in new[] { Vector3.zero, center + Vector3.left })
+            {
+                Budget(); foley = new MoonkovSurfaceFoley();
+                foley.TrySlide(actor.transform, center, slide * .03f, .4f, .016f, out _);
+                Require(!foley.TrySlide(actor.transform, away, slide * .04f, .4f, .016f, out _) &&
+                    !((RaycastHit)contact.GetValue(foley)).collider, "Opening or separation kept stale friction");
+            }
+            Budget(); foley = new MoonkovSurfaceFoley();
+            foley.TrySlide(actor.transform, center, slide * .03f, .4f, .016f, out _);
+            rays.SetValue(null, 12);
+            Require(!foley.TrySlide(actor.transform, center, slide * .04f, .4f, .016f, out _) &&
+                !((RaycastHit)contact.GetValue(foley)).collider, "Concave confirmation exceeded its shared ray budget");
+            Require(!nativeError, "Concave contact used unsupported ClosestPoint");
+            return "Concave foley: PASS (slide, opening, separation, ray budget and no native errors).";
+        }
+        finally
+        {
+            Application.logMessageReceived -= Log;
+            rays.SetValue(null, oldRays); frame.SetValue(null, oldFrame);
+            UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+            UnityEngine.Object.DestroyImmediate(mesh);
+        }
     }
 }
