@@ -92,7 +92,15 @@ namespace Unity.MP_FPS.Moon
             previousSun = RenderSettings.sun;
             previousFog = RenderSettings.fog;
             appliedPipeline = pipeline;
-            if (adaptInteriorShadows && pipeline is UniversalRenderPipelineAsset sourcePipeline)
+            if (sourceStaticLighting && pipeline is UniversalRenderPipelineAsset fixedPipeline)
+            {
+                runtimePipeline = Instantiate(fixedPipeline);
+                runtimePipeline.name = fixedPipeline.name + " (runtime performance)";
+                runtimePipeline.hideFlags = HideFlags.DontSave;
+                SourceWorldRuntimeQuality.Configure(runtimePipeline);
+                appliedPipeline = runtimePipeline;
+            }
+            else if (adaptInteriorShadows && pipeline is UniversalRenderPipelineAsset sourcePipeline)
                 CreateInteriorPipeline(sourcePipeline);
             if (appliedPipeline) QualitySettings.renderPipeline = appliedPipeline;
             if (spaceSkybox && !sourceStaticLighting)

@@ -38,6 +38,19 @@ float SourceGGXVisibility(float3 v,float3 n,float3 tangent,float3 bitangent,floa
 float3 SourceGlossy(SourceClosure b,SourceContext c,SourceVaryings input,float3 normal,float3 f0,float roughness,uint seed,float anisotropy)
 {
  float3 n=normal.xzy,v=c.view.xzy;float nv=dot(n,v);if(nv<=0)return 0;
+ if(_SourceSpecularSamples<=1)
+ {
+  // The runtime budget uses the probe's filtered mip instead of one noisy
+  // Monte Carlo path. Keep the full source integrator for authoring captures.
+  roughness=saturate(roughness);
+  BRDFData environment=(BRDFData)0;
+  environment.specular=f0;
+  float alpha=max(roughness*roughness,.001);
+  environment.roughness2=alpha*alpha;
+  environment.grazingTerm=saturate(1-roughness+ReflectivitySpecular(f0));
+  return GlossyEnvironmentReflection(reflect(-v,n),input.positionWS,roughness,1,GetNormalizedScreenSpaceUV(input.positionCS))
+   *EnvironmentBRDFSpecular(environment,Pow4(1-saturate(nv)));
+ }
  float3 t=c.tangent.xyz.xzy;t=SourceSafeNormal(t-n*dot(t,n));
  if(dot(t,t)<.1)t=SourceSafeNormal(cross(abs(n.z)<.999?float3(0,0,1):float3(1,0,0),n));
  float3 bitangent=cross(n,t);float rotation=b.anisotropicRotation*6.28318530718;

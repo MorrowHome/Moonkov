@@ -17,6 +17,8 @@ namespace Unity.MP_FPS.Moon
         }
         [SerializeField] private SourceWorldLightingData data;
         [SerializeField] private RendererBinding[] bindings = Array.Empty<RendererBinding>();
+        [SerializeField, Min(0), Tooltip("Runtime base-camera range at 75-degree FOV; magnified sights extend it. Zero keeps the authored camera range.")]
+        private float runtimeViewDistance = SourceWorldRuntimeQuality.ViewDistance;
         private LightmapData[] previousMaps;
         private LightProbes previousProbes;
         private LightmapsMode previousMode;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS.Moon
             public SourceAgXCamera display;
             public bool createdDisplay, displayEnabled, previousAllowsOverlay;
             public Material previousDisplay;
+            public float farClipPlane;
         }
 
         public void Configure(SourceWorldLightingData lighting, RendererBinding[] renderers)
@@ -83,7 +86,9 @@ namespace Unity.MP_FPS.Moon
                 binding.renderer.lightmapScaleOffset = new Vector4(1, 1, 0, 0);
             }
             Shader.SetGlobalTexture(Statistics, data.surfaceStatistics); Shader.SetGlobalFloat(StatisticsEnabled, 1);
-            Shader.SetGlobalFloat(SpecularSamples, data.specularSamples); Shader.SetGlobalFloat(DiffuseSamples, data.diffuseSamples);
+            bool runtime = Application.IsPlaying(gameObject);
+            Shader.SetGlobalFloat(SpecularSamples, runtime ? 1 : data.specularSamples);
+            Shader.SetGlobalFloat(DiffuseSamples, runtime ? 0 : data.diffuseSamples);
             applied = true; owner = this;
             reflectionBudget = new SourceWorldReflectionBudget(GetComponentsInChildren<ReflectionProbe>(true), SystemInfo.maxTextureSize);
             RenderPipelineManager.beginCameraRendering += PrepareCamera;
@@ -131,6 +136,7 @@ namespace Unity.MP_FPS.Moon
                     postProcessing = additional.renderPostProcessing, allowHDR = camera.allowHDR,
                     colorOption = additional.requiresColorOption, depthOption = additional.requiresDepthOption,
                     clearFlags = camera.clearFlags, background = camera.backgroundColor,
+                    farClipPlane = camera.farClipPlane,
                     createdDisplay = !display, displayEnabled = display && display.enabled,
                     previousAllowsOverlay = display && display.AllowsOverlay,
                     previousDisplay = display ? display.DisplayTransform : null
@@ -141,6 +147,8 @@ namespace Unity.MP_FPS.Moon
             // Gameplay camera controllers may write their old post setting each LateUpdate.
             additional.renderPostProcessing = false; camera.allowHDR = true;
             additional.requiresColorOption = CameraOverrideOption.On; additional.requiresDepthOption = CameraOverrideOption.On;
+            if (!overlay && Application.IsPlaying(gameObject))
+                camera.farClipPlane = SourceWorldRuntimeQuality.FarClip(state.farClipPlane, runtimeViewDistance, camera.fieldOfView, camera.orthographic);
             if (!overlay) { camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = data.linearBackground.gamma; }
             state.display.Configure(displayHere ? data.displayTransform : null, overlay); state.display.enabled = true;
             return state;
@@ -159,6 +167,7 @@ namespace Unity.MP_FPS.Moon
                 var additional = pair.Key.GetUniversalAdditionalCameraData(); additional.renderPostProcessing = pair.Value.postProcessing;
                 additional.requiresColorOption = pair.Value.colorOption; additional.requiresDepthOption = pair.Value.depthOption;
                 pair.Key.allowHDR = pair.Value.allowHDR; pair.Key.clearFlags = pair.Value.clearFlags; pair.Key.backgroundColor = pair.Value.background;
+                pair.Key.farClipPlane = pair.Value.farClipPlane;
                 var display = pair.Value.display;
                 if (!display) continue;
                 if (pair.Value.createdDisplay)

@@ -6,6 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -27,10 +28,43 @@ namespace Unity.MP_FPS.Moon.Editor
             checks = 0;
             CheckSerialization();
             CheckReflectionBudget();
-            string report = $"Source world startup checks passed: {checks}. Serialization round trip, pixel/mesh preservation, probe selection, budget and cleanup.";
+            CheckRuntimeQuality();
+            string report = $"Source world startup checks passed: {checks}. Serialization round trip, pixel/mesh preservation, probe selection, runtime quality, sight range and cleanup.";
             Directory.CreateDirectory("LocalData/SourceWorldStartupAudit");
             File.WriteAllText("LocalData/SourceWorldStartupAudit/Checks.txt", report);
             Debug.Log(report);
+        }
+
+        private static void CheckRuntimeQuality()
+        {
+            var authored = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
+            authored.renderScale = 1; authored.msaaSampleCount = 4; authored.shadowDistance = 1800;
+            var runtime = Object.Instantiate(authored);
+            try
+            {
+                SourceWorldRuntimeQuality.Configure(runtime);
+                Require(authored.renderScale == 1 && authored.msaaSampleCount == 4 && authored.shadowDistance == 1800,
+                    "The runtime quality budget modified the authored pipeline.");
+                Require(runtime.renderScale <= .67f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
+                    "The baked-world runtime budget was not applied.");
+                Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 75, false) == 100,
+                    "Ordinary field of view must use the world range budget.");
+                float zoomFov = 2 * Mathf.Atan(Mathf.Tan(37.5f * Mathf.Deg2Rad) / 4) * Mathf.Rad2Deg;
+                Require(Mathf.Abs(SourceWorldRuntimeQuality.FarClip(2000, 100, zoomFov, false) - 400) < .001f,
+                    "A four-times sight must retain four-times viewing distance.");
+                Require(SourceWorldRuntimeQuality.FarClip(250, 100, zoomFov, false) == 250,
+                    "Zoom must respect a shorter authored camera limit.");
+                Require(SourceWorldRuntimeQuality.FarClip(2000, 0, 75, false) == 2000,
+                    "Zero budget must preserve the authored view distance.");
+                Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 75, true) == 2000,
+                    "Orthographic cameras must retain their authored range.");
+                Require(SourceWorldRuntimeQuality.FarClip(2000, 100, 100, false) == 100,
+                    "A wider player field of view must not shorten nearby visibility.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(runtime); Object.DestroyImmediate(authored);
+            }
         }
 
         private static void CheckSerialization()
