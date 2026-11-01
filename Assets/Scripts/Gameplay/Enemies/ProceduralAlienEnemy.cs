@@ -400,6 +400,10 @@ namespace Unity.MP_FPS
         }
         private bool WantsLiquid()
         {
+            // The baked world's performance budget uses the existing solid rig.
+            // Its hitboxes, attacks and animation remain the same without the
+            // particle solver, density volume or high-detail filament mesh.
+            if (Moon.SourceWorldRuntimeQuality.Active) return false;
             if (!profile.Liquid || profile.MaximumLiquidEnemies <= 0 || !SystemInfo.supportsComputeShaders) return false;
             var camera = Camera.main;
             if (!camera) return false;

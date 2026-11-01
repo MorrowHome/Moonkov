@@ -8,12 +8,20 @@ namespace Unity.MP_FPS.Moon
     {
         public const float RenderScale = 2f / 3f;
         public const float ViewDistance = 100f;
+        private static UniversalRenderPipelineAsset s_RuntimePipeline;
+
+        public static bool Active => Application.isPlaying && s_RuntimePipeline &&
+            QualitySettings.renderPipeline == s_RuntimePipeline;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Reset() => s_RuntimePipeline = null;
 
         public static void Configure(UniversalRenderPipelineAsset runtimePipeline)
         {
             runtimePipeline.renderScale = RenderScale;
             runtimePipeline.msaaSampleCount = 1;
             runtimePipeline.shadowDistance = 0;
+            s_RuntimePipeline = runtimePipeline;
         }
 
         public static float FarClip(float authoredDistance, float budget, float fieldOfView, bool orthographic)
