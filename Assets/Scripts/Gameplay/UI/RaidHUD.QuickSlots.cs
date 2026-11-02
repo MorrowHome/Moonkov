@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
     {
         public static bool TacticalPressed(bool keyboard, bool gamepad, bool missionFocused, bool controlFocused, bool tacticalTarget)
         {
-            if (gamepad && missionFocused) return false;
+            if (missionFocused || controlFocused) return false;
             return keyboard || gamepad && (tacticalTarget || !controlFocused);
         }
     }
@@ -300,11 +300,10 @@ namespace Unity.MP_FPS
             if (!found && (QuickOwner.FireSeconds > 0 || QuickOwner.BleedSeconds > 0))
             { found = true; action = TacticalItemAction.Extinguish; }
             if (!found) return false;
-            m_QuickInteractionHint = action == TacticalItemAction.Resupply ? "[E] RESUPPLY FROM AMMO BOX" :
-                action == TacticalItemAction.Disarm ? "[E] DISARM TRAP" : "[E] STOP BURNING / BLEEDING";
+            m_QuickInteractionHint = m_InteractionBindings.Label(m_InteractionBindings.Loot) + "  " +
+                (action == TacticalItemAction.Resupply ? "补充弹药" : action == TacticalItemAction.Disarm ? "拆除陷阱" : "止血 / 灭火");
             m_QuickInteractionHintUntil = Time.unscaledTime + .2f;
-            bool pressed = RaidInteractionInput.TacticalPressed(Keyboard.current?.eKey.wasPressedThisFrame == true,
-                Gamepad.current?.buttonWest.wasPressedThisFrame == true, missionFocused, controlFocused, tacticalTarget);
+            bool pressed = !missionFocused && !controlFocused && m_InteractionBindings.Loot.WasPressedThisFrame();
             if (!pressed) return false;
             SendQuickTactical(action, target: target); return true;
         }

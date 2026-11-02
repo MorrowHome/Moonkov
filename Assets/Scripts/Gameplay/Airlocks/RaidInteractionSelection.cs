@@ -18,6 +18,7 @@ namespace Unity.MP_FPS
         public Vector3 Center => Airlock ? Airlock.InteractionCenter : Light ? Light.InteractionCenter : default;
         public string Name => Airlock ? Airlock.DisplayName : Light ? MoonkovLocalization.Text(Light.Label) : "";
         public string Id => Airlock ? Airlock.ButtonId : Light ? Light.SwitchId : "";
+        public Transform Surface => Airlock ? Airlock.transform : Light ? Light.transform : null;
         public bool InRange(Vector3 actor) => Airlock ? Airlock.InRange(actor) : Light && Light.InRange(actor);
         public bool SameGroup(RaidInteractionTarget other)
         {
@@ -48,9 +49,10 @@ namespace Unity.MP_FPS
     {
         private readonly List<RaidInteractionTarget> m_Candidates = new List<RaidInteractionTarget>();
         private readonly List<RaidInteractionTarget> m_Choices = new List<RaidInteractionTarget>();
+        private RaidInteractionTarget m_LastAimFocus;
         public IReadOnlyList<RaidInteractionTarget> Choices => m_Choices;
         public RaidInteractionTarget Selected { get; private set; }
-        public void Clear() { Selected = default; m_Choices.Clear(); m_Candidates.Clear(); }
+        public void Clear() { Selected = m_LastAimFocus = default; m_Choices.Clear(); m_Candidates.Clear(); }
 
         public void Refresh(Camera camera, Vector3 actor, bool allowed)
         {
@@ -59,15 +61,13 @@ namespace Unity.MP_FPS
             foreach (var button in AirlockButton.Active) if (button) m_Candidates.Add(new RaidInteractionTarget(button));
             foreach (var button in LightSwitchButton.Active) if (button) m_Candidates.Add(new RaidInteractionTarget(button));
             var focus = default(RaidInteractionTarget);
-            float best = .12f;
+            float best = -1;
             foreach (var target in m_Candidates)
             {
                 if (!target.InRange(actor)) continue;
-                var point = camera.WorldToViewportPoint(target.Center);
-                if (point.z <= 0) continue;
-                float distance = new Vector2(point.x - .5f, point.y - .5f).magnitude;
-                if (distance >= best || !target.VisibleFrom(camera.transform.position)) continue;
-                best = distance; focus = target;
+                float score = RaidInteractionAim.Score(camera, actor, target.Center, 4, target.Surface);
+                if (score <= best || !target.VisibleFrom(camera.transform.position)) continue;
+                best = score; focus = target;
             }
             if (!focus.IsValid) { Clear(); return; }
             bool retain = focus.SameGroup(Selected);
@@ -76,7 +76,9 @@ namespace Unity.MP_FPS
                 if (focus.SameGroup(target) && target.InRange(actor) && target.VisibleFrom(camera.transform.position) &&
                     camera.WorldToViewportPoint(target.Center).z > 0) m_Choices.Add(target);
             m_Choices.Sort(Compare);
-            if (!retain || !m_Choices.Contains(Selected)) Selected = focus;
+            // A new direct surface wins. Explicit cycling survives a stationary aim.
+            if (best > 900 && !focus.Equals(m_LastAimFocus) || !retain || !m_Choices.Contains(Selected)) Selected = focus;
+            m_LastAimFocus = focus;
         }
         private static int Compare(RaidInteractionTarget a, RaidInteractionTarget b)
         {

@@ -6,6 +6,12 @@ namespace Unity.MP_FPS
     // Authored physical hardware. It presents server state and never decides completion.
     public sealed class RaidMissionDevice : MonoBehaviour
     {
+        private static readonly System.Collections.Generic.List<RaidMissionDevice> s_Active = new System.Collections.Generic.List<RaidMissionDevice>();
+        public static System.Collections.Generic.IReadOnlyList<RaidMissionDevice> Active => s_Active;
+        private void OnEnable() { if (!s_Active.Contains(this)) s_Active.Add(this); }
+        private void OnDisable() => s_Active.Remove(this);
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRegistry() => s_Active.Clear();
         [SerializeField] private string m_AnchorId;
         [SerializeField] private Renderer[] m_Indicators;
         [SerializeField] private Transform m_Rotor, m_Lever;

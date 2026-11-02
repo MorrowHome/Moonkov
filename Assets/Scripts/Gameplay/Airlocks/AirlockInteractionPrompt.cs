@@ -25,6 +25,10 @@ namespace Unity.MP_FPS
         public AirlockButton Selected => m_Selection.Selected.Airlock;
         public bool HasSelection => m_Selection.Selected.IsValid;
         public int ChoiceCount => m_Selection.Choices.Count;
+        public float FocusScore(Camera camera, Vector3 actor) => HasSelection ?
+            RaidInteractionAim.Score(camera, actor, m_Selection.Selected.Center, 4, m_Selection.Selected.Surface) : -1;
+        public void SetPresentation(bool visible) => m_Root?.EnableInClassList("is-visible", visible && HasSelection);
+        public string BindingLabel { get; set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetRegistry() => s_Active.Clear();
@@ -95,7 +99,7 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_Caption, selected.Airlock ? "AIRLOCK CONTROL" : "LIGHTING CONTROL");
             bool gamepad = Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame &&
                 (Keyboard.current == null || !Keyboard.current.anyKey.isPressed);
-            MoonkovLocalization.Set(m_Key, gamepad ? "X" : "F");
+            MoonkovLocalization.Set(m_Key, BindingLabel ?? (gamepad ? "X" : "F"));
             MoonkovLocalization.Set(m_Range, "DISTANCE {0:0.0} m", Vector3.Distance(m_ActorPosition + Vector3.up, selected.Center));
             bool blocked;
             if (selected.Airlock)
@@ -142,7 +146,7 @@ namespace Unity.MP_FPS
                 bool active = target.Equals(selected); if (active) index = i;
                 m_Rows[i].EnableInClassList("is-selected", active);
             }
-            MoonkovLocalization.Set(m_Hint, count > 1 ? "SCROLL / D-PAD SELECT  {0}/{1}  |  F / X OPERATE" : "F / X OPERATE", index + 1, count);
+            m_Hint.text = count > 1 ? $"滚轮选择  {index + 1}/{count}" : "";
         }
         public bool TryInteract(Camera camera, Vector3 actor, World world)
         {

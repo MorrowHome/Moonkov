@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
         private Vector3 m_CampaignDestination;
         private string m_CampaignDestinationName;
         private readonly HashSet<string> m_CampaignCommunicationsShown = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_CampaignDiscoveredAnchors = new HashSet<string>(StringComparer.Ordinal);
 
         private bool CampaignJournalAvailable
         {
@@ -94,6 +95,7 @@ namespace Unity.MP_FPS
             if (m_CampaignRadioRaid != m_Snapshot.RaidId)
             {
                 m_CampaignRadioRaid = m_Snapshot.RaidId; m_CampaignCommunicationsShown.Clear();
+                m_CampaignDiscoveredAnchors.Clear();
                 m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
             }
             PresentCampaignCommunication(progress);
@@ -119,6 +121,13 @@ namespace Unity.MP_FPS
                 m_CampaignHint.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : CampaignTeachingHint(node);
                 Vector3? origin = m_PlayerQuery.HasSingleton<LocalTransform>() ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : null;
                 m_CampaignHasDestination = CampaignScene.TryDestination(m_World, progress, id, origin, out m_CampaignDestination, out m_CampaignDestinationName);
+                var anchor = RaidMissionSite.Active ? RaidMissionSite.Active.Anchor(node?.AnchorId) : null;
+                bool undiscovered = anchor != null && anchor.Id != "entry" && !m_CampaignDiscoveredAnchors.Contains(anchor.Id);
+                if (undiscovered && origin.HasValue && Camera.main && Vector3.Distance(origin.Value, anchor.Position) <= 12 &&
+                    Vector3.Angle(Camera.main.transform.forward, anchor.Position - Camera.main.transform.position) <= 60 &&
+                    RaidInteractionAim.Visible(Camera.main.transform.position, anchor.Position, RaidInteractionAim.MissionSurface(anchor.Id)))
+                { m_CampaignDiscoveredAnchors.Add(anchor.Id); undiscovered = false; }
+                if (undiscovered) m_CampaignHasDestination = false;
                 if (m_CampaignHasDestination && origin.HasValue)
                 {
                     Vector3 from = origin.Value;
@@ -126,7 +135,7 @@ namespace Unity.MP_FPS
                     string floor = height > 3 ? "楼上" : height < -3 ? "楼下" : "当前层附近";
                     m_CampaignLocation.text = m_CampaignDestinationName + "\n" + floor + "  直线 " + Vector3.Distance(from, m_CampaignDestination).ToString("0") + " 米";
                 }
-                else m_CampaignLocation.text = node?.Location ?? "返回作业船查看记录";
+                else m_CampaignLocation.text = undiscovered ? anchor.Region + "  沿入口楼梯前往设备区" : node?.Location ?? "返回作业船查看记录";
             }
             UpdateCampaignMarker(show && m_CampaignHasDestination);
         }
@@ -142,6 +151,9 @@ namespace Unity.MP_FPS
 
         private void PresentCampaignCommunication(CampaignProgress progress)
         {
+            // Field confirmation is distinct from extraction/save. Read actual server facts once per raid.
+            ConfirmCampaignFieldStage(progress, "CM01");
+            ConfirmCampaignFieldStage(progress, "CM02");
             // Follow actual chapter progress, not the currently selected journal row.
             string current = CampaignRules.CurrentMain(progress);
             var node = current == null ? null : CampaignRules.CurrentNode(progress, current);
@@ -150,9 +162,17 @@ namespace Unity.MP_FPS
             m_CampaignNextPresentation = 0;
         }
 
+        private void ConfirmCampaignFieldStage(CampaignProgress progress, string id)
+        {
+            if ((CampaignRules.Mask(progress, id) & 3) == 3 && !progress.CompletedTasks.Contains(id) &&
+                m_CampaignCommunicationsShown.Add(id + "/field-confirmed"))
+                m_ChapterRadioQueue.Enqueue(CampaignCatalog.Find(id).CompletionText);
+        }
+
         private string CampaignActionText(NodeDefinition node)
         {
             if (node == null) return "调查记录已保存";
+            if (node.Kind == CampaignObjectiveKind.Configure && !m_MissionInspected.Contains(node.AnchorId)) return "查看配电 A 故障铭牌";
             if (node.Kind != CampaignObjectiveKind.Process || node.Seconds <= 0 || string.IsNullOrEmpty(node.ExistingObjectiveId)) return node.Action;
             var site = RaidMissionSite.Active;
             int index = m_MissionSnapshot.DefinitionIndex;
@@ -183,8 +203,10 @@ namespace Unity.MP_FPS
                     return "没有可用电池，留意已充能弹量与回程余量。";
             }
             if (node.Kind == CampaignObjectiveKind.Process) return "设备自动运行，可以移动观察，也可以提前撤离。";
-            if (node.Kind == CampaignObjectiveKind.Configure) return "看向近处面板，核对故障说明后选择线路。";
-            return TutorialRuntime.InteractHint;
+            if (node.Kind == CampaignObjectiveKind.Configure) return m_MissionInspected.Contains(node.AnchorId) ?
+                "隔离烧损支路，保留备用母线。" : "靠近设备查看铭牌，再选择线路。";
+            string key = m_InteractionBindings.Label(m_InteractionBindings.Operate);
+            return node.Seconds > 0 ? $"按住 {key} {node.Seconds:0.#} 秒，松开取消。" : key + "  操作设备";
         }
 
         private void PresentCampaignResult(CampaignProgress progress)

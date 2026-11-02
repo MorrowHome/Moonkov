@@ -59,7 +59,7 @@
 .campaign-review-host { flex-grow: 1; min-height: 0; padding: 20px; background-color: #18191b; border-top-width: 3px; border-top-color: #164bff; }
 
 .campaign-tutorial .campaign-hud { width: 390px; align-self: flex-end; }
-.campaign-tutorial .campaign-hud-title { font-size: 24px; }
+.campaign-tutorial .campaign-hud-title { font-size: 20px; }
 .campaign-tutorial .campaign-hud-action { font-size: 20px; }
 .campaign-tutorial .campaign-hud-location, .campaign-tutorial .campaign-hud-hint, .campaign-tutorial .campaign-hud .campaign-muted { font-size: 18px; }
 .campaign-tutorial .raid-ui .raid-right-rail { width: 390px; }

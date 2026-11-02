@@ -470,62 +470,28 @@ namespace Unity.MP_FPS
             PresentProtection(alive && ready && !settled && !m_InventoryVisible && !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen);
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
+            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested &&
+                !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible &&
+                !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
+                UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
+            SelectWorldInteraction(liveInteraction, !clash, position, deathBags, out nearest, out distance);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
+            m_AirlockPrompt.BindingLabel = m_InteractionBindings.Label(m_InteractionBindings.Operate);
+            m_AirlockPrompt.SetPresentation(liveInteraction && !missionControl && m_WorldControlFocused);
             PresentTimedAction();
             UpdateCampaignHUD(alive && ready && !settled && !clash);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
-            bool liveInteraction = alive && ready && !settled && !MapInputBlocked;
-            if (liveInteraction)
+            bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction, missionControl, m_WorldControlFocused);
+            if (liveInteraction && !missionControl)
             {
-                position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
-                m_AirlockPrompt.RefreshSelection(Camera.main, position, !clash && !m_InventoryVisible && !m_InventoryRequestPending &&
-                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
-            }
-            bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested,
-                missionControl, liveInteraction && m_AirlockPrompt.HasSelection);
-            if (liveInteraction)
-            {
-                var map = MoonRaidMap.Active;
-                for (int i = 0; i < map.LootPositions.Length; i++)
-                {
-                    float candidate = Vector3.Distance(position, map.LootPositions[i]);
-                    if (candidate < distance) { nearest = i; distance = candidate; }
-                }
-                var camera=Camera.main;
-                float bestAim=-2;
-                foreach(var bag in deathBags.Bags.Values)
-                {
-                    if(bag.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex && bag.Empty)continue;
-                    var target=(Vector3)bag.Position+Vector3.up*.25f;
-                    float candidate=Vector3.Distance(position,(Vector3)bag.Position);
-                    if(candidate>RaidRules.PickupRange || UnityEngine.Physics.Linecast(position+Vector3.up*1.4f,target,
-                        LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))continue;
-                    float aim=camera ? Vector3.Dot(camera.transform.forward,(target-camera.transform.position).normalized) : 0;
-                    if(candidate<distance-.05f || Mathf.Abs(candidate-distance)<=.05f &&
-                        (aim>bestAim+.001f || Mathf.Abs(aim-bestAim)<=.001f && bag.LootId>nearest))
-                    {nearest=bag.LootId;distance=candidate;bestAim=aim;}
-                }
-                if (!clash && RaidFurnitureLoot.Active)
-                {
-                    int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
-                    if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
-                }
-                bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
-                               (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
-                    (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                bool controlPressed = !tacticalInteraction && !clash && !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
-                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
-                    m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
-                if (nearest >= 0 && pressed && !tacticalInteraction && !DarkSightRequested && !controlPressed && !missionControl && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
-                {
+                bool controlPressed = !tacticalInteraction && !clash && m_WorldControlFocused &&
+                    m_InteractionBindings.Operate.WasPressedThisFrame() && m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
+                if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame() && !tacticalInteraction && !controlPressed && !m_WorldControlFocused)
                     OpenLootContainer(nearest);
-                }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
-            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible && !MapInputBlocked && !DarkSightRequested &&
-                !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
-                UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            bool interactionVisible = liveInteraction;
             if (!interactionVisible)
             {
                 m_Interaction.EnableInClassList("is-visible", false);
@@ -538,7 +504,7 @@ namespace Unity.MP_FPS
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId && nearest<RaidLootContainers.FirstMissionCacheId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
-            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
+            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !missionControl && !m_WorldControlFocused,alien,IsDroppedLoot(nearest));
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             bool showReturn = !m_InventoryVisible && !MapInputBlocked && !m_MissionDetailsVisible &&
                 !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;
@@ -626,7 +592,7 @@ namespace Unity.MP_FPS
             if (!visible) return;
             m_Interaction.EnableInClassList("is-error", error);
             m_Interaction.EnableInClassList("is-empty", !error && empty);
-            MoonkovLocalization.Set(m_InteractionKey, error ? "!" : "E");
+            MoonkovLocalization.Set(m_InteractionKey, error ? "!" : m_InteractionBindings.Label(m_InteractionBindings.Loot));
             m_InteractionDetails.style.display = error ? DisplayStyle.None : DisplayStyle.Flex;
             if (error)
             {
@@ -635,7 +601,7 @@ namespace Unity.MP_FPS
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 · " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
                 : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
             if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
@@ -978,6 +944,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            m_InteractionBindings?.Dispose(); m_InteractionBindings = null;
             DisposeChat();
             DisposeCampaignHUD();
             ResetRaidCinematics();
