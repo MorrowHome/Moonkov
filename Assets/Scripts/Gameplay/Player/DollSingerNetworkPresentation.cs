@@ -238,6 +238,7 @@ namespace Unity.MP_FPS
                 m_Action.ResetPresentation();
                 m_Protection = m_Model.GetComponent<EnergyShieldPresentation>();
                 if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
+                m_Protection.ConfigureHardwareBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
                 m_Protection.ResetPresentation();
             }
         }

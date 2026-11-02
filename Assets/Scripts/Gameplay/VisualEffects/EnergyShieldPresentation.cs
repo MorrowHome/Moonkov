@@ -19,9 +19,16 @@ namespace Unity.MP_FPS
         private Material m_FieldMaterial;
         private bool m_Ready,m_GeometryRetained,m_HasSequence,m_Owned,m_FirstPerson,m_HeadEquipped,m_ShieldEquipped,m_Regenerating,m_Hidden;
         private bool m_StandardCollar;
+        private bool m_OmitHardware;
         private Color? m_PreviewHaloColor;
         public void SetPreviewHaloColor(Color color) => m_PreviewHaloColor = color;
         public bool PresentationAudioEnabled { get; set; } = true;
+        public void ConfigureHardwareBudget(bool omitHardware)
+        {
+            if(m_OmitHardware==omitHardware)return;
+            if(m_Ready)DisposePresentation();
+            m_OmitHardware=omitHardware;
+        }
         private Camera m_OwnedCamera;
         private uint m_HitSequence,m_BreakSequence,m_RestoreSequence;
         private float m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
@@ -78,11 +85,14 @@ namespace Unity.MP_FPS
             m_Head=animator.GetBoneTransform(HumanBodyBones.Head);if(!m_Head)return false;
             m_Neck=animator.GetBoneTransform(HumanBodyBones.Neck);m_Hips=animator.GetBoneTransform(HumanBodyBones.Hips);m_Chest=animator.GetBoneTransform(HumanBodyBones.Chest);
             m_LeftFoot=animator.GetBoneTransform(HumanBodyBones.LeftFoot);m_RightFoot=animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            FitCollar(animator);
+            if(!m_OmitHardware)FitCollar(animator);
             EnergyShieldGeometry.Retain();m_GeometryRetained=true;
             m_FieldMaterial=new Material(shader){name="Energy protection / private surface",hideFlags=HideFlags.HideAndDontSave};
             m_Root=new GameObject("Energy protection / original runtime geometry"){hideFlags=HideFlags.DontSave}.transform;m_Root.SetParent(transform,false);
             m_ShellRenderer=Surface("Transient combat field",out m_Shell);
+            // Remote performance avatars retain shield hit/break/recovery cues.
+            // Decorative collar, visor rails and backpack hardware are optional.
+            if(m_OmitHardware){m_Ready=true;EnergyShieldRendering.Register(this);return true;}
             m_Collar=new GameObject("Neko life-support collar").transform;m_Collar.SetParent(m_Root,false);
             m_Device=new GameObject("Independent shield generator").transform;m_Device.SetParent(m_Root,false);
             var metal=Resources.Load<Material>("Moonkov/TacticalMetal");var indicator=Resources.Load<Material>("Moonkov/TacticalIndicator");
@@ -115,11 +125,14 @@ namespace Unity.MP_FPS
         private void LateUpdate()
         {
             if(!m_Ready || !m_Head)return;
-            UpdateCollarPose();
-            m_Collar.gameObject.SetActive(m_HeadEquipped);
-            m_CollarNekoDetails.gameObject.SetActive(!m_StandardCollar);
-            m_CollarStandardDetails.gameObject.SetActive(m_StandardCollar);
-            UpdateVisor();UpdateEquipment();
+            if(!m_OmitHardware)
+            {
+                UpdateCollarPose();
+                m_Collar.gameObject.SetActive(m_HeadEquipped);
+                m_CollarNekoDetails.gameObject.SetActive(!m_StandardCollar);
+                m_CollarStandardDetails.gameObject.SetActive(m_StandardCollar);
+                UpdateVisor();UpdateEquipment();
+            }
             var feet=m_LeftFoot&&m_RightFoot?(m_LeftFoot.position+m_RightFoot.position)*.5f:transform.position;
             Vector3 axis=m_Head.position-feet;float length=Mathf.Max(.65f,axis.magnitude);axis=axis.sqrMagnitude>.001f?axis.normalized:transform.up;
             Vector3 forward=Vector3.Cross(transform.right,axis);if(forward.sqrMagnitude<.01f)forward=transform.forward;
