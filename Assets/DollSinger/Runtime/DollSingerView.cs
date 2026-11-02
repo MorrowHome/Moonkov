@@ -26,6 +26,8 @@ public class DollSingerView : MonoBehaviour
     // Owner-camera copies can retain the morph slots without their duplicate
     // expression data. The shared world mesh keeps its complete expressions.
     public bool SimplifyFirstPersonMorphs { get; set; }
+    // A pipeline without realtime shadows does not need a second skinned body.
+    public bool RenderFirstPersonShadow { get; set; } = true;
 
     [Header("Local player view")]
     [Tooltip("Switches between third and first person. Tick it in the Play-mode Inspector " +
@@ -719,10 +721,11 @@ public class DollSingerView : MonoBehaviour
     {
         if (!bodyRenderer || !firstPersonMesh || !fullShadowRenderer) return;
         firstPersonPresentationActive = active;
-        // One full silhouette casts shadows in every view. Only the visible body changes
-        // per camera; the shadow mesh always uses the unmodified source and lilToon alpha.
+        // When enabled, the full silhouette casts shadows in every view. Only the visible
+        // body changes per camera; the shadow mesh keeps the source mesh and lilToon alpha.
         bodyRenderer.shadowCastingMode = active ? ShadowCastingMode.Off : thirdPersonShadowMode;
-        fullShadowRenderer.enabled = active && bodyRenderer.enabled && thirdPersonShadowMode != ShadowCastingMode.Off;
+        fullShadowRenderer.enabled = RenderFirstPersonShadow && active && bodyRenderer.enabled &&
+            thirdPersonShadowMode != ShadowCastingMode.Off;
     }
 
     private void BeginCameraRendering(ScriptableRenderContext context, Camera renderingCamera) => BeforeCameraCull(renderingCamera);

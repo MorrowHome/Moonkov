@@ -15,6 +15,72 @@ public static class MoonkovFirstPersonCameraChecks
     [MenuItem("Tools/Moonkov/Check First Person Camera")]
     public static void Run() => Debug.Log(RunReport() + "\n" + CheckMotion());
 
+    public static string CheckShadowBudget()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit Mode.");
+        int checks = 0;
+        void Check(bool condition, string message) { Require(condition, message); checks++; }
+        var type = typeof(DollSingerView);
+        var present = type.GetMethod("SetFirstPersonPresentation", Private);
+        var sync = type.GetMethod("SyncShadowBlendShapes", Private);
+        foreach (var path in new[] { "Assets/HatsuneMiku/Prefabs/HatsuneMikuPlayer.prefab",
+            "Assets/DollSinger/Prefabs/DollSingerPlayer.prefab", "Assets/Shian/Prefabs/ShianPlayer.prefab" })
+        {
+            var scene = EditorSceneManager.NewPreviewScene();
+            DollSingerView view = null;
+            try
+            {
+                var root = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path), scene);
+                foreach (var behaviour in root.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
+                view = root.GetComponentInChildren<DollSingerView>(true);
+                var body = (SkinnedMeshRenderer)type.GetMethod("FindBodyRenderer", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { root });
+                var source = body.sharedMesh;
+                var authoredShadow = body.shadowCastingMode;
+                bool authoredEnabled = body.enabled;
+                Check(view.RenderFirstPersonShadow, "Default view lost its full shadow: " + path);
+                view.SimplifyFirstPersonMorphs = true;
+                view.BindPlayer(root, true);
+                var shadow = (SkinnedMeshRenderer)type.GetField("fullShadowRenderer", Private).GetValue(view);
+                Check(shadow && shadow.sharedMesh == source && shadow.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly,
+                    "Missing original full shadow mesh: " + path);
+                body.enabled = true;
+                present.Invoke(view, new object[] { true });
+                Check(shadow.enabled == (authoredShadow != UnityEngine.Rendering.ShadowCastingMode.Off), "Default shadow state changed");
+                view.RenderFirstPersonShadow = false;
+                present.Invoke(view, new object[] { true });
+                Check(!shadow.enabled && body.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.Off, "Budget still updates a shadow-only body");
+                type.GetMethod("BeforeCameraCull", Private).Invoke(view, new object[] { view.camera });
+                Check(body.sharedMesh != source && body.sharedMesh.vertexCount == source.vertexCount, "Budget changed the owner cutout");
+                type.GetMethod("AfterCameraRender", Private).Invoke(view, new object[] { view.camera });
+                Check(body.sharedMesh == source, "Budget changed the observer body");
+                Check(source.blendShapeCount > 0, "Expected expression shapes for regression fixture");
+                float previous = shadow.GetBlendShapeWeight(0);
+                body.SetBlendShapeWeight(0, previous + 17);
+                sync.Invoke(view, null);
+                Check(shadow.GetBlendShapeWeight(0) == previous, "Disabled shadow still synchronizes expressions");
+                view.RenderFirstPersonShadow = true;
+                present.Invoke(view, new object[] { true });
+                sync.Invoke(view, null);
+                Check(shadow.enabled && shadow.GetBlendShapeWeight(0) == previous + 17, "Restored shadow missed current expressions");
+                present.Invoke(view, new object[] { false });
+                Check(!shadow.enabled && body.shadowCastingMode == authoredShadow, "Third-person shadow state was not restored");
+                body.enabled = false;
+                present.Invoke(view, new object[] { true });
+                Check(!shadow.enabled, "A hidden body must not keep its shadow proxy active");
+                body.enabled = authoredEnabled;
+                view.BindPlayer(null, true);
+                Check(body.sharedMesh == source && body.shadowCastingMode == authoredShadow, "Unbind changed the source presentation");
+            }
+            finally
+            {
+                if (view) view.BindPlayer(null, true);
+                EditorSceneManager.ClosePreviewScene(scene);
+            }
+        }
+        return $"First-person shadow budget: PASS ({checks} checks, 3 characters; owner cutout, observer mesh, expression catch-up and original shadow restoration).";
+    }
+
     public static string CheckCompactOwnerMorphs()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit Mode.");

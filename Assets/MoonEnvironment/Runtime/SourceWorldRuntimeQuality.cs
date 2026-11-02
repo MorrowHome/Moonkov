@@ -24,6 +24,10 @@ namespace Unity.MP_FPS.Moon
             runtimePipeline.renderScale = RenderScale;
             runtimePipeline.msaaSampleCount = 1;
             runtimePipeline.shadowDistance = 0;
+            // URP exposes these serialized switches with internal setters. Update only
+            // the runtime clone, so shadow setup is disabled as well as shadow drawing.
+            JsonUtility.FromJsonOverwrite("{\"m_MainLightShadowsSupported\":false," +
+                "\"m_AdditionalLightShadowsSupported\":false,\"m_SoftShadowsSupported\":false}", runtimePipeline);
             s_RuntimePipeline = runtimePipeline;
         }
 

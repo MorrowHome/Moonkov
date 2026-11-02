@@ -39,6 +39,8 @@ namespace Unity.MP_FPS.Moon.Editor
         {
             var authored = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
             authored.renderScale = 1; authored.msaaSampleCount = 4; authored.shadowDistance = 1800;
+            JsonUtility.FromJsonOverwrite("{\"m_MainLightShadowsSupported\":true," +
+                "\"m_AdditionalLightShadowsSupported\":true,\"m_SoftShadowsSupported\":true}", authored);
             var runtime = Object.Instantiate(authored);
             try
             {
@@ -47,6 +49,10 @@ namespace Unity.MP_FPS.Moon.Editor
                     "The runtime quality budget modified the authored pipeline.");
                 Require(runtime.renderScale == .5f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
                     "The baked-world runtime budget was not applied.");
+                Require(authored.supportsMainLightShadows && authored.supportsAdditionalLightShadows && authored.supportsSoftShadows,
+                    "The runtime budget changed authored shadow support.");
+                Require(!runtime.supportsMainLightShadows && !runtime.supportsAdditionalLightShadows && !runtime.supportsSoftShadows,
+                    "The runtime pipeline still supports realtime shadow work.");
                 Require(SourceWorldRuntimeQuality.FarClip(2000, SourceWorldRuntimeQuality.ViewDistance, 75, false) == 75,
                     "Ordinary field of view must use the world range budget.");
                 float zoomFov = 2 * Mathf.Atan(Mathf.Tan(37.5f * Mathf.Deg2Rad) / 4) * Mathf.Rad2Deg;

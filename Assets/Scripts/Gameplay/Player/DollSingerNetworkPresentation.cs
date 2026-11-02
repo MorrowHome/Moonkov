@@ -282,6 +282,7 @@ namespace Unity.MP_FPS
             m_View.gameObject.SetActive(true);
             m_Input.enabled = true;
             m_View.SimplifyFirstPersonMorphs = Moon.SourceWorldRuntimeQuality.Active;
+            m_View.RenderFirstPersonShadow = !Moon.SourceWorldRuntimeQuality.Active;
             m_View.BindPlayer(m_Model.gameObject, true);
             m_View.camera.tag = "MainCamera";
             m_View.camera.enabled = true;
