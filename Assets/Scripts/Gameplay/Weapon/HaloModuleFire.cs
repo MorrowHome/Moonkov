@@ -82,7 +82,8 @@ namespace Unity.MP_FPS
 
             float step = Mathf.Max(0, deltaTime);
             bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
-            if (input.Aim || input.FireHeld || input.Shoot || state.BurstRemaining > 0)
+            // ADS raises the hands directly; only firing extends the hip-fire hold.
+            if (input.FireHeld || input.Shoot || state.BurstRemaining > 0)
                 state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
             else state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
 

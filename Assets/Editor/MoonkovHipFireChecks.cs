@@ -21,6 +21,7 @@ public static class MoonkovHipFireChecks
             CheckWindup(registry, dt);
             CheckHeldTrigger(registry, dt);
             CheckTransition(registry, dt);
+            CheckAimRelease(registry, dt);
         }
         CheckCancellation(registry);
         CheckEquipAndReload(registry);
@@ -28,7 +29,7 @@ public static class MoonkovHipFireChecks
         CheckRecoil();
         CheckPresentation();
         Debug.Log($"Hip fire checks passed: {assertions} assertions; 30/60/144 Hz windup, single click, held auto/semi/burst, " +
-            "ADS handoff, cancellation, deterministic spread, stronger/slower recoil, separate pose and lens.");
+            "ADS handoff/release, cancellation, deterministic spread, stronger/slower recoil, separate pose and lens.");
     }
 
     private static PredictedPlayerGhost Ready(uint id) => new PredictedPlayerGhost
@@ -93,6 +94,40 @@ public static class MoonkovHipFireChecks
         Require(Step(ref state, weapon, Intent(true, true), dt), "Releasing ADS imposed another hip windup.");
         for (int i = 0; i < Mathf.CeilToInt(.3f / dt); i++) Step(ref state, weapon, Intent(held: true), dt);
         Require(Step(ref state, weapon, Intent(true, true, true), dt), "Entering ADS imposed another pose windup.");
+    }
+
+    private static void CheckAimRelease(WeaponRegistry registry, float dt)
+    {
+        foreach (uint id in new[] { DollSingerWeapons.Halo, DollSingerWeapons.Revolver, DollSingerWeapons.Shotgun, DollSingerWeapons.Sniper, DollSingerWeapons.Trine })
+        {
+            var weapon = registry.GetWeaponData(id);
+            foreach (float aimDuration in new[] { .1f, .4f })
+            {
+                var state = Ready(id);
+                for (int cycle = 0; cycle < 2; cycle++)
+                {
+                    for (int i = 0; i < Mathf.CeilToInt(aimDuration / dt); i++)
+                        Require(!Step(ref state, weapon, Intent(aim: true), dt), "Aiming alone fired a shot.");
+                    float raised = state.WeaponRaiseProgress;
+                    Require(raised > 0, "ADS did not raise the hands.");
+                    Require(!Step(ref state, weapon, Intent(), dt) && state.WeaponRaiseProgress < raised,
+                        $"Pure ADS release waited for the hip-fire hold: weapon={id}, dt={dt}, held={aimDuration}.");
+                    for (int i = 1; i < Mathf.CeilToInt(DollSingerHaloAim.LowerSeconds / dt); i++)
+                        Require(!Step(ref state, weapon, Intent(), dt), "ADS release fired a pending shot.");
+                    Require(state.WeaponRaiseProgress == 0, "Pure ADS release exceeded the lowering duration.");
+                }
+            }
+
+            var fired = Ready(id);
+            for (int i = 0; i < Mathf.CeilToInt(.4f / dt); i++) Step(ref fired, weapon, Intent(aim: true), dt);
+            Require(Step(ref fired, weapon, Intent(true, true, true), dt), "Aimed shot failed before release check.");
+            Step(ref fired, weapon, Intent(), dt);
+            Require(fired.WeaponRaiseProgress == 1, "ADS release removed the recent-shot hip-fire hold.");
+            // Finish any burst, then keep aiming beyond the last shot's hold window.
+            for (int i = 0; i < Mathf.CeilToInt(2f / dt); i++) Step(ref fired, weapon, Intent(aim: true), dt);
+            Require(!Step(ref fired, weapon, Intent(), dt) && fired.WeaponRaiseProgress < 1,
+                "Aiming refreshed the hold timer after shooting stopped.");
+        }
     }
 
     private static void CheckCancellation(WeaponRegistry registry)
