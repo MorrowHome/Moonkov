@@ -208,13 +208,15 @@ namespace Unity.MP_FPS
             bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
             m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;
-            m_Vitals.Present(playerData);
+            m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 302 : 284;
 
             // Update Ammo Label
             if (m_AmmoLabel != null)
             {
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID, playerData.EquippedModules);
                 int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
+                bool sharedHalo = playerData.HaloEquipped || DollSingerWeapons.IsHalo(playerData.EquippedWeaponID);
+                m_AmmoLabel.style.display = sharedHalo ? DisplayStyle.None : DisplayStyle.Flex;
 
                 // Update Ammo Text and Color
                 float fraction = magazineSize > 0 ? (float)playerData.CurrentAmmo / magazineSize : 0;
@@ -230,7 +232,8 @@ namespace Unity.MP_FPS
                 else if (playerData.CurrentAmmo <= magazineSize * 0.3f) m_AmmoLabel.style.color = Color.yellow;
                 else m_AmmoLabel.style.color = Color.white;
 
-                if (m_AmmoBar != null && (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
+                if (sharedHalo && ammoPanel != null) ammoPanel.style.display = DisplayStyle.None;
+                if (m_AmmoBar != null && (sharedHalo || !playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
                     m_AmmoBar.style.display = DisplayStyle.None;
             }
 
@@ -243,6 +246,7 @@ namespace Unity.MP_FPS
                     playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
             }
             PresentChargeFeedback(playerData);
+            m_Vitals.Present(playerData, haloNotice: m_LastChargeNotice);
 
             // Update Reticle
             UpdateReticleVisual(playerData);

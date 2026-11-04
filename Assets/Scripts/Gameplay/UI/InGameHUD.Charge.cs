@@ -46,6 +46,14 @@ namespace Unity.MP_FPS
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(player.EquippedWeaponID, player.EquippedModules);
             var status = m_ChargeFeedback.Update(player, weapon, graph,
                 !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked, Time.unscaledTime);
+            if (player.HaloEnergyInitialized)
+            {
+                // The shared energy belongs to the existing medical scanner HUD.
+                m_LastChargeNotice = status.Notice;
+                m_ReloadingLabel.style.display = DisplayStyle.None;
+                m_ChargeWeaponPanel.style.display = DisplayStyle.None;
+                return;
+            }
             if (status.Notice != m_LastChargeNotice || Time.unscaledTime >= m_NextChargeText)
             {
                 PresentChargeStatus(m_RootElement, status);

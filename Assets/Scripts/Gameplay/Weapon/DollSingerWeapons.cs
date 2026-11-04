@@ -28,7 +28,7 @@ namespace Unity.MP_FPS
         public static void SaveActiveAmmo(ref PredictedPlayerGhost state, InventoryGraph graph)
         {
             var item = graph?.Find(state.EquippedWeaponItem.ToString());
-            if (item != null && MeleeInventory.Kind(item.Code) == DollSinger.MeleeWeaponKind.None &&
+            if (!state.HaloEnergyInitialized && item != null && MeleeInventory.Kind(item.Code) == DollSinger.MeleeWeaponKind.None &&
                 WeaponId(item.Code) == state.EquippedWeaponID) item.LoadedAmmo = state.CurrentAmmo;
             StoreAmmo(ref state);
         }
@@ -56,11 +56,14 @@ namespace Unity.MP_FPS
         // The authoritative item tree determines possession; backpack weapons cannot be selected.
         public static void SyncEquipment(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry)
         {
+            HaloEnergyRules.Synchronize(ref state, graph);
             SaveActiveAmmo(ref state, graph);
             state.InventoryWeapons = true;
             var primary = graph?.Equipped("Primary"); var secondary = graph?.Equipped("Secondary"); var pistol = graph?.Equipped("Pistol");
             state.PrimaryWeaponID = WeaponId(primary?.Code); state.SecondaryWeaponID = WeaponId(secondary?.Code); state.PistolWeaponID = WeaponId(pistol?.Code);
-            state.PrimaryAmmo = Ammo(primary, graph, registry); state.SecondaryAmmo = Ammo(secondary, graph, registry); state.PistolAmmo = Ammo(pistol, graph, registry);
+            state.PrimaryAmmo = HaloEnergyRules.AvailableShots(state, registry.GetWeaponData(state.PrimaryWeaponID, (ushort)HaloModules.Mask(graph, primary)));
+            state.SecondaryAmmo = HaloEnergyRules.AvailableShots(state, registry.GetWeaponData(state.SecondaryWeaponID, (ushort)HaloModules.Mask(graph, secondary)));
+            state.PistolAmmo = HaloEnergyRules.AvailableShots(state, registry.GetWeaponData(state.PistolWeaponID, (ushort)HaloModules.Mask(graph, pistol)));
             state.PrimaryModules = (ushort)HaloModules.Mask(graph, primary); state.SecondaryModules = (ushort)HaloModules.Mask(graph, secondary);
             state.PistolModules = (ushort)HaloModules.Mask(graph, pistol);
             ushort activity=state.AlienFoodEffectSeconds>0 ? (ushort)((int)state.AlienFoodEffect<<12) : (ushort)0;
@@ -87,11 +90,12 @@ namespace Unity.MP_FPS
             if (!RefreshTemporaryModules(ref state,id,WeaponId(active?.Code),modules))
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
-                state.CurrentAmmo = Ammo(active, graph, registry); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
+                state.CurrentAmmo = HaloEnergyRules.AvailableShots(state, registry.GetWeaponData(WeaponId(active?.Code), modules)); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
                 state.ControllerState.IsReloadingState = false;
                 state.ReloadDuration = 0;
                 HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
             }
+            HaloEnergyRules.RefreshAmmo(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
         }
         public static bool TryEquip(ref PredictedPlayerGhost state, in PlayerInput input, WeaponRegistry registry)
         {
@@ -129,13 +133,13 @@ namespace Unity.MP_FPS
             state.ReloadTargetAmmo = 0;
         }
         public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon) =>
-            CompleteReload(ref state,weapon != null ? weapon.MagazineSize : 0);
+            CompleteReload(ref state, state.HaloEnergyInitialized && IsHalo(state.EquippedWeaponID) ? 0 : weapon != null ? weapon.MagazineSize : 0);
 
         // Successful extraction ends the playable raid immediately. Settle rounds
         // already paid for before destroying the player and saving their loadout.
         public static bool CompleteExtractedCharge(ref PredictedPlayerGhost state,InventoryGraph graph,int magazineSize)
         {
-            if(!state.InventoryWeapons || !state.ControllerState.IsReloadingState || state.CurrentHealth<=0 ||
+            if(state.HaloEnergyInitialized || !state.InventoryWeapons || !state.ControllerState.IsReloadingState || state.CurrentHealth<=0 ||
                 !IsHalo(state.EquippedWeaponID) || state.EquippedWeaponSlot<1 || state.EquippedWeaponSlot>3 ||
                 state.ReloadTargetAmmo<=state.CurrentAmmo || magazineSize<=0) return false;
             var active=graph?.Equipped(Slot(state.EquippedWeaponSlot));

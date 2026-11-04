@@ -69,8 +69,9 @@ namespace Unity.MP_FPS
         // Store one click through that windup, separately from the short cooldown buffer.
         public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, in PlayerInput input, bool switched, float deltaTime)
         {
+            HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
-            bool blocked = input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
+            bool blocked = input.HaloDefense || state.HaloDefenseHeld || input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
             if (blocked)
             {
                 Reset(ref state);
@@ -104,10 +105,11 @@ namespace Unity.MP_FPS
 
         public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, bool trigger, bool aiming, bool switched)
         {
+            HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool pulse = IsPulse(state, weapon);
             bool pressed = trigger && !state.BurstTriggerHeld;
             state.BurstTriggerHeld = trigger;
-            bool blocked = weapon == null || switched || state.CurrentHealth <= 0 ||
+            bool blocked = weapon == null || switched || state.CurrentHealth <= 0 || state.HaloDefenseHeld ||
                 (DollSingerWeapons.IsHalo(state.EquippedWeaponID) && !aiming);
             if (blocked) { state.BurstRemaining = 0; state.FireBufferRemaining = 0; return false; }
 

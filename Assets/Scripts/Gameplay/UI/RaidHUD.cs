@@ -160,7 +160,6 @@ namespace Unity.MP_FPS
             InitializeQuickSlots();
             InitializeMelee();
             InitializeBountyClash();
-            InitializeProtection();
             InitializeRaidMap();
             InitializeSpecialEquipment();
             InitializeChat();
@@ -400,9 +399,9 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (!inGame) { ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             PresentOnlineSquad();
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
@@ -467,7 +466,6 @@ namespace Unity.MP_FPS
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
             CloseLootWhenIdle();
-            PresentProtection(alive && ready && !settled && !m_InventoryVisible && !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen);
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
             bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested &&
@@ -949,7 +947,6 @@ namespace Unity.MP_FPS
             DisposeCampaignHUD();
             ResetRaidCinematics();
             DisposeRaidMap();
-            DisposeProtection();
             DisposeBountyClash();
             DisposeMelee();
             DisposeQuickSlots();

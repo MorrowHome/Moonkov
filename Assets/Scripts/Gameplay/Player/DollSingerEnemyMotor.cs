@@ -123,7 +123,7 @@ namespace Unity.MP_FPS
                 ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
-                bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory, weapon.EnergyPerRound);
+                bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory, health.HaloEnergyInitialized ? 1 : weapon.EnergyPerRound);
                 if (cellReady) {brain.ReloadFailure.Clear();input.SetFlag(PlayerInput.InputFlag.Reload, true);}
                 else
                 {
@@ -148,7 +148,12 @@ namespace Unity.MP_FPS
                 brain.BurstUntil = now + brain.Random.NextFloat(.25f, .6f);
                 brain.NextBurst = brain.BurstUntil + brain.Random.NextFloat(.5f, 1.1f);
             }
-            input.SetFlag(PlayerInput.InputFlag.Shoot, firingSolution && now < brain.BurstUntil);
+            bool defend = !TutorialRuntime.Enabled(EntityManager) && brain.Visible &&
+                (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Cover && !brain.IsPeeking) &&
+                health.HaloEnergy > 15 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
+                !input.Reload && HaloEnergyRules.CanDefend(health);
+            input.SetFlag(PlayerInput.InputFlag.HaloDefense, defend);
+            input.SetFlag(PlayerInput.InputFlag.Shoot, !defend && firingSolution && now < brain.BurstUntil);
             return input;
         }
 

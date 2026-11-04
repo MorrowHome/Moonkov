@@ -21,7 +21,8 @@ public struct PlayerInput
         Prone = 1 << 11,
         Tiptoe = 1 << 12,
         FireHeld = 1 << 13,
-        FireSuppressed = 1 << 14
+        FireSuppressed = 1 << 14,
+        HaloDefense = 1 << 15
     }
 
     public float2 MoveInput;
@@ -51,6 +52,7 @@ public struct PlayerInput
     public bool Shoot => (InputFlags & (uint)InputFlag.Shoot) != 0;
     public bool FireHeld => (InputFlags & (uint)InputFlag.FireHeld) != 0;
     public bool FireSuppressed => (InputFlags & (uint)InputFlag.FireSuppressed) != 0;
+    public bool HaloDefense => (InputFlags & (uint)InputFlag.HaloDefense) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
@@ -80,7 +82,7 @@ public struct PlayerInput
         const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
             InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
-            InputFlag.FireHeld | InputFlag.FireSuppressed);
+            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense);
         result.InputFlags &= knownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;

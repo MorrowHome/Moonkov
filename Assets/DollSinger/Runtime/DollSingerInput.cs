@@ -85,6 +85,7 @@ namespace Unity.MP_FPS.DollSinger
             PlayerPrefs.Save();
         }
         public bool ReloadPressed { get; private set; }
+        public bool DefenseHeld { get; private set; }
         public int WeaponSlotPressed { get; private set; }
         public bool AltHeld { get; private set; }
         public float LeanTarget { get; private set; }
@@ -201,6 +202,7 @@ namespace Unity.MP_FPS.DollSinger
                 ViewPressed = (DarkSightMode?.Invoke() == true ? keyboard.bKey : keyboard.vKey).wasPressedThisFrame;
                 LightPressed = toggleLight;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
+                DefenseHeld = keyboard.tKey.isPressed;
                 int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
                     keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
                     keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
@@ -234,6 +236,7 @@ namespace Unity.MP_FPS.DollSinger
                 JumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
                 SprintHeld |= gamepad.leftStickButton.isPressed;
                 ReloadPressed |= gamepad.buttonNorth.wasPressedThisFrame;
+                DefenseHeld |= gamepad.dpad.right.isPressed;
                 AimHeld |= gamepad.leftTrigger.isPressed;
                 AimPressed |= gamepad.leftTrigger.wasPressedThisFrame;
                 FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
@@ -255,6 +258,7 @@ namespace Unity.MP_FPS.DollSinger
                 FirePressed = FireHeld = false;
                 if (!held) suppressFireUntilRelease = false;
             }
+            if (DefenseHeld) FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
             if (MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
             if (QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
@@ -267,7 +271,7 @@ namespace Unity.MP_FPS.DollSinger
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
             AimPressed = false;
-            FireHeld = false;
+            FireHeld = DefenseHeld = false;
             Stance = toggledStance;
             AltHeld = false;
             LeanTarget = 0f;

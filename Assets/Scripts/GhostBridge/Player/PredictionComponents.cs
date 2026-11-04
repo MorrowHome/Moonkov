@@ -70,10 +70,18 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public Unity.Collections.FixedString64Bytes HandActionItem;
     [GhostField(Quantization = 100)] public float HandActionRemaining, HandActionDuration;
     [GhostField(Quantization = 1000)] public float3 HandActionTarget;
-    [GhostField] public bool ShieldEquipped, HeadDomeEquipped, ShieldRegenerating;
+    [GhostField] public bool HeadDomeEquipped;
+    [GhostField] public bool HaloEquipped, HaloEnergyInitialized, HaloDefending, HaloDefenseHeld, HaloDefenseBroken, HaloRegenerating;
+    [GhostField(Quantization = 100)] public float HaloEnergy, HaloCapacity, HaloRecoveryDelay;
+    [GhostField] public uint HaloRechargeSequence;
+    // Legacy presentation/test adapters. These are aliases, never separate resources.
+    public bool ShieldEquipped { get => HaloEquipped; set => HaloEquipped = value; }
+    public bool ShieldRegenerating { get => HaloRegenerating; set => HaloRegenerating = value; }
+    public float ShieldCharge { get => HaloEnergy; set => HaloEnergy = value; }
+    public float ShieldEnergy { get => HaloEnergy; set => HaloEnergy = value; }
+    public float ShieldRecoveryDelay { get => HaloRecoveryDelay; set => HaloRecoveryDelay = value; }
     [GhostField] public byte SubspaceBackpack; // Equipped inventory: 0 none, 1 light, 2 expedition, 3 cargo, 4 scout.
     [GhostField] public bool HeadDomeStandard;
-    [GhostField(Quantization = 100)] public float ShieldCharge, ShieldEnergy, ShieldRecoveryDelay;
     [GhostField] public uint ShieldHitSequence, ShieldBreakSequence, ShieldRestoreSequence;
     [GhostField] public float3 ShieldHitPoint;
     [GhostField(Quantization = 100)] public float ShieldHitStrength;

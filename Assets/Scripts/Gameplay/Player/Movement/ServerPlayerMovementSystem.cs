@@ -93,28 +93,25 @@ namespace Unity.MP_FPS
                 ? EntityManager.GetComponentObject<RaidInventoryState>(connection).Graph : null;
         }
 
-        private bool TryReserveHaloEnergy(Entity player, uint weaponId, WeaponData weapon, int currentAmmo, out int targetAmmo)
+        private bool TryRechargeHalo(Entity player, ref PredictedPlayerGhost state)
         {
-            targetAmmo = weapon.MagazineSize;
-            if (!DollSingerWeapons.IsHalo(weaponId) || MoonRaidMap.Active == null) return true;
-            if (EntityManager.HasComponent<DollSingerEnemy>(player))
-                return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory.TryRecharge(currentAmmo, weapon.MagazineSize, weapon.EnergyPerRound, out targetAmmo);
-            if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
+            if (!DollSingerWeapons.IsHalo(state.EquippedWeaponID)) return false;
+            if (EntityManager.HasComponent<DollSingerEnemyBrain>(player))
+                return HaloEnergyInventory.RechargeFirst(ref state, EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory);
+            if (!ghostOwnerLookup.HasComponent(player) || !SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
             int owner = ghostOwnerLookup[player].NetworkId;
             if (owner <= 0 || owner >= clients.Length) return false;
-            Entity connection = clients[owner].ConnectionEntity;
+            var connection = clients[owner].ConnectionEntity;
             if (!EntityManager.Exists(connection) || !EntityManager.HasComponent<RaidSession>(connection) ||
-                !EntityManager.HasComponent<JoinedClient>(connection) ||
-                EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity != player ||
-                EntityManager.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth <= 0) return false;
+                !EntityManager.HasComponent<JoinedClient>(connection) || !EntityManager.HasComponent<RaidInventoryState>(connection) ||
+                EntityManager.HasComponent<NetworkStreamRequestDisconnect>(connection) ||
+                EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity != player) return false;
             var session = EntityManager.GetComponentData<RaidSession>(connection);
-            if (EntityManager.HasComponent<RaidInventoryState>(connection))
-            {
-                var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
-                if (session.Phase != RaidPhase.Active || !inventory.Graph.TryRecharge(currentAmmo, weapon.MagazineSize, weapon.EnergyPerRound, out targetAmmo)) return false;
-                RaidInventoryState.UpdateTotals(inventory.Graph, ref session);
-            }
-            else return false; // A persistent battery graph is required; never fall back to one-cell-per-magazine.
+            var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
+            if (session.Phase != RaidPhase.Active || inventory.RaidId != session.RaidId || inventory.ActionPending ||
+                !HaloEnergyInventory.RechargeFirst(ref state, inventory.Graph)) return false;
+            RaidInventoryState.UpdateTotals(inventory.Graph, ref session);
+            inventory.LastSentVersion = -1;
             EntityManager.SetComponentData(connection, session);
             return true;
         }
@@ -339,6 +336,20 @@ namespace Unity.MP_FPS
                 }
             }
 
+            // Resolve every actor's defense before any hitscan shot. Entity iteration order
+            // must not decide whether this tick's held defense protects the target.
+            foreach (var (defender, lookup) in SystemAPI.Query<RefRW<PredictedPlayerGhost>, RefRO<PlayerClientCommandInputLookup>>().WithAll<Simulate>())
+            {
+                bool held = false;
+                if (lookup.ValueRO.ClientCommandInputEntity != Entity.Null && predictedClientInputComponentLookup.HasComponent(lookup.ValueRO.ClientCommandInputEntity))
+                {
+                    var pending = predictedClientInputComponentLookup[lookup.ValueRO.ClientCommandInputEntity];
+                    if (pending.InputCount > 0 && commands[pending.BeginInputIndex + pending.InputCount - 1].TryGetPlayerMovementInput(defender.ValueRO.InputIndex, out var intent))
+                        held = intent.HaloDefense && !intent.FireSuppressed && !intent.FreeLooking;
+                }
+                HaloEnergyRules.SetDefense(ref defender.ValueRW, held);
+            }
+
             foreach (var (predictedPlayer, inputLookup,
                          entity)
                      in SystemAPI.Query<RefRW<PredictedPlayerGhost>, RefRO<PlayerClientCommandInputLookup>>()
@@ -374,17 +385,22 @@ namespace Unity.MP_FPS
                         bool wantsToShoot = !switchedWeapon && input.Shoot && !input.FireSuppressed;
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
-                        if (HaloModuleFire.ReadyToReload(ref predictedPlayer.ValueRW,wantsToReload || mustReload,weaponData.MagazineSize) &&
-                            TryReserveHaloEnergy(entity, predictedPlayer.ValueRO.EquippedWeaponID, weaponData, predictedPlayer.ValueRO.CurrentAmmo, out int targetAmmo))
+                        bool halo = DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID);
+                        if (halo && wantsToReload && !input.HaloDefense && TryRechargeHalo(entity, ref predictedPlayer.ValueRW))
                         {
-                            HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, targetAmmo);
+                            predictedPlayer.ValueRW.LastReloadTick = serverTick;
+                            HaloEnergyRules.RefreshAmmo(ref predictedPlayer.ValueRW, weaponData);
+                        }
+                        else if (!halo && HaloModuleFire.ReadyToReload(ref predictedPlayer.ValueRW, wantsToReload || mustReload, weaponData.MagazineSize))
+                        {
+                            HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, weaponData.MagazineSize);
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 
                         if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, deltaTime))
                         {
                             HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, deltaTime);
-                            predictedPlayer.ValueRW.CurrentAmmo--;
+                            HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
 
                             bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;

@@ -14,9 +14,12 @@ namespace Unity.MP_FPS.Client
         private readonly RaidBodyDiagram m_Body;
         private readonly VitalWaveform m_Wave;
         private readonly Label m_Warning;
-        private readonly VisualElement[][] m_Reserves = new VisualElement[4][];
-        private readonly int[] m_Counts = { -1, -1, -1, -1 };
-        private readonly Color[] m_Colors = new Color[4];
+        private readonly VisualElement[][] m_Reserves = new VisualElement[5][];
+        private readonly int[] m_Counts = { -1, -1, -1, -1, -1 };
+        private readonly Color[] m_Colors = new Color[5];
+        private readonly VisualElement m_HaloRow;
+        private readonly Label m_HaloLabel;
+        private bool m_HaloVisible;
         private string m_LastWarning;
         private readonly Label m_OxygenLabel;
         private int m_LastOxygen = -1;
@@ -37,12 +40,14 @@ namespace Unity.MP_FPS.Client
             m_Wave = new VitalWaveform(); trace.Add(m_Wave);
             m_Warning = new Label { name = "vitals-warning", pickingMode = PickingMode.Ignore };
             m_Warning.AddToClassList("vitals-warning"); signals.Add(m_Warning); Add(signals);
-            string[] captions = { "O₂", "BODY ENERGY", "HYDRATION", "STOMACH" };
-            for (int i = 0; i < 4; i++)
+            string[] captions = { "O₂", "BODY ENERGY", "HYDRATION", "STOMACH", "HALO" };
+            for (int i = 0; i < captions.Length; i++)
             {
                 var row = new VisualElement { name = "vitals-reserve-" + i, pickingMode = PickingMode.Ignore }; row.AddToClassList("vitals-reserve"); signals.Add(row);
+                if (i == 4) { m_HaloRow = row; row.style.display = DisplayStyle.None; }
                 var label = new Label(captions[i]) { pickingMode = PickingMode.Ignore }; label.AddToClassList("vitals-reserve-label"); row.Add(label);
                 if (i == 0) m_OxygenLabel = label;
+                if (i == 4) m_HaloLabel = label;
                 var cells = new VisualElement { pickingMode = PickingMode.Ignore }; cells.AddToClassList("vitals-cells"); row.Add(cells);
                 m_Reserves[i] = new VisualElement[12];
                 for (int c = 0; c < 12; c++)
@@ -51,7 +56,7 @@ namespace Unity.MP_FPS.Client
             RegisterCallback<AttachToPanelEvent>(_ => MoonkovLocalization.Bind(this));
         }
 
-        public void Present(in PredictedPlayerGhost state, BodyPart selected = BodyPart.Auto)
+        public void Present(in PredictedPlayerGhost state, BodyPart selected = BodyPart.Auto, HaloChargeNotice haloNotice = HaloChargeNotice.None)
         {
             m_Body.Present(state, selected);
             var signal = RaidVitalSignal.Read(state); m_Wave.Present(signal);
@@ -67,9 +72,24 @@ namespace Unity.MP_FPS.Client
             Reserve(1, state.Energy, signal.Ready, state.Energy <= 0 ? DangerColor : state.Energy <= 25 ? WarningColor : SignalColor);
             Reserve(2, state.Hydration, signal.Ready, state.Hydration <= 0 ? DangerColor : state.Hydration <= 25 ? WarningColor : SignalColor);
             Reserve(3, state.Satiety, signal.Ready, state.Satiety >= RaidNutrition.FullThreshold ? WarningColor : SignalColor);
+            bool haloVisible = signal.Ready && state.HaloEnergyInitialized && state.HaloEquipped;
+            if (m_HaloVisible != haloVisible)
+            {
+                m_HaloVisible = haloVisible;
+                m_HaloRow.style.display = haloVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            float haloPercent = HaloEnergyRules.Energy(state) / HaloEnergyRules.Maximum(state) * 100;
+            Color haloColor = haloVisible && haloPercent <= 0 ? DangerColor : haloVisible && haloPercent <= 25 ? WarningColor : SignalColor;
+            if (m_Colors[4] != haloColor) m_HaloLabel.style.color = haloColor;
+            Reserve(4, haloPercent, haloVisible, haloColor);
             string warning = signal.Warning;
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity && state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
                 warning = "OXYGEN REFILLING";
+            // Reuse the instrument's brief notice line; medical warnings always take priority.
+            if (string.IsNullOrEmpty(warning) && haloVisible)
+                warning = haloNotice == HaloChargeNotice.LowEnergy ? "NO BATTERY READY" :
+                    haloNotice == HaloChargeNotice.MoveCells ? "BATTERY OUT OF REACH" :
+                    haloNotice == HaloChargeNotice.Full ? "HALO FULL" : "";
             int grace = warning == "OXYGEN DEPLETED" ? Mathf.CeilToInt(state.OxygenGraceRemaining) : -1;
             float estimate = warning == "OXYGEN REFILLING" ? RaidOxygen.RefillSeconds(state) :
                 warning == "LOW OXYGEN" || warning == "CRITICAL OXYGEN" ? RaidOxygen.RemainingSeconds(state) : float.PositiveInfinity;

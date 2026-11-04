@@ -38,18 +38,23 @@ public static class EnergyShieldBudgetChecks
                 for(int repeat=0;repeat<2;repeat++)
                 {
                     view.ConfigureHardwareBudget(true);view.ResetPresentation();
-                    var state=new PredictedPlayerGhost{CurrentHealth=440,HeadDomeEquipped=true,ShieldEquipped=true,
-                        ShieldCharge=100,ShieldEnergy=100,SubspaceBackpack=2};
+                    var state=new PredictedPlayerGhost{CurrentHealth=440,HeadDomeEquipped=true,HaloEquipped=true,
+                        HaloEnergyInitialized=true,HaloEnergy=100,HaloCapacity=100,SubspaceBackpack=2};
                     view.Present(state,false,false,null);tick.Invoke(view,null);
-                    var shell=(MeshRenderer)type.GetField("m_ShellRenderer",flags).GetValue(view);
+                    var sphere=model.GetComponentInChildren<HaloDefenseSphere>(true);
                     var hardware=(List<Renderer>)type.GetField("m_Hardware",flags).GetValue(view);
-                    Check(shell && !shell.enabled && hardware.Count==0,"Remote hardware was built or idle shield is visible");
+                    Check(sphere && !sphere.Surface && hardware.Count==0,"Idle defense allocated geometry or decorative hardware");
+                    state.HaloDefending=true;
+                    view.Present(state,false,false,null);
+                    for(int frame=0;frame<16;frame++)tick.Invoke(view,null);
+                    Check(sphere.Surface && sphere.Surface.enabled && sphere.Deployment==1 && sphere.Surface.sharedMaterials.Length==4,
+                        "Active remote defense must open with four material batches");
                     state.ShieldHitSequence=1;state.ShieldHitStrength=.7f;
                     view.Present(state,false,false,null);tick.Invoke(view,null);
-                    Check(shell.enabled,"Remote shield hit cue disappeared");
-                    view.ResetPresentation();state.ShieldHitSequence=0;state.ShieldRegenerating=true;
+                    Check(sphere.Surface.enabled,"Active defense disappeared on impact");
+                    view.ResetPresentation();state.ShieldHitSequence=0;state.HaloDefending=false;state.HaloRegenerating=true;
                     view.Present(state,false,false,null);tick.Invoke(view,null);
-                    Check(shell.enabled,"Remote shield regeneration cue disappeared");
+                    Check(!sphere.Surface.enabled,"Regeneration must not activate passive defense");
                     view.ConfigureHardwareBudget(false);view.Present(state,true,true,null);tick.Invoke(view,null);
                     hardware=(List<Renderer>)type.GetField("m_Hardware",flags).GetValue(view);
                     var collar=(Transform)type.GetField("m_Collar",flags).GetValue(view);
@@ -60,6 +65,6 @@ public static class EnergyShieldBudgetChecks
             }
             finally{EditorSceneManager.ClosePreviewScene(scene);}
         }
-        return $"Remote shield budget: PASS ({checks} checks, 3 avatars, hit/regeneration cues and full hardware restoration).";
+        return $"Halo defense budget: PASS ({checks} checks, 3 avatars, lazy geometry, active defense and full hardware restoration).";
     }
 }

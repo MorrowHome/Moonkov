@@ -50,10 +50,10 @@ namespace Unity.MP_FPS.Inventory
         {
             switch (FromCode(code))
             {
-                case HaloModule.Capacitor: return "Capacity +50%; charge time +35%.";
-                case HaloModule.ChargeBridge: return "Charge time -40%; energy per round +50%.";
-                case HaloModule.MooncoreRecycler: return "Energy per round reduced by one third (rounded up); charge time +20%.";
-                case HaloModule.FocusLens: return "Shotgun spread -55%; capacity -1.";
+                case HaloModule.Capacitor: return "Shared halo capacity +50%; recovery speed -26%.";
+                case HaloModule.ChargeBridge: return "Recovery speed +67%; energy per round +50%.";
+                case HaloModule.MooncoreRecycler: return "Energy per round reduced by one third (rounded up); recovery speed -17%.";
+                case HaloModule.FocusLens: return "Shotgun spread -55%; energy per round +33% (rounded up).";
                 case HaloModule.FanArray: return "Shotgun spread +60%; 12 pellets share the original total damage.";
                 case HaloModule.PulseController: return "Rifle fires three rounds per trigger press; 0.42s between bursts.";
                 case HaloModule.HitMarker: return "Energy per round +25%; confirmed hits mark the last impact position for allies for 3s.";

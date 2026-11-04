@@ -39,11 +39,7 @@ namespace Unity.MP_FPS.Client
         public static string ItemState(InventoryItem item)
         {
             if (item == null) return "";
-            if (item.Code == "energy_shield_generator")
-            {
-                if (item.ShieldCharge < 0 || item.ShieldEnergy < 0) return MoonkovLocalization.Text("NEW GENERATOR / INITIAL CHARGE ON FIRST DEPLOYMENT");
-                return MoonkovLocalization.Format($"SHIELD {item.ShieldCharge:0}/100 / ENERGY {item.ShieldEnergy:0}/100");
-            }
+            if (item.Code == "energy_shield_generator") return MoonkovLocalization.Text("RETIRED EQUIPMENT");
             if (item.Code == "energy_head_dome" || item.Code == "helmet")
                 return item.SuitOxygen < 0 ? MoonkovLocalization.Text("NEW COLLAR / INITIAL OXYGEN ON FIRST DEPLOYMENT")
                     : MoonkovLocalization.Format($"COLLAR O₂ / {item.SuitOxygen:0}%");
@@ -84,11 +80,11 @@ namespace Unity.MP_FPS.Client
                 case "secure_case": description = "装备在中栏保险箱槽后，箱体与内部 2×2 格物品在死亡或超时结算时保留。仅保护仍在箱内的物品；不计成功撤离或任务首次回收。禁止武器、穿戴装备、嵌套容器和任务产物。箱内补给须先移至衣兜或胸挂才能使用。"; break;
                 case "survey_compass": description = "装入任意特殊装备槽后，HUD 自动显示当前视线的罗盘方位。0° 为世界北向（+Z）。死亡和超时保留；放在普通背包中不生效且会掉落。"; break;
                 case "laser_rangefinder": description = "装入任意特殊装备槽后，HUD 自动显示视线首个实体表面的距离，上限 500m；无命中显示超出量程，不透墙。死亡和超时保留；普通背包中不生效且会掉落。"; break;
-                case "energy_shield_generator": description = "A visible waist-mounted shield projector with charge indicators. Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."; break;
+                case "energy_shield_generator": description = "Legacy generator. Defense now uses the halo and its shared energy. Can be stored or sold."; break;
                 case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
                 case "helmet": description = "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."; break;
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
-                case "cells": description = "Stored battery energy powers weapon reloading and shield recharging. Move cells to pockets or an equipped rig before use. Recharging the shield consumes only the energy transferred."; break;
+                case "cells": description = "Instantly restores up to 100 halo energy. Keep batteries in pockets or an equipped rig. Unused charge is retained."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
@@ -124,7 +120,7 @@ namespace Unity.MP_FPS.Client
                 case "optical_sensor": description = "An intact precision sensor. Compact trade goods recovered from lunar equipment."; break;
                 case "data_drive": description = "An encrypted survey archive. Extract it and sell it for moon dust."; break;
                 case "mooncore_fragment": description = "An anomalous MC00 crystal. Successfully extract it, then store it for Mooncore stabilization research and repeatable recycler fabrication at Suppliers → Halo research. Research and fabrication consume separate fragments only when confirmed. Can still be sold; carried fragments drop on death."; break;
-                case "halo_mooncore_recycler": description = "Fabricated after Mooncore stabilization research. Install in a rifle or shotgun storage slot: energy per round reduced by one third (rounded up), charge time +20%. Knowledge is permanent; this physical module can be lost on death."; break;
+                case "halo_mooncore_recycler": description = "Fabricated after Mooncore stabilization research. Energy per round is reduced by one third (rounded up); recovery speed -17%. Knowledge is permanent; the physical module can be lost on death."; break;
                 case "mc00_archive_drive": description = "MC00 事故设备恢复的档案。成功带回自动保存调查发现。未入库前死亡会丢失，其他玩家可拾取。"; break;
                 case "helium3_sample": description = "A sealed helium-3 research sample. Valuable trade goods; does not refill suit oxygen."; break;
                 case "quantum_core": description = "A rare quantum processor. High-value cargo to bring back from a raid."; break;

@@ -23,12 +23,12 @@ namespace Unity.MP_FPS
                 EnergyShieldEquipment.Tick(ref health.ValueRW,inventory.Graph,SystemAPI.Time.DeltaTime,recover);
                 if(send && (health.ValueRO.ShieldEquipped || health.ValueRO.HeadDomeEquipped))inventory.LastSentVersion=-1;
             }
-            // Ordinary PMCs have no connection/RaidSession. Only equipped shields
-            // need recovery here; their life support is updated separately below.
+            // NPCs have no connection/RaidSession. Their halos share the player
+            // recovery rule; ordinary PMC life support is updated separately below.
             foreach (var (health, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
-                         .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+                         .WithAll<DollSingerEnemy, Simulate>().WithEntityAccess())
             {
-                if (!health.ValueRO.ShieldEquipped || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                if (!state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
                 var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 EnergyShieldEquipment.Tick(ref health.ValueRW, brain.Inventory, SystemAPI.Time.DeltaTime);
             }

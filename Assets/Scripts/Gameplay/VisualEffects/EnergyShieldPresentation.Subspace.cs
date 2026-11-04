@@ -71,23 +71,12 @@ namespace Unity.MP_FPS
             m_ScoutFins=new GameObject("Scout stabilizer fins").transform;m_ScoutFins.SetParent(m_Subspace,false);
             for(int side=-1;side<=1;side+=2)
                 Hardware(m_ScoutFins,EnergyShieldGeometry.Housing,new Vector3(side*.128f,0,-.012f),new Vector3(.025f,.12f,.02f),metal,silver);
-            Hardware(m_Device,EnergyShieldGeometry.Housing,Vector3.zero,new Vector3(.105f,.145f,.045f),metal,dark);
-            Hardware(m_Device,EnergyShieldGeometry.Housing,new Vector3(0,0,.025f),new Vector3(.08f,.12f,.012f),metal,silver);
-            var core=Hardware(m_Device,EnergyShieldGeometry.Collar,new Vector3(0,.012f,.035f),new Vector3(.027f,.025f,.027f),indicator,cyan);
-            core.transform.localRotation=Quaternion.Euler(90,0,0);
-            for(int i=0;i<3;i++)
-            {
-                float a=i*Mathf.PI*2/3;
-                var vane=Hardware(m_Device,EnergyShieldGeometry.Box,new Vector3(Mathf.Sin(a)*.035f,.012f+Mathf.Cos(a)*.035f,.034f),new Vector3(.012f,.025f,.012f),metal,dark);
-                vane.transform.localRotation=Quaternion.Euler(0,0,-i*120);
-            }
-            m_ChargeBars=new MeshRenderer[4];
-            for(int i=0;i<4;i++)m_ChargeBars[i]=Hardware(m_Device,EnergyShieldGeometry.Box,new Vector3(-.027f+i*.018f,-.045f,.035f),new Vector3(.011f,.006f,.003f),indicator,cyan);
+
         }
 
         private void UpdateEquipment()
         {
-            m_Subspace.gameObject.SetActive(m_BackpackStyle!=0);m_Device.gameObject.SetActive(m_ShieldEquipped);
+            m_Subspace.gameObject.SetActive(m_BackpackStyle!=0);m_Device.gameObject.SetActive(false);
             if(m_BackpackStyle!=0)
             {
                 float size=m_BackpackStyle==1?.78f:m_BackpackStyle==2?1:m_BackpackStyle==4?.9f:1.12f;
@@ -100,15 +89,7 @@ namespace Unity.MP_FPS
                 m_ApertureRenderer.SetPropertyBlock(m_EquipmentProperties);
             }
             m_ApertureRenderer.enabled=m_BackpackStyle!=0;
-            WorldPose(m_Device,m_ShieldAnchor.TransformPoint(m_DeviceOffset),m_ShieldAnchor.rotation*m_DeviceFrame,Vector3.one);
-            for(int i=0;i<4;i++)
-            {
-                bool filled=m_Charge>(i+.01f)/4;
-                Color color=filled?new Color(.12f,.64f,.94f):new Color(.025f,.05f,.075f);
-                if(m_Energy<=0)color=filled?new Color(.9f,.38f,.12f):new Color(.1f,.035f,.015f);
-                if(m_Regenerating)color*=.65f+.35f*Mathf.Sin(Time.unscaledTime*4-i*.6f);
-                m_EquipmentProperties.Clear();m_EquipmentProperties.SetColor("_BaseColor",color);m_ChargeBars[i].SetPropertyBlock(m_EquipmentProperties);
-            }
+
         }
     }
 }

@@ -157,7 +157,7 @@ namespace Unity.MP_FPS
         {
             if (!TryContext(player, out var context) || !Tick(out uint tick)) return false;
             var actor = Resolve(context);
-            if (!context.CanAct || context.Pending || context.Health.ControllerState.IsReloadingState || context.Health.WeaponEquipRemaining > 0)
+            if (!context.CanAct || context.Pending || RaidHealth.HandsBusy(context.Health))
             { actor.Feedback = context.CanAct ? MeleeFeedback.Busy : MeleeFeedback.Inactive; Publish(player, actor); return false; }
             if (!MeleeRules.TryStart(ref actor.State, attack, true, Stimulated(player), out var error))
             {

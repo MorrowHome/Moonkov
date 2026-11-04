@@ -49,8 +49,8 @@ namespace Unity.MP_FPS.Inventory
         public static readonly HaloResearchDefinition[] Research = {
             MooncoreResearch,
             new HaloResearchDefinition("halo_biology","BIOLOGICAL FIREPOWER","Permanent: all halo damage +60%. Retained after death.","alien_neural_core",0,new[]{"alien_neural_core","alien_tissue"},new[]{3,5}),
-            new HaloResearchDefinition("halo_capacity","BIOLOGICAL CAPACITY","Permanent: all halo magazine capacities +40%. Upgrades do not grant free ammunition.","alien_contractile_heart",1,new[]{"alien_nutrient_sac","alien_gel_bladder","alien_contractile_heart"},new[]{2,2,1}),
-            new HaloResearchDefinition("halo_charge","BIOLOGICAL CHARGING","Permanent: all halo recharge times -25%.","alien_root_nodule",2,new[]{"alien_adrenal_gland","alien_root_nodule","alien_tissue"},new[]{2,1,5}),
+            new HaloResearchDefinition("halo_capacity","BIOLOGICAL CAPACITY","Permanent: shared halo energy capacity +40%. Upgrades do not grant free energy.","alien_contractile_heart",1,new[]{"alien_nutrient_sac","alien_gel_bladder","alien_contractile_heart"},new[]{2,2,1}),
+            new HaloResearchDefinition("halo_charge","BIOLOGICAL CHARGING","Permanent: all halo energy recovery +33%.","alien_root_nodule",2,new[]{"alien_adrenal_gland","alien_root_nodule","alien_tissue"},new[]{2,1,5}),
             new HaloResearchDefinition("halo_stability","BIOLOGICAL STABILITY","Permanent: all halo spread -30% and handling penalties -15%.","alien_silk_gland",4,new[]{"alien_silk_gland","alien_neural_ganglion","alien_tissue"},new[]{2,2,5})
         };
         public static AlienOrganDefinition Organ(string code)=>Organs.FirstOrDefault(o=>o.Code==code);

@@ -17,8 +17,9 @@ namespace Unity.MP_FPS
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
             int cost=weapon?.EnergyPerRound ?? 1;
             bool energy = weapon != null && !brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,cost) &&
-                brain.Inventory.CellEnergy(carriedOnly: true) >= cost;
-            bool exhausted = health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
+                brain.Inventory.CellEnergy(carriedOnly: true) >= (health.HaloEnergyInitialized ? 1 : cost);
+            bool exhausted = !health.HaloEnergyInitialized && health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
+            bool energyLow = health.HaloEnergyInitialized && health.HaloEnergy < cost;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
             bool needsHealing = NeedsHealing(health);
@@ -96,7 +97,7 @@ namespace Unity.MP_FPS
             // once sight is broken, instead of being stuck in Retreat until all memory expires.
             if (PmcUnknownAttack.NeedsEvasion(brain.IsClashBot, contact, brain.LastDamage, now))
                 Consider(PmcAction.Retreat, 105, "move to safety after an unseen attack");
-            if ((lowHealth || exhausted || lowOxygen || lowNutrition || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
+            if ((lowHealth || exhausted || energyLow || lowOxygen || lowNutrition || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
                 Consider(PmcAction.Retreat, 110, (lowOxygen || lowNutrition) && !brain.Leaving ?
                     "break contact to replenish survival supplies" : "break contact to survive and extract");
             if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))
@@ -124,6 +125,7 @@ namespace Unity.MP_FPS
         {
             if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard ||
                 health.ControllerState.IsReloadingState) return false;
+            if (health.HaloEnergyInitialized) return health.HaloEnergy <= PmcShieldSupply.RechargeThreshold && SafeToTreat(brain, position, now);
             if (health.CurrentAmmo <= 0) return true;
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
             return weapon != null && health.CurrentAmmo < weapon.MagazineSize &&

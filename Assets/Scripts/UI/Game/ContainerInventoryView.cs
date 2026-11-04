@@ -144,7 +144,7 @@ namespace Unity.MP_FPS.Client
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "RETIRED EQUIPMENT" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
@@ -206,6 +206,8 @@ namespace Unity.MP_FPS.Client
             bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
             m_SearchTotal=searchTotal;m_SearchFootprints=searchFootprints;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
+            if (m_Slots.TryGetValue(LoadoutSlot.Shield, out var retiredSlot))
+                retiredSlot.style.display = graph?.Equipped("Shield") != null ? DisplayStyle.Flex : DisplayStyle.None;
             m_CorpseCharacterIndex = corpseCharacterIndex;
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
             if (operationCompleted) m_Busy = false;
@@ -416,13 +418,13 @@ namespace Unity.MP_FPS.Client
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
             if (!m_Stash && m_UseConsumable != null && BatteryEnergy.IsCell(item))
             {
-                var recharge = MoonkovTerminal.ActionButton(window, "RECHARGE SHIELD", () =>
+                var recharge = MoonkovTerminal.ActionButton(window, "RECHARGE HALO", () =>
                 {
                     if (m_Busy || m_ReadOnlyReason != null || !(ShieldRechargeAvailable?.Invoke(item) ?? false)) return;
                     m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
                 });
                 recharge.SetEnabled(!m_Busy && m_ReadOnlyReason == null && (ShieldRechargeAvailable?.Invoke(item) ?? false));
-                recharge.tooltip = MoonkovLocalization.Text("Requires an equipped shield with space for energy, and charged cells in pockets or an equipped rig.");
+                recharge.tooltip = MoonkovLocalization.Text("Requires halo energy below maximum and a charged battery in pockets or an equipped rig.");
             }
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
                 MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>

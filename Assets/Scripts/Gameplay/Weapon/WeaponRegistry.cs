@@ -31,7 +31,7 @@ namespace Unity.MP_FPS
             if (weaponID == DollSingerWeapons.Shotgun)
             {
                 if ((mask & HaloModule.FocusLens) != 0)
-                { variant.SpreadDegrees *= .45f; variant.MagazineSize = Mathf.Max(1, variant.MagazineSize - 1); }
+                { variant.SpreadDegrees *= .45f; variant.MagazineSize = Mathf.Max(1, variant.MagazineSize - 1); variant.EnergyPerRound = Mathf.CeilToInt(variant.EnergyPerRound * (4f / 3f)); }
                 else if ((mask & HaloModule.FanArray) != 0)
                 { variant.SpreadDegrees *= 1.6f; variant.PelletCount = 12; variant.Damage = original.Damage * original.PelletCount / 12f; }
             }

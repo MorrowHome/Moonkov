@@ -16,6 +16,9 @@ namespace Unity.MP_FPS
         private Transform m_Head,m_Neck,m_Hips,m_Chest,m_LeftFoot,m_RightFoot;
         private Transform m_Shell,m_Collar,m_Device,m_Root;
         private MeshRenderer m_ShellRenderer;
+        private HaloDefenseSphere m_HaloDefense;
+        private Unity.MP_FPS.DollSinger.DollSingerHaloAim m_DefenseHalo;
+        private bool m_Defending;
         private Material m_FieldMaterial;
         private bool m_Ready,m_GeometryRetained,m_HasSequence,m_Owned,m_FirstPerson,m_HeadEquipped,m_ShieldEquipped,m_Regenerating,m_Hidden;
         private bool m_StandardCollar;
@@ -46,10 +49,11 @@ namespace Unity.MP_FPS
             m_Owned=owned;m_FirstPerson=owned&&firstPerson;m_OwnedCamera=ownedCamera;
             bool head=snapshot.HeadDomeEquipped;
             if(head&&!m_HeadEquipped)m_VisorEquippedAt=Time.unscaledTime;
-            m_HeadEquipped=head;m_ShieldEquipped=snapshot.ShieldEquipped;
+            m_HeadEquipped=head;m_ShieldEquipped=snapshot.HaloEquipped;
+            m_Defending=snapshot.HaloDefending && EnergyShieldRules.Alive(snapshot);
             m_StandardCollar=snapshot.HeadDomeStandard;
             m_BackpackStyle=(byte)Mathf.Clamp(snapshot.SubspaceBackpack,0,4);
-            m_Charge=EnergyShieldRules.Resource(snapshot.ShieldCharge)/100;m_Energy=EnergyShieldRules.Resource(snapshot.ShieldEnergy)/100;
+            m_Charge=HaloEnergyRules.Energy(snapshot)/HaloEnergyRules.Maximum(snapshot);m_Energy=m_Charge;
             m_Regenerating=snapshot.ShieldRegenerating && snapshot.CurrentHealth>0 && (!snapshot.ClashEnabled || snapshot.ClashLife==ClashLife.Alive);
             if(!m_HasSequence)
             {m_HitSequence=snapshot.ShieldHitSequence;m_BreakSequence=snapshot.ShieldBreakSequence;m_RestoreSequence=snapshot.ShieldRestoreSequence;m_HasSequence=true;}
@@ -65,11 +69,9 @@ namespace Unity.MP_FPS
         // Optional inventory-portrait bridge; uses real item values, not a second loadout model.
         public void PresentInventory(InventoryGraph graph)
         {
-            var shield=graph?.Equipped("Shield");var head=graph?.Equipped("Helmet");
-            var snapshot=new PredictedPlayerGhost{CurrentHealth=1,ShieldEquipped=shield?.Code==EnergyShieldEquipment.ShieldCode,HeadDomeEquipped=EnergyShieldEquipment.IsHeadDome(head?.Code),HeadDomeStandard=head?.Code==EnergyShieldEquipment.StandardHeadDomeCode};
+            var head=graph?.Equipped("Helmet");
+            var snapshot=new PredictedPlayerGhost{CurrentHealth=1,HeadDomeEquipped=EnergyShieldEquipment.IsHeadDome(head?.Code),HeadDomeStandard=head?.Code==EnergyShieldEquipment.StandardHeadDomeCode};
             snapshot.SubspaceBackpack=EnergyShieldEquipment.BackpackStyle(graph?.Equipped("Backpack")?.Code);
-            snapshot.ShieldCharge=shield==null?0:shield.ShieldCharge<0?100:shield.ShieldCharge;
-            snapshot.ShieldEnergy=shield==null?0:shield.ShieldEnergy<0?100:shield.ShieldEnergy;
             Present(snapshot,false,false,null);
         }
         private static bool NewSequence(uint current,ref uint previous)
@@ -89,7 +91,10 @@ namespace Unity.MP_FPS
             EnergyShieldGeometry.Retain();m_GeometryRetained=true;
             m_FieldMaterial=new Material(shader){name="Energy protection / private surface",hideFlags=HideFlags.HideAndDontSave};
             m_Root=new GameObject("Energy protection / original runtime geometry"){hideFlags=HideFlags.DontSave}.transform;m_Root.SetParent(transform,false);
-            m_ShellRenderer=Surface("Transient combat field",out m_Shell);
+            m_DefenseHalo=GetComponentInChildren<Unity.MP_FPS.DollSinger.DollSingerHaloAim>(true);
+            var defense=new GameObject("Halo / spherical defense"){layer=gameObject.layer};
+            defense.transform.SetParent(m_Root,false);
+            m_HaloDefense=defense.AddComponent<HaloDefenseSphere>();
             // Remote performance avatars retain shield hit/break/recovery cues.
             // Decorative collar, visor rails and backpack hardware are optional.
             if(m_OmitHardware){m_Ready=true;EnergyShieldRendering.Register(this);return true;}
@@ -134,12 +139,13 @@ namespace Unity.MP_FPS
                 UpdateVisor();UpdateEquipment();
             }
             var feet=m_LeftFoot&&m_RightFoot?(m_LeftFoot.position+m_RightFoot.position)*.5f:transform.position;
-            Vector3 axis=m_Head.position-feet;float length=Mathf.Max(.65f,axis.magnitude);axis=axis.sqrMagnitude>.001f?axis.normalized:transform.up;
-            Vector3 forward=Vector3.Cross(transform.right,axis);if(forward.sqrMagnitude<.01f)forward=transform.forward;
-            WorldPose(m_Shell,(feet+m_Head.position)*.5f,Quaternion.LookRotation(forward,axis),new Vector3(.43f,length*.57f,.34f));
-            float now=Time.unscaledTime,hitAge=now-m_HitAt,breakAge=now-m_BreakAt,restoreAge=now-m_RestoreAt;
-            m_ShellRenderer.enabled=m_ShieldEquipped && (hitAge<.5f || breakAge<.65f || restoreAge<.6f || m_Regenerating);
-            m_ShieldProperties.SetVector("_FieldState",new Vector4(1,1.12f,hitAge,breakAge));m_ShieldProperties.SetVector("_FieldFlow",new Vector4(m_Regenerating?1:0,restoreAge,m_Strength,0));m_ShieldProperties.SetVector("_EnergyHitPoint",m_Impact);m_ShellRenderer.SetPropertyBlock(m_ShieldProperties);
+            float radius=Mathf.Max(.85f,Vector3.Distance(feet,m_Head.position)*.78f);
+            Vector3 center=(feet+m_Head.position)*.5f;
+            Color color=m_PreviewHaloColor??(m_DefenseHalo&&m_DefenseHalo.haloLight?m_DefenseHalo.haloLight.color:new Color(1,.18f,.42f));
+            Vector3 impactDirection=m_Impact-center;
+            Vector3 surfaceImpact=center+(impactDirection.sqrMagnitude>.001f?impactDirection.normalized:transform.forward)*radius;
+            m_HaloDefense.Present(m_Defending,m_Head.position+transform.up*.35f,center,radius,color,m_Energy,
+                Time.unscaledTime-m_HitAt,surfaceImpact,m_FirstPerson,Application.isPlaying?Time.deltaTime:1f/60);
         }
         internal bool OwnerVisor(Camera camera) => m_Ready && m_HeadEquipped && m_Owned && m_FirstPerson && camera==m_OwnedCamera;
         internal void SimulatePresentation() => LateUpdate();
@@ -178,7 +184,8 @@ namespace Unity.MP_FPS
         }
         public void ResetPresentation()
         {
-            m_HeadEquipped=m_ShieldEquipped=m_Regenerating=m_HasSequence=false;m_BackpackStyle=0;
+            m_HeadEquipped=m_ShieldEquipped=m_Defending=m_Regenerating=m_HasSequence=false;
+            if(m_HaloDefense)m_HaloDefense.Clear();m_BackpackStyle=0;
             if(m_Subspace)m_Subspace.gameObject.SetActive(false);m_HitAt=m_BreakAt=m_RestoreAt=-100;
             GameManager.Instance?.SoundSystem?.Stop(m_Sound, .03f);m_Sound=null;if(m_ShellRenderer)m_ShellRenderer.enabled=false;
             if(m_VisorRenderer)m_VisorRenderer.enabled=false;
@@ -190,6 +197,7 @@ namespace Unity.MP_FPS
         {
             EnergyShieldRendering.Unregister(this);SetHidden(false);m_Cameras.Clear();GameManager.Instance?.SoundSystem?.Stop(m_Sound, .03f);m_Sound=null;
             DestroyOwned(m_FieldMaterial);if(m_Root)DestroyOwned(m_Root.gameObject);
+            m_HaloDefense=null;m_DefenseHalo=null;
             m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Sound=null;
             m_Visor=null;m_VisorRenderer=null;m_VisorRails=null;
             m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;

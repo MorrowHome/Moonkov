@@ -51,11 +51,18 @@ public sealed class RaidVitalMonitorReview : EditorWindow
     {
         m_State = default; RaidHealth.Initialize(ref m_State);
         m_State.Oxygen = 67; m_State.Energy = 54; m_State.Hydration = 42; m_State.Satiety = 36;
+        m_State.HaloEnergyInitialized = true; m_State.HaloEquipped = true;
+        m_State.HaloCapacity = 100; m_State.HaloEnergy = 62;
         RaidHealth.Set(ref m_State,BodyPart.Chest,65); RaidHealth.Set(ref m_State,BodyPart.Abdomen,50);
         RaidHealth.Set(ref m_State,BodyPart.LeftArm,25); RaidHealth.Set(ref m_State,BodyPart.LeftLeg,45);
         if (scenario == 1) { m_State.Oxygen = 0; m_State.Energy = 0; m_State.Hydration = 0; }
         if (scenario == 2) { m_State.CurrentHealth = 0; }
         if (scenario == 3) m_State.BodyHealthInitialized = false;
+        if (scenario == 4) m_State.HaloEnergy = 0;
+        if (scenario == 5) { m_State.HaloCapacity = 150; m_State.HaloEnergy = 150; }
+        if (scenario == 6) m_State.HaloEquipped = false;
+        var combatPanel = rootVisualElement.Q("health-info-container");
+        combatPanel.style.height = m_State.HaloEquipped && m_State.BodyHealthInitialized ? 302 : 284;
         m_Combat.Present(m_State); m_View.Present(m_State,4,false,2,2,1);
     }
     public static string CheckInteraction()
@@ -84,6 +91,31 @@ public sealed class RaidVitalMonitorReview : EditorWindow
         var w = Resources.FindObjectsOfTypeAll<RaidVitalMonitorReview>().First();
         w.position = new Rect(40,70,980,660);
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.GetLocale("en"); w.Scenario(0); w.SourceFont();
+    }
+
+    public static string CheckHaloEnergy()
+    {
+        var w = Resources.FindObjectsOfTypeAll<RaidVitalMonitorReview>().First();
+        int checks = 0;
+        void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
+        int Filled(VisualElement monitor, int row) => monitor.Q("vitals-reserve-" + row).Query<VisualElement>(className: "vitals-cell")
+            .ToList().Count(cell => cell.style.backgroundColor.value.a > 0);
+        foreach (int scenario in new[] { 0, 4, 5, 6 })
+        {
+            w.Scenario(scenario);
+            var tab = w.m_Host.Q("vitals-monitor");
+            bool equipped = scenario != 6;
+            int expected = scenario == 0 ? 7 : scenario == 5 ? 12 : 0;
+            Check(Filled(w.m_Combat, 4) == expected && Filled(tab, 4) == expected, "HUD and health page must show the same normalized halo energy");
+            Check((w.m_Combat.Q("vitals-reserve-4").style.display.value != DisplayStyle.None) == equipped,
+                "Unequipped halo row must disappear");
+            Check(Filled(w.m_Combat, 1) == 6 && Filled(tab, 1) == 6, "Halo changes must not change body nutrition");
+        }
+        w.Scenario(0); w.m_State.Oxygen = 0;
+        w.m_Combat.Present(w.m_State, haloNotice: HaloChargeNotice.LowEnergy);
+        Check(w.m_Combat.Q<Label>("vitals-warning").text != MoonkovLocalization.Text("NO BATTERY READY"), "Battery notice must not mask hypoxia");
+        w.Scenario(0); w.SourceFont();
+        return $"PASS: {checks} shared HUD/health energy, capacity, unequipped and medical warning checks.";
     }
     private void OnDisable()
     {

@@ -31,7 +31,7 @@ namespace Unity.MP_FPS
             {
                 s_Pad = pad;
                 s_PadAim = "按住 " + Name(pad?.leftTrigger, "LT") + " 瞄准，" + Name(pad?.rightTrigger, "RT") + " 发射光环脉冲";
-                s_PadReload = "按 " + Name(pad?.buttonNorth, "Y") + " 为光环充能，电池需放入口袋或胸挂";
+                s_PadReload = "按 " + Name(pad?.buttonNorth, "Y") + " 使用电池补能；方向键右按住防御";
                 s_PadInteract = "靠近并看向设备，按住 " + Name(pad?.buttonWest, "X") + " 操作";
                 s_PadHealth = "按 " + Name(pad?.selectButton, "View") + " 打开装备，切换健康页使用医疗用品。可以先退回安全处。";
             }
@@ -43,7 +43,7 @@ namespace Unity.MP_FPS
         public static string HealthHint => UsingGamepad ? s_PadHealth : "按 Tab 打开装备，切换健康页使用医疗用品。可以先退回安全处。";
         public static string MoveHint => UsingGamepad ? "左摇杆移动，右摇杆观察" : "W A S D 移动，鼠标观察";
         public static string AimHint => UsingGamepad ? s_PadAim : "按住鼠标右键瞄准，左键发射光环脉冲";
-        public static string ReloadHint => UsingGamepad ? s_PadReload : "按 R 为光环充能，电池需放入口袋或胸挂";
+        public static string ReloadHint => UsingGamepad ? s_PadReload : "光环能量会自动恢复；R 使用电池，按住 T 防御";
         public static string InteractHint => UsingGamepad ? s_PadInteract : "靠近并看向设备，按住 F 操作";
     }
 }

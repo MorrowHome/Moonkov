@@ -195,6 +195,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRW.InputIndex, out var input))
                     {
                         input = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
+                        HaloEnergyRules.SetDefense(ref predictedPlayer.ValueRW, input.HaloDefense && !input.FireSuppressed && !input.FreeLooking);
                         predictedPlayer.ValueRW.LocalLookYawPitchDegrees = input.LookYawPitchDegrees;
 
                         bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
@@ -223,7 +224,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, dt / commands.Length))
                             {
                                 HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, dt);
-                                predictedPlayer.ValueRW.CurrentAmmo--;
+                                HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                                 predictedPlayer.ValueRW.LastShotTick = commandInput.Tick.TickIndexForValidTick;
 
                                 bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;

@@ -5689,6 +5689,100 @@ MonoBehaviour:
     m_Key: OXYGEN REFILLING
     m_Metadata:
       m_Items: []
+  - m_Id: 10162203922522119
+    m_Key: RECHARGE HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522121
+    m_Key: NO BATTERY READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522122
+    m_Key: RETIRED EQUIPMENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522123
+    m_Key: HALO RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522124
+    m_Key: HALO CAPACITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522125
+    m_Key: Requires halo energy below maximum and a charged battery in pockets or
+      an equipped rig.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10162203922522126
+    m_Key: Legacy generator. Defense now uses the halo and its shared energy. Can
+      be stored or sold.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268891627520
+    m_Key: Shared halo capacity +50%; recovery speed -26%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821824
+    m_Key: Recovery speed +67%; energy per round +50%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821825
+    m_Key: Energy per round reduced by one third (rounded up); recovery speed -17%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821826
+    m_Key: Shotgun spread -55%; energy per round +33% (rounded up).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821827
+    m_Key: More energy for attack and defense
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821828
+    m_Key: Spend less energy per shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821829
+    m_Key: Recovery speed +67%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821830
+    m_Key: Recovery speed -26%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821831
+    m_Key: Recovery speed -17%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821832
+    m_Key: Energy per round +33% (rounded up)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821833
+    m_Key: Instantly restores up to 100 halo energy. Keep batteries in pockets or
+      an equipped rig. Unused charge is retained.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10164268895821834
+    m_Key: Fabricated after Mooncore stabilization research. Energy per round is
+      reduced by one third (rounded up); recovery speed -17%. Knowledge is permanent;
+      the physical module can be lost on death.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10167237724856320
+    m_Key: BATTERY OUT OF REACH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10170259242737664
+    m_Key: 'Permanent: shared halo energy capacity +40%. Upgrades do not grant free
+      energy.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10170259246931968
+    m_Key: 'Permanent: all halo energy recovery +33%.'
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

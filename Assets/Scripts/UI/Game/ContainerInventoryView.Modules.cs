@@ -123,9 +123,9 @@ namespace Unity.MP_FPS.Client
         {
             switch (code)
             {
-                case "halo_capacitor": return "Fire longer before recharging";
+                case "halo_capacitor": return "More energy for attack and defense";
                 case "halo_charge_bridge": return "Get back to firing sooner";
-                case "halo_mooncore_recycler": return "Make your battery last longer";
+                case "halo_mooncore_recycler": return "Spend less energy per shot";
                 case "halo_focus_lens": return "Keep shotgun pellets together";
                 case "halo_fan_array": return "Cover a wider area with pellets";
                 case "halo_pulse_controller": return "Fire controlled three-round bursts";
@@ -137,7 +137,7 @@ namespace Unity.MP_FPS.Client
             switch (code)
             {
                 case "halo_capacitor": return "Capacity +50%";
-                case "halo_charge_bridge": return "Charge time -40%";
+                case "halo_charge_bridge": return "Recovery speed +67%";
                 case "halo_mooncore_recycler": return "Energy per round reduced by one third";
                 case "halo_focus_lens": return "Pellet spread -55%";
                 case "halo_fan_array": return "Wider spread with 12 pellets; total damage unchanged";
@@ -149,10 +149,10 @@ namespace Unity.MP_FPS.Client
         {
             switch (code)
             {
-                case "halo_capacitor": return "Charge time +35%";
+                case "halo_capacitor": return "Recovery speed -26%";
                 case "halo_charge_bridge": return "Energy per round +50%";
-                case "halo_mooncore_recycler": return "Charge time +20%";
-                case "halo_focus_lens": return "Capacity -1 round";
+                case "halo_mooncore_recycler": return "Recovery speed -17%";
+                case "halo_focus_lens": return "Energy per round +33% (rounded up)";
                 case "halo_fan_array": return "Less damage per pellet; spread +60%";
                 case "halo_pulse_controller": return "Press again for the next burst; at least 0.42s between bursts";
                 default: return "Energy per round +25%";
@@ -261,8 +261,8 @@ namespace Unity.MP_FPS.Client
             if (before != null && after != null)
             {
                 WorkshopStat(stats, "Energy", "ENERGY PER ROUND", before.EnergyPerRound, after.EnergyPerRound, "{0} E", -1);
-                WorkshopStat(stats, "Charge", "CHARGE TIME", before.ReloadTime, after.ReloadTime, "{0:0.##} s", -1);
-                WorkshopStat(stats, "Capacity", "CAPACITY", before.MagazineSize, after.MagazineSize, "{0}", 1);
+                WorkshopStat(stats, "Charge", "HALO RECOVERY", HaloEnergyRules.RecoveryRate(mask), HaloEnergyRules.RecoveryRate(afterMask), "{0:0.##} E/s", 1);
+                WorkshopStat(stats, "Capacity", "HALO CAPACITY", HaloEnergyRules.CapacityForModules(mask), HaloEnergyRules.CapacityForModules(afterMask), "{0} E", 1);
                 WorkshopStat(stats, "Damage", "DAMAGE PER ROUND (ALL PELLETS)", before.Damage * before.PelletCount, after.Damage * after.PelletCount, "{0:0.##}", 1);
                 if (weaponCode == "shotgun")
                 {

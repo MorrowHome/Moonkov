@@ -203,23 +203,9 @@ namespace Unity.MP_FPS
     public static class PmcProtectionLoadout
     {
         public const float ShieldChance = 1f / 3f;
-        public static bool ShouldEquip(bool clash, bool tutorial, float roll) =>
-            !clash && !tutorial && float.IsFinite(roll) && roll >= 0 && roll < ShieldChance;
-
-        public static bool TryEquip(InventoryGraph inventory, bool clash, bool tutorial, float roll)
-        {
-            if (!ShouldEquip(clash, tutorial, roll) || inventory == null) return false;
-            var shield = new InventoryItem { Id = System.Guid.NewGuid().ToString("D"),
-                Code = EnergyShieldEquipment.ShieldCode, Parent = InventoryCatalog.Equipment,
-                Region = "Shield", FoundInRaid = true };
-            if (!float.IsFinite(inventory.CarriedWeight) ||
-                inventory.CarriedWeight + InventoryCatalog.Get(shield.Code).Weight > InventoryCatalog.CarryWeightLimit) return false;
-            if (inventory.CanPlace(shield, InventoryCatalog.Equipment, "Shield", 0, 0, false) != InventoryError.None)
-                return false;
-            inventory.Items.Add(shield);
-            inventory.Version++;
-            return true;
-        }
+        // Legacy generators are retained in old saves, but no longer spawn or equip.
+        public static bool ShouldEquip(bool clash, bool tutorial, float roll) => false;
+        public static bool TryEquip(InventoryGraph inventory, bool clash, bool tutorial, float roll) => false;
 
         public static void Initialize(ref PredictedPlayerGhost health, InventoryGraph inventory)
         {
@@ -230,18 +216,8 @@ namespace Unity.MP_FPS
             if (!health.HeadDomeEquipped) health.Oxygen = oxygen;
         }
 
-        public static bool CanUseLootedShield(InventoryItem item) => item?.Code == EnergyShieldEquipment.ShieldCode &&
-            (item.ShieldCharge == -1 || item.ShieldCharge > 0 || item.ShieldEnergy == -1 || item.ShieldEnergy > 0);
-
-        // Binding a found item preserves its stored resources; it does not create
-        // a new generator or refill it. Called immediately after the loot transfer.
-        public static bool BindLootedShield(ref PredictedPlayerGhost health, InventoryGraph inventory)
-        {
-            if (health.CurrentHealth <= 0 || health.ShieldEquipped ||
-                !CanUseLootedShield(inventory?.Equipped("Shield"))) return false;
-            Initialize(ref health, inventory);
-            return health.ShieldEquipped;
-        }
+        public static bool CanUseLootedShield(InventoryItem item) => false;
+        public static bool BindLootedShield(ref PredictedPlayerGhost health, InventoryGraph inventory) => false;
     }
 
     // These instant inventory actions still wait for a safe opening and cannot
@@ -283,19 +259,8 @@ namespace Unity.MP_FPS
 
         public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize)
         {
-            if (inventory == null || roundCost <= 0 || magazineSize <= 0 || !health.ShieldEquipped ||
-                !float.IsFinite(health.ShieldEnergy) || health.ShieldEnergy < 0 || health.ShieldEnergy > RechargeThreshold) return false;
-            long reserve = (long)roundCost * magazineSize;
-            int available = inventory.CellEnergy(accessibleOnly: true);
-            int needed = Mathf.FloorToInt(EnergyShieldRules.EnergyCapacity - health.ShieldEnergy + .0001f);
-            foreach (var cell in inventory.Items)
-            {
-                if (!EnergyShieldInventory.CanRecharge(health, inventory, cell)) continue;
-                int used = System.Math.Min(needed, BatteryEnergy.Stored(cell));
-                if (used <= 0 || available - (long)used < reserve) continue;
-                return EnergyShieldInventory.Recharge(ref health, inventory, cell.Id, inventory.Version) == InventoryError.None;
-            }
-            return false;
+            if (inventory == null || !health.HaloEquipped || HaloEnergyRules.Energy(health) > RechargeThreshold) return false;
+            return HaloEnergyInventory.RechargeFirst(ref health, inventory);
         }
     }
 
