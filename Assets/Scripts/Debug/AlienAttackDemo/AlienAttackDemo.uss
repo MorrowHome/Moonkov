@@ -1,0 +1,53 @@
+.demo {
+    flex-grow: 1;
+    flex-direction: row;
+    background-color: #111113;
+    color: #edeef0;
+    font-size: 14px;
+    -unity-font-definition: url("project://database/Assets/Localization/Fonts/NotoSansCJKsc.asset");
+    padding: 16px;
+}
+.sidebar {
+    width: 224px;
+    padding: 16px;
+    margin-right: 16px;
+    background-color: #191b1f;
+    border-radius: 8px;
+}
+.title { font-size: 22px; -unity-font-style: bold; }
+.roster { flex-grow: 1; margin-top: 20px; }
+.main { flex-grow: 1; min-width: 0; }
+.heading { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.muted { color: #b0b4ba; }
+.row { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.demo Button {
+    margin: 0 8px 0 0;
+    padding: 8px 14px;
+    min-height: 36px;
+    color: #edeef0;
+    background-color: #272a30;
+    border-width: 1px;
+    border-color: #363a43;
+    border-radius: 4px;
+    -unity-font-style: normal;
+}
+.demo Button:hover { background-color: #2e3138; border-color: #5a616e; }
+.demo Button:focus { border-color: #70b8ff; }
+.demo Button:active { background-color: #3d4450; }
+.demo Button.selected { background-color: #17395e; border-color: #2870bd; color: #c2e6ff; }
+.demo Button.creature { margin: 0 0 7px 0; min-height: 40px; -unity-text-align: middle-left; }
+.attacks { min-height: 40px; margin-bottom: 12px; }
+.viewport { flex-grow: 1; min-height: 200px; }
+.stage-image { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.view-controls { position: absolute; top: 12px; right: 12px; flex-direction: row; }
+.readout {
+    position: absolute; left: 16px; bottom: 16px;
+    padding: 10px 14px; background-color: rgba(17, 17, 19, .88); border-radius: 4px;
+}
+#status { color: #c2e6ff; margin-bottom: 5px; }
+.playback { margin-top: 16px; }
+.demo Toggle { margin: 6px 12px 6px 0; flex-direction: row-reverse; }
+.demo Toggle > .unity-toggle__label { min-width: 0; margin-left: 6px; margin-right: 0; color: #edeef0; }
+.demo Toggle > .unity-toggle__input { margin-right: 0; }
+.demo Toggle:disabled { opacity: .4; }
+.help { font-size: 12px; color: #b0b4ba; margin-top: 12px; }

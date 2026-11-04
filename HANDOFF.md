@@ -1,5 +1,12 @@
 # 项目交接
 
+## 怪物攻击演示（2026-11-04）
+
+- 独立场景为 `Assets/Scenes/AlienAttackDemo.unity`。菜单为 `Tools / Moonkov / Aliens / Open attack demonstration`。打开后 Play，默认逐招轮播。包含当前 12 份异形配置、16 个攻击组合，支持目标躲避、三机位、暂停、重播、Boss 二阶段和液态外观。
+- 演示手动驱动一个隔离 ECS 世界。出招后走真实移动、弹道、伤害和覆面附着代码。表现读取同一状态。不要启动完整战局或第二客户端来运行此场景。新怪物或攻击加入正式阵容后，同步 `AlienAttackDemo.Catalog.cs` 和场景 Profile 列表。
+- 音效注入独立 `SoundSystem`，沿用正式音源池、Mixer 和录音。不要为演示启动 `GameManager`，否则会加载正式常驻场景。切换招式会释放旧骨架、世界和声音。这里展示的是当前材质与声音，没有新增蜘蛛 Boss 专属视听设计。
+- 单 Editor 编译通过。35 项命中／躲避／Boss 二阶段检查、17 轮正常速度播放与音源播放检查通过。原蜘蛛 Boss、伏顶扑击和音效库检查也通过。验证入口与操作见 [程序异形](Docs/ProceduralAlienEnemies.md#攻击演示场景)。报告与原生截图在 `LocalData/AlienAttackDemoReview/`。靶场证据不等于正式战局或整图性能验收。
+
 ## 光环共用能量与主动防御（2026-11-04）
 
 - 攻击和防御改用角色的一条光环能量。基础容量 100。停止消耗并松开防御 3 秒后，每秒回 10 点。R 使用可取用电池立即补充最多 100 点，余电保留。切换、卸装和重装光环不会补能。完整规则见 [光环共享能量](Docs/HaloEnergy.md)。

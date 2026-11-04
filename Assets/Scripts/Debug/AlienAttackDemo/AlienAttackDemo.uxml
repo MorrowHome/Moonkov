@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="AlienAttackDemo.uss" />
+    <ui:VisualElement name="demo" class="demo">
+        <ui:VisualElement class="sidebar">
+            <ui:Label text="怪物攻击演示" class="title" />
+            <ui:ScrollView name="roster" class="roster" horizontal-scroller-visibility="Hidden" />
+        </ui:VisualElement>
+        <ui:VisualElement class="main">
+            <ui:VisualElement class="heading">
+                <ui:Label name="creatureName" text="巨型猎蛛" class="title" />
+                <ui:Label name="count" text="01 / 16" class="muted" />
+            </ui:VisualElement>
+            <ui:VisualElement name="attacks" class="row attacks" />
+            <ui:VisualElement name="viewport" class="viewport" picking-mode="Ignore">
+                <ui:Image name="stageImage" class="stage-image" picking-mode="Ignore" />
+                <ui:VisualElement class="view-controls">
+                    <ui:Button name="view0" text="全景" /><ui:Button name="view1" text="侧面" /><ui:Button name="view2" text="目标视角" />
+                </ui:VisualElement>
+                <ui:VisualElement class="readout" picking-mode="Ignore">
+                    <ui:Label name="status" text="准备" /><ui:Label name="result" text="命中 0 次    伤害 0" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="row playback">
+                <ui:Button name="pause" text="暂停" /><ui:Button name="replay" text="重播" /><ui:Button name="next" text="下一招" />
+                <ui:Toggle name="cycleAll" label="全部轮播" value="true" />
+                <ui:Toggle name="dodge" label="目标躲避" />
+                <ui:Toggle name="enraged" label="Boss 二阶段" />
+                <ui:Toggle name="liquid" label="液态外观" tooltip="实验室液态外观。正式地图目前使用实体外观。" />
+            </ui:VisualElement>
+            <ui:Label text="右键旋转   滚轮缩放   P 暂停   R 重播   N 下一招" class="help" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

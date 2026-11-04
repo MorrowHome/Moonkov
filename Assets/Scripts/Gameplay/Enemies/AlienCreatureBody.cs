@@ -53,10 +53,10 @@ namespace Unity.MP_FPS
         public Vector3 AttackSocket => m_StiltRig != null ? m_StiltRig.Chest : m_Chain != null ? m_Chain.Centres[0] : AimPoint;
         public SkeletonFluidPresentation Fluid => m_ArticulatedFluid?.Fluid ?? m_ChainFluid?.Fluid ?? m_BranchFluid?.Fluid ?? m_SpiderView?.Fluid;
 
-        public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer)
+        public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer, ISoundSystem localSoundSystem = null)
         {
             m_Owner = owner; m_Profile = profile; m_Scale = Mathf.Clamp(scale, .1f, 4); m_Render = render;
-            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species, owner, profile.Tier, profile.Approach);
+            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species, owner, profile.Tier, profile.Approach, localSoundSystem);
             m_Mask = LayerMask.GetMask("Default", "Ground");
             Motor = new SurfaceMotor(owner.position, owner.rotation, m_Mask, m_Scale);
             if (profile.IsUpright) m_StiltRig = new StiltWalkerRig(owner, profile, m_Scale, render, m_Mask);

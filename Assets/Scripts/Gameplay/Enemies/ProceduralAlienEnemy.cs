@@ -66,7 +66,7 @@ namespace Unity.MP_FPS
         private readonly Dictionary<Entity, FootstepTrack> m_Footsteps = new Dictionary<Entity, FootstepTrack>();
         private readonly List<Entity> m_ExpiredFootsteps = new List<Entity>();
         private int m_FootstepWorldMask;
-        public override bool AllowAutoRegisterForUpdates() => Application.isPlaying;
+        public override bool AllowAutoRegisterForUpdates() => Application.isPlaying && !m_ManualDemonstration;
         private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new List<ProceduralAlienEnemy>();
         private float m_NextLod;
         private bool m_Liquid;

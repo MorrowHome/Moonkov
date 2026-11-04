@@ -21,6 +21,7 @@ namespace Unity.MP_FPS
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
         private float m_IdleIn, m_MotionIn, m_SurfaceTravel, m_ScrapeIn, m_ProximityIn;
         private ISoundSystem m_System;
+        private readonly ISoundSystem m_LocalSoundSystem;
         private AlienAction m_PreviousAction;
         private uint m_AttackSequence, m_PlayedStrikeSequence;
         private float m_Health, m_StepCooldown, m_HurtAt, m_Travel;
@@ -29,8 +30,9 @@ namespace Unity.MP_FPS
         private bool m_HasState, m_HasFeet, m_Detached, m_Disposed;
 
         public AlienCreatureFeedback(float scale, AlienSpecies species = AlienSpecies.Spider, Transform anchor = null,
-            AlienThreatTier tier = AlienThreatTier.Common, AlienApproach approach = AlienApproach.Direct)
+            AlienThreatTier tier = AlienThreatTier.Common, AlienApproach approach = AlienApproach.Direct, ISoundSystem localSoundSystem = null)
         {
+            m_LocalSoundSystem = localSoundSystem;
             m_Tier = tier; m_Approach = approach; m_Species = species;
             m_ContactDistance = tier == AlienThreatTier.Boss ? 2.5f : .8f;
             m_Anchor = anchor;
@@ -124,13 +126,13 @@ namespace Unity.MP_FPS
         {
             Vector3 position = motor.Current.Position;
             if (m_Health <= 0 || action == AlienAction.Dead || action == AlienAction.Ambush || action == AlienAction.Attached ||
-                !MoonkovAudio.CanHearDetail(position, m_Tier == AlienThreatTier.Boss ? 65 : 28))
+                !CanHearDetail(position, m_Tier == AlienThreatTier.Boss ? 65 : 28))
             { Stop(Cue.Proximity, .08f); m_Wall.Reset(); m_SurfaceTravel = 0; return; }
             bool attacking = action == AlienAction.Windup || action == AlienAction.Strike || action == AlienAction.Dominance;
             // Small grounded creatures must remain audible when they reach the listener
             // and stop moving. Ambush/attached/dead states returned above remain silent.
             bool close = m_Tier != AlienThreatTier.Boss && m_Approach != AlienApproach.Stalk &&
-                MoonkovAudio.CanHearDetail(position, 4);
+                CanHearDetail(position, 4);
             m_ProximityIn = Mathf.Max(0, m_ProximityIn - dt);
             if (close && !attacking && m_ProximityIn <= 0)
             {
@@ -176,12 +178,16 @@ namespace Unity.MP_FPS
             m_ScrapeIn = .52f;
         }
 
+        private bool CanHearDetail(Vector3 position, float range) => m_LocalSoundSystem is SoundSystem local
+            ? local.IsWithinHearing(position, range) : MoonkovAudio.CanHearDetail(position, range);
+
         private bool Play(Cue cue, Vector3 position, float volume, SoundDef overrideSound = null, bool worldPosition = false)
         {
             var game = GameManager.Instance;
             var library = MoonkovAudio.Library;
-            if (!Application.isPlaying || !game || game.IsHeadless || game.SoundSystem == null || !library) return false;
-            m_System = game.SoundSystem;
+            if (!Application.isPlaying || !library) return false;
+            m_System = m_LocalSoundSystem ?? (game && !game.IsHeadless ? game.SoundSystem : null);
+            if (m_System == null) return false;
             SoundDef sound = cue == Cue.Step ? library.AlienContact : cue == Cue.Warning ?
                 (m_Tier == AlienThreatTier.Boss ? library.AlienBossVoice : library.AlienWarning) :
                 cue == Cue.Strike ? (m_Tier == AlienThreatTier.Boss ? library.AlienBossVoice : library.AlienStrike) : cue == Cue.Hurt ? library.AlienHurt :
