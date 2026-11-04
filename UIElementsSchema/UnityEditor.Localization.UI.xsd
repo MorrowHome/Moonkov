@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="UnityEditor.Localization.UI" elementFormDefault="qualified" targetNamespace="UnityEditor.Localization.UI" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
+  <xs:import schemaLocation="UnityEditor.Localization.Plugins.XLIFF.xsd" namespace="UnityEditor.Localization.Plugins.XLIFF" />
+  <xs:complexType name="ProjectTablesPopupType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="UnityEngine.UIElements" base="q1:BindableElementType">
+        <xs:choice />
+        <xs:attribute default="Selected collection" name="label" type="xs:string" />
+        <xs:attribute default="project://database/Assets/Localization/Tables/MoonkovUI.asset?fileID=11400000&amp;guid=61d57eadd4ce7634ab16dfeb48136b99&amp;type=2#MoonkovUI" name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ProjectTablesPopup" xmlns:q2="UnityEngine.UIElements" substitutionGroup="q2:BindableElement" type="tns:ProjectTablesPopupType" />
+  <xs:complexType name="XliffVersionPopupType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="UnityEngine.UIElements" base="q3:BindableElementType">
+        <xs:choice />
+        <xs:attribute default="XLIFF Version" name="label" type="xs:string" />
+        <xs:attribute default="V20" name="value" xmlns:q4="UnityEditor.Localization.Plugins.XLIFF" type="q4:XliffVersionType" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="XliffVersionPopup" xmlns:q5="UnityEngine.UIElements" substitutionGroup="q5:BindableElement" type="tns:XliffVersionPopupType" />
+  <xs:complexType name="ProjectCollectionsTableSelectorType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q6="UnityEngine.UIElements" base="q6:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ProjectCollectionsTableSelector" xmlns:q7="UnityEngine.UIElements" substitutionGroup="q7:VisualElement" type="tns:ProjectCollectionsTableSelectorType" />
+  <xs:complexType name="ProjectLocalePopupFieldType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q8="UnityEngine.UIElements" base="q8:BindableElementType">
+        <xs:choice />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ProjectLocalePopupField" xmlns:q9="UnityEngine.UIElements" substitutionGroup="q9:BindableElement" type="tns:ProjectLocalePopupFieldType" />
+</xs:schema>

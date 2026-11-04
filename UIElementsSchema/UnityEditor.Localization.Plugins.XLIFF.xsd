@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="UnityEditor.Localization.Plugins.XLIFF" elementFormDefault="qualified" targetNamespace="UnityEditor.Localization.Plugins.XLIFF" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="XliffVersionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="V12" />
+      <xs:enumeration value="V20" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

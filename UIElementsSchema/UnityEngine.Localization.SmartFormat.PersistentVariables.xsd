@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="UnityEngine.Localization.SmartFormat.PersistentVariables" elementFormDefault="qualified" targetNamespace="UnityEngine.Localization.SmartFormat.PersistentVariables" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="StringVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q1="UnityEngine.UIElements" ref="q1:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q2="UnityEngine.UIElements" type="q2:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q3="UnityEngine.UIElements" type="q3:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q4="UnityEngine.UIElements" type="q4:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute name="value" type="xs:string" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="StringVariable" type="tns:StringVariableType" />
+  <xs:complexType name="SByteVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q5="UnityEngine.UIElements" ref="q5:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q6="UnityEngine.UIElements" type="q6:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q7="UnityEngine.UIElements" type="q7:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q8="UnityEngine.UIElements" type="q8:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:byte" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="SByteVariable" type="tns:SByteVariableType" />
+  <xs:complexType name="UShortVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q9="UnityEngine.UIElements" ref="q9:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q10="UnityEngine.UIElements" type="q10:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q11="UnityEngine.UIElements" type="q11:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q12="UnityEngine.UIElements" type="q12:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:unsignedShort" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="UShortVariable" type="tns:UShortVariableType" />
+  <xs:complexType name="FloatVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q13="UnityEngine.UIElements" ref="q13:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q14="UnityEngine.UIElements" type="q14:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q15="UnityEngine.UIElements" type="q15:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q16="UnityEngine.UIElements" type="q16:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:float" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="FloatVariable" type="tns:FloatVariableType" />
+  <xs:complexType name="ULongVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q17="UnityEngine.UIElements" ref="q17:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q18="UnityEngine.UIElements" type="q18:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q19="UnityEngine.UIElements" type="q19:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q20="UnityEngine.UIElements" type="q20:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:unsignedLong" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="ULongVariable" type="tns:ULongVariableType" />
+  <xs:complexType name="LongVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q21="UnityEngine.UIElements" ref="q21:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q22="UnityEngine.UIElements" type="q22:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q23="UnityEngine.UIElements" type="q23:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q24="UnityEngine.UIElements" type="q24:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:long" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="LongVariable" type="tns:LongVariableType" />
+  <xs:complexType name="ObjectVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q25="UnityEngine.UIElements" ref="q25:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q26="UnityEngine.UIElements" type="q26:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q27="UnityEngine.UIElements" type="q27:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q28="UnityEngine.UIElements" type="q28:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute name="value" type="xs:string" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="ObjectVariable" type="tns:ObjectVariableType" />
+  <xs:complexType name="IntVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q29="UnityEngine.UIElements" ref="q29:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q30="UnityEngine.UIElements" type="q30:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q31="UnityEngine.UIElements" type="q31:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q32="UnityEngine.UIElements" type="q32:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:int" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="IntVariable" type="tns:IntVariableType" />
+  <xs:complexType name="ByteVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q33="UnityEngine.UIElements" ref="q33:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q34="UnityEngine.UIElements" type="q34:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q35="UnityEngine.UIElements" type="q35:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q36="UnityEngine.UIElements" type="q36:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:unsignedByte" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="ByteVariable" type="tns:ByteVariableType" />
+  <xs:complexType name="UIntVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q37="UnityEngine.UIElements" ref="q37:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q38="UnityEngine.UIElements" type="q38:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q39="UnityEngine.UIElements" type="q39:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q40="UnityEngine.UIElements" type="q40:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:unsignedInt" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="UIntVariable" type="tns:UIntVariableType" />
+  <xs:complexType name="ShortVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q41="UnityEngine.UIElements" ref="q41:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q42="UnityEngine.UIElements" type="q42:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q43="UnityEngine.UIElements" type="q43:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q44="UnityEngine.UIElements" type="q44:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:short" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="ShortVariable" type="tns:ShortVariableType" />
+  <xs:complexType name="BoolVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q45="UnityEngine.UIElements" ref="q45:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q46="UnityEngine.UIElements" type="q46:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q47="UnityEngine.UIElements" type="q47:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q48="UnityEngine.UIElements" type="q48:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="false" name="value" type="xs:boolean" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="BoolVariable" type="tns:BoolVariableType" />
+  <xs:complexType name="DoubleVariableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element xmlns:q49="UnityEngine.UIElements" ref="q49:VisualElement" />
+      <xs:element minOccurs="0" form="unqualified" name="Style" xmlns:q50="UnityEngine.UIElements" type="q50:StyleType" />
+      <xs:element minOccurs="0" form="unqualified" name="Template" xmlns:q51="UnityEngine.UIElements" type="q51:TemplateType" />
+      <xs:element minOccurs="0" form="unqualified" name="AttributeOverrides" xmlns:q52="UnityEngine.UIElements" type="q52:AttributeOverridesType" />
+    </xs:choice>
+    <xs:attribute default="0" name="value" type="xs:double" />
+    <xs:anyAttribute processContents="lax" />
+  </xs:complexType>
+  <xs:element name="DoubleVariable" type="tns:DoubleVariableType" />
+</xs:schema>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="Unity.MP_FPS.Client" elementFormDefault="qualified" targetNamespace="Unity.MP_FPS.Client" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
+  <xs:complexType name="LunarSchematicType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="UnityEngine.UIElements" base="q1:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LunarSchematic" xmlns:q2="UnityEngine.UIElements" substitutionGroup="q2:VisualElement" type="tns:LunarSchematicType" />
+  <xs:complexType name="SignalWaveType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="UnityEngine.UIElements" base="q3:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="SignalWave" xmlns:q4="UnityEngine.UIElements" substitutionGroup="q4:VisualElement" type="tns:SignalWaveType" />
+  <xs:complexType name="HaloSchematicType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q5="UnityEngine.UIElements" base="q5:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="HaloSchematic" xmlns:q6="UnityEngine.UIElements" substitutionGroup="q6:VisualElement" type="tns:HaloSchematicType" />
+  <xs:complexType name="HazardStripesType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q7="UnityEngine.UIElements" base="q7:VisualElementType">
+        <xs:choice />
+        <xs:attribute default="rgb(255, 225, 26)" name="stripe-color" type="xs:string" />
+        <xs:attribute default="true" name="moving" type="xs:boolean" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="HazardStripes" xmlns:q8="UnityEngine.UIElements" substitutionGroup="q8:VisualElement" type="tns:HazardStripesType" />
+  <xs:complexType name="ArcMeterType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q9="UnityEngine.UIElements" base="q9:VisualElementType">
+        <xs:choice />
+        <xs:attribute default="0" name="value" type="xs:float" />
+        <xs:attribute default="rgb(255, 225, 26)" name="meter-color" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ArcMeter" xmlns:q10="UnityEngine.UIElements" substitutionGroup="q10:VisualElement" type="tns:ArcMeterType" />
+  <xs:complexType name="ArchiveOrbitGuidesType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q11="UnityEngine.UIElements" base="q11:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ArchiveOrbitGuides" xmlns:q12="UnityEngine.UIElements" substitutionGroup="q12:VisualElement" type="tns:ArchiveOrbitGuidesType" />
+  <xs:complexType name="ArchiveCardFrameType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q13="UnityEngine.UIElements" base="q13:VisualElementType">
+        <xs:choice />
+        <xs:attribute default="false" name="orbital" type="xs:boolean" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ArchiveCardFrame" xmlns:q14="UnityEngine.UIElements" substitutionGroup="q14:VisualElement" type="tns:ArchiveCardFrameType" />
+  <xs:complexType name="TechFrameType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q15="UnityEngine.UIElements" base="q15:VisualElementType">
+        <xs:choice />
+        <xs:attribute default="0" name="delay" type="xs:float" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TechFrame" xmlns:q16="UnityEngine.UIElements" substitutionGroup="q16:VisualElement" type="tns:TechFrameType" />
+  <xs:complexType name="StashItemArtType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q17="UnityEngine.UIElements" base="q17:VisualElementType">
+        <xs:choice />
+        <xs:attribute default="None" name="art-kind" type="tns:StashArtKindType" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="StashArtKindType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Dust" />
+      <xs:enumeration value="Alloy" />
+      <xs:enumeration value="Cell" />
+      <xs:enumeration value="Halo" />
+      <xs:enumeration value="Outfit" />
+      <xs:enumeration value="Helmet" />
+      <xs:enumeration value="Rifle" />
+      <xs:enumeration value="Pistol" />
+      <xs:enumeration value="ChestRig" />
+      <xs:enumeration value="Backpack" />
+      <xs:enumeration value="HaloRifle" />
+      <xs:enumeration value="HaloRevolver" />
+      <xs:enumeration value="HaloShotgun" />
+      <xs:enumeration value="Medical" />
+      <xs:enumeration value="HaloSniper" />
+      <xs:enumeration value="Ration" />
+      <xs:enumeration value="Water" />
+      <xs:enumeration value="HaloCapacitor" />
+      <xs:enumeration value="HaloChargeBridge" />
+      <xs:enumeration value="HaloFocusLens" />
+      <xs:enumeration value="HaloFanArray" />
+      <xs:enumeration value="HaloPulseController" />
+      <xs:enumeration value="HaloHitMarker" />
+      <xs:enumeration value="OxygenCanister" />
+      <xs:enumeration value="MedicalGel" />
+      <xs:enumeration value="TraumaKit" />
+      <xs:enumeration value="EnergyGel" />
+      <xs:enumeration value="ProteinBar" />
+      <xs:enumeration value="Electrolyte" />
+      <xs:enumeration value="OxygenReserve" />
+      <xs:enumeration value="ScoutRig" />
+      <xs:enumeration value="FieldRig" />
+      <xs:enumeration value="SlingPack" />
+      <xs:enumeration value="CargoPack" />
+      <xs:enumeration value="CircuitBoard" />
+      <xs:enumeration value="CopperCoil" />
+      <xs:enumeration value="CeramicPlate" />
+      <xs:enumeration value="OpticalSensor" />
+      <xs:enumeration value="DataDrive" />
+      <xs:enumeration value="HeliumSample" />
+      <xs:enumeration value="QuantumCore" />
+      <xs:enumeration value="BlackBox" />
+      <xs:enumeration value="AlienMeat" />
+      <xs:enumeration value="AlienOrgan" />
+      <xs:enumeration value="AlienTissue" />
+      <xs:enumeration value="AlienSpider" />
+      <xs:enumeration value="AlienSnake" />
+      <xs:enumeration value="AlienCaterpillar" />
+      <xs:enumeration value="AlienTentacle" />
+      <xs:enumeration value="AlienCentipede" />
+      <xs:enumeration value="AlienLeech" />
+      <xs:enumeration value="AlienSlime" />
+      <xs:enumeration value="AlienRoots" />
+      <xs:enumeration value="AlienFaceHugger" />
+      <xs:enumeration value="EnergyGrenade" />
+      <xs:enumeration value="MooncoreFragment" />
+      <xs:enumeration value="MissionArchive" />
+      <xs:enumeration value="HaloMooncoreRecycler" />
+      <xs:enumeration value="HaloCicada" />
+      <xs:enumeration value="HaloTrine" />
+      <xs:enumeration value="HaloAegis" />
+      <xs:enumeration value="HaloVesper" />
+      <xs:enumeration value="HaloThorn" />
+      <xs:enumeration value="HaloSundown" />
+      <xs:enumeration value="HaloRondo" />
+      <xs:enumeration value="HaloTempest" />
+      <xs:enumeration value="HaloNocturne" />
+      <xs:enumeration value="LifeSupportShroud" />
+      <xs:enumeration value="ShieldGenerator" />
+      <xs:enumeration value="EnergySword" />
+      <xs:enumeration value="CombatKnife" />
+      <xs:enumeration value="ScoutPack" />
+      <xs:enumeration value="SecureCase" />
+      <xs:enumeration value="SurveyCompass" />
+      <xs:enumeration value="Rangefinder" />
+      <xs:enumeration value="Fists" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="StashItemArt" xmlns:q18="UnityEngine.UIElements" substitutionGroup="q18:VisualElement" type="tns:StashItemArtType" />
+  <xs:complexType name="ShipBlueprintType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q19="UnityEngine.UIElements" base="q19:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ShipBlueprint" xmlns:q20="UnityEngine.UIElements" substitutionGroup="q20:VisualElement" type="tns:ShipBlueprintType" />
+</xs:schema>
