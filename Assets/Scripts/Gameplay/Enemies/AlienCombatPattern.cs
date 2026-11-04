@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienAttackKind : byte { Bite, Charge, AcidSpit, TentacleSweep, FaceLeap, SlimePulse, RootSpikes, TentacleSlam, RoofPounce, LeechDrain, StiltRake, MucusSpit }
+    public enum AlienAttackKind : byte { Bite, Charge, AcidSpit, TentacleSweep, FaceLeap, SlimePulse, RootSpikes, TentacleSlam, RoofPounce, LeechDrain, StiltRake, MucusSpit, SpiderRush, SpiderRake }
 
     /// <summary>Species define different timing and hit geometry. Boss phase is
     /// committed at windup, so a health change cannot silently resize a warning.</summary>
@@ -26,6 +26,21 @@ namespace Unity.MP_FPS
         public static AlienCombatPattern For(AlienCreatureProfile profile, byte phase, uint sequence, AlienAttackKind? committed = null)
         {
             float scale = Mathf.Clamp(profile.Scale, .1f, 4);
+            if (profile.IsSpiderBoss && committed != AlienAttackKind.MucusSpit)
+            {
+                // World-space ranges belong to the boss profile. Do not multiply a
+                // large spider's reach or speed by the generic creature size again.
+                bool rush = committed == AlienAttackKind.SpiderRush;
+                float active = rush ? Mathf.Max(.4f, profile.SpiderStrikeSeconds) : .45f;
+                float range = rush ? profile.SpiderAmbushRange : profile.AttackReach * scale;
+                return new AlienCombatPattern {
+                    Kind = rush ? AlienAttackKind.SpiderRush : AlienAttackKind.SpiderRake,
+                    Range = range, Radius = rush ? .38f * scale : range,
+                    Windup = Mathf.Max(1.15f, (rush ? profile.SpiderWindup : profile.Windup) * (phase > 1 ? .85f : 1)),
+                    Active = active, Recovery = Mathf.Max(.9f, (rush ? profile.SpiderRecovery : profile.Recovery) * (phase > 1 ? .8f : 1)),
+                    Speed = rush ? range / active : 0, DamageScale = rush ? 1.15f : 1, Pulses = 1
+                };
+            }
             var p = new AlienCombatPattern { Range = 2.2f, Radius = .8f, Windup = .55f, Active = .3f,
                 Recovery = .8f, DamageScale = 1, Speed = 0, Pulses = 1 };
             switch (profile.Species)

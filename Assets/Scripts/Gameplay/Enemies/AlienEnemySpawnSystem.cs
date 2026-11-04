@@ -125,8 +125,8 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(entity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
                 EntityManager.SetComponentData(entity, new ProceduralAlienEnemy.State
                 {
-                    Scale = scale, AmbushEnabled = spawn.Profile.Species == AlienSpecies.Spider,
-                    Action = spawn.Profile.Species == AlienSpecies.Spider ? AlienAction.Ambush : AlienAction.Roam,
+                    Scale = scale, AmbushEnabled = spawn.Profile.IsCeilingSpider,
+                    Action = spawn.Profile.IsCeilingSpider ? AlienAction.Ambush : AlienAction.Roam,
                     BossPhase = 1
                 });
                 state.Entity = entity;
@@ -228,7 +228,7 @@ namespace Unity.MP_FPS
                 Vector3 candidate = anchor == 0 ? spawn.Position : spawn.CandidatePositions[anchor - 1];
                 if (!HasNearbyPlayer(candidate, settings.ActivationDistance)) continue;
                 nearbyAttempts++;
-                if (spawn.Profile.Species == AlienSpecies.Spider)
+                if (spawn.Profile.IsCeilingSpider)
                 {
                     if (TryAmbushPosition(settings, spawn, scale, candidate, anchor > 0, out position, out rotation)) return true;
                     continue;

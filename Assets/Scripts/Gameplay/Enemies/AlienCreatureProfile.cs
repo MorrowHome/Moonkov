@@ -43,10 +43,12 @@ namespace Unity.MP_FPS
         [Range(.6f, 3)] public float BossDisplaySeconds = 1.8f;
         public AlienThreatTier Tier => Boss ? AlienThreatTier.Boss : ThreatTier;
         public string CreatureName => string.IsNullOrWhiteSpace(DisplayName) ? Species.ToString() : DisplayName;
-        public float GroundBodyRadius(float scale) => IsUpright ? UprightRadius(scale) :
+        public bool IsSpiderBoss => Boss && Species == AlienSpecies.Spider;
+        public bool IsCeilingSpider => !Boss && Species == AlienSpecies.Spider;
+        public float GroundBodyRadius(float scale) => IsUpright ? UprightRadius(scale) : IsSpiderBoss ? SurfaceBodyRadius * scale :
             Mathf.Max(SurfaceBodyRadius, Mathf.Max(Branch.bodyRadii.x, Branch.bodyRadii.z) * .7f) * scale;
         private const float SurfaceBodyRadius = .23f;
-        public float GroundBodyHeight(float scale) => IsUpright ? UprightHeight(scale) :
+        public float GroundBodyHeight(float scale) => IsUpright ? UprightHeight(scale) : IsSpiderBoss ? .95f * scale :
             Mathf.Max(GroundBodyRadius(scale) * 2, (Branch.bodyRadii.y * 2 + .4f) * scale);
         [Header("Boss 追击与换位 / 世界米每秒")]
         [Min(0)] public float BossPursuitSpeed = 4.8f;

@@ -17,24 +17,8 @@ public static class AlienAmbushSetup
     [MenuItem("Tools/Moonkov/Aliens/Configure species and boss roles")]
     public static void ConfigureCombatRoles()
     {
-        foreach (var species in new[] { AlienSpecies.Tentacle, AlienSpecies.Roots })
-        {
-            var profile = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + species + ".asset");
-            if (!profile) throw new InvalidOperationException("Missing boss profile " + species);
-            Undo.RecordObject(profile, "Configure alien boss");
-            profile.Boss = true; profile.EnrageHealthFraction = .5f;
-            profile.Scale = species == AlienSpecies.Tentacle ? 1.1f : 1.2f;
-            profile.Health = species == AlienSpecies.Tentacle ? 1100 : 1400;
-            profile.Damage = species == AlienSpecies.Tentacle ? 36 : 32;
-            profile.BossPursuitSpeed = species == AlienSpecies.Tentacle ? 4.8f : 3.1f;
-            profile.BossPreferredDistance = species == AlienSpecies.Tentacle ? 4.5f : 8;
-            profile.BossRepositionSpeed = species == AlienSpecies.Tentacle ? 8 : 6;
-            profile.BossRepositionSeconds = species == AlienSpecies.Tentacle ? .5f : .65f;
-            profile.MucusEveryAttacks = 3;
-            profile.Speed = profile.BossPursuitSpeed / profile.Scale;
-            EditorUtility.SetDirty(profile); AssetDatabase.SaveAssetIfDirty(profile);
-        }
-        Debug.Log("Tentacle and Roots boss profiles saved. Half-health phase, one spawn per map, tissue and nucleus rewards.");
+        SpiderBossSetup.ApplyProfiles();
+        Debug.Log("Spider boss role applied. Ceiling spider profile retained.");
     }
 
     [MenuItem("Tools/Moonkov/Aliens/Set up MC00 spider ambush")]

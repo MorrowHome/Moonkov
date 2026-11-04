@@ -19,7 +19,7 @@ namespace Unity.MP_FPS
             m_Body.SetCombatPresentation(m_Action, m_Clock - m_ActionStarted, m_Attacks, health,
                 m_AmbushEnabled ? profile.SpiderWindup : Mathf.Max(.1f, m_Pattern.Windup),
                 m_AmbushEnabled ? profile.SpiderRecovery : Mathf.Max(.1f, m_Pattern.Recovery),
-                m_AmbushEnabled ? profile.SpiderStrikeSeconds : Mathf.Max(.1f, m_Pattern.Active));
+                m_AmbushEnabled ? profile.SpiderStrikeSeconds : Mathf.Max(.1f, m_Pattern.Active), m_Pattern.Kind);
         }
 
         private void UpdateAmbush(float dt, float health)

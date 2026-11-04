@@ -93,7 +93,7 @@ namespace Unity.MP_FPS
             m_ObservedShots.Clear(); m_Footsteps.Clear();
             var state = ReadGhostComponentData<State>();
             m_Spawn = transform.position; m_RoamGoal = m_Spawn;
-            m_AmbushEnabled = profile.Species == AlienSpecies.Spider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
+            m_AmbushEnabled = profile.IsCeilingSpider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
             m_Action = state.Action;
             m_LastHealth = profile.Health;
             float scale = state.Scale > 0 ? state.Scale : profile.Scale;
@@ -354,7 +354,7 @@ namespace Unity.MP_FPS
             m_Body.SetCombatPresentation(state.Action, state.ActionTime, state.AttackSequence, health,
                 m_AmbushEnabled ? profile.SpiderWindup : m_Pattern.Windup,
                 m_AmbushEnabled ? profile.SpiderRecovery : m_Pattern.Recovery,
-                m_AmbushEnabled ? profile.SpiderStrikeSeconds : m_Pattern.Active);
+                m_AmbushEnabled ? profile.SpiderStrikeSeconds : m_Pattern.Active, m_Pattern.Kind);
             if (Time.unscaledTime >= m_NextLod)
             { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
             m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);

@@ -42,7 +42,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("Tactical " + name);
         var holder = new GameObject("Temporary tactical encounter");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset"));
+        var p = LegacyBossFixtureProfile(name);
         p.Liquid = false; p.Damage = .1f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
         p.PatrolRadius = 0; p.BossDisplaySeconds = .6f;
         Vector3 origin = new Vector3(-9700, 1000, -9700);
@@ -71,7 +71,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("Predictive " + name);
         var holder = new GameObject("Temporary visible motion fixture");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset"));
+        var p = LegacyBossFixtureProfile(name);
         p.Liquid = false; p.Damage = .1f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
         p.PatrolRadius = 0; p.BossDisplaySeconds = .6f;
         Vector3 origin = new Vector3(-9700, 1000, -9700);
@@ -111,7 +111,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("Root close pulse");
         var holder = new GameObject("Temporary root close response");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Roots.asset"));
+        var p = LegacyBossFixtureProfile("Roots");
         p.Liquid = false; p.Damage = 1; p.AttackCooldown = 60; p.PatrolRadius = 0;
         p.BossPursuitSpeed = p.BossRepositionSpeed = 0; p.BossDisplaySeconds = .6f;
         Vector3 origin = new Vector3(-9700, 1000, -9700);
@@ -144,7 +144,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("Root wave stationary target");
         var holder = new GameObject("Temporary root wave damage");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Roots.asset"));
+        var p = LegacyBossFixtureProfile("Roots");
         p.Liquid = false; p.Damage = 1; p.AttackCooldown = 60; p.PatrolRadius = 0;
         p.BossPursuitSpeed = p.BossRepositionSpeed = 0; p.BossDisplaySeconds = .6f;
         Vector3 origin = new Vector3(-9700, 1000, -9700);
@@ -182,7 +182,7 @@ public static partial class AlienEnemyChecks
     }
     private static void CheckRootWaveWarnings(List<string> passed)
     {
-        var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Roots.asset");
+        var p = LegacyBossFixtureProfile("Roots");
         var holder = new GameObject("Temporary root wave warning fixture");
         try
         {
@@ -200,6 +200,6 @@ public static partial class AlienEnemyChecks
             Require(holder.GetComponentsInChildren<Collider>().Length == 0, "Warning created client damage geometry.");
             passed.Add("Root wave: nine patches pre-warned, three distinct rows, zero client colliders");
         }
-        finally { Object.DestroyImmediate(holder); }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
     }
 }

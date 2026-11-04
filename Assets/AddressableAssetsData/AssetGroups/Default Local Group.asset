@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d33cf52c0f374eaabdfd2c9f5026bf1
+    m_Address: Assets/AlienCreatures/Prefabs/XenoSpiderBoss.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 60167978cf99f034a918f22acfb3fe7e
     m_Address: Assets/AlienCreatures/Prefabs/XenoCaterpillar.prefab
     m_ReadOnly: 0

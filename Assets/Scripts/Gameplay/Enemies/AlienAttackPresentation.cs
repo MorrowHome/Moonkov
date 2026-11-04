@@ -70,7 +70,28 @@ namespace Unity.MP_FPS
             float elapsed = state.Action == AlienAction.Windup ? state.ActionTime / Mathf.Max(.01f, pattern.Windup) :
                 Mathf.Repeat(state.ActionTime - .08f, pattern.Active / Mathf.Max(1, pattern.Pulses)) / (pattern.Active / Mathf.Max(1, pattern.Pulses));
             m_WarningMaterial.SetColor("_BaseColor", Color.Lerp(new Color(.7f, .17f, .025f), new Color(1, .7f, .18f), Mathf.Clamp01(elapsed)));
-            bool sweep = pattern.Kind == AlienAttackKind.TentacleSweep;
+            bool sweep = pattern.Kind == AlienAttackKind.TentacleSweep || pattern.Kind == AlienAttackKind.SpiderRake;
+            if (pattern.Kind == AlienAttackKind.SpiderRush)
+            {
+                var lane = Warning(0);
+                if (m_WarningSequence != state.AttackSequence)
+                {
+                    m_WarningSequence = state.AttackSequence;
+                    Vector3 start = (Vector3)state.AttackOrigin - Vector3.up * (.56f * state.Scale);
+                    Vector3 end = state.AttackPoint;
+                    Vector3 heading = state.AttackDirection;
+                    // One capsule outline covers the same swept radius as damage.
+                    lane.positionCount = 27;
+                    for (int cap = 0; cap < 2; cap++) for (int i = 0; i <= 12; i++)
+                    {
+                        float angle = -90 + i * 15 + cap * 180;
+                        lane.SetPosition(cap * 13 + i, WarningGround((cap == 0 ? end : start) +
+                            Quaternion.AngleAxis(angle, Vector3.up) * heading * pattern.Radius));
+                    }
+                    lane.SetPosition(26, lane.GetPosition(0));
+                }
+                return;
+            }
             bool spit = pattern.Kind == AlienAttackKind.MucusSpit;
             Vector3 centre = sweep || pattern.Kind == AlienAttackKind.SlimePulse ?
                 (Vector3)state.AttackOrigin - Vector3.up * (.56f * state.Scale) : (Vector3)state.AttackPoint;
@@ -171,7 +192,7 @@ namespace Unity.MP_FPS
             foreach (var stream in m_Streams) stream.enabled = false;
             m_Globule.gameObject.SetActive(false);
             m_Wake.emitting = strike && (pattern.Kind == AlienAttackKind.RoofPounce || pattern.Kind == AlienAttackKind.FaceLeap ||
-                pattern.Kind == AlienAttackKind.Charge || pattern.Kind == AlienAttackKind.Bite);
+                pattern.Kind == AlienAttackKind.Charge || pattern.Kind == AlienAttackKind.Bite || pattern.Kind == AlienAttackKind.SpiderRush);
             m_Wake.transform.position = socket;
             if (state.Action == AlienAction.Dead)
             { m_Wake.Clear(); m_Droplets.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear); m_Observed = true; return; }

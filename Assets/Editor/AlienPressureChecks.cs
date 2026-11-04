@@ -56,7 +56,7 @@ public static partial class AlienEnemyChecks
         var time = manager.CreateEntity(typeof(NetworkTime));
         manager.SetComponentData(time, new NetworkTime { ServerTick = new NetworkTick(1) });
         var holder = new GameObject("Temporary boss pressure fixture");
-        var profile = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + species + ".asset"));
+        var profile = LegacyBossFixtureProfile(species.ToString());
         profile.Liquid = false; profile.Damage = 1; profile.PatrolRadius = 0;
         // This fixture isolates the original short-distance mobility contract;
         // giant body, introduction and phase timing have their own horror checks.

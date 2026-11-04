@@ -42,6 +42,7 @@ namespace Unity.MP_FPS
         private bool m_LastLiquid;
         private SurfaceMotor.Pose m_SpiderPose;
         private AlienAction m_CombatAction;
+        private AlienAttackKind m_CombatKind;
         private float m_ActionTime, m_WindupDuration, m_RecoveryDuration, m_StrikeDuration;
         private float m_Phase, m_Clock;
         private bool m_Folded;
@@ -106,9 +107,9 @@ namespace Unity.MP_FPS
         /// <summary>Call before Tick/Observe with authoritative action age in seconds.
         /// Both peers solve the same attack silhouette; audio observes client snapshots only.</summary>
         public void SetCombatPresentation(AlienAction action, float actionTime, uint attackSequence, float health,
-            float windupDuration = 0, float recoveryDuration = 0, float strikeDuration = 0)
+            float windupDuration = 0, float recoveryDuration = 0, float strikeDuration = 0, AlienAttackKind kind = AlienAttackKind.Bite)
         {
-            m_CombatAction = action; m_ActionTime = Mathf.Max(0, actionTime);
+            m_CombatAction = action; m_CombatKind = kind; m_ActionTime = Mathf.Max(0, actionTime);
             m_WindupDuration = windupDuration > 0 ? windupDuration : m_Profile.Windup;
             m_RecoveryDuration = recoveryDuration > 0 ? recoveryDuration : m_Profile.Recovery;
             m_StrikeDuration = strikeDuration > 0 ? strikeDuration : .24f;
@@ -140,7 +141,8 @@ namespace Unity.MP_FPS
                 if (m_Phase >= .58f || m_Chain.SuckerSpan >= m_ChainShape.length * 1.25f) gaitSpeed = 0;
                 else gaitSpeed *= .8f;
             }
-            if (m_Feet != null) gaitSpeed *= m_Feet.SpeedScale;
+            if (m_Feet != null && !(m_Profile.IsSpiderBoss && m_CombatAction == AlienAction.Strike && m_CombatKind == AlienAttackKind.SpiderRush))
+                gaitSpeed *= m_Feet.SpeedScale;
             if (m_StiltRig != null) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt, m_StiltRig.Height, m_StiltRig.CollisionRadius);
             else if (m_Profile.Boss) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt,
                 m_Profile.GroundBodyHeight(m_Scale), m_Profile.GroundBodyRadius(m_Scale));
@@ -265,20 +267,26 @@ namespace Unity.MP_FPS
             float recover = m_CombatAction == AlienAction.Recover ? 1 - Ease(m_ActionTime / Mathf.Max(.01f, m_RecoveryDuration)) :
                 m_CombatAction == AlienAction.Strike ? Ease((strikeTime - .75f) / .25f) : 0;
             float dead = m_CombatAction == AlienAction.Dead ? Ease(m_ActionTime / .65f) : 0;
+            float display = m_Profile.IsSpiderBoss && m_CombatAction == AlienAction.Dominance ?
+                Mathf.Sin(Mathf.Clamp01(m_ActionTime / m_Profile.BossDisplaySeconds) * Mathf.PI) : 0;
+            bool rake = m_Profile.IsSpiderBoss && m_CombatKind == AlienAttackKind.SpiderRake;
+            // The rake lands on the shared damage/audio pulse, then withdraws.
+            float rakeStrike = rake && m_CombatAction == AlienAction.Strike ?
+                Ease(m_ActionTime / .08f) * (1 - Ease((m_ActionTime - .08f) / .3f)) : 0;
             m_SpiderPose = m_Feet.BodyPose;
             var surface = Motor.Current;
             // The six supporting feet retain their real anchors during the warning.
             // Move hips before IK so the shell, legs and damage volumes remain aligned.
-            m_SpiderPose.Position += surface.Up * (-.17f * windup - .07f * recover - .23f * dead) * m_Scale;
-            m_SpiderPose.Rotation *= Quaternion.Euler(-16 * windup + 13 * strike + 7 * recover, 0, 0);
+            m_SpiderPose.Position += surface.Up * ((rake ? .08f : -.17f) * windup + .14f * display - .07f * recover - .23f * dead) * m_Scale;
+            m_SpiderPose.Rotation *= Quaternion.Euler((rake ? -24 : -16) * windup - 20 * display + 13 * strike + 7 * recover, 0, 0);
             for (int leg = 0; leg < 8; leg++)
             {
                 Vector3 target = m_Feet[leg].Position;
                 Vector3 radial = m_SpiderPose.Rotation * PredictiveFeet.Radial(leg);
                 // The forward pair opens toward the target; the remaining legs brace.
                 if (leg == 0 || leg == 7)
-                    target += (surface.Up * (.40f * windup + .22f * strike) +
-                        surface.Forward * (-.18f * windup + .50f * strike)) * m_Scale;
+                    target += (surface.Up * (.40f * windup + .22f * strike + .65f * display - .25f * rakeStrike) +
+                        surface.Forward * (-.18f * windup + .50f * strike + .25f * rakeStrike)) * m_Scale;
                 Vector3 hip = PredictiveFeet.Hip(m_SpiderPose, leg, m_Scale);
                 bool solved = SpiderLegKinematics.Solve(m_SpiderPose, leg, target, m_Feet[leg].Normal,
                     m_Mask, out var knee, out var toe, m_Scale);

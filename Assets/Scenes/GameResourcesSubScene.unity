@@ -303,6 +303,11 @@ MonoBehaviour:
     m_SubObjectType:
     m_SubObjectGUID:
     m_EditorAssetChanged: 0
+  - m_AssetGUID: 5d33cf52c0f374eaabdfd2c9f5026bf1
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

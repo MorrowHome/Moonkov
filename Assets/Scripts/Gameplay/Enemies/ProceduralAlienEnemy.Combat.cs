@@ -63,7 +63,11 @@ namespace Unity.MP_FPS
             Vector3 intent = Vector3.zero;
             float speed = 0;
             if (m_Action == AlienAction.Strike && m_Pattern.Speed > 0)
-            { intent = Vector3.ProjectOnPlane(m_CombatDirection, m_Body.Motor.Current.Up).normalized; speed = m_Pattern.Speed; }
+            {
+                intent = Vector3.ProjectOnPlane(m_CombatDirection, m_Body.Motor.Current.Up).normalized; speed = m_Pattern.Speed;
+                if (m_Pattern.Kind == AlienAttackKind.SpiderRush)
+                    speed = Mathf.Min(speed, Mathf.Max(0, Vector3.Dot(m_CombatPoint - transform.position, m_CombatDirection)) / Mathf.Max(.001f, dt));
+            }
             else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && (profile.Species != AlienSpecies.Roots || profile.Boss))
             {
                 bool pause = false;
@@ -80,7 +84,7 @@ namespace Unity.MP_FPS
                 if (profile.Boss && m_Action != AlienAction.Roam) speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
                 if (pause || Vector3.Distance(goal, transform.position) < .7f) speed = 0;
             }
-            Vector3 facingIntent = m_Action == AlienAction.Windup ? m_CombatDirection :
+            Vector3 facingIntent = m_Action == AlienAction.Windup || profile.IsSpiderBoss && m_Action == AlienAction.Strike ? m_CombatDirection :
                 remembered && m_Visible && (profile.Boss || speed <= .1f) ?
                     Vector3.ProjectOnPlane(m_LastSeen - transform.position, Vector3.up).normalized : intent;
             float yaw = facingIntent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, facingIntent, m_Body.Motor.Current.Up) /
@@ -100,7 +104,7 @@ namespace Unity.MP_FPS
             if (!ClearSight(AimPoint, target, root.transform)) return false;
             if (next.Kind == AlienAttackKind.SlimePulse && (GroundDistance(target, transform.position) > next.Radius ||
                 Mathf.Abs(target.y - transform.position.y) >= 2)) return false;
-            if (next.Kind == AlienAttackKind.TentacleSweep && !AlienCombatPattern.SweepContains(target,
+            if ((next.Kind == AlienAttackKind.TentacleSweep || next.Kind == AlienAttackKind.SpiderRake) && !AlienCombatPattern.SweepContains(target,
                 transform.position, Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized,
                 next.Radius, m_Body.Motor.BodyHeight)) return false;
             // A heavy mantle cannot warn forward and then sweep behind itself.
@@ -117,7 +121,7 @@ namespace Unity.MP_FPS
         {
             if (m_Pattern.Kind == AlienAttackKind.MucusSpit) return;
             float age = m_Clock - m_ActionStarted;
-            bool moving = m_Pattern.Kind == AlienAttackKind.Bite || m_Pattern.Kind == AlienAttackKind.Charge || m_Pattern.Kind == AlienAttackKind.FaceLeap;
+            bool moving = m_Pattern.Kind == AlienAttackKind.Bite || m_Pattern.Kind == AlienAttackKind.Charge || m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.SpiderRush;
             if (!moving && (m_Pulse >= m_Pattern.Pulses || age < m_Pattern.PulseTime(m_Pulse))) return;
             if (!moving) { m_Pulse++; m_StrikeVictims.Clear(); }
             var manager = GhostGameObject.EntityManager;
@@ -132,6 +136,13 @@ namespace Unity.MP_FPS
                 bool hit = false;
                 switch (m_Pattern.Kind)
                 {
+                    case AlienAttackKind.SpiderRush:
+                        // Swept damage follows the actual body, not the warned destination.
+                        // The warning includes the victim radius and the rounded end caps.
+                        hit = DistanceToSegment(Vector3.ProjectOnPlane(point, Vector3.up),
+                            Vector3.ProjectOnPlane(previous, Vector3.up), Vector3.ProjectOnPlane(transform.position, Vector3.up)) <= m_Pattern.Radius &&
+                            Mathf.Abs(point.y - (transform.position.y - m_Body.Motor.BodyHeight + .5f)) < 1.5f;
+                        break;
                     case AlienAttackKind.StiltRake:
                         Vector3 rakeEnd = m_CombatOrigin + m_CombatDirection * m_Pattern.Range;
                         hit = DistanceToSegment(Vector3.ProjectOnPlane(point, Vector3.up),
@@ -148,6 +159,7 @@ namespace Unity.MP_FPS
                         point = TargetHead(entity).position;
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius; break;
                     case AlienAttackKind.TentacleSweep:
+                    case AlienAttackKind.SpiderRake:
                         hit = AlienCombatPattern.SweepContains(point, m_CombatOrigin, m_CombatDirection,
                             m_Pattern.Radius, m_Body.Motor.BodyHeight); break;
                     case AlienAttackKind.SlimePulse:

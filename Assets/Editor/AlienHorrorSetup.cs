@@ -24,28 +24,9 @@ public static class AlienHorrorSetup
         walker.FlankDistance = 3.5f; walker.Speed = 4; walker.TurnSpeed = 100;
         var watcher = Tune("StiltWatcher", "长颈监视者", "精英：4.2 米长颈轮廓，缓慢逼近后长距抓击；借低矮通道脱离。", AlienThreatTier.Elite, AlienApproach.Stalk, 680, 48);
         watcher.FlankDistance = 4.5f; watcher.AttackReach = 4.2f; watcher.Windup = 1.05f; watcher.Speed = 3.2f; watcher.TurnSpeed = 75;
-        var tentacle = Tune("Tentacle", "深渊肢王", "巨型首领：横扫前方与锁点重砸交替；半血转阶段，绕到背侧或借厚掩体避让。", AlienThreatTier.Boss, AlienApproach.Direct, 3400, 48);
-        tentacle.Scale = 4; tentacle.Branch.bodyRadii = new Vector3(.55f, .85f, .7f); tentacle.Branch.reach = 3;
-        tentacle.Branch.rootRadius = .19f; tentacle.Branch.tipRadius = .055f;
-        tentacle.Branch.frequency = .42f; tentacle.Branch.lift = .22f; tentacle.Branch.curl = .16f;
-        tentacle.Branch.bodyStretch = .12f; tentacle.Branch.ripple = .012f;
-        tentacle.BossPursuitSpeed = 4.2f; tentacle.BossRepositionSpeed = 6; tentacle.BossRepositionSeconds = .8f;
-        tentacle.BossPreferredDistance = 10; tentacle.BossRepositionCooldown = 5; tentacle.TurnSpeed = 65;
-        var roots = Tune("Roots", "葬根主宰", "巨型首领：扎根封锁远处落点，攻击间拔根换位；根刺间留有通路，半血连发。", AlienThreatTier.Boss, AlienApproach.Direct, 4400, 42);
-        roots.Scale = 4; roots.Branch.bodyRadii = new Vector3(.65f, 1.05f, .65f); roots.Branch.reach = 3.6f;
-        roots.Branch.rootRadius = .16f; roots.Branch.tipRadius = .045f;
-        roots.Branch.frequency = .3f; roots.Branch.lift = .16f; roots.Branch.curl = .25f;
-        roots.Branch.ripple = .01f; roots.Branch.growthRate = .6f;
-        roots.BossPursuitSpeed = 2.2f; roots.BossRepositionSpeed = 3.8f; roots.BossRepositionSeconds = 1.1f;
-        roots.BossPreferredDistance = 18; roots.BossRepositionCooldown = 6; roots.TurnSpeed = 45;
-        foreach (var boss in new[] { tentacle, roots })
-        {
-            boss.Speed = boss.BossPursuitSpeed / boss.Scale; boss.SightRange = 65; boss.HearingRange = 28;
-            boss.MemorySeconds = 14; boss.PatrolRadius = 3; boss.BossDisplaySeconds = 1.8f;
-            boss.LiquidDistance = 22; boss.MaximumLiquidEnemies = 1;
-        }
+        SpiderBossSetup.ApplyProfiles();
         AssetDatabase.SaveAssets();
-        Debug.Log("Horror roster applied to 11 profiles already referenced by the formal Theophilus map.");
+        Debug.Log("Horror roster applied; giant spider is the boss, tentacle and roots remain ordinary creatures.");
     }
 
     private static AlienCreatureProfile Tune(string asset, string title, string hint, AlienThreatTier tier,

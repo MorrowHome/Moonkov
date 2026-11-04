@@ -13,9 +13,10 @@ using Object = UnityEngine.Object;
 
 public static class AlienHorrorPreview
 {
-    [MenuItem("Tools/Moonkov/Aliens/Capture giant boss scale preview")]
+    [MenuItem("Tools/Moonkov/Aliens/Capture spider boss scale and attacks")]
     public static void Capture()
     {
+        if (Application.isBatchMode) EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
         var original = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         var root = new GameObject("Temporary giant boss scale preview");
@@ -34,22 +35,18 @@ public static class AlienHorrorPreview
             floor.GetComponent<Renderer>().sharedMaterial = floorMaterial;
             Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(floor);
             Physics.SyncTransforms();
-            foreach (string name in new[] { "Tentacle", "Roots", "StiltWatcher" })
+            foreach (string name in new[] { "SpiderBoss", "Spider" })
             {
                 var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset");
                 var actor = new GameObject(name); actor.transform.SetParent(root.transform);
-                actor.transform.position = offset + new Vector3(name == "Tentacle" ? -17 : name == "Roots" ? 17 : 0, SurfaceMotor.Height * p.Scale, name == "StiltWatcher" ? -5 : 0);
+                actor.transform.position = offset + new Vector3(name == "SpiderBoss" ? -2 : 6, SurfaceMotor.Height * p.Scale, 0);
                 actor.transform.rotation = Quaternion.Euler(0, 180, 0);
                 var body = new AlienCreatureBody(actor.transform, p, p.Scale, true, LayerMask.NameToLayer("ClientPlayer")); bodies.Add(body);
                 body.SetCombatPresentation(AlienAction.Roam, 0, 0, p.Health);
-                // Force each real GPU liquid through a short bounded solve, independently of distance LOD.
-                for (int frame = 0; frame < 12; frame++) body.Tick(Vector3.zero, 0, 0, 1f / 60, 0, true);
-                var sample = body.Fluid.SampleParticles();
-                if (sample.nonFinite != 0 || sample.particles <= 0) throw new InvalidOperationException(name + " liquid is invalid.");
-                evidence.Add(name + " GPU particles=" + sample.particles + ", nonFinite=" + sample.nonFinite);
+                for (int frame = 0; frame < 12; frame++) body.Tick(Vector3.zero, 0, 0, 1f / 60, 0, false);
             }
             var human = GameObject.CreatePrimitive(PrimitiveType.Capsule); human.transform.SetParent(root.transform);
-            human.transform.position = offset + new Vector3(0, .9f, -11); human.transform.localScale = new Vector3(.5f, .9f, .5f);
+            human.transform.position = offset + new Vector3(3, .9f, -2); human.transform.localScale = new Vector3(.5f, .9f, .5f);
             Object.DestroyImmediate(human.GetComponent<Collider>());
             var humanMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit")); materials.Add(humanMaterial);
             humanMaterial.SetColor("_BaseColor", new Color(.7f, .5f, .22f)); human.GetComponent<Renderer>().sharedMaterial = humanMaterial;
@@ -63,22 +60,44 @@ public static class AlienHorrorPreview
             var cameraObject = new GameObject("Human eye height scale camera"); cameraObject.transform.SetParent(root.transform);
             var camera = cameraObject.AddComponent<Camera>(); camera.scene = scene;
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.018f, .022f, .03f);
-            camera.transform.position = offset + new Vector3(0, 1.7f, -45); camera.transform.LookAt(offset + Vector3.up * 3.7f);
+            camera.transform.position = offset + new Vector3(-8, 5, -17); camera.transform.LookAt(offset + Vector3.up * 1.5f);
             camera.fieldOfView = 50; camera.nearClipPlane = .1f; camera.farClipPlane = 160;
             camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
             target = new RenderTexture(1440, 810, 24);
-            RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-            var previous = RenderTexture.active;
-            try
+            var boss = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>(SpiderBossSetup.ProfilePath);
+            string directory = "LocalData/SpiderBossReview";
+            Directory.CreateDirectory(directory);
+            foreach (string pose in new[] { "solid-idle", "solid-rake", "solid-rush", "liquid-idle", "solid-dead" })
             {
-                RenderTexture.active = target; pixels = new Texture2D(1440, 810, TextureFormat.RGB24, false);
-                pixels.ReadPixels(new Rect(0, 0, 1440, 810), 0, 0); pixels.Apply();
+                bool liquid = pose == "liquid-idle";
+                var kind = pose == "solid-rush" ? AlienAttackKind.SpiderRush : AlienAttackKind.SpiderRake;
+                var pattern = AlienCombatPattern.For(boss, 1, 1, kind);
+                var action = pose == "solid-dead" ? AlienAction.Dead :
+                    pose == "solid-rake" || pose == "solid-rush" ? AlienAction.Windup : AlienAction.Roam;
+                float age = action == AlienAction.Dead ? 1 : action == AlienAction.Windup ? pattern.Windup : 0;
+                bodies[0].SetCombatPresentation(action, age, 1, action == AlienAction.Dead ? 0 : boss.Health,
+                    pattern.Windup, pattern.Recovery, pattern.Active, kind);
+                for (int frame = 0; frame < 20; frame++) bodies[0].Tick(Vector3.zero, 0, 0, 1f / 60, 0, liquid);
+                if (liquid)
+                {
+                    var sample = bodies[0].Fluid.SampleParticles();
+                    if (sample.nonFinite != 0 || sample.particles <= 0) throw new InvalidOperationException("Invalid spider liquid.");
+                    evidence.Add("Spider boss GPU particles=" + sample.particles + ", nonFinite=" + sample.nonFinite);
+                }
+                RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                var previous = RenderTexture.active;
+                try
+                {
+                    RenderTexture.active = target;
+                    if (!pixels) pixels = new Texture2D(1440, 810, TextureFormat.RGB24, false);
+                    pixels.ReadPixels(new Rect(0, 0, 1440, 810), 0, 0); pixels.Apply();
+                }
+                finally { RenderTexture.active = previous; }
+                File.WriteAllBytes(directory + "/" + pose + ".png", pixels.EncodeToPNG());
+                evidence.Add(pose + ": native rig, original ceiling-spider scale and 1.8m human reference");
             }
-            finally { RenderTexture.active = previous; }
-            Directory.CreateDirectory("Docs/AI"); File.WriteAllBytes("Docs/AI/AlienHorrorRoster.png", pixels.EncodeToPNG());
-            Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
-            File.WriteAllLines("Library/BuildValidation/AlienIntegration/horror-gpu.txt", evidence);
-            Debug.Log("Actual liquid bosses rendered at human eye height; gold capsule=1.8m, centre=4.2m watcher. Preview is not formal-map Play acceptance.");
+            File.WriteAllLines(directory + "/evidence.txt", evidence);
+            Debug.Log("SPIDER_BOSS_PREVIEW_PASSED: native solid/ liquid, attack and death poses; gold capsule=1.8m. This is not formal-map Play acceptance.");
         }
         finally
         {

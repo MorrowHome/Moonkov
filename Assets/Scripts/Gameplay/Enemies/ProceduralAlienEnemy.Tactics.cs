@@ -34,7 +34,13 @@ namespace Unity.MP_FPS
                     next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
                 return CanBeginSpeciesAttack(next);
             }
-            if (profile.Species == AlienSpecies.Roots)
+            if (profile.IsSpiderBoss)
+            {
+                if (TryBossPattern(AlienAttackKind.SpiderRake, phase, m_NextBossSweep, out next)) return true;
+                if (GroundDistance(ContactPoint(m_Target), transform.position) > profile.AttackReach * m_Body.Scale &&
+                    TryBossPattern(AlienAttackKind.SpiderRush, phase, m_NextBossArea, out next)) return true;
+            }
+            else if (profile.Species == AlienSpecies.Roots)
             {
                 if (TryBossPattern(AlienAttackKind.SlimePulse, phase, m_NextBossSweep, out next)) return true;
                 if (TryBossPattern(AlienAttackKind.RootSpikes, phase, m_NextBossArea, out next)) return true;
@@ -54,7 +60,30 @@ namespace Unity.MP_FPS
             // Ground strikes must not lock onto an unrelated floor below an elevated player.
             if (kind != AlienAttackKind.MucusSpit &&
                 Mathf.Abs(ContactPoint(m_Target).y - (transform.position.y - m_Body.Motor.BodyHeight + 1)) > 1.5f) return false;
+            if (kind == AlienAttackKind.SpiderRush && !TrySpiderRushLanding(transform.position, m_LastSeen - Vector3.up, out _)) return false;
             return CanBeginSpeciesAttack(pattern);
+        }
+
+        private bool TrySpiderRushLanding(Vector3 origin, Vector3 target, out Vector3 landing)
+        {
+            landing = default;
+            Vector3 direction = Vector3.ProjectOnPlane(target - origin, Vector3.up).normalized;
+            float distance = GroundDistance(target, origin);
+            if (distance > profile.SpiderAmbushRange || distance < .1f) return false;
+            Vector3 foot = origin - Vector3.up * m_Body.Motor.BodyHeight;
+            float radius = profile.GroundBodyRadius(m_Body.Scale), height = profile.GroundBodyHeight(m_Body.Scale);
+            int mask = LayerMask.GetMask("Default", "Ground");
+            // Reject blocked lanes before selecting this attack, so another legal
+            // skill can be chosen. The grounded motor rechecks moving obstacles.
+            if (UnityEngine.Physics.CapsuleCast(foot + Vector3.up * (radius + .04f),
+                foot + Vector3.up * (height - radius + .04f), radius, direction, distance, mask, QueryTriggerInteraction.Ignore)) return false;
+            if (!RaidSpawnSafety.TryGroundPosition(target, radius, height, 35, out landing, out _) ||
+                Mathf.Abs(landing.y - foot.y) > .4f) return false;
+            // Bounded samples avoid committing a rush across a hole in the floor.
+            for (int i = 1; i <= 4; i++)
+                if (!UnityEngine.Physics.Raycast(Vector3.Lerp(foot, landing, i / 5f) + Vector3.up * .45f,
+                    Vector3.down, out var floor, .9f, mask, QueryTriggerInteraction.Ignore) || floor.normal.y < .75f) return false;
+            return true;
         }
 
         private bool CommitAttack(AlienCombatPattern next, byte phase)
@@ -78,6 +107,7 @@ namespace Unity.MP_FPS
             if (next.Kind == AlienAttackKind.MucusSpit && !PrepareMucusArc(target)) return false;
             if (!head && UnityEngine.Physics.Raycast(target + Vector3.up * 2, Vector3.down,
                 out var floor, 6, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) target = floor.point + floor.normal * .04f;
+            if (next.Kind == AlienAttackKind.SpiderRush && !TrySpiderRushLanding(origin, target, out target)) return false;
             m_Pattern = next; m_BossPhase = phase; m_Attacks++;
             m_CombatOrigin = origin; m_CombatPoint = target;
             m_CombatDirection = Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized;
@@ -93,7 +123,7 @@ namespace Unity.MP_FPS
                 // different legal tool or move; never bypass a cooldown by repeating a shot.
                 float ready = m_Clock + cycle + (phase > 1 ? 1.2f : 2.5f);
                 if (next.Kind == AlienAttackKind.MucusSpit) m_NextBossSpit = ready;
-                else if (next.Kind == AlienAttackKind.TentacleSweep || next.Kind == AlienAttackKind.SlimePulse) m_NextBossSweep = ready;
+                else if (next.Kind == AlienAttackKind.TentacleSweep || next.Kind == AlienAttackKind.SlimePulse || next.Kind == AlienAttackKind.SpiderRake) m_NextBossSweep = ready;
                 else m_NextBossArea = ready;
             }
             return true;

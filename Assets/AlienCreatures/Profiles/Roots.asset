@@ -13,24 +13,24 @@ MonoBehaviour:
   m_Name: Roots
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 7
-  Scale: 4
-  Health: 4400
-  Speed: 0.55
-  TurnSpeed: 45
-  SightRange: 65
-  HearingRange: 28
-  MemorySeconds: 14
-  PatrolRadius: 3
-  Damage: 42
+  Scale: 1.1
+  Health: 320
+  Speed: 1.2727273
+  TurnSpeed: 180
+  SightRange: 32
+  HearingRange: 14
+  MemorySeconds: 8
+  PatrolRadius: 5
+  Damage: 26
   AttackReach: 2.6
   Windup: 0.42
   Recovery: 0.55
   AttackCooldown: 1.6
   LungeSpeed: 3
-  Boss: 1
-  ThreatTier: 2
-  DisplayName: "\u846C\u6839\u4E3B\u5BB0"
-  EncounterHint: "\u5DE8\u578B\u9996\u9886\uFF1A\u624E\u6839\u5C01\u9501\u8FDC\u5904\u843D\u70B9\uFF0C\u653B\u51FB\u95F4\u62D4\u6839\u6362\u4F4D\uFF1B\u6839\u523A\u95F4\u7559\u6709\u901A\u8DEF\uFF0C\u534A\u8840\u8FDE\u53D1\u3002"
+  Boss: 0
+  ThreatTier: 0
+  DisplayName: "\u4F0F\u6839\u517D"
+  EncounterHint: "\u624E\u6839\u653B\u51FB\u9644\u8FD1\u843D\u70B9\uFF1B\u79BB\u5F00\u9884\u5146\u4F4D\u7F6E\u3002"
   Approach: 0
   PreferredDistance: 7
   FlankDistance: 3
@@ -41,7 +41,7 @@ MonoBehaviour:
   BossRepositionSeconds: 1.1
   BossRepositionCooldown: 6
   BossPreferredDistance: 18
-  MucusEveryAttacks: 3
+  MucusEveryAttacks: 0
   MucusRange: 14
   MucusSpeed: 18
   MucusBlindSeconds: 2.6
@@ -97,26 +97,26 @@ MonoBehaviour:
     smoothness: 0.48
     metallic: 0.08
   Branch:
-    bodyRadii: {x: 0.65, y: 1.05, z: 0.65}
+    bodyRadii: {x: 0.3, y: 0.36, z: 0.38}
     arms: 6
-    reach: 3.6
-    rootRadius: 0.16
-    tipRadius: 0.045
+    reach: 2.1
+    rootRadius: 0.09
+    tipRadius: 0.035
     speed: 1.4
     burstMultiplier: 1.8
     turnSpeed: 260
-    frequency: 0.3
+    frequency: 0.65
     stanceFraction: 0.75
     prediction: 0.22
-    lift: 0.16
-    curl: 0.25
+    lift: 0.18
+    curl: 0.42
     follow: 16
     stuckDelay: 0.85
     bodyStretch: 0.15
-    ripple: 0.01
+    ripple: 0.045
     actionDuration: 1.1
     actionExtension: 0.65
-    growthRate: 0.6
+    growthRate: 0.28
     colour: {r: 0.025, g: 0.035, b: 0.041, a: 1}
     smoothness: 0.84
   Gait:

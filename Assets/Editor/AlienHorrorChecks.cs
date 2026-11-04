@@ -14,6 +14,25 @@ using Object = UnityEngine.Object;
 
 public static partial class AlienEnemyChecks
 {
+    // Historical shape fixtures still exercise generic sweep/spike/mucus rules.
+    // Keep them independent of the live roster, where only the spider is a boss.
+    private static AlienCreatureProfile LegacyBossFixtureProfile(string name)
+    {
+        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset"));
+        if (name != "Tentacle" && name != "Roots") return p;
+        bool roots = name == "Roots";
+        p.Boss = true; p.ThreatTier = AlienThreatTier.Boss; p.Scale = 4;
+        p.Health = roots ? 4400 : 3400; p.Damage = roots ? 42 : 48;
+        p.Branch.bodyRadii = roots ? new Vector3(.65f, 1.05f, .65f) : new Vector3(.55f, .85f, .7f);
+        p.Branch.reach = roots ? 3.6f : 3; p.Branch.rootRadius = roots ? .16f : .19f;
+        p.BossPursuitSpeed = roots ? 2.2f : 4.2f; p.BossRepositionSpeed = roots ? 3.8f : 6;
+        p.BossRepositionSeconds = roots ? 1.1f : .8f; p.BossPreferredDistance = roots ? 18 : 10;
+        p.BossRepositionCooldown = roots ? 6 : 5; p.TurnSpeed = roots ? 45 : 65;
+        p.Speed = p.BossPursuitSpeed / p.Scale; p.SightRange = 65; p.HearingRange = 28;
+        p.MemorySeconds = 14; p.PatrolRadius = 3; p.MucusEveryAttacks = 3;
+        return p;
+    }
+
     [MenuItem("Tools/Moonkov/Aliens/Check giant boss formal map placement")]
     public static void RunFormalHorrorPlacement()
     {
@@ -51,7 +70,7 @@ public static partial class AlienEnemyChecks
                 Require(found, "No valid formal-map giant spawn for " + spawn.Profile.CreatureName);
                 bosses.Add(spawn.Profile.Species);
             }
-            Require(bosses.Count == 2, "Formal map must reference both giant bosses.");
+            Require(bosses.Count == 1 && bosses.Contains(AlienSpecies.Spider), "Formal map must use only the giant spider as boss.");
             var states = (System.Collections.IList)typeof(AlienEnemySpawnSystem).GetField("m_Encounters", flags).GetValue(system);
             for (int i = 0; i < settings.Count; i++) states.Add(Activator.CreateInstance(stateType, true));
             for (int i = 0; i < settings.Count; i++)
@@ -79,11 +98,11 @@ public static partial class AlienEnemyChecks
         var passed = new List<string>();
         try
         {
-            foreach (string name in new[] { "Tentacle", "Roots" }) CheckGiantBoss(name, passed);
+            CheckGiantBoss("SpiderBoss", passed);
             CheckHunt("StiltWalker", passed);
             CheckHunt("Centipede", passed);
             CheckHunt("Caterpillar", passed);
-            CheckHunt("Tentacle", passed);
+            CheckHunt("SpiderBoss", passed);
             CheckGiantSlope(passed);
             Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
             File.WriteAllLines("Library/BuildValidation/AlienIntegration/horror-contract.txt", passed);
@@ -135,10 +154,10 @@ public static partial class AlienEnemyChecks
             Require(actor.GetComponentsInChildren<Renderer>().Length == 0, "Server allocated boss renderers.");
             var pattern = AlienCombatPattern.For(p, 2, 1);
             Require(pattern.Windup >= 1.14f, "Enraged giant lost readable warning.");
-            Require(p.Branch.reach * p.Scale * 2 >= 24, "Boss silhouette is not gigantic.");
+            Require((p.IsSpiderBoss ? 1.25f : p.Branch.reach) * p.Scale * 2 >= 8, "Boss silhouette is not gigantic.");
             Require(RaidSpawnSafety.TryGroundPosition(origin, p.GroundBodyRadius(p.Scale), p.GroundBodyHeight(p.Scale), 35, out _, out _), "Giant rejected open floor.");
             var ceiling = new GameObject("Low ceiling"); ceiling.transform.SetParent(holder.transform);
-            ceiling.transform.position = origin + Vector3.up * 4;
+            ceiling.transform.position = origin + Vector3.up * 3;
             ceiling.AddComponent<BoxCollider>().size = new Vector3(12, .3f, 12); Physics.SyncTransforms();
             Require(!RaidSpawnSafety.TryGroundPosition(origin, p.GroundBodyRadius(p.Scale), p.GroundBodyHeight(p.Scale), 35, out _, out _), "Giant fits under a low ceiling.");
             passed.Add(name + ": giant movement, harmless intro, one enrage, open floor/low ceiling, server zero renderers");
@@ -196,7 +215,7 @@ public static partial class AlienEnemyChecks
         {
             floor.transform.position = origin; floor.transform.rotation = Quaternion.Euler(-10, 0, 0);
             floor.AddComponent<BoxCollider>().size = new Vector3(100, .5f, 100); Physics.SyncTransforms();
-            var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset");
+            var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/SpiderBoss.asset");
             Require(RaidSpawnSafety.TryGroundPosition(origin + Vector3.up, p.GroundBodyRadius(p.Scale), p.GroundBodyHeight(p.Scale), 35, out var ground, out _), "No valid sloping giant spawn.");
             var motor = new SurfaceMotor(ground + Vector3.up * SurfaceMotor.Height * p.Scale, Quaternion.identity, LayerMask.GetMask("Default", "Ground"), p.Scale);
             Vector3 start = motor.Current.Position;

@@ -47,7 +47,7 @@ public static partial class AlienEnemyChecks
         using var world = CounterplayWorld(name + mode);
         var manager = world.EntityManager;
         var holder = new GameObject("Temporary ranged boss fixture");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset"));
+        var p = LegacyBossFixtureProfile(name);
         p.Liquid = false; p.Damage = 1; p.PatrolRadius = 0; p.AttackCooldown = 60;
         p.BossDisplaySeconds = .6f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
         Vector3 origin = new Vector3(-9800, 1000, -9800);
@@ -97,7 +97,7 @@ public static partial class AlienEnemyChecks
         using var world = CounterplayWorld(name + " pulses");
         var manager = world.EntityManager;
         var holder = new GameObject("Temporary committed boss pulses");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset"));
+        var p = LegacyBossFixtureProfile(name);
         p.Liquid = false; p.Damage = 1; p.PatrolRadius = 0; p.AttackCooldown = 60; p.MucusEveryAttacks = 0;
         p.BossDisplaySeconds = .6f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
         Vector3 origin = new Vector3(-9850, 1000, -9850);
@@ -154,7 +154,7 @@ public static partial class AlienEnemyChecks
     private static void CheckWarningPresentation(string name, List<string> passed)
     {
         var holder = new GameObject("Temporary boss warning presentation");
-        var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset");
+        var p = LegacyBossFixtureProfile(name);
         try
         {
             for (uint sequence = 1; sequence <= 2; sequence++)
@@ -186,7 +186,7 @@ public static partial class AlienEnemyChecks
             }
             passed.Add(name + " client: windup geometry exists, recovery hides it, zero colliders");
         }
-        finally { Object.DestroyImmediate(holder); }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
     }
 
     private static void CheckLostAlienSearch(List<string> passed)
@@ -258,7 +258,7 @@ public static partial class AlienEnemyChecks
             Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
             foreach (string name in new[] { "Tentacle", "Roots" })
             {
-                var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + name + ".asset");
+                var p = LegacyBossFixtureProfile(name);
                 var owner = new GameObject(name + " warning capture"); owner.transform.SetParent(holder.transform);
                 owner.transform.position = origin + Vector3.up * .56f * p.Scale;
                 try
@@ -279,7 +279,7 @@ public static partial class AlienEnemyChecks
                     }
                     finally { RenderTexture.active = previous; }
                 }
-                finally { Object.DestroyImmediate(owner); }
+                finally { Object.DestroyImmediate(owner); Object.DestroyImmediate(p); }
             }
         }
         finally
@@ -341,7 +341,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("near height");
         var holder = new GameObject("Temporary near height fixture");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        var p = LegacyBossFixtureProfile("Tentacle");
         p.Liquid = false; p.BossDisplaySeconds = .6f; p.BossRepositionSpeed = p.BossPursuitSpeed = 0;
         p.AttackCooldown = 60; p.Damage = 1; p.PatrolRadius = 0;
         Vector3 origin = new Vector3(-10050, 1000, -10050);
@@ -363,7 +363,7 @@ public static partial class AlienEnemyChecks
         using var world = CounterplayWorld("roof arc");
         var manager = world.EntityManager;
         var holder = new GameObject("Temporary roof arc fixture");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        var p = LegacyBossFixtureProfile("Tentacle");
         p.Liquid = false; p.BossDisplaySeconds = .6f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
         p.AttackCooldown = 60; p.Damage = 1; p.PatrolRadius = 0;
         Vector3 origin = new Vector3(-10150, 1000, -10150);
@@ -404,7 +404,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("giant navigation");
         var holder = new GameObject("Temporary giant navigation budget");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        var p = LegacyBossFixtureProfile("Tentacle");
         p.Liquid = false; p.BossRepositionSpeed = 0; p.PatrolRadius = 0;
         Vector3 origin = new Vector3(-10250, 1000, -10250);
         UnityEngine.AI.NavMeshData nav = null;
@@ -450,7 +450,7 @@ public static partial class AlienEnemyChecks
     {
         using var world = CounterplayWorld("blocked arcs");
         var holder = new GameObject("Temporary blocked arc corridor");
-        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        var p = LegacyBossFixtureProfile("Tentacle");
         p.Liquid = false; Vector3 origin = new Vector3(-10350, 1000, -10350);
         try
         {
@@ -470,7 +470,7 @@ public static partial class AlienEnemyChecks
     private static void CheckContactPresentation(List<string> passed)
     {
         var holder = new GameObject("Temporary contact presentation");
-        var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset");
+        var p = LegacyBossFixtureProfile("Tentacle");
         try
         {
             var pattern = AlienCombatPattern.For(p, 1, 1, AlienAttackKind.MucusSpit);
@@ -490,7 +490,7 @@ public static partial class AlienEnemyChecks
             }
             passed.Add("Client contact: actual point/normal burst, duplicate suppression, late first snapshot silent");
         }
-        finally { Object.DestroyImmediate(holder); }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
     }
 
     private static World CounterplayWorld(string name)

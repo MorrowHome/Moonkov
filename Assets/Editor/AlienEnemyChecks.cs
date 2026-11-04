@@ -162,11 +162,11 @@ public static partial class AlienEnemyChecks
         var projectile = go.AddComponent<Projectile>(); projectile.SetGhostGameObject(ghost);
         var weapon = ScriptableObject.CreateInstance<WeaponData>(); weapon.Damage = 17;
         typeof(Projectile).GetField("m_Weapon", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(projectile, weapon);
-        typeof(Projectile).GetField("m_Data", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(projectile, new Projectile.ProjectileData { OwnerNetworkId = 42 });
+        typeof(Projectile).GetField("m_Data", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(projectile, new Projectile.ProjectileData { OwnerNetworkId = 42, Origin = target.AimPoint });
         var movement = server.GetOrCreateSystemManaged<ServerPlayerMovementSystem>();
         float before = manager.GetComponentData<PredictedPlayerGhost>(target.GhostGameObject.LinkedEntity).CurrentHealth;
         typeof(Projectile).GetMethod("Damage", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(projectile,
-            new object[] { target.GhostGameObject, movement.GetComponentLookup<PredictedPlayerGhost>(), movement.GetComponentLookup<GhostOwner>(), BodyPart.Chest });
+            new object[] { target.GhostGameObject, movement.GetComponentLookup<PredictedPlayerGhost>(), movement.GetComponentLookup<GhostOwner>(), BodyPart.Chest, target.AimPoint });
         bool damaged = manager.GetComponentData<PredictedPlayerGhost>(target.GhostGameObject.LinkedEntity).CurrentHealth == before - 17;
         Object.DestroyImmediate(weapon); Object.DestroyImmediate(go); return damaged;
     }

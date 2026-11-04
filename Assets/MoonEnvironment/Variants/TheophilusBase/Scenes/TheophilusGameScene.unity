@@ -115676,20 +115676,20 @@ MonoBehaviour:
     - {x: 3456, y: 239.34546, z: 3968}
     - {x: 3712, y: 287.5814, z: 3968}
     - {x: 3968, y: 336.98236, z: 3968}
-  - Profile: {fileID: 11400000, guid: b8135596a5b27f747b1b724bb3a4695a, type: 2}
+  - Profile: {fileID: 11400000, guid: 4e4d4799bacf54c7c83ad27ba822f3f9, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
-        m_AssetGUID: c612969593356ac49b57170911850090
+        m_AssetGUID: 5d33cf52c0f374eaabdfd2c9f5026bf1
         m_SubObjectName: 
         m_SubObjectType: 
         m_SubObjectGUID: 
         m_EditorAssetChanged: 0
       m_GhostGuid:
         Value:
-          x: 1500062060
-          y: 1285968697
-          z: 2423354809
-          w: 151017489
+          x: 637285333
+          y: 2923904780
+          z: 2620259770
+          w: 532029535
     Position: {x: 1664.0344, y: 207.5332, z: 2117.9656}
     Yaw: -90
     Ambush: 0
@@ -116792,20 +116792,20 @@ MonoBehaviour:
     - {x: 3456, y: 239.34546, z: 3968}
     - {x: 3712, y: 287.5814, z: 3968}
     - {x: 3968, y: 336.98236, z: 3968}
-  - Profile: {fileID: 11400000, guid: 6fa2790f210aa8a4995f68d3929c87cd, type: 2}
+  - Profile: {fileID: 11400000, guid: 4e4d4799bacf54c7c83ad27ba822f3f9, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
-        m_AssetGUID: 65e9068a354054343b9db362c8a8ea19
+        m_AssetGUID: 5d33cf52c0f374eaabdfd2c9f5026bf1
         m_SubObjectName: 
         m_SubObjectType: 
         m_SubObjectGUID: 
         m_EditorAssetChanged: 0
       m_GhostGuid:
         Value:
-          x: 2824904278
-          y: 1128596563
-          z: 641456563
-          w: 2444135052
+          x: 637285333
+          y: 2923904780
+          z: 2620259770
+          w: 532029535
     Position: {x: 1732.9331, y: 225.49077, z: 2387.9297}
     Yaw: -90
     Ambush: 0
