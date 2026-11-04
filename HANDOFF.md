@@ -16,6 +16,7 @@
 - 球面排列十二组对应图案。约 250 毫秒展开，200 毫秒收回。第一人称压低中央遮挡。共用一份网格、图集和材质，972 顶点、1536 三角形、一个材质批次。切换武器只更新属性，不生成灯光、粒子或碰撞体，不逐帧重建几何。本人、远端角色和低性能预算共用。
 - 防御会把攻击表现切为 `None`，灯光也可能停止刷新。必须按同步的 `EquippedWeaponID` 选图案，再用 `DollSingerHaloAim.ColorForWeapon()` 取正式配色；不能读取隐藏状态或灯光旧色。手持近战时，HUD 与防御统一按主武器、副武器、手枪顺序取已装备光环。受击只增强亮度。
 - 后续能力统一通过 `HaloEnergyRules` 扣能和回能。`HaloEnergyInventory` 处理真实电池事务。旧 Ghost 护盾属性只是同一池的兼容别名，不得再存一套权威值。旧存档物品字段保留，但不兑换成新能量。新 Ghost 字段要求客户端与服务器版本匹配。
+- 后续方向已由用户选定：探索、光环外放、围绕能量合作、改装和研究解锁新操作。用户明确排除精准防御和按武器类别区分的防御性能；当前外形和颜色跟随武器的规则保留。[光环探索与协作](Docs/Planning/HaloExploration.md) 记录方向与建议原型顺序。具体扫描、供能、转能、槽位、按键和数值尚未实现或定案，不要把建议当作已交付规则。
 - 原 42 项共享能量检查通过。本轮编译、123 项三角色外观切换检查、42 项防御预算检查、7 项球体呈现检查、13 项 HUD 能量联动及 81 项格子颜色检查通过。入口见 `HaloDefenseReview.CheckWeapons()` / `Capture()`、`EnergyShieldBudgetChecks.Run()`、`RaidVitalMonitorReview.CheckHaloEnergy()` / `CheckHaloAppearance()`。原生预览在忽略目录 `LocalData/HaloEnergy`，使用样例状态，不是实际战局截图。未做完整战局、联机或 Player 构建验收。
 
 ## 蜘蛛 Boss（2026-11-04）
