@@ -52,9 +52,7 @@ namespace Unity.MP_FPS
             if(head&&!m_HeadEquipped)m_VisorEquippedAt=Time.unscaledTime;
             m_HeadEquipped=head;m_ShieldEquipped=snapshot.HaloEquipped;
             m_Defending=snapshot.HaloDefending && EnergyShieldRules.Alive(snapshot);
-            m_DefenseWeapon=DollSingerWeapons.IsHalo(snapshot.EquippedWeaponID)
-                ? (Unity.MP_FPS.DollSinger.DollSingerHaloAim.HaloWeapon)(snapshot.EquippedWeaponID-1)
-                : Unity.MP_FPS.DollSinger.DollSingerHaloAim.HaloWeapon.None;
+            m_DefenseWeapon=(Unity.MP_FPS.DollSinger.DollSingerHaloAim.HaloWeapon)(HaloAppearanceCatalog.CurrentWeapon(snapshot)-1);
             m_StandardCollar=snapshot.HeadDomeStandard;
             m_BackpackStyle=(byte)Mathf.Clamp(snapshot.SubspaceBackpack,0,4);
             m_Charge=HaloEnergyRules.Energy(snapshot)/HaloEnergyRules.Maximum(snapshot);m_Energy=m_Charge;
@@ -149,7 +147,7 @@ namespace Unity.MP_FPS
             Vector3 impactDirection=m_Impact-center;
             Vector3 surfaceImpact=center+(impactDirection.sqrMagnitude>.001f?impactDirection.normalized:transform.forward)*radius;
             m_HaloDefense.Present(m_Defending,m_Head.position+transform.up*.35f,center,radius,color,m_Energy,
-                Time.unscaledTime-m_HitAt,surfaceImpact,m_FirstPerson,Application.isPlaying?Time.deltaTime:1f/60);
+                Time.unscaledTime-m_HitAt,surfaceImpact,m_FirstPerson,Application.isPlaying?Time.deltaTime:1f/60,(uint)m_DefenseWeapon+1);
         }
         internal bool OwnerVisor(Camera camera) => m_Ready && m_HeadEquipped && m_Owned && m_FirstPerson && camera==m_OwnedCamera;
         internal void SimulatePresentation() => LateUpdate();

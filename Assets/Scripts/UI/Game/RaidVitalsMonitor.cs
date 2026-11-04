@@ -20,6 +20,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_HaloRow;
         private readonly Label m_HaloLabel;
         private bool m_HaloVisible;
+        private Color m_HaloLabelColor;
         private string m_LastWarning;
         private readonly Label m_OxygenLabel;
         private int m_LastOxygen = -1;
@@ -79,8 +80,10 @@ namespace Unity.MP_FPS.Client
                 m_HaloRow.style.display = haloVisible ? DisplayStyle.Flex : DisplayStyle.None;
             }
             float haloPercent = HaloEnergyRules.Energy(state) / HaloEnergyRules.Maximum(state) * 100;
-            Color haloColor = haloVisible && haloPercent <= 0 ? DangerColor : haloVisible && haloPercent <= 25 ? WarningColor : SignalColor;
-            if (m_Colors[4] != haloColor) m_HaloLabel.style.color = haloColor;
+            Color labelColor = haloVisible && haloPercent <= 0 ? DangerColor : haloVisible && haloPercent <= 25 ? WarningColor : SignalColor;
+            if (m_HaloLabelColor != labelColor) { m_HaloLabelColor = labelColor; m_HaloLabel.style.color = labelColor; }
+            var appearance = HaloAppearanceCatalog.Current;
+            Color haloColor = appearance ? appearance.ForWeapon(HaloAppearanceCatalog.CurrentWeapon(state)).Color : SignalColor;
             Reserve(4, haloPercent, haloVisible, haloColor);
             string warning = signal.Warning;
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity && state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
@@ -123,7 +126,7 @@ namespace Unity.MP_FPS.Client
             {
                 var tile = m_Reserves[index][i]; bool live = i < filled;
                 tile.style.backgroundColor = live ? color : Color.clear;
-                var line = live ? color : new Color(.48f, .55f, .44f, .55f);
+                var line = live ? color : index == 4 ? new Color(color.r, color.g, color.b, .28f) : new Color(.48f, .55f, .44f, .55f);
                 tile.style.borderLeftColor = tile.style.borderRightColor = tile.style.borderTopColor = tile.style.borderBottomColor = line;
             }
         }

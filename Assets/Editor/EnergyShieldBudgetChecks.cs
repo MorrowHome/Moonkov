@@ -47,8 +47,8 @@ public static class EnergyShieldBudgetChecks
                     state.HaloDefending=true;
                     view.Present(state,false,false,null);
                     for(int frame=0;frame<16;frame++)tick.Invoke(view,null);
-                    Check(sphere.Surface && sphere.Surface.enabled && sphere.Deployment==1 && sphere.Surface.sharedMaterials.Length==4,
-                        "Active remote defense must open with four material batches");
+                    Check(sphere.Surface && sphere.Surface.enabled && sphere.Deployment==1 && sphere.Surface.sharedMaterials.Length==1,
+                        "Active remote defense must open with one shared material batch");
                     state.ShieldHitSequence=1;state.ShieldHitStrength=.7f;
                     view.Present(state,false,false,null);tick.Invoke(view,null);
                     Check(sphere.Surface.enabled,"Active defense disappeared on impact");

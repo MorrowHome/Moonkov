@@ -156,9 +156,8 @@ public static class HaloWeaponSetup
     }
     // Copy the actual sprite pixels and line vertices. This is independent of the
     // Editor's render loop, so the original-shape icons can also be rebuilt in batch mode.
-    private static Texture2D Rasterize(Renderer[] renderers, Bounds bounds)
+    internal static Texture2D Rasterize(Renderer[] renderers, Bounds bounds, int size = 256)
     {
-        const int size = 256;
         float extent = Mathf.Max(bounds.extents.x, bounds.extents.y) * 1.12f;
         float unit = extent * 2f / size;
         var colours = new Color[size * size];

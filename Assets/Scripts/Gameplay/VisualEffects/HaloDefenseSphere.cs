@@ -1,26 +1,26 @@
 using System.Collections.Generic;
-using Unity.MP_FPS.Client;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS
 {
     // Twelve copies of the formal halo artwork, projected onto one sphere.
-    // Four shared material batches; no lights, physics, particles or per-frame mesh rebuild.
+    // One shared mesh, atlas and material; changing weapons only updates a property block.
     public sealed class HaloDefenseSphere : MonoBehaviour
     {
         private static Mesh s_Mesh;
-        private static Material[] s_Materials;
+        private static Material s_Material;
         private static int s_Users;
         private MeshRenderer m_Renderer;
         private MaterialPropertyBlock m_Properties;
         private float m_Deployment;
         private bool m_Retained;
+        private HaloAppearanceCatalog m_Appearance;
         public float Deployment => m_Deployment;
         public Renderer Surface => m_Renderer;
 
         public void Present(bool active, Vector3 head, Vector3 center, float radius, Color color,
-            float energy, float hitAge, Vector3 hitPoint, bool firstPerson, float dt)
+            float energy, float hitAge, Vector3 hitPoint, bool firstPerson, float dt, uint weapon = DollSingerWeapons.Halo)
         {
             if (!active && m_Deployment <= 0) return;
             if (!m_Renderer && !Build()) return;
@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
             m_Renderer.enabled = m_Deployment > 0;
             color.a = 1;
             m_Properties.SetColor("_HaloColor", color);
+            m_Properties.SetVector("_HaloArtworkRect", m_Appearance.ForWeapon(weapon).ArtworkRect);
             m_Properties.SetVector("_HaloState", new Vector4(eased, Mathf.Clamp01(energy), Mathf.Max(0, hitAge), firstPerson ? 1 : 0));
             m_Properties.SetVector("_HaloHit", hitPoint);
             m_Renderer.SetPropertyBlock(m_Properties);
@@ -45,25 +46,20 @@ namespace Unity.MP_FPS
 
         private bool Build()
         {
+            m_Appearance = HaloAppearanceCatalog.Current;
+            if (!m_Appearance || !m_Appearance.Artwork) return false;
             if (!s_Mesh)
             {
-                var art = Resources.Load<HaloProgressArtwork>("Moonkov/UI/HaloProgressArtwork");
                 var shader = Resources.Load<Shader>("Moonkov/HaloDefense");
-                if (!art || !shader || !shader.isSupported) return false;
-                var sprites = new[] { art.Petal, art.OuterArc, art.InnerArc, art.Cell };
-                foreach (var sprite in sprites) if (!sprite) return false;
-                s_Mesh = CreateMesh(sprites);
-                s_Materials = new Material[4];
-                for (int i = 0; i < 4; i++)
-                {
-                    s_Materials[i] = new Material(shader) { name = "Halo defense artwork " + i, hideFlags = HideFlags.HideAndDontSave };
-                    s_Materials[i].SetTexture("_MainTex", sprites[i].texture);
-                }
+                if (!shader || !shader.isSupported) return false;
+                s_Mesh = CreateMesh();
+                s_Material = new Material(shader) { name = "Equipped halo defense artwork", hideFlags = HideFlags.HideAndDontSave };
+                s_Material.SetTexture("_MainTex", m_Appearance.Artwork);
             }
             s_Users++; m_Retained = true;
             gameObject.AddComponent<MeshFilter>().sharedMesh = s_Mesh;
             m_Renderer = gameObject.AddComponent<MeshRenderer>();
-            m_Renderer.sharedMaterials = s_Materials;
+            m_Renderer.sharedMaterial = s_Material;
             m_Renderer.shadowCastingMode = ShadowCastingMode.Off;
             m_Renderer.receiveShadows = false;
             m_Renderer.lightProbeUsage = LightProbeUsage.Off;
@@ -73,14 +69,13 @@ namespace Unity.MP_FPS
             return true;
         }
 
-        private static Mesh CreateMesh(Sprite[] sprites)
+        private static Mesh CreateMesh()
         {
-            var vertices = new List<Vector3>(5000);
-            var uv = new List<Vector2>(5000);
-            var colors = new List<Color>(5000);
-            var triangles = new List<int>[4];
-            int[] counts = { 6, 6, 3, 30 };
-            float[] radii = { .171f, .135f, .09f, .114f };
+            const int divisions = 8;
+            var vertices = new List<Vector3>(972);
+            var uv = new List<Vector2>(972);
+            var colors = new List<Color>(972);
+            var triangles = new List<int>(4608);
             float golden = (1 + Mathf.Sqrt(5)) / 2;
             var normals = new List<Vector3>(12);
             for (int a = -1; a <= 1; a += 2)
@@ -90,47 +85,31 @@ namespace Unity.MP_FPS
                     normals.Add(new Vector3(a, b * golden, 0).normalized);
                     normals.Add(new Vector3(b * golden, 0, a).normalized);
                 }
-            for (int layer = 0; layer < 4; layer++)
+            for (int face = 0; face < normals.Count; face++)
             {
-                triangles[layer] = new List<int>();
-                var sprite = sprites[layer];
-                var rect = sprite.textureRect;
-                Vector2 low = (sprite.textureRectOffset - sprite.pivot) / sprite.pixelsPerUnit;
-                Vector2 span = rect.size / sprite.pixelsPerUnit;
-                for (int face = 0; face < normals.Count; face++)
-                {
-                    Vector3 normal = normals[face];
-                    Vector3 right = Vector3.Cross(Mathf.Abs(normal.y) > .9f ? Vector3.forward : Vector3.up, normal).normalized;
-                    Vector3 up = Vector3.Cross(normal, right);
-                    for (int piece = 0; piece < counts[layer]; piece++)
+                Vector3 normal = normals[face];
+                Vector3 right = Vector3.Cross(Mathf.Abs(normal.y) > .9f ? Vector3.forward : Vector3.up, normal).normalized;
+                Vector3 up = Vector3.Cross(normal, right);
+                int first = vertices.Count;
+                // Curve the entire formal assembly around the sphere, preserving its silhouette.
+                for (int y = 0; y <= divisions; y++)
+                    for (int x = 0; x <= divisions; x++)
                     {
-                        float angle = piece * Mathf.PI * 2 / counts[layer];
-                        float c = Mathf.Cos(angle), s = Mathf.Sin(angle);
-                        int first = vertices.Count;
-                        // Subdivide the sprite twice so each motif follows the spherical surface.
-                        for (int y = 0; y <= 2; y++)
-                            for (int x = 0; x <= 2; x++)
-                            {
-                                Vector2 p = (low + Vector2.Scale(span, new Vector2(x * .5f, y * .5f))) * (layer == 3 ? .9f : 1);
-                                p.x += radii[layer];
-                                var rotated = new Vector2(c * p.x - s * p.y, s * p.x + c * p.y) * 2.7f;
-                                vertices.Add((normal + right * rotated.x + up * rotated.y).normalized);
-                                uv.Add(new Vector2((rect.xMin + rect.width * x * .5f) / sprite.texture.width,
-                                    (rect.yMin + rect.height * y * .5f) / sprite.texture.height));
-                                colors.Add(new Color(face / 12f, layer / 4f, piece / (float)counts[layer], 1));
-                            }
-                        for (int y = 0; y < 2; y++)
-                            for (int x = 0; x < 2; x++)
-                            {
-                                int v = first + y * 3 + x;
-                                triangles[layer].AddRange(new[] { v, v + 1, v + 4, v, v + 4, v + 3 });
-                            }
+                        var point = new Vector2(x / (float)divisions, y / (float)divisions);
+                        var offset = (point - Vector2.one * .5f) * 1.5f;
+                        vertices.Add((normal + right * offset.x + up * offset.y).normalized);
+                        uv.Add(point); colors.Add(new Color(face / 12f, 0, 0, 1));
                     }
+                for (int y = 0; y < divisions; y++)
+                    for (int x = 0; x < divisions; x++)
+                {
+                    int v = first + y * (divisions + 1) + x;
+                    triangles.Add(v); triangles.Add(v + 1); triangles.Add(v + divisions + 2);
+                    triangles.Add(v); triangles.Add(v + divisions + 2); triangles.Add(v + divisions + 1);
                 }
             }
             var mesh = new Mesh { name = "Twelve formal halos / spherical defense", hideFlags = HideFlags.HideAndDontSave };
-            mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetColors(colors); mesh.subMeshCount = 4;
-            for (int i = 0; i < 4; i++) mesh.SetTriangles(triangles[i], i);
+            mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetColors(colors); mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds(); mesh.UploadMeshData(true);
             return mesh;
         }
@@ -141,8 +120,7 @@ namespace Unity.MP_FPS
             m_Retained = false;
             if (--s_Users > 0) return;
             DestroyOwned(s_Mesh); s_Mesh = null;
-            if (s_Materials != null) foreach (var material in s_Materials) DestroyOwned(material);
-            s_Materials = null;
+            DestroyOwned(s_Material); s_Material = null;
         }
         private static void DestroyOwned(Object item)
         { if (!item) return; if (Application.isPlaying) Destroy(item); else DestroyImmediate(item); }
