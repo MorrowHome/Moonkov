@@ -21,7 +21,7 @@ public static class HaloGestureChecks
     public static void CapturePlayingFirstPerson()
     {
         var view = UnityEngine.Object.FindObjectsByType<DollSingerView>(FindObjectsSortMode.None)
-            .FirstOrDefault(v => v.isActiveAndEnabled && v.GestureHandsActive);
+            .FirstOrDefault(v => v.isActiveAndEnabled && v.IsFirstPerson);
         if (!EditorApplication.isPlaying || !view || !view.camera || !view.camera.isActiveAndEnabled)
             throw new InvalidOperationException("Capture requires an aiming local player in first person during Play mode.");
         Capture(view.camera, "Play-FirstPerson");

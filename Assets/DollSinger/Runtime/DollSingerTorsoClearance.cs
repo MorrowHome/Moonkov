@@ -132,7 +132,7 @@ internal sealed class DollSingerTorsoClearance
         float top = float.NegativeInfinity;
         for (int i = 0; i < triangles.Length; i += 3)
         {
-            // Overlay gestures remove these exact faces from the world body.
+            // Hands may enter the view, but must not lift the eye as they move.
             if (!includeArms && armFaces[i / 3]) continue;
             var a = projected[triangles[i]]; var b = projected[triangles[i + 1]]; var c = projected[triangles[i + 2]];
             if (Mathf.Max(a.x, Mathf.Max(b.x, c.x)) < minX || Mathf.Min(a.x, Mathf.Min(b.x, c.x)) > maxX ||

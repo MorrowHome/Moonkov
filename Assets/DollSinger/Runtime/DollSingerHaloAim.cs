@@ -109,7 +109,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private DollSingerBakedGestures bakedGestures;
     private ILocalArsenalDriver localArsenal;
     private float gestureShotTime = float.NegativeInfinity;
-    private float gestureReframeUntil;
     private uint gestureShotTick;
     private bool gestureTickInitialized;
     private Animator animator;
@@ -205,7 +204,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             if (!networkControlled) localArsenal?.CancelBurst();
             gestureShotTime = float.NegativeInfinity;
             GestureReleaseSeconds = 0;
-            gestureReframeUntil = Time.time + gestureTransitionSeconds + .04f;
             localPendingShot = false;
         }
         visualWeapon = weapon;
@@ -374,7 +372,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 #else
         bool aimingInput = manualAim;
 #endif
-        bool wasAiming = wantsAim;
         if (!networkControlled && input.CanReadPlayerInput && !(thirdPerson && thirdPerson.IsFreeLooking))
         {
             if (input.FirePressed && aimBlend < 1f - .00001f && LocalAmmo(visualWeapon) > 0 &&
@@ -385,7 +382,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         bool readying = networkControlled ? networkAiming || networkReadying :
             thirdPerson && thirdPerson.enabled && playerCamera && (aimingInput || Time.time < localHipReadyUntil || localPendingShot);
         wantsAim = visualWeapon != HaloWeapon.None && readying;
-        if (wantsAim && !wasAiming) gestureReframeUntil = Time.time + aimInSeconds + .04f;
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
         if (!networkControlled && input && input.enabled)
         {
@@ -404,7 +400,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (view && view.isActiveAndEnabled && view.player == gameObject)
         {
             view.SetAimBlend(adsBlend);
-            view.SetWeaponPoseBlend(aimBlend);
             view.SetWeaponAimMagnification(ScopeMagnification);
         }
         if (ArsenalVisual) ArsenalVisual.SetAimBlend(DollSingerView.AimPoseBlend(aimBlend));
@@ -501,7 +496,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         gestureShotTick = tick; gestureShotTime = Time.time;
     }
 
-    private void ApplyBakedGestures()
+    private void ApplyBakedGestures(Camera eye)
     {
         if (bakedGestures == null) return;
         bool reload = false; float progress = 0;
@@ -516,7 +511,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         Vector3 direction = networkControlled ? networkDirection : playerCamera ? playerCamera.transform.forward : transform.forward;
         float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
         bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction,
-            burstIndex: gestureBurstIndex, releaseSeconds: GestureReleaseSeconds);
+            burstIndex: gestureBurstIndex, releaseSeconds: GestureReleaseSeconds, eye: eye);
     }
 
     private void LateUpdate() {
@@ -525,20 +520,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         { if (haloVisual) haloVisual.gameObject.SetActive(false); return; }
         if (haloVisual && visualWeapon != HaloWeapon.None) haloVisual.gameObject.SetActive(true);
         if (!haloVisual || !head || visualWeapon == HaloWeapon.None)
-        { if (view) view.SetGestureHandsActive(false); return; }
-        ApplyBakedGestures();
+        { return; }
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
-        if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper,
-            visualWeapon == HaloWeapon.Cicada ? .03f : visualWeapon == HaloWeapon.Tempest ? .025f : 0,
-            ArsenalVisual != null);
+        ApplyBakedGestures(centred ? aimingCamera : null);
+        if (centred && visualWeapon == HaloWeapon.Sniper)
+            bakedGestures?.AlignViewfinder(aimingCamera, DollSingerView.AimPoseBlend(aimBlend));
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
         float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);
-        if (centred && view.GestureHandsActive)
-        {
-            view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil,
-                bakedGestures != null && bakedGestures.IsFiring((int)visualWeapon, Time.time - gestureShotTime, GestureReleaseSeconds));
-        }
         Vector3 headPosition = head.position + transform.up * IdleHeadHeight +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;
         Vector3 aimDirection = networkControlled ? networkDirection :
@@ -696,7 +685,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         bakedGestures?.RestoreBeforeAnimation();
         gestureShotTime = float.NegativeInfinity; gestureTickInitialized = false;
         wantsAim = false;
-        if (view) view.SetGestureHandsActive(false);
         aimBlend = adsBlend = 0f;
         localHipReadyUntil = 0; localPendingShot = false;
         nextLocalShotTime = 0;

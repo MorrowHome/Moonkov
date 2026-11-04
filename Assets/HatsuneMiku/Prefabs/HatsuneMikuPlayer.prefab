@@ -2716,7 +2716,7 @@ MonoBehaviour:
   viewBlendSeconds: 0.15
   zoomSmoothTime: 0.12
   firstPersonFieldOfView: 75
-  firstPersonNearClip: 0.03
+  firstPersonNearClip: 0.015
   thirdPersonOrbitHeight: 1.22
   cameraCollisionRecoverySeconds: 0.35
   thirdPersonCameraRadius: 0.2
@@ -2739,7 +2739,8 @@ MonoBehaviour:
   lookTargetDistance: 12
   firstPersonEyeForward: 0.015
   lookDownBodyClearance: 0.075
-  gestureFieldOfView: 65
+  firstPersonMotionScale: {x: 0.2, y: 0.35, z: 0.35}
+  firstPersonMotionSmoothing: 0.22
 --- !u!1 &1194060798609683922
 GameObject:
   m_ObjectHideFlags: 0

@@ -246,7 +246,7 @@ public static class MoonkovHipFireChecks
             {
                 view.SetFirstPerson(first); Set(view, "viewBlend", first ? 1f : 0f);
                 view.SetWeaponAimMagnification(zoom); Set(view, "presentedWeaponMagnification", zoom);
-                view.SetAimBlend(0); view.SetWeaponPoseBlend(1); Call(view, "LateUpdate");
+                view.SetAimBlend(0); Call(view, "LateUpdate");
                 Require(Mathf.Abs(camera.fieldOfView - view.firstPersonFieldOfView) < .001f &&
                     Mathf.Abs(view.AimLookSensitivity - 1) < .001f, "Raised hip pose changed FOV or mouse sensitivity.");
             }

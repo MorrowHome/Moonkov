@@ -39,6 +39,9 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Vector3[] bindPosition;
         private readonly Transform leftShoulder, rightShoulder;
         private readonly Transform rightIndex, rightIndexTip;
+        private readonly Transform leftIndexTip, leftThumbTip, rightThumbTip;
+        private readonly Transform leftUpperArm, leftForearm, leftHand, rightUpperArm, rightForearm, rightHand;
+        private readonly Vector3 neutralEyeFromChest;
         private readonly Transform body;
         private readonly DollSingerMovement movement;
         private int currentWeapon;
@@ -77,6 +80,25 @@ namespace Unity.MP_FPS.DollSinger
             }
             leftShoulder = hierarchy["肩P.L"]; rightShoulder = hierarchy["肩P.R"];
             rightIndex = hierarchy["人指１.R"]; rightIndexTip = hierarchy["人指先.R"];
+            leftIndexTip = hierarchy["人指先.L"]; leftThumbTip = hierarchy["親指先.L"]; rightThumbTip = hierarchy["親指先.R"];
+            leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+            leftForearm = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+            leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            rightForearm = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+            rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            var chest = hierarchy["上半身2"];
+            var leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
+            var rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
+            foreach (var pair in new[] { new[] { "目.L", "目.R" }, new[] { "eye_L", "eye_R" }, new[] { "Eye_L", "Eye_R" } })
+            {
+                if (leftEye && rightEye) break;
+                hierarchy.TryGetValue(pair[0], out leftEye); hierarchy.TryGetValue(pair[1], out rightEye);
+            }
+            var head = animator.GetBoneTransform(HumanBodyBones.Head);
+            Vector3 eye = leftEye && rightEye ? (leftEye.position + rightEye.position) * .5f :
+                head.position + body.rotation * new Vector3(0, .08f, .05f);
+            neutralEyeFromChest = Quaternion.Inverse(chest.rotation * Quaternion.Inverse(library.chestBindRotation)) * (eye - chest.position);
         }
 
         public bool IsFiring(int weapon, float shotAge, float releaseSeconds = 0) => weapon >= 1 && weapon <= library.motions.Length &&
@@ -101,14 +123,15 @@ namespace Unity.MP_FPS.DollSinger
         }
 
         public void Apply(int weapon, float blend, float shotAge, bool reloading, float reloadProgress,
-            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f, int burstIndex = 0, float releaseSeconds = 0)
+            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f, int burstIndex = 0, float releaseSeconds = 0, Camera eye = null)
         {
             if (blend <= .0001f || weapon < 1 || weapon > library.motions.Length) { initialized = false; return; }
             Motion motion = library.motions[weapon - 1];
             shotAge = ShotSampleTime(shotAge, motion.fireSeconds, releaseSeconds);
             Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
-            if (motion.aimPoses != null && motion.aimPoses.Length > 0 && aimDirection.sqrMagnitude > .001f)
+            bool eyeRelative = eye && weapon != 4;
+            if (!eyeRelative && motion.aimPoses != null && motion.aimPoses.Length > 0 && aimDirection.sqrMagnitude > .001f)
             {
                 authoredPitch = Mathf.Clamp(Mathf.Asin(-aimDirection.normalized.y) * Mathf.Rad2Deg,
                     motion.aimPoses[0].pitch, motion.aimPoses[motion.aimPoses.Length - 1].pitch);
@@ -165,6 +188,90 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 pivot = (leftShoulder.position + rightShoulder.position) * .5f;
             RotateShoulder(leftShoulder, pivot, correction);
             RotateShoulder(rightShoulder, pivot, correction);
+            if (eyeRelative)
+            {
+                // Aim the authored motion around the real eye. Pitch-specific
+                // bakes were framed by the removed hand camera and can cover the
+                // reticle when looking down. Keep the neutral animation's metre
+                // offsets, including fire/reload movement; never fit screen bounds.
+                Vector3 neutralEye = chest.position + authoredBasis * neutralEyeFromChest;
+                MoveHands((eye.transform.position - (pivot + correction * (neutralEye - pivot))) * blend);
+            }
+        }
+
+        private void MoveHands(Vector3 offset)
+        {
+            if (offset.sqrMagnitude < .00000001f) return;
+            // A common translation preserves finger contacts. Stop at the first
+            // arm's physical reach instead of stretching bones or shifting the eye.
+            float fraction = Mathf.Min(ReachFraction(leftUpperArm, leftForearm, leftHand, offset),
+                ReachFraction(rightUpperArm, rightForearm, rightHand, offset));
+            offset *= fraction;
+            Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset);
+            Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset);
+        }
+
+        private static float ReachFraction(Transform upper, Transform lower, Transform hand, Vector3 offset)
+        {
+            float length = Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position);
+            Vector3 from = hand.position - upper.position;
+            float a = offset.sqrMagnitude, b = Vector3.Dot(from, offset);
+            float c = from.sqrMagnitude - length * length;
+            return Mathf.Clamp01((-b + Mathf.Sqrt(Mathf.Max(0, b * b - a * c))) / a);
+        }
+
+        /// <summary>Raise the real sniper frame to the eye ray. Never change camera optics or bone lengths.</summary>
+        public void AlignViewfinder(Camera eye, float blend)
+        {
+            if (!eye || blend <= .0001f || !leftUpperArm || !leftForearm || !leftHand ||
+                !rightUpperArm || !rightForearm || !rightHand) return;
+            Vector3 center = (leftIndexTip.position + rightThumbTip.position + rightIndexTip.position + leftThumbTip.position) * .25f;
+            Vector3 origin = eye.transform.position, forward = eye.transform.forward;
+            // Both hands move by one common offset, preserving the authored finger
+            // contacts and frame orientation. Keep the target inside BOTH arms' reach.
+            float minimum = eye.nearClipPlane + .06f, maximum = .32f;
+            if (!Reach(leftUpperArm, leftForearm, leftHand) || !Reach(rightUpperArm, rightForearm, rightHand) || minimum > maximum) return;
+            float depth = Mathf.Clamp(Vector3.Dot(center - origin, forward), minimum, maximum);
+            // A frame very near the eye clips sleeves and hands even before zoom.
+            depth = Mathf.Clamp(Mathf.Max(.24f, depth), minimum, maximum);
+            Vector3 offset = (origin + forward * depth - center) * Mathf.SmoothStep(0, 1, blend);
+            Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset);
+            Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset);
+
+            bool Reach(Transform upper, Transform lower, Transform hand)
+            {
+                float length = Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position) - .005f;
+                Vector3 relative = origin + hand.position - center - upper.position;
+                float along = Vector3.Dot(relative, forward);
+                float square = length * length - (relative.sqrMagnitude - along * along);
+                if (square <= 0) return false;
+                float extent = Mathf.Sqrt(square);
+                minimum = Mathf.Max(minimum, -along - extent);
+                maximum = Mathf.Min(maximum, -along + extent);
+                return true;
+            }
+        }
+
+        private static void Solve(Transform upper, Transform lower, Transform hand, Vector3 target)
+        {
+            Vector3 shoulder = upper.position, elbow = lower.position, wrist = hand.position;
+            Quaternion handRotation = hand.rotation;
+            float upperLength = Vector3.Distance(shoulder, elbow), lowerLength = Vector3.Distance(elbow, wrist);
+            Vector3 direction = target - shoulder;
+            float distance = direction.magnitude;
+            if (distance < .0001f || upperLength < .0001f || lowerLength < .0001f) return;
+            direction /= distance;
+            float reach = Mathf.Clamp(distance, Mathf.Abs(upperLength - lowerLength) + .0001f, upperLength + lowerLength - .0001f);
+            Vector3 bend = Vector3.ProjectOnPlane(elbow - shoulder, direction);
+            if (bend.sqrMagnitude < .000001f) bend = Vector3.ProjectOnPlane(upper.up, direction);
+            if (bend.sqrMagnitude < .000001f) bend = Vector3.Cross(direction, upper.right);
+            float along = (upperLength * upperLength + reach * reach - lowerLength * lowerLength) / (2 * reach);
+            Vector3 solvedElbow = shoulder + direction * along + bend.normalized * Mathf.Sqrt(Mathf.Max(0, upperLength * upperLength - along * along));
+            upper.rotation = Quaternion.FromToRotation(elbow - shoulder, solvedElbow - shoulder) * upper.rotation;
+            lower.rotation = Quaternion.FromToRotation(hand.position - lower.position, target - lower.position) * lower.rotation;
+            // Fingers keep their authored shape and both palms retain a common
+            // orientation. Only the upper-arm/elbow swing changes to reach the eye.
+            hand.rotation = handRotation;
         }
 
         private Quaternion Read(float[] samples, int frame, int bone)

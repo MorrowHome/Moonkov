@@ -3,7 +3,7 @@
 var lab=UnityEngine.Object.FindAnyObjectByType<Unity.MP_FPS.WeaponGestureLab>();
 var root=UnityEngine.Object.FindAnyObjectByType<UnityEngine.UIElements.UIDocument>().rootVisualElement;
 T Q<T>(string name) where T:UnityEngine.UIElements.VisualElement => UnityEngine.UIElements.UQueryExtensions.Q<T>(root,name);
-var renderer=lab.Halo.GetComponentsInChildren<UnityEngine.SkinnedMeshRenderer>(true).First(x=>x.name=="FirstPersonGestureArms (Runtime)");
+var renderer=(UnityEngine.SkinnedMeshRenderer)typeof(Unity.MP_FPS.DollSinger.DollSingerView).GetMethod("FindBodyRenderer",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).Invoke(null,new object[]{lab.Player});
 var original=UnityEditor.AssetDatabase.LoadAllAssetsAtPath("Assets/DollSinger/Art/Model/LuoTianYi_DollSinger.fbx").OfType<UnityEngine.Mesh>().OrderByDescending(x=>x.vertexCount).First();
 string Group(string n){var side=n.EndsWith(".L")?"L":n.EndsWith(".R")?"R":"";if(side=="")return "body";if(new[]{"人指","中指","薬指","小指","親指"}.Any(d=>n.StartsWith(d)))return n.Substring(0,2)+"."+side;if(n.StartsWith("手首"))return "palm."+side;if(n.StartsWith("ひじ")||n.StartsWith("手捩"))return "forearm."+side;if(n.StartsWith("腕")||n.StartsWith("肩"))return "upper."+side;return "body";}
 var labels=original.boneWeights.Select(w=>new[]{(w.boneIndex0,w.weight0),(w.boneIndex1,w.weight1),(w.boneIndex2,w.weight2),(w.boneIndex3,w.weight3)}.OrderByDescending(x=>x.Item2).First().Item1).Select(i=>Group(renderer.bones[i].name)).ToArray();

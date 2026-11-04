@@ -390,7 +390,6 @@ namespace Unity.MP_FPS
                 }
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
                 m_View.SetAimBlend(m_Halo.AdsBlend);
-                m_View.SetWeaponPoseBlend(m_Halo.AimBlend);
                 m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
             }
         }

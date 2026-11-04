@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -14,18 +13,13 @@ namespace Unity.MP_FPS
         private sealed class Prop
         {
             public GameObject Root;
-            public Renderer[] World, Owner;
-            public Bounds Bounds;
-            public RaidActionProp Model, OwnerModel;
+            public RaidActionProp Model;
         }
         private readonly Dictionary<string, Prop> props = new Dictionary<string, Prop>();
         private readonly RaidActionFoley foley = new RaidActionFoley();
-        private readonly RaycastHit[] obstructionHits = new RaycastHit[32];
-        private static int? ignoredObstructionLayers;
         private DollSingerActionAnimation animation;
         private RaidActionContact contact;
         private Animator animator;
-        private DollSingerView view;
         private DollSingerHaloAim halo;
         private Vector3 searchTarget;
         private HandAction action;
@@ -34,11 +28,10 @@ namespace Unity.MP_FPS
         private uint sequence;
         private float receivedAt, remaining, duration, blend, searchStartedAt, releaseStartedAt, releasePhase;
         private float previewPhase = -1f;
-        private bool owner, firstPerson, active, prepared, subscribed, finishing;
+        private bool owner, active, prepared, finishing;
         private Transform middle, index, little;
         public bool OwnsHands => animation != null && (active || blend > .001f);
         public HandAction Action => action;
-        public bool WorldDepthFallbackActive { get; private set; }
         public float SampledPhase { get; private set; }
         public float ContactError => prop?.Model && prop.Model.Contact ? Vector3.Distance(prop.Model.Contact.position,
             action == HandAction.Inject ? animation.InjectionSite(code,SampledPhase) : contact.Mouth) : 0;
@@ -59,8 +52,7 @@ namespace Unity.MP_FPS
         public void Configure(Animator target, DollSingerView playerView, DollSingerHaloAim playerHalo, string rig)
         {
             if (animation != null) return;
-            animator = target; view = playerView; halo = playerHalo;
-            if (view) view.ActionInjectionPitch = rig == "HatsuneMiku" ? 75 : rig == "Shian" ? 35 : 25;
+            animator = target; halo = playerHalo;
             if (halo) halo.PrepareExternalHandPose();
             var data = Resources.Load<TextAsset>("Moonkov/Actions/" + rig);
             if (!data) throw new InvalidOperationException("Missing authored action library: " + rig);
@@ -69,11 +61,10 @@ namespace Unity.MP_FPS
             middle = animator.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
             index = animator.GetBoneTransform(HumanBodyBones.RightIndexProximal);
             little = animator.GetBoneTransform(HumanBodyBones.RightLittleProximal);
-            Subscribe();
         }
         public void Present(in PredictedPlayerGhost value, bool isOwner, bool isFirstPerson, bool suppressed)
         {
-            searchTarget = value.HandActionTarget; owner = isOwner; firstPerson = isFirstPerson;
+            searchTarget = value.HandActionTarget; owner = isOwner;
             var next = (HandAction)value.HandAction;
             bool alive = value.CurrentHealth > 0 && (!value.ClashEnabled || value.ClashLife == ClashLife.Alive);
             bool playing = alive && !suppressed && next != HandAction.None && animation != null && animation.Has(next);
@@ -119,11 +110,9 @@ namespace Unity.MP_FPS
             if (!OwnsHands)
             {
                 finishing = false;
-                WorldDepthFallbackActive = false;
                 foley.Stop();
                 if (prop != null) prop.Root.SetActive(false);
                 if (halo) halo.ExternalHandPoseActive = false;
-                if (view) view.SetActionHandsActive(false, 0);
                 return;
             }
             float phase = SampledPhase = previewPhase >= 0f ? previewPhase : Phase;
@@ -136,39 +125,19 @@ namespace Unity.MP_FPS
                 prop.Root.SetActive(true);
                 var motion=animation.GetMotion(action,code);
                 bool authored=motion!=null&&motion.root?.positions?.Length==motion.frames*3;
-                if(!authored){prop.Model?.Present(phase, action == HandAction.Inject);prop.OwnerModel?.Present(phase, action == HandAction.Inject);}
+                if(!authored)prop.Model?.Present(phase, action == HandAction.Inject);
                 PlaceProp(prop,phase);
                 if (prop.Model && prop.Model.Contact && (action == HandAction.Eat || action == HandAction.Drink))
                 {
                     contact.ToMouth(prop.Model.Contact.position, animation.ContactWeight(action,code,phase) * blend);
                     PlaceProp(prop,phase);
                 }
-                if(authored){PresentParts(prop.Model,motion,phase);PresentParts(prop.OwnerModel,motion,phase);}
+                if(authored)PresentParts(prop.Model,motion,phase);
             }
             var soundPosition = prop?.Model && prop.Model.Grip ? prop.Model.Grip.position : animation.RightHand.position;
             foley.Observe(action, sequence, phase, animation.Contact(action, code), code, soundPosition, owner, active || finishing,animation.GetMotion(action,code)?.openMarker??.08f);
-            // Searching has no viewmodel prop. Keep the ordinary first-person
-            // body projection so looking down never exposes detached shoulders.
-            // Overlay cameras clear depth. When a wall intervenes, use the same
-            // bones/prop in the ordinary world pass so real geometry occludes them.
-            // This avoids a second environment render or changing the authored pose.
-            WorldDepthFallbackActive = owner && firstPerson && action != HandAction.Search && view && view.camera &&
-                (Obstructed(animation.RightHand.position, .045f) || Obstructed(animation.LeftHand.position, .045f) ||
-                 prop?.Model && prop.Model.Contact && Obstructed(prop.Model.Contact.position, .025f));
-            if (view) view.SetActionHandsActive(owner && firstPerson && action != HandAction.Search && !WorldDepthFallbackActive, blend, action == HandAction.Inject);
-        }
-        private bool Obstructed(Vector3 point, float radius)
-        {
-            Vector3 origin = view.camera.transform.position, delta = point - origin;
-            float distance = delta.magnitude;
-            if (distance < .001f) return false;
-            int ignoredLayers = ignoredObstructionLayers ??= LayerMask.GetMask("ServerPlayer", "ClientPlayer", "FirstPersonOverlay");
-            int count = gameObject.scene.GetPhysicsScene().SphereCast(origin, radius, delta / distance,
-                obstructionHits, distance, view.cameraObstacleLayers & ~ignoredLayers, QueryTriggerInteraction.Ignore);
-            if (count == obstructionHits.Length) return true;
-            for (int i = 0; i < count; i++)
-                if (obstructionHits[i].collider && !obstructionHits[i].collider.transform.IsChildOf(animator.transform.root)) return true;
-            return false;
+            // The real prop and body always share world depth. Walls occlude
+            // them without a second copy, camera or per-action physics queries.
         }
         public void SamplePreview(float phase)
         {
@@ -211,13 +180,8 @@ namespace Unity.MP_FPS
             }
             // The source prefab already converts its FBX centimetres and Z-up axis.
             // Preserve it and move a metre-scale parent, never rescale skinned bones.
-            var ownerCopy = Instantiate(world, root.transform, false);
-            int layer = LayerMask.NameToLayer("FirstPersonOverlay");
-            foreach (var child in ownerCopy.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = layer;
-            var result = new Prop { Root = root, World = worldRenderers, Owner = ownerCopy.GetComponentsInChildren<Renderer>(true), Bounds = bounds,
-                Model = world.GetComponent<RaidActionProp>(), OwnerModel = ownerCopy.GetComponent<RaidActionProp>() };
-            foreach (var renderer in result.Owner) { renderer.forceRenderingOff = true; renderer.shadowCastingMode = ShadowCastingMode.Off; }
-            foreach (var renderer in result.World) renderer.shadowCastingMode = ShadowCastingMode.Off;
+            var result = new Prop { Root = root, Model = world.GetComponent<RaidActionProp>() };
+            foreach (var renderer in worldRenderers) renderer.shadowCastingMode = ShadowCastingMode.Off;
             root.SetActive(false); props.Add(item, result); return result;
         }
         private void PlaceProp(Prop value,float phase)
@@ -255,46 +219,16 @@ namespace Unity.MP_FPS
                 node.SetPositionAndRotation(anchor.position+anchor.rotation*p,anchor.rotation*q);
             }
         }
-        private void BeforeCamera(ScriptableRenderContext context, Camera camera)
-        {
-            if (prop == null || !prop.Root || !prop.Root.activeInHierarchy) return;
-            bool useOverlay = owner && firstPerson && view && view.GestureHandsActive;
-            bool overlay = useOverlay && camera == view.GestureCamera;
-            bool hideWorld = useOverlay && (camera == view.camera || overlay);
-            foreach (var renderer in prop.World) renderer.forceRenderingOff = hideWorld;
-            foreach (var renderer in prop.Owner) renderer.forceRenderingOff = !overlay;
-        }
-        private void AfterCamera(ScriptableRenderContext context, Camera camera)
-        {
-            if (prop == null) return;
-            foreach (var renderer in prop.World) renderer.forceRenderingOff = false;
-            foreach (var renderer in prop.Owner) renderer.forceRenderingOff = true;
-        }
         public void ResetPresentation()
         {
             if (animation != null && prepared) animation.RestoreBeforeAnimation();
             foley.Stop();
             if (prop != null) prop.Root.SetActive(false);
             active = prepared = finishing = false; blend = 0; sequence = 0; action = HandAction.None;
-            WorldDepthFallbackActive = false;
             releasePhase = SampledPhase = 0;
             if (halo) halo.ExternalHandPoseActive = false;
-            if (view) view.SetActionHandsActive(false, 0);
         }
-        private void Subscribe()
-        {
-            if (subscribed) return; subscribed = true;
-            RenderPipelineManager.beginCameraRendering += BeforeCamera;
-            RenderPipelineManager.endCameraRendering += AfterCamera;
-        }
-        private void OnEnable() { if (animation != null) Subscribe(); }
-        public void DisposePresentation()
-        {
-            ResetPresentation();
-            if (!subscribed) return; subscribed = false;
-            RenderPipelineManager.beginCameraRendering -= BeforeCamera;
-            RenderPipelineManager.endCameraRendering -= AfterCamera;
-        }
+        public void DisposePresentation() => ResetPresentation();
         private void OnDisable() => DisposePresentation();
         private void OnDestroy() { DisposePresentation(); foreach (var value in props.Values) if (value.Root) DestroyObject(value.Root); props.Clear(); }
         private static void DestroyObject(UnityEngine.Object value)

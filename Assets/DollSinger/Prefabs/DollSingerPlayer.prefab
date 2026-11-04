@@ -630,7 +630,7 @@ MonoBehaviour:
   viewBlendSeconds: 0.15
   zoomSmoothTime: 0.12
   firstPersonFieldOfView: 75
-  firstPersonNearClip: 0.03
+  firstPersonNearClip: 0.015
   thirdPersonOrbitHeight: 1.25
   cameraCollisionRecoverySeconds: 0.35
   thirdPersonCameraRadius: 0.2
@@ -645,10 +645,12 @@ MonoBehaviour:
   weaponZoomTransitionSeconds: 0.16
   aimedLookSensitivity: 1
   fallbackEyeWorldOffset: {x: 0, y: 0.08, z: 0.05}
+  firstPersonHiddenBonePrefixes: []
   lookTargetDistance: 12
   firstPersonEyeForward: 0.015
   lookDownBodyClearance: 0.075
-  gestureFieldOfView: 65
+  firstPersonMotionScale: {x: 0.2, y: 0.35, z: 0.35}
+  firstPersonMotionSmoothing: 0.22
 --- !u!1 &3581373097316671528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3830,6 +3832,7 @@ MonoBehaviour:
   - {fileID: 4479446385939820313}
   - {fileID: 1722708798345184512}
   - {fileID: 4754970725608668666}
+  passiveChainBones: []
   skirtColliders:
   - bone: {fileID: 1745588048431246932}
     radius: 0.045

@@ -40,7 +40,7 @@ public class DollSingerView : MonoBehaviour
     [Min(0.01f)] public float zoomSmoothTime = 0.12f;
     [Tooltip("Base world-camera FOV shared by both perspectives. The serialized name is retained for existing prefabs.")]
     [Range(40f, 100f)] public float firstPersonFieldOfView = DollSingerViewSettings.DefaultFov;
-    [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.03f;
+    [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.015f;
 
     [Header("Third person orbit (Cinemachine)")]
     [Tooltip("Orbit around the torso in world-up space, rather than pitching a camera offset around the feet.")]
@@ -99,43 +99,8 @@ public class DollSingerView : MonoBehaviour
     private Transform motionAnchor;
     private Vector3 eyeMotionOffset;
 
-    [Header("First person gesture presentation")]
-    [Tooltip("Presentation FOV for ordinary weapon gestures. The sniper follows the player camera's zoom.")]
-    [Range(50f, 80f)] public float gestureFieldOfView = 65f;
-    private DollSingerFirstPersonHands gestureHands;
-    private bool meleeHandsActive;
-    private bool actionHandsActive;
-    public float ActionInjectionPitch { get; set; } = 25;
     // Temporary deployment camera shares the owner mesh cutout near the eye.
     public Camera TransitionCamera { get; set; }
-    public Camera GestureCamera => gestureHands?.Camera;
-    public void FrameGestureHands(bool force = false, bool firing = false) => gestureHands?.FrameHands(force, firing);
-    public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
-    public void SetGestureHandsActive(bool active, bool viewfinder = false, float verticalOffset = 0, bool stableFraming = false)
-    {
-        if (gestureHands != null) gestureHands.StableFraming = stableFraming;
-        gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
-            viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
-            AimPoseBlend(weaponPoseBlend), verticalOffset);
-    }
-    public void SetMeleeHandsActive(bool active, float poseBlend, MeleeWeaponKind weapon)
-    {
-        if (!active && !meleeHandsActive) return;
-        meleeHandsActive = active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled;
-        // Fixed viewmodel framing preserves the swing. Never chase each moving fist/blade.
-        Vector3 offset = weapon == MeleeWeaponKind.EnergySword ? new Vector3(0, .14f, -.38f) :
-            weapon == MeleeWeaponKind.Dagger ? new Vector3(0, .08f, -.28f) : new Vector3(0, .06f, -.16f);
-        gestureHands?.PresentMelee(meleeHandsActive, camera, poseBlend, offset);
-    }
-    public void SetActionHandsActive(bool active, float blend, bool injecting = false)
-    {
-        if (!active && !actionHandsActive) return;
-        actionHandsActive = active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled;
-        // One fixed perspective for the entire action, including the held prop.
-        // Re-fitting animated hand bounds would make the prop breathe in size.
-        gestureHands?.PresentAction(actionHandsActive, camera, blend, injecting, ActionInjectionPitch,
-            player ? player.transform.up : Vector3.up);
-    }
 
     // Finish raising the gesture before zooming. Reverse the same timeline
     // to unzoom before any weapon's arms lower past the lens.
@@ -176,7 +141,6 @@ public class DollSingerView : MonoBehaviour
     private float distanceVelocity;
     private float viewBlend;
     private float aimBlend;
-    private float weaponPoseBlend;
     private float weaponAimMagnification;
     private float presentedWeaponMagnification = 1.75f;
     public float TargetAimMagnification => weaponAimMagnification > 0
@@ -255,7 +219,7 @@ public class DollSingerView : MonoBehaviour
         appliedFirstPerson = false;
         networkLookDriven = false;
         viewBlend = 0f;
-        aimBlend = weaponPoseBlend = 0f;
+        aimBlend = 0f;
         weaponAimMagnification = 0;
         presentedWeaponMagnification = Mathf.Clamp(aimMagnification, 1f, 3f);
         lastRenderedLeanOffset = Vector3.zero;
@@ -273,8 +237,7 @@ public class DollSingerView : MonoBehaviour
             -thirdPersonRestPosition.z, minThirdPersonDistance, maxThirdPersonDistance);
     }
 
-    public void SetAimBlend(float blend) { aimBlend = Mathf.Clamp01(blend); weaponPoseBlend = aimBlend; }
-    public void SetWeaponPoseBlend(float blend) => weaponPoseBlend = Mathf.Clamp01(blend);
+    public void SetAimBlend(float blend) => aimBlend = Mathf.Clamp01(blend);
     public void SetWeaponAimMagnification(float value) => weaponAimMagnification = value > 0 ? Mathf.Clamp(value, 1f, 12f) : 0;
 
     /// <summary>Keep the owned view independent of network prediction rotating its character parent.</summary>
@@ -327,7 +290,6 @@ public class DollSingerView : MonoBehaviour
     {
         if (firstPerson != enabled) { cameraMotion.Reset(); eyeMotionOffset = Vector3.zero; }
         firstPerson = enabled;
-        if (!enabled) SetGestureHandsActive(false);
         if (input) input.SetLeanEnabled(enabled);
         appliedFirstPerson = enabled;
         if (movement) movement.IsFirstPersonView = enabled;
@@ -509,9 +471,10 @@ public class DollSingerView : MonoBehaviour
         }
         Quaternion look = transform.rotation;
         if (firstPerson && movement) look *= Quaternion.Euler(0, 0, movement.LeanRoll);
-        // Only visible surfaces near the eye/near plane constrain the viewpoint.
+        // The torso protects the eye from entering the body. Hands are allowed
+        // to enter the view; raising an arm must never push the world camera up.
         eye = torsoClearance != null ? torsoClearance.KeepAboveTorso(eye, up,
-            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f, look, !GestureHandsActive) : eye;
+            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f, look, false) : eye;
         if (!firstPerson) return eye;
         // The controller protects the body axis, but the animated eye and look-down
         // offset can extend beyond it. Sweep from that axis before rendering the world.
@@ -598,7 +561,6 @@ public class DollSingerView : MonoBehaviour
         if (!firstPersonMesh) return;
         if (animator && animator.isHuman)
             torsoClearance = new DollSingerTorsoClearance(bodyRenderer, animator, firstPersonMesh);
-        gestureHands = new DollSingerFirstPersonHands(bodyRenderer, firstPersonMesh, camera, character.GetComponent<Animator>());
 
         var shadowObject = new GameObject("FirstPersonFullShadow (Runtime)");
         shadowObject.transform.SetParent(bodyRenderer.transform, false);
@@ -735,21 +697,17 @@ public class DollSingerView : MonoBehaviour
 
     private void BeforeCameraCull(Camera renderingCamera)
     {
-        gestureHands?.BeforeCamera(renderingCamera);
         if (!bodyRenderer || !firstPersonMesh) return;
         cameraMeshStates.Push(new CameraMeshState { camera = renderingCamera, firstPersonMesh = renderingFirstPersonMesh,
             forceRenderingOff = bodyRenderer.forceRenderingOff });
-        // The separate full shadow renderer and observer cameras keep the complete
-        // body. During owner aiming, the skirt/torso cannot cross the zoomed sight.
+        // Every action uses this same connected body and the world's projection.
+        // Observer cameras and shadows retain the complete head.
         bool ownerCamera = renderingCamera == camera || renderingCamera == TransitionCamera;
-        bodyRenderer.forceRenderingOff |= firstPersonPresentationActive && ownerCamera &&
-            gestureHands != null && gestureHands.HideOwnerBody;
         SetCameraMesh(firstPersonPresentationActive && ownerCamera);
     }
 
     private void AfterCameraRender(Camera renderingCamera)
     {
-        gestureHands?.AfterCamera(renderingCamera);
         if (!bodyRenderer || cameraMeshStates.Count == 0) return;
         if (cameraMeshStates.Peek().camera != renderingCamera)
         {
@@ -766,8 +724,7 @@ public class DollSingerView : MonoBehaviour
     private void SetCameraMesh(bool firstPersonMeshActive)
     {
         if (!bodyRenderer || !thirdPersonMesh || !firstPersonMesh || renderingFirstPersonMesh == firstPersonMeshActive) return;
-        bodyRenderer.sharedMesh = firstPersonMeshActive ?
-            (GestureHandsActive ? gestureHands.BodyWithoutArms : firstPersonMesh) : thirdPersonMesh;
+        bodyRenderer.sharedMesh = firstPersonMeshActive ? firstPersonMesh : thirdPersonMesh;
         renderingFirstPersonMesh = firstPersonMeshActive;
     }
 
@@ -785,8 +742,6 @@ public class DollSingerView : MonoBehaviour
 
     private void ReleaseFirstPersonPresentation()
     {
-        gestureHands?.Dispose();
-        gestureHands = null;
         cameraMeshStates.Clear();
         if (bodyRenderer)
         {
@@ -836,7 +791,7 @@ public class DollSingerView : MonoBehaviour
         appliedFirstPerson = false;
         networkLookDriven = false;
         viewBlend = 0f;
-        aimBlend = weaponPoseBlend = 0f;
+        aimBlend = 0f;
         lastRenderedLeanOffset = Vector3.zero;
         if (!camera || !cameraDefaultsCaptured) return;
         camera.transform.localPosition = thirdPersonRestPosition;

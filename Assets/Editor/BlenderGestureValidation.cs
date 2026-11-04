@@ -34,7 +34,7 @@ public static class BlenderGestureValidation
     private static Mesh armSurface;
     private static SkinnedMeshRenderer armRenderer;
     private static int[] armTriangles;
-    private static readonly Rect AimWindow = Rect.MinMaxRect(.44f, .44f, .56f, .56f);
+    private static readonly Rect AimWindow = Rect.MinMaxRect(.49f, .49f, .51f, .51f);
     private static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [MenuItem("Tools/Moonkov/Validate Blender Gestures In Playing Lab")]
@@ -82,7 +82,8 @@ public static class BlenderGestureValidation
         Motion low = m, high = m;
         Vector3 aim = (Vector3)typeof(DollSingerHaloAim).GetField("networkDirection", Private).GetValue(lab.Halo);
         float pitch = Mathf.Asin(-aim.normalized.y)*Mathf.Rad2Deg;
-        if (m.aimPoses != null)
+        bool eyeRelative = lab.PlayerView.IsFirstPerson && lab.WeaponIndex != 3;
+        if (!eyeRelative && m.aimPoses != null)
         foreach(var pose in m.aimPoses)
         {
             if (pose.pitch <= pitch && (low.pitch > pitch || pose.pitch > low.pitch)) low = pose;
@@ -104,13 +105,19 @@ public static class BlenderGestureValidation
         float max = 0;
         for (int i = 0; i < bake.bones.Length; i++)
         {
+            // First-person gestures now reach the eye using the real arms.
+            // Finger/twist keys remain authored; shoulder/elbow reach and hand
+            // orientation are covered by WeaponFramingChecks.
+            if (lab.PlayerView.IsFirstPerson &&
+                (bake.bones[i] == "腕.L" || bake.bones[i] == "腕.R" || bake.bones[i] == "ひじ.L" ||
+                 bake.bones[i] == "ひじ.R" || bake.bones[i] == "手首.L" || bake.bones[i] == "手首.R")) continue;
             var expected = Quaternion.Slerp(Read(values, a, i, bake.bones.Length), Read(values, b, i, bake.bones.Length), frame - a);
             if(pitchMix>0) expected=Quaternion.Slerp(expected,Quaternion.Slerp(Read(highValues,a,i,bake.bones.Length),Read(highValues,b,i,bake.bones.Length),frame-a),pitchMix);
             if (bake.bones[i].StartsWith("肩P"))
             {
                 // Validate the common world orientation too: local-only checks
                 // cannot detect an entire arm pair rolling at steep look angles.
-                float authoredPitch = m.aimPoses == null ? 0 : pitch;
+                float authoredPitch = eyeRelative || m.aimPoses == null ? 0 : pitch;
                 expected = Quaternion.LookRotation(aim, Vector3.up) * Quaternion.Euler(-authoredPitch,0,0) * bake.chestBindRotation * expected;
                 // Directional signs share one common correction across both complete arm chains.
                 if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10 && lab.WeaponIndex != 12) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
@@ -146,14 +153,12 @@ public static class BlenderGestureValidation
         {
             Vector3 center = (bones["人指先.L"].position + bones["親指先.R"].position +
                 bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
-            var uv = lab.PlayerView.GestureCamera.WorldToViewportPoint(center);
+            var uv = lab.PlayerView.camera.WorldToViewportPoint(center);
             var owner = lab.PlayerView.camera;
             float pixels = new Vector2((uv.x-.5f)*owner.pixelWidth, (uv.y-.5f)*owner.pixelHeight).magnitude;
             Require(pixels < .5f, "Sniper frame centre drifted from crosshair: " + pixels + " pixels");
-            Require(Mathf.Abs(lab.PlayerView.GestureCamera.fieldOfView-owner.fieldOfView)<.001f,
-                "Sniper hands are not using the owner's zoom");
-            Require(Mathf.Abs(lab.PlayerView.GestureCamera.transform.localPosition.z)<.00001f,
-                "Sniper hand camera moved backwards to cancel zoom");
+            Require(!lab.Player.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")),
+                "Sniper added a separate hand projection");
             // A normal optical zoom can crop the hands at the viewport edges.
             // Do not force them back inside the screen and undo magnification.
             return;
@@ -161,15 +166,15 @@ public static class BlenderGestureValidation
         foreach (var name in new[] { "手首.L", "手首.R" })
         foreach (var bone in bones[name].GetComponentsInChildren<Transform>())
         {
-            var uv = lab.PlayerView.GestureCamera.WorldToViewportPoint(bone.position);
-            Require(uv.z > .015f && uv.x > .01f && uv.x < .99f && uv.y > .01f && uv.y < .99f, "Finger left owner viewport: " + bone.name);
-            if (lab.WeaponIndex != 3) Require(uv.y < .42f, "Hand entered aiming area: " + bone.name);
+            var uv = lab.PlayerView.camera.WorldToViewportPoint(bone.position);
+            Require(float.IsFinite(uv.x) && float.IsFinite(uv.y) && float.IsFinite(uv.z), "Nonfinite hand projection: " + bone.name);
+            // Natural eye projection may crop the hands. ClearAim checks the actual sight line.
         }
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
         if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10 && lab.WeaponIndex != 12) return;
-        var camera = lab.PlayerView.GestureCamera;
+        var camera = lab.PlayerView.camera;
         Vector2 a = camera.WorldToViewportPoint(bones["人指１.R"].position);
         Vector2 b = camera.WorldToViewportPoint(bones["人指先.R"].position);
         // Use pixel coordinates so non-square viewports do not distort the angle.
@@ -177,14 +182,15 @@ public static class BlenderGestureValidation
         Require(Vector2.Angle(Vector2.Scale(b-a,pixel), Vector2.Scale(Vector2.one*.5f-a,pixel)) < 1f,
             "Directional index does not point at crosshair: weapon "+lab.WeaponIndex);
     }
-    // Test the rendered arm triangles too: sleeves and forearms must leave the
-    // central 12% square clear, even when all finger joints are below it.
+    // A settled pose must leave the reticle clear. Natural hands may enter the
+    // surrounding view and cross it while raising/lowering; do not reframe them.
     private static void ClearAim(WeaponGestureLab lab)
     {
+        if (DollSingerView.AimPoseBlend(lab.Halo.AimBlend) < .999f) return;
         // Compensate the FBX hierarchy scale before applying localToWorldMatrix.
         armRenderer.BakeMesh(armSurface, true);
         var vertices = armSurface.vertices;
-        var camera = lab.PlayerView.GestureCamera;
+        var camera = lab.PlayerView.camera;
         var world = armRenderer.transform.localToWorldMatrix;
         var projected = new Vector3[vertices.Length];
         var used = new bool[vertices.Length];
@@ -265,15 +271,28 @@ public static class BlenderGestureValidation
         Require(bake.revision == disk.revision, "Unity is using a stale bake. Stop Play, force-import the JSON, then Play again.");
         report.Add("Bake revision: " + bake.revision);
         var bones = lab.Halo.GetComponentsInChildren<Transform>(true).GroupBy(t => t.name).ToDictionary(g => g.Key, g => g.First());
-        armRenderer = lab.Halo.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(x => x.name == "FirstPersonGestureArms (Runtime)");
-        armSurface = new Mesh(); armTriangles = armRenderer.sharedMesh.triangles;
+        armRenderer = (SkinnedMeshRenderer)typeof(DollSingerView).GetMethod("FindBodyRenderer", BindingFlags.Static | BindingFlags.NonPublic)
+            .Invoke(null, new object[] { lab.Player });
+        var animatorForArms = lab.Halo.GetComponent<Animator>();
+        var leftArm = animatorForArms.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        var rightArm = animatorForArms.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        var armBones = armRenderer.bones.Select(b => b && (b.IsChildOf(leftArm) || b.IsChildOf(rightArm))).ToArray();
+        var armVertices = armRenderer.sharedMesh.boneWeights.Select(w =>
+            (armBones[w.boneIndex0] ? w.weight0 : 0) + (armBones[w.boneIndex1] ? w.weight1 : 0) +
+            (armBones[w.boneIndex2] ? w.weight2 : 0) + (armBones[w.boneIndex3] ? w.weight3 : 0) >= .5f).ToArray();
+        var triangles = armRenderer.sharedMesh.triangles;
+        var selectedTriangles = new List<int>();
+        for (int i = 0; i < triangles.Length; i += 3)
+            if (armVertices[triangles[i]] || armVertices[triangles[i + 1]] || armVertices[triangles[i + 2]])
+            { selectedTriangles.Add(triangles[i]); selectedTriangles.Add(triangles[i + 1]); selectedTriangles.Add(triangles[i + 2]); }
+        armSurface = new Mesh(); armTriangles = selectedTriangles.ToArray();
         float error = 0, fanDistance = 0;
         foreach (int weapon in focused>=0?new[]{focused}.AsEnumerable():Enumerable.Range(0,arsenal?HaloArsenal.Entries.Length+4:4))
         {
             lab.SelectWeapon(weapon); yield return new WaitForSeconds(.6f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
             FingerFan(lab,bones);
-            if (weapon == 3) Shape(bones, lab.PlayerView.GestureCamera, report);
+            if (weapon == 3) Shape(bones, lab.PlayerView.camera, report);
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Output + $"/{weapon + 1}-idle.png")); yield return new WaitForEndOfFrame();
             Vector3 offhand = bones["手首.L"].position;
             lab.Fire(); float start = Time.time; bool captured = false;
@@ -299,7 +318,7 @@ public static class BlenderGestureValidation
         }
         if(focused<0) Require(fanDistance > .055f, "Revolver offhand did not fan the hammer: " + fanDistance);
         if(focused<0) report.Add($"revolver offhand stroke {fanDistance * 1000:F1} mm; maximum Blender/runtime rotation difference {error:F3} deg");
-        // The normal weapons retain a clear aiming window at steep pitch and
+        // The normal weapons retain a clear reticle at steep pitch and
         // both common aspect ratios. Inspect the actual deformed arm triangles.
         foreach (float aspect in new[] { 16f/9f, 4f/3f })
         foreach (int weapon in OrdinaryWeapons)
@@ -325,8 +344,8 @@ public static class BlenderGestureValidation
                 root.Q<Slider>("pitch").value = -80f*Mathf.Sin((Time.time-start)/2f*Mathf.PI);
                 yield return new WaitForEndOfFrame();
                 Visible(lab,bones); ClearAim(lab); PointAtAim(lab,bones); HeadLook(lab,bones);
-                var a=lab.PlayerView.GestureCamera.WorldToViewportPoint(bones["手首.L"].position);
-                var b=lab.PlayerView.GestureCamera.WorldToViewportPoint(bones["手首.R"].position);
+                var a=lab.PlayerView.camera.WorldToViewportPoint(bones["手首.L"].position);
+                var b=lab.PlayerView.camera.WorldToViewportPoint(bones["手首.R"].position);
                 Vector2 current=(a+b)*.5f;
                 if(hasLast) Require(Vector2.Distance(current,last)<.08f,"Looking up made the gesture projection snap");
                 last=current; hasLast=true;
@@ -344,7 +363,7 @@ public static class BlenderGestureValidation
         }
         lab.SelectWeapon(3); root.Q<Slider>("pitch").value = 0;
         yield return new WaitForSeconds(.5f);
-        report.Add("Revolver index converges on crosshair within 1 degree in idle/fire/reload and pitch/aspect checks. Normal weapons: finger joints below 42% viewport height; deformed arm triangles leave central 12% square clear through fire/reload, authored and interpolated pitch -80 through +80 and 16:9 / 4:3.");
+        report.Add("Revolver index converges on crosshair within 1 degree. Natural hand projection may crop fingers; deformed arm triangles are checked against the central aiming window through fire/reload, pitch -80 through +80 and 16:9 / 4:3.");
         // Repeat the straightness/closure check through actual first/third-person mode and extreme pitch.
         foreach (bool fp in new[] { true, false })
         foreach (float pitch in new[] { -65f, 0f, 65f })
@@ -352,20 +371,20 @@ public static class BlenderGestureValidation
             root.Q<Toggle>("firstPerson").value = fp; root.Q<Slider>("pitch").value = pitch;
             yield return new WaitForSeconds(.35f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error, Compare(bake, lab, bones));
-            if (fp) { Visible(lab, bones); ClearAim(lab); Shape(bones, lab.PlayerView.GestureCamera, report); }
+            if (fp) { Visible(lab, bones); ClearAim(lab); Shape(bones, lab.PlayerView.camera, report); }
         }
         root.Q<Toggle>("firstPerson").value = true; root.Q<Slider>("pitch").value = 0;
-        float gestureFov = lab.PlayerView.gestureFieldOfView;
+        float gestureFov = lab.PlayerView.firstPersonFieldOfView;
         foreach (float aspect in new[] { 16f/9f, 4f/3f })
         foreach (float fov in new[] { 50f, 65f, 80f })
         foreach (float pitch in new[] { -65f, 0f, 65f, 0f })
         {
-            lab.PlayerView.camera.aspect = aspect; lab.PlayerView.gestureFieldOfView = fov;
+            lab.PlayerView.camera.aspect = aspect; lab.PlayerView.firstPersonFieldOfView = fov;
             root.Q<Slider>("pitch").value = pitch;
             yield return new WaitForSeconds(.2f); yield return new WaitForEndOfFrame();
             Visible(lab, bones);
         }
-        lab.PlayerView.gestureFieldOfView = gestureFov; lab.PlayerView.camera.aspect = 16f/9f;
+        lab.PlayerView.firstPersonFieldOfView = gestureFov; lab.PlayerView.camera.aspect = 16f/9f;
         float sweepStart = Time.time;
         while (Time.time - sweepStart < 3f)
         {
@@ -375,7 +394,7 @@ public static class BlenderGestureValidation
         root.Q<Slider>("pitch").value = 0;
         root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
         root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f); yield return new WaitForEndOfFrame();
-        Shape(bones, lab.PlayerView.GestureCamera, report);
+        Shape(bones, lab.PlayerView.camera, report);
         lab.SetPaused(true); var hand = bones["手首.L"].position; yield return new WaitForSecondsRealtime(.15f); yield return new WaitForEndOfFrame();
         Require(Vector3.Distance(hand, bones["手首.L"].position) < .00001f, "Frozen gesture drifted."); lab.SetPaused(false);
         report.Add("FP/TP modes, pitch -65/0/+65, aim-out/in, pause/resume passed.");
@@ -389,8 +408,8 @@ public static class BlenderGestureValidation
         {
             lab.Halo.sniperVisual.scopeMagnification = zoom;
             yield return new WaitForSeconds(.7f); yield return new WaitForEndOfFrame();
-            Visible(lab, bones); Shape(bones, lab.PlayerView.GestureCamera, report);
-            var camera = lab.PlayerView.GestureCamera;
+            Visible(lab, bones); Shape(bones, lab.PlayerView.camera, report);
+            var camera = lab.PlayerView.camera;
             Vector2 span = camera.WorldToViewportPoint(bones["人指先.L"].position) - camera.WorldToViewportPoint(bones["人指先.R"].position);
             var normalized = span / lab.PlayerView.CurrentAimMagnification;
             if (zoom == 1) { baseSize = normalized; baseHaloPosition = lab.Halo.haloVisual.position; }
@@ -430,7 +449,7 @@ public static class BlenderGestureValidation
     {
         if(lab.WeaponIndex!=5&&lab.WeaponIndex!=8)return;
         var names=lab.WeaponIndex==5?new[]{"人指先.R","中指先.R","薬指先.R"}:new[]{"親指先.R","人指先.R","中指先.R","薬指先.R","小指先.R"};
-        var camera=lab.PlayerView.GestureCamera;
+        var camera=lab.PlayerView.camera;
         var pixel=new Vector2(camera.pixelWidth,camera.pixelHeight);
         for(int i=0;i<names.Length;i++)for(int j=i+1;j<names.Length;j++)
         {
@@ -456,7 +475,7 @@ public static class BlenderGestureValidation
                     while (Time.time-start<.4f)
                     {
                         yield return new WaitForEndOfFrame(); frames++;
-                        if (lab.PlayerView.GestureHandsActive) ClearAim(lab);
+                        if ((lab.PlayerView.IsFirstPerson && lab.Halo.OwnsHandPose)) ClearAim(lab);
                         if (lab.PlayerView.CurrentAimMagnification>1.01f)
                         {
                             Require(lab.Halo.AimBlend>.45f, "Ordinary weapon zoom overlapped raising/lowering arms");
@@ -483,7 +502,7 @@ public static class BlenderGestureValidation
                     while (Time.time-start<interval)
                     {
                         yield return new WaitForEndOfFrame(); frames++;
-                        if (lab.PlayerView.GestureHandsActive) ClearAim(lab);
+                        if ((lab.PlayerView.IsFirstPerson && lab.Halo.OwnsHandPose)) ClearAim(lab);
                         if (lab.PlayerView.CurrentAimMagnification>1.01f)
                         { Require(lab.Halo.AimBlend>.45f, "Interrupted ordinary aim lagged pose"); Visible(lab, bones); PointAtAim(lab, bones); }
                     }
@@ -492,7 +511,7 @@ public static class BlenderGestureValidation
         }
         finally { Time.captureDeltaTime = captureDelta; }
         root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f);
-        report.Add($"{OrdinaryWeapons.Length} ordinary weapon aim transitions: {frames} rendered frames, pitch -65/0/+65, 16:9 / 4:3; central skinned arm clearance throughout raising/lowering. {OrdinaryWeapons.Length*48} interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.");
+        report.Add($"{OrdinaryWeapons.Length} ordinary weapon aim transitions: {frames} rendered frames, pitch -65/0/+65, 16:9 / 4:3; settled-pose reticle clearance, natural raising/lowering. {OrdinaryWeapons.Length*48} interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.");
     }
 
     private static IEnumerator CheckSniperTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,
@@ -504,8 +523,7 @@ public static class BlenderGestureValidation
         foreach (float aspect in new[] { 16f/9f, 4f/3f })
         {
             root.Q<Slider>("pitch").value = pitch; lab.PlayerView.camera.aspect = aspect;
-            // Start with another weapon's fitted hand camera to catch stale
-            // projection/position on the very first active sniper frame.
+            // Switch from another weapon to catch any stale projection or eye offset.
             lab.SelectWeapon(0); root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.4f);
             root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
             lab.SelectWeapon(3);
@@ -517,10 +535,10 @@ public static class BlenderGestureValidation
                 {
                     yield return new WaitForEndOfFrame(); frames++;
                     float blend = lab.Halo.AimBlend;
-                    var camera = lab.PlayerView.GestureCamera;
-                    if (!lab.PlayerView.GestureHandsActive) continue;
+                    var camera = lab.PlayerView.camera;
+                    if (!(lab.PlayerView.IsFirstPerson && lab.Halo.OwnsHandPose)) continue;
                     Require(Mathf.Abs(camera.transform.localPosition.z)<.00001f,
-                        "First sniper frame retained another weapon's hand camera");
+                        "First sniper frame moved the eye");
                     maximumOffset = Mathf.Max(maximumOffset, camera.transform.localPosition.magnitude);
                     if (blend<.1f) Require(camera.transform.localPosition.magnitude<.1f,
                         "Aim transition chased the resting hands down the body");
@@ -546,7 +564,7 @@ public static class BlenderGestureValidation
                 if (lab.PlayerView.CurrentAimMagnification>1.01f)
                 {
                     Require(lab.Halo.AimBlend>.45f, "Interrupted aim left camera one frame behind pose");
-                    Shape(bones, lab.PlayerView.GestureCamera, new List<string>()); ClearAim(lab);
+                    Shape(bones, lab.PlayerView.camera, new List<string>()); ClearAim(lab);
                 }
             }
         }

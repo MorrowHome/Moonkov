@@ -101,7 +101,6 @@ public static class SurvivalActionRuntimeChecks
                 fixtureCamera=view.camera;
                 view.camera.backgroundColor = new Color(.10f, .12f, .14f); view.camera.clearFlags = CameraClearFlags.SolidColor;
                 view.camera.farClipPlane = 10; view.camera.useOcclusionCulling = false;
-                if (view.GestureCamera) view.GestureCamera.scene = scene;
                 var twist = animator.GetComponent<HumanoidTwistFollowers>(); if (twist) twist.enabled = true;
                 var halo = root.GetComponentInChildren<DollSingerHaloAim>(true);
                 if(halo)halo.enabled=true;
@@ -119,7 +118,10 @@ public static class SurvivalActionRuntimeChecks
                     action.Present(state, true, true, false); await Task.Delay(150); await Rendered(() => { });
                     for(int wait=0;wait<40&&(float)blendField.GetValue(action)<.999f;wait++)await Rendered(()=>{});
                     Check((float)blendField.GetValue(action)>=.999f,rig+" action did not finish its entry blend");
-                    state.HandActionRemaining = 2.22f; action.Present(state, true, true, false);
+                    var motion = authored.motions.First(m => m.action == kind.ToString() && (kind == HandAction.Search || m.items != null && m.items.Contains(code)));
+                    float useEnd = kind == HandAction.Search ? 1f : Mathf.Clamp(motion.contactOut, .5f, .8f);
+                    state.HandActionRemaining = 3 * (1 - Mathf.Min(useEnd, motion.openMarker + .03f) / useEnd);
+                    action.Present(state, true, true, false);
                     // The sound pool applies LateUpdate requests on its next Update.
                     await Task.Delay(65);
                     await Rendered(() =>
@@ -130,8 +132,10 @@ public static class SurvivalActionRuntimeChecks
                     });
                     int before = Voices(); action.Present(state, true, true, false);
                     await Rendered(() => Check(Voices() <= before, "Duplicate snapshot added a voice."));
-                    var motion = authored.motions.First(m => m.action == kind.ToString() && (kind == HandAction.Search || m.items != null && m.items.Contains(code)));
-                    state.HandActionRemaining = 3 * (1 - Mathf.Max(.52f, motion.contact + .02f)); action.Present(state, true, true, false);
+                    // Server use time ends at contactOut; the authored stow segment
+                    // runs afterwards. Convert the desired source phase back to use time.
+                    float contactPhase = Mathf.Min(useEnd, Mathf.Max(.52f, motion.contact + .02f));
+                    state.HandActionRemaining = 3 * (1 - contactPhase / useEnd); action.Present(state, true, true, false);
                     await Task.Delay(65);
                     Transform[] poseNodes=null;Vector3[] posePositions=null;Quaternion[] poseRotations=null;
                     int capturedFrame=0;float capturedPhase=0;
@@ -143,7 +147,7 @@ public static class SurvivalActionRuntimeChecks
                             Check(heard.Contains(contact), rig + " contact cue did not play: " + kind);
                             Check(action.ContactError < .04f, rig + " runtime contact miss " + kind + " " + action.ContactError);
                         }
-                        Check(kind == HandAction.Search ? !view.GestureHandsActive : view.GestureHandsActive && view.GestureCamera.enabled, "Incorrect owner hand camera for " + kind);
+                        Check(view.IsFirstPerson && view.camera.enabled && !root.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")), "Action added a separate camera for " + kind);
                         float sample = action.SampledPhase * (motion.frames - 1); int from = Mathf.FloorToInt(sample), to = Mathf.Min(from + 1, motion.frames - 1);
                         foreach (string bone in new[] { "ひじ.R", "手捩.R", "手首.R", "手捩1.R", "手捩2.R", "手捩3.R", "人指１.R", "親指１.R" })
                         {
@@ -161,7 +165,7 @@ public static class SurvivalActionRuntimeChecks
                     var head=animator.GetBoneTransform(HumanBodyBones.Head);observer.transform.position=head.position+new Vector3(kind==HandAction.Inject?-.55f:.55f,-.18f,1.0f);observer.transform.LookAt(head.position+Vector3.down*.20f);Capture(observer,$"LocalData/Actions/Runtime/{rig}-{kind}-observer.png");
                     results.Add(new{rig,action=kind.ToString(),frame=capturedFrame,phase=capturedPhase,screenshot=path});
                     action.Present(default, true, true, false); await Task.Delay(200);
-                    await Rendered(() => Check(!action.OwnsHands && (!view.GestureHandsActive || halo && halo.OwnsHandPose) && (!halo || !halo.ExternalHandPoseActive) && root.GetComponentsInChildren<RaidActionProp>(true).All(p=>!p.gameObject.activeInHierarchy) && Voices() == 0, "Cancel/death retained a prop, hands or cue."));
+                    await Rendered(() => Check(!action.OwnsHands && (!halo || !halo.ExternalHandPoseActive) && root.GetComponentsInChildren<RaidActionProp>(true).All(p=>!p.gameObject.activeInHierarchy) && Voices() == 0, "Cancel/death retained a prop, hands or cue."));
                 }
                 action.DisposePresentation(); action = null; UnityEngine.Object.Destroy(root); root = null; await Task.Delay(50);
             }

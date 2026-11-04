@@ -18,7 +18,9 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
     [MenuItem("Tools/Moonkov/Check View Projection And Aim")]
     public static void CheckCamera()
     {
-        var holder = new GameObject("Inactive view checks") { hideFlags = HideFlags.HideAndDontSave };
+        var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+        var holder = new GameObject("Inactive view checks");
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(holder, scene);
         holder.SetActive(false);
         // Keep camera matrices near the origin: reconstructing a ray from a .03 m
         // near plane at 10 km measures float cancellation rather than view direction.
@@ -79,7 +81,12 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             Debug.Log("View checks passed: shared configured world FOV, actual 1.35x/1.75x/6x/8x projection in both perspectives, " +
                 "command/centre ray agreement, rendered-zoom sensitivity and sub-degree input scaled once.");
         }
-        finally { if (view) view.BindPlayer(null, true); DestroyImmediate(holder); }
+        finally
+        {
+            if (view) view.BindPlayer(null, true);
+            DestroyImmediate(holder);
+            UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+        }
     }
 
     [MenuItem("Tools/Moonkov/Check Portrait Drag")]

@@ -30,22 +30,18 @@ namespace Unity.MP_FPS.DollSinger
         private sealed class Prop
         {
             public GameObject Root;
-            public Renderer[] World, Owner;
-            public TrailRenderer WorldTrail, OwnerTrail;
+            public TrailRenderer Trail;
         }
-        private struct Visibility { public Camera Camera; public uint World, Owner; }
         private readonly Dictionary<MeleeWeaponKind, Prop> props = new Dictionary<MeleeWeaponKind, Prop>();
         private readonly List<Mesh> ownedMeshes = new List<Mesh>();
         private readonly List<Material> ownedMaterials = new List<Material>();
-        private readonly Stack<Visibility> visibility = new Stack<Visibility>(8);
         private DollSingerMeleeBake bake;
-        private DollSingerView view;
         private DollSingerHaloAim halo;
         private DollSingerMovement movement;
         private MeleeViewState state;
         private MeleeWeaponKind selected;
         private uint lastAttack, lastCancel, lastHit, cancelledAttack;
-        private bool configured, received, wasActive, subscribed;
+        private bool configured, received, wasActive;
         private float blend, equipStarted, elapsedReceivedAt, lastElapsed;
         private string previousAction;
         private Quaternion committedFacing = Quaternion.identity;
@@ -70,12 +66,12 @@ namespace Unity.MP_FPS.DollSinger
             if (!data || !art || !shader) throw new InvalidOperationException("Independent melee bake/art/shader resources have not been imported.");
             // Initializing during an already posed preview must not capture the gun pose as bind state.
             if (playerHalo) playerHalo.PrepareExternalHandPose();
-            bake = new DollSingerMeleeBake(animator, data); view = playerView; halo = playerHalo;
+            bake = new DollSingerMeleeBake(animator, data); halo = playerHalo;
             movement = animator.GetComponent<DollSingerMovement>();
             var library = JsonUtility.FromJson<ArtLibrary>(art.text);
             if (library == null || library.version != 1) throw new InvalidOperationException("Unsupported melee art library.");
             foreach (var weapon in library.weapons) BuildProp(weapon, shader);
-            configured = true; Subscribe();
+            configured = true;
         }
         public void SetPresentation(in MeleeViewState value)
         {
@@ -120,12 +116,11 @@ namespace Unity.MP_FPS.DollSinger
             if (configured) { ClearTrails(); bake.RestoreBeforeAnimation(); }
             foreach (var value in props.Values) value.Root.SetActive(false);
             if (impact) impact.gameObject.SetActive(false);
-            visibility.Clear(); received = wasActive = false; blend = 0;
+            received = wasActive = false; blend = 0;
             lastAttack = lastCancel = lastHit = cancelledAttack = 0; previousAction = null;
             selected = MeleeWeaponKind.None; prop = null; state = default;
             committedFacing = Quaternion.identity;
             if (halo) halo.ExternalHandPoseActive = false;
-            if (view) view.SetMeleeHandsActive(false, 0, selected);
         }
         private void Update() => PreparePresentation(Time.deltaTime);
         public void PreparePresentation(float deltaTime)
@@ -152,7 +147,6 @@ namespace Unity.MP_FPS.DollSinger
             if (!wasActive)
             {
                 if (prop != null) prop.Root.SetActive(false);
-                if (view) view.SetMeleeHandsActive(false, 0, selected);
                 return;
             }
             bool attacking = WantsPresentation && state.AttackWeapon == selected && state.AttackSequence != 0 &&
@@ -174,9 +168,8 @@ namespace Unity.MP_FPS.DollSinger
             {
                 prop.Root.SetActive(WantsPresentation);
                 bool trail = attacking && state.Phase == MeleePhase.Active && elapsed >= timing.Windup && elapsed < timing.Windup + timing.Active;
-                prop.WorldTrail.emitting = trail; prop.OwnerTrail.emitting = trail;
+                prop.Trail.emitting = trail;
             }
-            if (view) view.SetMeleeHandsActive(state.IsOwner && state.FirstPerson, blend, selected);
         }
         private void UpdateImpact()
         {
@@ -215,7 +208,6 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 inverse = InverseScale(bake.RightHand.lossyScale);
             root.transform.localPosition = Vector3.Scale(bake.GripPosition, inverse);
             root.transform.localRotation = bake.GripRotation; root.transform.localScale = inverse;
-            var world = new List<Renderer>(); var owner = new List<Renderer>();
             foreach (var part in art.parts)
             {
                 var mesh = new Mesh { name = "Melee " + art.weapon + " " + part.name };
@@ -225,74 +217,33 @@ namespace Unity.MP_FPS.DollSinger
                 mesh.vertices = vertices; mesh.normals = normals; mesh.triangles = part.triangles; mesh.RecalculateBounds(); ownedMeshes.Add(mesh);
                 var material = new Material(shader) { name = "Melee " + art.weapon + " " + part.name };
                 material.SetColor("_BaseColor", new Color(part.color[0], part.color[1], part.color[2], part.color[3])); material.SetFloat("_Emission", part.emission); ownedMaterials.Add(material);
-                for (int copy = 0; copy < 2; copy++)
-                {
-                    var child = new GameObject(part.name + (copy == 0 ? " World" : " Owner")); child.transform.SetParent(root.transform, false);
-                    child.layer = copy == 0 ? gameObject.layer : LayerMask.NameToLayer("FirstPersonOverlay");
-                    child.AddComponent<MeshFilter>().sharedMesh = mesh;
-                    var renderer = child.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material; renderer.forceRenderingOff = copy != 0;
-                    renderer.shadowCastingMode = ShadowCastingMode.Off; (copy == 0 ? world : owner).Add(renderer);
-                }
+                var child = new GameObject(part.name); child.transform.SetParent(root.transform, false);
+                child.layer = gameObject.layer;
+                child.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = child.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material;
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
             var result = new Prop { Root = root };
-            result.WorldTrail = BuildTrail(root.transform, kind, false); result.OwnerTrail = BuildTrail(root.transform, kind, true);
-            world.Add(result.WorldTrail); owner.Add(result.OwnerTrail); result.World = world.ToArray(); result.Owner = owner.ToArray();
+            result.Trail = BuildTrail(root.transform, kind);
             props.Add(kind, result); root.SetActive(false);
         }
-        private TrailRenderer BuildTrail(Transform root, MeleeWeaponKind kind, bool owner)
+        private TrailRenderer BuildTrail(Transform root, MeleeWeaponKind kind)
         {
-            var child = new GameObject(owner ? "Owner blade trail" : "World blade trail"); child.transform.SetParent(root, false);
-            child.layer = owner ? LayerMask.NameToLayer("FirstPersonOverlay") : gameObject.layer;
+            var child = new GameObject("Blade trail"); child.transform.SetParent(root, false);
+            child.layer = gameObject.layer;
             child.transform.localPosition = Vector3.up * (kind == MeleeWeaponKind.EnergySword ? .83f : .29f);
             var trail = child.AddComponent<TrailRenderer>(); trail.emitting = false; trail.time = .075f;
             trail.minVertexDistance = .018f; trail.startWidth = kind == MeleeWeaponKind.EnergySword ? .018f : .009f; trail.endWidth = 0;
-            trail.numCornerVertices = 1; trail.shadowCastingMode = ShadowCastingMode.Off; trail.forceRenderingOff = owner;
+            trail.numCornerVertices = 1; trail.shadowCastingMode = ShadowCastingMode.Off;
             var material = new Material(Resources.Load<Shader>("MoonkovMeleeTrail"));
             material.SetColor("_BaseColor", kind == MeleeWeaponKind.EnergySword ? new Color(.3f, .9f, 1, .4f) : new Color(.8f, .85f, .9f, .18f));
             trail.sharedMaterial = material; ownedMaterials.Add(material); return trail;
         }
         private void ClearTrails()
-        { foreach (var value in props.Values) { value.WorldTrail.emitting = value.OwnerTrail.emitting = false; value.WorldTrail.Clear(); value.OwnerTrail.Clear(); } }
+        { foreach (var value in props.Values) { value.Trail.emitting = false; value.Trail.Clear(); } }
         private static Vector3 InverseScale(Vector3 scale) => new Vector3(
             1 / Mathf.Max(.0001f, Mathf.Abs(scale.x)), 1 / Mathf.Max(.0001f, Mathf.Abs(scale.y)), 1 / Mathf.Max(.0001f, Mathf.Abs(scale.z)));
-        private void Subscribe()
-        {
-            if (subscribed || !isActiveAndEnabled) return;
-            RenderPipelineManager.beginCameraRendering += BeforeCamera; RenderPipelineManager.endCameraRendering += AfterCamera; subscribed = true;
-        }
-        private void BeforeCamera(ScriptableRenderContext context, Camera camera)
-        {
-            if (prop == null || !view) return;
-            uint a = 0, b = 0;
-            bool own = state.IsOwner && state.FirstPerson && view.GestureHandsActive;
-            for (int i = 0; i < prop.World.Length; i++)
-            {
-                if (prop.World[i].forceRenderingOff) a |= 1u << i;
-                if (prop.Owner[i].forceRenderingOff) b |= 1u << i;
-                prop.World[i].forceRenderingOff = own && camera == view.camera;
-                prop.Owner[i].forceRenderingOff = !own || camera != view.GestureCamera;
-            }
-            visibility.Push(new Visibility { Camera = camera, World = a, Owner = b });
-        }
-        private void AfterCamera(ScriptableRenderContext context, Camera camera)
-        {
-            if (prop == null || visibility.Count == 0) return;
-            var previous = visibility.Pop();
-            if (previous.Camera != camera)
-            {
-                visibility.Clear();
-                for (int i = 0; i < prop.World.Length; i++) { prop.World[i].forceRenderingOff = false; prop.Owner[i].forceRenderingOff = true; }
-                return;
-            }
-            for (int i = 0; i < prop.World.Length; i++)
-            { prop.World[i].forceRenderingOff = (previous.World & (1u << i)) != 0; prop.Owner[i].forceRenderingOff = (previous.Owner & (1u << i)) != 0; }
-        }
-        private void OnEnable() { if (configured) Subscribe(); }
-        private void OnDisable()
-        {
-            if (subscribed) { RenderPipelineManager.beginCameraRendering -= BeforeCamera; RenderPipelineManager.endCameraRendering -= AfterCamera; subscribed = false; }
-            ResetPresentation();
-        }
+        private void OnDisable() => ResetPresentation();
         private void OnDestroy()
         {
             foreach (var value in props.Values) if (value.Root) DestroyOwned(value.Root);

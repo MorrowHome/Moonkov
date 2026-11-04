@@ -18,10 +18,10 @@ using BodyPart = Unity.MP_FPS.BodyPart;
 public static class SurvivalCameraReview
 {
     [Serializable] public sealed class ReviewRow
-    { public string kind, item; public float contactMetres, overlayPitch; }
+    { public string kind, item; public float contactMetres, lookPitch; }
     [Serializable] public sealed class ReviewData
     { public string result, rig, scope; public int checks; public bool selectedCharacterUnchanged; public List<ReviewRow> results; }
-    private const string Output = "LocalData/Actions/CameraUse20261029";
+    private const string Output = "LocalData/FirstPersonView20261104/Actions";
     private static int checks;
     private static void Require(bool condition, string message)
     { checks++; if (!condition) throw new InvalidOperationException(message); }
@@ -141,7 +141,6 @@ public static class SurvivalCameraReview
             view.camera.enabled = true; view.camera.scene = scene; view.camera.aspect = 16f / 9;
             view.camera.farClipPlane = 10; view.camera.useOcclusionCulling = false;
             view.camera.backgroundColor = new Color(.11f, .13f, .16f); view.camera.clearFlags = CameraClearFlags.SolidColor;
-            if (view.GestureCamera) view.GestureCamera.scene = scene;
             var movement = animator.GetComponent<DollSingerMovement>();
             movement.SetNetworkViewPresentation(true, Quaternion.identity, 0); movement.enabled = true;
             var twist = animator.GetComponent<HumanoidTwistFollowers>(); if (twist) twist.enabled = true;
@@ -192,13 +191,9 @@ public static class SurvivalCameraReview
                         Capture(view.camera, rig + "-" + kind);
                         if (kind == HandAction.Inject)
                         {
-                            var rotation = view.GestureCamera.transform.localRotation;
-                            pitch = Vector3.SignedAngle(Vector3.forward, view.GestureCamera.transform.forward, Vector3.right);
-                            Require(Mathf.Abs(pitch - view.ActionInjectionPitch) < .1f, "Injection pitch was added to player pitch.");
+                            pitch = Vector3.SignedAngle(Vector3.forward, view.camera.transform.forward, Vector3.right);
                             Require(Quaternion.Angle(view.camera.transform.rotation, look) < .1f, "Action turned the world camera.");
-                            view.GestureCamera.transform.localRotation = Quaternion.Euler(view.ActionInjectionPitch, 0, 0);
-                            Capture(view.camera, rig + "-Inject-LegacyPitch");
-                            view.GestureCamera.transform.localRotation = rotation;
+                            Require(!root.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")), "Injection added a separate view.");
                         }
                     }
                 }
@@ -210,11 +205,11 @@ public static class SurvivalCameraReview
                 Require(action.OwnsHands, "Completed action skipped authored put-away: " + kind);
                 float deadline = Time.time + .8f;
                 while (action.OwnsHands && Time.time < deadline) await Frame(view.camera);
-                await Frame(view.camera, () => Require(!action.OwnsHands && !view.GestureHandsActive, "Put-away left a pose behind: " + kind));
-                results.Add(new ReviewRow { kind = kind.ToString(), item = code, contactMetres = error, overlayPitch = pitch });
+                await Frame(view.camera, () => Require(!action.OwnsHands, "Put-away left a pose behind: " + kind));
+                results.Add(new ReviewRow { kind = kind.ToString(), item = code, contactMetres = error, lookPitch = pitch });
             }
 
-            // Verify the ordinary world-depth fallback with a real intervening wall.
+            // Verify the single world-depth path with a real intervening wall.
             view.SetNetworkLookRotation(Quaternion.identity); movement.SetNetworkViewPresentation(true, Quaternion.identity, 0);
             var cover = new PredictedPlayerGhost { CurrentHealth = 100, HandAction = (byte)HandAction.Drink,
                 HandActionSequence = sequence++, HandActionItem = "water", HandActionDuration = 2, HandActionRemaining = 1 };
@@ -227,13 +222,13 @@ public static class SurvivalCameraReview
             await Frame(view.camera);
             await Frame(view.camera, () =>
             {
-                Require(action.WorldDepthFallbackActive && !view.GestureHandsActive, "An intervening wall did not restore world depth");
+                Require(action.OwnsHands && !root.GetComponentsInChildren<Renderer>(true).Any(r => r.gameObject.layer == LayerMask.NameToLayer("FirstPersonOverlay")), "Action bypassed world depth");
                 SavePose();
             });
             RestorePose(); Capture(view.camera, rig + "-WallDepth");
             UnityEngine.Object.Destroy(coverWall);
             await Frame(view.camera);
-            await Frame(view.camera, () => Require(!action.WorldDepthFallbackActive && view.GestureHandsActive, "Removing cover did not restore the action view"));
+            await Frame(view.camera, () => Require(action.OwnsHands && !root.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")), "Removing cover changed the action view"));
             action.ResetPresentation();
 
             if (!injectionOnly)
@@ -252,14 +247,14 @@ public static class SurvivalCameraReview
             RestorePose();
             Capture(view.camera, rig + "-Drink-Cancel");
             waitUntil = Time.time + .3f; while (Time.time < waitUntil) await Frame(view.camera);
-            await Frame(view.camera, () => Require(!action.OwnsHands && !view.GestureHandsActive, "Cancel retained owner hands"));
+            await Frame(view.camera, () => Require(!action.OwnsHands, "Cancel retained owner hands"));
             foreach (bool suppressed in new[] { true, false })
             {
                 cancel.CurrentHealth = 100; cancel.HandAction = (byte)HandAction.Drink; cancel.HandActionSequence = sequence++;
                 action.Present(cancel, true, true, false); action.SamplePreview(.5f);
                 cancel.CurrentHealth = suppressed ? 100 : 0;
                 action.Present(cancel, true, true, suppressed);
-                Require(!action.OwnsHands && !view.GestureHandsActive, suppressed ? "Menu retained hands" : "Death retained hands");
+                Require(!action.OwnsHands, suppressed ? "Menu retained hands" : "Death retained hands");
             }
             }
             var report = new ReviewData { result = "PASS", checks = checks, rig = rig, selectedCharacterUnchanged = PlayerPrefs.GetInt("Moonkov.PlayerCharacter", 2) == selected,

@@ -97,7 +97,7 @@ public static class HatsuneMikuPlayChecks
             Capture(view.camera, "play-first-person");
             halo.editorForceAim = true;
             await Frames(30);
-            Require(halo.AimBlend > .9f && view.GestureHandsActive, "First-person gesture arms did not activate.");
+            Require(halo.AimBlend > .9f && view.IsFirstPerson, "First-person weapon pose did not activate.");
             Capture(view.camera, "play-first-person-rifle");
             halo.EditorPreviewFire(); await Frames(8);
             report.firstPersonGestureArms = true;
