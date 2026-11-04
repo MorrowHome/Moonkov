@@ -5783,6 +5783,22 @@ MonoBehaviour:
     m_Key: 'Permanent: all halo energy recovery +33%.'
     m_Metadata:
       m_Items: []
+  - m_Id: 10212965222440960
+    m_Key: Hold to transfer energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161216
+    m_Key: Transferring energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161217
+    m_Key: Halo returning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161218
+    m_Key: Teammate
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

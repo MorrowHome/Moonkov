@@ -26,7 +26,8 @@ namespace Unity.MP_FPS
                 Mouse.current?.leftButton.wasPressedThisFrame == true || Mouse.current?.rightButton.wasPressedThisFrame == true) UsingGamepad = false;
             if (pad != null && (pad.leftStick.ReadValue().sqrMagnitude > .04f || pad.rightStick.ReadValue().sqrMagnitude > .04f ||
                 pad.leftTrigger.isPressed || pad.rightTrigger.isPressed || pad.buttonSouth.wasPressedThisFrame || pad.buttonWest.wasPressedThisFrame ||
-                pad.buttonNorth.wasPressedThisFrame || pad.selectButton.wasPressedThisFrame || pad.dpad.up.wasPressedThisFrame)) UsingGamepad = true;
+                pad.buttonNorth.wasPressedThisFrame || pad.selectButton.wasPressedThisFrame || pad.dpad.up.wasPressedThisFrame ||
+                pad.dpad.left.wasPressedThisFrame || pad.dpad.right.wasPressedThisFrame)) UsingGamepad = true;
             if (pad != s_Pad)
             {
                 s_Pad = pad;

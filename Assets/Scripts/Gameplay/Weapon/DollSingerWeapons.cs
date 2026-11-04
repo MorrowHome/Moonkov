@@ -99,7 +99,7 @@ namespace Unity.MP_FPS
         }
         public static bool TryEquip(ref PredictedPlayerGhost state, in PlayerInput input, WeaponRegistry registry)
         {
-            if (!state.InventoryWeapons || state.CurrentHealth <= 0f || state.ControllerState.IsReloadingState) return false;
+            if (!state.InventoryWeapons || state.CurrentHealth <= 0f || state.ControllerState.IsReloadingState || HaloTransferRules.Occupied(state) || input.HaloTransfer) return false;
             int slot = input.EquipPistol ? 3 : input.EquipRevolver ? 2 : input.EquipHalo ? 1 : state.EquippedWeaponSlot;
             uint requested = slot == 1 ? state.PrimaryWeaponID : slot == 2 ? state.SecondaryWeaponID : slot == 3 ? state.PistolWeaponID : None;
             if (slot == state.EquippedWeaponSlot || requested == None || registry?.GetWeaponData(requested) == null) return false;
@@ -113,7 +113,7 @@ namespace Unity.MP_FPS
         }
         public static bool EquipMelee(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry, string itemId)
         {
-            if (!state.InventoryWeapons || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState) return false;
+            if (!state.InventoryWeapons || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState || HaloTransferRules.Occupied(state)) return false;
             var item = MeleeInventory.Equipped(graph);
             // Empty hands are an equipment mode, never a fabricated inventory item.
             if ((item?.Id ?? "") != (itemId ?? "")) return false;

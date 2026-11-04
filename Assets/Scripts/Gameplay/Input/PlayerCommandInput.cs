@@ -22,7 +22,8 @@ public struct PlayerInput
         Tiptoe = 1 << 12,
         FireHeld = 1 << 13,
         FireSuppressed = 1 << 14,
-        HaloDefense = 1 << 15
+        HaloDefense = 1 << 15,
+        HaloTransfer = 1 << 16
     }
 
     public float2 MoveInput;
@@ -33,6 +34,9 @@ public struct PlayerInput
     public bool FreeLooking;
     // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
     public float3 AimPoint;
+    // Ghost identity includes its spawn tick so a recycled id cannot change the recipient.
+    public int HaloTransferGhostId;
+    public uint HaloTransferSpawnTick;
 
     public uint HaloLightingSettings;
     public uint InputFlags;
@@ -53,6 +57,7 @@ public struct PlayerInput
     public bool FireHeld => (InputFlags & (uint)InputFlag.FireHeld) != 0;
     public bool FireSuppressed => (InputFlags & (uint)InputFlag.FireSuppressed) != 0;
     public bool HaloDefense => (InputFlags & (uint)InputFlag.HaloDefense) != 0;
+    public bool HaloTransfer => (InputFlags & (uint)InputFlag.HaloTransfer) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
@@ -82,7 +87,7 @@ public struct PlayerInput
         const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
             InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
-            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense);
+            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer);
         result.InputFlags &= knownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
@@ -109,8 +114,23 @@ public struct PlayerInput
         {
             result.SetFlag(InputFlag.Shoot, false);
             result.SetFlag(InputFlag.FireHeld, false);
+            result.SetFlag(InputFlag.HaloTransfer, false);
         }
+        result.ApplyTransferIntent();
         return result;
+    }
+
+    private void ApplyTransferIntent()
+    {
+        if (FreeLooking || FireSuppressed) SetFlag(InputFlag.HaloTransfer, false);
+        if (!HaloTransfer)
+        {
+            HaloTransferGhostId = 0;
+            HaloTransferSpawnTick = 0;
+            return;
+        }
+        InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload |
+            InputFlag.HaloDefense | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
     }
 
     public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true)
@@ -129,18 +149,20 @@ public struct PlayerInput
             Lean = input.Lean;
             FreeLooking = input.FreeLooking;
             AimPoint = input.AimPoint;
+            HaloTransferGhostId = input.HaloTransferGhostId;
+            HaloTransferSpawnTick = input.HaloTransferSpawnTick;
             const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
         // Preserve the target belonging to a buffered single-shot press.
-        if (input.Shoot)
+        if (input.Shoot && !HaloTransfer)
         {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
             Lean = input.Lean;
             SetFlag(InputFlag.ThirdPerson, input.ThirdPerson);
         }
-        else if (hadBufferedShot)
+        else if (hadBufferedShot && !HaloTransfer)
         {
             AimPoint = bufferedAimPoint;
             LookYawPitchDegrees = bufferedLook;
@@ -153,6 +175,7 @@ public struct PlayerInput
             SetFlag(InputFlag.Shoot, false);
             SetFlag(InputFlag.FireHeld, false);
         }
+        ApplyTransferIntent();
     }
 }
 

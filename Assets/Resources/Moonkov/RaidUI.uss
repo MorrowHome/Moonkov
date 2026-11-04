@@ -16,6 +16,8 @@
 .raid-interaction-details { flex-direction: row; margin-top: 5px; }
 .raid-ui .raid-interaction-state { margin: 0; color: #b8c5b7; font-size: 10px; letter-spacing: 2px; }
 .raid-ui .raid-interaction-range { margin: 0 0 0 18px; color: #9da8a6; font-size: 10px; letter-spacing: 1px; }
+.raid-ui .is-halo-transfer .raid-interaction-key, .raid-ui .is-halo-transfer .raid-interaction-state, .raid-ui .is-halo-transfer .raid-interaction-range { font-size: 12px; }
+.raid-ui .is-halo-transfer .raid-interaction-state { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0; }
 .raid-interaction.is-empty { border-left-color: #7c8c88; }
 .raid-ui .raid-interaction.is-empty .raid-interaction-state { color: #919d98; }
 .raid-interaction.is-error { border-left-color: #dd9077; }

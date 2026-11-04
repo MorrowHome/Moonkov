@@ -29,6 +29,8 @@ namespace Unity.MP_FPS
         private DollSingerMeleePresentation m_Melee;
         private RaidActionPresentation m_Action;
         private EnergyShieldPresentation m_Protection;
+        private HaloTransferPresentation m_Transfer;
+        private bool m_HaloOccupied;
         private Animator m_PresentationAnimator;
         private float m_AuthoredSpringDistance = float.NaN;
         private AnimatorCullingMode? m_AuthoredAnimationCulling;
@@ -138,8 +140,8 @@ namespace Unity.MP_FPS
             m_OwnedAimPoint = target;
             // The ECS input pass follows MonoBehaviour.Update. Forward its freshly
             // sampled target before Halo.LateUpdate, without waiting another frame.
-            m_Halo.SetNetworkPresentation(m_OwnedAiming,
-                m_OwnedViewRotation * Vector3.forward, target, m_OwnedLightEnabled, ReadOwnedReadyIntent());
+            m_Halo.SetNetworkPresentation(!m_HaloOccupied && m_OwnedAiming,
+                m_OwnedViewRotation * Vector3.forward, target, m_OwnedLightEnabled, !m_HaloOccupied && ReadOwnedReadyIntent());
             PresentMuzzleObstruction(target);
             return target;
         }
@@ -173,7 +175,7 @@ namespace Unity.MP_FPS
 
         public bool ReadOwnedAimIntent()
         {
-            bool blocked = !m_OwnedAlive || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected;
+            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected;
             var returning = DollSingerLookController.ReturnFreeLook(m_FreeLookOffset, m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
             bool freeLooking = m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(returning) > .01f);
             return m_OwnedAiming = !blocked && (m_Input.LightAdjusting ? m_Input.LightPreviewAiming :
@@ -182,7 +184,7 @@ namespace Unity.MP_FPS
 
         public bool ReadOwnedReadyIntent()
         {
-            bool blocked = !m_OwnedAlive || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation ||
+            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation ||
                 GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
                 RaidHUD.QuickSlotToolSelected || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput;
             return !blocked && !(m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)) &&
@@ -240,6 +242,10 @@ namespace Unity.MP_FPS
                 if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
                 m_Protection.ConfigureHardwareBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
                 m_Protection.ResetPresentation();
+                m_Transfer = m_Model.GetComponent<HaloTransferPresentation>();
+                if (!m_Transfer) m_Transfer = m_Model.gameObject.AddComponent<HaloTransferPresentation>();
+                m_Transfer.Configure(m_Halo);
+                m_HaloOccupied = false;
             }
         }
 
@@ -296,6 +302,7 @@ namespace Unity.MP_FPS
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             var state = ghost.ControllerState;
+            m_HaloOccupied = HaloTransferRules.Occupied(ghost);
             bool downed = ghost.ClashEnabled && ghost.ClashLife == ClashLife.Downed;
             var presentedStance = downed ? DollSingerStance.Prone : state.Stance;
             m_OwnedAlive = ghost.CurrentHealth > 0;
@@ -346,11 +353,11 @@ namespace Unity.MP_FPS
             bool hideWeapon = downed || ghost.HaloDefenseHeld || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
-            m_Halo.SetNetworkPresentation(!hideWeapon && (owned ? m_OwnedAiming : state.Aiming),
+            m_Halo.SetNetworkPresentation(!hideWeapon && !m_HaloOccupied && (owned ? m_OwnedAiming : state.Aiming),
                 (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
                 owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
                 owned ? m_OwnedLightEnabled : state.HaloLightEnabled,
-                !hideWeapon && (owned ? ReadOwnedReadyIntent() : ghost.HipFireHoldRemaining > 0 || ghost.HaloPendingShot));
+                !hideWeapon && !m_HaloOccupied && (owned ? ReadOwnedReadyIntent() : ghost.HipFireHoldRemaining > 0 || ghost.HaloPendingShot));
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
                 ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1) : DollSingerHaloAim.HaloWeapon.None;
@@ -358,6 +365,17 @@ namespace Unity.MP_FPS
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
                 state.IsReloadingState, HaloReload.Progress(ghost, weapon),
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
+            if (m_Transfer)
+            {
+                DollSingerHaloAim recipient = null;
+                if (World.EntityManager.HasComponent<GhostGameObjectLink>(ghost.HaloTransferTarget))
+                {
+                    var link = World.EntityManager.GetComponentObject<GhostGameObjectLink>(ghost.HaloTransferTarget);
+                    if (link.LinkedInstance && link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var other))
+                        recipient = other.m_Halo;
+                }
+                m_Transfer.Present(ghost, recipient);
+            }
             if (Role == MultiplayerRole.ClientOwned)
             {
                 bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
@@ -438,6 +456,8 @@ namespace Unity.MP_FPS
             if (m_Melee) m_Melee.ResetPresentation();
             if (m_Action) m_Action.ResetPresentation();
             if (m_Protection) m_Protection.DisposePresentation();
+            if (m_Transfer) m_Transfer.ResetPresentation();
+            m_HaloOccupied = false;
             m_Halo.OwnedAimIntent = null;
             m_Halo.OwnedReadyIntent = null;
             RaidQuickSlotInput.Unbind(m_Input);

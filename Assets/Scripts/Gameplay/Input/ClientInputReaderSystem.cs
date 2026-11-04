@@ -45,6 +45,8 @@ public partial class ClientInputReaderSystem : SystemBase
                 _lastKnownPlayerEntity = currentLocalPlayer;
                 _dollSingerInput = null;
                 _dollSingerPresentation = null;
+                _transferGestureHeld = false;
+                _transferTarget = HaloTransferCandidate = Entity.Null;
             }
         }
         else
@@ -54,6 +56,8 @@ public partial class ClientInputReaderSystem : SystemBase
             _lastKnownPlayerEntity = Entity.Null;
             _dollSingerInput = null;
             _dollSingerPresentation = null;
+            _transferGestureHeld = false;
+            _transferTarget = HaloTransferCandidate = Entity.Null;
         }
 
         if (_dollSingerInput == null && currentLocalPlayer != Entity.Null &&
@@ -115,6 +119,7 @@ public partial class ClientInputReaderSystem : SystemBase
                     !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected);
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
+                ReadHaloTransfer(currentLocalPlayer, equipped, canFire, ref playerInput);
                 TutorialRuntime.Observe(playerInput);
                 InGameHUD.ObserveHaloChargeInput(playerInput, equipped);
                 input.ValueRW.SetInput(0, playerInput);

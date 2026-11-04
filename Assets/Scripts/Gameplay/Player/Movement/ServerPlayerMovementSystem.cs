@@ -345,10 +345,12 @@ namespace Unity.MP_FPS
                 {
                     var pending = predictedClientInputComponentLookup[lookup.ValueRO.ClientCommandInputEntity];
                     if (pending.InputCount > 0 && commands[pending.BeginInputIndex + pending.InputCount - 1].TryGetPlayerMovementInput(defender.ValueRO.InputIndex, out var intent))
-                        held = intent.HaloDefense && !intent.FireSuppressed && !intent.FreeLooking;
+                        held = intent.HaloDefense && !intent.HaloTransfer && !intent.FireSuppressed && !intent.FreeLooking;
                 }
                 HaloEnergyRules.SetDefense(ref defender.ValueRW, held);
             }
+
+            UpdateHaloTransfers(serverTick, deltaTime);
 
             foreach (var (predictedPlayer, inputLookup,
                          entity)

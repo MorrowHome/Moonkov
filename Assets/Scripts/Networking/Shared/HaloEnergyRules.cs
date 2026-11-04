@@ -55,7 +55,7 @@ namespace Unity.MP_FPS
         public static bool CanDefend(in PredictedPlayerGhost state) => state.HaloEquipped &&
             EnergyShieldRules.Alive(state) && (!state.ClashEnabled || state.ClashCanAct) &&
             !state.ConsumingSupply && state.HandAction == 0 && state.MeleePhase == 0 &&
-            !state.ControllerState.IsReloadingState && state.WeaponEquipRemaining <= 0 && !state.ClashDarkSight;
+            !state.ControllerState.IsReloadingState && state.WeaponEquipRemaining <= 0 && !state.ClashDarkSight && !HaloTransferRules.Occupied(state);
 
         public static void Release(ref PredictedPlayerGhost state)
         { state.HaloDefending = false; state.HaloDefenseHeld = false; }
@@ -108,7 +108,7 @@ namespace Unity.MP_FPS
             { Release(ref state); return; }
             if (!float.IsFinite(dt) || dt <= 0) return;
             state.HaloEnergy = Energy(state);
-            if (state.HaloDefenseHeld) { state.HaloRecoveryDelay = RecoveryDelay; return; }
+            if (state.HaloDefenseHeld || HaloTransferRules.Occupied(state)) { state.HaloRecoveryDelay = RecoveryDelay; return; }
             float delay = float.IsFinite(state.HaloRecoveryDelay) ? Mathf.Max(0, state.HaloRecoveryDelay) : RecoveryDelay;
             state.HaloRecoveryDelay = Mathf.Max(0, delay - dt);
             float active = Mathf.Max(0, dt - delay);

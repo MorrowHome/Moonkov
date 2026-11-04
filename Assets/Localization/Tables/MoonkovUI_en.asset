@@ -5810,6 +5810,22 @@ MonoBehaviour:
     m_Localized: 'Permanent: all halo energy recovery +33%.'
     m_Metadata:
       m_Items: []
+  - m_Id: 10212965222440960
+    m_Localized: Hold to transfer energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161216
+    m_Localized: Transferring energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161217
+    m_Localized: Halo returning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10212965281161218
+    m_Localized: Teammate
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

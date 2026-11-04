@@ -130,6 +130,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private Camera playerCamera;
     private DollSingerView cameraOwner;
     private Transform head;
+    public Vector3 RestingAnchor => head ? head.position + transform.up * IdleHeadHeight : transform.position + transform.up * 1.9f;
     private Transform chest;
     private Transform rightIndexTip;
     private Transform rightThumbTip;
