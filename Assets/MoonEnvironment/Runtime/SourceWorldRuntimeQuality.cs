@@ -6,7 +6,7 @@ namespace Unity.MP_FPS.Moon
     /// <summary>Runtime budget for the fixed, baked world. Authoring assets stay unchanged.</summary>
     public static class SourceWorldRuntimeQuality
     {
-        public const float RenderScale = .5f;
+        public const float RenderScale = .4f;
         public const int TextureMipmapLimit = 1;
         // Keep the authored camera range. A short global clip cuts off buildings and targets.
         public const float ViewDistance = 0f;

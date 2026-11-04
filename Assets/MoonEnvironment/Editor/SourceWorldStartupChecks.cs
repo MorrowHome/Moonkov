@@ -47,7 +47,7 @@ namespace Unity.MP_FPS.Moon.Editor
                 SourceWorldRuntimeQuality.Configure(runtime);
                 Require(authored.renderScale == 1 && authored.msaaSampleCount == 4 && authored.shadowDistance == 1800,
                     "The runtime quality budget modified the authored pipeline.");
-                Require(runtime.renderScale == .5f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
+                Require(runtime.renderScale == .4f && runtime.msaaSampleCount == 1 && runtime.shadowDistance == 0,
                     "The baked-world runtime budget was not applied.");
                 Require(authored.supportsMainLightShadows && authored.supportsAdditionalLightShadows && authored.supportsSoftShadows,
                     "The runtime budget changed authored shadow support.");
