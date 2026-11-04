@@ -8,7 +8,8 @@ namespace Unity.MP_FPS.Moon
     {
         public const float RenderScale = .5f;
         public const int TextureMipmapLimit = 1;
-        public const float ViewDistance = 75f;
+        // Keep the authored camera range. A short global clip cuts off buildings and targets.
+        public const float ViewDistance = 0f;
         public const float SecondaryMotionDistance = 12f;
         public const float FullRateCreatureDistance = 12f;
         private static UniversalRenderPipelineAsset s_RuntimePipeline;
