@@ -270,6 +270,18 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         revolverEquipped && revolverVisual ? revolverVisual.lightColor :
         visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : aimedHaloColor;
 
+    // Defense hides the attack visual, so its color cannot depend on visualWeapon or a light's last frame.
+    public Color ColorForWeapon(HaloWeapon weapon)
+    {
+        int index = (int)weapon - 5;
+        if (index >= 0 && index < arsenalVisuals.Length && arsenalVisuals[index]) return arsenalVisuals[index].lightColor;
+        if (weapon == HaloWeapon.Rifle && rifleVisual) return rifleVisual.lightColor;
+        if (weapon == HaloWeapon.Revolver && revolverVisual) return revolverVisual.lightColor;
+        if (weapon == HaloWeapon.Shotgun && shotgunVisual) return shotgunVisual.lightColor;
+        if (weapon == HaloWeapon.Sniper && sniperVisual) return sniperVisual.lightColor;
+        return aimedHaloColor;
+    }
+
     private void PlayDischarge(uint tick = 0)
     {
         if (!haloVisual || !beamCore || !beamCore.sharedMaterial) return;

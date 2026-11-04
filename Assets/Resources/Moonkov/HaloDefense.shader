@@ -54,7 +54,7 @@ Shader "Moonkov/Halo Defense"
                 float backFade = lerp(lerp(.28, 1, step(0, facing)), 1, _HaloState.w);
                 half alpha = deployment * backFade * (art.a * .18 + edge * .85) * (opacity + wave * .55 + highlight * .6);
                 clip(alpha - .003);
-                half3 color = lerp(_HaloColor.rgb, half3(1,.9,.96), saturate(wave + highlight));
+                half3 color = _HaloColor.rgb;
                 return half4(color * (1.5 + edge * 1.8 + _HaloState.y * .45 + wave * 2), alpha);
             }
             ENDHLSL
