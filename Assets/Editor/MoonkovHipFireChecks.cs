@@ -28,6 +28,7 @@ public static class MoonkovHipFireChecks
         CheckSpread(registry);
         CheckRecoil();
         CheckPresentation();
+        CheckOwnedReleasePresentation();
         Debug.Log($"Hip fire checks passed: {assertions} assertions; 30/60/144 Hz windup, single click, held auto/semi/burst, " +
             "ADS handoff/release, cancellation, deterministic spread, stronger/slower recoil, separate pose and lens.");
     }
@@ -121,12 +122,44 @@ public static class MoonkovHipFireChecks
             var fired = Ready(id);
             for (int i = 0; i < Mathf.CeilToInt(.4f / dt); i++) Step(ref fired, weapon, Intent(aim: true), dt);
             Require(Step(ref fired, weapon, Intent(true, true, true), dt), "Aimed shot failed before release check.");
-            Step(ref fired, weapon, Intent(), dt);
-            Require(fired.WeaponRaiseProgress == 1, "ADS release removed the recent-shot hip-fire hold.");
-            // Finish any burst, then keep aiming beyond the last shot's hold window.
-            for (int i = 0; i < Mathf.CeilToInt(2f / dt); i++) Step(ref fired, weapon, Intent(aim: true), dt);
+            Require(fired.HipFireHoldRemaining == 0, "An aimed shot armed the hip-fire hold.");
+            int shots = 1;
+            // A committed burst may finish. It must not add a pose timer afterwards.
+            for (int i = 0; i < Mathf.CeilToInt(1f / dt) && HaloModuleFire.HasPendingFire(fired); i++)
+                if (Step(ref fired, weapon, Intent(), dt)) shots++;
+            Require(shots == Mathf.Max(1, weapon.BurstCount), "Releasing ADS lost or repeated a committed burst.");
             Require(!Step(ref fired, weapon, Intent(), dt) && fired.WeaponRaiseProgress < 1,
-                "Aiming refreshed the hold timer after shooting stopped.");
+                "Releasing ADS after shooting waited for the hip-fire hold.");
+            for (int i = 1; i < Mathf.CeilToInt(DollSingerHaloAim.LowerSeconds / dt); i++) Step(ref fired, weapon, Intent(), dt);
+            Require(fired.WeaponRaiseProgress == 0, "Aimed-shot release exceeded the lowering duration.");
+
+            // A hip-fire hold must also be consumed when switching into ADS.
+            var hip = Ready(id);
+            for (int i = 0; i < Mathf.CeilToInt(.4f / dt); i++) Step(ref hip, weapon, Intent(i == 0, true), dt);
+            Require(hip.HipFireHoldRemaining > 0, "Hip fire lost its hold timer.");
+            for (int i = 0; i < Mathf.CeilToInt(.4f / dt); i++) Step(ref hip, weapon, Intent(aim: true), dt);
+            Require(!Step(ref hip, weapon, Intent(), dt) && hip.WeaponRaiseProgress < 1,
+                "Entering ADS retained an earlier hip-fire hold.");
+
+            // Keep a click through the raise animation, including a rapid RMB release.
+            var queued = Ready(id); shots = 0;
+            if (Step(ref queued, weapon, Intent(true, true, true), dt)) shots++;
+            for (int i = 0; i < Mathf.CeilToInt(1.5f / dt); i++)
+                if (Step(ref queued, weapon, Intent(), dt)) shots++;
+            Require(shots == Mathf.Max(1, weapon.BurstCount) && queued.WeaponRaiseProgress == 0,
+                "A rapid aimed click was lost, repeated, or left the hands raised.");
+
+            var repeated = Ready(id);
+            for (int cycle = 0; cycle < 2; cycle++)
+            {
+                shots = 0;
+                for (int i = 0; i < Mathf.CeilToInt(1f / dt); i++)
+                    if (Step(ref repeated, weapon, Intent(weapon.Automatic || weapon.BurstCount > 1 || i == 0, true, true), dt)) shots++;
+                Require(weapon.Automatic ? shots > 1 : shots == Mathf.Max(1, weapon.BurstCount),
+                    $"Re-aiming after lowering lost a trigger release: weapon={id}, dt={dt}, cycle={cycle}, shots={shots}.");
+                for (int i = 0; i < Mathf.CeilToInt(DollSingerHaloAim.LowerSeconds / dt); i++) Step(ref repeated, weapon, Intent(), dt);
+                HaloModuleFire.AdvanceTimers(ref repeated, weapon.CooldownInMs);
+            }
         }
     }
 
@@ -252,6 +285,47 @@ public static class MoonkovHipFireChecks
             }
         }
         finally { if (view) view.BindPlayer(null, true); UnityEngine.Object.DestroyImmediate(root); }
+    }
+
+    private static void CheckOwnedReleasePresentation()
+    {
+        var root = new GameObject("Inactive aimed-shot release fixture"); root.SetActive(false);
+        try
+        {
+            var presenter = root.AddComponent<DollSingerNetworkPresentation>();
+            var halo = root.AddComponent<DollSingerHaloAim>();
+            var ready = typeof(DollSingerNetworkPresentation).GetMethod("ReadOwnedReadyState", Private);
+            bool firing = true;
+            halo.OwnedAimIntent = () => (bool)Get(presenter, "m_OwnedAiming");
+            halo.OwnedReadyIntent = () => (bool)ready.Invoke(presenter, new object[] { firing });
+            Set(presenter, "m_OwnedRaised", true);
+            Set(presenter, "m_OwnedAiming", true);
+            halo.SetNetworkPresentation(true, Vector3.forward, Vector3.forward * 20, readying: true);
+            Call(halo, "Update");
+            Require((bool)Get(halo, "wantsAim"), "Aimed fire did not raise the owner pose.");
+            firing = false; Set(presenter, "m_OwnedAiming", false);
+            // Keep delivering pre-release hold states, even after a cleared snapshot.
+            foreach (bool staleHold in new[] { true, true, false, true, false })
+            {
+                Set(presenter, "m_OwnedRaised", staleHold);
+                halo.SetNetworkPresentation(true, Vector3.forward, Vector3.forward * 20, readying: staleHold);
+                Call(halo, "Update");
+                Require(!(bool)Get(halo, "wantsAim"), "A stale snapshot raised the owner after RMB release.");
+            }
+            Set(presenter, "m_OwnedPendingFire", true); Call(halo, "Update");
+            Require((bool)Get(halo, "wantsAim"), "An unfinished shot lost its pose.");
+            Set(presenter, "m_OwnedPendingFire", false); Call(halo, "Update");
+            Require(!(bool)Get(halo, "wantsAim"), "Finishing a shot left an extra hold.");
+            firing = true; Call(halo, "Update");
+            Require((bool)Get(halo, "wantsAim"), "Continuing hip fire failed to raise the owner pose.");
+            firing = false; Set(presenter, "m_OwnedRaised", true); Call(halo, "Update");
+            Require((bool)Get(halo, "wantsAim"), "A new hip-fire action lost its normal hold.");
+            halo.OwnedAimIntent = null; halo.OwnedReadyIntent = null;
+            halo.SetNetworkPresentation(false, Vector3.forward, Vector3.forward * 20, readying: true);
+            Call(halo, "Update");
+            Require((bool)Get(halo, "wantsAim"), "Remote replicas stopped following synchronized pose state.");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(root); }
     }
 
     private static object Get(object value, string name) => value.GetType().GetField(name, Private).GetValue(value);

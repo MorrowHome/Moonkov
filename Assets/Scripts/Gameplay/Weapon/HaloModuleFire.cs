@@ -9,6 +9,9 @@ namespace Unity.MP_FPS
     {
         public const float InputBufferSeconds = .12f;
 
+        public static bool HasPendingFire(in PredictedPlayerGhost state) =>
+            state.HaloPendingShot || state.BurstRemaining > 0 || state.FireBufferRemaining > 0;
+
         public static void Reset(ref PredictedPlayerGhost state)
         {
             state.BurstRemaining = 0;
@@ -82,8 +85,12 @@ namespace Unity.MP_FPS
 
             float step = Mathf.Max(0, deltaTime);
             bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
-            // ADS raises the hands directly; only firing extends the hip-fire hold.
-            if (input.FireHeld || input.Shoot || state.BurstRemaining > 0)
+            // Lowering can return before TryFire's trigger edge tracking runs.
+            if (!input.Shoot) state.BurstTriggerHeld = false;
+            // Aiming consumes the hip-fire hold. An aimed shot must not leave a
+            // timed pose behind when RMB is released, even immediately after firing.
+            if (input.Aim) state.HipFireHoldRemaining = 0;
+            else if (input.FireHeld || input.Shoot || state.HipFireHoldRemaining > 0 && HasPendingFire(state))
                 state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
             else state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
 
@@ -91,7 +98,7 @@ namespace Unity.MP_FPS
             if (!wasReady && input.Shoot && (!state.ControllerState.IsReloadingState || reloadEnding) &&
                 (state.CurrentAmmo > 0 || reloadEnding))
                 state.HaloPendingShot = true;
-            bool raised = input.Aim || state.HipFireHoldRemaining > 0 || state.HaloPendingShot;
+            bool raised = input.Aim || state.HipFireHoldRemaining > 0 || HasPendingFire(state);
             state.WeaponRaiseProgress = Mathf.MoveTowards(state.WeaponRaiseProgress, raised ? 1 : 0,
                 step / ((raised ? DollSingerHaloAim.RaiseSeconds : DollSingerHaloAim.LowerSeconds) * RaidHealth.HandlingMultiplier(state)));
             if (state.ControllerState.IsReloadingState && !reloadEnding) state.HaloPendingShot = false;
@@ -100,7 +107,8 @@ namespace Unity.MP_FPS
             bool trigger = input.Shoot || state.HaloPendingShot;
             state.HaloPendingShot = false;
             bool fired = TryFire(ref state, weapon, trigger, true, false);
-            if (fired) state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
+            if (fired && !input.Aim && state.HipFireHoldRemaining > 0)
+                state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
             return fired;
         }
 

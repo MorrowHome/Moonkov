@@ -24,6 +24,7 @@ namespace Unity.MP_FPS
         private RaycastHit[] m_AimHits = new RaycastHit[32];
         private const int AimMask = ~(1 << (int)LayerIndex.ServerPlayer);
         private bool m_OwnedAiming, m_OwnedRaised, m_HasOwnedAimPoint;
+        private bool m_OwnedPendingFire, m_OwnedHipHoldSuppressed;
         private Vector3 m_OwnedAimPoint;
         private MoonkovPlayerAudio m_Audio;
         private DollSingerMeleePresentation m_Melee;
@@ -188,8 +189,17 @@ namespace Unity.MP_FPS
             bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation ||
                 GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
                 RaidHUD.QuickSlotToolSelected || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput;
-            return !blocked && !(m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)) &&
-                (m_OwnedRaised || m_Input.FireHeld || m_Input.FirePressed);
+            if (blocked || m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)) return false;
+            return ReadOwnedReadyState(m_Input.FireHeld || m_Input.FirePressed);
+        }
+
+        private bool ReadOwnedReadyState(bool fire)
+        {
+            // RMB owns the local release. Late snapshots may still contain the
+            // previous hip-fire hold; only a new local hip-fire input rearms it.
+            if (m_OwnedAiming) m_OwnedHipHoldSuppressed = true;
+            else if (fire) m_OwnedHipHoldSuppressed = false;
+            return fire || m_OwnedPendingFire || m_OwnedRaised && !m_OwnedHipHoldSuppressed;
         }
 
         public override void OnGhostLinked()
@@ -197,6 +207,7 @@ namespace Unity.MP_FPS
             m_Linked = true;
             m_Motor = GetComponent<FirstPersonController>();
             m_OwnedAiming = m_OwnedRaised = m_HasOwnedAimPoint = false;
+            m_OwnedPendingFire = m_OwnedHipHoldSuppressed = false;
             m_Recoil.Reset(); m_RecoilWeapon = 0;
             m_LightPanel?.Dispose(); m_LightPanel = null;
             m_OwnedLightEnabled = true;
@@ -312,7 +323,8 @@ namespace Unity.MP_FPS
             bool downed = ghost.ClashEnabled && ghost.ClashLife == ClashLife.Downed;
             var presentedStance = downed ? DollSingerStance.Prone : state.Stance;
             m_OwnedAlive = ghost.CurrentHealth > 0;
-            m_OwnedRaised = ghost.HipFireHoldRemaining > 0 || ghost.HaloPendingShot;
+            m_OwnedRaised = ghost.HipFireHoldRemaining > 0;
+            m_OwnedPendingFire = HaloModuleFire.HasPendingFire(ghost);
             m_Halo.HandlingMultiplier = RaidHealth.HandlingMultiplier(ghost);
             if (!m_OwnedAlive || downed || m_RecoilWeapon != ghost.EquippedWeaponID) m_Recoil.Reset();
             m_RecoilWeapon = ghost.EquippedWeaponID;
@@ -364,7 +376,7 @@ namespace Unity.MP_FPS
                 (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
                 owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
                 owned ? m_OwnedLightEnabled : state.HaloLightEnabled,
-                !hideWeapon && !m_HaloOccupied && (owned ? ReadOwnedReadyIntent() : ghost.HipFireHoldRemaining > 0 || ghost.HaloPendingShot));
+                !hideWeapon && !m_HaloOccupied && (owned ? ReadOwnedReadyIntent() : m_OwnedRaised || m_OwnedPendingFire));
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
                 ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1) : DollSingerHaloAim.HaloWeapon.None;
