@@ -58,8 +58,8 @@ public static class RaidFallDamageChecks
 
         health = Fresh(16);
         Check(RaidHealth.ApplyLandingDamage(ref health, false, gravity, 21) > 0 &&
-              health.LeftLegHealth == 0 && health.RightLegHealth == 0 && !RaidNutrition.CanSprint(health),
-            "A hard landing disables legs and sprint through existing rules");
+              health.LeftLegHealth == 0 && health.RightLegHealth == 0 && RaidNutrition.CanSprint(health),
+            "A hard landing disables legs but still permits a costly sprint");
         var injured = Fresh(6);
         RaidHealth.Set(ref injured, BodyPart.LeftLeg, 0);
         float before = injured.CurrentHealth;

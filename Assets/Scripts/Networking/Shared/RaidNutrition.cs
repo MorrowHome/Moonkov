@@ -163,8 +163,7 @@ namespace Unity.MP_FPS
             state.LastHitPart = BodyPart.Auto; state.ControllerState.IsHit = true;
         }
         public static bool CanSprint(in PredictedPlayerGhost state) => !state.BodyHealthInitialized ||
-            (state.Energy > 0 && state.Hydration > 0 && (state.Oxygen > 0 || !RaidOxygen.NeedsSuitAir(state)) &&
-             state.LeftLegHealth > 0 && state.RightLegHealth > 0);
+            (state.Energy > 0 && state.Hydration > 0 && (state.Oxygen > 0 || !RaidOxygen.NeedsSuitAir(state)));
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
         {
@@ -177,7 +176,7 @@ namespace Unity.MP_FPS
             if (state.Oxygen <= 10 && RaidOxygen.NeedsSuitAir(state))
             { constants.Walk.Speed *= state.Oxygen <= 0 ? .65f : .85f; constants.Sprint.Speed *= .8f; constants.JumpHeight *= .7f; }
             if (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0)
-            { constants.Walk.Speed *= .65f; constants.JumpHeight *= .5f; }
+            { constants.Walk.Speed *= .65f; constants.Sprint.Speed *= .65f; constants.JumpHeight *= .5f; }
             if (!CanSprint(state)) constants.Sprint.Speed = constants.Walk.Speed;
             if(state.AlienFoodEffectSeconds>0)
             {

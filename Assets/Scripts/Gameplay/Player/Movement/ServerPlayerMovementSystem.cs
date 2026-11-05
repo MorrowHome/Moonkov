@@ -616,13 +616,20 @@ namespace Unity.MP_FPS
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f)
                 {
                     bool wasLanding = predictedPlayer.ValueRO.ControllerState.LandTriggered;
+                    bool wasGrounded = predictedPlayer.ValueRO.ControllerState.MovementType == FirstPersonController.MovementType.Standing;
+                    float3 beforePosition = predictedPlayer.ValueRO.ControllerState.CurrentPosition;
                     controllerLink.Controller.ApplyMovementUpdate(ref predictedPlayer.ValueRW.ControllerState,
                         controllerConsts.ValueRO.ControllerConsts,
                         predictedPlayer.ValueRO.AccumulatedMovement,
                         deltaTime);
                     if (MoonRaidMap.Active)
+                    {
                         RaidHealth.ApplyLandingDamage(ref predictedPlayer.ValueRW, wasLanding,
                             controllerConsts.ValueRO.ControllerConsts.Gravity, serverTick);
+                        RaidHealth.ApplyInjuredSprintDamage(ref predictedPlayer.ValueRW,
+                            (Vector3)(predictedPlayer.ValueRO.ControllerState.CurrentPosition - beforePosition),
+                            wasGrounded, deltaTime, serverTick);
+                    }
                 }
 
                 predictedPlayer.ValueRW.AccumulatedMovement = float3.zero;

@@ -29,7 +29,7 @@ public static class MoonkovRaidHealthChecks
         RaidHealth.Damage(ref health, BodyPart.LeftLeg, 80, 1);
         Require(health.LeftLegHealth == 0 && Mathf.Abs(health.CurrentHealth - 360) < .001f && health.CurrentHealth > 0, "Limb overflow must conserve damage without instant death.");
         var input = new PlayerInput(); input.SetFlag(PlayerInput.InputFlag.Sprint, true);
-        Require(!RaidHealth.RestrictInput(health, input).Sprint, "Disabled leg still sprints.");
+        Require(RaidHealth.RestrictInput(health, input).Sprint, "Disabled leg must allow a costly sprint.");
         var constants = new FirstPersonController.ControllerConsts(); constants.Walk.Speed = 4; constants.Sprint.Speed = 8;
         Require(Mathf.Abs(RaidHealth.Movement(health, constants).Walk.Speed - 2.6f) < .001f, "Leg injury missing from movement.");
         foreach (var vital in new[] { BodyPart.Head, BodyPart.Chest })

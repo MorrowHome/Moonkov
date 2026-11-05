@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
         public const float MoonGravity = 1.62f;
         public const float FallDamagePerMeter = 12f;
         public const float MaximumFallDamage = 600f;
+        public const float InjuredSprintDamagePerLegPerSecond = 2f;
         public static float Maximum(BodyPart part)
         {
             switch (part)
@@ -112,6 +113,27 @@ namespace Unity.MP_FPS
             state.LastHitPart = part; state.LastDamageAmount = amount;
             state.LastHitTick = tick; state.ControllerState.IsHit = true;
             if(!physiological && state.CurrentHealth<before)state.NonPhysiologicalDamageSequence++;
+            return before - state.CurrentHealth;
+        }
+
+        // Server-only, after collision resolution. Holding sprint at rest, jumping,
+        // teleports and prediction replays must not charge an injured runner.
+        public static float ApplyInjuredSprintDamage(ref PredictedPlayerGhost state, Vector3 travel,
+            bool wasGrounded, float dt, uint tick)
+        {
+            if (!state.BodyHealthInitialized || state.ClashEnabled || state.CurrentHealth <= 0 ||
+                !state.ControllerState.Sprinting || !wasGrounded ||
+                state.ControllerState.MovementType != FirstPersonController.MovementType.Standing ||
+                !float.IsFinite(dt) || dt <= 0 || dt > .25f) return 0;
+            travel.y = 0;
+            float distance = travel.magnitude;
+            float speed = state.ControllerState.MovementSpeed;
+            if (!float.IsFinite(distance) || !float.IsFinite(speed) || speed <= .1f ||
+                distance <= dt * .15f || distance > Mathf.Max(.5f, speed * dt * 1.5f)) return 0;
+            float before = state.CurrentHealth;
+            float damage = InjuredSprintDamagePerLegPerSecond * dt;
+            if (state.LeftLegHealth <= 0) Damage(ref state, BodyPart.LeftLeg, damage, tick, physiological: true);
+            if (state.RightLegHealth <= 0) Damage(ref state, BodyPart.RightLeg, damage, tick, physiological: true);
             return before - state.CurrentHealth;
         }
 

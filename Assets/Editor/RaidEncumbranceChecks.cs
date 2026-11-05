@@ -37,7 +37,8 @@ public static class RaidEncumbranceChecks
             Near(RaidEncumbrance.Burden(90), 1), "Invalid or migrated weight escaped the safe range.");
         RaidHealth.Damage(ref health, BodyPart.LeftLeg, 65, 1);
         Check(Near(RaidHealth.Movement(health, constants).Walk.Speed, heavy.Walk.Speed * .65f) &&
-            !RaidNutrition.CanSprint(health), "Weight bypassed the existing leg injury rules.");
+            Near(RaidHealth.Movement(health, constants).Sprint.Speed, heavy.Sprint.Speed * .65f) &&
+            RaidNutrition.CanSprint(health), "Weight bypassed the leg injury speed penalty or blocked sprint.");
         health.ClashEnabled = true;
         Check(Near(RaidEncumbrance.Movement(health, constants).Walk.Speed, constants.Walk.Speed),
             "The separate bounty mode acquired the expedition weight penalty.");
