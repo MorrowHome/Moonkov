@@ -8,6 +8,8 @@ namespace Unity.MP_FPS.Online
     {
         public string PlayerId, Name;
         public bool Ready, Returned;
+        public bool Connected = true;
+        public int ReconnectSeconds;
         public int Team;
     }
     [Serializable] public sealed class LobbySnapshot
@@ -19,7 +21,7 @@ namespace Unity.MP_FPS.Online
     }
     [Serializable] public sealed class LobbyAction
     {
-        public string Action, Code, Mode;
+        public string Action, Code, Mode, TargetPlayerId;
         public bool Ready, PublicQueue;
         public int Team;
     }
