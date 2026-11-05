@@ -1,6 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Build.DataBuilders;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEditor.Build.Pipeline;
+using UnityEditor.Build.Pipeline.Interfaces;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -12,7 +18,70 @@ public static class OnlineGameServerBuild
     const string Report = "Library/BuildValidation/OnlineServer/build-report.json";
     const string QueueKey = "Moonkov.OnlineServerBuildQueued";
     static double s_IdleSince = -1;
-    [Serializable] sealed class Result { public string Status, Output, Message; public ulong Bytes; public int Errors; }
+    [Serializable] sealed class Result
+    {
+        public string Status, Output, Message;
+        public ulong Bytes;
+        public int Errors;
+        public double Seconds, AddressablesSeconds, ArchiveSeconds;
+    }
+    [Serializable] sealed class BuildTrace { public TraceEvent[] traceEvents; }
+    [Serializable] sealed class TraceEvent { public string name; public double dur; }
+
+    // Addressables' "LZ4" uses LZ4HC. Local iteration does not need that expensive
+    // compression pass. Keep the normal SBP cache and all source group settings.
+    public sealed class LocalBundleCompression : IDisposable
+    {
+        readonly BuildCallbacks m_Callbacks = ContentPipeline.BuildCallbacks;
+        readonly Func<IBuildParameters, IDependencyData, IWriteData, ReturnCode> m_PreviousPacking;
+        readonly Dictionary<BundledAssetGroupSchema, CompressionState> m_Saved = new Dictionary<BundledAssetGroupSchema, CompressionState>();
+        struct CompressionState { public int Value; public bool Dirty; }
+
+        public LocalBundleCompression()
+        {
+            m_PreviousPacking = m_Callbacks.PostPackingCallback;
+            m_Callbacks.PostPackingCallback = PrepareBundles;
+        }
+
+        ReturnCode PrepareBundles(IBuildParameters parameters, IDependencyData dependencies, IWriteData writeData)
+        {
+            var code = m_PreviousPacking?.Invoke(parameters, dependencies, writeData) ?? ReturnCode.Success;
+            if (code < ReturnCode.Success || !(parameters is AddressableAssetsBundleBuildParameters bundles)) return code;
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            if (settings == null) return code;
+            foreach (var group in settings.groups)
+            {
+                var schema = group != null ? group.GetSchema<BundledAssetGroupSchema>() : null;
+                // Custom schemas retain their own compression policy.
+                if (schema == null || schema.GetType() != typeof(BundledAssetGroupSchema) || m_Saved.ContainsKey(schema)) continue;
+                using (var serialized = new SerializedObject(schema))
+                {
+                    var compression = serialized.FindProperty("m_Compression");
+                    if (compression == null) throw new InvalidOperationException("Addressables compression schema has changed.");
+                    m_Saved.Add(schema, new CompressionState { Value = compression.intValue, Dirty = EditorUtility.IsDirty(schema) });
+                }
+                // Do not use the property setter: it dirties groups/settings and
+                // can save temporary server settings into the client's assets.
+                JsonUtility.FromJsonOverwrite("{\"m_Compression\":0}", schema);
+                EditorUtility.ClearDirty(schema);
+            }
+            bundles.BundleCompression = BuildCompression.Uncompressed;
+            return code;
+        }
+
+        public void Dispose()
+        {
+            m_Callbacks.PostPackingCallback = m_PreviousPacking;
+            foreach (var saved in m_Saved)
+            {
+                if (saved.Key == null) continue;
+                JsonUtility.FromJsonOverwrite("{\"m_Compression\":" + saved.Value.Value + "}", saved.Key);
+                if (saved.Value.Dirty) EditorUtility.SetDirty(saved.Key);
+                else EditorUtility.ClearDirty(saved.Key);
+            }
+            m_Saved.Clear();
+        }
+    }
 
     static OnlineGameServerBuild()
     { if (SessionState.GetBool(QueueKey, false)) EditorApplication.update += WhenIdle; }
@@ -72,15 +141,22 @@ public static class OnlineGameServerBuild
                 if (!EditorSceneManager.SaveScene(loaded, copy, true)) throw new InvalidOperationException("Could not preserve a build copy of the unsaved scene.");
                 scenes[i] = copy;
             }
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            var started = DateTime.UtcNow;
+            BuildReport report;
+            using (new LocalBundleCompression())
             {
-                scenes = scenes,
-                locationPathName = result.Output,
-                target = BuildTarget.StandaloneWindows64, targetGroup = BuildTargetGroup.Standalone,
-                subtarget = (int)StandaloneBuildSubtarget.Server, options = BuildOptions.None,
-                extraScriptingDefines = new[] { "MOON_LOCAL_SERVER" }
-            });
+                report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+                {
+                    scenes = scenes,
+                    locationPathName = result.Output,
+                    target = BuildTarget.StandaloneWindows64, targetGroup = BuildTargetGroup.Standalone,
+                    subtarget = (int)StandaloneBuildSubtarget.Server, options = BuildOptions.None,
+                    extraScriptingDefines = new[] { "MOON_LOCAL_SERVER" }
+                });
+            }
             result.Status = report.summary.result.ToString(); result.Errors = report.summary.totalErrors; result.Bytes = report.summary.totalSize;
+            result.Seconds = report.summary.totalTime.TotalSeconds;
+            ReadAddressablesTimings(result, started);
             if (report.summary.result == BuildResult.Cancelled)
             {
                 result.Message = "Build cancelled; save modified scenes only after their owner confirms.";
@@ -97,5 +173,22 @@ public static class OnlineGameServerBuild
             if (EditorUserBuildSettings.standaloneBuildSubtarget != previousSubtarget)
                 EditorUserBuildSettings.standaloneBuildSubtarget = previousSubtarget;
         }
+    }
+
+    static void ReadAddressablesTimings(Result result, DateTime started)
+    {
+        const string tracePath = "Library/com.unity.addressables/AddressablesBuildTEP.json";
+        if (!File.Exists(tracePath) || File.GetLastWriteTimeUtc(tracePath) < started) return;
+        try
+        {
+            var trace = JsonUtility.FromJson<BuildTrace>(File.ReadAllText(tracePath));
+            if (trace?.traceEvents == null) return;
+            foreach (var step in trace.traceEvents)
+            {
+                if (step.name == "ContentPipeline.BuildAssetBundles") result.AddressablesSeconds += step.dur / 1000000d;
+                if (step.name == "ArchiveAndCompressBundles") result.ArchiveSeconds += step.dur / 1000000d;
+            }
+        }
+        catch (Exception ex) { Debug.LogWarning("[Online Server] Could not read build timings: " + ex.Message); }
     }
 }

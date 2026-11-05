@@ -50,6 +50,10 @@ Unity 6000.5.10f1 需要 Windows Dedicated Server Build Support。本轮已通�
 
 从现有 Editor 的 **Tools → Moonkov → Build Local Windows Server** 构建到 `Build/MoonServer/MoonServer.exe`。工具等待编译/导入空闲，使用正式地图和共享网络资源；若正式场景有未保存改动，先用 `SaveAsCopy` 保存构建副本到被忽略的 `Assets/OnlineServerBuildSnapshot/`，保留当前内容。Unity 正式构建仍可能弹出原场景保存对话框；场景含并行修改时，由用户决定是否保存，工具不自动确认。构建状态在 `Library/BuildValidation/OnlineServer/build-report.json`。
 
+该菜单保留 Unity/Bee 和 SBP 增量缓存。Archive 是把资源写成运行时读取的资源包。Addressables 的“LZ4”实际使用 LZ4HC，改动大包后重新压缩会很慢。本地服务器改用未压缩包，产物较大；客户端的源分组设置不变。临时设置和构建回调在成功、取消或异常后恢复。首次切换压缩方式会重新生成资源包，之后继续复用缓存。日常构建不要清理 `Library` 或使用 Clean Build。
+
+缓存只能复用未变内容。同一大包内有资源变化，仍需重新写这个包。构建报告新增 `Seconds`、`AddressablesSeconds` 和 `ArchiveSeconds`，分别记录总构建、Addressables 管线和 Archive 耗时，单位为秒。
+
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-GameServer.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Stop-GameServer.ps1

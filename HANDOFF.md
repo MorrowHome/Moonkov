@@ -1,5 +1,12 @@
 # 项目交接
 
+## 本地 Windows 独立服构建（2026-11-06）
+
+- `Tools / Moonkov / Build Local Windows Server` 保留 Unity/Bee 和 SBP 增量缓存。Archive 是资源包归档。Addressables 的“LZ4”实际使用 LZ4HC，大包变化后仍需整包重新压缩。日常不要清理 `Library` 或使用 Clean Build。
+- 本地服务器改用未压缩 Addressables 包。`OnlineGameServerBuild.LocalBundleCompression` 在 SBP 完成分包后临时覆盖压缩值，不写客户端源分组。成功、取消和异常都会恢复原值、脏标记和回调。保留正常依赖检查，不跳过资源更新。详见[本地独立服构建](Docs/OnlineSessions-20261024.md)。
+- 本机实测：总构建由 1055.7 秒降到 357.7 秒，Archive 由 387.3 秒降到 8.4 秒。总耗时也受本次缓存命中影响。产物由 1.79 GiB 增到 2.64 GiB。报告 `Library/BuildValidation/OnlineServer/build-report.json` 新增总构建、Addressables 和 Archive 秒数。
+- 单 Editor 构建成功，0 错误，4271 条既有警告。8 项压缩作用域检查通过。9 组源压缩设置、文件哈希和 Player 子目标已恢复。原 MainMenu 保持未修改，没有进入 Play、启动游戏服或进行联机验收。
+
 ## 手雷动作与温雷（2026-11-05）
 
 - G 或已绑定数字键取出投掷物。未启用时可一直拿着，不扣物；G/X 收回，选其他槽位先收回。按住左键远投、右键低抛，继续按住可温雷，松开投掷。启用后 X 丢下，不能收回。死亡、倒地、掉线会掉落并保留引信。详见[手雷流程](Docs/EnergyGrenade.md)。
