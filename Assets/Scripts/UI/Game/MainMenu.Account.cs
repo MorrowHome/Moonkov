@@ -78,6 +78,7 @@ namespace Unity.MP_FPS.Client
         private void UpdateAccountPanel()
         {
             bool loggedIn = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
+            if (!loggedIn || PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan) m_LobbyOpen = false;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
             m_ProfileModeButton.SetEnabled(!PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
             MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsLan ? "离开局域网房间" : PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
@@ -112,6 +113,7 @@ namespace Unity.MP_FPS.Client
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
             m_AccountPanel.EnableInClassList("is-busy", m_AccountBusy);
             m_AccountMessage.EnableInClassList("is-error", !string.IsNullOrEmpty(m_AccountError));
+            PresentLobby();
         }
 
         private async void RestoreLogin()
@@ -182,7 +184,7 @@ namespace Unity.MP_FPS.Client
             PlayerProfileClient.SelectCarryCells(evt.newValue);
             UpdateAccountPanel();
         }
-        private void ShowStash() { m_ShowConnectionMenu = false; UpdateAccountPanel(); }
+        private void ShowStash() { m_LobbyOpen = false; m_ShowConnectionMenu = false; UpdateAccountPanel(); }
         private void StashSettingsChanged(object sender, BindablePropertyChangedEventArgs evt)
         {
             var gameState = GameSettings.Instance.GameState;
@@ -190,6 +192,7 @@ namespace Unity.MP_FPS.Client
             m_LastStashGameState = gameState;
             if (!returnedToMenu) return;
             m_ShowConnectionMenu = OnlineLobbyClient.Snapshot?.Code != null;
+            m_LobbyOpen = m_ShowConnectionMenu;
             if (PlayerProfileClient.IsLoggedIn) RefreshStash();
             else UpdateAccountPanel();
         }

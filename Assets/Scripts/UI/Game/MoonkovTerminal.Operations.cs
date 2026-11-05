@@ -66,7 +66,7 @@ namespace Unity.MP_FPS.Client
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionNote"), offline
                         ? "Deploy using your offline loadout. This is a real expedition: death or timeout loses unprotected equipment."
                         : lan ? "Open your LAN room to choose a host or join a crew. Deployment starts from the room."
-                        : "Open connection setup to host a session or join a crew. Opening the terminal does not deploy your equipment.");
+                        : "进入小队，邀请好友或准备出发。装备在实际进入战局时出战。");
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyDepartureNote"),
                         "Check your equipped weapon and carried supplies before leaving. Storage items stay here; carried loot is secured after extraction and saving.");
                     launch.SetEnabled(!m_Busy);
@@ -76,7 +76,7 @@ namespace Unity.MP_FPS.Client
         }
 
         private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
-            offline ? "DEPLOY SOLO" : "OPEN CONNECTION TERMINAL";
+            offline ? "DEPLOY SOLO" : "进入小队";
 
         private void PresentDepartureEquipment()
         {

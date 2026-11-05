@@ -1,0 +1,63 @@
+/* Radix Slate dark: surfaces 1–5, borders 6–8, text 11–12; Blue 9–12 for actions.
+   https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale */
+.online-squad-screen {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background-color: #111113; color: #edeef0; padding: 26px 42px 18px;
+    -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); font-size: 14px;
+}
+.online-header { flex-direction: row; align-items: center; min-height: 48px; margin-bottom: 12px; flex-shrink: 0; }
+.online-squad-screen .online-title { font-size: 22px; -unity-font-style: bold; margin: 0 18px 0 24px; }
+.online-secondary { color: #b0b4ba; font-size: 12px; }
+.online-squad-screen .online-code { margin-left: auto; color: #c2e6ff; }
+.online-stage-host { flex-grow: 1; min-height: 160px; }
+.online-stage { flex-grow: 1; min-height: 100px; }
+.online-members { position: relative; height: 86px; flex-shrink: 0; margin-top: 10px; }
+.online-member { position: absolute; width: 21%; top: 0; padding: 0 8px; align-items: center; }
+.online-member-name { font-size: 14px; -unity-font-style: bold; white-space: normal; -unity-text-align: middle-center; }
+.online-member-status { font-size: 12px; color: #b0b4ba; margin-top: 5px; white-space: normal; -unity-text-align: middle-center; }
+.online-member.is-ready .online-member-status { color: #70b8ff; }
+.online-member.is-offline { opacity: 0.55; }
+.online-member.is-self .online-member-name { color: #c2e6ff; }
+.online-squad-screen .online-member-action { font-size: 12px; min-height: 26px; margin-top: 4px; padding: 2px 12px; color: #b0b4ba; background-color: transparent; border-color: transparent; }
+.online-controls { flex-direction: row; align-items: flex-end; flex-wrap: wrap; padding-top: 18px; border-top-width: 1px; border-top-color: #363a3f; flex-shrink: 0; }
+.online-personal { flex-direction: row; align-items: center; margin-right: 24px; margin-bottom: 12px; }
+.online-squad-screen .unity-base-field { margin: 0 14px 0 0; min-width: 120px; }
+.online-squad-screen .unity-base-field__label { color: #b0b4ba; min-width: 36px; margin-right: 10px; font-size: 12px; }
+.online-squad-screen .unity-base-field__input { background-color: #212225; color: #edeef0; border-width: 1px; border-color: #43484e; border-radius: 4px; min-height: 38px; padding: 5px 10px; font-size: 14px; }
+.online-squad-screen .unity-base-field__input:hover { background-color: #272a2d; }
+.online-squad-screen .unity-base-field__input:focus { border-color: #70b8ff; }
+.online-squad-screen .unity-base-field__label--with-dragger { min-width: 0; }
+.online-squad-screen .unity-popup-field__text { color: #edeef0; font-size: 14px; }
+.online-squad-screen .unity-popup-field__arrow { -unity-background-image-tint-color: #b0b4ba; }
+.online-entry { flex-direction: row; align-items: center; flex-wrap: wrap; flex-grow: 1; justify-content: flex-end; margin-bottom: 12px; }
+.online-entry .unity-text-field { margin-left: 20px; width: 180px; }
+.online-party { flex-direction: row; flex-wrap: wrap; align-items: center; flex-grow: 1; margin-bottom: 12px; }
+.online-settings { flex-direction: row; flex-wrap: wrap; align-items: center; margin-right: 16px; }
+.online-squad-screen .unity-radio-button-group__container { flex-direction: row; align-items: center; }
+.online-squad-screen .unity-radio-button { min-width: 0; margin: 0 12px 0 0; }
+.online-squad-screen .unity-radio-button__label, .online-squad-screen .unity-toggle__label { color: #edeef0; font-size: 14px; }
+.online-squad-screen .unity-toggle__input { min-width: 20px; min-height: 20px; padding: 0; background-color: transparent; }
+.online-squad-screen .unity-radio-button__input { background-color: transparent; border-width: 0; padding: 0; min-width: 18px; min-height: 18px; }
+.online-actions { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; flex-grow: 1; }
+.online-squad-screen Button {
+    min-height: 40px; padding: 8px 18px; margin: 0 0 0 8px; border-width: 1px; border-color: #43484e;
+    border-radius: 4px; background-color: #212225; color: #edeef0; font-size: 14px;
+    transition-duration: 0.15s;
+}
+.online-squad-screen Button:hover { background-color: #272a2d; border-color: #5a6169; }
+.online-squad-screen Button:focus { border-color: #70b8ff; }
+.online-squad-screen Button:active { background-color: #2e3135; }
+.online-squad-screen Button:disabled { opacity: 0.5; }
+.online-squad-screen .online-back { margin-left: 0; background-color: transparent; }
+.online-squad-screen .online-primary { background-color: #0090ff; border-color: #0090ff; min-width: 108px; color: #ffffff; -unity-font-style: bold; }
+.online-squad-screen .online-primary:hover { background-color: #3b9eff; border-color: #3b9eff; }
+.online-squad-screen .online-quiet { background-color: transparent; border-color: transparent; color: #b0b4ba; }
+.online-bottom { flex-direction: row; align-items: flex-start; flex-shrink: 0; min-height: 30px; }
+.online-status { flex-grow: 1; flex-shrink: 1; font-size: 12px; color: #b0b4ba; white-space: normal; margin: 8px 24px 0 0; }
+.online-status.is-error { color: #ff9592; }
+.online-options { width: 270px; flex-shrink: 0; font-size: 12px; margin-top: 4px; }
+.online-options .unity-foldout__content { padding: 10px 0; }
+.online-squad-screen.online-compact { padding: 14px 18px 10px; }
+.online-compact .online-personal { margin-right: 12px; }
+.online-compact .online-controls { padding-top: 10px; }
+.online-squad-screen.online-reduced-motion Button { transition-duration: 0s; }

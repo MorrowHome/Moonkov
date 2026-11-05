@@ -36,6 +36,7 @@ namespace Unity.MP_FPS.Client
         private MenuCharacterSettings m_Settings;
         private readonly GameSettings m_GameSettings;
         private readonly bool m_IdleOnly;
+        private readonly Transform m_SharedStage;
         private Animator m_Animator;
         public event Action FrameRendered;
         private readonly System.Random m_Random = new System.Random();
@@ -76,9 +77,10 @@ namespace Unity.MP_FPS.Client
         public float InspectionYaw => m_InspectionYaw;
         public float Zoom { get; private set; } = 1;
 
-        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null)
+        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null, Transform sharedStage = null)
         {
             m_IdleOnly = idleOnly;
+            m_SharedStage = sharedStage;
             Element = element ?? new Image();
             Element.pickingMode = PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
@@ -96,7 +98,7 @@ namespace Unity.MP_FPS.Client
             try
             {
                 m_LastTime = Time.realtimeSinceStartupAsDouble;
-                m_Timer = Element.schedule.Execute(Tick).Every(33);
+                if (m_SharedStage == null) m_Timer = Element.schedule.Execute(Tick).Every(33);
             }
             catch { Dispose(); throw; }
         }
@@ -178,14 +180,15 @@ namespace Unity.MP_FPS.Client
             m_Times[0] = m_Times[1] = 0;
             m_GestureActive = false;
 #if UNITY_EDITOR
-            if (!Application.isPlaying) { m_Scene = EditorSceneManager.NewPreviewScene(); m_EditorScene = true; }
+            if (m_SharedStage == null && !Application.isPlaying) { m_Scene = EditorSceneManager.NewPreviewScene(); m_EditorScene = true; }
             else
 #endif
-                m_Scene = SceneManager.CreateScene("Moonkov menu character " + Guid.NewGuid().ToString("N"));
+                m_Scene = m_SharedStage != null ? m_SharedStage.gameObject.scene : SceneManager.CreateScene("Moonkov menu character " + Guid.NewGuid().ToString("N"));
             m_Stage = new GameObject("Menu character render stage");
             SceneManager.MoveGameObjectToScene(m_Stage, m_Scene);
             // Far from gameplay geometry and lights in a player build.
-            m_Stage.transform.position = m_EditorScene ? Vector3.zero : new Vector3(1000 + 64 * (s_StageSequence++ % 100), 1000, 1000);
+            if (m_SharedStage != null) m_Stage.transform.SetParent(m_SharedStage, false);
+            else m_Stage.transform.position = m_EditorScene ? Vector3.zero : new Vector3(1000 + 64 * (s_StageSequence++ % 100), 1000, 1000);
             m_Stage.SetActive(false);
             m_Model = UnityEngine.Object.Instantiate(m_Settings.VisualPrefab, m_Stage.transform, false);
             m_Model.transform.localPosition = Vector3.zero;
@@ -247,6 +250,7 @@ namespace Unity.MP_FPS.Client
             if (m_Renderers.Length == 0) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
             m_Bounds = new Bounds(m_Stage.transform.position, Vector3.zero);
             ExpandFramingBounds();
+            if (m_SharedStage != null) return;
             m_Camera = Child("Menu portrait camera").AddComponent<Camera>();
             m_Camera.enabled = false;
             m_Camera.cullingMask = 1 << ViewLayer;
@@ -294,6 +298,10 @@ namespace Unity.MP_FPS.Client
         {
             // Shuffle without replacement: every configured action gets a turn before any repeat.
             int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? TakeAction() : 0;
+            BeginMotion(next);
+        }
+        private void BeginMotion(int next)
+        {
             if (next != 0)
             {
                 m_LastAction = next;
@@ -365,12 +373,13 @@ namespace Unity.MP_FPS.Client
         public void Advance(float dt)
         {
             if (m_Disposed || m_Settings == null) return;
-            if (m_Camera == null) CreateStage();
+            if (m_Model == null) CreateStage();
             m_Remaining -= dt;
             m_BaseTime += dt;
             var idle = m_Settings.Motions[0];
             m_BaseIdle.SetTime(m_BaseTime % idle.length);
-            if (!m_IdleOnly && m_Remaining <= 0 && !m_Transition) BeginNextMotion();
+            if (m_SharedStage != null) AdvanceSquadPose(dt);
+            else if (!m_IdleOnly && m_Remaining <= 0 && !m_Transition) BeginNextMotion();
             for (int i = 0; i < 2; i++)
             {
                 if (!m_Clips[i].IsValid()) continue;
@@ -571,6 +580,7 @@ namespace Unity.MP_FPS.Client
             m_Spring = null; m_HandAvoidance = null;
             m_TwistFollowers = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;
+            if (m_SharedStage != null) { m_Scene = default; return; }
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR
             if (m_EditorScene) { EditorSceneManager.ClosePreviewScene(m_Scene); m_Scene = default; return; }
