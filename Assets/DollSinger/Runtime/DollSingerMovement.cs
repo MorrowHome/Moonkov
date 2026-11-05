@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -143,6 +144,10 @@ namespace Unity.MP_FPS.DollSinger {
         private static readonly int k_AnimIDMoveX = Animator.StringToHash("MoveX");
         private static readonly int k_AnimIDMoveZ = Animator.StringToHash("MoveZ");
         private Animator m_Animator;
+        // Events stay on the animated model; the raid adapter owns pooled surface audio.
+        public event Action Footstep;
+        private readonly HashSet<AnimationClip> m_FootstepClips = new HashSet<AnimationClip>();
+        private readonly List<AnimatorClipInfo> m_LocomotionClips = new List<AnimatorClipInfo>(16);
         private CharacterController m_Controller;
         private GameObject m_MainCamera;
         private const float k_Threshold = 0.01f;
@@ -362,6 +367,11 @@ namespace Unity.MP_FPS.DollSinger {
             m_StandingCenter = m_Controller.center;
             m_HasAnimator = TryGetComponent(out m_Animator);
             if (m_HasAnimator) {
+                m_FootstepClips.Clear();
+                if (m_Animator.runtimeAnimatorController)
+                    foreach (var clip in m_Animator.runtimeAnimatorController.animationClips)
+                        foreach (var evt in clip.events)
+                            if (evt.functionName == "OnFootstep") { m_FootstepClips.Add(clip); break; }
                 foreach (var parameter in m_Animator.parameters) {
                     if (parameter.nameHash == k_AnimIDSpeed && parameter.type == AnimatorControllerParameterType.Float)
                         m_HasSpeedParameter = true;
@@ -882,14 +892,38 @@ namespace Unity.MP_FPS.DollSinger {
         }
 
         private void OnFootstep(AnimationEvent animationEvent) {
-            if (!(animationEvent.animatorClipInfo.weight > 0.5f)) return;
+            if (!isActiveAndEnabled || !m_Grounded || !m_HasAnimator ||
+                CurrentSpeed <= .05f && m_TurnWeight <= .5f || !IsDominantFootstep(animationEvent)) return;
+            if (m_NetworkDriven) { Footstep?.Invoke(); return; }
             if (m_FootstepAudioClips == null || m_FootstepAudioClips.Length == 0) return;
             int index = Random.Range(0, m_FootstepAudioClips.Length);
             AudioSource.PlayClipAtPoint(m_FootstepAudioClips[index], transform.TransformPoint(m_Controller.center),
                 m_FootstepAudioVolume);
         }
 
+        private bool IsDominantFootstep(AnimationEvent evt)
+        {
+            int layer = m_TurnLayer >= 0 && m_TurnWeight > .5f ? m_TurnLayer :
+                m_StanceLayer >= 0 && m_Animator.GetLayerWeight(m_StanceLayer) > .5f ? m_StanceLayer : 0;
+            bool next = m_Animator.IsInTransition(layer) && m_Animator.GetAnimatorTransitionInfo(layer).normalizedTime >= .5f;
+            var state = next ? m_Animator.GetNextAnimatorStateInfo(layer) : m_Animator.GetCurrentAnimatorStateInfo(layer);
+            if (evt.animatorStateInfo.fullPathHash != state.fullPathHash) return false;
+            if (next) m_Animator.GetNextAnimatorClipInfo(layer, m_LocomotionClips);
+            else m_Animator.GetCurrentAnimatorClipInfo(layer, m_LocomotionClips);
+            AnimationClip dominant = null; float weight = 0;
+            foreach (var info in m_LocomotionClips)
+            {
+                if (!m_FootstepClips.Contains(info.clip) || info.weight <= .001f) continue;
+                if (info.weight > weight)
+                { dominant = info.clip; weight = info.weight; }
+            }
+            // A diagonal/aim blend may give every moving clip less than 50% weight.
+            // Select one source so neither missing steps nor doubled steps result.
+            return dominant && evt.animatorClipInfo.clip == dominant;
+        }
+
         private void OnLand(AnimationEvent animationEvent) {
+            if (m_NetworkDriven) return; // Raid landing audio already observes the authoritative landing tick.
             if (animationEvent.animatorClipInfo.weight > 0.5f && m_LandingAudioClip != null) {
                 AudioSource.PlayClipAtPoint(m_LandingAudioClip, transform.TransformPoint(m_Controller.center),
                     m_FootstepAudioVolume);

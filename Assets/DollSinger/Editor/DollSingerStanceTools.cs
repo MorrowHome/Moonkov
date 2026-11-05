@@ -115,6 +115,7 @@ namespace Unity.MP_FPS.DollSinger.Editor
             settings.loopTime = settings.loopBlend = true;
             AnimationUtility.SetAnimationClipSettings(copy, settings);
             AnimationUtility.SetAnimationEvents(copy, Array.Empty<AnimationEvent>());
+            DollSingerFootstepTools.SetEvents(copy);
             string destination = Root + "/" + name + ".anim";
             var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(destination);
             if (!existing) { AssetDatabase.CreateAsset(copy, destination); return copy; }

@@ -49,6 +49,16 @@ flowchart TD
 
 最终动作观感、裙子与脚步效果由用户在 Play 中确认，不用自动截图验收。
 
+## 脚步音效事件
+
+正式角色由动画片段的 `OnFootstep` 触发脚步声。`DollSingerMovement` 接收事件，`DollSingerNetworkPresentation` 转交给现有 `MoonkovPlayerAudio`。音量、负重、地面材质和音源池沿用原规则。落地声仍观察服务器落地事件，避免播放两次。
+
+侧移、后退、瞄准、转身和姿态动作已补齐左右接触事件。编辑器工具按脚部高度曲线的下降落脚段生成事件；匍匐按手掌着地生成衣物摩擦声。运行时不扫描骨骼，也不再累计距离来定脚步节奏。移动量只用于屏蔽顶墙、静止和瞬移。混合时选择权重最大的有效移动片段，不能要求单个片段超过 50%，否则斜走和瞄准过渡会漏声。
+
+菜单 **Tools → Doll Singer → Set Up Footstep Events** 可单独重建事件。原移动和姿态重建工具也会补齐事件。`FootstepAnimationChecks.Run()` 必须在隔离 Play 场景执行；Edit 模式手动调用 Animator.Update 不会派发真实动画事件。单 Editor 的 59 项片段与实际事件检查通过。此检查不等于正式地图的听感或联机验收。
+
+服务器人形和异形的听觉判定继续使用自身移动规则。服务端模型可以关闭，不能依赖客户端的声音回调决定敌人是否发现玩家。
+
 ## 原地转身脚步
 
 `Turn In Place` 是腿部 Override 层，使用 `DollSinger_TurnLegs.mask` 排除 Root、身体、头、手臂和手指，同时启用左右腿及 LeftFootIK / RightFootIK。后两项保留 Humanoid 片段自带的脚部目标；若关闭，待机目标会把脚留在原处，即使转身片段的权重为 1 也看不到有效挪步。这里没有新增程序化脚部 IK。控制器继续负责身体旋转；转身动画只提供左右腿的挪步，不叠加动画自带的根旋转。原 Halo Aim 与空中护裙层保持原资源。

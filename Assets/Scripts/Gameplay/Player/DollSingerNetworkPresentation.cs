@@ -202,6 +202,7 @@ namespace Unity.MP_FPS
             m_AudioAiming = false; m_DryFireAt = 0;
             m_Audio?.Stop();
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
+            BindFootsteps();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
             m_ObstructionView?.Dispose(); m_ObstructionView = null;
             OwnedMuzzleObstructed = false;
@@ -440,10 +441,31 @@ namespace Unity.MP_FPS
             }
         }
 
-        private void OnDisable() => m_Audio?.Stop();
+        private void BindFootsteps()
+        {
+            if (!m_Model) return;
+            m_Model.Footstep -= OnFootstep;
+            if (m_Linked && Role != MultiplayerRole.Server && isActiveAndEnabled)
+                m_Model.Footstep += OnFootstep;
+        }
+
+        private void OnFootstep()
+        {
+            if (!m_Linked || !isActiveAndEnabled || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
+            var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
+            m_Audio?.OnFootstep(ghost, transform, Role == MultiplayerRole.ClientOwned);
+        }
+
+        private void OnEnable() => BindFootsteps();
+        private void OnDisable()
+        {
+            if (m_Model) m_Model.Footstep -= OnFootstep;
+            m_Audio?.Stop();
+        }
 
         public override void OnGhostPreDestroy()
         {
+            if (m_Model) m_Model.Footstep -= OnFootstep;
             m_LightPanel?.Dispose(); m_LightPanel = null;
             m_Audio?.Stop();
             GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);

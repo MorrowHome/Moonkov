@@ -14,7 +14,7 @@ namespace Unity.MP_FPS
         private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_ConsumableSequence, m_Weapon;
-        private float m_Stride, m_SurfaceTimer;
+        private bool m_CanStep;
         private Vector3 m_Position;
         private SoundDef m_Surface;
         private DollSingerStance m_Stance;
@@ -40,6 +40,7 @@ namespace Unity.MP_FPS
 
         public void Update(in PredictedPlayerGhost ghost, Transform player, bool owned, float deltaTime)
         {
+            m_CanStep = false;
             var library = MoonkovAudio.Library;
             if (library == null) return;
             Vector3 position = player.position;
@@ -103,7 +104,7 @@ namespace Unity.MP_FPS
                 float landingLoad = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
                 LocalOrWorld(m_Surface, position, owned, Mathf.Lerp(.65f, 1.2f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
-                m_Stride = 0f; m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
+                m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
             }
             if (NewTick(ghost.LastImpactTick, ref m_ImpactTick) && Time.unscaledTime >= m_HitAt)
             {
@@ -157,7 +158,7 @@ namespace Unity.MP_FPS
             {
                 m_StanceSound = LocalOrWorld(library.StanceChange, position, owned,
                     ghost.ControllerState.Stance == DollSingerStance.Prone || m_Stance == DollSingerStance.Prone ? .85f : .5f);
-                m_Stride = 0; m_TurnTravel = 0;
+                m_TurnTravel = 0;
             }
             m_Stance = ghost.ControllerState.Stance;
             m_Weapon = ghost.EquippedWeaponID;
@@ -169,14 +170,15 @@ namespace Unity.MP_FPS
             bool grounded = ghost.ControllerState.MovementType == FirstPersonController.MovementType.Standing;
             if (!grounded || ghost.CurrentHealth <= 0f || deltaTime <= 0f || deltaTime > .25f || travel.magnitude > 2f)
             {
-                m_Stride = 0f; m_TurnTravel = 0; m_Wall.Reset();
+                m_TurnTravel = 0; m_Wall.Reset();
                 return;
             }
             float yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
             float turn = Mathf.Abs(Mathf.DeltaAngle(m_Yaw, yaw)); m_Yaw = yaw;
+            m_CanStep = travel.sqrMagnitude >= .000001f || turn > .1f && turn < 45f;
             if (travel.sqrMagnitude < .000001f)
             {
-                m_Stride = 0; m_Wall.Reset();
+                m_Wall.Reset();
                 if (turn < 90) m_TurnTravel += turn;
                 if (m_TurnTravel >= 50 && Time.time >= m_GearAt && m_Stance != DollSingerStance.Prone)
                 {
@@ -198,19 +200,17 @@ namespace Unity.MP_FPS
                         wall.point, ghost.ControllerState.Sprinting ? .8f : .55f, owned ? .65f : 1);
                 }
             }
-            m_SurfaceTimer -= deltaTime;
-            if (m_SurfaceTimer <= 0f)
-            {
-                m_SurfaceTimer = .2f;
-                SampleSurface(player, library);
-            }
-            m_Stride += travel.magnitude;
-            float stride = m_Stance == DollSingerStance.Prone ? .55f :
-                m_Stance == DollSingerStance.Crouching || m_Stance == DollSingerStance.Tiptoe ? .6f :
-                ghost.ControllerState.Sprinting ? 1.35f : .9f;
-            if (m_Stride < stride || Time.unscaledTime - m_LastStepTime < .18f) return;
-            m_Stride %= stride; // At most one step after a stalled frame or reconciliation.
+        }
+
+        public void OnFootstep(in PredictedPlayerGhost ghost, Transform player, bool owned)
+        {
+            var library = MoonkovAudio.Library;
+            if (!m_Initialized || !m_CanStep || library == null || ghost.CurrentHealth <= 0 ||
+                ghost.ControllerState.MovementType != FirstPersonController.MovementType.Standing ||
+                Time.unscaledTime - m_LastStepTime < .18f) return;
             m_LastStepTime = Time.unscaledTime;
+            Vector3 position = player.position;
+            SampleSurface(player, library);
             float loadVolume = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
             if (m_Stance == DollSingerStance.Prone)
             {
@@ -225,6 +225,7 @@ namespace Unity.MP_FPS
         }
         public void Stop()
         {
+            m_CanStep = false;
             var system = GameManager.Instance?.SoundSystem;
             system?.Stop(m_LootSound,.08f);m_LootSound=null;m_WasLootSearching=false;
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
