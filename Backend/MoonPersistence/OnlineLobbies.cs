@@ -7,6 +7,7 @@ public sealed class OnlineLobbies
 {
     private static readonly TimeSpan HeartbeatTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ReconnectGrace = TimeSpan.FromSeconds(90);
+    private static readonly System.Text.Json.JsonSerializerOptions StateJson = new() { IncludeFields = true };
     public sealed class Member
     {
         public Guid Id { get; set; }
@@ -14,6 +15,7 @@ public sealed class OnlineLobbies
         public bool Ready { get; set; }
         public int Team { get; set; }
         public DateTime Seen { get; set; }
+        public LobbyAppearance Appearance { get; set; } = new();
     }
     public sealed class Party
     {
@@ -57,7 +59,7 @@ public sealed class OnlineLobbies
     {
         stateFile = path;
         if (path != null && File.Exists(path))
-            state = System.Text.Json.JsonSerializer.Deserialize<State>(File.ReadAllText(path)) ?? new();
+            state = System.Text.Json.JsonSerializer.Deserialize<State>(File.ReadAllText(path), StateJson) ?? new();
     }
     private Party? Find(Guid id) => state.Parties.FirstOrDefault(p => p.Members.Any(m => m.Id == id));
     private static void Require(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }
@@ -92,7 +94,7 @@ public sealed class OnlineLobbies
         if (stateFile == null) return;
         Directory.CreateDirectory(Path.GetDirectoryName(stateFile)!);
         var temp = stateFile + ".tmp";
-        File.WriteAllText(temp, System.Text.Json.JsonSerializer.Serialize(state));
+        File.WriteAllText(temp, System.Text.Json.JsonSerializer.Serialize(state, StateJson));
         File.Move(temp, stateFile, true);
     }
     public LobbySnapshot Snapshot(Guid id, DateTime now, string address, string serverName, int port)
@@ -112,10 +114,24 @@ public sealed class OnlineLobbies
                 Phase = a == null ? p.Phase : a.Phase, InstanceId = a?.Id, PublicQueue = p.PublicQueue,
                 Address = a?.Phase == "Ready" ? address : null, ServerName = serverName, Port = port, Message = p.Message,
                 Members = p.Members.Select(m => new LobbyMember { PlayerId = m.Id.ToString(), Name = m.Name,
-                    Ready = m.Ready, Team = m.Team, Connected = now - m.Seen < HeartbeatTimeout,
+                    Ready = m.Ready, Team = m.Team, Appearance = m.Appearance.Copy(), Connected = now - m.Seen < HeartbeatTimeout,
                     ReconnectSeconds = Math.Max(0, (int)Math.Ceiling((ReconnectGrace - (now - m.Seen)).TotalSeconds)),
                     Returned = a?.Seats.FirstOrDefault(s => s.Player == m.Id)?.Returned ?? false }).ToArray()
             };
+        }
+    }
+    public void UpdateAppearance(Guid id, LobbyAppearance appearance)
+    {
+        lock (gate)
+        {
+            var party = Find(id);
+            if (party == null || party.Instance != null) return;
+            var member = party.Members.Single(m => m.Id == id);
+            if (member.Appearance.SameAs(appearance)) return;
+            if (party.Phase == "Queued") { Reset(party); party.Message = "出战配置已更改，请重新准备。"; }
+            member.Ready = false;
+            member.Appearance = appearance.Copy();
+            Save();
         }
     }
     public void Act(Guid id, string name, bool raidActive, LobbyAction request, DateTime now)

@@ -17,7 +17,8 @@ namespace Unity.MP_FPS
             string token = Token;
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl)) throw new InvalidOperationException("请先登录在线账号。");
             using var request = new HttpRequestMessage(action == null ? HttpMethod.Get : HttpMethod.Post,
-                Address(s_BaseUrl, action == null ? "auth/lobby" : "auth/lobby/action"));
+                Address(s_BaseUrl, (action == null ? "auth/lobby" : "auth/lobby/action") +
+                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             if (action != null) request.Content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
@@ -38,8 +39,9 @@ namespace Unity.MP_FPS
         public static string LastAttempt { get; private set; }
         private static string s_Account;
         public static string Error { get; private set; }
+        public static int SelectedPose { get; set; } = -1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; }
+        static void Reset() { Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; }
         public static async Task RefreshAsync(CancellationToken ct)
         {
             string scope = PlayerProfileClient.LocalPreferenceScope;
