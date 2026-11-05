@@ -131,6 +131,7 @@ public sealed class RaidVitalMonitorReview : EditorWindow
         int checks = 0;
         void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
         w.Scenario(0);
+        var bodyColor = w.m_Combat.Q("vitals-reserve-1").Q(className: "vitals-cell").style.backgroundColor.value;
         foreach (var entry in catalog.Entries)
         {
             // Keep energy and cell count identical: color must still refresh when switching weapons.
@@ -142,7 +143,7 @@ public sealed class RaidVitalMonitorReview : EditorWindow
                 Check(cells.Take(7).All(cell => cell.style.backgroundColor.value == entry.Color), "Halo cells must match held weapon: " + entry.Weapon);
                 Check(cells.Skip(7).All(cell => cell.style.backgroundColor.value.a == 0 &&
                     cell.style.borderTopColor.value == new Color(entry.Color.r, entry.Color.g, entry.Color.b, .28f)), "Empty halo cells lost weapon identity");
-                Check(monitor.Q("vitals-reserve-1").Q(className: "vitals-cell").style.backgroundColor.value == RaidVitalsMonitor.SignalColor,
+                Check(monitor.Q("vitals-reserve-1").Q(className: "vitals-cell").style.backgroundColor.value == bodyColor,
                     "Weapon color leaked into body nutrition");
             }
         }

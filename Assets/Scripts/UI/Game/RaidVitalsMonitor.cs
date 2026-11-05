@@ -11,6 +11,8 @@ namespace Unity.MP_FPS.Client
         public static readonly Color SignalColor = new Color32(196, 225, 255, 255);
         private static readonly Color WarningColor = new Color32(235, 169, 93, 255);
         private static readonly Color DangerColor = new Color32(245, 121, 94, 255);
+        private static readonly Color ReserveWarningColor = new Color32(255, 197, 61, 255); // Radix amber 9.
+        private static readonly Color ReserveDangerColor = new Color32(229, 72, 77, 255); // Radix red 9.
         private readonly RaidBodyDiagram m_Body;
         private readonly VitalWaveform m_Wave;
         private readonly Label m_Warning;
@@ -68,11 +70,10 @@ namespace Unity.MP_FPS.Client
                 if (panel != null && oxygen >= 0) MoonkovLocalization.Set(m_OxygenLabel, "O₂  {0}%", oxygen);
                 else m_OxygenLabel.text = oxygen < 0 ? "O₂" : $"O₂  {oxygen}%";
             }
-            bool needsAir = RaidOxygen.NeedsSuitAir(state);
-            Reserve(0, state.Oxygen, signal.Ready, needsAir && state.Oxygen <= 10 ? DangerColor : needsAir && state.Oxygen <= 25 ? WarningColor : SignalColor);
-            Reserve(1, state.Energy, signal.Ready, state.Energy <= 0 ? DangerColor : state.Energy <= 25 ? WarningColor : SignalColor);
-            Reserve(2, state.Hydration, signal.Ready, state.Hydration <= 0 ? DangerColor : state.Hydration <= 25 ? WarningColor : SignalColor);
-            Reserve(3, state.Satiety, signal.Ready, state.Satiety >= RaidNutrition.FullThreshold ? WarningColor : SignalColor);
+            Reserve(0, state.Oxygen, signal.Ready);
+            Reserve(1, state.Energy, signal.Ready);
+            Reserve(2, state.Hydration, signal.Ready);
+            Reserve(3, state.Satiety, signal.Ready);
             bool haloVisible = signal.Ready && state.HaloEnergyInitialized && state.HaloEquipped;
             if (m_HaloVisible != haloVisible)
             {
@@ -117,6 +118,16 @@ namespace Unity.MP_FPS.Client
             else if (panel != null) MoonkovLocalization.Set(m_Warning, warning); else m_Warning.text = warning;
         }
 
+        private static Color ReserveColor(float value)
+        {
+            // Whole-percent steps preserve the style cache while the server drains fractional reserves.
+            int percent = Mathf.RoundToInt(Mathf.Clamp(float.IsFinite(value) ? value : 0, 0, 100));
+            return percent <= 50 ? Color.Lerp(ReserveDangerColor, ReserveWarningColor, percent / 50f) :
+                Color.Lerp(ReserveWarningColor, SignalColor, (percent - 50) / 50f);
+        }
+
+        private void Reserve(int index, float value, bool ready) => Reserve(index, value, ready, ready ? ReserveColor(value) : SignalColor);
+
         private void Reserve(int index, float value, bool ready, Color color)
         {
             int filled = ready ? RaidVitalSignal.ReserveCells(value, 12) : 0;
@@ -126,7 +137,8 @@ namespace Unity.MP_FPS.Client
             {
                 var tile = m_Reserves[index][i]; bool live = i < filled;
                 tile.style.backgroundColor = live ? color : Color.clear;
-                var line = live ? color : index == 4 ? new Color(color.r, color.g, color.b, .28f) : new Color(.48f, .55f, .44f, .55f);
+                var line = live ? color : new Color(color.r, color.g, color.b, index == 4 ? .28f : .5f);
+                if (!ready && index != 4) line = new Color(.48f, .55f, .44f, .55f);
                 tile.style.borderLeftColor = tile.style.borderRightColor = tile.style.borderTopColor = tile.style.borderBottomColor = line;
             }
         }
