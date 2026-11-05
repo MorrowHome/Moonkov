@@ -607,7 +607,7 @@ namespace Unity.MP_FPS.Client
             private InventoryCommand m_ValidatedCommand;
             private InventoryError m_PlacementError;
             private int m_ClickCount;
-            private IVisualElementScheduledItem m_Scroll;
+            private IVisualElementScheduledItem m_Scroll, m_ReleaseRecovery;
             public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
             { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
             public bool CanRetain(InventoryGraph graph)
@@ -627,6 +627,7 @@ namespace Unity.MP_FPS.Client
             {
                 if (m_View.m_Graph==null) { evt.StopImmediatePropagation(); return; }
                 if (evt.button==1 && m_View.m_Drag!=null) { m_View.CancelDrag(); evt.StopImmediatePropagation(); return; }
+                if (evt.button==0 && m_ReleaseRecovery!=null) Cancel();
                 // Repeated down notifications must not restart a held gesture.
                 if (evt.button==0 && m_View.m_Drag==this && m_Pointer==evt.pointerId)
                 { evt.StopImmediatePropagation(); return; }
@@ -642,9 +643,14 @@ namespace Unity.MP_FPS.Client
             private void Move(PointerMoveEvent evt)
             {
                 if (m_Pointer<0 || evt.pointerId!=m_Pointer) return;
-                // Releasing outside the Game view can omit PointerUp; never keep a ghost
-                // press alive once the pointer reports that the primary button is up.
-                if ((evt.pressedButtons & 1)==0) { Cancel(); return; }
+                // Input System can dispatch an unpressed move before the queued PointerUp.
+                // Let that event finish the drop before recovering a genuinely missed release.
+                if ((evt.pressedButtons & 1)==0)
+                {
+                    m_ReleaseRecovery ??= target.schedule.Execute(Cancel);
+                    evt.StopImmediatePropagation(); return;
+                }
+                m_ReleaseRecovery?.Pause(); m_ReleaseRecovery=null;
                 m_Last=evt.position;
                 evt.StopImmediatePropagation();
                 if (m_View.m_ReadOnlyReason != null || m_View.m_Busy) return;
@@ -732,6 +738,7 @@ namespace Unity.MP_FPS.Client
             {
                 if (m_View.m_Drag!=this) return;
                 m_View.QuickSlotDragPreview?.Invoke(null, default);
+                m_ReleaseRecovery?.Pause(); m_ReleaseRecovery=null;
                 m_Scroll?.Pause(); m_Scroll=null; int pointer=m_Pointer; m_Pointer=-1;
                 if (pointer>=0 && target.HasPointerCapture(pointer)) target.ReleasePointer(pointer); target.style.opacity=1;
                 m_Active=false; if (m_View.m_Drag==this) m_View.m_Drag=null;
