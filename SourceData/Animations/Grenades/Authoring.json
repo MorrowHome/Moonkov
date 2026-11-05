@@ -1,0 +1,34 @@
+{
+  "blender": "5.2.2 LTS",
+  "source": "ArtSource/DollSinger/GrenadeGestures.blend",
+  "sourceSha256": "80908f1716e3967a8d2d0a57f3a80175590c5dfb934a4a7c4d5a0c0bf18f4656",
+  "frames": {
+    "hold": [
+      1,
+      2
+    ],
+    "prime": [
+      21,
+      54
+    ],
+    "overhand": [
+      81,
+      141
+    ],
+    "underhand": [
+      161,
+      221
+    ]
+  },
+  "geometryChanged": false,
+  "rigs": [
+    "DollSinger",
+    "HatsuneMiku",
+    "Shian"
+  ],
+  "outputs": [
+    "DollSinger.json",
+    "HatsuneMiku.json",
+    "Shian.json"
+  ]
+}

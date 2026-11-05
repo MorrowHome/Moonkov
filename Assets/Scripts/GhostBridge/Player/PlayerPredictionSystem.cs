@@ -211,6 +211,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
+                                !GrenadeHandling.Occupied(predictedPlayer.ValueRO) &&
                                 // The server reserves accessible energy and synchronizes the target ammo.
                                 // Predicting one without that reservation causes empty/full ammo oscillation.
                                 !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) &&

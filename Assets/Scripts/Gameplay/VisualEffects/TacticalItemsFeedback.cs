@@ -61,7 +61,8 @@ namespace Unity.MP_FPS
         {
             var definition=TacticalItemRules.Find(code);
             bool medical=Unity.MP_FPS.Inventory.ConsumableCatalog.MedicalRestore(code)>0;
-            if(definition==null && code!="energy_grenade" && !medical)
+            // Grenades are rendered by the replicated hand animation, including safe holding.
+            if(GrenadeHandling.Throwable(code) || definition==null && !medical)
             {
                 if(s_Active)
                 {

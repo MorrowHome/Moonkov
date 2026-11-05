@@ -31,6 +31,7 @@ public static class TacticalItemsAuthorityChecks
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);SceneManager.MoveGameObjectToScene(floor,scene);
             floor.transform.position=new Vector3(0,-.1f,0);floor.transform.localScale=new Vector3(40,.2f,40);
             var handle=world.GetOrCreateSystem<ServerGameSystem>();
+            var grenades=world.GetOrCreateSystemManaged<EnergyGrenadeServerSystem>();
             var clockEntity=em.CreateEntity(typeof(NetworkTime));double now=0;uint tick=10;
             var root=new GameObject("Tactical fixture player");SceneManager.MoveGameObjectToScene(root,scene);
             var ghost=root.AddComponent<GhostGameObject>();
@@ -51,6 +52,7 @@ public static class TacticalItemsAuthorityChecks
                 ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
                 ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
                 var ecb=new EntityCommandBuffer(Allocator.Temp);system.TacticalTestTick(ref state,ecb);ecb.Playback(em);ecb.Dispose();
+                grenades.Update();
                 using var outgoing=em.CreateEntityQuery(typeof(SendRpcCommandRequest));em.DestroyEntity(outgoing);
             }
             void Wait(float seconds){double end=now+seconds;while(now<end)Tick();}
@@ -59,7 +61,7 @@ public static class TacticalItemsAuthorityChecks
             {
                 ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
                 var ecb=new EntityCommandBuffer(Allocator.Temp);system.TacticalTestClear(ref state,ecb);ecb.Playback(em);ecb.Dispose();
-                root.transform.position=Vector3.zero;health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.Initialize(ref health);health.ControllerState.PitchDegrees=53.13f;health.ControllerState.Sprinting=false;health.ControllerState.MovementSpeed=0;em.SetComponentData(player,health);
+                root.transform.position=Vector3.zero;health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.Initialize(ref health);HaloEnergyRules.Release(ref health);health.ControllerState.PitchDegrees=53.13f;health.ControllerState.Sprinting=false;health.ControllerState.MovementSpeed=0;em.SetComponentData(player,health);
             }
             string Add(string code,int quantity=1)
             {
@@ -69,6 +71,17 @@ public static class TacticalItemsAuthorityChecks
             }
             void Request(TacticalItemAction action,string id="",uint target=0,int? version=null,int raid=4,uint? replay=null)
             {
+                if(action==TacticalItemAction.Use && GrenadeHandling.Throwable(inventory.Graph.Find(id)?.Code))
+                {
+                    void Grenade(GrenadeCommand command)
+                    {
+                        var rpc=em.CreateEntity();em.AddComponentData(rpc,new RaidGrenadeThrowRpc {RaidId=raid,ItemId=id,Command=command,
+                            RequestId=++requestId,ExpectedVersion=inventory.Graph.Version,HoldId=em.GetComponentData<PredictedPlayerGhost>(player).GrenadeHoldId});
+                        em.AddComponentData(rpc,new ReceiveRpcCommandRequest {SourceConnection=connection});Tick();
+                    }
+                    Grenade(GrenadeCommand.Equip);Wait(GrenadeHandling.DrawSeconds);
+                    Grenade(GrenadeCommand.Prime);Wait(GrenadeHandling.PrimeSeconds);Grenade(GrenadeCommand.Release);return;
+                }
                 var entity=em.CreateEntity();em.AddComponentData(entity,new RaidTacticalItemActionRpc {RaidId=raid,ItemId=id,TargetId=target,
                     RequestId=replay ?? ++requestId,ExpectedVersion=version ?? inventory.Graph.Version,Action=action});
                 em.AddComponentData(entity,new ReceiveRpcCommandRequest {SourceConnection=connection});Tick();
@@ -88,7 +101,7 @@ public static class TacticalItemsAuthorityChecks
             em.DestroyEntity(npc);em.DestroyEntity(clashNpc);
             var burningNpc=em.CreateEntity(typeof(DollSingerEnemy),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost),typeof(GhostOwner));
             var burningHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref burningHealth);
-            burningHealth.ShieldEquipped=true;burningHealth.ShieldCharge=100;
+            burningHealth.ShieldEquipped=true;burningHealth.ShieldCharge=100;HaloEnergyRules.SetDefense(ref burningHealth,true);
             em.SetComponentData(burningNpc,burningHealth);em.SetComponentData(burningNpc,LocalTransform.Identity);
             em.SetComponentData(burningNpc,new GhostOwner {NetworkId=-1000});
             var burningStatus=new TacticalServerWorld.Status {Fire=now+20,Bleed=now+20};Data().Statuses[burningNpc]=burningStatus;
@@ -147,13 +160,13 @@ public static class TacticalItemsAuthorityChecks
             health=em.GetComponentData<PredictedPlayerGhost>(player);RaidNutrition.Tick(ref health,.1f,1000,1000,300,0,2,0,tick);em.SetComponentData(player,health);
             BountyClashDamage.Apply(world,player,8,BodyPart.RightArm,5,tick,RaidDamageKind.Bullet);Tick();
             Check(!inventory.TacticalPending,"Same-tick metabolic damage hid an external injury during self-treatment");
-            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=100;em.SetComponentData(player,health);
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=100;HaloEnergyRules.SetDefense(ref health,true);em.SetComponentData(player,health);
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Bullet);Tick();
             health=em.GetComponentData<PredictedPlayerGhost>(player);
             Check(health.CurrentHealth==440 && health.ShieldCharge==70 &&
                 (!Data().Statuses.TryGetValue(player,out var shieldWound) || shieldWound.Bleed<=now),
                 "A fully absorbed shield hit caused bleeding");
-            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=10;em.SetComponentData(player,health);
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=10;HaloEnergyRules.SetDefense(ref health,true);em.SetComponentData(player,health);
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Bullet);Tick();
             Check(Data().Statuses.TryGetValue(player,out var penetrated) && penetrated.Bleed>now,
                 "A penetrating shield hit failed to produce a wound");
@@ -367,7 +380,7 @@ public static class TacticalItemsAuthorityChecks
             Clear();
             string dynamite=Add("dynamite_bundle");Request(TacticalItemAction.Use,dynamite);Wait(1.2f);
             Check(Data().Objects.Count==1 && Data().Objects[0].Phase==TacticalWorldPhase.Flying,"Actual throw request creates swept flying object");
-            var flying=Data().Objects[0];Vector3 initialPosition=flying.Position;Wait(3.4f);
+            var flying=Data().Objects[0];Vector3 initialPosition=flying.Position;Wait((float)(flying.Until-now)-.3f);
             Check(Vector3.Distance(flying.Position,initialPosition)>1 && flying.Position.y>-.1f,"Projectile advances and floor collision prevents tunneling");
             (Entity,GhostGameObject) Target(string name,Vector3 position)
             {var obj=new GameObject(name);SceneManager.MoveGameObjectToScene(obj,scene);obj.transform.position=position;var link=obj.AddComponent<GhostGameObject>();var victim=em.CreateEntity(typeof(PredictedPlayerGhost));var h=new PredictedPlayerGhost();RaidHealth.Initialize(ref h);em.SetComponentData(victim,h);em.AddComponentObject(victim,new GhostGameObjectLink {LinkedInstance=link});return(victim,link);}
@@ -416,7 +429,7 @@ public static class TacticalItemsAuthorityChecks
             Check(released.Source.ParticipantId==31 && released.Source.Epoch==7 && released.Source.NetworkId==7,"Release captures immutable participant and epoch");
             em.SetComponentData(player,new GhostOwner {NetworkId=0});em.SetComponentData(player,new ClashPlayer {CanAct=false,ParticipantId=31,TeamId=0,Epoch=7});
             var stranger=em.CreateEntity(typeof(GhostOwner),typeof(ClashPlayer));em.SetComponentData(stranger,new GhostOwner {NetworkId=7});em.SetComponentData(stranger,new ClashPlayer {ParticipantId=42,TeamId=1,Epoch=7,CanAct=true});
-            Wait(3.4f);released.Velocity=Vector3.zero;released.Resting=true;
+            Wait((float)(released.Until-now)-.3f);released.Velocity=Vector3.zero;released.Resting=true;
             var(fragmentVictim,_)=Target("Fragment source victim",released.Position+Vector3.right*2-Vector3.up*.8f);
             var(longFragmentVictim,_)=Target("Long wound fragment victim",released.Position+Vector3.forward*3-Vector3.up*.8f);
             var longSource=new ClashDamageSource {NetworkId=20,ParticipantId=70,Epoch=7};

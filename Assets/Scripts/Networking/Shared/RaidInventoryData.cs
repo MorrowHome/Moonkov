@@ -178,8 +178,10 @@ namespace Unity.MP_FPS
         public readonly System.Collections.Generic.List<int> HiddenDeathBags = new System.Collections.Generic.List<int>();
         public readonly System.Collections.Generic.List<int> RemovedSearches = new System.Collections.Generic.List<int>();
         public bool TacticalPending;
-        public bool ActionPending => TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
-        public bool InventoryMoveBlocked => TacticalPending || MedicalItemId!=null;
+        // Owned by the grenade system. Generic cancel requests cannot erase a live fuse.
+        public bool GrenadePending;
+        public bool ActionPending => GrenadePending || TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
+        public bool InventoryMoveBlocked => GrenadePending || TacticalPending || MedicalItemId!=null;
         public void CloseLoot()
         {
             // Closing a view owns the search, not an unrelated self-use action.

@@ -27,6 +27,7 @@ namespace Unity.MP_FPS.DollSinger
         public System.Func<bool, bool> QuickSlotPrimaryUse { get; set; }
         // Separate melee intent; true consumes both attack buttons without generating gun input.
         public System.Func<bool, bool, bool> MeleeAttackInput { get; set; }
+        public System.Func<bool, bool, bool, bool, bool> GrenadeInput { get; set; }
         public void SuppressPrimaryUntilRelease() => suppressFireUntilRelease = true;
         private bool IsGameplayBlocked => GameplayInputBlocked?.Invoke() == true;
         private bool suppressTiptoeUntilRelease;
@@ -254,6 +255,8 @@ namespace Unity.MP_FPS.DollSinger
                     Stance = toggledStance;
                 if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
             }
+            // Holding a grenade needs physical button state even while gun fire is suppressed.
+            bool grenade = GrenadeInput?.Invoke(FirePressed, FireHeld, AimPressed, AimHeld) == true;
             if (suppressFireUntilRelease)
             {
                 bool held = (mouse != null && mouse.leftButton.isPressed) ||
@@ -263,9 +266,10 @@ namespace Unity.MP_FPS.DollSinger
             }
             if (TransferHeld) { DefenseHeld = false; WeaponSlotPressed = 0; }
             if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
-            if (MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
+            if (grenade) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = DefenseHeld = TransferHeld = false; WeaponSlotPressed = 0; }
+            if (!grenade && MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
-            if (QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
+            if (!grenade && QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
             Move = Vector2.ClampMagnitude(Move, 1f);
         }

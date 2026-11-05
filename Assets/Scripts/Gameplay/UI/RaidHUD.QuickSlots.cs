@@ -20,11 +20,13 @@ namespace Unity.MP_FPS
             input.DarkSightMode = RaidHUD.UsesDarkSightViewKey;
             input.QuickSlotPrimaryUse = RaidHUD.RouteQuickSlotPrimary;
             input.MeleeAttackInput = RaidHUD.RouteMeleeInput;
+            input.GrenadeInput = RaidHUD.RouteGrenadeInput;
         }
         public static void Unbind(DollSingerInput input)
         {
             if (!input) return;
             input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null; input.MeleeAttackInput = null;
+            input.GrenadeInput = null;
             if (s_Input == input) s_Input = null;
         }
         internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
@@ -75,7 +77,7 @@ namespace Unity.MP_FPS
         private TacticalItemOwnerRpc QuickOwner => TacticalItemsFeedback.LocalOwner.RaidId == m_Snapshot.RaidId ? TacticalItemsFeedback.LocalOwner : default;
         private bool QuickTacticalActionPending => QuickOwner.Remaining > 0 || m_QuickTacticalRequest != 0;
         private bool QuickTacticalCancelPending => m_QuickTacticalRequest != 0 && m_QuickRequestedAction == TacticalItemAction.Cancel;
-        private bool QuickManualBusy => m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
+        private bool QuickManualBusy => GrenadeBusy || m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
         private bool QuickBusy => QuickManualBusy || MeleeBusy;
         private RaidInventoryClientState QuickInventory => m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
             ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()) : null;
@@ -143,6 +145,7 @@ namespace Unity.MP_FPS
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return 0;
             if (QuickManualBusy)
             {
+                if (GrenadeBusy && !GrenadeHandling.Live((GrenadePhase)GrenadeState.GrenadePhase) && SendGrenade(GrenadeCommand.Stow)) m_GrenadeNextSlot = number;
                 if (QuickTacticalActionPending && !QuickTacticalCancelPending) SendQuickTactical(TacticalItemAction.Cancel);
                 return 0;
             }
@@ -158,6 +161,7 @@ namespace Unity.MP_FPS
             if (item == null) { QuickNotice(m_QuickBindings.Reason); return 0; }
             RaidQuickSlotInput.ReleasePrimary();
             int slot = QuickSlotBindings.WeaponSlot(QuickGraph, item);
+            if (GrenadeHandling.Throwable(item.Code)) { EquipGrenade(item); return 0; }
             if (slot == MeleeInventory.EquipmentIndex)
             {
                 if (!SelectMelee(item)) QuickNotice("Melee weapon unavailable. Check equipment.");
@@ -178,22 +182,10 @@ namespace Unity.MP_FPS
             if (!tool) return releasedTool;
             if (!pressed || !QuickAlive || DarkSightRequested || QuickBusy || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return true;
-            if (TacticalItemRules.Find(item.Code) != null) SendQuickTactical(TacticalItemAction.Use, item.Id);
+            if (GrenadeHandling.Throwable(item.Code)) EquipGrenade(item);
+            else if (TacticalItemRules.Find(item.Code) != null) SendQuickTactical(TacticalItemAction.Use, item.Id);
             else if (graph.MedicalAccessible(item)) UseMedical(item);
             else if (graph.ConsumableAccessible(item)) UseConsumable(item);
-            else if (EnergyGrenadeRules.Accessible(graph, item))
-            {
-                if (Time.unscaledTime < m_NextGrenadeThrow) { QuickNotice("Item is cooling down."); return true; }
-                if (m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>()))
-                { QuickNotice("INTERRUPTED / WEAPON CHANGED"); MoonkovAudio.Error(); return true; }
-                m_InventoryRequestId = NextManualActionRequest();
-                if (Send(new RaidGrenadeThrowRpc { RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version, ItemId = item.Id, RequestId = m_InventoryRequestId }))
-                {
-                    m_GrenadeRequest = m_InventoryRequestId; m_InventoryRequestedAt = Time.unscaledTime;
-                    m_InventoryRequestPending = true; m_NextGrenadeThrow = Time.unscaledTime + EnergyGrenadeRules.Cooldown;
-                }
-                else QuickNotice("Not connected. Item remains in its container.");
-            }
             return true;
         }
         private void SendQuickTactical(TacticalItemAction action, string itemId = null, uint target = 0)
@@ -263,6 +255,7 @@ namespace Unity.MP_FPS
                 Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
             string meleeStatus = MeleeCaption();
             if (status == null && meleeStatus != null && m_QuickActive && !DarkSightRequested && !QuickManualBusy) status = meleeStatus;
+            if (!m_InventoryVisible && GrenadeBusy) status = GrenadeCaption();
             if (status == null && !m_InventoryVisible) status = QuickSprintCaption(owner);
             m_QuickView.Element.EnableInClassList("quick-slots-exhausted", m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
             m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested, m_InventoryVisible, status);

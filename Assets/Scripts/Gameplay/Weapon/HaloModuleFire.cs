@@ -54,7 +54,7 @@ namespace Unity.MP_FPS
         // early. A later weapon switch discards the old weapon's queued intent.
         public static bool ReadyToReload(ref PredictedPlayerGhost state,bool requested,int magazineSize)
         {
-            if(state.CurrentHealth<=0 || state.ControllerState.IsReloadingState || magazineSize<=state.CurrentAmmo)
+            if(GrenadeHandling.Occupied(state) || state.CurrentHealth<=0 || state.ControllerState.IsReloadingState || magazineSize<=state.CurrentAmmo)
             {state.ReloadQueued=false;return false;}
             if(state.WeaponEquipRemaining>0)
             {
@@ -71,7 +71,7 @@ namespace Unity.MP_FPS
         {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
-            bool blocked = input.HaloDefense || input.HaloTransfer || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
+            bool blocked = GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
             if (blocked)
             {
                 Reset(ref state);
@@ -110,7 +110,7 @@ namespace Unity.MP_FPS
             bool pulse = IsPulse(state, weapon);
             bool pressed = trigger && !state.BurstTriggerHeld;
             state.BurstTriggerHeld = trigger;
-            bool blocked = weapon == null || switched || state.CurrentHealth <= 0 || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) ||
+            bool blocked = GrenadeHandling.Occupied(state) || weapon == null || switched || state.CurrentHealth <= 0 || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) ||
                 (DollSingerWeapons.IsHalo(state.EquippedWeaponID) && !aiming);
             if (blocked) { state.BurstRemaining = 0; state.FireBufferRemaining = 0; return false; }
 

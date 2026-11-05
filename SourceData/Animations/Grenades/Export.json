@@ -1,0 +1,23 @@
+{
+  "sourceSha256": "80908f1716e3967a8d2d0a57f3a80175590c5dfb934a4a7c4d5a0c0bf18f4656",
+  "rigs": [
+    {
+      "rig": "HatsuneMiku",
+      "frames": 158,
+      "maximumContactResidualMetres": 0.0,
+      "maximumWeightedContactResidualMetres": 0.0,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 3.796357746205168e-08
+    },
+    {
+      "rig": "Shian",
+      "frames": 158,
+      "maximumContactResidualMetres": 0.0,
+      "maximumWeightedContactResidualMetres": 0.0,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 1.1452202197669464e-07
+    }
+  ]
+}

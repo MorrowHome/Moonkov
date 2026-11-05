@@ -78,7 +78,7 @@ namespace Unity.MP_FPS
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
         public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
-        public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
+        public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()

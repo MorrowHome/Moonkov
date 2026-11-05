@@ -7,9 +7,9 @@
 首次有效配置只将当前真实装备武器设为 1/2/3；保存或主动清除后不再自动填充，后续换装/新 ID 需要显式绑定。
 
 1. 在战局打开背包，悬停或选择已装备武器、按原规则可访问的可用物品（食物饮水可在随身背包，医疗/氧气/战术道具须口袋或胸挂），按 1–9 绑定；也可将实际物品拖入下方格子。右键槽位清除。不可从搜刮容器、仓库或未装备武器绑定。
-2. 关闭背包，数字键只选中。武器按该物品当前真实装备槽切换；道具显示名字、数量，并拦截旧武器 Fire/Aim/Reload。松开当前主键后重新按主键才使用，数字键本身不消耗。
-3. 急救包/医疗凝胶/创伤包、食物饮水氧气、能量雷分别走原服务器 RPC；新战术道具只发 RaidTacticalItemActionRpc，没有客户端扣物或指定落点。
-4. 新道具请求发出后、Started 回包前，以及服务器报告耗时动作期间，X、菜单或数字切换意图均可请求取消；该数字不会同时选择下一物品。同一次按住 X 不会在取消回包后转成踮脚，松开后的下一次独立 X 恢复踮脚。移动/受伤等中断仍由服务器裁决。取消反馈只提示检查背包，不声称服务器必然未扣物。
+2. 关闭背包，数字键选中。投掷物同时取出到手中，不启用、不扣物。武器按该物品当前真实装备槽切换；道具显示名字、数量，并拦截旧武器 Fire/Aim/Reload。松开当前主键后重新按主键才使用，数字键本身不消耗。
+3. 所有投掷物统一走 `RaidGrenadeThrowRpc` 的 Equip/Prime/Release/Stow/Drop。G 取出或收回，按住左键远投、右键低抛，松开投掷。启用后可以温雷，X 丢下，不能收回。普通医疗和食物仍走原 RPC；注射、布设等用 `RaidTacticalItemActionRpc`。没有客户端扣物或指定落点。
+4. 注射、布设等耗时请求发出后、Started 回包前，以及服务器报告耗时动作期间，X、菜单或数字切换意图均可请求取消；该数字不会同时选择下一物品。同一次按住 X 不会在取消回包后转成踮脚，松开后的下一次独立 X 恢复踮脚。移动/受伤等中断仍由服务器裁决。取消反馈只提示检查背包，不声称服务器必然未扣物。安全持雷时选择其他槽位，会先收回再选择；已启用的雷必须投出或丢下。
 
 ## 身份、生命周期和边界
 
@@ -22,16 +22,18 @@
 
 ## 集成契约
 
-- Presentation：RaidQuickSlotInput.Bind(input) / Unbind(input)。DollSingerInput 两个可选委托 QuickSlotSelection(int number)->真实武器槽 或 0，QuickSlotPrimaryUse(bool pressed)->是否抑制武器。只在拥有者实际战局安装。
+- Presentation：RaidQuickSlotInput.Bind(input) / Unbind(input)。DollSingerInput 可选委托 QuickSlotSelection(int number)->真实武器槽 或 0，QuickSlotPrimaryUse(bool pressed)->是否抑制武器。`GrenadeInput` 在武器按键抑制前接收真实按下/按住状态，避免温雷被误判为松手。只在拥有者实际战局安装。
 - RaidHUD：InitializeQuickSlots() / PresentQuickSlots(bool active) / DisposeQuickSlots()，由基础生命周期调用；不在独立 Update 中重复执行。
 - ContainerInventoryView：QuickSlotCandidate（悬停优先、选中后备）、QuickSlotDrop(item,panelPoint)、QuickSlotDragPreview。Drop 被消费后不发送 Move，不改变库存。
 - 统一 NextManualActionRequest / m_InventoryRequestId；owner 的同 RequestId Started→Completed/Interrupted 仍更新反馈，不能只观察 RequestId。
 - TryQuickTacticalInteraction(bool active) 在旧 E 交互前执行；命中陷阱/弹药箱或自身灭火止血后返回本帧已消费，不再同时打开旧容器。
 - E 查询使用实际 Ghost root 的 capsule 眼高（max(.3,height-.2)，默认高度1.8）和 PredictedPlayerGhost.ControllerState 的 Pitch/Yaw，完全与服务器一致。第三人称 orbit 相机距离不改变可达性；隔墙与跨楼层仍由客户端辅助查询和服务器复核。
-- 图形预览调用 TacticalItemsFeedback.SetSelectedItem(code/null)，服务器仍独立验明物品、距离、地面与消耗。SetPresentationBlocked 在菜单/文本/暗视/死亡隐藏；pending 保留手持并隐藏投掷轨迹。
-- 手持模型目前覆盖本地第一人称/本地第三人称，远端选择持物未新增 Ghost 协议；世界投掷物/陷阱/箱体的联网表现由道具组提供。
+- 图形预览调用 TacticalItemsFeedback.SetSelectedItem(code/null)，服务器仍独立验明物品、距离、地面与消耗。SetPresentationBlocked 在菜单/文本/暗视/死亡隐藏；投掷物由 `GrenadePresentation` 显示，不再生成旧相机持物或固定远投轨迹。
+- 手雷阶段、引信、物品类型和 HoldId 已进入 Ghost，本人和观察者共用真实骨架动作。其他物品的选中持物仍仅本地显示；世界投掷物、陷阱和箱体沿用已有广播。客户端与服务器须使用相同协议版本。
 
 ## 验证记录
+
+- 2026-11-05：`GrenadeInputPlayChecks.Run()` 在同一个无连接单角色 fixture 中通过 25 项真实键鼠/HUD/骨架检查。包括 G 只取出、短按等待启用确认、按住温雷、右键低抛、X 丢下不触发踮脚、数字槽先收回、收势后枪械恢复。库存回包显式注入，服务器另有独立权威检查。
 
 - `dotnet run --project Tools/QuickSlotChecks/QuickSlotChecks.csproj`：真实规则与内存 store，167 项（无真实 Prefs/账号读写）。覆盖三真实武器槽、全部战术物品、三种医疗、食品/水/氧气、选择不消耗、访问失效、同名新 ID 不替代、重绑/清除/账户隔离/损坏存储。
 - Unity 单角色 fixture 已完成真实 UITK 路径：医疗包4/解毒针5/破片雷6/窒息弹7/弹药箱8键绑定，耐力针9拖入→右键清除→重新拖入，库存 GraphVersion=9 保持不变。关闭菜单首帧保护继续保留；等待正常游戏帧后独立数字9选中成功，数量2、使用意图0。

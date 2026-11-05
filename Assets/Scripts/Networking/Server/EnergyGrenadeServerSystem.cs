@@ -21,18 +21,56 @@ namespace Unity.MP_FPS
             public Transform Shooter;
             public PhysicsScene Scene;
             public Vector3 Position, Velocity;
-            public float Age, SnapshotAge;
+            public float Age, SnapshotAge, FlightAge;
             public bool Resting;
         }
 
         private readonly List<Grenade> m_Active = new();
+        private sealed class Held
+        {
+            public Entity Player;
+            public RaidInventoryState Inventory;
+            public int Raid;
+            public uint HoldId;
+            public string ItemId, Code;
+            public GrenadePhase Phase;
+            public double Until, FuseAt = double.PositiveInfinity;
+            public bool Consumed, ReleaseQueued, Underhand, Reserved;
+            public Transform Root;
+            public PhysicsScene Scene;
+            public Vector3 Position;
+            public ClashDamageSource Source;
+            public int Owner;
+        }
+        private readonly Dictionary<Entity, Held> m_Held = new();
+        private readonly List<Entity> m_HeldKeys = new();
         private readonly Dictionary<Entity, double> m_NextThrow = new();
         private readonly List<Entity> m_ExpiredCooldowns = new();
         private RaycastHit[] m_Hits = new RaycastHit[16];
+        private EntityQuery m_TacticalQuery;
         private MoonRaidMap m_Map;
         private uint m_NextId;
 
-        protected override void OnCreate() => RequireForUpdate<NetworkTime>();
+        protected override void OnCreate()
+        {
+            RequireForUpdate<NetworkTime>();
+            m_TacticalQuery = GetEntityQuery(typeof(TacticalServerWorld));
+        }
+        private TacticalServerWorld Tactical => m_TacticalQuery.IsEmptyIgnoreFilter ? null :
+            EntityManager.GetComponentObject<TacticalServerWorld>(m_TacticalQuery.GetSingletonEntity());
+
+        public static InventoryError CommitEquip(RaidInventoryState inventory, ref PredictedPlayerGhost health,
+            bool canAct, string itemId, int version, uint tick)
+        {
+            if (inventory?.Graph == null) return InventoryError.Invalid;
+            if (!canAct || !(health.CurrentHealth > 0) || !float.IsFinite(health.CurrentHealth) || health.ClashDarkSight ||
+                RaidHealth.HandsBusy(health) || health.MeleePhase != 0) return InventoryError.Inaccessible;
+            if (inventory.Graph.Version != version) return InventoryError.Stale;
+            if (!GrenadeHandling.Accessible(inventory.Graph, inventory.Graph.Find(itemId))) return InventoryError.Inaccessible;
+            inventory.CancelActions(); inventory.GrenadePending = true;
+            health.LastGrenadeShotTick = tick;
+            return InventoryError.None;
+        }
 
         // Read-only server perception. No trajectory or owner is exposed to NPCs.
         public int ActiveThreatCount => m_Active.Count;
@@ -42,32 +80,21 @@ namespace Unity.MP_FPS
             if (index < 0 || index >= m_Active.Count) return false;
             var grenade = m_Active[index];
             if (grenade == null || grenade.Id == 0 || !grenade.Scene.IsValid() || !float.IsFinite(grenade.Age) ||
-                grenade.Age < 0 || grenade.Age >= EnergyGrenadeRules.Fuse ||
+                grenade.Age >= EnergyGrenadeRules.Fuse ||
                 !float.IsFinite(grenade.Position.x) || !float.IsFinite(grenade.Position.y) || !float.IsFinite(grenade.Position.z)) return false;
             id = grenade.Id; scene = grenade.Scene; position = grenade.Position;
             remaining = EnergyGrenadeRules.Fuse - grenade.Age;
             return true;
         }
 
-        // Call only after validating the throw pose and capacity. Failed requests
-        // neither consume a grenade nor interrupt another hand action.
-        public static InventoryError CommitThrow(RaidInventoryState inventory, ref PredictedPlayerGhost health,
-            bool canAct, string itemId, int version, uint tick)
-        {
-            if (inventory?.Graph == null) return InventoryError.Invalid;
-            if (!canAct || !(health.CurrentHealth > 0) || !float.IsFinite(health.CurrentHealth) ||
-                health.ClashDarkSight || RaidHealth.HandsBusy(health))
-                return InventoryError.Inaccessible;
-            var error = EnergyGrenadeRules.Take(inventory.Graph, itemId, version);
-            if (error == InventoryError.None) health.LastGrenadeShotTick = tick;
-            return error;
-        }
-
         protected override void OnUpdate()
         {
             var map = MoonRaidMap.Active;
             if (map != m_Map)
-            { m_Active.Clear(); m_NextThrow.Clear(); m_Map = map; }
+            {
+                foreach (var held in m_Held.Values) Clear(held);
+                m_Held.Clear(); m_Active.Clear(); m_NextThrow.Clear(); m_Map = map;
+            }
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             double now = SystemAPI.Time.ElapsedTime;
             m_ExpiredCooldowns.Clear();
@@ -93,33 +120,60 @@ namespace Unity.MP_FPS
                         var session = EntityManager.GetComponentData<RaidSession>(connection);
                         var player = EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity;
                         if (map && session.Phase == RaidPhase.Active && session.RaidId == r.RaidId && inventory.RaidId == r.RaidId &&
-                            m_Active.Count < 64 && (!m_NextThrow.TryGetValue(connection, out var next) || now >= next) &&
                             EntityManager.HasComponent<PredictedPlayerGhost>(player) && EntityManager.HasComponent<GhostGameObjectLink>(player) &&
                             EntityManager.HasComponent<GhostOwner>(player))
                         {
                             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(player);
                             var root = EntityManager.GetComponentObject<GhostGameObjectLink>(player).LinkedInstance;
                             bool canAct = BountyClashRuntime.CanAct(EntityManager, player);
-                            if (health.CurrentHealth > 0 && canAct && !health.ClashDarkSight &&
-                                !RaidHealth.HandsBusy(health) && root && TryPose(root, health, out var position, out var velocity))
-                            {
-                                inventory.Error = CommitThrow(inventory, ref health, canAct, r.ItemId.ToString(), r.ExpectedVersion, tick);
-                                if (inventory.Error == InventoryError.None)
-                                {
-                                    var grenade = new Grenade { Id = ++m_NextId, Owner = EntityManager.GetComponentData<GhostOwner>(player).NetworkId,
-                                        Source = BountyClashDamage.Capture(World,player),
-                                        Shooter = root.transform, Scene = root.gameObject.scene.GetPhysicsScene(), Position = position, Velocity = velocity };
-                                    m_Active.Add(grenade);
-                                    EntityManager.SetComponentData(player, health);
-                                    m_NextThrow[connection] = now + EnergyGrenadeRules.Cooldown;
-                                    Broadcast(ecb, grenade, tick, false);
-                                }
-                            }
+                            if (health.CurrentHealth > 0 && float.IsFinite(health.CurrentHealth) && canAct && !health.ClashDarkSight && root)
+                                inventory.Error = Command(connection, player, root, inventory, ref health, r, now, tick, ecb);
+                            EntityManager.SetComponentData(player, health);
                         }
                         inventory.LastSentVersion = -1;
                     }
                 }
                 ecb.DestroyEntity(entity);
+            }
+            m_HeldKeys.Clear(); m_HeldKeys.AddRange(m_Held.Keys);
+            foreach (var connection in m_HeldKeys)
+            {
+                var held = m_Held[connection];
+                bool actor = EntityManager.HasComponent<PredictedPlayerGhost>(held.Player);
+                var health = actor ? EntityManager.GetComponentData<PredictedPlayerGhost>(held.Player) : default;
+                bool valid = actor && held.Root && health.CurrentHealth > 0 && !health.ClashDarkSight &&
+                    BountyClashRuntime.CanAct(EntityManager, held.Player) && EntityManager.HasComponent<RaidSession>(connection) &&
+                    EntityManager.HasComponent<JoinedClient>(connection) && !EntityManager.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
+                    EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity == held.Player &&
+                    EntityManager.GetComponentData<RaidSession>(connection).RaidId == held.Raid &&
+                    EntityManager.GetComponentData<RaidSession>(connection).Phase == RaidPhase.Active;
+                if (held.Root) held.Position = HandPosition(held.Root, health);
+                if (!valid || held.Consumed && now >= held.FuseAt)
+                {
+                    if (held.Consumed) Release(held, health, true, now, tick, ecb);
+                    Clear(held); m_Held.Remove(connection); continue;
+                }
+                // A safe grenade stays in inventory. An external inventory replacement must never duplicate it.
+                if (!held.Consumed && held.Phase != GrenadePhase.Recovering &&
+                    !GrenadeHandling.Accessible(held.Inventory.Graph, held.Inventory.Graph?.Find(held.ItemId)))
+                { Clear(held); m_Held.Remove(connection); continue; }
+                if (now >= held.Until)
+                {
+                    if (held.Phase == GrenadePhase.Drawing) SetPhase(held, GrenadePhase.Safe, now);
+                    else if (held.Phase == GrenadePhase.Priming)
+                        SetPhase(held, held.ReleaseQueued ? GrenadePhase.Throwing : GrenadePhase.Live, held.Until);
+                    if (held.Phase == GrenadePhase.Throwing && now >= held.Until)
+                    {
+                        double releaseAt = held.Until;
+                        Release(held, health, false, now, tick, ecb);
+                        SetPhase(held, GrenadePhase.Recovering, releaseAt);
+                        m_NextThrow[connection] = now + EnergyGrenadeRules.Cooldown;
+                    }
+                    else if ((held.Phase == GrenadePhase.Recovering || held.Phase == GrenadePhase.Stowing) && now >= held.Until)
+                    { Clear(held); m_Held.Remove(connection); continue; }
+                }
+                Publish(held, ref health, now);
+                EntityManager.SetComponentData(held.Player, health);
             }
             if (map)
                 for (int i = m_Active.Count - 1; i >= 0; i--)
@@ -128,7 +182,8 @@ namespace Unity.MP_FPS
                     if (!g.Scene.IsValid()) { m_Active.RemoveAt(i); continue; }
                     float dt = Mathf.Min(SystemAPI.Time.DeltaTime, EnergyGrenadeRules.Fuse - g.Age);
                     EnergyGrenadePhysics.Step(g.Scene, ref g.Position, ref g.Velocity, ref g.Resting, dt,
-                        g.Age < .25f ? g.Shooter : null, ref m_Hits);
+                        g.FlightAge < .25f ? g.Shooter : null, ref m_Hits);
+                    g.FlightAge += dt;
                     g.Age += dt;
                     if (g.Age >= EnergyGrenadeRules.Fuse)
                     {
@@ -143,30 +198,119 @@ namespace Unity.MP_FPS
             ecb.Dispose();
         }
 
-        private bool TryPose(GhostGameObject root, in PredictedPlayerGhost player, out Vector3 position, out Vector3 velocity)
+        private InventoryError Command(Entity connection, Entity player, GhostGameObject root, RaidInventoryState inventory,
+            ref PredictedPlayerGhost health, in RaidGrenadeThrowRpc request, double now, uint tick, EntityCommandBuffer ecb)
+        {
+            if (request.Command == GrenadeCommand.Equip)
+            {
+                if (m_Held.ContainsKey(connection) || RaidHealth.HandsBusy(health) || health.MeleePhase != 0 ||
+                    m_NextThrow.TryGetValue(connection, out var next) && now < next) return InventoryError.Inaccessible;
+                var accepted = CommitEquip(inventory, ref health, true, request.ItemId.ToString(), request.ExpectedVersion, tick);
+                if (accepted != InventoryError.None) return accepted;
+                var item = inventory.Graph.Find(request.ItemId.ToString());
+                var held = new Held { Player = player, Inventory = inventory, Raid = request.RaidId, HoldId = request.RequestId,
+                    ItemId = item.Id, Code = item.Code, Root = root.transform, Scene = root.gameObject.scene.GetPhysicsScene(),
+                    Position = HandPosition(root.transform, health), Owner = EntityManager.GetComponentData<GhostOwner>(player).NetworkId,
+                    Source = BountyClashDamage.Capture(World, player) };
+                SetPhase(held, GrenadePhase.Drawing, now); m_Held.Add(connection, held);
+                HaloModuleFire.Reset(ref health);
+                Publish(held, ref health, now);
+                return InventoryError.None;
+            }
+            if (!m_Held.TryGetValue(connection, out var current) || current.Player != player ||
+                request.HoldId != current.HoldId) return InventoryError.Inaccessible;
+            switch (request.Command)
+            {
+                case GrenadeCommand.Prime:
+                    if (current.Phase != GrenadePhase.Safe) return InventoryError.Inaccessible;
+                    var tactical = Tactical;
+                    bool energy = current.Code == EnergyGrenadeRules.Code;
+                    int reserved = 0;
+                    if (energy) foreach (var held in m_Held.Values) if (held.Consumed && held.Code == EnergyGrenadeRules.Code) reserved++;
+                    if (energy ? m_Active.Count + reserved >= 64 : tactical == null || tactical.Objects.Count + tactical.GrenadeReservations >= TacticalItemRules.MaxWorldObjects)
+                        return InventoryError.Full;
+                    var error = GrenadeHandling.Take(inventory.Graph, current.ItemId, request.ExpectedVersion);
+                    if (error != InventoryError.None) return error;
+                    current.Consumed = true; current.Underhand = request.Underhand;
+                    current.FuseAt = now + GrenadeHandling.PrimeSeconds + GrenadeHandling.Fuse(current.Code);
+                    if (!energy) { tactical.GrenadeReservations++; current.Reserved = true; }
+                    SetPhase(current, GrenadePhase.Priming, now); health.LastGrenadeShotTick = tick;
+                    break;
+                case GrenadeCommand.Release:
+                    if (current.Phase == GrenadePhase.Priming) current.ReleaseQueued = true;
+                    else if (current.Phase == GrenadePhase.Live) SetPhase(current, GrenadePhase.Throwing, now);
+                    else return InventoryError.Inaccessible;
+                    break;
+                case GrenadeCommand.Stow:
+                    if (current.Consumed || current.Phase != GrenadePhase.Safe && current.Phase != GrenadePhase.Drawing)
+                        return InventoryError.Inaccessible;
+                    SetPhase(current, GrenadePhase.Stowing, now);
+                    break;
+                case GrenadeCommand.Drop:
+                    if (!current.Consumed) return InventoryError.Inaccessible;
+                    Release(current, health, true, now, tick, ecb); SetPhase(current, GrenadePhase.Recovering, now);
+                    break;
+                default: return InventoryError.Invalid;
+            }
+            Publish(current, ref health, now);
+            return InventoryError.None;
+        }
+
+        private static void SetPhase(Held held, GrenadePhase phase, double now)
+        { held.Phase = phase; float seconds = GrenadeHandling.Duration(phase); held.Until = seconds > 0 ? now + seconds : double.PositiveInfinity; }
+        private static void Publish(Held held, ref PredictedPlayerGhost health, double now)
+        {
+            health.GrenadeHoldId = held.HoldId; health.GrenadePhase = (byte)held.Phase;
+            health.GrenadeItem = held.Code; health.GrenadeUnderhand = held.Underhand;
+            health.GrenadePhaseRemaining = double.IsFinite(held.Until) ? Mathf.Max(0, (float)(held.Until - now)) : 0;
+            health.GrenadeFuseRemaining = held.Consumed ? Mathf.Max(0, (float)(held.FuseAt - now)) : 0;
+        }
+        private void Clear(Held held)
+        {
+            if (held.Reserved && Tactical != null) Tactical.GrenadeReservations = Mathf.Max(0, Tactical.GrenadeReservations - 1);
+            held.Reserved = false; held.Inventory.GrenadePending = false; held.Inventory.LastSentVersion = -1;
+            if (!EntityManager.HasComponent<PredictedPlayerGhost>(held.Player)) return;
+            var health = EntityManager.GetComponentData<PredictedPlayerGhost>(held.Player);
+            health.GrenadePhase = 0; health.GrenadeItem = default; health.GrenadePhaseRemaining = health.GrenadeFuseRemaining = 0;
+            EntityManager.SetComponentData(held.Player, health);
+        }
+        private static Vector3 HandPosition(Transform root, in PredictedPlayerGhost health)
         {
             var controller = root.GetComponent<PlayerGhost>()?.Controller?.CharacterController;
             float height = controller ? controller.height : 1.8f;
-            Vector3 eye = root.transform.position + Vector3.up * Mathf.Max(.25f, height - .2f);
-            var state = player.ControllerState;
-            Vector3 direction = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0) * Vector3.forward;
-            position = eye;
-            velocity = direction * EnergyGrenadeRules.Speed + Vector3.up * 2f;
-            if (!float.IsFinite(velocity.x) || !float.IsFinite(velocity.y) || !float.IsFinite(velocity.z)) return false;
-            // Sweep from the body to the release point: aiming against a wall cannot spawn through it.
-            var scene = root.gameObject.scene.GetPhysicsScene();
-            if (Ballistics.Sweep(scene, eye, eye + direction * .55f, EnergyGrenadeRules.BodyRadius,
-                EnergyGrenadePhysics.HitMask, root.transform, ref m_Hits, out var hit))
-                position = eye + direction * Mathf.Max(0, hit.distance - .02f);
-            else position += direction * .55f;
-            // Casts do not detect an overlapping starting sphere. Reject it without spending an item.
-            var overlaps = new Collider[16];
-            int count = scene.OverlapSphere(position, EnergyGrenadeRules.BodyRadius, overlaps,
-                EnergyGrenadePhysics.HitMask, QueryTriggerInteraction.Ignore);
-            if (count == overlaps.Length) return false;
-            for (int i = 0; i < count; i++)
-                if (!overlaps[i].transform.IsChildOf(root.transform)) return false;
-            return true;
+            var rotation = Quaternion.Euler(0, health.ControllerState.YawDegrees, 0);
+            return root.position + Vector3.up * Mathf.Max(.25f, height - .45f) + rotation * new Vector3(.18f, 0, .2f);
+        }
+        private void Release(Held held, in PredictedPlayerGhost health, bool drop, double now, uint tick, EntityCommandBuffer ecb)
+        {
+            if (!held.Consumed || !held.Scene.IsValid()) return;
+            var position = held.Position;
+            var direction = Quaternion.Euler(health.ControllerState.PitchDegrees, health.ControllerState.YawDegrees, 0) * Vector3.forward;
+            var velocity = drop ? Vector3.zero : direction * (held.Underhand ? GrenadeHandling.LowSpeed : EnergyGrenadeRules.Speed) + Vector3.up * (held.Underhand ? .8f : 2f);
+            // Sweep from inside the capsule to the hand. A live grenade can never be cancelled by a wall.
+            if (held.Root)
+            {
+                var origin = new Vector3(held.Root.position.x, position.y, held.Root.position.z);
+                if (Ballistics.Sweep(held.Scene, origin, position, EnergyGrenadeRules.BodyRadius, EnergyGrenadePhysics.HitMask, held.Root, ref m_Hits, out var hit))
+                { position = origin + (position - origin).normalized * Mathf.Max(0, hit.distance - .02f); velocity = Vector3.zero; }
+            }
+            if (held.Code == EnergyGrenadeRules.Code)
+            {
+                var grenade = new Grenade { Id = ++m_NextId, Owner = held.Owner, Source = held.Source, Shooter = held.Root,
+                    Scene = held.Scene, Position = position, Velocity = velocity,
+                    Age = Mathf.Min(EnergyGrenadeRules.Fuse - (float)(held.FuseAt - now), EnergyGrenadeRules.Fuse) };
+                grenade.SnapshotAge = grenade.Age; m_Active.Add(grenade); Broadcast(ecb, grenade, tick, false);
+            }
+            else if (Tactical is { } tactical)
+            {
+                var obj = new TacticalServerWorld.Object { Id = ++tactical.NextId, Owner = held.Owner, OwnerPlayer = held.Player,
+                    Source = held.Source, Definition = TacticalItemRules.Find(held.Code), Phase = TacticalWorldPhase.Flying,
+                    Scene = held.Scene, Shooter = held.Root, Position = position, Velocity = velocity, Created = now,
+                    Until = held.FuseAt, ArmAt = now };
+                tactical.Objects.Add(obj); ServerGameSystem.TacticalBroadcast(ecb, tactical, obj, false);
+            }
+            if (held.Reserved && Tactical != null) Tactical.GrenadeReservations = Mathf.Max(0, Tactical.GrenadeReservations - 1);
+            held.Reserved = held.Consumed = false;
         }
 
         private void Explode(Grenade grenade, uint tick)

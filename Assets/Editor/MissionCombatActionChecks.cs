@@ -69,10 +69,10 @@ public static class MissionCombatActionChecks
         var current = Health(); var marker = new RaidMissionWorld.Actor { Key = "player", Node = 0, Request = 1 };
         var active = Operation(); marker.Capture(current,float3.zero);
         Check(active.Begin(marker.Key, 1, 0, 1, 0) == MissionActionResult.Started, "Grenade interruption setup");
-        Check(EnergyGrenadeServerSystem.CommitThrow(inventory, ref current, true, grenade.Id, graph.Version - 1, 8) == InventoryError.Stale &&
+        Check(EnergyGrenadeServerSystem.CommitEquip(inventory, ref current, true, grenade.Id, graph.Version - 1, 8) == InventoryError.Stale &&
               !marker.Interrupted(current,float3.zero), "Rejected throw does not cancel the operation");
-        Check(EnergyGrenadeServerSystem.CommitThrow(inventory, ref current, true, grenade.Id, graph.Version, 8) == InventoryError.None &&
-              marker.Interrupted(current,float3.zero), "A real accepted grenade interrupts the operation");
+        Check(EnergyGrenadeServerSystem.CommitEquip(inventory, ref current, true, grenade.Id, graph.Version, 8) == InventoryError.None &&
+              marker.Interrupted(current,float3.zero) && grenade.Quantity == 1, "Taking out a grenade interrupts the operation without spending it");
         active.Cancel(marker.Key);
         Check(active.Renew(marker.Key, 1, 1) == MissionActionResult.Stale && !active.Completed(0), "Grenade cannot grant mission progress");
 

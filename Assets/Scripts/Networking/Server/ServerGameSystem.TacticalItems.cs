@@ -50,6 +50,7 @@ namespace Unity.MP_FPS
         public readonly List<Entity> Scratch=new();
         public readonly List<Entity> Victims=new();
         public uint Epoch=1,NextId,Sequence; public object Map; public double NextOwnerSnapshot,Now;
+        public int GrenadeReservations;
         public RaycastHit[] Hits=new RaycastHit[32]; public readonly Collider[] Overlaps=new Collider[32];
     }
 
@@ -301,6 +302,8 @@ namespace Unity.MP_FPS
             {
                 inventory.Error=TacticalItemRules.Validate(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,out definition);
                 if(inventory.Error!=InventoryError.None)return;
+                // All throwable items use the held/prime/release authority flow.
+                if(definition.Throwable) {inventory.Error=InventoryError.Inaccessible;return;}
                 seconds=definition.UseSeconds;
                 if(definition.Deployable && !TacticalPlacement(root,health,world,out placement)) {inventory.Error=InventoryError.Inaccessible;world.Feedbacks[connection]=TacticalItemFeedback.NeedGround;return;}
                 if((definition.Throwable||definition.Deployable) && !TacticalCapacity(world,definition,player,placement))
@@ -337,7 +340,7 @@ namespace Unity.MP_FPS
         }
         private static bool TacticalCapacity(TacticalServerWorld world,TacticalItemDefinition definition,Entity player,Vector3 position)
         {
-            if(world.Objects.Count>=TacticalItemRules.MaxWorldObjects)return false;
+            if(world.Objects.Count+world.GrenadeReservations>=TacticalItemRules.MaxWorldObjects)return false;
             if(definition.Trap && world.Objects.FindAll(o=>o.OwnerPlayer==player && o.Definition.Trap && o.Phase==TacticalWorldPhase.Armed).Count>=TacticalItemRules.MaxOwnerTraps)return false;
             return !definition.Deployable || !world.Objects.Exists(o=>o.Phase!=TacticalWorldPhase.Flying && Vector3.Distance(o.Position,position)<.65f);
         }
@@ -651,7 +654,7 @@ namespace Unity.MP_FPS
                 health.ValueRW.TacticalSprintExhausted = status.Sprint.Exhausted;
             }
         }
-        private static void TacticalBroadcast(EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,bool removed)
+        internal static void TacticalBroadcast(EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,bool removed)
         {
             var entity=ecb.CreateEntity();ecb.AddComponent(entity,new TacticalWorldStateRpc {Epoch=world.Epoch,Id=obj?.Id ?? 0,Sequence=++world.Sequence,
                 Kind=obj?.Definition.Kind ?? default,Phase=removed ? TacticalWorldPhase.Removed : obj.Phase,

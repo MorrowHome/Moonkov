@@ -9,6 +9,9 @@ namespace Unity.MP_FPS
         public int RaidId, ExpectedVersion;
         public uint RequestId;
         public FixedString64Bytes ItemId;
+        public GrenadeCommand Command;
+        public uint HoldId;
+        public bool Underhand;
     }
 
     // Reliable, low-rate authoritative poses also make active grenades visible to late joiners.

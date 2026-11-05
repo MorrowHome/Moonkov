@@ -240,7 +240,7 @@ namespace Unity.MP_FPS
             return constants;
         }
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
-        public static bool HandsBusy(in PredictedPlayerGhost state) => state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
+        public static bool HandsBusy(in PredictedPlayerGhost state) => GrenadeHandling.Occupied(state) || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
         // Self-treatment can continue through physiological damage, but not a new
         // external injury or a hit fully absorbed by the shield.
         public static bool SelfTreatmentDamageUnchanged(in PredictedPlayerGhost state,uint damageSequence,uint shieldSequence) =>
@@ -254,6 +254,14 @@ namespace Unity.MP_FPS
         }
         public static PlayerInput RestrictInput(in PredictedPlayerGhost state, PlayerInput input)
         {
+            if (GrenadeHandling.Occupied(state))
+            {
+                input.SetFlag(PlayerInput.InputFlag.Shoot, false); input.SetFlag(PlayerInput.InputFlag.FireHeld, false);
+                input.SetFlag(PlayerInput.InputFlag.Aim, false); input.SetFlag(PlayerInput.InputFlag.Reload, false);
+                input.SetFlag(PlayerInput.InputFlag.EquipHalo, false); input.SetFlag(PlayerInput.InputFlag.EquipRevolver, false);
+                input.SetFlag(PlayerInput.InputFlag.EquipPistol, false); input.SetFlag(PlayerInput.InputFlag.HaloDefense, false);
+                input.SetFlag(PlayerInput.InputFlag.HaloTransfer, false); input.SetFlag(PlayerInput.InputFlag.FireSuppressed, true);
+            }
             if(state.ClashEnabled && !state.ClashCanAct)
             {
                 // Suppress actions without resetting the player's continuous light

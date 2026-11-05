@@ -176,6 +176,11 @@ public struct PredictedPlayerGhost : IComponentData
     // Server-authored; one event when a timed consumable or self-treatment begins.
     [GhostField] public uint ConsumableUseSequence;
     [GhostField] public uint LastGrenadeShotTick;
+    [GhostField] public byte GrenadePhase;
+    [GhostField] public uint GrenadeHoldId;
+    [GhostField] public Unity.Collections.FixedString64Bytes GrenadeItem;
+    [GhostField(Quantization = 1000)] public float GrenadePhaseRemaining, GrenadeFuseRemaining;
+    [GhostField] public bool GrenadeUnderhand;
     [GhostField] public float ReloadTimer;
     [GhostField] public float ReloadDuration;
     [GhostField] public int ReloadTargetAmmo;

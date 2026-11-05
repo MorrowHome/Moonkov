@@ -28,6 +28,7 @@ namespace Unity.MP_FPS
         private MoonkovPlayerAudio m_Audio;
         private DollSingerMeleePresentation m_Melee;
         private RaidActionPresentation m_Action;
+        private GrenadePresentation m_Grenade;
         private EnergyShieldPresentation m_Protection;
         private HaloTransferPresentation m_Transfer;
         private bool m_HaloOccupied;
@@ -57,7 +58,7 @@ namespace Unity.MP_FPS
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public Camera OwnedCamera => m_Linked && m_ViewActivated && Role == MultiplayerRole.ClientOwned ? m_View.camera : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
-        public bool WeaponHandsAvailable => m_Halo && !m_Halo.ExternalHandPoseActive;
+        public bool WeaponHandsAvailable => m_Halo && !m_Halo.ExternalHandPoseActive && !RaidHUD.GrenadeInHands && !(m_Grenade && m_Grenade.OwnsHands);
         public void PrepareDeploymentView(Camera transitionCamera)
         {
             if (Role != MultiplayerRole.ClientOwned || !m_View) return;
@@ -239,6 +240,10 @@ namespace Unity.MP_FPS
                 string rig = name.Contains("HatsuneMiku") ? "HatsuneMiku" : name.Contains("Shian") ? "Shian" : "DollSinger";
                 m_Action.Configure(m_PresentationAnimator, m_View, m_Halo, rig);
                 m_Action.ResetPresentation();
+                m_Grenade = m_Model.GetComponent<GrenadePresentation>();
+                if (!m_Grenade) m_Grenade = m_Model.gameObject.AddComponent<GrenadePresentation>();
+                m_Grenade.Configure(m_PresentationAnimator, m_Halo, rig);
+                m_Grenade.ResetPresentation();
                 m_Protection = m_Model.GetComponent<EnergyShieldPresentation>();
                 if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
                 m_Protection.ConfigureHardwareBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
@@ -336,7 +341,8 @@ namespace Unity.MP_FPS
             var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
             bool owned = Role == MultiplayerRole.ClientOwned;
             if (m_Action) m_Action.Present(ghost, owned, owned && m_View.IsFirstPerson,
-                downed || ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen));
+                downed || GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen));
+            if (m_Grenade) m_Grenade.Present(ghost, owned);
             if (m_Protection) m_Protection.Present(ghost, owned, owned && m_View.IsFirstPerson, owned ? m_View.camera : null);
             PresentMelee(new MeleeViewState
             {
@@ -347,11 +353,11 @@ namespace Unity.MP_FPS
                 Epoch = ghost.MeleeEpoch,
                 Alive = ghost.CurrentHealth > 0 && !downed, IsOwner = owned,
                 FirstPerson = owned && m_View.IsFirstPerson, AttackDirection = viewRotation * Vector3.forward,
-                Suppressed = ghost.ClashDarkSight || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
+                Suppressed = GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
                     GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked),
                 HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
             });
-            bool hideWeapon = downed || ghost.HaloDefenseHeld || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
+            bool hideWeapon = downed || m_Grenade && m_Grenade.OwnsHands || ghost.HaloDefenseHeld || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(!hideWeapon && !m_HaloOccupied && (owned ? m_OwnedAiming : state.Aiming),
@@ -476,6 +482,7 @@ namespace Unity.MP_FPS
             m_Recoil.Reset();
             if (m_Melee) m_Melee.ResetPresentation();
             if (m_Action) m_Action.ResetPresentation();
+            if (m_Grenade) m_Grenade.ResetPresentation();
             if (m_Protection) m_Protection.DisposePresentation();
             if (m_Transfer) m_Transfer.ResetPresentation();
             m_HaloOccupied = false;
