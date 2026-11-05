@@ -73,3 +73,9 @@
 
 .inventory-raid .field-search-hidden { position: absolute; background-color: #343b3d; border-width: 1px; border-color: #66706a; }
 .inventory-raid .field-search-hidden.field-search-current { border-color: #c8cfaa; }
+
+.inventory-view .inventory-item-tooltip { position: absolute; display: none; width: 360px; padding: 12px; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-radius: 6px; overflow: hidden; }
+.inventory-view .inventory-item-tooltip Label { color: #edeef0; font-size: 12px; white-space: normal; margin: 0; padding: 0; letter-spacing: 0; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-title { font-size: 14px; -unity-font-style: bold; margin-bottom: 4px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-summary { color: #b0b4ba; margin-bottom: 8px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-state { color: #b0b4ba; margin-top: 8px; }

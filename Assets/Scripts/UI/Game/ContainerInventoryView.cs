@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.MP_FPS.Inventory;
+using PointerType = UnityEngine.UIElements.PointerType;
 
 namespace Unity.MP_FPS.Client
 {
@@ -137,6 +138,7 @@ namespace Unity.MP_FPS.Client
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
             Application.focusChanged += FocusChanged;
             m_Windows = new TerminalWindows(m_Root, () => { });
+            InitializeItemTooltip();
             InitializeRaidPortrait();
             Present(null);
             m_PortraitSettings = GameSettings.Instance;
@@ -249,6 +251,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Suspend()
         {
+            HideItemTooltip();
             ClearQuickTransfers();
             m_PortraitShowing = false;
             m_PortraitTimer?.Pause();
@@ -265,6 +268,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Render()
         {
+            HideItemTooltip();
             ReleaseCorpsePortrait(); m_CorpseStage = null;
             m_HoveredItemId = null;
             m_Grids.RemoveAll(g => !m_Slots.Values.Any(s => ReferenceEquals(s, g.Element))); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
@@ -575,7 +579,7 @@ namespace Unity.MP_FPS.Client
             if(m_PortraitShowing){PresentOperatorPortrait();PresentCorpsePortrait();}
         }
         public void CancelDrag() => m_Drag?.Cancel();
-        private void FocusChanged(bool focused) { if (!focused) CancelDrag(); }
+        private void FocusChanged(bool focused) { if (!focused) { HideItemTooltip(); CancelDrag(); } }
         public bool Escape()
         {
             if (Application.isPlaying && m_EscapeHandledFrame==Time.frameCount) return true;
@@ -595,7 +599,7 @@ namespace Unity.MP_FPS.Client
             m_DeferredRender?.Pause();m_DeferredLayout=null;
             if (m_Disposed) return;
             if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged -= PortraitCharacterChanged;
-            Suspend(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
+            Suspend(); ReleaseItemTooltip(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
         }
 
         private sealed class Drag : PointerManipulator
@@ -621,10 +625,20 @@ namespace Unity.MP_FPS.Client
             { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); target.RegisterCallback<PointerCancelEvent>(Cancelled); target.RegisterCallback<DetachFromPanelEvent>(Detached); }
             protected override void UnregisterCallbacksFromTarget()
             { Cancel(); target.UnregisterCallback<PointerEnterEvent>(Enter); target.UnregisterCallback<PointerLeaveEvent>(Leave); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); target.UnregisterCallback<PointerCancelEvent>(Cancelled); target.UnregisterCallback<DetachFromPanelEvent>(Detached); }
-            private void Enter(PointerEnterEvent evt) => m_View.m_HoveredItemId = m_Source()?.Id;
-            private void Leave(PointerLeaveEvent evt) { if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null; }
+            private void Enter(PointerEnterEvent evt)
+            {
+                var item = m_Source(); m_View.m_HoveredItemId = item?.Id;
+                if (evt.pointerType == PointerType.mouse && evt.pressedButtons == 0)
+                    m_View.ShowItemTooltip(target, item, evt.position);
+            }
+            private void Leave(PointerLeaveEvent evt)
+            {
+                m_View.HideItemTooltip(target);
+                if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null;
+            }
             private void Down(PointerDownEvent evt)
             {
+                m_View.HideItemTooltip();
                 if (m_View.m_Graph==null) { evt.StopImmediatePropagation(); return; }
                 if (evt.button==1 && m_View.m_Drag!=null) { m_View.CancelDrag(); evt.StopImmediatePropagation(); return; }
                 if (evt.button==0 && m_ReleaseRecovery!=null) Cancel();
@@ -642,6 +656,8 @@ namespace Unity.MP_FPS.Client
             }
             private void Move(PointerMoveEvent evt)
             {
+                if (m_Pointer < 0 && evt.pointerType == PointerType.mouse && evt.pressedButtons == 0)
+                    m_View.ShowItemTooltip(target, m_Source(), evt.position);
                 if (m_Pointer<0 || evt.pointerId!=m_Pointer) return;
                 // Input System can dispatch an unpressed move before the queued PointerUp.
                 // Let that event finish the drop before recovering a genuinely missed release.
@@ -733,7 +749,7 @@ namespace Unity.MP_FPS.Client
             }
             private void Lost(PointerCaptureOutEvent evt) { if (evt.target==target && evt.pointerId==m_Pointer) Cancel(); }
             private void Cancelled(PointerCancelEvent evt) { if (evt.pointerId==m_Pointer) Cancel(); }
-            private void Detached(DetachFromPanelEvent evt) { if (m_View.m_Drag==this) Cancel(); }
+            private void Detached(DetachFromPanelEvent evt) { m_View.HideItemTooltip(target); if (m_View.m_Drag==this) Cancel(); }
             public void Cancel()
             {
                 if (m_View.m_Drag!=this) return;

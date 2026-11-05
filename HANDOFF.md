@@ -230,6 +230,13 @@
 - Blender 使用 `D:/_DevTools/Blender/blender-5.2.2-windows-x64/blender.exe` 和 OptiX，不静默回退 CPU；重 GPU 任务串行、AboveNormal、CPU AUTO。长队列隐藏独立启动，核对实际进程和完成标记。旧 5.1.1 不可用，不继续 Mac 烘焙。
 - 最多一个 Unity Editor，已有实例只复用 CLI Pipeline；Windows 不用鼠标。Cubemap 校准已通过，实际 Y=-1。不做未授权 Player 构建或联机，不走曾导致 D3D12 故障的反射 Panel.Repaint/Render 或正式全场景截图路径。
 
+## 物品悬浮信息
+
+- 2026-11-06 仓库、随身格子、装备槽和已揭示的搜刮物品共用悬浮信息卡。入口为 `ContainerInventoryView.Tooltip.cs`。名称、用途和状态复用现有物品显示数据。等价快照原位刷新数量和资源余量，不重建格子。
+- 信息卡及文字均使用 `PickingMode.Ignore`。位置限制在当前背包界面内。按下鼠标、滚动、失焦、关闭、重建和目标卸载时隐藏，不发送库存请求。
+- 紧凑菜单打开期间不显示信息卡。Unity 在右键菜单打开时可能补发未按键的 `PointerEnterEvent`；用 `TerminalWindows.HasContext` 阻止它重新显示，不能只在按下时隐藏。
+- 单 Editor 编译、54 项悬浮交互检查和原有 36 项拖放检查通过。检查使用隔离面板和样例库存，没有进入 Play、联机或执行 Player 构建。原生长中文信息卡已查看。
+
 ## 连续搜刮与快捷收纳
 
 - 2026-11-05 修复格子拖放显示绿框、松手却回原位。`ContainerInventoryView.Drag` 收到未按键的移动事件时，不得立即取消；同一批输入中的 `PointerUp` 可能还未派发。漏收松手的清理改由面板调度器执行。正常松手立即提交，继续按住、新按下、失焦和关闭都会清理待执行回收。当前 Input System 的实际排序回放已复现修复前零请求、修复后一次请求。

@@ -34,6 +34,7 @@ namespace Unity.MP_FPS.Client
                 tile.tooltip = MoonkovLocalization.Text(def.Name) + " ×" + item.Quantity + "\n" + MoonkovItemPresentation.Details(item.Code) + "\n" + MoonkovItemPresentation.ItemState(item);
             }
             RefreshWeight();
+            RefreshItemTooltip();
             if (m_Drag != null) m_Drag.RefreshItem();
         }
 

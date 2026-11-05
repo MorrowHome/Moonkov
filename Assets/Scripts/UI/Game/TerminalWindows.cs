@@ -13,6 +13,7 @@ namespace Unity.MP_FPS.Client
         private readonly Action m_Back;
         private IVisualElementScheduledItem m_ToastTimer;
         private readonly Label m_Toast;
+        internal bool HasContext => m_Windows.Exists(window => window.ClassListContains("terminal-context"));
 
         public TerminalWindows(VisualElement root, Action back)
         {
