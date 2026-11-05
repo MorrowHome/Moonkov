@@ -168,7 +168,7 @@ namespace Unity.MP_FPS
                 RenderMission(definition, snapshot, live);
             }
             m_MissionHud.style.display = live && m_MissionPinned && !m_InventoryVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            UpdateMissionMarker(m_MissionHasDestination && live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
+            UpdateMissionMarker(false);
             if (!ChatInputBlocked && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
             if (!live || ChatInputBlocked || MapInputBlocked || m_InventoryVisible || m_InventoryRequestPending || m_MissionDetailsVisible || m_CampaignJournalVisible || GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !Application.isFocused || UnityEngine.Cursor.lockState != CursorLockMode.Locked)

@@ -15,6 +15,9 @@ namespace Unity.MP_FPS
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
         private VisualElement m_Root, m_Result, m_Status, m_Inventory;
+        private VisualElement m_TaskPanel;
+        private Button m_TaskToggle, m_ClashTaskToggle;
+        private bool m_TasksCollapsed;
         private Client.ContainerInventoryView m_InventoryView;
         private Client.RaidHealthView m_HealthView;
         private VisualElement m_EquipmentHost, m_HealthHost;
@@ -103,9 +106,18 @@ namespace Unity.MP_FPS
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             var rightRail = m_Root.Q<ScrollView>("raidRightRail");
-            rightRail.Add(m_Root.Q("raidMinimap"));
             rightRail.Add(m_Root.Q("raidExtractionPanel"));
-            rightRail.Add(m_Root.Q(className: "raid-cargo-instrument"));
+            var supplementary = m_Root.Q("raidSupplementaryHud");
+            supplementary.Add(m_Root.Q("raidMinimap"));
+            supplementary.Add(m_Root.Q("raidStatus"));
+            supplementary.Add(m_Root.Q(className: "raid-cargo-instrument"));
+            supplementary.Add(m_Root.Q("raidSurveyReadout"));
+            supplementary.Add(m_Root.Q("raidReceipt"));
+            m_TaskPanel = m_Root.Q("raidTaskPanel");
+            m_TaskToggle = m_Root.Q<Button>("raidTaskToggle");
+            m_TaskToggle.clicked += ToggleTasks;
+            SetTasksCollapsed(false);
+            m_TaskPanel.style.display = DisplayStyle.None;
             m_Minimap = new RaidMinimapView(m_Root);
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
@@ -160,9 +172,40 @@ namespace Unity.MP_FPS
             InitializeQuickSlots();
             InitializeMelee();
             InitializeBountyClash();
+            m_ClashTaskToggle = m_ClashView.Tasks.Q<Button>("raidTaskToggle");
+            m_ClashTaskToggle.clicked += ToggleTasks;
+            SetTasksCollapsed(m_TasksCollapsed);
             InitializeRaidMap();
             InitializeSpecialEquipment();
             InitializeChat();
+        }
+
+        private void ToggleTasks() => SetTasksCollapsed(!m_TasksCollapsed);
+
+        private void SetTasksCollapsed(bool collapsed)
+        {
+            m_TasksCollapsed = collapsed;
+            m_TaskPanel.EnableInClassList("is-collapsed", collapsed);
+            MoonkovLocalization.Set(m_TaskToggle.Q<Label>("raidTaskChevron"), collapsed ? "+" : "−");
+            if (m_ClashTaskToggle != null)
+            {
+                m_ClashView.Tasks.EnableInClassList("is-collapsed", collapsed);
+                MoonkovLocalization.Set(m_ClashTaskToggle.Q<Label>("raidTaskChevron"), collapsed ? "+" : "−");
+            }
+        }
+
+        private void UpdateTaskPanel(bool live)
+        {
+            bool visible = live && !m_InventoryVisible && !m_MapOpen && !m_MissionDetailsVisible &&
+                !m_CampaignJournalVisible && !ChatInputBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
+                (m_ClashMode || m_MissionHud.style.display == DisplayStyle.Flex ||
+                 m_CampaignHud != null && !m_CampaignHud.ClassListContains("campaign-hidden") ||
+                 m_ExtractionPanel.ClassListContains("is-visible"));
+            m_TaskPanel.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ClashView.Tasks.style.display = visible && m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
+            if (visible && Application.isFocused && Keyboard.current?.hKey.wasPressedThisFrame == true &&
+                !Client.QuickSlotBindings.Typing(m_Root.panel?.focusController.focusedElement as VisualElement))
+                ToggleTasks();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -401,15 +444,13 @@ namespace Unity.MP_FPS
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
             if (!inGame) { ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
-            PresentOnlineSquad();
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
             bool clash = PresentBountyClash();
             UpdateRaidCinematics(clash);
             UpdateChat();
-            UpdateSpecialEquipment();
             if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
@@ -480,6 +521,7 @@ namespace Unity.MP_FPS
             m_AirlockPrompt.SetPresentation(liveInteraction && !missionControl && m_WorldControlFocused);
             PresentTimedAction();
             UpdateCampaignHUD(alive && ready && !settled && !clash);
+            UpdateTaskPanel(alive && ready && !settled);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy, missionControl, m_WorldControlFocused);
             if (liveInteraction && !missionControl && !haloBusy)
@@ -529,9 +571,6 @@ namespace Unity.MP_FPS
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
             RefreshSupplyReceipt(ready && !settled);
-            bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;
-            bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
-            m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
             MoonkovLocalization.Set(m_Bag, "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}" , count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
@@ -556,7 +595,7 @@ namespace Unity.MP_FPS
                 m_ExtractionSoundAt = Time.unscaledTime + 1;
             }
             bool returnBeacon = showReturn && m_ReturnGuidance.ShowBeacon;
-            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check || returnBeacon));
+            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && showReturn && (extracting || returnBeacon));
             m_ExtractionTrack.style.display = DisplayStyle.None;
             if (extracting)
                 m_ExtractionFill.style.width = Length.Percent(100 * Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining / MoonRaidMap.Active.ExtractionSeconds));
@@ -570,7 +609,7 @@ namespace Unity.MP_FPS
                 else if (returnBeacon)
                     MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude, MoonkovLocalization.Text(heading));
                 else
-                    MoonkovLocalization.Set(m_Exit, check ? MoonkovLocalization.Format($"GREEN BEACON / {delta.magnitude:F0}m {heading}") : "");
+                    MoonkovLocalization.Set(m_Exit, "");
             }
             else MoonkovLocalization.Set(m_Exit, "");
             if (settled)
@@ -945,6 +984,9 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
+            if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
+            m_ClashTaskToggle = null;
             m_InteractionBindings?.Dispose(); m_InteractionBindings = null;
             DisposeChat();
             DisposeCampaignHUD();

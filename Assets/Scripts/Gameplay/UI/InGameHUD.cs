@@ -246,6 +246,7 @@ namespace Unity.MP_FPS
                     playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
             }
             PresentChargeFeedback(playerData);
+            m_ChargeWeaponPanel.style.display = DisplayStyle.None;
             m_Vitals.Present(playerData, haloNotice: m_LastChargeNotice);
 
             // Update Reticle

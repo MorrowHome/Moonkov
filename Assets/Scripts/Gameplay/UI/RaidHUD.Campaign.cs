@@ -137,7 +137,7 @@ namespace Unity.MP_FPS
                 }
                 else m_CampaignLocation.text = undiscovered ? anchor.Region + "  沿入口楼梯前往设备区" : node?.Location ?? "返回作业船查看记录";
             }
-            UpdateCampaignMarker(show && m_CampaignHasDestination);
+            UpdateCampaignMarker(false);
         }
 
         private static string EffectiveCampaignTask(CampaignProgress progress)

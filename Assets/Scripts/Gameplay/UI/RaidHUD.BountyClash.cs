@@ -99,7 +99,7 @@ namespace Unity.MP_FPS
                 snapshot.Phase == ClashPhase.Preparing || snapshot.Phase == ClashPhase.Deploying;
             m_ClashActionsBlocked = m_ClashLobbyPointer || snapshot.Life != ClashLife.Alive;
             if (m_ClashActionsBlocked && m_InventoryVisible) SetInventory(false);
-            cargo.style.display = m_InventoryVisible || GameSettings.Instance.IsPauseMenuOpen || m_ClashActionsBlocked ? DisplayStyle.None : DisplayStyle.Flex;
+            cargo.style.display = DisplayStyle.None;
             if (m_ClashLobbyPointer) Utils.SetCursorVisible(true);
             else if (previouslyPointer && !GameSettings.Instance.IsPauseMenuOpen && !m_InventoryVisible) Utils.SetCursorVisible(false);
             bool hasLocal = TryGetLocalPlayerEntity(out var owner);

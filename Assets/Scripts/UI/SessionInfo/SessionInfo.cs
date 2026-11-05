@@ -156,6 +156,10 @@ namespace Unity.MP_FPS.Client
 
         void LateUpdate()
         {
+            bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
+            m_SessionInfoBanner.style.display = inGame ? DisplayStyle.None : DisplayStyle.Flex;
+            if (inGame) return;
+
             if (m_SessionInfoContainer.style.display == DisplayStyle.None)
                 return;
 

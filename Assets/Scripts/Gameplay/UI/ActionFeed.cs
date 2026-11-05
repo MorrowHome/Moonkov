@@ -48,6 +48,12 @@ namespace Unity.MP_FPS.UI
             }
         }
 
+        private void LateUpdate()
+        {
+            if (_rootElement != null)
+                _rootElement.style.display = GameSettings.Instance.GameState == GlobalGameState.InGame ? DisplayStyle.None : DisplayStyle.Flex;
+        }
+
         public void AnnouncePlayerJoined(string playerName)
         {
             if (_actionFeedContainer == null) return;

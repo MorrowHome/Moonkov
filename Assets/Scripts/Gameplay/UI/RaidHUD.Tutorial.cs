@@ -53,7 +53,7 @@ namespace Unity.MP_FPS
             m_Root.EnableInClassList("campaign-tutorial", active);
             m_TutorialSkip.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             m_TutorialShortcut.text = TutorialRuntime.UsingGamepad ? "方向键上  任务与通讯" : "J  任务与通讯";
-            bool visible = live && !m_CampaignHud.ClassListContains("campaign-hidden");
+            bool visible = live && !m_TasksCollapsed && !m_CampaignHud.ClassListContains("campaign-hidden");
             if (visible)
             {
                 if (m_ChapterRadioCurrent == null && m_ChapterRadioQueue.Count > 0)

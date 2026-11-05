@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
     public sealed class BountyClashView : IDisposable
     {
         public VisualElement Element { get; }
+        internal VisualElement Tasks { get; }
         internal VisualElement EquipmentStatusHost => m_Sidebar;
         internal BountyClashMapView Map => m_Map;
         private readonly Action<ClashIntent, int, string> m_Send;
@@ -43,6 +44,14 @@ namespace Unity.MP_FPS
             sidebar.AddToClassList("clash-sidebar"); m_Battle.Add(sidebar);
             sidebar.Add(Element.Q("clashMap")); sidebar.Add(Element.Q<Label>("clashSense").parent); sidebar.Add(Element.Q("clashExits"));
             m_SenseLayer = Element.Q("clashSenseLayer"); m_MarkerLayer = Element.Q("clashTeamMarkers");
+            Tasks = TerminalLayout.Clone(Resources.Load<VisualTreeAsset>("Moonkov/RaidUI"), "raidTaskPanel");
+            Tasks.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/RaidMinimap"));
+            m_Battle.Add(Tasks);
+            var taskContent = Tasks.Q<ScrollView>("raidRightRail");
+            taskContent.Add(instrument); taskContent.Add(Element.Q("clashExits"));
+            sidebar.style.display = DisplayStyle.None;
+            Element.Q(className: "clash-team").style.display = DisplayStyle.None;
+            m_MarkerLayer.style.display = DisplayStyle.None;
             m_Capacity = Element.Q<DropdownField>("clashCapacity"); m_Code = Element.Q<TextField>("clashInviteInput");
             m_Create = Element.Q<Button>("clashCreate"); m_Create.clicked += Create;
             m_Join = Element.Q<Button>("clashJoin"); m_Join.clicked += Join;

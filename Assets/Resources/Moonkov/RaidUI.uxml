@@ -4,7 +4,15 @@
     <ui:Style src="UI/RaidMinimap.uss" />
     <ui:Style src="UI/RaidInventory.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
-        <ui:ScrollView name="raidRightRail" class="raid-right-rail" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" />
+        <ui:VisualElement name="raidTaskPanel" class="raid-task-panel" picking-mode="Ignore">
+            <ui:Button name="raidTaskToggle" class="raid-task-toggle" focusable="false">
+                <ui:Label text="TASKS" class="raid-task-heading" picking-mode="Ignore" />
+                <ui:Label text="H" class="raid-task-key" picking-mode="Ignore" />
+                <ui:Label name="raidTaskChevron" text="−" class="raid-task-chevron" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:ScrollView name="raidRightRail" class="raid-right-rail" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="raidSupplementaryHud" style="display: none;" picking-mode="Ignore" />
         <ui:Label name="raidSurveyReadout" class="raid-survey-readout moonkov-style-font" picking-mode="Ignore" />
         <ui:VisualElement name="raidMinimap" class="raid-minimap" picking-mode="Ignore">
             <ui:VisualElement class="raid-minimap-heading" picking-mode="Ignore">

@@ -27,3 +27,26 @@
 .raid-ui .raid-right-rail .mission-eyebrow, .raid-ui .raid-right-rail .mission-hint { display: none; }
 .raid-ui .raid-right-rail .raid-copy { margin: 0; }
 .raid-ui .raid-receipt { right: 324px; }
+
+.raid-ui #raidTaskPanel { position: absolute; top: 24px; right: 24px; width: 280px; max-height: 70%; }
+.raid-ui #raidTaskPanel.is-collapsed { width: 112px; }
+.raid-ui #raidTaskPanel .raid-right-rail { position: relative; top: auto; right: auto; bottom: auto; width: 100%; min-height: 0; flex-shrink: 1; }
+.raid-ui #raidTaskPanel.is-collapsed .raid-right-rail { display: none; }
+.raid-ui .raid-task-toggle { flex-direction: row; align-items: center; width: 100%; min-width: 0; height: 32px; min-height: 32px; flex-shrink: 0; margin: 0; padding: 6px 12px; border-width: 1px; border-color: #43484e; border-radius: 0; background-color: rgba(24, 25, 27, 0.92); letter-spacing: 0; }
+.raid-ui .raid-task-toggle:hover { background-color: #272a2d; border-color: #5a6169; }
+.raid-ui .raid-task-toggle:active { background-color: #2e3135; }
+.raid-ui .raid-task-toggle Label { margin: 0; font-size: 12px; color: #edeef0; }
+.raid-ui .raid-task-heading { flex-grow: 1; }
+.raid-ui .raid-task-toggle .raid-task-key { color: #b0b4ba; margin-right: 12px; }
+.raid-ui .raid-task-chevron { width: 12px; -unity-text-align: middle-center; }
+.raid-ui #raidTaskPanel .mission-hud, .raid-ui #raidTaskPanel .campaign-hud { position: relative; top: auto; right: auto; left: auto; bottom: auto; width: 100%; margin: 0; padding: 12px; flex-shrink: 0; background-color: rgba(24, 25, 27, 0.88); }
+.raid-ui #raidTaskPanel .mission-title, .raid-ui #raidTaskPanel .campaign-hud-title { font-size: 16px; }
+.raid-ui #raidTaskPanel .mission-step, .raid-ui #raidTaskPanel .campaign-hud-action { font-size: 14px; }
+.raid-ui #raidTaskPanel .campaign-hud-location, .raid-ui #raidTaskPanel .campaign-hud-hint, .raid-ui #raidTaskPanel .campaign-muted { font-size: 12px; }
+.raid-ui #raidTaskPanel #campaignHudChapter, .raid-ui #raidTaskPanel #campaignJournalShortcut { display: none; }
+.raid-ui #raidTaskPanel .raid-extraction-panel { display: none; margin-bottom: 0; }
+.raid-ui #raidTaskPanel .raid-extraction-panel.is-visible { display: flex; }
+.raid-ui #raidTaskPanel #clashInstrument { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: 100%; margin: 0; padding: 12px; background-color: rgba(24, 25, 27, 0.88); }
+.raid-ui #raidTaskPanel #clashClock, .raid-ui #raidTaskPanel #clashPhase { display: none; }
+.raid-ui #raidTaskPanel #clashBounty, .raid-ui #raidTaskPanel .clash-objective { font-size: 14px; white-space: normal; }
+.raid-ui #raidTaskPanel .clash-exit { font-size: 12px; white-space: normal; margin: 0; padding: 12px; background-color: rgba(24, 25, 27, 0.88); }

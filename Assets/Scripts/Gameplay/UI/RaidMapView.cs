@@ -50,7 +50,7 @@ namespace Unity.MP_FPS
         public void Present(bool available, bool open, bool clash, ClashSnapshotRpc snapshot)
         {
             RefreshViewport();
-            m_Hint.style.display = available && !open ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Hint.style.display = DisplayStyle.None;
             m_Overlay.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
             if (!open) { m_Map.CancelDrag(); return; }
             MoonkovLocalization.Set(m_Status, !clash ? (m_Map.HasSurface ? "SATELLITE" : "EXPEDITION / SCHEMATIC SUPPLY AND EXIT MAP") :
