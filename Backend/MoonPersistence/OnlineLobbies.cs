@@ -5,6 +5,9 @@ using Unity.MP_FPS.Online;
 // each allocation gets a new process and a clean map, never a reused raid World.
 public sealed class OnlineLobbies
 {
+    private static readonly TimeSpan HeartbeatTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan ReconnectGrace = TimeSpan.FromSeconds(90);
+    private static readonly System.Text.Json.JsonSerializerOptions StateJson = new() { IncludeFields = true };
     public sealed class Member
     {
         public Guid Id { get; set; }
@@ -12,6 +15,7 @@ public sealed class OnlineLobbies
         public bool Ready { get; set; }
         public int Team { get; set; }
         public DateTime Seen { get; set; }
+        public LobbyAppearance Appearance { get; set; } = new();
     }
     public sealed class Party
     {
@@ -50,29 +54,59 @@ public sealed class OnlineLobbies
     private readonly object gate = new();
     private State state = new();
     private readonly string? stateFile;
+    private DateTime nextHeartbeatSave;
     public OnlineLobbies(string? path = null)
     {
         stateFile = path;
         if (path != null && File.Exists(path))
-            state = System.Text.Json.JsonSerializer.Deserialize<State>(File.ReadAllText(path)) ?? new();
+            state = System.Text.Json.JsonSerializer.Deserialize<State>(File.ReadAllText(path), StateJson) ?? new();
     }
     private Party? Find(Guid id) => state.Parties.FirstOrDefault(p => p.Members.Any(m => m.Id == id));
     private static void Require(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }
+    private bool Maintain(DateTime now)
+    {
+        bool changed = false;
+        // A raid owns its roster until all settlement receipts have been handled.
+        foreach (var party in state.Parties.Where(p => p.Instance == null).ToArray())
+        {
+            var offline = party.Members.Where(m => now - m.Seen >= HeartbeatTimeout).ToArray();
+            if (offline.Length == 0) continue;
+            if (party.Phase == "Queued" || offline.Any(m => m.Ready))
+            {
+                Reset(party);
+                party.Message = "队员连接中断，已取消准备。";
+                changed = true;
+            }
+            if (party.Members.RemoveAll(m => now - m.Seen >= ReconnectGrace) > 0)
+            {
+                Reset(party);
+                party.Message = "离线队员已离队。";
+                changed = true;
+            }
+            if (party.Members.Count == 0) { state.Parties.Remove(party); continue; }
+            if (party.Members.All(m => m.Id != party.Leader))
+                party.Leader = party.Members.OrderByDescending(m => now - m.Seen < HeartbeatTimeout).First().Id;
+        }
+        return changed;
+    }
     private void Save()
     {
         if (stateFile == null) return;
         Directory.CreateDirectory(Path.GetDirectoryName(stateFile)!);
         var temp = stateFile + ".tmp";
-        File.WriteAllText(temp, System.Text.Json.JsonSerializer.Serialize(state));
+        File.WriteAllText(temp, System.Text.Json.JsonSerializer.Serialize(state, StateJson));
         File.Move(temp, stateFile, true);
     }
     public LobbySnapshot Snapshot(Guid id, DateTime now, string address, string serverName, int port)
     {
         lock (gate)
         {
+            bool changed = Maintain(now);
             var p = Find(id);
-            if (p == null) return new LobbySnapshot { SelfId = id.ToString(), Phase = "None" };
+            if (p == null) { if (changed) Save(); return new LobbySnapshot { SelfId = id.ToString(), Phase = "None" }; }
             p.Members.Single(m => m.Id == id).Seen = now;
+            // Keep restart recovery bounded without writing a file for every poll.
+            if (changed || now >= nextHeartbeatSave) { Save(); nextHeartbeatSave = now.AddSeconds(15); }
             var a = p.Instance == state.Active?.Id ? state.Active : null;
             return new LobbySnapshot
             {
@@ -80,14 +114,31 @@ public sealed class OnlineLobbies
                 Phase = a == null ? p.Phase : a.Phase, InstanceId = a?.Id, PublicQueue = p.PublicQueue,
                 Address = a?.Phase == "Ready" ? address : null, ServerName = serverName, Port = port, Message = p.Message,
                 Members = p.Members.Select(m => new LobbyMember { PlayerId = m.Id.ToString(), Name = m.Name,
-                    Ready = m.Ready, Team = m.Team, Returned = a?.Seats.FirstOrDefault(s => s.Player == m.Id)?.Returned ?? false }).ToArray()
+                    Ready = m.Ready, Team = m.Team, Appearance = m.Appearance.Copy(), Connected = now - m.Seen < HeartbeatTimeout,
+                    ReconnectSeconds = Math.Max(0, (int)Math.Ceiling((ReconnectGrace - (now - m.Seen)).TotalSeconds)),
+                    Returned = a?.Seats.FirstOrDefault(s => s.Player == m.Id)?.Returned ?? false }).ToArray()
             };
+        }
+    }
+    public void UpdateAppearance(Guid id, LobbyAppearance appearance)
+    {
+        lock (gate)
+        {
+            var party = Find(id);
+            if (party == null || party.Instance != null) return;
+            var member = party.Members.Single(m => m.Id == id);
+            if (member.Appearance.SameAs(appearance)) return;
+            if (party.Phase == "Queued") { Reset(party); party.Message = "出战配置已更改，请重新准备。"; }
+            member.Ready = false;
+            member.Appearance = appearance.Copy();
+            Save();
         }
     }
     public void Act(Guid id, string name, bool raidActive, LobbyAction request, DateTime now)
     {
         lock (gate)
         {
+            if (Maintain(now)) Save();
             var p = Find(id);
             if (request.Action == "create" || request.Action == "join")
             {
@@ -148,9 +199,14 @@ public sealed class OnlineLobbies
                         case "team":
                             Require(request.Team is 0 or 1, "请选择 A 队或 B 队。"); Reset(p); me.Team = request.Team; break;
                         case "ready": me.Ready = request.Ready; break;
+                        case "kick":
+                            Require(p.Leader == id, "只有队长可移除队员。");
+                            Require(Guid.TryParse(request.TargetPlayerId, out var target) && target != id && p.Members.Any(m => m.Id == target),
+                                "请选择其他队员。");
+                            p.Members.RemoveAll(m => m.Id == target); Reset(p); break;
                         case "start":
                             Require(p.Leader == id, "只有队长可出发。");
-                            Require(p.Members.All(m => m.Ready && now - m.Seen < TimeSpan.FromSeconds(30)), "所有在线队员都需准备。");
+                            Require(p.Members.All(m => m.Ready && now - m.Seen < HeartbeatTimeout), "所有在线队员都需准备。");
                             if (p.Mode == "Versus" && !p.PublicQueue)
                                 Require(p.Members.Select(m => m.Team).Distinct().Count() >= 2, "好友对抗需要至少两人，分别加入 A、B 队。");
                             p.Phase = "Queued"; p.QueuedAt = now; p.Message = p.PublicQueue ? "正在寻找队伍；队长可取消。" : "等待本机对局槽位。"; break;
@@ -169,12 +225,8 @@ public sealed class OnlineLobbies
     {
         lock (gate)
         {
-            if (state.Active != null) return null;
-            bool changed = false;
-            foreach (var p in state.Parties.Where(p => p.Phase == "Queued").ToArray())
-                if (p.Members.Any(m => now - m.Seen > TimeSpan.FromSeconds(30))) { Reset(p); p.Message = "队员离线，已取消出发。"; changed = true; }
-            foreach (var stale in state.Parties.Where(p => p.Phase == "Lobby" && p.Instance == null && p.Members.All(m => now - m.Seen > TimeSpan.FromDays(1))).ToArray())
-            { state.Parties.Remove(stale); changed = true; }
+            bool changed = Maintain(now);
+            if (state.Active != null) { if (changed) Save(); return null; }
             var queued = state.Parties.Where(p => p.Phase == "Queued").OrderBy(p => p.QueuedAt).ToList();
             List<Party>? chosen = null;
             foreach (var first in queued)

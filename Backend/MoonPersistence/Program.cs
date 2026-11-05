@@ -122,23 +122,34 @@ auth.MapPost("/game-ticket", async (HttpRequest request, AccountRepository accou
     var profile = await accounts.ResolveSessionAsync(request.Headers.Authorization.ToString().Replace("Bearer ", ""), ct);
     return profile is null ? Results.Unauthorized() : Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow) });
 }).RequireRateLimiting("auth");
-auth.MapGet("/lobby", async (HttpRequest request, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapGet("/lobby", async (HttpRequest request, int? character, int? pose, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
+    RefreshLobbyAppearance(lobbies, profile, character, pose);
     return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
 });
-auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, int? character, int? pose, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
     try
     {
+        RefreshLobbyAppearance(lobbies, profile, character, pose);
         lobbies.Act(profile.PlayerId, profile.DisplayName, profile.ActiveDeploymentId != null, action, DateTime.UtcNow);
+        RefreshLobbyAppearance(lobbies, profile, character, pose);
         return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
     }
     catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
+void RefreshLobbyAppearance(OnlineLobbies lobbies, Profile profile, int? character, int? pose)
+{
+    if (profile.ActiveDeploymentId != null) return;
+    // Selectors are cosmetic and bounded. Equipment always comes from the account.
+    var inventory = profile.InventoryJson == null ? InventoryGraph.Create(false, false) : InventoryRepository.Decode(profile.InventoryJson);
+    var appearance = LobbyAppearanceInventory.FromInventory(inventory, character ?? 2, pose ?? -1);
+    lobbies.UpdateAppearance(profile.PlayerId, appearance);
+}
 auth.MapPost("/lobby/game-ticket", async (HttpRequest request, InstanceCredential credential, AccountRepository accounts, OnlineLobbies lobbies, GameJoinTickets tickets, CancellationToken ct) =>
 {
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
