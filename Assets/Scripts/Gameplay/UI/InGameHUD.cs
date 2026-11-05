@@ -106,9 +106,12 @@ namespace Unity.MP_FPS
         private void FitVitals(GeometryChangedEvent evt)
         {
             if (m_VitalsPanel == null) return;
-            bool compact = m_RootElement.contentRect.width > 0 && m_RootElement.contentRect.width < 1100;
+            float panelWidth = m_RootElement.contentRect.width;
+            float viewportWidth = Mathf.Min(Screen.width, panelWidth);
+            bool compact = viewportWidth > 0 && viewportWidth < 1100;
             m_VitalsPanel.style.width = compact ? 200 : 224;
-            m_VitalsPanel.style.bottom = compact ? 112 : 28;
+            // The quickbar keeps native pixel sizing even when PanelSettings scales the HUD down.
+            m_VitalsPanel.style.bottom = compact ? 112 * panelWidth / viewportWidth : 28;
         }
 
         private void DrawRifleHit(MeshGenerationContext context)
@@ -205,6 +208,7 @@ namespace Unity.MP_FPS
 
             // Get the player's data directly from the ECS component
             PredictedPlayerGhost playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
+            FitVitals(null);
             bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
             m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;

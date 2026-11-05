@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
             if (s_Input == input) s_Input = null;
         }
         internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
+        internal static bool ScrolledThisFrame => s_Input && s_Input.isActiveAndEnabled && s_Input.CanReadPlayerInput && s_Input.Scroll != 0;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset() => s_Input = null;
     }
@@ -143,6 +144,7 @@ namespace Unity.MP_FPS
             m_QuickBindings.Validate(QuickGraph);
             if (number == 0 || !QuickAlive || DarkSightRequested || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return 0;
+            m_QuickView?.Reveal();
             if (QuickManualBusy)
             {
                 if (GrenadeBusy && !GrenadeHandling.Live((GrenadePhase)GrenadeState.GrenadePhase) && SendGrenade(GrenadeCommand.Stow)) m_GrenadeNextSlot = number;
@@ -214,6 +216,7 @@ namespace Unity.MP_FPS
                 m_QuickOwnerError = InventoryError.None; m_QuickInteractionHintUntil = 0;
                 m_QuickOwnerFeedback = TacticalItemFeedback.None; m_QuickStatusUntil = 0;
                 m_QuickBindings.Deselect(); m_QuickWasTool = false;
+                m_QuickView.Hide();
                 RaidQuickSlotInput.ReleasePrimary();
             }
             m_QuickBindings.UseProfile(scope);
@@ -242,6 +245,10 @@ namespace Unity.MP_FPS
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
             { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
+            bool canReveal = m_QuickActive && !menu && !DarkSightRequested && Application.isFocused &&
+                UnityEngine.Cursor.lockState == CursorLockMode.Locked && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
+            if (!canReveal) m_QuickView.Hide();
+            else if (RaidQuickSlotInput.ScrolledThisFrame) m_QuickView.Reveal();
             bool cancelMenu = ChatInputBlocked || CinematicInputBlocked || MapInputBlocked || m_WasSettled ||
                 m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
             if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))

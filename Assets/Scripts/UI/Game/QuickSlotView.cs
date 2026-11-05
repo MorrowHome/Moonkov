@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Client
 {
     public sealed class QuickSlotView : IDisposable
     {
+        private const float RevealSeconds = 2f, FadeSeconds = .6f;
         public VisualElement Element { get; }
         private readonly VisualElement m_PixelRoot;
         private readonly VisualElement m_HudHost;
@@ -20,11 +21,14 @@ namespace Unity.MP_FPS.Client
         private readonly string[] m_Codes = new string[QuickSlotBindings.Count];
         private readonly Label m_Caption, m_Selected;
         private bool m_InventoryOpen;
+        private float m_RevealUntil = float.NegativeInfinity;
         public QuickSlotView(VisualElement host, Action<int> clear, Action<int> bind = null)
         {
             m_HudHost = host;
             Element = new VisualElement { name = "raidQuickSlots", pickingMode = PickingMode.Ignore };
             Element.AddToClassList("quick-slots");
+            Element.style.opacity = 0;
+            Element.style.visibility = Visibility.Hidden;
             m_PixelRoot = new VisualElement { name = "raidQuickSlotsPixelRoot", pickingMode = PickingMode.Ignore };
             m_PixelRoot.AddToClassList("quick-slots-pixel-root");
             m_PixelRoot.AddToClassList("moonkov-controls");
@@ -54,6 +58,8 @@ namespace Unity.MP_FPS.Client
         public int Hit(Vector2 point)
         { for (int i = 0; i < m_Slots.Length; i++) if (m_Slots[i].panel != null && m_Slots[i].worldBound.Contains(point)) return i; return -1; }
         public void SetInventoryHost(VisualElement host) => m_InventoryHost = host;
+        public void Reveal() => m_RevealUntil = Time.unscaledTime + RevealSeconds;
+        public void Hide() => m_RevealUntil = float.NegativeInfinity;
         public void PreviewDrop(int slot, bool valid)
         {
             for (int i = 0; i < m_Slots.Length; i++)
@@ -63,6 +69,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_InventoryOpen && m_InventoryHost != null)
             {
+                m_PixelRoot.RemoveFromClassList("quick-slots-narrow");
                 m_PixelRoot.style.width = StyleKeyword.Auto; m_PixelRoot.style.height = StyleKeyword.Auto;
                 m_PixelRoot.style.scale = new Scale(Vector3.one); m_ViewportScale = -1;
                 return;
@@ -79,13 +86,14 @@ namespace Unity.MP_FPS.Client
             m_ViewportSize = size; m_ViewportScale = scale;
             m_PixelRoot.style.width = size.x; m_PixelRoot.style.height = size.y;
             m_PixelRoot.style.scale = new Scale(new Vector3(scale, scale, 1));
-            m_PixelRoot.EnableInClassList("quick-slots-narrow", width < 1000);
+            m_PixelRoot.EnableInClassList("quick-slots-narrow", width < 1100);
             // Keep the existing timed medical panel above this compact row.
             var actionPanel = m_PixelRoot.Q("raidTimedAction");
             if (actionPanel != null) actionPanel.style.bottom = width < 1000 ? 210 : 145;
         }
         public void Present(QuickSlotBindings bindings, InventoryGraph graph, bool busy, bool inventoryOpen, string status)
         {
+            if (m_InventoryOpen != inventoryOpen) Hide();
             m_InventoryOpen = inventoryOpen;
             var parent = inventoryOpen && m_InventoryHost != null ? m_InventoryHost : m_HudHost;
             if (m_PixelRoot.parent != parent) parent.Add(m_PixelRoot);
@@ -126,6 +134,11 @@ namespace Unity.MP_FPS.Client
             m_Selected.style.display = selected != null && !inventoryOpen && !showStatus ? DisplayStyle.Flex : DisplayStyle.None;
             MoonkovLocalization.Set(m_Caption, status ?? "");
             m_Caption.style.display = showStatus ? DisplayStyle.Flex : DisplayStyle.None;
+            // Only player input renews this timer. Status refreshes must not keep the HUD open.
+            float fade = Mathf.Clamp01((Time.unscaledTime - m_RevealUntil) / FadeSeconds);
+            float opacity = inventoryOpen ? 1 : 1 - fade * fade;
+            Element.style.opacity = opacity;
+            Element.style.visibility = opacity > 0 ? Visibility.Visible : Visibility.Hidden;
         }
         public void Dispose() => m_PixelRoot.RemoveFromHierarchy();
     }

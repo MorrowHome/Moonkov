@@ -6,24 +6,25 @@
 .quick-slots-docked .quick-slots-row .quick-slot-name { font-size: 12px; }
 .quick-slots-docked .quick-slot-caption { position: absolute; bottom: 60px; font-size: 12px; color: #eeeee6; background-color: #101416; }
 .quick-slots-pixel-root { position: absolute; left: 0; top: 0; transform-origin: 0% 0%; --mk-surface: #08090c; --mk-panel: #111318; }
-.quick-slots { position: absolute; bottom: 28px; left: 5%; right: 5%; align-items: center; }
-.quick-slots-narrow .quick-slots { bottom: 100px; }
+.quick-slots { position: absolute; bottom: 24px; left: 272px; right: 272px; align-items: center; }
+.quick-slots-narrow .quick-slots { left: 5%; right: 5%; }
+.quick-slots-narrow .quick-slot-caption, .quick-slots-narrow .quick-slot-detail { max-width: 65%; right: 0; }
 .quick-slots.quick-slots-inventory { bottom: 16px; }
-.quick-slots-row.inventory-view { width: 100%; max-width: 504px; flex-direction: row; justify-content: center; padding: 0; background-color: transparent; }
-.quick-slots-row .quick-slot { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; height: 64px; margin: 0 2px; padding: 0; position: relative; }
+.quick-slots-row.inventory-view { width: 100%; max-width: 648px; flex-direction: row; justify-content: center; padding: 0; background-color: transparent; }
+.quick-slots-row .quick-slot { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; height: 80px; margin: 0 2px; padding: 0; position: relative; }
 .quick-slots-row.inventory-view .inventory-item { background-color: var(--mk-panel); }
 .quick-slots-row.inventory-view .inventory-selected { background-color: #112044; }
-.quick-slots-row .quick-slot-key { position: absolute; left: 4px; top: 1px; color: var(--mk-ink); font-size: 12px; }
-.quick-slots-row .quick-slot-count { position: absolute; left: auto; right: 2px; top: 1px; bottom: auto; height: 16px; min-height: 0; max-height: 16px; margin: 0; color: var(--mk-ink); font-size: 13px; background-color: transparent; padding: 0; }
+.quick-slots-row .quick-slot-key { position: absolute; left: 4px; top: 1px; color: var(--mk-ink); font-size: 14px; }
+.quick-slots-row .quick-slot-count { position: absolute; left: auto; right: 2px; top: 1px; bottom: auto; height: 16px; min-height: 0; max-height: 16px; margin: 0; color: var(--mk-ink); font-size: 14px; background-color: transparent; padding: 0; }
 .quick-slot-icon { position: absolute; left: 6px; right: 6px; top: 18px; bottom: 18px; }
 .quick-slot-art { flex-grow: 1; }
-.quick-slots-row .quick-slot-name { position: absolute; top: auto; bottom: 1px; left: 1px; right: 1px; height: 14px; min-height: 0; max-height: 14px; margin: 0; padding: 0; color: var(--mk-ink); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-center; background-color: transparent; }
+.quick-slots-row .quick-slot-name { position: absolute; top: auto; bottom: 1px; left: 1px; right: 1px; height: 16px; min-height: 0; max-height: 16px; margin: 0; padding: 0; color: var(--mk-ink); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-center; background-color: transparent; }
 .quick-slots-row .quick-slot-empty { opacity: 1; }
 .quick-slots-row .quick-slot-empty .quick-slot-key { color: var(--mk-muted); }
 .quick-slots-row.inventory-view .quick-slot-unavailable { border-color: #bd7772; background-color: #231417; }
 .quick-slot-unavailable .quick-slot-icon { opacity: .35; }
 .quick-slots-row .quick-slot-unavailable .quick-slot-count { color: #ffb1a4; font-size: 16px; }
-.quick-slot-caption, .quick-slot-detail { max-width: 504px; min-height: 20px; color: var(--mk-ink); background-color: rgba(8,9,12,.92); font-size: 12px; -unity-text-align: middle-center; white-space: normal; padding: 2px 6px; margin-top: 4px; }
+.quick-slot-caption, .quick-slot-detail { position: absolute; bottom: 88px; max-width: 648px; min-height: 20px; color: var(--mk-ink); background-color: rgba(8,9,12,.92); font-size: 12px; -unity-text-align: middle-center; white-space: normal; padding: 2px 6px; }
 .quick-slots-busy .quick-slot { opacity: .65; }
 .quick-slots-row.inventory-view .quick-slot-drop-valid { border-width: 2px; border-color: var(--mk-accent); }
 .quick-slots-row.inventory-view .quick-slot-drop-invalid { border-width: 2px; border-color: #f09484; }
