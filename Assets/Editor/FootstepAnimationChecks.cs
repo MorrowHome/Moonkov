@@ -55,17 +55,18 @@ public static class FootstepAnimationChecks
             foreach (float aim in new[] { 0f, .5f, 1f })
             foreach (var direction in new[] { Vector3.forward, Vector3.back, Vector3.left, Vector3.right,
                 new Vector3(1, 0, 1).normalized })
+            foreach (float speed in new[] { .65f, 1.3f, 2f })
             {
                 animator.Rebind(); animator.SetFloat("AimBlend", aim);
                 animator.Play("Base Layer.Idle Walk Run Blend", 0, 0);
-                model.ApplyNetworkPresentation(2, 0, true, false, false, .016f, direction * 2);
+                model.ApplyNetworkPresentation(speed, 0, true, false, false, .016f, direction * speed);
                 animator.Update(0); count = 0;
                 for (int frame = 0; frame < 180; frame++)
                 {
-                    model.ApplyNetworkPresentation(2, 0, true, false, false, 1f / 60, direction * 2);
+                    model.ApplyNetworkPresentation(speed, 0, true, false, false, 1f / 60, direction * speed);
                     animator.Update(1f / 60);
                 }
-                Check(count >= 2 && count <= 14, $"Missing/duplicated gait events at aim={aim}, direction={direction}: {count}, raw={probe.Count}, active={model.isActiveAndEnabled}, state={animator.GetCurrentAnimatorStateInfo(0).fullPathHash}");
+                Check(count >= 2 && count <= 14, $"Missing/duplicated gait events at aim={aim}, speed={speed}, direction={direction}: {count}, raw={probe.Count}");
             }
             foreach (var stance in new[] { DollSingerStance.Crouching, DollSingerStance.Prone, DollSingerStance.Tiptoe })
             {

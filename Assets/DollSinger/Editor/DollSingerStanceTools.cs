@@ -59,6 +59,7 @@ namespace Unity.MP_FPS.DollSinger.Editor
             }
             controller.layers = layers.ToArray();
             EditorUtility.SetDirty(controller);
+            DollSingerLocomotionTools.SetUpCadence();
             AssetDatabase.SaveAssets();
         }
 

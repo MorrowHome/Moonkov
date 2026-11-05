@@ -75,7 +75,42 @@ namespace Unity.MP_FPS.DollSinger.Editor
             EditorUtility.SetDirty(state);
             EditorUtility.SetDirty(controller);
             SetUpTurnInPlace();
+            SetUpCadence();
             AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem("Tools/Doll Singer/Set Up Natural Locomotion Cadence")]
+        public static void SetUpCadence()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play Mode first.");
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+            if (!controller) throw new InvalidOperationException("DollSinger controller missing.");
+            if (!controller.parameters.Any(p => p.name == "StanceMotionSpeed"))
+                controller.AddParameter(new AnimatorControllerParameter
+                { name = "StanceMotionSpeed", type = AnimatorControllerParameterType.Float, defaultFloat = 1f });
+            var parameters = controller.parameters;
+            foreach (var parameter in parameters)
+            {
+                if (parameter.name != "MotionSpeed" && parameter.name != "StanceMotionSpeed") continue;
+                if (parameter.type != AnimatorControllerParameterType.Float)
+                    throw new InvalidOperationException(parameter.name + " must be a Float parameter.");
+                parameter.defaultFloat = 1f; // Menu/corpse previews can evaluate without the movement component.
+            }
+            controller.parameters = parameters;
+            foreach (var layer in controller.layers)
+            foreach (var child in layer.stateMachine.states)
+            {
+                var state = child.state;
+                if (layer.name == "Base Layer" && state.name == "Idle Walk Run Blend")
+                    state.speedParameter = "MotionSpeed";
+                else if (layer.name == "Stances" && state.motion is BlendTree)
+                    state.speedParameter = "StanceMotionSpeed";
+                else continue;
+                state.speedParameterActive = true;
+                EditorUtility.SetDirty(state);
+            }
+            EditorUtility.SetDirty(controller);
+            AssetDatabase.SaveAssetIfDirty(controller);
         }
 
         [MenuItem("Tools/Doll Singer/Set Up Turn In Place")]

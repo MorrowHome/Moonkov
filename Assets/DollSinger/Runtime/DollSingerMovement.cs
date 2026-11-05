@@ -141,6 +141,7 @@ namespace Unity.MP_FPS.DollSinger {
         private static readonly int k_AnimIDJump = Animator.StringToHash("Jump");
         private static readonly int k_AnimIDFreeFall = Animator.StringToHash("FreeFall");
         private static readonly int k_AnimIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        private static readonly int k_AnimIDStanceMotionSpeed = Animator.StringToHash("StanceMotionSpeed");
         private static readonly int k_AnimIDMoveX = Animator.StringToHash("MoveX");
         private static readonly int k_AnimIDMoveZ = Animator.StringToHash("MoveZ");
         private Animator m_Animator;
@@ -162,6 +163,7 @@ namespace Unity.MP_FPS.DollSinger {
         private bool m_HasFreeFallParameter;
         private bool m_HasMotionSpeedParameter;
         private bool m_MotionSpeedIsFloat;
+        private bool m_HasStanceMotionSpeed;
         private bool m_HasJumpParameter;
         private bool m_HasMoveXParameter, m_HasMoveZParameter;
         private Vector2 m_LastMoveDirection = Vector2.up;
@@ -354,11 +356,7 @@ namespace Unity.MP_FPS.DollSinger {
             if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, grounded);
             if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, !grounded && verticalVelocity < 0f);
             if (m_HasJumpParameter && jumped) m_Animator.SetTrigger(k_AnimIDJump);
-            if (m_HasMotionSpeedParameter)
-            {
-                if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, 1f);
-                else m_Animator.SetInteger(k_AnimIDMotionSpeed, m_AnimationBlend > 0.01f ? 1 : 0);
-            }
+            ApplyLocomotionCadence();
         }
 
         private void Awake() {
@@ -393,6 +391,8 @@ namespace Unity.MP_FPS.DollSinger {
                         m_HasMoveXParameter = true;
                     if (parameter.nameHash == k_AnimIDMoveZ && parameter.type == AnimatorControllerParameterType.Float)
                         m_HasMoveZParameter = true;
+                    if (parameter.nameHash == k_AnimIDStanceMotionSpeed && parameter.type == AnimatorControllerParameterType.Float)
+                        m_HasStanceMotionSpeed = true;
                 }
                 m_TurnLayer = m_Animator.GetLayerIndex("Turn In Place");
                 m_StanceLayer = m_Animator.GetLayerIndex("Stances");
@@ -771,12 +771,38 @@ namespace Unity.MP_FPS.DollSinger {
             if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
             ApplyDirectionalAnimation(m_Controller.velocity, Time.deltaTime);
             if (m_HasMoveParameter) m_Animator.SetBool("Move", CurrentSpeed > 0.05f);
-            if (m_HasMotionSpeedParameter) {
-                // As a Float this multiplies the locomotion state's playback speed;
-                // leaving it at 0 freezes the run cycle mid-pose. Keep natural rate.
-                if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, 1f);
-                else m_Animator.SetInteger(k_AnimIDMotionSpeed, inputMagnitude > 0.01f ? 1 : 0);
+            ApplyLocomotionCadence();
+        }
+
+        private void ApplyLocomotionCadence()
+        {
+            if (m_HasMotionSpeedParameter)
+            {
+                if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, NaturalMotionRate(0));
+                else m_Animator.SetInteger(k_AnimIDMotionSpeed, CurrentSpeed > .01f ? 1 : 0);
             }
+            if (m_HasStanceMotionSpeed)
+                m_Animator.SetFloat(k_AnimIDStanceMotionSpeed, NaturalMotionRate(m_StanceLayer));
+        }
+
+        private float NaturalMotionRate(int layer)
+        {
+            if (layer < 0 || !m_Grounded || CurrentSpeed <= .05f || m_Animator.IsInTransition(layer)) return 1f;
+            m_Animator.GetCurrentAnimatorClipInfo(layer, m_LocomotionClips);
+            float duration = 0, movingDuration = 0, movingWeight = 0;
+            foreach (var info in m_LocomotionClips)
+            {
+                duration += info.weight * info.clip.length;
+                if (!m_FootstepClips.Contains(info.clip)) continue;
+                movingDuration += info.weight * info.clip.length;
+                movingWeight += info.weight;
+            }
+            // The idle is 8.3s, the walk about 1s. Unity synchronizes their phases,
+            // so a 65%-strength stride otherwise takes 3.53s. Keep that short stride
+            // while removing the idle's contribution to the moving cycle duration.
+            // Pure walk/run blends, authored clip time scales and resting idle stay unchanged.
+            return movingDuration > .001f
+                ? Mathf.Clamp(duration * movingWeight / movingDuration, 1f, 12f) : 1f;
         }
 
         private void ApplyDirectionalAnimation(Vector3 worldMovement, float deltaTime)
