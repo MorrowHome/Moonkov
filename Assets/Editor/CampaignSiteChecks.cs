@@ -32,6 +32,17 @@ public static class CampaignSiteChecks
                 "archive chapter is guaranteed and retains early scanning");
             Require(original.OfferSeconds == oldOffer && original.ActiveSeconds == oldActive,
                 "chapter setup does not mutate the ordinary random facility");
+            foreach (int chapter in new[] { 1, 2 })
+            {
+                string id = chapter == 1 ? "mc00_mooncore" : "mc00_archive";
+                site.SetCampaignChapter(chapter, 1200);
+                var extended = site.Definitions.Single(d => d.Id == id);
+                Require(extended.OfferSeconds == 1200 && extended.ActiveSeconds == 1200,
+                    "chapter facility follows the 20 minute raid");
+                site.SetCampaignChapter(chapter, 480);
+                Require(extended.OfferSeconds == 480 && extended.ActiveSeconds == 480,
+                    "cached chapter facility follows a later shorter raid");
+            }
             site.SetCampaignChapter(0);
             Require(ReferenceEquals(site.Definitions.Single(d => d.Id == "mc00_archive"), original),
                 "ordinary missions recover their authored templates");

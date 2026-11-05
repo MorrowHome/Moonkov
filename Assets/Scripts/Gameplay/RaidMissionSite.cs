@@ -35,9 +35,10 @@ namespace Unity.MP_FPS
         public MissionDefinition[] Definitions => m_CampaignChapter == 1 ? m_FirstChapterDefinitions :
             m_CampaignChapter == 2 ? m_SecondChapterDefinitions : m_Definitions;
         public bool FirstChapter => m_CampaignChapter == 1;
-        public void SetCampaignChapter(int chapter)
+        public void SetCampaignChapter(int chapter, float raidSeconds = 600)
         {
             if (chapter < 0 || chapter > 2) throw new ArgumentOutOfRangeException(nameof(chapter));
+            if (!float.IsFinite(raidSeconds) || raidSeconds < 30) throw new ArgumentOutOfRangeException(nameof(raidSeconds));
             if (chapter == 1 && m_FirstChapterDefinitions == null)
             {
                 m_FirstChapterDefinitions = Array.ConvertAll(m_Definitions, d => d.Copy());
@@ -45,7 +46,7 @@ namespace Unity.MP_FPS
                 if (definition == null || Anchor("entry") == null) throw new InvalidOperationException("第一章缺少月核模板或入口锚点。");
                 var nodes = new System.Collections.Generic.List<MissionObjectiveDefinition>(definition.Objectives);
                 nodes.Add(new MissionObjectiveDefinition { Id = "report", Anchor = "entry", Name = "登记清理队身份", Kind = MissionObjectiveKind.Interact, Seconds = 2 });
-                definition.Objectives = nodes.ToArray(); definition.OfferSeconds = 600; definition.ActiveSeconds = 600;
+                definition.Objectives = nodes.ToArray();
                 if (definition.Validate() != null || definition.Objectives.Length > 8) throw new InvalidOperationException("第一章设施模板无效。");
             }
             if (chapter == 2 && m_SecondChapterDefinitions == null)
@@ -53,9 +54,17 @@ namespace Unity.MP_FPS
                 m_SecondChapterDefinitions = Array.ConvertAll(m_Definitions, d => d.Copy());
                 var definition = Array.Find(m_SecondChapterDefinitions, d => d.Id == "mc00_archive");
                 if (definition == null) throw new InvalidOperationException("第二章缺少档案模板。");
-                definition.OfferSeconds = 600; definition.ActiveSeconds = 600;
                 if (definition.Validate() != null || definition.Objectives.Length > 8)
                     throw new InvalidOperationException("第二章设施模板无效。");
+            }
+            // Guaranteed chapter facilities stay available for the authored raid budget.
+            // Refresh cached copies too: a later deployment may use a different duration.
+            if (chapter != 0)
+            {
+                var definitions = chapter == 1 ? m_FirstChapterDefinitions : m_SecondChapterDefinitions;
+                var definition = Array.Find(definitions, d => d.Id == (chapter == 1 ? "mc00_mooncore" : "mc00_archive"));
+                definition.OfferSeconds = raidSeconds;
+                definition.ActiveSeconds = raidSeconds;
             }
             m_CampaignChapter = chapter;
         }

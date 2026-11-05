@@ -52,7 +52,8 @@ namespace Unity.MP_FPS
                 { LootContainers(ref state).Containers.Remove(context.OutputLootId); LootContainers(ref state).MissionCaches.Remove(context.OutputLootId); }
                 context.Operation = null; context.OutputLootId = -1; context.OutputProduced = false;
                 context.Known.Clear(); context.Actors.Clear(); context.EndedAt = 0; context.NextSend = 0; context.CampaignNextCheck = 0;
-                context.CampaignChapter = chapter; site.SetCampaignChapter(chapter);
+                context.CampaignChapter = chapter;
+                site.SetCampaignChapter(chapter, MoonRaidMap.Active ? MoonRaidMap.Active.RaidDuration : 600);
             }
             if (chapter == 0 || context.Operation != null || now < context.CampaignNextCheck) return;
             context.CampaignNextCheck = now + .5;
