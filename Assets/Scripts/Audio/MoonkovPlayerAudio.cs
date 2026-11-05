@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_ConsumableSequence, m_Weapon;
         private bool m_CanStep;
+        private float m_LastMovementTime = float.NegativeInfinity;
         private Vector3 m_Position;
         private SoundDef m_Surface;
         private DollSingerStance m_Stance;
@@ -170,12 +171,17 @@ namespace Unity.MP_FPS
             bool grounded = ghost.ControllerState.MovementType == FirstPersonController.MovementType.Standing;
             if (!grounded || ghost.CurrentHealth <= 0f || deltaTime <= 0f || deltaTime > .25f || travel.magnitude > 2f)
             {
+                m_LastMovementTime = float.NegativeInfinity;
                 m_TurnTravel = 0; m_Wall.Reset();
                 return;
             }
             float yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
             float turn = Mathf.Abs(Mathf.DeltaAngle(m_Yaw, yaw)); m_Yaw = yaw;
-            m_CanStep = travel.sqrMagnitude >= .000001f || turn > .1f && turn < 45f;
+            if (travel.sqrMagnitude >= .000001f || turn > .1f && turn < 45f)
+                m_LastMovementTime = Time.unscaledTime;
+            // Rendered animation can step between two simulation snapshots. Keep
+            // the motion gate briefly, without using displacement to schedule sound.
+            m_CanStep = Time.unscaledTime - m_LastMovementTime <= .1f;
             if (travel.sqrMagnitude < .000001f)
             {
                 m_Wall.Reset();
@@ -226,6 +232,7 @@ namespace Unity.MP_FPS
         public void Stop()
         {
             m_CanStep = false;
+            m_LastMovementTime = float.NegativeInfinity;
             var system = GameManager.Instance?.SoundSystem;
             system?.Stop(m_LootSound,.08f);m_LootSound=null;m_WasLootSearching=false;
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
