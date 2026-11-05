@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Window;
         private readonly ScrollView m_List;
         private readonly Label m_Balance, m_Status;
+        private readonly VisualElement m_StatusHost;
         private readonly Button m_Retry;
         private readonly Button[] m_Tabs;
         private readonly MoonkovResearchView m_Research;
@@ -24,14 +25,21 @@ namespace Unity.MP_FPS.Client
         private ShopCommand m_Pending;
         private bool m_Busy, m_Disposed;
         private int m_Tab;
+        private string m_StatusSource;
 
         public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false, Action openWorkshop = null, bool research = false, string initialProduct = null)
         {
             m_Window = window; m_Tab = research ? 3 : recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
+            window.EnableInClassList("research-dedicated", research);
+            if (research)
+            {
+                window.style.left = Length.Percent(3); window.style.top = Length.Percent(3);
+                MoonkovLocalization.Set(window.Q<Label>("windowTitle"), "RESEARCH & FABRICATION");
+            }
             m_InitialProduct = initialProduct;
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/Research"));
             var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
-            m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop);
+            m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop, openStorage);
             if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.Inventory);
             catalog.Insert(3, m_Research.Root);
             m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
@@ -42,10 +50,12 @@ namespace Unity.MP_FPS.Client
             var tabs = catalog.Q("shopTabs");
             string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
             for (int i = 0; i < names.Length; i++)
-            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; Render(); }); }
+            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if (tab == 3 && m_Pending == null) Status(""); Render(); }); }
             m_List = catalog.Q<ScrollView>("shopList");
             var statusHost = catalog.Q("shopStatusHost");
+            m_StatusHost = statusHost; statusHost.AddToClassList("research-transaction-status");
             m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
+            Status(research ? "" : "Contacting lunar supply…");
             m_Retry = MoonkovTerminal.ActionButton(statusHost, "CHECK LAST ORDER", () => Execute(m_Pending)); m_Retry.style.display = DisplayStyle.None;
             window.RegisterCallback<DetachFromPanelEvent>(Detached); PlayerProfileClient.InventoryChanged += Changed;
             Load();
@@ -56,10 +66,10 @@ namespace Unity.MP_FPS.Client
             try
             {
                 m_Offers = await PlayerProfileClient.GetShopOffersAsync(m_Stop.Token);
-                if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
+                if (!m_Disposed) Status(m_Tab == 3 ? "" : "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
             }
-            catch (OperationCanceledException) { if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Supply contact timed out. Close and reopen the supplier to reconnect."); }
-            catch (Exception ex) { if (!m_Disposed) MoonkovLocalization.Set(m_Status, ex.Message); }
+            catch (OperationCanceledException) { if (!m_Disposed) Status("Supply contact timed out. Close and reopen the supplier to reconnect."); }
+            catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
             finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
         private void Changed() { if (!m_Busy && !m_Disposed) Render(); }
@@ -67,6 +77,8 @@ namespace Unity.MP_FPS.Client
         private void Render()
         {
             m_Window.EnableInClassList("is-busy", m_Busy);
+            m_Window.EnableInClassList("research-window", m_Tab == 3);
+            m_StatusHost.EnableInClassList("research-hidden", m_Tab == 3 && (string.IsNullOrEmpty(m_StatusSource) || m_Busy));
             m_Window.Q(className: "archive-shop-body").EnableInClassList("research-hidden", m_Tab == 3);
             m_Research.Root.EnableInClassList("research-hidden", m_Tab != 3);
             m_List.Clear();
@@ -74,6 +86,7 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.StashDust);
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
             m_Retry.style.display = m_Pending != null && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
+            if (m_Tab == 3) { Research(); return; }
             if (PlayerProfileClient.RaidActive)
                 MoonkovTerminal.Text(m_List, "Finish or leave your active raid before trading or requesting emergency supplies.", "terminal-copy");
             if (m_Offers == null)
@@ -81,12 +94,13 @@ namespace Unity.MP_FPS.Client
             if (m_Tab == 0) foreach (var offer in m_Offers.OrderByDescending(offer => offer.Code == m_InitialProduct)) { if (offer.BuyDust >= 0) BuyRow(offer); }
             else if (m_Tab == 1) SellRows();
             else if(m_Tab==2) Recovery();
-            else Research();
         }
         private void Research()
         {
-            m_Research.Present(PlayerProfileClient.Inventory, Ready, m_Busy, m_Pending != null);
+            m_Research.Present(PlayerProfileClient.Inventory, Ready, m_Busy, m_Pending != null, m_Offers == null && m_Busy);
         }
+        private void Status(string source)
+        { m_StatusSource = source; MoonkovLocalization.Set(m_Status, source); }
         private VisualElement Product(string code, string name, string detail)
         {
             var row = TerminalLayout.Clone("Components/ShopProduct", "shopProduct"); m_List.Add(row);
@@ -174,20 +188,19 @@ namespace Unity.MP_FPS.Client
         private async void Execute(ShopCommand command)
         {
             if (command == null || m_Busy || m_Disposed) return;
-            m_Pending = command; m_Busy = true; MoonkovLocalization.Set(m_Status, "Confirming supply order…"); Render();
+            m_Pending = command; m_Busy = true; Status("Confirming supply order…"); Render();
             try
             {
                 await PlayerProfileClient.TradeAsync(command, m_Stop.Token);
                 m_Pending = null;
-                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Fabricate ? "Module fabricated in storage. Go to Halo modification to install it before deployment." :
-                    command.Operation == ShopOperation.Research && command.Code == AlienBiology.MooncoreResearch.Code ? "Mooncore knowledge saved permanently. Go to fabrication next; no module has been granted or equipped." :
-                    command.Operation == ShopOperation.Research ? "Permanent halo research saved. It applies to all halo weapons on your next deployment." :
+                if (!m_Disposed) Status(command.Operation == ShopOperation.Fabricate ? "Module added to storage." :
+                    command.Operation == ShopOperation.Research ? "Research saved." :
                     command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.");
             }
             catch (AccountClient.InventoryRequestException ex)
             {
                 if (ex.ErrorCode.StartsWith("service_")) Uncertain();
-                else { m_Pending = null; if (!m_Disposed) MoonkovLocalization.Set(m_Status, ex.Message); }
+                else { m_Pending = null; if (!m_Disposed) Status(ex.Message); }
             }
             catch (OperationCanceledException) { if (!m_Disposed) Uncertain(); }
             catch (System.Net.Http.HttpRequestException) { Uncertain(); }
@@ -195,7 +208,7 @@ namespace Unity.MP_FPS.Client
             finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
         private void Uncertain()
-        { if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Confirmation was interrupted. CHECK LAST ORDER safely retries the same order without a second charge."); }
+        { if (!m_Disposed) Status("Confirmation was interrupted. CHECK LAST ORDER safely retries the same order without a second charge."); }
         private void Detached(DetachFromPanelEvent evt) { if (evt.target == m_Window) Dispose(); }
         public void Dispose()
         {

@@ -1,39 +1,63 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="../Research.uss" />
     <ui:VisualElement name="researchPanel" class="research-panel">
-        <ui:ScrollView name="researchChoices" class="research-choices" mode="Vertical" />
+        <ui:VisualElement class="research-catalog">
+            <ui:Label text="RESEARCH PROJECTS" class="research-section-label" />
+            <ui:ScrollView name="researchChoices" class="research-choices" mode="Vertical" horizontal-scroller-visibility="Hidden" />
+        </ui:VisualElement>
         <ui:VisualElement class="research-main">
             <ui:VisualElement class="research-header">
-                <ui:VisualElement name="researchArt" class="research-art" picking-mode="Ignore" />
                 <ui:VisualElement class="research-heading">
-                    <ui:Label name="researchTitle" class="terminal-title" />
-                    <ui:Label name="researchDescription" class="terminal-copy" />
-                    <ui:Label name="researchState" class="research-state" />
+                    <ui:Label name="researchCategory" class="research-section-label" />
+                    <ui:Label name="researchTitle" class="research-title" />
+                    <ui:Label name="researchDescription" class="research-copy" />
                 </ui:VisualElement>
+                <ui:Label name="researchState" class="research-state" />
             </ui:VisualElement>
             <ui:VisualElement name="researchStages" class="research-stages">
-                <ui:Button name="researchStage" class="terminal-button" text="01 / PERMANENT RESEARCH" />
-                <ui:Button name="fabricationStage" class="terminal-button" text="02 / FABRICATE MODULE" />
+                <ui:Button name="researchStage" class="research-stage" text="Research" />
+                <ui:Button name="fabricationStage" class="research-stage" text="Fabricate" />
             </ui:VisualElement>
-            <ui:VisualElement class="research-details">
-            <ui:ScrollView class="research-explanation" mode="Vertical">
-                <ui:Label name="researchEffect" class="terminal-copy research-effect" />
-                <ui:Label name="researchComparison" class="terminal-copy" />
-                <ui:Label name="researchNumbers" class="terminal-copy research-effect" />
-                <ui:Label name="researchSource" class="terminal-copy research-source" />
-            </ui:ScrollView>
-            <ui:ScrollView class="research-payment" mode="Vertical">
-                <ui:Label text="MATERIALS IN STORAGE / REQUIRED" class="terminal-heading" />
-                <ui:VisualElement name="researchMaterials" />
-                <ui:Label name="researchActionHint" class="terminal-copy" />
-                <ui:Button name="researchConfirm" class="terminal-primary" />
-                <ui:VisualElement class="research-navigation">
-                    <ui:Button name="goFabrication" class="terminal-button" text="GO TO FABRICATION" />
-                    <ui:Button name="goWorkshop" class="terminal-button" text="GO TO HALO MODIFICATION" />
+            <ui:ScrollView name="researchContent" class="research-content" mode="Vertical" horizontal-scroller-visibility="Hidden">
+                <ui:VisualElement class="research-details">
+                    <ui:VisualElement class="research-overview">
+                        <ui:VisualElement class="research-showcase">
+                            <ui:VisualElement class="research-specimen" picking-mode="Ignore">
+                                <ui:VisualElement class="research-specimen-ring" />
+                                <ui:VisualElement name="researchArt" class="research-art" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="research-outcome">
+                                <ui:Label name="researchOutcomeType" class="research-section-label" />
+                                <ui:Label name="researchOutcome" class="research-outcome-title" />
+                                <ui:Label name="researchEffect" class="research-copy" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="researchNumbers" class="research-numbers" />
+                        <ui:Label name="researchComparison" class="research-note" />
+                        <ui:VisualElement name="researchOwnership" class="research-ownership">
+                            <ui:Label name="researchOwned" />
+                            <ui:Label name="researchInstalled" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="research-payment">
+                        <ui:VisualElement class="research-material-heading">
+                            <ui:Label name="researchMaterialsTitle" class="research-section-label" />
+                            <ui:Label text="HAVE / NEED" class="research-section-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="researchMaterials" />
+                        <ui:Label name="researchSource" class="research-note research-source" />
+                        <ui:Button name="goStorage" class="research-link" text="VIEW STORAGE" />
+                        <ui:Label name="researchActionHint" class="research-note research-cost-note" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:ScrollView>
+            <ui:VisualElement class="research-footer">
+                <ui:Label name="researchFeedback" class="research-note research-feedback" />
+                <ui:VisualElement class="research-actions">
+                    <ui:Button name="goWorkshop" class="research-secondary" text="HALO WORKSHOP" />
+                    <ui:Button name="researchConfirm" class="research-primary" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label name="researchOwnership" class="terminal-copy research-source" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

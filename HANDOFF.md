@@ -568,7 +568,15 @@
 
 后续按改动范围使用 `HaloWorkshopReview.cs`、`HaloModuleChecks.cs` 和 `Backend/HaloWeaponChecks`。数据库检查只用隔离测试数据。遵守项目单 Editor 和不做联机验收的约定。旧 `MoonkovUIRuntimeReview` 的光环检查已适配新控件；其其他流程仍有历史环境限制。
 
-月核中文研究布局与回流光环效果仍有历史视觉待验收记录。既有编译、截图或数据库检查不能替代当前版本的实际验收。
+### 研究与制造页面（2026-11-06）
+
+- 任务页与供应商入口统一叫“研究与制造”。研究专用窗口隐藏买卖、应急补给和月尘栏。左侧选研究，中央看效果与参数，右侧核对材料。底部固定主操作。窄窗口把目录改为横向滚动，材料优先，详情单独滚动。
+- `MoonkovResearchView.cs` 绑定现有五项研究。布局在 `Components/ResearchPanel.uxml`，样式在 `Research.uss`。复用目录、材料和参数控件，由库存事件和页面操作更新，不逐帧重建。
+- 研究月核只解锁配方。完成后主按钮进入制造。制造仍消耗独立材料，获得仓库实体模块后才显示改装入口。忙碌、结果未知、缺料和仓库满时禁用消耗。沿用原库存事务与回执，不改配方或存档协议。
+- 参数使用真实武器数据与 `HaloEnergyRules.RecoveryRate`，展示步枪、霰弹每发耗能及每秒回能。不要再用旧充能时长代替当前共享能量的回能速度。
+- `MooncoreResearchReview.SyncTranslations()` 只同步页面使用的键，并同时保存字符串表和 Shared Data。新增键后必须保存 Shared Data，否则重载后会出现丢键和无效表项。不要重建整套字库。
+- 验收入口为 `Tools/Moonkov/Mooncore/Review Research Layout`。只用原生 UI 和隔离库存，不写账号，不进入 Play。预览与检查结果在忽略目录 `LocalData/ResearchRedesign`。回流光环的正式战局表现仍需单独验收。
+- 单 Editor 编译通过。55 项 UI、状态和隔离事务检查通过。窄屏修复后，另有 31 项布局、字号、固定操作区与防重叠检查通过。已查看中英文原生画面。`flow-checks.txt` 保存流程结果，`checks.txt` 保存最终布局结果。本界面未做 Player 或联机验收。
 
 ## UI 美术清单交接
 
