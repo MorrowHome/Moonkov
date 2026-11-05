@@ -41,6 +41,7 @@ public static class RaidFallDamageChecks
 
         var health = Fresh(6);
         health.ShieldEquipped = true; health.ShieldCharge = 100; health.ShieldEnergy = 100;
+        HaloEnergyRules.SetDefense(ref health, true);
         float applied = RaidHealth.ApplyLandingDamage(ref health, false, gravity, 17);
         Check(Near(applied, 18) && Near(health.CurrentHealth, 422), "Landing damages once");
         Check(Near(health.LeftLegHealth, 56) && Near(health.RightLegHealth, 56), "Both legs absorb impact");
@@ -73,6 +74,7 @@ public static class RaidFallDamageChecks
         Check(Near(RaidHealth.CombatDamage(ref gel,BodyPart.RightArm,20,23,RaidDamageKind.Bullet),15) && Near(gel.RightArmHealth,45),
             "Combat gel armor still reduces incoming tissue damage");
         gel=Fresh(0);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;gel.ShieldEquipped=true;gel.ShieldCharge=10;
+        HaloEnergyRules.SetDefense(ref gel, true);
         Check(Near(RaidHealth.CombatDamage(ref gel,BodyPart.RightArm,20,23,RaidDamageKind.Bullet),7.5f) && gel.ShieldCharge==0,
             "Gel armor preserves shield-first damage ordering");
         gel=Fresh(0);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;gel.Oxygen=0;

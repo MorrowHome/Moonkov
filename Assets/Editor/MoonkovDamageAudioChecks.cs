@@ -27,6 +27,7 @@ public static class MoonkovDamageAudioChecks
         RaidHealth.Damage(ref state, BodyPart.Chest, .1f, 123);
         Require(state.LastImpactTick == 121, "Continuous damage overwrote pending combat impact");
         state.ShieldEquipped = true; state.ShieldCharge = 100;
+        HaloEnergyRules.SetDefense(ref state, true);
         RaidHealth.CombatDamage(ref state, BodyPart.LeftArm, 1, 124, RaidDamageKind.Melee);
         Require(state.LastImpactTick == 121 && state.ShieldHitSequence == 1, "Fully shielded hit emitted tissue impact");
         state.ShieldCharge = .5f;

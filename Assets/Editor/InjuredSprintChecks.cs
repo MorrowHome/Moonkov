@@ -43,6 +43,7 @@ public static class InjuredSprintChecks
             {
                 runner = Runner(legs); float before = runner.CurrentHealth;
                 runner.ShieldEquipped = true; runner.ShieldCharge = 100;
+                HaloEnergyRules.SetDefense(ref runner, true);
                 runner.LastImpactTick = 7; uint damageSequence = runner.NonPhysiologicalDamageSequence;
                 for (int i = 0; i < hz * 2; i++)
                     RaidHealth.ApplyInjuredSprintDamage(ref runner, Vector3.forward * (3.5f / hz), true, 1f / hz, (uint)(i + 10));
