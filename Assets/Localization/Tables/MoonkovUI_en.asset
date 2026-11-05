@@ -18,6 +18,98 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
+  - m_Id: 4381285036482194973
+    m_Localized: "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 324546037687662782
+    m_Localized: "Revolver halo with strong individual shots. Uses the same energy pool as your other halos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1786305602107089202
+    m_Localized: "Fires several pellets per shot for close-range combat. Total damage depends on how many pellets hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1942762119095226963
+    m_Localized: "Precision halo for aimed fire at distant targets. Uses shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2363673862440023973
+    m_Localized: "Fires a short burst with each trigger press. Each round spends shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7035938950564307084
+    m_Localized: "Launches explosive projectiles that damage targets around the impact. Uses shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4419882054697928228
+    m_Localized: "Field food that restores energy and fullness. Keep drinking water nearby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404611389229118539
+    m_Localized: "Refills the life-support collar. Use from pockets or an equipped rig; excess oxygen is lost."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3776034184766986014
+    m_Localized: "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a rig before use. Weapons, worn gear and mission outputs cannot be stored inside."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8245630299633593916
+    m_Localized: "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped rig before using them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8537718928290244441
+    m_Localized: "Chest-mounted storage. Medical supplies, food, grenades and cells inside remain directly accessible."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 443644616408898108
+    m_Localized: "Used to buy supplies and fund halo research at the supplier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7021917314398656094
+    m_Localized: "Material for halo research and fabrication. Can also be sold to the supplier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 324593218587204434
+    m_Localized: "DAMAGE PER SHOT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2599071591148609780
+    m_Localized: "SHOT INTERVAL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7015755670951112884
+    m_Localized: "PROJECTILE SPEED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94825695614416
+    m_Localized: "BLAST RADIUS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8753459121695392509
+    m_Localized: "DAMAGE FALLOFF"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3009778842696292836
+    m_Localized: "No falloff"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4545135549698769734
+    m_Localized: "AIMED SPREAD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5354698553412171148
+    m_Localized: "BURST PAUSE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8759711896313403206
+    m_Localized: "SEMI-AUTOMATIC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1163323848018666525
+    m_Localized: "{0}-ROUND BURST"
+    m_Metadata:
+      m_Items: []
   - m_Id: 2838245376
     m_Localized: SHIP
     m_Metadata:

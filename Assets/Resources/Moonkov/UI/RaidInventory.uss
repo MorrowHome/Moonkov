@@ -74,8 +74,16 @@
 .inventory-raid .field-search-hidden { position: absolute; background-color: #343b3d; border-width: 1px; border-color: #66706a; }
 .inventory-raid .field-search-hidden.field-search-current { border-color: #c8cfaa; }
 
-.inventory-view .inventory-item-tooltip { position: absolute; display: none; width: 360px; padding: 12px; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-radius: 6px; overflow: hidden; }
+.inventory-view .inventory-item-tooltip { position: absolute; display: none; width: 400px; padding: 12px; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-top-color: #70b8ff; border-radius: 6px; overflow: hidden; }
 .inventory-view .inventory-item-tooltip Label { color: #edeef0; font-size: 12px; white-space: normal; margin: 0; padding: 0; letter-spacing: 0; }
 .inventory-view .inventory-item-tooltip .inventory-tooltip-title { font-size: 14px; -unity-font-style: bold; margin-bottom: 4px; }
-.inventory-view .inventory-item-tooltip .inventory-tooltip-summary { color: #b0b4ba; margin-bottom: 8px; }
-.inventory-view .inventory-item-tooltip .inventory-tooltip-state { color: #b0b4ba; margin-top: 8px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-summary { color: #3dd68c; margin-bottom: 8px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-mode { color: #70b8ff; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-state { color: #7de2d1; margin-top: 8px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-warning { color: #ffca16; }
+.inventory-tooltip-stats { display: none; flex-direction: row; flex-wrap: wrap; justify-content: space-between; margin-top: 8px; border-top-width: 1px; border-top-color: #363a3f; padding-top: 4px; }
+.inventory-tooltip-stat { width: 48%; padding-top: 4px; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-stat-label { color: #b0b4ba; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-stat-value { font-size: 14px; color: #7de2d1; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-damage { color: #ffb86b; }
+.inventory-view .inventory-item-tooltip .inventory-tooltip-energy { color: #ffca16; }
