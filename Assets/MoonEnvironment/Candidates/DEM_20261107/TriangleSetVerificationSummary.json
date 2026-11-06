@@ -1,0 +1,62 @@
+{
+  "method": "Exact coordinate triangle multisets, independent of index welding/normal splitting; double FBX reference, exact reconstructed Unity float32; actual exported world matrix verified",
+  "fbxSha256": "0f3689fbf5c881442210f3373c97b1c39417bccea518ce306ca9f53b8f611d2a",
+  "allCloudReferenceStatsReproduced": true,
+  "allPassed": true,
+  "collisionState": "Not changed; all three remain without Collider",
+  "formalAssetsModified": false,
+  "objects": [
+    {
+      "name": "FT09_Precise_Natural_North_Cut",
+      "referenceCloudStatsReproduced": true,
+      "sourceVertexMappingExact": true,
+      "sourceTriangles": 22470,
+      "unityTriangles": 22460,
+      "missingTriangleOccurrences": 10,
+      "extraTriangleOccurrences": 0,
+      "missingPositiveAreaTriangleOccurrences": 0,
+      "missingWithoutRepeatedCoordinateOccurrences": 0,
+      "missingExactZeroAreaOccurrences": 10,
+      "worldSpaceMissingTriangleOccurrences": 10,
+      "worldSpaceExtraTriangleOccurrences": 0,
+      "worldMatrixVsIdealAxisMaximumDriftMeters": 0.000493945769344504,
+      "comparisonComplete": true,
+      "pass": true
+    },
+    {
+      "name": "FT09_Preserved_Precise_Central_Low_Cut",
+      "referenceCloudStatsReproduced": true,
+      "sourceVertexMappingExact": true,
+      "sourceTriangles": 5249,
+      "unityTriangles": 4989,
+      "missingTriangleOccurrences": 260,
+      "extraTriangleOccurrences": 0,
+      "missingPositiveAreaTriangleOccurrences": 0,
+      "missingWithoutRepeatedCoordinateOccurrences": 0,
+      "missingExactZeroAreaOccurrences": 260,
+      "worldSpaceMissingTriangleOccurrences": 260,
+      "worldSpaceExtraTriangleOccurrences": 0,
+      "worldMatrixVsIdealAxisMaximumDriftMeters": 0.00044520060749655505,
+      "comparisonComplete": true,
+      "pass": true
+    },
+    {
+      "name": "FT09_Preserved_Preserved_North_Stair_Cut",
+      "referenceCloudStatsReproduced": true,
+      "sourceVertexMappingExact": true,
+      "sourceTriangles": 33341,
+      "unityTriangles": 33225,
+      "missingTriangleOccurrences": 116,
+      "extraTriangleOccurrences": 0,
+      "missingPositiveAreaTriangleOccurrences": 0,
+      "missingWithoutRepeatedCoordinateOccurrences": 0,
+      "missingExactZeroAreaOccurrences": 116,
+      "worldSpaceMissingTriangleOccurrences": 116,
+      "worldSpaceExtraTriangleOccurrences": 0,
+      "worldMatrixVsIdealAxisMaximumDriftMeters": 0.00048347904367068164,
+      "comparisonComplete": true,
+      "pass": true
+    }
+  ],
+  "fullLocalReportSha256": "14bd3bb121a92218560bb68db1e4cf1f7e5575b0bbaddc3d2bd805642f3c6373"
+}

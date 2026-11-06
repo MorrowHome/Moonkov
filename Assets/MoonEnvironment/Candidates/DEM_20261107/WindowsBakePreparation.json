@@ -1,0 +1,686 @@
+{
+  "status": "PREPARATION_ONLY_NOT_BAKED",
+  "recordedUtc": "2026-11-06T19:41:29.222422+00:00",
+  "geometryInputs": [
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT14_Staging\\Expanded\\exports\\FT14_Gateways_Routes.fbx",
+      "sha256": "2e716f3661b7fb2a456ebbce8a6e394693389da3a3675be08e43293f1b2e3895",
+      "scope": "FT14_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part00.fbx",
+      "sha256": "28b66e12bdc44e91ca945d871995f01c3f9c4bdeedcc9da97e11daa3afb1329c",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part01.fbx",
+      "sha256": "7ff5ec4f8be3de8fa8651aceb6affce31803f1921899b2b016999faff99578df",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part02.fbx",
+      "sha256": "7bb2e4c42dde46dfed40e9ce4b0d5334eba1cb2a3078dd75f0e2fbb47a1c1c4d",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part03.fbx",
+      "sha256": "4faf8f57e4799caec24458ae347746d51866649386e63f11b1cfcf7ac799b5c7",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part04.fbx",
+      "sha256": "34de1743e8ddec155af89194047755395d6afe47a89e91374f472b6961c56ef2",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part05.fbx",
+      "sha256": "ec9d1bb0bb26502cc14e5a22c97f8278103cd2879823c057dbc370e38fe77931",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part06.fbx",
+      "sha256": "8be6fe94c28c3f065695438a9ee49d131e6d9d7680026e5bed51f7d89d821b97",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part07.fbx",
+      "sha256": "0f3689fbf5c881442210f3373c97b1c39417bccea518ce306ca9f53b8f611d2a",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part08.fbx",
+      "sha256": "bcd82cb9443532d000b270d9f2330ac1bae5f408aba8069b79487291625a362a",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part09.fbx",
+      "sha256": "088503a781fe04f32901b45f98f32f093b3944c69187c2c727966e10881b277e",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part10.fbx",
+      "sha256": "f0f4f606e62608c63fda4f9ce036227fc13176b57273ec244f3a74850f08e41a",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part11.fbx",
+      "sha256": "f4fef3f52b3acda28c5b9c1534526b760a905ec8228bca510cf41e48faa7f874",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part12.fbx",
+      "sha256": "d3acb061929fac3e0cc06caf7a89295e7da8ca7e80198c8b1152f766af095d01",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part13.fbx",
+      "sha256": "dc1bfb22a78ed127abc146f290383270aed07a8d1448d501be365eb4a44f723c",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\FT17_Staging\\Expanded\\exports\\FT17_Part14.fbx",
+      "sha256": "e35696bd293d048c5f94cee87bf4c8ee578e04387dcefb06d1ce62e44bf873f2",
+      "scope": "FT17_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile00.fbx",
+      "sha256": "f645b291610b04a8b0be7a030f674c3d995cf6ae9c35454dacd1e7c15efb6800",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile01.fbx",
+      "sha256": "0025be86022d5573e92678c083f47f6852b614c6823c7436541dd2b940c99f02",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile02.fbx",
+      "sha256": "7046679f19bf1aaebe00ca8e5c16cd35038ba3d8537e4bec34e62b5a41714904",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile03.fbx",
+      "sha256": "087f767581b89065eaf85c6d7b817b0eee7462cb2a2da24ebc89e98c8420891b",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile04.fbx",
+      "sha256": "6649eb2e4d7786b427617a4fde19ab1cd4cd153567fc751a5a4f7a7bf6ff04be",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile05_Chunk00.fbx",
+      "sha256": "858877e17613b92c26ca9ebb21ef3f3eb75ff12e4255fe821750368707f47507",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile05_Chunk01.fbx",
+      "sha256": "426dc740ee800135af54ecddd86baad73eba86c2d9828d7c2fdc8c7b69043195",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile05_Chunk02.fbx",
+      "sha256": "504669a207373fd6d4352c90442d35ffd9fd34a0436eb577f31d7f6a89500ff0",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile05_Chunk03.fbx",
+      "sha256": "44c031de5a096fdb561a0336bc3c7dff2e8abe95494d6c285484a6da5dd2076e",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile06_Chunk00.fbx",
+      "sha256": "a7bfcc721bcd4743f68b35d40ebd208cc20dc3d155f2a0f3f019f7b923581de2",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile06_Chunk01.fbx",
+      "sha256": "ec65bfae6a1f74ca33ed2f632585781cf73b6c96ee1421461f842e01ff3887a8",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile06_Chunk02.fbx",
+      "sha256": "2e0e753e80a0693931a2176a5fc2b6c7ac6c548c6c6c3604a352da01fda28c7c",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile06_Chunk03.fbx",
+      "sha256": "d5ae40cb97dda8daad5d6b1250f6defcd6a0bfa15d85d5d73ae5291eb33cf41e",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile07.fbx",
+      "sha256": "3e9a6b611adf41587c7d7eda83bed0252a16d3ecf94210af6c836c2db285a5bc",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile08.fbx",
+      "sha256": "e7c6d5f6e5c4cf70c359ad346dc0e6cd593d89f48e4ce725d55354992338df40",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk00.fbx",
+      "sha256": "888d2b004cdcea2d0ab450a6c8cd42a23a4a4fa5b901fd32ca63a7b5397410cf",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk01.fbx",
+      "sha256": "89090bb5f1f9cafc9b9871395a2aa3d042a5680169da2c1160713feae34f6b62",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk02.fbx",
+      "sha256": "d287e4cb20a34d088cdb168699bd9ed6fb6a3c65e8e091180385ad692a308c94",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk03.fbx",
+      "sha256": "83565589b3c27ae9dcf91eb3945b03b00386d1b9c4e4819d6a4f4ade20ee6c0c",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk04.fbx",
+      "sha256": "8dcd1592b6b62c4a41f47359df7f1bc4c0a6458d3d50fc8f4b8651d2b6f21b79",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk05.fbx",
+      "sha256": "b1944ca81c74c1c07becf948a2ae132da727491bff0283e487b162b8eb80d70f",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk06.fbx",
+      "sha256": "4f33764e570d9bbf51c9dcb0c3b4076f450ff090ff06c1196cb87d47032e5f05",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk07.fbx",
+      "sha256": "33df2f338cc16942a281986d41eea38e0d22cb780b6c98d9494f4ab9f9123950",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile09_Chunk08.fbx",
+      "sha256": "e04c64eac5c2b3bec600b21ebc21a1d233c28253dba863fbaf877a86e1f0e3c3",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk00.fbx",
+      "sha256": "5e066d7c8a747b79da351016ee01713204957a54152cb6e8e60fde60268eb053",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk01.fbx",
+      "sha256": "376dc1bb9b8819721aad8e1ec197f28c95d7e7da0c3f14040285334969a851e6",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk02.fbx",
+      "sha256": "98bf12ca7237aa7972f7bf04ad7456efcb67d28e9f24069a90bb6efff84ff2b7",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk03.fbx",
+      "sha256": "c4401d3307757d4d199fec1da1c49683166150a65ac77459d063aa06025a79ca",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk04.fbx",
+      "sha256": "d24bc5114610f205210050c6eb0da1e57d4d3e0c6b2dc20cead201cc45517cfd",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile10_Chunk05.fbx",
+      "sha256": "293fc1ddcb8c852c131357586348aed57819f81b572a68e9ed36459faceaa79b",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile11.fbx",
+      "sha256": "f7f2bce4682194e6b5a401a6ec767763b9d03e79a058c384b35f3f3b0cc24c87",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile12.fbx",
+      "sha256": "a3982b57e594355a88f6408de8e30b7d4bfbbf3e283bff7a576831a25724fa84",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile13.fbx",
+      "sha256": "40385afd02bdf9ec40e3bcf143a267733043668d5f9cf9aa8460a2f29a9b6bab",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile14.fbx",
+      "sha256": "106ed78a6ea30ab3c973349ea51b9c0c98988162cf6186368c54fb8ebe120f5b",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\DEM_Staging\\Expanded\\exports\\FT17_OuterDEM_Tile15.fbx",
+      "sha256": "d1586bbbd16510f5f1ba432fbdf95622cebd3b375d4720d7c459099fcdb2a1e7",
+      "scope": "DEM_Staging/Expanded/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_000.fbx",
+      "sha256": "e1e94ac972c4b1fb2d6e3233c522bda3a29c04c0ea9d3162fe72deefb6ef5f75",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_001.fbx",
+      "sha256": "a282db8a4e5593271acea0a929e176f4ef216d8d91d995d30b57ab04428d9b35",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_002.fbx",
+      "sha256": "53e6533a9411f0ffd8ea8d71f294cb163b13120bb31149f7d9b9c17483a718f1",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_003.fbx",
+      "sha256": "dca54f300a664bd46f714f7361e5e1714e16249ea868a8bde5d06afce6911cbe",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_004.fbx",
+      "sha256": "4a814b95df3ae8d9ccd15a167382ba7ddb4409de882a3c725b60ef2a32f63be2",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_005.fbx",
+      "sha256": "6aa61416d8a69f28b6b4cbb11ba566e83a45a5b1b1f81e898b65729de06ba31f",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_006.fbx",
+      "sha256": "142ac76f7c5ab67044602a213ecec6d31529dce748db79386356a5674480fa94",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_007.fbx",
+      "sha256": "c7f933ba4f2627aa59ebd77f82bc1d380c16a293d9770f495a4e1c4d1d796dcd",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_008.fbx",
+      "sha256": "3e25b2ed380910e922c455c5501806f52aa47c13fca7c598ce6dfd966fe14bc1",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_009.fbx",
+      "sha256": "3ecd02eb5b28da1706bb0c75d81f2eee712193e0d6e0956b5f2ddbfff46a7df9",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_010.fbx",
+      "sha256": "7792ddd5e4df4415b7c437ecd66721180637e3dac08665ed2479bf88ba7b187b",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_011.fbx",
+      "sha256": "a5e19e310ca2aaa77c32cb2e5a16d7fe7f32bece0c45d98d469b0e257429957c",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_012.fbx",
+      "sha256": "ec7c3652fcc79a351bb041d0dcdccebe256eaa5edd2fdf17722be520f624ce9b",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_013.fbx",
+      "sha256": "b6a5245d7fe6d2bd467f129b3c8a49f40e5292b0be79911d6e6260e78ab1e8af",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_014.fbx",
+      "sha256": "634183fd385d715d623425df30cc2f97d03903e814215d11d8ad10115fc527aa",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_015.fbx",
+      "sha256": "eeb65c29c24332949a020dd29a6973411524fe4c3f2627e6daae9732a7be422a",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_016.fbx",
+      "sha256": "3857f796878523244590be47b19829ddbb898e853c0ab6e98ac9dd4da4bafbfe",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_017.fbx",
+      "sha256": "9805e8e69ac519220ca781cc723b055adb180a08f894eb63e2ce53ffcb00f108",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_018.fbx",
+      "sha256": "b523e2e67bced252417967908804693d902bdbadcda86fdb6b76ba6fdc20a000",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_019.fbx",
+      "sha256": "857e7b2cfe7c6288753f741baee7e1ad8480a347466acdefb10d7962f56555e7",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_020.fbx",
+      "sha256": "9b8b12c5d059707029dc6c1bfd422cc49dba7c503f2a1f4f503f379b655ac251",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_021.fbx",
+      "sha256": "e34ad21be9fd74f0890a150315ea9274c2c4fef882315da0f7c1ce2035b83aa6",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_022.fbx",
+      "sha256": "d35b7c5f8191cbb764a7e9886d9b78313b2c162d197e21dcc039c143a7a64b2b",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_023.fbx",
+      "sha256": "23dfce8f7236040f87c277b89f293c7bc2b5f7718b8b11b57ee8af1aa7a4c499",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_024.fbx",
+      "sha256": "c1c8696e2d695685c86f985059a042bcfa126f4e1b9f3f771eb3dca80cffbd56",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_025.fbx",
+      "sha256": "558c09f871d06a42e1c1fe86446a69d5578048b1739e6926844af753ac4182c0",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_026.fbx",
+      "sha256": "291354155e7ceea4bf5edfa9ee807f90f10ae5ab998b3565911fcf6e0b1aa76b",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part00\\exports\\V73_Core_027.fbx",
+      "sha256": "8718cdb7979ba0ff1602dc46df9d1b7c03a59f5326117328560da0e8df9c1baa",
+      "scope": "V73_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_028.fbx",
+      "sha256": "70417d3ddaa238f0a8a9185fc3c061d2278120dac687a5200f5d85c6cda4116a",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_029.fbx",
+      "sha256": "ee7880b893a9851cebe8bef39344d50c884013dcf2b460f17df8c2826e1c64a7",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_030.fbx",
+      "sha256": "85227d1a79f9cbdb9fd7b9d27bb14f4ac694d06873562039bbb38362195c57ca",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_031.fbx",
+      "sha256": "eb7ec70e5fbf0f813e7bd29cf2288a77e9720e2be2a9a237ee00873e00bcf958",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_032.fbx",
+      "sha256": "f361557b9fb9de9108b0c970c744247d29f14777fc701fb2f373408db3b93cae",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_033.fbx",
+      "sha256": "13e4b2ee963cd2268f6e6c7bc9a81e9211c803fede482f3f450cfd2fc231d0e3",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Staging\\Part01\\exports\\V73_Core_034.fbx",
+      "sha256": "521242903437dec18f1249ae019795497506fca207e75dec52c1b455c60746b8",
+      "scope": "V73_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_035a.fbx",
+      "sha256": "32bff93ba8db82ee9ee28783d705fa832e35a6be7eaa32465eaa7fdb7c8be877",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_035b.fbx",
+      "sha256": "96caf7ca7906cc6fedaacbdc557db12b706cc1a481b47d9e7e30dbf11fa5a60f",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_036.fbx",
+      "sha256": "ac828eb4e5851a90dcb8bac9c23ac2ccf6cd57eb5d4f7ea3ae66efd4d66d718d",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_037.fbx",
+      "sha256": "6105f0e620bd5d14054033bc065d04e22dbb31611b616f14492bd8a74886ab44",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_038.fbx",
+      "sha256": "7fa0f02e81685dab1e1c7b61c488f3a4cbec7b7cc00b1df7fa558d07b4a95d5f",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_039.fbx",
+      "sha256": "139214dc9e9384296f86abe53400041a68e8eea0791cd4a073ca4f2a5b31152a",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_040.fbx",
+      "sha256": "2e8a9946193978966f4c74cd598dcb8b055dda1b5442ee97283822c16706a07c",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_041.fbx",
+      "sha256": "bcbc26da9af6448d57bb3b87cc0b60fef33bbd8ed0d24c87c5ce0abb8440b300",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_042.fbx",
+      "sha256": "108f1da0f6184df44e6036a727ce6e7446df412e4d066eec9055b2914d936b5d",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_043.fbx",
+      "sha256": "fceb82212c8fe16c92bc76a2abde036154c049bfda9361abcb5f4daf8cc94003",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_044.fbx",
+      "sha256": "8c31d12500c980be8d70b134cebbcc043f8428230cdf1dba662e5e61fba3a69b",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_045.fbx",
+      "sha256": "20144da0bfacba31b2150c86386903115e5f9b190a04d0b977c091baf1a06565",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_046.fbx",
+      "sha256": "2ab5a26d977aa7e13888eaa511cb53104a052dcc5874778de4fd57725db7fe0e",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_047.fbx",
+      "sha256": "64d56270a4ca4026cba3415139b794f40ee4b78e79941b4e9edd3f2c455879a6",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_048.fbx",
+      "sha256": "06e0a17263b1f0a890424953fd36aa79838c9d4a3e240439d3d170a512364b76",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_049.fbx",
+      "sha256": "c75a1b06e16432721f1e551fd8d45ba18ae5a4b3237a97c7635e0635593384d8",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_050.fbx",
+      "sha256": "cc3dbf3272c70b23f58185e300ea0436fd30f1dfcc9a92937d157ee4e14acc11",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_051.fbx",
+      "sha256": "30012cf0ad92b462ae2e9429cda450db6e972ee15ab2f2f4e93ec7c49076b8a0",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_052.fbx",
+      "sha256": "6abb6eba9b6a5b725877a7cf3bd8893a327f2c5516f9c84a70a62600c813ba9d",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_053.fbx",
+      "sha256": "263884cbb3efe17e1f8310d4cc03f2edc761ce27c71b741739a563d14434d9ac",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part00\\exports\\V73_Core_054.fbx",
+      "sha256": "4c366c4adba7ffecf29d30a5e913ae0743a8619e91647506629cd6e7c8944f9a",
+      "scope": "V73_Stage2_Staging/Part00/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_055.fbx",
+      "sha256": "5088e05363e42a81660f5a4edf761591c1c1afa70c7a336c82eb879dc6f39d90",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_056.fbx",
+      "sha256": "5279e5e33ac009eccf94003b0c6bb2d921e954302120841bf15493ac2ac09dc8",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_057.fbx",
+      "sha256": "6baf1f0791632c3cada848180ab1a6b7ccf947e5f470749bd3539e7e18e8e22f",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_058.fbx",
+      "sha256": "1f99a33dd2f57066ca3f5de65b11107329e438ae4b402fcd27a7afbe4411a5b7",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_059.fbx",
+      "sha256": "707885512f282a904c800844e8668073b1d69d0426f5a8e225e729bfb287c034",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_060.fbx",
+      "sha256": "47bd4e0aa34db12b0746009d389195d83eb674db2007d3cbd74f3517b261bd06",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_061.fbx",
+      "sha256": "b61c6ee625fb2f52ba2f131ba5cc1a0debcc3941a6a885c020c48a4c71a02079",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_062.fbx",
+      "sha256": "1af98142b099f2e5f16888f383f64b57b0bd6c55d704fa09f55efb74b30cf252",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_063.fbx",
+      "sha256": "acc53b54141596bddfc9bf57ad4a3be4f8f1f0356d006ced361460caec6ab6a7",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_064.fbx",
+      "sha256": "be0d235be67d0cb1de9349275862af62d78ef8c52ca9a43c4f87a51556a08438",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_065.fbx",
+      "sha256": "c386caa6b5a74bcf4a7d0fa6d414ea2308d004ec63a92afd486d8ce7ce77be70",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_066.fbx",
+      "sha256": "deea72488cfcd5cc5a7be66d053b523a3450f75680028ddff90a404fb151b89c",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_067.fbx",
+      "sha256": "7b25181b4dfde51b3b6773cc4b83ed58d19a90b0f5e0102fcd824b2498a039bd",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_068.fbx",
+      "sha256": "6694584e43a5ffda2e9f0ff5527ca87f8a9a2090d4ad973999d525065eea6ef4",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    },
+    {
+      "file": "E:\\Code\\Codex\\2026-10-29\\task\\V73_Stage2_Staging\\Part01\\exports\\V73_Core_069.fbx",
+      "sha256": "17b7022245da96a09bc6c45c24ae5f77ce144a6ff9b4ec1985ffe49e994b2d3d",
+      "scope": "V73_Stage2_Staging/Part01/exports"
+    }
+  ],
+  "partialV73Core": true,
+  "geometryInputCount": 122,
+  "bridgeSha256": "d60b6462a3f6603dd259136f75f95e7d0bbc6183de515cfbe32f98bf06c9287f",
+  "coordinatePolicy": "FBX importer audited; one Y180 parent; Blender world XYZ -> Unity XZY; never reapply original matrices to world-baked vertices",
+  "pilotScope": {
+    "area": "FT14 T1 lower stair to Landing020",
+    "route": [
+      "FT11_T1_Tread_000",
+      "FT11_T1_Tread_001",
+      "FT11_T1_Tread_002",
+      "FT11_T1_Tread_003",
+      "FT11_T1_Tread_004",
+      "FT11_T1_Tread_005",
+      "FT11_T1_Tread_006",
+      "FT11_T1_Tread_007",
+      "FT11_T1_Tread_008",
+      "FT11_T1_Tread_009",
+      "FT11_T1_Tread_010",
+      "FT11_T1_Tread_011",
+      "FT11_T1_Tread_012",
+      "FT11_T1_Tread_013",
+      "FT11_T1_Tread_014",
+      "FT11_T1_Tread_015",
+      "FT11_T1_Tread_016",
+      "FT11_T1_Tread_017",
+      "FT11_T1_Tread_018",
+      "FT11_T1_Tread_019",
+      "FT11_T1_Landing_020"
+    ],
+    "purpose": "local brightness, tread/edge readability and bright-surface detail; not whole-map approval"
+  },
+  "colorManagement": {
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast reference baseline",
+    "exposureEV": 0,
+    "gamma": 1,
+    "globalExposureCompensationForDarkAreas": false
+  },
+  "lightingOwnership": {
+    "emptyAnchorsAreLights": false,
+    "fixedFill": "candidate BAKE_SOURCE_ONLY lights after source inputs are reconciled; diffuse direct+indirect irradiance without base material color",
+    "switchable": "kept separate from baked fixed direct; no claim that disabling Light removes baked light",
+    "runtime118LightControlsRestored": false
+  },
+  "cachePolicy": {
+    "reuseOldWorld30Atlases": false,
+    "reuseOldReflectionsOrSH": false,
+    "newFingerprintInputs": [
+      "exact geometry SHA",
+      "material and texture mapping including color space",
+      "fixed source light type/shape/power/color/matrix",
+      "source visibility and light linking",
+      "UV atlas plan",
+      "bake configuration"
+    ]
+  },
+  "execution": {
+    "platform": "Windows",
+    "backend": "Cycles OptiX via existing cycles_device.py; never silently CPU fallback",
+    "serialHeavyJobs": true,
+    "fullBakeStarted": false,
+    "startWithLocalReferenceBeforeProductionBake": true
+  },
+  "remainingInputs": [
+    "remaining V73 retained visual core",
+    "verified material/image node binding and required texture parts",
+    "fixed-versus-switchable fixture ownership and source parameters for pilot",
+    "candidate replacement/semantic anchors for complete gameplay route"
+  ],
+  "runtimeScope": "No Host, account/save, deployment or SubScene investigation; no upload or push"
+}
