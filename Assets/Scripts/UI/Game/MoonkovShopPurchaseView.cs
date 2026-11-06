@@ -101,6 +101,7 @@ namespace Unity.MP_FPS.Client
             {
                 var captured = offer; var tile = new Button(() => Select(captured.Code));
                 tile.name = "purchaseProduct" + offer.Code; tile.AddToClassList("shop-purchase-tile");
+                MoonkovItemPresentation.ApplyCategory(tile, offer.Code);
                 var artHost = new VisualElement { pickingMode = PickingMode.Ignore }; artHost.AddToClassList("shop-purchase-tile-art");
                 var art = new StashItemArt(offer.Code) { pickingMode = PickingMode.Ignore }; art.style.flexGrow = 1; artHost.Add(art); tile.Add(artHost);
                 var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = false }; title.AddToClassList("shop-purchase-tile-name"); tile.Add(title); MoonkovLocalization.Set(title, offer.Name ?? InventoryCatalog.Get(offer.Code).Name);
@@ -142,7 +143,11 @@ namespace Unity.MP_FPS.Client
             if (selected)
             {
                 var definition = InventoryCatalog.Get(offer.Code); m_QuantityValue = Math.Max(1, Math.Min(definition.MaxStack, m_QuantityValue));
-                if (m_ArtCode != offer.Code) { m_ArtCode = offer.Code; m_Art.Clear(); var art = new StashItemArt(offer.Code) { pickingMode = PickingMode.Ignore }; art.style.flexGrow = 1; m_Art.Add(art); }
+                if (m_ArtCode != offer.Code)
+                {
+                    MoonkovItemPresentation.ApplyCategory(m_Art, offer.Code); m_ArtCode = offer.Code; m_Art.Clear();
+                    var art = new StashItemArt(offer.Code) { pickingMode = PickingMode.Ignore }; art.style.flexGrow = 1; m_Art.Add(art);
+                }
                 m_Information.Present(NewItem(offer.Code, m_QuantityValue), m_Graph);
                 MoonkovLocalization.Set(m_Amount, "× {0}", m_QuantityValue);
                 m_Minus.SetEnabled(m_CanTrade && m_QuantityValue > 1); m_Plus.SetEnabled(m_CanTrade && m_QuantityValue < definition.MaxStack);

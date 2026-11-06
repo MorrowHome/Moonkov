@@ -9,7 +9,8 @@ namespace Unity.MP_FPS.Client
         private bool m_WasInLan;
         private void InitializeLanUI()
         {
-            m_LanRoom = new LanRoomView(m_MainMenu.Q("Canvas"), () => { m_ShowConnectionMenu = false; UpdateAccountPanel(); });
+            m_LanRoom = new LanRoomView(m_MainMenu.Q("Canvas"), () => { m_ShowConnectionMenu = false; UpdateAccountPanel(); },
+                () => { m_LobbyOpen = false; PresentLobby(); });
             LanRoomClient.Changed += LanProfileChanged;
             LanProfileChanged();
         }

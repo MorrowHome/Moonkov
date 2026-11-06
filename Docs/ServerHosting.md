@@ -25,14 +25,14 @@
   DNS 域名走 HTTP 被专门挡掉（注释写明"域名不能把 HTTP 例外变成公网访问"）。
   所以对远程玩家，**TLS 反代是客户端的硬性要求**，不是优化项。
 
-```
-玩家
- ├─ UDP 7979 ───────────────► VPS 公网 IP ──┐
- │                                          │ wg0 隧道
- └─ HTTPS 443 (你的域名) ──► VPS 上的 Caddy ─┘
-                                            │
-                            你家机器 10.8.0.2 ├─ 游戏服务器 UDP 0.0.0.0:7979
-                                             └─ MoonPersistence HTTP 10.8.0.2:5080
+```mermaid
+flowchart LR
+    Player[玩家] -->|游戏 UDP 7979| Relay[VPS 端口转发]
+    Player -->|账号 HTTPS TCP 443| Proxy[VPS HTTPS 反向代理]
+    Relay --> Tunnel[WireGuard 隧道]
+    Proxy --> Tunnel
+    Tunnel --> Game[本机游戏服 UDP 7979]
+    Tunnel --> Account[本机账号后端 HTTP 5080]
 ```
 
 ## 约定
@@ -46,7 +46,7 @@
 | `10.8.0.1` | VPS 在隧道里的地址 | 固定 |
 | `10.8.0.2` | 你家机器在隧道里的地址 | 固定 |
 | `ens3` | VPS 的公网网卡名 | **先查，不是 eth0** |
-| `51820` | WireGuard 端口 | 可改 |
+| `51820` | 通用示例的 WireGuard 端口 | 当前校园网部署改用 UDP 443，见下文 |
 
 先确认网卡名：
 
@@ -154,6 +154,25 @@ New-NetFirewallRule -DisplayName "Moonkov account TCP 5080" -Direction Inbound -
 ping 10.8.0.1
 ```
 
+### 校园网与其他 VPN 同时使用
+
+2026-11-06 的实际部署使用 **UDP 443** 承载 WireGuard。原 UDP 51820 的握手在校园网直连路径上失败；切到 UDP 443 后恢复。两端必须同时设置：VPS 的 `ListenPort = 443`，本机的 `Endpoint = <VPS IPv4>:443`。修改运行配置后，也要保存两端配置文件。更换端口不会改变游戏端口 UDP 7979，也不会占用账号 HTTPS 的 TCP 443。
+
+普通 UDP 探测包能到达，不代表 WireGuard 握手能成功。先检查新握手时间，再从 VPS 请求本机账号接口。只看到 Windows 服务正在运行，也不能证明隧道可用。
+
+其他 VPN 可能添加两条 `/1` 默认路由，把 VPS 流量带进 VPN。需要校园网直连时，在管理员 PowerShell 中运行：
+
+```powershell
+./Backend/Set-VpsDirectRoute.ps1 -VpsAddress <VPS IPv4> -SourceAddress <当前物理网卡 IPv4> -WhatIf
+./Backend/Set-VpsDirectRoute.ps1 -VpsAddress <VPS IPv4> -SourceAddress <当前物理网卡 IPv4>
+```
+
+脚本只添加一条 VPS `/32` 路由，保留其他 VPN 路由。默认保存到后续重启；只需本次 Windows 会话时加 `-SessionOnly`。发现冲突路由会停止。网络或网关变化后先检查并处理旧路由，不要直接沿用旧地址。
+
+账号域名当前使用仅 DNS 解析，直接指向 VPS，HTTPS 证书继续由 VPS 提供。游戏地址可以使用 VPS IPv4；`GameServerName` 仍保留证书域名。
+
+本次固定校园网物理网卡，现有账号完整资料下载返回 HTTP 200，用时 2.29 秒。游戏 UDP 7979 的 64 和 1200 字节数据包均完成公网与隧道的双向转发，往返约 630–650 ms。首个独立 UDP 探测曾超时，未测持续丢包率。临时探测监听已关闭。用户随后确认当前客户端已登录并成功进入战局。异地多人完整对局和长时间稳定性仍未验收。
+
 ## 4. 账号后端：绑到隧道地址
 
 `Backend/MoonPersistence/Program.cs:10` 从配置读监听地址，默认 `http://127.0.0.1:5080`，
@@ -241,11 +260,11 @@ Caddy 会自动申请并续期 Let's Encrypt 证书，前提是**域名的 A 记
 ## 7. 验证顺序
 
 1. `wg show` 有握手；你家机器 `ping 10.8.0.1` 通
-2. 你家机器：`netstat -an | findstr 7979` 看到 `0.0.0.0:7979` LISTENING
+2. 有战局时，用 `Get-NetUDPEndpoint -LocalPort 7979` 检查游戏服监听。按局启动模式在空闲时没有监听是正常的。
 3. VPS：`curl -sv http://10.8.0.2:5080/` 有响应
 4. VPS：`curl -sv https://moon.example.com/` 有响应
-5. **你自己**用 `127.0.0.1:7979` 进游戏（别走中继，省一圈）
-6. 让朋友连 `moon.example.com:7979` + 账号服务
+5. 用户自行测试本机客户端。使用高级直连时可以用 `127.0.0.1:7979`，证书名称仍用 `GameServerName`。小队匹配使用后端下发地址，不由本机地址覆盖决定。
+6. 用户让朋友连接游戏入口和账号服务。游戏域名必须仅 DNS 解析，不能经过普通网页代理。
 7. 有玩家时在 VPS 上看转发是否生效：`conntrack -L | grep 7979`
 
 ## 8. 你会踩到的坑

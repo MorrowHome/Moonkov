@@ -131,6 +131,7 @@ namespace Unity.MP_FPS.Client
         {
             var button = new Button { name = "inventorySlot" + slot };
             button.AddToClassList("inventory-empty-container");
+            MoonkovItemPresentation.ApplyCategory(button, item?.Code);
             if (item == null) button.text = "空";
             else
             {
@@ -168,6 +169,7 @@ namespace Unity.MP_FPS.Client
         private void TextSpecialSlot(Button button, string slot, int n)
         {
             var item = m_Graph?.Equipped(slot);
+            MoonkovItemPresentation.ApplyCategory(button, item?.Code);
             MoonkovLocalization.Set(button.Q<Label>("slotLabel"), "工具 " + n);
             MoonkovLocalization.Set(button.Q<Label>("item"), item == null ? "空工具槽" : InventoryCatalog.Get(item.Code).Name);
             if (item == null) button.tooltip = "拖入指南针或测距仪";
@@ -219,6 +221,7 @@ namespace Unity.MP_FPS.Client
                 if (item != null) shown.Add(item.Id);
                 var card = (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
                 card.name = "corpseSlot" + slot; card.RemoveFromClassList("inventory-slot"); card.AddToClassList("field-corpse-slot");
+                MoonkovItemPresentation.ApplyCategory(card, item?.Code);
                 if (portraitKnown) card.AddToClassList("field-corpse-body-slot");
                 MoonkovLocalization.Set(card.Q<Label>("slotLabel"), SlotLabel(slot));
                 MoonkovLocalization.Set(card.Q<Label>("item"), item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
@@ -296,6 +299,7 @@ namespace Unity.MP_FPS.Client
         private void AddCorpseContainerSlot(VisualElement group, InventoryItem item, string slot)
         {
             var button = new Button { name = "corpseSlot" + slot }; button.AddToClassList("inventory-empty-container");
+            MoonkovItemPresentation.ApplyCategory(button, item?.Code);
             if (item == null) { button.text = "空"; button.SetEnabled(false); }
             else
             {

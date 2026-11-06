@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Unity.MP_FPS.Online;
 
 namespace Unity.MP_FPS.Client
 {
@@ -15,6 +16,8 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Container, m_Root, m_Modal, m_Host;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private readonly Action m_Equipment;
+        private readonly Action m_Opened;
+        private readonly LanSquadStage m_Squad;
         private readonly IVisualElementScheduledItem m_ViewportRefresh;
         private bool m_Busy, m_Disposed;
         private string m_Roster, m_LastRoom;
@@ -22,15 +25,23 @@ namespace Unity.MP_FPS.Client
         private RaidGameMode m_Mode;
         private Vector3 m_LastViewport;
 
-        public LanRoomView(VisualElement host, Action equipment)
+        public LanRoomView(VisualElement host, Action equipment, Action opened = null)
         {
-            m_Host = host; m_Equipment = equipment;
+            m_Host = host; m_Equipment = equipment; m_Opened = opened;
             m_Container = Resources.Load<VisualTreeAsset>("Moonkov/UI/LanRoomPanel").CloneTree();
             m_Container.pickingMode = PickingMode.Ignore;
             m_Container.style.position = Position.Absolute; m_Container.style.left = m_Container.style.top = 0;
             host.Add(m_Container); m_Root = m_Container.Q(className: "lan-layer"); m_Modal = m_Root.Q("lanModal");
+            m_Squad = new LanSquadStage();
             m_Root.Q<TextField>("lanPlayerName").value = PlayerPrefs.GetString("Moonkov.LAN.Name", "Operator");
             m_Root.Q<TextField>("lanAddress").value = PlayerPrefs.GetString("Moonkov.LAN.Address", "192.168.1.100");
+            m_Root.Q<DropdownField>("lanCharacter").RegisterValueChangedCallback(_ => AppearanceChanged());
+            m_Root.Q<DropdownField>("lanPose").RegisterValueChangedCallback(_ => AppearanceChanged());
+            m_Root.Q<TextField>("lanPlayerName").RegisterValueChangedCallback(_ => { if (!LanRoomClient.Active) Present(); });
+            var motion = m_Root.Q<Toggle>("lanReduceMotion");
+            motion.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.SquadReducedMotion", OnlineSquadStage.SystemReducedMotion ? 1 : 0) != 0);
+            SetReducedMotion(motion.value);
+            motion.RegisterValueChangedCallback(e => { SetReducedMotion(e.newValue); PlayerPrefs.SetInt("Moonkov.SquadReducedMotion", e.newValue ? 1 : 0); });
             Bind("lanEntry", Open); Bind("lanClose", Close);
             Bind("lanBrowseTab", () => SelectPage(LanRoomPage.Browse));
             Bind("lanCreateTab", () => SelectPage(LanRoomPage.Create));
@@ -48,7 +59,7 @@ namespace Unity.MP_FPS.Client
             {
                 if (LanRoomClient.Ready) await LanRoomClient.RequestAsync("ready", ready: false, ct: m_Stop.Token);
                 await LanRoomClient.RequestAsync("profile", ct: m_Stop.Token);
-                m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Equipment();
+                m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Squad.SetVisible(false); m_Equipment();
             }, "正在打开装备…", "装备整理完成后，回到房间准备。"));
             Bind("lanCopy", () =>
             {
@@ -65,15 +76,18 @@ namespace Unity.MP_FPS.Client
         private void Bind(string name, Action callback) => m_Root.Q<Button>(name).clicked += callback;
         public void Open()
         {
+            m_Opened?.Invoke();
             m_Modal.RemoveFromClassList("lan-hidden"); m_Container.BringToFront(); m_ViewportRefresh.Resume();
             RefreshViewport(); Present();
             FocusPage();
-            if (!LanRoomClient.Active && m_Page == LanRoomPage.Browse) Run(RefreshRooms, "正在寻找附近房间…", "房间列表已更新。");
+            if (LanRoomClient.Active && LanRoomClient.Room.Phase == LanRoomPhase.Lobby && AppearancePending())
+                Run(() => LanRoomClient.RequestAsync("appearance", ct: m_Stop.Token), "正在同步角色配置…", "角色配置已更新。");
+            else if (!LanRoomClient.Active && m_Page == LanRoomPage.Browse) Run(RefreshRooms, "正在寻找附近房间…", "房间列表已更新。");
         }
         private void Close()
         {
             if (m_Busy) return;
-            m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Root.Q<Button>("lanEntry").Focus();
+            m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Squad.SetVisible(false); m_Root.Q<Button>("lanEntry").Focus();
         }
         private void Key(KeyDownEvent evt)
         {
@@ -96,6 +110,22 @@ namespace Unity.MP_FPS.Client
             LanRoomPresentation.Mode(m_Root, mode);
             var capacity = m_Root.Q<IntegerField>("lanCapacity"); capacity.value = Mathf.Clamp(capacity.value, 2, mode == RaidGameMode.BountyClash ? 12 : 32);
         }
+        private void SetReducedMotion(bool reduced)
+        { m_Squad.Stage.ReducedMotion = reduced; m_Root.EnableInClassList("lan-reduced-motion", reduced); }
+        private bool AppearancePending()
+        {
+            var self = LanRoomClient.Room?.Members.FirstOrDefault(m => m.Id == LanRoomClient.MemberId)?.Appearance;
+            return self != null && (self.CharacterIndex != Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4) || self.PoseIndex != LanRoomClient.PoseIndex);
+        }
+        private void AppearanceChanged()
+        {
+            if (m_Busy || m_Disposed) return;
+            GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
+            PlayerPrefs.SetInt("Moonkov.LAN.Pose", m_Root.Q<DropdownField>("lanPose").index - 1);
+            PlayerPrefs.Save();
+            if (LanRoomClient.Active) Run(() => LanRoomClient.RequestAsync("appearance", ct: m_Stop.Token), "正在同步角色配置…", "角色配置已更新。");
+            else Present();
+        }
         private async void Run(Func<Task> action, string waiting, string success)
         {
             if (m_Busy || m_Disposed) return; m_Busy = true; Status(waiting, false); Present();
@@ -111,12 +141,14 @@ namespace Unity.MP_FPS.Client
         }
         private async Task Create()
         {
+            GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
             await LanRoomClient.CreateAsync(m_Root.Q<TextField>("lanRoomName").value, SaveName(), m_Mode,
                 m_Root.Q<IntegerField>("lanCapacity").value, m_Root.Q<IntegerField>("lanControlPort").value,
                 m_Root.Q<IntegerField>("lanGamePort").value, m_Stop.Token);
         }
         private async Task Join(string address, int port)
         {
+            GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
             await LanRoomClient.JoinAsync(address, port, SaveName(), m_Stop.Token);
             PlayerPrefs.SetString("Moonkov.LAN.Address", address); PlayerPrefs.Save();
         }
@@ -133,7 +165,7 @@ namespace Unity.MP_FPS.Client
         private static string HostAddress()
         {
             string address = LanRoomClient.IsHost ? string.Join("\n", LanRoomClient.LocalAddresses()) : LanRoomClient.Address;
-            return $"{(string.IsNullOrEmpty(address) ? "未检测到局域网 IPv4" : address)}\n房间 TCP {LanRoomClient.Port} · 游戏 UDP {LanRoomClient.Room?.GamePort}";
+            return $"{(string.IsNullOrEmpty(address) ? "未检测到局域网 IPv4" : address)}\n房间 TCP {LanRoomClient.Port}\n游戏 UDP {LanRoomClient.Room?.GamePort}";
         }
         private void GeometryChanged(GeometryChangedEvent evt) => RefreshViewport();
         private void RefreshViewport()
@@ -152,6 +184,16 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             bool active = LanRoomClient.Active;
+            var stageHost = m_Root.Q(active ? "lanStageLobbyHost" : "lanStageEntryHost");
+            if (m_Squad.Element.parent != stageHost) stageHost.Add(m_Squad.Element);
+            var character = m_Root.Q<DropdownField>("lanCharacter");
+            character.SetValueWithoutNotify(character.choices[Mathf.Clamp(GameSettings.Instance.PlayerCharacter - 2, 0, 2)]);
+            var pose = m_Root.Q<DropdownField>("lanPose"); pose.SetValueWithoutNotify(pose.choices[LanRoomClient.PoseIndex + 1]);
+            character.SetEnabled(!m_Busy && (!active || LanRoomClient.Room.Phase == LanRoomPhase.Lobby)); pose.SetEnabled(character.enabledSelf);
+            m_Squad.Present(active ? LanRoomClient.Room : null, LanRoomClient.MemberId, m_Root.Q<TextField>("lanPlayerName").value,
+                new LobbyAppearance { CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = LanRoomClient.PoseIndex });
+            m_Squad.SetVisible(!m_Modal.ClassListContains("lan-hidden"));
+            m_Root.EnableInClassList("lan-large-room", active && LanRoomClient.Room.Members.Length > 4);
             if (active) m_Page = LanRoomPage.Lobby; else if (m_Page == LanRoomPage.Lobby) m_Page = LanRoomPage.Browse;
             LanRoomPresentation.Page(m_Root, m_Page);
             m_Root.Q<TextField>("lanPlayerName").SetEnabled(!active && !m_Busy);
@@ -165,9 +207,10 @@ namespace Unity.MP_FPS.Client
                 return;
             }
             var room = LanRoomClient.Room;
-            m_Root.Q<Button>("lanEntry").text = $"局域网 · {room.Members.Length}/{room.Capacity}";
-            var roster = room.Phase + string.Join("|", room.Members.Select(m => $"{m.Id}/{m.Name}/{m.Host}/{m.Ready}/{m.InGame}"));
+            m_Root.Q<Button>("lanEntry").text = $"局域网小队 {room.Members.Length}/{room.Capacity}";
+            var roster = room.Phase + string.Join("|", room.Members.Select(m => $"{m.Id}/{m.Name}/{m.Host}/{m.Ready}/{m.InGame}/{m.Appearance?.CharacterIndex}"));
             LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy, HostAddress(), roster != m_Roster);
+            if (AppearancePending()) { m_Root.Q<Button>("lanReady").SetEnabled(false); m_Root.Q<Button>("lanStart").SetEnabled(false); }
             m_Roster = roster;
             if (m_LastRoom != room.Id) { m_LastRoom = room.Id; FocusPage(); }
             if (LanRoomClient.IsHost && !LanRoomClient.Server.DiscoveryAvailable) Status("自动发现暂不可用，展开邀请信息，让成员通过 IPv4 加入。", true);
@@ -177,7 +220,7 @@ namespace Unity.MP_FPS.Client
         { LanRoomPresentation.Status(m_Root, message, error); }
         public void Dispose()
         {
-            m_Disposed = true; m_Stop.Cancel(); m_ViewportRefresh.Pause(); LanRoomClient.Changed -= Present;
+            m_Disposed = true; m_Stop.Cancel(); m_ViewportRefresh.Pause(); m_Squad.Dispose(); LanRoomClient.Changed -= Present;
             m_Host.UnregisterCallback<GeometryChangedEvent>(GeometryChanged); m_Modal.UnregisterCallback<KeyDownEvent>(Key); m_Container.RemoveFromHierarchy();
         }
     }
@@ -215,7 +258,7 @@ namespace Unity.MP_FPS.Client
             {
                 var row = template.CloneTree(); list.Add(row);
                 row.Q<Label>("roomName").enableRichText = false; row.Q<Label>("roomName").text = room.Name;
-                row.Q<Label>("roomDetail").text = $"{ModeName(room.Mode)} · {room.Address}";
+                row.Q<Label>("roomDetail").text = $"{ModeName(room.Mode)} / {room.Address}";
                 row.Q<Label>("roomCount").text = $"{room.Members.Length}/{room.Capacity}";
                 row.Q("roomArt").EnableInClassList("lan-clash-art", room.Mode == RaidGameMode.BountyClash);
                 row.Q<Button>("roomJoin").SetEnabled(room.Members.Length < room.Capacity);
@@ -226,15 +269,12 @@ namespace Unity.MP_FPS.Client
         public static void Lobby(VisualElement root, LanRoomSnapshot room, string localId, bool host, bool ready, bool busy, string address, bool rebuildRoster = true)
         {
             root.Q<Label>("lanRoomHeading").enableRichText = false; root.Q<Label>("lanRoomHeading").text = room.Name;
-            root.Q<Label>("lanRoomMeta").text = $"{ModeName(room.Mode)} · {room.Members.Length}/{room.Capacity} 位干员";
+            root.Q<Label>("lanRoomMeta").text = $"{ModeName(room.Mode)} / {room.Members.Length}/{room.Capacity} 位干员";
             int count = room.Members.Count(m => m.Host || m.Ready);
             root.Q<Label>("lanReadyCount").text = $"{count}/{room.Members.Length} 已就绪";
             root.Q<Label>("lanHostAddress").text = address;
-            root.Q<Label>("lanModeTitle").text = ModeName(room.Mode);
-            root.Q("lanModeArt").EnableInClassList("lan-clash-art", room.Mode == RaidGameMode.BountyClash);
             root.Q<Label>("lanBriefing").text = room.Mode == RaidGameMode.BountyClash
-                ? "进入集结区后，创建或加入 1–3 人小队。至少两支队伍准备后开战。"
-                : "探索月面，带回搜集到的物资。成功撤离保留战利品，死亡丢失携带装备。";
+                ? "进入集结区后组队，至少两队准备后开战。" : "";
             if (rebuildRoster)
             {
                 var list = root.Q<ScrollView>("lanMembers"); list.Clear();
@@ -244,7 +284,7 @@ namespace Unity.MP_FPS.Client
                     var row = template.CloneTree(); list.Add(row);
                     row.Q<Label>("memberIndex").text = string.IsNullOrEmpty(member.Name) ? "?" : StringInfo.GetNextTextElement(member.Name);
                     row.Q<Label>("memberName").enableRichText = false; row.Q<Label>("memberName").text = member.Name;
-                    row.Q<Label>("memberRole").text = member.Host ? member.Id == localId ? "房主 · 你" : "房主" : member.Id == localId ? "成员 · 你" : "成员";
+                    row.Q<Label>("memberRole").text = member.Host ? member.Id == localId ? "房主 / 你" : "房主" : member.Id == localId ? "成员 / 你" : "成员";
                     row.Q<Label>("memberState").text = member.InGame ? room.Phase == LanRoomPhase.Preparing ? "载入中" : "对局中" : member.Host || member.Ready ? "已就绪" : "未准备";
                     row.EnableInClassList("lan-is-ready", member.Host || member.Ready);
                 }

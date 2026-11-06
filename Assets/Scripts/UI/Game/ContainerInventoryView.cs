@@ -280,6 +280,7 @@ namespace Unity.MP_FPS.Client
             foreach (var pair in m_Slots)
             {
                 var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
+                MoonkovItemPresentation.ApplyCategory(button, item?.Code);
                 MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
                 if (item != null) { var icon = new StashItemArt(item.Code); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
                 button.tooltip = MoonkovLocalization.Text(SlotLabel(pair.Key.ToString())) + " / " + (item == null ? MoonkovLocalization.Text("EMPTY") : MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + "\n" + MoonkovItemPresentation.ItemState(item));
@@ -343,6 +344,7 @@ namespace Unity.MP_FPS.Client
                 {
                     var captured = entry;
                     var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem"); tile.name="inventoryItem"+entry.Id;
+                    MoonkovItemPresentation.ApplyCategory(tile, entry.Code);
                     var icon = new StashItemArt(entry.Code); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
                     var itemDef = InventoryCatalog.Get(entry.Code); MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant());
                     MoonkovLocalization.Set(tile.Q<Label>("quantity"), itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());

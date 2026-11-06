@@ -1,11 +1,43 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
+using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
     internal static class MoonkovItemPresentation
     {
+        private static string CategoryClass(string code)
+        {
+            var tactical = TacticalItemRules.Find(code);
+            if (tactical != null && (tactical.Kind == TacticalItemKind.Vitality || tactical.Kind == TacticalItemKind.Stamina || tactical.Kind == TacticalItemKind.Antidote))
+                return "item-category-medical";
+            return InventoryCatalog.Get(code)?.Kind switch
+            {
+                ItemKind.LongGun or ItemKind.Pistol or ItemKind.Melee => "item-category-weapon",
+                ItemKind.Helmet or ItemKind.Shield or ItemKind.Rig or ItemKind.Backpack or ItemKind.SecureContainer or ItemKind.SpecialEquipment => "item-category-equipment",
+                ItemKind.Medical => "item-category-medical",
+                ItemKind.Food => "item-category-food",
+                ItemKind.Drink => "item-category-drink",
+                ItemKind.Oxygen => "item-category-oxygen",
+                ItemKind.Cell => "item-category-energy",
+                ItemKind.Throwable => "item-category-tactical",
+                ItemKind.StorageModule or ItemKind.ShapingModule or ItemKind.UtilityModule => "item-category-module",
+                ItemKind.Material => "item-category-material",
+                _ => "item-category-other"
+            };
+        }
+
+        public static void ApplyCategory(VisualElement element, string code)
+        {
+            string previous = element.GetClasses().FirstOrDefault(c => c.StartsWith("item-category-", StringComparison.Ordinal));
+            if (previous != null) element.RemoveFromClassList(previous);
+            element.EnableInClassList("item-category", code != null);
+            if (code != null) element.AddToClassList(CategoryClass(code));
+        }
+
         public static string Effect(string code)
         {
             if (code == EnergyGrenadeRules.Code) return MoonkovLocalization.Text("3s FUSE / 6m BLAST / UP TO 480 DAMAGE");

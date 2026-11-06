@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Online;
 
 namespace Unity.MP_FPS
 {
@@ -16,6 +17,7 @@ namespace Unity.MP_FPS
     {
         public string Id, Name;
         public bool Host, Ready, InGame;
+        public LobbyAppearance Appearance = new LobbyAppearance();
     }
     [Serializable] public sealed class LanRoomSnapshot
     {
@@ -36,6 +38,7 @@ namespace Unity.MP_FPS
         public int Protocol = LanProtocol.Version;
         public string Action, Credential, Name, RoomId;
         public bool Ready;
+        public int CharacterIndex = 2, PoseIndex = -1;
         public JObject Payload;
     }
     public sealed class LanReply
@@ -47,8 +50,8 @@ namespace Unity.MP_FPS
     // Length-prefixed, bounded UTF-8 JSON; no polymorphic deserialization.
     public static class LanProtocol
     {
-        public const int Version = 1, ControlPort = 7978, GamePort = 7979, DiscoveryPort = 7980;
-        public const string DiscoveryQuery = "Moonkov.LAN/1?";
+        public const int Version = 2, ControlPort = 7978, GamePort = 7979, DiscoveryPort = 7980;
+        public const string DiscoveryQuery = "Moonkov.LAN/2?";
         public const int MaxFrame = 2 * 1024 * 1024;
         public static readonly JsonSerializerSettings Json = new JsonSerializerSettings { MaxDepth = 48, TypeNameHandling = TypeNameHandling.None };
         public static async Task WriteAsync<T>(Stream stream, T value, CancellationToken ct)
