@@ -73,8 +73,8 @@ namespace Unity.MP_FPS
             {
                 if (m_State.HaloDeploymentMode == HaloDeploymentMode.Sentry && ((Vector3)m_State.AimPoint - m_Position).sqrMagnitude > .01f)
                     m_Halo.haloVisual.rotation = Quaternion.LookRotation((Vector3)m_State.AimPoint - m_Position);
-                if (m_State.HaloDeploymentMode == HaloDeploymentMode.Light && m_Halo.haloLight)
-                { m_Halo.haloLight.enabled = true; m_Halo.haloLight.range = 8; m_Halo.haloLight.intensity = 4; }
+                if (m_State.HaloDeploymentMode == HaloDeploymentMode.Light && m_Phase != HaloTransferPhase.Returning)
+                    m_Halo.PresentDeployedLight(m_Color);
                 SetLines(false);
                 return;
             }

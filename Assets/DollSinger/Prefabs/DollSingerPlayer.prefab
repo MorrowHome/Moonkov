@@ -4050,15 +4050,15 @@ MonoBehaviour:
   idleHaloColor: {r: 1, g: 0.72, b: 0.9, a: 0.9}
   aimedHaloColor: {r: 1, g: 0.16, b: 0.35, a: 1}
   glowAlpha: 0.6
-  idleLightIntensity: 2.2
-  aimedLightIntensity: 3.5
-  lightRange: 3.2
+  idleLightIntensity: 12
+  aimedLightIntensity: 14
+  lightRange: 8
   haloLightEnabled: 1
   faceSpotAngle: 110
   faceLightIntensityScale: 0.7
   flashlightRange: 80
   flashlightAngle: 48
-  flashlightIntensity: 45
+  flashlightIntensity: 180
   gestureBake: {fileID: 4900000, guid: 14b20615f8bd3446bb80a867b002316d, type: 3}
   input: {fileID: 5454841194306245068}
   view: {fileID: 4506668622313829390}

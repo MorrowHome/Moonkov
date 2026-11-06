@@ -114,6 +114,36 @@ var emptyHands = InventoryGraph.Create(false, false); int emptyCount = emptyHand
 Check(MeleeInventory.ActiveKind(emptyHands, 0, false) == MeleeWeaponKind.Fists, "no active weapon falls back to fists");
 Check(MeleeInventory.ActiveKind(emptyHands, 1, true) == MeleeWeaponKind.None, "firearm remains outside melee mode");
 Check(emptyHands.Items.Count == emptyCount && InventoryCatalog.Get("fists") == null, "fists never create a catalog or inventory item");
+{
+    var wheelGraph = InventoryGraph.Create(false);
+    var wheel = new QuickSlotBindings(new MemoryStore()); wheel.UseProfile("wheel"); wheel.InitializeWeapons(wheelGraph);
+    int version = wheelGraph.Version;
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 1) == 1, "wheel starts after the actually equipped weapon before any number selection");
+    Check(wheel.NextWeaponSlot(wheelGraph, -1, 1) == 3, "backward wheel wraps from primary to melee or fists");
+    wheel.Select(1, wheelGraph);
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 1) == 2, "rapid wheel follows the local selection while equipment acknowledgement lags");
+    Check(wheel.NextWeaponSlot(wheelGraph, -1, 1) == 0, "backward wheel moves to the previous weapon");
+    wheel.Select(3, wheelGraph);
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 4) == 0, "forward wheel wraps from melee to primary");
+    Check(wheel.Bind(8, wheelGraph.Equipped("Primary"), wheelGraph), "duplicate weapon shortcut can exist outside equipment slots");
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 4) == 0, "duplicate shortcuts do not add a second stop to weapon cycling");
+    Check(wheelGraph.AddSupply("ration", 1, wheelGraph.Equipped("ChestRig").Id) == InventoryError.None, "wheel fixture can carry a consumable");
+    Check(wheel.Bind(4, wheelGraph.Items.First(i => i.Code == "ration"), wheelGraph), "wheel fixture has a consumable shortcut");
+    wheel.Select(4, wheelGraph);
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 2) == 2, "wheel leaves a consumable for the next equipped weapon");
+    wheel.Select(3, wheelGraph);
+    wheelGraph.Items.Remove(wheelGraph.Equipped("Primary"));
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 4) == 1, "wheel skips an unavailable bound weapon");
+    wheel.InitializeWeapons(wheelGraph);
+    Check(wheel.NextWeaponSlot(wheelGraph, 1, 4) == 1, "wheel skips an empty equipment slot");
+    Check(wheel.NextWeaponSlot(wheelGraph, 0, 4) == -1 && wheel.NextWeaponSlot(null, 1, 4) == -1, "no direction or inventory yields no switch");
+    var fistsOnly = InventoryGraph.Create(false, false);
+    var unarmed = new QuickSlotBindings(new MemoryStore()); unarmed.UseProfile("fists"); unarmed.InitializeWeapons(fistsOnly);
+    Check(unarmed.NextWeaponSlot(fistsOnly, 1, 0) == 3 && unarmed.NextWeaponSlot(fistsOnly, -1, 0) == 3, "unarmed cycling can select the single available fists slot");
+    unarmed.Select(3, fistsOnly);
+    Check(unarmed.NextWeaponSlot(fistsOnly, 1, 4) == -1 && unarmed.NextWeaponSlot(fistsOnly, -1, 4) == -1, "one available weapon never sends redundant equips");
+    Check(wheel.Selected == 3 && wheelGraph.Version == version + 1, "cycle lookup does not select, consume or mutate inventory");
+}
 Console.WriteLine($"Quick slots: {count} checks passed; in-memory store only, no real preferences touched.");
 sealed class MemoryStore : IQuickSlotStore
 {

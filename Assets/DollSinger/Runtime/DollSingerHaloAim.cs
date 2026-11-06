@@ -91,9 +91,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     // clamp at 1 (Color32), so the HDR lift that feeds bloom lives in the
     // HaloLine shader's _Gain instead of these colours.
     [Range(0f, 1f)] public float glowAlpha = 0.6f;
-    [Min(0f)] public float idleLightIntensity = 2f;
-    [Min(0f)] public float aimedLightIntensity = 3.2f;
-    [Min(0.1f)] public float lightRange = 3f;
+    [Min(0f)] public float idleLightIntensity = 12f;
+    [Min(0f)] public float aimedLightIntensity = 14f;
+    [Min(0.1f)] public float lightRange = HaloLighting.DefaultRange;
     [Tooltip("Press L to toggle the halo lights on and off.")]
     public bool haloLightEnabled = true;
     [Range(10f, 170f)] public float faceSpotAngle = 110f;
@@ -101,7 +101,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Header("Flashlight (aim state)")]
     [Min(0.1f)] public float flashlightRange = 80f;
     [Range(10f, 90f)] public float flashlightAngle = 48f;
-    [Min(0f)] public float flashlightIntensity = 45f;
+    [Min(0f)] public float flashlightIntensity = 180f;
 
     private readonly RaycastHit[] rayHits = new RaycastHit[32];
     [Header("Blender authored whole-arm gestures")]
@@ -613,6 +613,29 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                 haloFaceLightBack.innerSpotAngle = faceSpotAngle * 0.55f;
                 haloFaceLightBack.enabled = haloLightEnabled;
             }
+        }
+    }
+
+    public void PresentDeployedLight(Color color)
+    {
+        float intensity = idleLightIntensity * HaloLighting.IdlePercent(LightingSettings) / 100f * 2f;
+        float range = HaloLighting.Range(LightingSettings, lightRange);
+        SetDeployedLight(haloLight, color, intensity, range);
+        SetDeployedLight(haloFaceLightFront, color, intensity * faceLightIntensityScale, range);
+        SetDeployedLight(haloFaceLightBack, color, intensity * faceLightIntensityScale, range);
+    }
+
+    private void SetDeployedLight(Light light, Color color, float intensity, float range)
+    {
+        if (!light) return;
+        light.color = color;
+        light.intensity = intensity;
+        light.range = range;
+        light.enabled = haloLightEnabled && intensity > 0;
+        if (light.type == LightType.Spot)
+        {
+            light.spotAngle = faceSpotAngle;
+            light.innerSpotAngle = faceSpotAngle * .55f;
         }
     }
 

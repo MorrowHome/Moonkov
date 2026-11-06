@@ -23,6 +23,7 @@ namespace Unity.MP_FPS.DollSinger
 #endif
         // Raid host maps 1–9 to real equipment. Unassigned in WeaponGestureLab.
         public System.Func<int, int> QuickSlotSelection { get; set; }
+        public System.Func<int, int> QuickSlotScrollSelection { get; set; }
         public System.Func<bool> DarkSightMode { get; set; }
         public System.Func<bool, bool> QuickSlotPrimaryUse { get; set; }
         // Separate melee intent; true consumes both attack buttons without generating gun input.
@@ -192,6 +193,7 @@ namespace Unity.MP_FPS.DollSinger
                     (mouse != null && mouse.leftButton.wasPressedThisFrame)) SetCapture(true);
                 return; // Consume the click that reacquires the Game view.
             }
+            bool numberPressed = false;
             if (keyboard != null)
             {
                 Move = new Vector2((keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0),
@@ -218,6 +220,7 @@ namespace Unity.MP_FPS.DollSinger
                     keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
                     keyboard.digit7Key.wasPressedThisFrame ? 7 : keyboard.digit8Key.wasPressedThisFrame ? 8 :
                     keyboard.digit9Key.wasPressedThisFrame ? 9 : 0;
+                numberPressed = number != 0;
                 WeaponSlotPressed = QuickSlotSelection != null ? QuickSlotSelection(number) : number <= 3 ? number : 0;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
                 if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
@@ -270,6 +273,9 @@ namespace Unity.MP_FPS.DollSinger
                     if (HaloAnchorHeld || HaloModeHeld) { TransferHeld = DefenseHeld = false; Stance = toggledStance; }
                 }
             }
+            // A direct number selection wins if the wheel moves in the same frame.
+            if (!numberPressed && !ViewPressed && !HaloAnchorHeld && !HaloModeHeld && !TransferHeld && Mathf.Abs(Scroll) > .01f)
+                WeaponSlotPressed = QuickSlotScrollSelection?.Invoke(Scroll > 0 ? -1 : 1) ?? WeaponSlotPressed;
             // Holding a grenade needs physical button state even while gun fire is suppressed.
             bool grenade = GrenadeInput?.Invoke(FirePressed, FireHeld, AimPressed, AimHeld) == true;
             if (suppressFireUntilRelease)

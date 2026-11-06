@@ -11,11 +11,11 @@
             <ui:VisualElement class="halo-light-heading">
                 <ui:Label text="LIGHT RANGE" /><ui:Label name="haloRangeValue" class="halo-light-value" />
             </ui:VisualElement>
-            <ui:Slider name="haloRange" low-value="1" high-value="12" />
+            <ui:Slider name="haloRange" low-value="1" high-value="24" />
             <ui:VisualElement class="halo-light-heading">
                 <ui:Label text="LIGHT INTENSITY" /><ui:Label name="haloIdleValue" class="halo-light-value" />
             </ui:VisualElement>
-            <ui:SliderInt name="haloIdleStrength" low-value="0" high-value="200" />
+            <ui:SliderInt name="haloIdleStrength" low-value="0" high-value="800" />
         </ui:VisualElement>
         <ui:VisualElement name="haloAimControls">
             <ui:VisualElement class="halo-light-heading">
@@ -25,7 +25,7 @@
             <ui:VisualElement class="halo-light-heading">
                 <ui:Label text="AIM INTENSITY" /><ui:Label name="haloAimValue" class="halo-light-value" />
             </ui:VisualElement>
-            <ui:SliderInt name="haloAimStrength" low-value="0" high-value="200" />
+            <ui:SliderInt name="haloAimStrength" low-value="0" high-value="800" />
         </ui:VisualElement>
         <ui:Button name="haloLightReset" text="RESTORE DEFAULTS" />
         <ui:Label text="Release L to close. Tap L to switch the light. Changes are saved automatically." class="halo-light-hint" />
