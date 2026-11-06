@@ -137,7 +137,7 @@ namespace Unity.MP_FPS.Client
             m_Preview = new VisualElement { pickingMode=PickingMode.Ignore }; m_Preview.AddToClassList("inventory-drop"); m_Preview.style.display=DisplayStyle.None;
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
             Application.focusChanged += FocusChanged;
-            m_Windows = new TerminalWindows(m_Root, () => { });
+            m_Windows = new TerminalWindows(m_Root, null);
             InitializeItemTooltip();
             InitializeRaidPortrait();
             Present(null);

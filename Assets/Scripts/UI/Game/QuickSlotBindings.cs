@@ -31,6 +31,11 @@ namespace Unity.MP_FPS.Client
                 if (m_Saved.Items[i]?.Length > 64 || m_Saved.Codes[i]?.Length > 64)
                 { m_Saved.Items[i] = null; m_Saved.Codes[i] = null; }
         }
+        public void Reset()
+        {
+            m_Saved = new QuickSlotSave();
+            Selected = -1; Reason = null; m_Fists = false;
+        }
         public void InitializeWeapons(InventoryGraph graph)
         {
             if (string.IsNullOrEmpty(m_Scope) || graph == null) return;

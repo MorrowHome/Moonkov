@@ -22,7 +22,7 @@
                         <ui:VisualElement class="op-photo op-protocol-photo op-photo-recover" />
                         <ui:Label text="01" class="op-kicker" />
                         <ui:Label text="RECOVER" class="op-heading" />
-                        <ui:Label text="[E] COLLECT NEARBY SUPPLIES" class="op-copy" />
+                        <ui:Label text="[F] COLLECT NEARBY SUPPLIES" class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-protocol-card">
                         <ui:VisualElement class="op-photo op-protocol-photo op-photo-survive" />

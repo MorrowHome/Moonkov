@@ -76,6 +76,7 @@ namespace Unity.MP_FPS
         private float m_LootErrorUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
+        private int m_MenuEscapeFrame = -1;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
         public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
@@ -83,18 +84,35 @@ namespace Unity.MP_FPS
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
+            if (s_Active == null) return false;
+            if (s_Active.m_MenuEscapeFrame == Time.frameCount) return true;
+            if (!CloseActiveMenu()) return false;
+            s_Active.m_MenuEscapeFrame = Time.frameCount;
+            RaidQuickSlotInput.ReleasePrimary();
+            return true;
+        }
+        private static bool CloseActiveMenu()
+        {
             if (s_Active != null && s_Active.CloseChatForEscape()) return true;
             if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
             { s_Active.CloseRaidMapFromUI(); return true; }
             if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
             if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
-            if (!InventoryOpen) return false;
+            if (!InventoryOpen) return RaidQuickSlotInput.CloseAdjustmentMenu();
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
             s_Active.SetInventory(false); return true;
         }
 
+        private void OnMenuKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode != KeyCode.Escape || GameSettings.Instance.GameState != GlobalGameState.InGame ||
+                m_ChatView?.Composing == true) return;
+            if (CloseInventory()) evt.StopImmediatePropagation();
+        }
+
         private void OnEnable()
         {
+            m_MenuEscapeFrame = -1;
             m_ReturnGuidance.Reset();
             m_DeployRequestedRaid = 0;
             m_DeployRequestedSequence = 0;
@@ -103,6 +121,7 @@ namespace Unity.MP_FPS
             s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
             MoonkovAudio.BindUI(m_Root);
+            m_Root.RegisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             var rightRail = m_Root.Q<ScrollView>("raidRightRail");
@@ -118,6 +137,7 @@ namespace Unity.MP_FPS
             m_TaskToggle.clicked += ToggleTasks;
             SetTasksCollapsed(false);
             m_TaskPanel.style.display = DisplayStyle.None;
+            InitializeTelemetry();
             m_Minimap = new RaidMinimapView(m_Root);
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
@@ -443,10 +463,11 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
+            UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
             bool clash = PresentBountyClash();
@@ -512,7 +533,7 @@ namespace Unity.MP_FPS
             CloseLootWhenIdle();
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
-            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested &&
+            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
                 !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
@@ -643,9 +664,9 @@ namespace Unity.MP_FPS
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
-                : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
-            if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[F]  SEARCH FALLEN EXPEDITION")
+                : MoonkovLocalization.Format($"[F]  OPEN SUPPLY CACHE / {nearest + 1:00}");
+            if (prompt.StartsWith("[F]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
             MoonkovLocalization.Set(m_InteractionState, RaidFurnitureLoot.IsFurniture(nearest) ? "小型容器" : empty ? "EMPTY" : "CONTENTS");
             MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
@@ -987,10 +1008,12 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ClearInventoryBackdrop();
+            m_Root?.UnregisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
             if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
             m_ClashTaskToggle = null;
             m_InteractionBindings?.Dispose(); m_InteractionBindings = null;
+            DisposeTelemetry();
             DisposeChat();
             DisposeCampaignHUD();
             ResetRaidCinematics();

@@ -25,7 +25,7 @@
                 <ui:Label text="KEYBOARD / MOUSE" class="terminal-heading" />
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="RAID INVENTORY" class="terminal-stat-name" /><ui:Label text="TAB" name="statValue0" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="STATUS CHECK" class="terminal-stat-name" /><ui:Label text="H (HOLD)" name="statValue1" class="terminal-stat-value" /></ui:VisualElement>
-                <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="PICKUP" class="terminal-stat-name" /><ui:Label text="E" name="statValue2" class="terminal-stat-value" /></ui:VisualElement>
+                <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="PICKUP" class="terminal-stat-name" /><ui:Label text="F" name="statValue2" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ROTATE IN STASH" class="terminal-stat-name" /><ui:Label text="R" name="statValue3" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ITEM INSPECT" class="terminal-stat-name" /><ui:Label text="DOUBLE CLICK / MIDDLE" name="statValue4" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ADVANCED ACTIONS" class="terminal-stat-name" /><ui:Label text="RIGHT CLICK" name="statValue5" class="terminal-stat-value" /></ui:VisualElement>

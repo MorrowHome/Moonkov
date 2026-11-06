@@ -22,7 +22,7 @@ namespace Unity.MP_FPS.Client
             m_Layer.AddToClassList("terminal-window-layer"); root.Add(m_Layer);
             m_Toast = new Label { pickingMode = PickingMode.Ignore };
             m_Toast.AddToClassList("terminal-toast"); m_Toast.style.display = DisplayStyle.None; root.Add(m_Toast);
-            root.RegisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
+            root.RegisterCallback<KeyDownEvent>(OnKey);
         }
 
         public VisualElement Open(string title, Vector2? position = null, bool compact = false)
@@ -70,7 +70,13 @@ namespace Unity.MP_FPS.Client
         private void OnKey(KeyDownEvent evt)
         {
             if (evt.keyCode != KeyCode.Escape) return;
-            if (m_Windows.Count > 0) Close(m_Windows[m_Windows.Count - 1]); else m_Back();
+            // Descendant menus get first refusal. An empty inventory window manager
+            // must let Esc continue to the owning page's back handler.
+            if (!CloseTop())
+            {
+                if (m_Back == null) return;
+                m_Back();
+            }
             evt.StopImmediatePropagation();
         }
         public void Toast(string message)
@@ -81,7 +87,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Dispose()
         {
-            CloseAll(); m_ToastTimer?.Pause(); m_Root.UnregisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
+            CloseAll(); m_ToastTimer?.Pause(); m_Root.UnregisterCallback<KeyDownEvent>(OnKey);
             m_Layer.RemoveFromHierarchy(); m_Toast.RemoveFromHierarchy();
         }
 

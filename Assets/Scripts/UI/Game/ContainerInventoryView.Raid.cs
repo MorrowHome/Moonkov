@@ -185,7 +185,7 @@ namespace Unity.MP_FPS.Client
             if (loot == null)
             {
                 MoonkovLocalization.Set(title, "搜刮目标");
-                MoonkovLocalization.Set(caption, m_ReadOnlyReason ?? "靠近容器或尸体，按 E 搜索");
+                MoonkovLocalization.Set(caption, m_ReadOnlyReason ?? "靠近容器或尸体，按 F 搜索");
                 var empty = new VisualElement(); empty.AddToClassList("field-empty"); m_LootPane.Add(empty);
                 Text(empty, m_Graph == null ? "正在读取随身物品" : "尚未打开搜刮目标", "field-empty-title");
                 Text(empty, "自己的装备和容器始终显示在左侧。\n搜刮目标打开后，物品会显示在这里。", "field-empty-copy");

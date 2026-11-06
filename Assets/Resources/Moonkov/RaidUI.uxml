@@ -4,6 +4,7 @@
     <ui:Style src="UI/RaidMinimap.uss" />
     <ui:Style src="UI/RaidInventory.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
+        <ui:Label name="raidTelemetry" class="raid-telemetry moonkov-style-font" picking-mode="Ignore" />
         <ui:VisualElement name="raidTaskPanel" class="raid-task-panel" picking-mode="Ignore">
             <ui:Button name="raidTaskToggle" class="raid-task-toggle" focusable="false">
                 <ui:Label text="TASKS" class="raid-task-heading" picking-mode="Ignore" />
@@ -52,7 +53,7 @@
         <ui:Label name="raidOxygenWarning" class="raid-oxygen-warning" picking-mode="Ignore" />
         <ui:VisualElement class="raid-interaction-anchor" picking-mode="Ignore">
             <ui:VisualElement name="raidInteraction" class="raid-interaction" picking-mode="Ignore">
-                <ui:Label name="raidInteractionKey" text="E" class="raid-interaction-key" picking-mode="Ignore" />
+                <ui:Label name="raidInteractionKey" text="F" class="raid-interaction-key" picking-mode="Ignore" />
                 <ui:VisualElement class="raid-interaction-copy" picking-mode="Ignore">
                     <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
                     <ui:VisualElement name="raidInteractionDetails" class="raid-interaction-details" picking-mode="Ignore">

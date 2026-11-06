@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Client
     public sealed class LanRoomView : IDisposable
     {
         private readonly VisualElement m_Container, m_Root, m_Modal, m_Host;
+        private readonly Button m_Entry;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private readonly Action m_Equipment;
         private readonly Action m_Opened;
@@ -42,7 +43,8 @@ namespace Unity.MP_FPS.Client
             motion.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.SquadReducedMotion", OnlineSquadStage.SystemReducedMotion ? 1 : 0) != 0);
             SetReducedMotion(motion.value);
             motion.RegisterValueChangedCallback(e => { SetReducedMotion(e.newValue); PlayerPrefs.SetInt("Moonkov.SquadReducedMotion", e.newValue ? 1 : 0); });
-            Bind("lanEntry", Open); Bind("lanClose", Close);
+            m_Entry = m_Root.Q<Button>("lanEntry");
+            m_Entry.clicked += Open; Bind("lanClose", Close);
             Bind("lanBrowseTab", () => SelectPage(LanRoomPage.Browse));
             Bind("lanCreateTab", () => SelectPage(LanRoomPage.Create));
             Bind("lanDirectTab", () => SelectPage(LanRoomPage.Direct));
@@ -73,6 +75,15 @@ namespace Unity.MP_FPS.Client
             m_ViewportRefresh = m_Root.schedule.Execute(RefreshViewport).Every(500); m_ViewportRefresh.Pause();
             SelectMode(GameSettings.Instance.RequestedMode); RefreshViewport(); Present();
         }
+        public void SetEntryHost(VisualElement host)
+        {
+            var target = host ?? m_Root;
+            m_Entry.EnableInClassList("lan-entry-docked", host != null);
+            if (m_Entry.parent == target) return;
+            if (host == null) { target.Insert(0, m_Entry); return; }
+            var logout = target.Q<Button>("stashLogout");
+            if (logout != null) target.Insert(target.IndexOf(logout), m_Entry); else target.Add(m_Entry);
+        }
         private void Bind(string name, Action callback) => m_Root.Q<Button>(name).clicked += callback;
         public void Open()
         {
@@ -87,7 +98,7 @@ namespace Unity.MP_FPS.Client
         private void Close()
         {
             if (m_Busy) return;
-            m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Squad.SetVisible(false); m_Root.Q<Button>("lanEntry").Focus();
+            m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Squad.SetVisible(false); m_Entry.Focus();
         }
         private void Key(KeyDownEvent evt)
         {
@@ -202,12 +213,12 @@ namespace Unity.MP_FPS.Client
             m_Root.Q<Label>("lanHostRequirement").text = PlayerProfileClient.SupportsSinglePlayer ? "创建后可邀请成员，再一起准备出发。" : "此版本不包含服务器功能，可加入其他房主。";
             if (!active)
             {
-                m_Root.Q<Button>("lanEntry").text = "局域网联机"; m_Roster = m_LastRoom = null;
+                m_Entry.text = "局域网联机"; m_Roster = m_LastRoom = null;
                 if (!string.IsNullOrEmpty(LanRoomClient.Error)) Status(LanRoomClient.Error, true);
                 return;
             }
             var room = LanRoomClient.Room;
-            m_Root.Q<Button>("lanEntry").text = $"局域网小队 {room.Members.Length}/{room.Capacity}";
+            m_Entry.text = $"局域网小队 {room.Members.Length}/{room.Capacity}";
             var roster = room.Phase + string.Join("|", room.Members.Select(m => $"{m.Id}/{m.Name}/{m.Host}/{m.Ready}/{m.InGame}/{m.Appearance?.CharacterIndex}"));
             LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy, HostAddress(), roster != m_Roster);
             if (AppearancePending()) { m_Root.Q<Button>("lanReady").SetEnabled(false); m_Root.Q<Button>("lanStart").SetEnabled(false); }
@@ -220,6 +231,7 @@ namespace Unity.MP_FPS.Client
         { LanRoomPresentation.Status(m_Root, message, error); }
         public void Dispose()
         {
+            m_Entry.clicked -= Open; m_Entry.RemoveFromHierarchy();
             m_Disposed = true; m_Stop.Cancel(); m_ViewportRefresh.Pause(); m_Squad.Dispose(); LanRoomClient.Changed -= Present;
             m_Host.UnregisterCallback<GeometryChangedEvent>(GeometryChanged); m_Modal.UnregisterCallback<KeyDownEvent>(Key); m_Container.RemoveFromHierarchy();
         }

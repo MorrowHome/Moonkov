@@ -1578,15 +1578,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871800156
-    m_Localized: '[E]  SEARCH FALLEN EXPEDITION'
+    m_Localized: '[F]  SEARCH FALLEN EXPEDITION'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800157
-    m_Localized: '[E]  OPEN EMPTY CACHE'
+    m_Localized: '[F]  OPEN EMPTY CACHE'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800158
-    m_Localized: '[E] COLLECT NEARBY SUPPLIES'
+    m_Localized: '[F] COLLECT NEARBY SUPPLIES'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800159
@@ -2110,7 +2110,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871800285
-    m_Localized: '[E]  OPEN SUPPLY CACHE / {0:00}'
+    m_Localized: '[F]  OPEN SUPPLY CACHE / {0:00}'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800286
@@ -3142,7 +3142,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3902840928743427
-    m_Localized: '[E]  DISSECT / SEARCH ALIEN REMAINS'
+    m_Localized: '[F]  DISSECT / SEARCH ALIEN REMAINS'
     m_Metadata:
       m_Items: []
   - m_Id: 3902840928743428
@@ -4357,15 +4357,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938055
-    m_Localized: '[E] RESUPPLY FROM AMMO BOX'
+    m_Localized: '[F] RESUPPLY FROM AMMO BOX'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938056
-    m_Localized: '[E] DISARM TRAP'
+    m_Localized: '[F] DISARM TRAP'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938057
-    m_Localized: '[E] STOP BURNING / BLEEDING'
+    m_Localized: '[F] STOP BURNING / BLEEDING'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938058

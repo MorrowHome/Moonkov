@@ -1573,15 +1573,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871800156
-    m_Key: '[E]  SEARCH FALLEN EXPEDITION'
+    m_Key: '[F]  SEARCH FALLEN EXPEDITION'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800157
-    m_Key: '[E]  OPEN EMPTY CACHE'
+    m_Key: '[F]  OPEN EMPTY CACHE'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800158
-    m_Key: '[E] COLLECT NEARBY SUPPLIES'
+    m_Key: '[F] COLLECT NEARBY SUPPLIES'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800159
@@ -2105,7 +2105,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871800285
-    m_Key: '[E]  OPEN SUPPLY CACHE / {0:00}'
+    m_Key: '[F]  OPEN SUPPLY CACHE / {0:00}'
     m_Metadata:
       m_Items: []
   - m_Id: 2871800286
@@ -3132,7 +3132,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3902840928743427
-    m_Key: '[E]  DISSECT / SEARCH ALIEN REMAINS'
+    m_Key: '[F]  DISSECT / SEARCH ALIEN REMAINS'
     m_Metadata:
       m_Items: []
   - m_Id: 3902840928743428
@@ -4338,15 +4338,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938055
-    m_Key: '[E] RESUPPLY FROM AMMO BOX'
+    m_Key: '[F] RESUPPLY FROM AMMO BOX'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938056
-    m_Key: '[E] DISARM TRAP'
+    m_Key: '[F] DISARM TRAP'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938057
-    m_Key: '[E] STOP BURNING / BLEEDING'
+    m_Key: '[F] STOP BURNING / BLEEDING'
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938058

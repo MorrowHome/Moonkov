@@ -1,5 +1,6 @@
 using Unity.Properties;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
@@ -60,15 +61,23 @@ namespace Unity.MP_FPS.Client
 
                 m_CancelButton = m_DirectConnectPopUp.Q<Button>(UIElementNames.CancelButton);
                 m_CancelButton.clicked += OnCancelPressed;
+                GameInput.Actions.UI.TogglePauseMenu.performed += CancelFromKeyboard;
             }
 
             void OnDisable()
             {
                 m_ConfirmButton.clicked -= OnConfirmPressed;
                 m_CancelButton.clicked -= OnCancelPressed;
+                GameInput.Actions.UI.TogglePauseMenu.performed -= CancelFromKeyboard;
             }
 
             static void OnConfirmPressed() => GameSettings.Instance.CancellableUserInputPopUp.SetResult();
+
+            static void CancelFromKeyboard(InputAction.CallbackContext context)
+            {
+                if (Application.isFocused && GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
+                    GameSettings.Instance.MainMenuState == MainMenuState.DirectConnectPopUp) OnCancelPressed();
+            }
 
             static void OnCancelPressed()
             {
