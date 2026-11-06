@@ -45,10 +45,12 @@ stateDiagram-v2
 ## 部署
 
 1. 在唯一 Editor 使用 `Tools / Moonkov / Build Local Windows Server` 增量更新独立服；构建器恢复原 Player 子目标，保留缓存。成功生成 `Build/MoonServer/online-instance-protocol.txt`，内容为 `1`。
-2. 执行 `Backend/Enable-OnlineInstances.ps1`：备份本机私有后端配置、正常停止旧常驻服、保存实例调度配置。遇到陌生端口占用时拒绝强制终止。
+2. 执行 `Backend/Enable-OnlineInstances.ps1 -Address <VPS公网IP或DNS直连域名> -ServerName <证书域名>`。替换尖括号内容。脚本备份本机私有后端配置、正常停止旧常驻服、保存实例调度配置。遇到陌生端口占用时拒绝强制终止。
 3. 使用 `Backend/Start-Backend.ps1 -Background -Update` 更新后端。大厅协议不会新增数据库 schema，不清玩家存档。
 4. 后端常驻，游戏地图按需启动。不要再手动运行 `Start-GameServer.ps1`；旧高级直连需显式 `-LegacyPersistent`，会占用实例槽端口。
 5. 发给朋友的客户端必须包含本轮网络代码、根目录公开 `moon-game-ca.pem` 和原公网 `moon-client.local.json`。旧构建不能混用。本轮不替用户打包客户端。
+
+账号 HTTPS 和游戏 UDP 可以使用不同地址。Cloudflare 普通网页代理不转发 UDP 7979；游戏地址必须直达 VPS，或使用关闭网页代理的 DNS 记录。客户端的 `ServerAddress` 与后端的 `OnlineInstances.Address` 使用游戏地址。客户端的 `GameServerName` 与后端的 `OnlineInstances.ServerName` 使用现有证书域名，不必因此重新生成证书。只改客户端文件不能修正大厅下发的地址；还要更新后端配置并重启后端。已有 Player 的客户端配置需重启后读取，这不需要重新打包。
 
 ## 最小验证
 
