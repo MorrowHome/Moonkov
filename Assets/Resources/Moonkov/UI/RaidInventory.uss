@@ -55,6 +55,31 @@
 .raid-ui .raid-inventory-tabs .raid-tab { height: 26px; min-width: 80px; font-size: 13px; letter-spacing: 0; background-color: #191f21; color: #b3bcb9; }
 .raid-ui .raid-inventory-tabs .raid-tab-active { background-color: #374236; color: #eeeee6; border-bottom-color: #c8cfaa; }
 .raid-ui .raid-inventory-header Button { height: 26px; min-width: 80px; margin: 0 4px 0 0; letter-spacing: 0; font-size: 13px; color: #eeeee6; background-color: #28312e; }
+
+/* Only the in-raid window: keep the live battle visible without fading text or icons. */
+#raidInventory { background-color: rgba(7, 8, 10, 0.10); }
+#raidInventory .raid-inventory-window,
+#raidInventory .inventory-view.inventory-raid { background-color: transparent; }
+#raidInventory .raid-inventory-header { background-color: rgba(16, 20, 22, 0.72); }
+#raidInventory .inventory-character,
+#raidInventory .field-carried { background-color: rgba(23, 28, 30, 0.38); }
+#raidInventory .field-loot { background-color: rgba(28, 34, 35, 0.40); }
+#raidInventory .inventory-grid { background-color: rgba(16, 23, 24, 0.16); }
+#raidInventory .inventory-item,
+#raidInventory .field-corpse-slot { background-color: rgba(34, 43, 43, 0.48); }
+#raidInventory .inventory-slot,
+#raidInventory .field-corpse-body-slot,
+#raidInventory .field-special-slot { background-color: rgba(15, 23, 22, 0.58); }
+#raidInventory .inventory-empty-container,
+#raidInventory .field-corpse-empty { background-color: rgba(18, 24, 25, 0.40); }
+#raidInventory .inventory-item:hover,
+#raidInventory .inventory-slot:hover,
+#raidInventory .inventory-empty-container:hover { background-color: rgba(48, 59, 56, 0.78); }
+#raidInventory .inventory-item:focus,
+#raidInventory .inventory-selected,
+#raidInventory .inventory-empty-container:focus { background-color: rgba(53, 65, 57, 0.82); }
+#raidInventory .inventory-drop-valid { background-color: rgba(124, 170, 131, 0.25); }
+#raidInventory .inventory-drop-invalid { background-color: rgba(206, 129, 119, 0.20); }
 .inventory-view.inventory-warehouse .inventory-character { width: 26%; max-width: 360px; }
 .inventory-warehouse .field-loot { flex-grow: 1.2; }
 .inventory-warehouse .inventory-slot-item { white-space: normal; }
