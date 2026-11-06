@@ -29,6 +29,7 @@ namespace Unity.MP_FPS
         public static bool Active => Room != null;
         public static bool IsHost => Server != null;
         public static bool Ready => Room?.Members.FirstOrDefault(m => m.Id == MemberId)?.Ready == true;
+        public static int PoseIndex => Mathf.Clamp(PlayerPrefs.GetInt("Moonkov.LAN.Pose", -1), -1, 3);
         private static string s_Credential;
         private static int s_Generation, s_LaunchedRound, s_Failures;
         private static bool s_Polling, s_Closing;
@@ -66,7 +67,7 @@ namespace Unity.MP_FPS
                 await persistence.RecoverAsync(); ct.ThrowIfCancellationRequested();
                 server = new LanRoomServer(persistence, name, mode, capacity, port, gamePort);
                 s_Credential = GetCredential();
-                var reply = server.AddHost(s_Credential, playerName);
+                var reply = server.AddHost(s_Credential, playerName, Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex);
                 Server = server; Address = "127.0.0.1"; Port = server.Port;
                 Enter(reply); EnsurePump();
             }
@@ -76,7 +77,8 @@ namespace Unity.MP_FPS
         {
             if (Active || s_Closing) throw new InvalidOperationException("请先离开当前房间。");
             string credential = GetCredential();
-            var reply = await LanProtocol.SendAsync(address, port, new LanRequest { Action = "join", Credential = credential, Name = playerName }, ct);
+            var reply = await LanProtocol.SendAsync(address, port, new LanRequest { Action = "join", Credential = credential, Name = playerName,
+                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex }, ct);
             ct.ThrowIfCancellationRequested();
             if (reply.Room == null || reply.Room.Protocol != LanProtocol.Version || reply.Profile?.Profile == null) throw new InvalidDataException("房间响应无效。");
             s_Credential = credential; Address = address; Port = port; Enter(reply); EnsurePump();
@@ -109,6 +111,7 @@ namespace Unity.MP_FPS
             if (!Active || s_Closing) throw new InvalidOperationException("尚未加入局域网房间。");
             int generation = s_Generation;
             var request = new LanRequest { Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,
+                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex,
                 Payload = payload == null ? null : JObject.FromObject(payload) };
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, s_Stop.Token);
             await s_Requests.WaitAsync(linked.Token);
@@ -201,7 +204,8 @@ namespace Unity.MP_FPS
         public static string[] LocalAddresses()
         {
             try { return NetworkInterface.GetAllNetworkInterfaces().Where(n => n.OperationalStatus == OperationalStatus.Up)
-                .SelectMany(n => n.GetIPProperties().UnicastAddresses).Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a.Address))
+                .OrderByDescending(n => n.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork && !g.Address.Equals(IPAddress.Any)))
+                .SelectMany(n => n.GetIPProperties().UnicastAddresses).Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a.Address) && !a.Address.ToString().StartsWith("169.254.", StringComparison.Ordinal))
                 .Select(a => a.Address.ToString()).Distinct().ToArray(); }
             catch { return Array.Empty<string>(); }
         }

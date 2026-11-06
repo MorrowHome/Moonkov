@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Online;
 
 namespace Unity.MP_FPS
 {
@@ -49,15 +51,17 @@ namespace Unity.MP_FPS
             value = new string((value ?? "").Trim().Where(c => !char.IsControl(c) && c != '<' && c != '>').Take(20).ToArray());
             return value.Length == 0 ? "Moonkov" : value;
         }
-        public LanReply AddHost(string credential, string name)
-        { lock (m_Lock) { if (m_Members.Count != 0) throw new InvalidOperationException(); return Join(credential, name, true); } }
-        private LanReply Join(string credential, string name, bool host = false)
+        public LanReply AddHost(string credential, string name, int character = 2, int pose = -1)
+        { lock (m_Lock) { if (m_Members.Count != 0) throw new InvalidOperationException(); return Join(credential, name, true, character, pose); } }
+        private LanReply Join(string credential, string name, bool host = false, int character = 2, int pose = -1)
         {
             if (m_Room.Phase != LanRoomPhase.Lobby) throw new InvalidOperationException("房间已开始对局，请等待本局结束。");
             if (m_Members.ContainsKey(credential)) throw new InvalidOperationException("此玩家已在房间中，请先退出原连接。");
             if (m_Members.Count >= m_Room.Capacity) throw new InvalidOperationException("房间已满。");
+            ValidateAppearance(character, pose);
             string id = Persistence.OpenPlayer(credential, CleanName(name));
-            var member = new Member { Credential = credential, Seen = DateTime.UtcNow, View = new LanMember { Id = id, Name = CleanName(name), Host = host } };
+            var member = new Member { Credential = credential, Seen = DateTime.UtcNow, View = new LanMember { Id = id, Name = CleanName(name), Host = host,
+                Appearance = new LobbyAppearance { CharacterIndex = character, PoseIndex = pose } } };
             m_Members.Add(credential, member);
             return Reply(member, true);
         }
@@ -65,10 +69,27 @@ namespace Unity.MP_FPS
         {
             return new LanRoomSnapshot { Id = m_Room.Id, HostId = m_Room.HostId, Name = m_Room.Name, Mode = m_Room.Mode, Capacity = m_Room.Capacity,
                 GamePort = m_Room.GamePort, Phase = m_Room.Phase, Round = m_Room.Round,
-                Members = m_Members.Values.Select(p => new LanMember { Id = p.View.Id, Name = p.View.Name, Host = p.View.Host, Ready = p.View.Ready, InGame = p.View.InGame }).ToArray() };
+                Members = m_Members.Values.Select(p => new LanMember { Id = p.View.Id, Name = p.View.Name, Host = p.View.Host, Ready = p.View.Ready, InGame = p.View.InGame,
+                    Appearance = p.View.Appearance.Copy() }).ToArray() };
         }
-        private LanReply Reply(Member member, bool profile = false) => new LanReply
-        { MemberId = member.View.Id, Ticket = member.Ticket, Room = Snapshot(), Profile = profile ? Persistence.Read(member.View.Id) : null };
+        private LanReply Reply(Member member, bool profile = false)
+        {
+            var data = profile ? Persistence.Read(member.View.Id) : null;
+            if (data != null) RefreshAppearance(member, data);
+            return new LanReply { MemberId = member.View.Id, Ticket = member.Ticket, Room = Snapshot(), Profile = data };
+        }
+        private static void ValidateAppearance(int character, int pose)
+        {
+            if (character < 2 || character > 4 || pose < -1 || pose > 3) throw new ArgumentException("无效的角色或姿势。");
+        }
+        private static void RefreshAppearance(Member member, LanProfileSnapshot profile)
+        {
+            var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.Profile.InventoryJson, LanProtocol.Json);
+            var previous = member.View.Appearance;
+            var next = LobbyAppearanceInventory.FromInventory(graph, previous.CharacterIndex, previous.PoseIndex);
+            if (!next.SameAs(previous)) member.View.Ready = false;
+            member.View.Appearance = next;
+        }
         public LanReply Handle(LanRequest request)
         {
             lock (m_Lock)
@@ -76,7 +97,7 @@ namespace Unity.MP_FPS
                 if (m_Disposed) throw new InvalidOperationException("房主已关闭房间。");
                 if (request == null || request.Protocol != LanProtocol.Version) throw new InvalidOperationException("游戏版本不兼容，请双方更新到相同版本。");
                 Expire(DateTime.UtcNow);
-                if (request.Action == "join") return Join(request.Credential, request.Name);
+                if (request.Action == "join") return Join(request.Credential, request.Name, false, request.CharacterIndex, request.PoseIndex);
                 if (request.RoomId != m_Room.Id || request.Credential == null || !m_Members.TryGetValue(request.Credential, out var member))
                     throw new InvalidOperationException("房间已关闭或玩家已离开，请重新加入。");
                 member.Seen = DateTime.UtcNow;
@@ -84,6 +105,15 @@ namespace Unity.MP_FPS
                 {
                     case "poll": return Reply(member);
                     case "profile": return Reply(member, true);
+                    case "appearance":
+                        RequireLobby();
+                        ValidateAppearance(request.CharacterIndex, request.PoseIndex);
+                        if (member.View.Appearance.CharacterIndex != request.CharacterIndex || member.View.Appearance.PoseIndex != request.PoseIndex)
+                        {
+                            member.View.Appearance.CharacterIndex = request.CharacterIndex; member.View.Appearance.PoseIndex = request.PoseIndex;
+                            member.View.Ready = false;
+                        }
+                        return Reply(member, true);
                     case "ready":
                         RequireLobby();
                         if (Persistence.Read(member.View.Id).RaidActive) throw new InvalidOperationException("上一局装备结算尚未完成。");
@@ -110,7 +140,9 @@ namespace Unity.MP_FPS
                     case "move": case "trade": case "recovery":
                         RequireLobby();
                         if (member.View.Ready) throw new InvalidOperationException("请先取消准备再修改装备。");
-                        return new LanReply { Room = Snapshot(), MemberId = member.View.Id, Profile = Persistence.Mutate(member.View.Id, request.Action, request.Payload ?? throw new ArgumentException("装备操作为空。")) };
+                        var changed = Persistence.Mutate(member.View.Id, request.Action, request.Payload ?? throw new ArgumentException("装备操作为空。"));
+                        RefreshAppearance(member, changed);
+                        return new LanReply { Room = Snapshot(), MemberId = member.View.Id, Profile = changed };
                     default: throw new InvalidOperationException("未知房间操作。");
                 }
                 return Reply(member);
