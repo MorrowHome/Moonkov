@@ -1,0 +1,13 @@
+.item-information { color: #edeef0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
+.item-information Label { color: #edeef0; font-size: 12px; white-space: normal; margin: 0; padding: 0; letter-spacing: 0; }
+.item-information .inventory-tooltip-title { font-size: 14px; -unity-font-style: bold; margin-bottom: 4px; }
+.item-information .inventory-tooltip-summary { color: #3dd68c; margin-bottom: 8px; }
+.item-information .inventory-tooltip-mode { color: #70b8ff; }
+.item-information .inventory-tooltip-state { color: #7de2d1; margin-top: 8px; }
+.item-information .inventory-tooltip-warning { color: #ffca16; }
+.item-information .inventory-tooltip-stats { display: none; flex-direction: row; flex-wrap: wrap; justify-content: space-between; margin-top: 8px; border-top-width: 1px; border-top-color: #363a3f; padding-top: 4px; }
+.item-information .inventory-tooltip-stat { width: 48%; padding-top: 4px; }
+.item-information .inventory-tooltip-stat-label { color: #b0b4ba; }
+.item-information .inventory-tooltip-stat-value { font-size: 14px; color: #7de2d1; }
+.item-information .inventory-tooltip-damage { color: #ffb86b; }
+.item-information .inventory-tooltip-energy { color: #ffca16; }

@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         private float m_LastAge;
         private Transform m_Model;
         private Transform[] m_Contacts;
+        private Bounds m_LootBounds;
         private float m_GroundLift;
         private PhysicsScene m_PhysicsScene;
         private static readonly int s_GroundMask=LayerMask.GetMask("Default","Ground");
@@ -28,6 +29,15 @@ namespace Unity.MP_FPS
         private static readonly Unity.Profiling.ProfilerMarker s_GroundProfile = new("Moonkov.Corpse.GroundFit");
         public bool Settled {get;private set;}
         public float FinishAge => m_End+(m_HairSpring!=null ? 3f : 0f);
+        public Vector3 LootAimPoint(Camera camera)
+        {
+            if (!camera || m_Contacts == null || m_Contacts.Length == 0)
+                return transform.position + Vector3.up * .25f;
+            var ray = new Ray(camera.transform.position, camera.transform.forward);
+            if (m_LootBounds.IntersectRay(ray, out float distance)) return ray.GetPoint(distance);
+            float depth = Mathf.Max(0, Vector3.Dot(m_LootBounds.center - ray.origin, ray.direction));
+            return m_LootBounds.ClosestPoint(ray.GetPoint(depth));
+        }
         public static CorpseVisual Spawn(Transform parent,CorpsePresentationSettings settings,RaidCorpseRpc corpse)
         {
             using var profile=s_SpawnProfile.Auto();
@@ -87,6 +97,7 @@ namespace Unity.MP_FPS
                 foreach(var contact in m_Contacts)IncludeGroundContact(contact.position-Vector3.up*.08f);
                 if(age>=m_End)FitFinalMeshToGround();
                 m_Model.position+=Vector3.up*m_GroundLift;
+                UpdateLootBounds();
                 if(age>=m_End){m_Animator.enabled=false;m_Graph.Destroy();m_BodySettled=true;}
             }
             float targetAge=Mathf.Clamp(age,0,FinishAge);
@@ -108,9 +119,18 @@ namespace Unity.MP_FPS
             {
                 m_Model.position-=Vector3.up*m_GroundLift;m_GroundLift=0;
                 FitFinalMeshToGround();m_Model.position+=Vector3.up*m_GroundLift;
+                UpdateLootBounds();
             }
             // Body stops at the death clip's end; hair gets three more seconds, then freezes too.
             Settled=true;enabled=false;
+        }
+        private void UpdateLootBounds()
+        {
+            if (m_Contacts == null || m_Contacts.Length == 0) return;
+            // Culling bounds are deliberately enlarged; only the posed body defines its loot target.
+            m_LootBounds = new Bounds(m_Contacts[0].position, Vector3.zero);
+            for (int i = 1; i < m_Contacts.Length; i++) m_LootBounds.Encapsulate(m_Contacts[i].position);
+            m_LootBounds.Expand(.2f);
         }
         private void IncludeGroundContact(Vector3 point)
         {

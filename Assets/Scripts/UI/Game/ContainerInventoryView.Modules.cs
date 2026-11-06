@@ -119,45 +119,9 @@ namespace Unity.MP_FPS.Client
             m_Graph.Items.Where(item => item.Code == code && !HaloModules.IsWeapon(m_Graph.Find(item.Parent)?.Code));
 
         private static string WorkshopSlotName(string slot) => slot == "Storage" ? "POWER SLOT" : slot == "Shaping" ? "FIRING SLOT" : "SUPPORT SLOT";
-        private static string WorkshopPurpose(string code)
-        {
-            switch (code)
-            {
-                case "halo_capacitor": return "More energy for attack and defense";
-                case "halo_charge_bridge": return "Get back to firing sooner";
-                case "halo_mooncore_recycler": return "Spend less energy per shot";
-                case "halo_focus_lens": return "Keep shotgun pellets together";
-                case "halo_fan_array": return "Cover a wider area with pellets";
-                case "halo_pulse_controller": return "Fire controlled three-round bursts";
-                default: return "Show your team where a hit landed";
-            }
-        }
-        private static string WorkshopBenefit(string code)
-        {
-            switch (code)
-            {
-                case "halo_capacitor": return "Capacity +50%";
-                case "halo_charge_bridge": return "Recovery speed +67%";
-                case "halo_mooncore_recycler": return "Energy per round reduced by one third";
-                case "halo_focus_lens": return "Pellet spread -55%";
-                case "halo_fan_array": return "Wider spread with 12 pellets; total damage unchanged";
-                case "halo_pulse_controller": return "Three rounds per trigger press";
-                default: return "Last hit position marked for 3 seconds";
-            }
-        }
-        private static string WorkshopTradeoff(string code)
-        {
-            switch (code)
-            {
-                case "halo_capacitor": return "Recovery speed -26%";
-                case "halo_charge_bridge": return "Energy per round +50%";
-                case "halo_mooncore_recycler": return "Recovery speed -17%";
-                case "halo_focus_lens": return "Energy per round +33% (rounded up)";
-                case "halo_fan_array": return "Less damage per pellet; spread +60%";
-                case "halo_pulse_controller": return "Press again for the next burst; at least 0.42s between bursts";
-                default: return "Energy per round +25%";
-            }
-        }
+        private static string WorkshopPurpose(string code) => MoonkovItemPresentation.ModulePurpose(code);
+        private static string WorkshopBenefit(string code) => MoonkovItemPresentation.ModuleBenefit(code);
+        private static string WorkshopTradeoff(string code) => MoonkovItemPresentation.ModuleTradeoff(code);
 
         private void RefreshWorkshop()
         {

@@ -1,4 +1,12 @@
 {
+  "WEAPONS": "武器",
+  "MODULES": "模块",
+  "FREE": "免费",
+  "{0} DUST": "{0} 月尘",
+  "CLAIM FREE SUPPLY": "领取免费补给",
+  "No matching supplies.": "没有匹配的商品",
+  "INSUFFICIENT MOON DUST": "月尘不足",
+  "× {0}": "× {0}",
   "Hold to transfer / RMB to guard": "按住传能 右键护卫",
   "Hold to transfer / LT to guard": "按住传能 LT 护卫",
   "{0}  {1} Switch": "{0}  {1} 切换",

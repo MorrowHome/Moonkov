@@ -18,6 +18,38 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
+  - m_Id: 1960680437654903865
+    m_Localized: "WEAPONS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3651084985842741300
+    m_Localized: "MODULES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8843005069518663594
+    m_Localized: "FREE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2697414463538498625
+    m_Localized: "{0} DUST"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6998400153559778892
+    m_Localized: "CLAIM FREE SUPPLY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3400536231777273841
+    m_Localized: "No matching supplies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8455071727572875977
+    m_Localized: "INSUFFICIENT MOON DUST"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8073912189698713078
+    m_Localized: "\u00d7 {0}"
+    m_Metadata:
+      m_Items: []
   - m_Id: 4381285036482194973
     m_Localized: "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."
     m_Metadata:
@@ -319,6 +351,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2871799857
     m_Localized: Account service timed out. Please retry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 600127641482266744
+    m_Localized: Loading your stash timed out. Please retry Login.
     m_Metadata:
       m_Items: []
   - m_Id: 2871799858

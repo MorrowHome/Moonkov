@@ -15,11 +15,11 @@ namespace Unity.MP_FPS.Client
         private readonly Button m_Retry;
         private readonly Button[] m_Tabs;
         private readonly MoonkovResearchView m_Research;
+        private readonly MoonkovShopPurchaseView m_Purchases;
         private readonly VisualElement m_InspectArt;
         private readonly Label m_InspectTitle, m_InspectDetail;
         private VisualElement m_SelectedRow;
         private string m_SelectedCode;
-        private readonly string m_InitialProduct;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private ShopOffer[] m_Offers;
         private ShopCommand m_Pending;
@@ -36,12 +36,17 @@ namespace Unity.MP_FPS.Client
                 window.style.left = Length.Percent(3); window.style.top = Length.Percent(3);
                 MoonkovLocalization.Set(window.Q<Label>("windowTitle"), "RESEARCH & FABRICATION");
             }
-            m_InitialProduct = initialProduct;
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/Research"));
+            window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/ShopPurchase"));
             var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
             m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop, openStorage);
             if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.Inventory);
             catalog.Insert(3, m_Research.Root);
+            if (!research)
+            {
+                m_Purchases = new MoonkovShopPurchaseView((offer, quantity) => Order(ShopOperation.Buy, offer.Code, null, quantity), initialProduct);
+                catalog.Insert(2, m_Purchases.Element);
+            }
             m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
             var head = catalog.Q("shopHead");
             m_Balance = MoonkovTerminal.Text(head, "MOON DUST / —", "terminal-heading");
@@ -50,12 +55,12 @@ namespace Unity.MP_FPS.Client
             var tabs = catalog.Q("shopTabs");
             string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
             for (int i = 0; i < names.Length; i++)
-            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if (tab == 3 && m_Pending == null) Status(""); Render(); }); }
+            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if ((tab == 0 || tab == 3) && m_Pending == null) Status(""); Render(); }); }
             m_List = catalog.Q<ScrollView>("shopList");
             var statusHost = catalog.Q("shopStatusHost");
             m_StatusHost = statusHost; statusHost.AddToClassList("research-transaction-status");
             m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
-            Status(research ? "" : "Contacting lunar supply…");
+            Status(research || m_Tab == 0 ? "" : "Contacting lunar supply…");
             m_Retry = MoonkovTerminal.ActionButton(statusHost, "CHECK LAST ORDER", () => Execute(m_Pending)); m_Retry.style.display = DisplayStyle.None;
             window.RegisterCallback<DetachFromPanelEvent>(Detached); PlayerProfileClient.InventoryChanged += Changed;
             Load();
@@ -66,7 +71,7 @@ namespace Unity.MP_FPS.Client
             try
             {
                 m_Offers = await PlayerProfileClient.GetShopOffersAsync(m_Stop.Token);
-                if (!m_Disposed) Status(m_Tab == 3 ? "" : "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
+                if (!m_Disposed) Status(m_Tab == 0 || m_Tab == 3 ? "" : "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
             }
             catch (OperationCanceledException) { if (!m_Disposed) Status("Supply contact timed out. Close and reopen the supplier to reconnect."); }
             catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
@@ -78,8 +83,14 @@ namespace Unity.MP_FPS.Client
         {
             m_Window.EnableInClassList("is-busy", m_Busy);
             m_Window.EnableInClassList("research-window", m_Tab == 3);
-            m_StatusHost.EnableInClassList("research-hidden", m_Tab == 3 && (string.IsNullOrEmpty(m_StatusSource) || m_Busy));
-            m_Window.Q(className: "archive-shop-body").EnableInClassList("research-hidden", m_Tab == 3);
+            m_Window.EnableInClassList("shop-buy-window", m_Tab == 0);
+            m_StatusHost.EnableInClassList("research-hidden", m_Tab == 3 && (string.IsNullOrEmpty(m_StatusSource) || m_Busy) || m_Tab == 0 && string.IsNullOrEmpty(m_StatusSource));
+            m_Window.Q(className: "archive-shop-body").EnableInClassList("research-hidden", m_Tab == 0 || m_Tab == 3);
+            if (m_Purchases != null)
+            {
+                m_Purchases.Element.style.display = m_Tab == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+                if (m_Tab != 0) m_Purchases.Suspend();
+            }
             m_Research.Root.EnableInClassList("research-hidden", m_Tab != 3);
             m_List.Clear();
             m_SelectedRow = null; m_InspectArt.Clear(); MoonkovLocalization.Set(m_InspectTitle, ""); MoonkovLocalization.Set(m_InspectDetail, "");
@@ -87,12 +98,17 @@ namespace Unity.MP_FPS.Client
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
             m_Retry.style.display = m_Pending != null && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
             if (m_Tab == 3) { Research(); return; }
+            if (m_Tab == 0 && m_Purchases != null)
+            {
+                m_Purchases.Present(m_Offers, PlayerProfileClient.Inventory, Ready, m_Busy,
+                    PlayerProfileClient.RaidActive ? "Finish or leave your active raid before trading or requesting emergency supplies." : null);
+                return;
+            }
             if (PlayerProfileClient.RaidActive)
                 MoonkovTerminal.Text(m_List, "Finish or leave your active raid before trading or requesting emergency supplies.", "terminal-copy");
             if (m_Offers == null)
             { MoonkovTerminal.Text(m_List, m_Busy ? "Connecting to supplier…" : "Sign in and reopen this supplier to load current stock.", "terminal-copy"); return; }
-            if (m_Tab == 0) foreach (var offer in m_Offers.OrderByDescending(offer => offer.Code == m_InitialProduct)) { if (offer.BuyDust >= 0) BuyRow(offer); }
-            else if (m_Tab == 1) SellRows();
+            if (m_Tab == 1) SellRows();
             else if(m_Tab==2) Recovery();
         }
         private void Research()
@@ -130,21 +146,6 @@ namespace Unity.MP_FPS.Client
             value = MoonkovTerminal.Text(picker, "× " + quantity, "terminal-copy");
             var plus = MoonkovTerminal.ActionButton(picker, "+", () => { quantity = Math.Min(maximum, quantity + 1); MoonkovLocalization.Set(value, "× " + quantity); changed(quantity); });
             minus.SetEnabled(maximum > 1 && Ready); plus.SetEnabled(maximum > 1 && Ready);
-        }
-        private void BuyRow(ShopOffer offer)
-        {
-            var definition = InventoryCatalog.Get(offer.Code);
-            var row = Product(offer.Code, offer.Name, MoonkovLocalization.Format($"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH"));
-            if (offer.FreeSupplyRestricted) MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), "EMERGENCY SUPPLY / CANNOT BE SOLD", "terminal-copy");
-            if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovLocalization.Format($"{BatteryEnergy.Capacity} ENERGY / FULL CELL"), "terminal-copy");
-            MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovItemPresentation.Details(offer.Code), "terminal-copy");
-            var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
-            int quantity = offer.Code == "cells" ? 3 : 1;
-            Button buy = null;
-            void Update(int value) { quantity = value; if (buy != null) { MoonkovLocalization.Set(buy, "BUY / {0} DUST" , quantity * offer.BuyDust); buy.SetEnabled(Ready && PlayerProfileClient.StashDust >= quantity * offer.BuyDust); } }
-            Quantity(order, definition.MaxStack, quantity, Update);
-            buy = MoonkovTerminal.ActionButton(order, "", () => Order(ShopOperation.Buy, offer.Code, null, quantity), "terminal-primary");
-            Update(quantity);
         }
         private void SellRows()
         {
@@ -214,6 +215,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return; m_Disposed = true;
             PlayerProfileClient.InventoryChanged -= Changed; m_Window.UnregisterCallback<DetachFromPanelEvent>(Detached);
+            m_Purchases?.Dispose();
             m_Stop.Cancel(); m_Stop.Dispose();
         }
     }
