@@ -24,7 +24,6 @@ namespace Unity.MP_FPS.Client
         private Label m_CarryNote;
         private string m_AccountError;
         private GlobalGameState m_LastStashGameState;
-        private LunarBackdrop m_LoginMoon;
         private Button m_ProfileModeButton;
         private HalosTerminalBackdrop m_LoginAnimation;
         private Toggle m_AccessReduceMotion;
@@ -33,8 +32,6 @@ namespace Unity.MP_FPS.Client
         private void InitializeAccountPanel()
         {
             var canvas = m_AccountCanvas = m_MainMenu.Q<VisualElement>("Canvas");
-            m_LoginMoon = new LunarBackdrop(BackdropMode.Login, canvas);
-            m_LoginMoon.AddToClassList("terminal-scene-shade"); canvas.Insert(0, m_LoginMoon);
             m_AccountStop = new CancellationTokenSource();
             m_ProfileModeButton = m_MainMenu.Q<Button>("ProfileMode");
             m_ProfileModeButton.clicked += SwitchProfileMode;
@@ -53,7 +50,7 @@ namespace Unity.MP_FPS.Client
             m_AccountPanel.Q<Button>("accountQuit").clicked += OnQuitPressed;
             m_AccountMessage = m_AccountPanel.Q<Label>("accountMessage");
             m_ConnectionPanel.parent.Insert(0, m_AccountPanel);
-            m_LoginAnimation = new HalosTerminalBackdrop(canvas, false, FocusAccountInput);
+            m_LoginAnimation = new HalosTerminalBackdrop(canvas, false, AccessIntroFinished);
             m_LoggedInLabel = new Label();
             m_Logout = new Button(Logout) { text = "LOG OUT" };
             m_ConnectionPanel.Insert(0, m_LoggedInLabel); m_ConnectionPanel.Insert(1, m_Logout);
@@ -86,7 +83,8 @@ namespace Unity.MP_FPS.Client
 
         private void UpdateAccountPanel()
         {
-            bool loggedIn = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
+            bool authenticated = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
+            bool loggedIn = authenticated && (m_AccessReduceMotion.value || !m_LoginAnimation.IntroPending);
             if (!loggedIn || PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan) m_LobbyOpen = false;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
             m_ProfileModeButton.SetEnabled(!PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
@@ -98,7 +96,9 @@ namespace Unity.MP_FPS.Client
             var canvas = m_MainMenu.Q("Canvas");
             canvas.EnableInClassList("archive-access-account", !loggedIn);
             canvas.AddToClassList("archive-login-plates");
-            m_LoginAnimation.Present(!loggedIn && GameSettings.Instance.GameState == GlobalGameState.MainMenu,
+            m_LoginAnimation.Present(!loggedIn && GameSettings.Instance.MainMenuSceneLoaded &&
+                GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
+                GameSettings.Instance.MainMenuState == MainMenuState.MainMenuScreen,
                 m_AccessReduceMotion.value);
             var modeHost = loggedIn ? (showStash ? m_MainMenu.Q("stashMenuActions") : m_ConnectionPanel) : m_AccountPanel.Q("accountSecondaryActions");
             m_ProfileModeButton.EnableInClassList("menu-entry-docked", loggedIn);
@@ -108,7 +108,6 @@ namespace Unity.MP_FPS.Client
                 modeHost.Insert(0, m_ProfileModeButton);
             }
             m_LanRoom?.SetEntryHost(loggedIn ? modeHost : null);
-            m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
@@ -205,7 +204,12 @@ namespace Unity.MP_FPS.Client
             if (gameState != GlobalGameState.MainMenu) m_LoginAnimation?.Present(false, m_AccessReduceMotion.value);
             bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
             m_LastStashGameState = gameState;
-            if (!returnedToMenu) return;
+            if (!returnedToMenu)
+            {
+                if (evt.propertyName == GameSettings.MainMenuSceneLoadedPropertyName ||
+                    evt.propertyName == GameSettings.MainMenuStylePropertyName) UpdateAccountPanel();
+                return;
+            }
             m_ShowConnectionMenu = OnlineLobbyClient.Snapshot?.Code != null;
             m_LobbyOpen = m_ShowConnectionMenu;
             if (PlayerProfileClient.IsLoggedIn) RefreshStash();
@@ -249,7 +253,6 @@ namespace Unity.MP_FPS.Client
             m_AccountPanel?.UnregisterCallback<KeyDownEvent>(AccountKeyboardSubmit);
             m_AccountCanvas?.UnregisterCallback<GeometryChangedEvent>(AccountGeometryChanged);
             m_AccessReduceMotion?.UnregisterValueChangedCallback(AccessMotionChanged);
-            m_LoginMoon?.Dispose(); m_LoginMoon?.RemoveFromHierarchy(); m_LoginMoon = null;
             m_AccountStop?.Cancel();
             if (m_ProfileModeButton != null) m_ProfileModeButton.clicked -= SwitchProfileMode;
             GameSettings.Instance.propertyChanged -= StashSettingsChanged;
@@ -276,8 +279,13 @@ namespace Unity.MP_FPS.Client
         private void AccessMotionChanged(ChangeEvent<bool> evt)
         {
             PlayerPrefs.SetInt(HalosTerminalBackdrop.ReducedMotionPreference, evt.newValue ? 1 : 0);
-            m_LoginAnimation.Present(m_AccountPanel.style.display != DisplayStyle.None &&
-                GameSettings.Instance.GameState == GlobalGameState.MainMenu, evt.newValue);
+            UpdateAccountPanel();
+        }
+
+        private void AccessIntroFinished()
+        {
+            UpdateAccountPanel();
+            FocusAccountInput();
         }
 
         private void FocusAccountInput()
