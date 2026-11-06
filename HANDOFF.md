@@ -86,9 +86,11 @@
 - 账号 HTTP 请求上限改为 30 秒，覆盖响应正文下载。仓库读取超时单独提示重新登录。主动取消仍保留取消语义；不会自动重放登录或注册请求，不重置账号和库存。
 - 用户原 Editor 在检查期间退出。没有另开 Editor。复用已有 Editor 编译参数，在忽略目录独立编译主程序集，0 错误、20 条未涉及本次文件的警告。使用 Unity 自带 Mono 调用该程序集，13 项定向传输检查通过，包含 11 秒正文延迟、两种超时提示、主动取消和不重放。结果在 `LocalData/OnlineLoginBug/`。未打包、未进入 Play，旧 Player 不会自动获得这项源码修改。
 
-## P2P 线路预检（2026-11-07）
+## P2P 线路预检与内置方案（2026-11-07）
 
-- 先用校园网 Windows 与手机热点 Mac 测跨网络直连，再决定是否适配游戏传输层。不能用同机自连或同一局域网的成功代替公网证明。用户自己的游戏客户端仍须走公网入口。
+- 用户明确要求玩家只安装游戏，不额外下载 VPN。Tailscale 仅作线路排查，不是发布依赖。Mac 暂时不可用，可继续内置方案研究；跨网络结果不能用同机自连或同一局域网的成功代替。用户自己的游戏客户端仍须走公网入口。
+- [内置网络研究](Docs/EmbeddedNetworkingResearch-20261107.md)建议优先验证 libjuice v1.7.4 与现有 UTP/DTLS 的适配，失败时保留原 VPS UDP 入口。当前 UTP 6.5.0 提供自定义 `INetworkInterface`；托管包装在 Windows 要用 struct，不能直接用 class。打洞和游戏收发必须共用 ICE agent，不能另开 socket 探测后只修改服务器地址。
+- 战局 UDP 内置打洞不会自动加速仓库 HTTPS。完整方案还需常驻的可靠账号请求通道，不能依赖按局退出的 Unity 服务器。本轮仅完成研究文档，未引入 SDK、改游戏代码、部署服务或进行联机验收。
 - 本机已安装并登录官方 Tailscale 1.104.5。现有 VPN 使用两条 `/1` 路由，Tailscale 默认绑定校园网网卡时，控制端登录连接无法建立。仅在 Tailscale 服务的 `Environment` 中增加 `TS_BIND_TO_INTERFACE_BY_ROUTE=1` 后，控制连接按系统路由经过 VPN，登录恢复。该选项已核对当前版本源码；升级后需重新确认。原服务环境备份在忽略目录 `LocalData/P2PTrial/`。
 - 测试配置关闭 `accept-dns` 和 `accept-routes`，不使用出口节点。没有更改游戏入口、数据库监听、现有 VPN 或 VPS 的主机路由。后续判断 `direct` 时仍要核对实际物理出口，不能把经其他 VPN 的直连算作校园网直连。
 - 绑定校园网地址的 `tailscale netcheck` 返回 `UDP=true`、`MappingVariesByDestIP=false`、`IPv6=false`。这只是本端 STUN 预检；尚无 Mac 对端的直连、往返延迟或丢包结论，不等于游戏联机验收。
