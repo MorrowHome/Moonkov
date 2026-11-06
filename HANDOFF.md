@@ -2,6 +2,7 @@
 
 ## Halos 登录与加载动画（2026-11-06）
 
+- 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，自动结束开场、账号输入、仓库初始化与出战准备点击均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
 - 美术源为 Halos 仓库的 `Moonkov UIs`。原 GML 和资源哈希在 `ArtSource/HalosUI`。保留原标志、十个终端窗口的位置和打字逻辑。开场缩到约 3.2 秒。`MoonkovWordmark.svg` 补游戏名称。
 - 输入框和登录、注册、单机、退出四个按钮复用原登录图的框。输入区域高 52 像素。密码使用 UXML 的 `password` 属性；旧 `is-password-field` 不生效。
 - 鼠标左键可跳过装饰动画。界面不显示跳过提示。跳过不修改真实加载状态。战局加载继续使用原 `PageArt/Base.png`，终端和蓝色噪声叠在其上。用户的概念图只作风格参考。

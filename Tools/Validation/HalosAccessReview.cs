@@ -16,6 +16,11 @@ using UnityEngine.UIElements;
 // Run through Pipeline run_script. This file stays outside Assets to avoid an Editor reload.
 public static class HalosAccessReview
 {
+    public static string CheckStartupPreferences() =>
+        Application.platform + " / " + EditorUserBuildSettings.activeBuildTarget +
+        " / system reduced motion: " + OnlineSquadStage.SystemReducedMotion +
+        " / access reduced motion: " + HalosTerminalBackdrop.PrefersReducedMotion;
+
     private static bool s_ReloadLocked;
     private static double s_UnlockAt;
 

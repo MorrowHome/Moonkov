@@ -38,7 +38,7 @@ namespace Unity.MP_FPS.Client
             get => m_ReducedMotion;
             set { if (m_ReducedMotion == value) return; m_ReducedMotion = value; m_Dirty = true; if (m_Root != null) Reconcile(); }
         }
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool SystemParametersInfo(uint action, uint parameter, out int value, uint flags);
 #endif
@@ -46,7 +46,7 @@ namespace Unity.MP_FPS.Client
         {
             get
             {
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)
                 return SystemParametersInfo(0x1042, 0, out int enabled, 0) && enabled == 0;
 #else
                 return false;
