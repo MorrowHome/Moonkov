@@ -45,8 +45,6 @@ namespace Unity.MP_FPS
             {
                 m_TutorialConfigured = TutorialRuntime.Enabled(m_World.EntityManager); m_TutorialModeKnown = true;
             }
-            // Return through the ship so the next expedition captures fresh encounter settings and kit.
-            m_Deploy.style.display = m_TutorialConfigured ? DisplayStyle.None : DisplayStyle.Flex;
             TutorialRuntime.UpdateDevice();
             var state = PlayerProfileClient.Tutorial;
             bool active = state != null && state.Status == TutorialStatus.Active;

@@ -435,7 +435,8 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
             for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Deploy.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            // Keep one owner for result actions; tutorial raids must return through the ship.
+            m_Deploy.style.display = m_ResultStep == 2 && !m_TutorialConfigured ? DisplayStyle.Flex : DisplayStyle.None;
             m_Return.style.display = DisplayStyle.Flex;
             m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
         }
