@@ -28,6 +28,8 @@ namespace Unity.MP_FPS.Client
             m_Range = m_Root.Q<Slider>("haloRange");
             m_AimRange = m_Root.Q<Slider>("haloAimRange");
             m_Idle = m_Root.Q<SliderInt>("haloIdleStrength"); m_Aim = m_Root.Q<SliderInt>("haloAimStrength");
+            m_Range.lowValue = HaloLighting.MinRange; m_Range.highValue = HaloLighting.MaxRange;
+            m_Idle.highValue = m_Aim.highValue = HaloLighting.MaxPercent;
             m_AimRangeValue = m_Root.Q<Label>("haloAimRangeValue");
             m_RangeValue = m_Root.Q<Label>("haloRangeValue"); m_IdleValue = m_Root.Q<Label>("haloIdleValue");
             m_AimValue = m_Root.Q<Label>("haloAimValue"); m_Status = m_Root.Q<Label>("haloLightStatus");
@@ -69,7 +71,12 @@ namespace Unity.MP_FPS.Client
         private void PreviewIdle() => m_Input.LightPreviewAiming = false;
         private void PreviewAim() => m_Input.LightPreviewAiming = true;
         private void Reset() => m_Input.LightingSettings = 0;
-        private void Store() => m_Input.LightingSettings = HaloLighting.Pack(m_Range.value, m_Idle.value, m_Aim.value, m_AimRange.value);
+        private void Store()
+        {
+            m_Input.LightingSettings = HaloLighting.Pack(m_Range.value, m_Idle.value, m_Aim.value, m_AimRange.value);
+            m_Idle.SetValueWithoutNotify(HaloLighting.IdlePercent(m_Input.LightingSettings));
+            m_Aim.SetValueWithoutNotify(HaloLighting.AimPercent(m_Input.LightingSettings));
+        }
         private void RangeChanged(ChangeEvent<float> evt) => Store();
         private void IdleChanged(ChangeEvent<int> evt) => Store();
         private void AimChanged(ChangeEvent<int> evt) => Store();
