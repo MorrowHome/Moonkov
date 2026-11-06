@@ -15,6 +15,7 @@ public partial class ClientInputReaderSystem
     {
         input.SetFlag(PlayerInput.InputFlag.HaloAnchor, allowed && _dollSingerInput.HaloAnchorHeld);
         input.SetFlag(PlayerInput.InputFlag.HaloMode, allowed && _dollSingerInput.HaloModeHeld);
+        input.SetFlag(PlayerInput.InputFlag.HaloScan, allowed && _dollSingerInput.HaloScanHeld);
         bool held = allowed && _dollSingerInput.TransferHeld && !input.FreeLooking && !input.FireSuppressed;
         HaloTransferCandidate = Entity.Null;
         var camera = _dollSingerPresentation.OwnedCamera;

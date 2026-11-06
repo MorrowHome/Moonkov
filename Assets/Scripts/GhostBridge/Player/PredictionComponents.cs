@@ -84,6 +84,9 @@ public struct PredictedPlayerGhost : IComponentData
     public bool HaloAnchorLatched, HaloModeLatched;
     public float HaloSentrySearchRemaining;
     public Entity HaloSentryTarget;
+    public bool HaloScanLatched;
+    public uint HaloScanSequence;
+    public float HaloScanCooldown;
     public uint HaloTransferWeapon;
     // Legacy presentation/test adapters. These are aliases, never separate resources.
     public bool ShieldEquipped { get => HaloEquipped; set => HaloEquipped = value; }

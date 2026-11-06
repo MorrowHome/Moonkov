@@ -26,7 +26,8 @@ public struct PlayerInput
         HaloTransfer = 1 << 16,
         HaloGuard = 1 << 17,
         HaloAnchor = 1 << 18,
-        HaloMode = 1 << 19
+        HaloMode = 1 << 19,
+        HaloScan = 1 << 20
     }
 
     public float2 MoveInput;
@@ -64,6 +65,7 @@ public struct PlayerInput
     public bool HaloGuard => HaloTransfer && (InputFlags & (uint)InputFlag.HaloGuard) != 0;
     public bool HaloAnchor => (InputFlags & (uint)InputFlag.HaloAnchor) != 0;
     public bool HaloMode => (InputFlags & (uint)InputFlag.HaloMode) != 0;
+    public bool HaloScan => (InputFlags & (uint)InputFlag.HaloScan) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
@@ -94,7 +96,7 @@ public struct PlayerInput
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
             InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
             InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer | InputFlag.HaloGuard |
-            InputFlag.HaloAnchor | InputFlag.HaloMode);
+            InputFlag.HaloAnchor | InputFlag.HaloMode | InputFlag.HaloScan);
         result.InputFlags &= knownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
@@ -130,7 +132,7 @@ public struct PlayerInput
     private void ApplyTransferIntent()
     {
         if (FreeLooking || FireSuppressed)
-        { SetFlag(InputFlag.HaloAnchor, false); SetFlag(InputFlag.HaloMode, false); }
+        { SetFlag(InputFlag.HaloAnchor, false); SetFlag(InputFlag.HaloMode, false); SetFlag(InputFlag.HaloScan, false); }
         if (HaloAnchor || HaloMode)
             InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload | InputFlag.HaloDefense |
                 InputFlag.HaloTransfer | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);

@@ -351,6 +351,7 @@ namespace Unity.MP_FPS
             }
 
             UpdateHaloTransfers(serverTick, deltaTime);
+            UpdateHaloScans(serverTick, deltaTime, ref ecb);
 
             foreach (var (predictedPlayer, inputLookup,
                          entity)
