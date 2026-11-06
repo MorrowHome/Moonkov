@@ -68,28 +68,48 @@ public sealed class AccessPresentationReview : EditorWindow
                 "first terminal pops in at full opacity and holds alone");
             Require(host.Q("Container").resolvedStyle.visibility == Visibility.Hidden,
                 "unrevealed login controls remain hidden from keyboard focus");
-            await Until(() => VisibleTerminals(host) == 10);
-            Require(VisibleTerminals(host) == 10, "accelerating burst completes with all ten windows layered");
+            await Until(() => VisibleTerminals(host) == 33);
+            await Wait(50);
+            Require(VisibleTerminals(host) == 33, "buildup retains all thirty-three windows at its peak");
+            bool inside = true;
+            for (int i = 1; i < 33; i++)
+            {
+                var bounds = host.Q("halosTerminal" + i).worldBound;
+                inside &= bounds.width > 0 && host.worldBound.Contains(bounds.min) && host.worldBound.Contains(bounds.max);
+            }
+            Require(inside, "stacked windows stay inside the visible canvas instead of building offscreen");
             var terminalText = host.Q("halosTerminal0").Q<Label>();
+            string retainedText = terminalText.text;
+            var newestText = host.Q("halosTerminal32").Q<Label>();
+            string liveText = newestText.text;
+            await Wait(100);
+            Require(terminalText.text == retainedText && newestText.text != liveText,
+                "covered text is retained while front windows continue scrolling");
             Require(terminalText.text.Length > 200 && !terminalText.enableRichText && terminalText.text.IndexOfAny("[]{}<>/_:=+-#$".ToCharArray()) >= 0,
                 "fast terminal stream includes literal corruption symbols without markup parsing");
             await Until(() => VisibleTerminals(host) == 0);
             Require(VisibleTerminals(host) == 0 && m_Backdrop.IntroPending && host.Q("Container").style.opacity.value == 0,
                 "windows clear before the quiet beat and login reveal");
             await Until(() => host.Q(className: "halos-shutter-top").style.translate.value.y.value < 0);
-            await Wait(250);
             Require(m_Backdrop.IntroPending && host.Q("Container").style.opacity.value == 0,
-                "shutter movement has room to finish before the login fade");
+                "quick shutter starts from black before the login reveal");
             await Until(() => host.Q("Container").style.opacity.value > 0);
-            await Wait(250);
+            Require(-host.Q(className: "halos-shutter-top").style.translate.value.y.value >= host.worldBound.height * .5f,
+                "shutter has fully cleared the center before the login appears");
+            await Wait(60);
             Require(m_Backdrop.IntroPending && host.Q("Container").style.opacity.value < 1,
-                "login fade remains visible instead of snapping to completion");
+                "exponential login reveal remains visible before the irregular flicker");
             double deadline = EditorApplication.timeSinceStartup + 15;
             while (m_Backdrop.IntroPending && EditorApplication.timeSinceStartup < deadline) await Wait(150);
             Require(!m_Backdrop.IntroPending && completed == 1, "visible intro completes exactly once");
-            Require(host.Q("Container").resolvedStyle.opacity > .99f, "the actual login form is revealed without a replacement-logo jump");
+            Require(host.Q("Container").resolvedStyle.opacity >= .6f, "the actual login form is revealed without a replacement-logo jump");
+            Require(await SignalMoves(host.Q("Container")), "login brightness continues the original irregular flicker");
             var signal = host.Q(className: "halos-signal");
-            Require(await SignalMoves(signal), "login background continues breathing after the intro");
+            Require(await SignalMoves(signal), "login background continues flickering after the intro");
+            var noise = host.Q(className: "halos-noise");
+            var echo = host.Q(className: "halos-noise-echo");
+            Require(echo.style.opacity.value > 0 && echo.style.translate.value.x.value == -2 * noise.style.translate.value.x.value,
+                "two static layers move in opposite directions");
             float opacity;
             m_Backdrop.Skip(); opacity = signal.style.opacity.value;
             Require(await SignalMoves(signal) && completed == 1 && host.Q(className: "halos-stage").style.display == DisplayStyle.None,
@@ -101,6 +121,8 @@ public sealed class AccessPresentationReview : EditorWindow
             Require(opacity == signal.style.opacity.value, "hidden background stops updating");
             m_Backdrop.Present(true, true);
             Require(host.Q(className: "halos-stage").style.display == DisplayStyle.None, "reduced motion disables decorative windows");
+            Require(host.Q("Container").style.opacity.keyword == StyleKeyword.Null && echo.style.opacity.value == 0,
+                "reduced motion restores steady login brightness and removes the extra static layer");
             m_Backdrop.Dispose();
             Require(host.Q("halosBackdrop") == null && host.Q("halosIntro") == null, "dispose removes the animation elements");
 
