@@ -129,14 +129,10 @@ def build(item):
   line('carry handle',[(-w*.25,0,h),( -w*.25,0,h+.035),(w*.25,0,h+.035),(w*.25,0,h)],.008,'dark')
   if code=='trauma_kit':box('medical cross vertical',(0,-d/2-.011,h*.49),(.012,.005,.05),'red');box('medical cross horizontal',(0,-d/2-.012,h*.49),(.045,.005,.012),'red')
  elif kind=='Rig':
-  w=.30 if code=='scout_rig' else .40;h=.27 if code!='field_rig' else .36
-  box('woven support',(0,.02,h/2),(w,.025,h),'dark',.012)
-  for x in [-w*.36,w*.36]:
-   line('shoulder harness',[(x,.02,h*.7),(x,.035,h+.16),(x,.09,h+.18),(x,.12,h*.6)],.018,'green')
-  for i in range(3):
-   x=(i-1)*w*.30;box('storage pouch',(x,-.03,h*.4),(w*.27,.09,h*.63),'green',.015);box('pouch flap',(x,-.08,h*.65),(w*.27,.012,.065),'green')
-   box('buckle',(x,-.091,h*.59),(.022,.008,.032),'steel')
-  label(code.upper(),(0,-.084,h*.27),w*.22,'ceramic')
+  import sys
+  sys.path.insert(0,str(ROOT/'Tools/Art'))
+  from chest_badges import build as build_badge
+  PARTS.append(build_badge(code))
  elif kind=='Backpack':
   count={'sling_pack':1,'small_pack':1,'backpack':2,'cargo_pack':3}[code];h=.26+count*.06
   panel('SUBSPACE / '+str(count),.19,h,.09)

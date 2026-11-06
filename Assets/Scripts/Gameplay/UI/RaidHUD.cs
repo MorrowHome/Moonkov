@@ -921,7 +921,7 @@ namespace Unity.MP_FPS
             bool oxygenSupply = definition != null && definition.Oxygen > 0;
             if (!(shieldSupply ? CanRechargeShieldCell(item) : oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
             {
-                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
+                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped badge." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
                     "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
                 MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }

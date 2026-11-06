@@ -91,7 +91,7 @@ namespace Unity.MP_FPS
                 case HaloChargeNotice.Charging: MoonkovLocalization.Set(label, "CHARGING / {0:0.0}s\nTARGET {1}/{2}", status.Remaining, status.Ammo, status.Capacity); break;
                 case HaloChargeNotice.Ready: MoonkovLocalization.Set(label, "CHARGED / {0}/{1}", status.Ammo, status.Capacity); break;
                 case HaloChargeNotice.Full: MoonkovLocalization.Set(label, "HALO FULL"); break;
-                case HaloChargeNotice.MoveCells: MoonkovLocalization.Set(label, "Move cells to pockets or your chest rig."); break;
+                case HaloChargeNotice.MoveCells: MoonkovLocalization.Set(label, "Move cells to pockets or your chest badge."); break;
                 case HaloChargeNotice.LowEnergy: MoonkovLocalization.Set(label, "CELL ENERGY TOO LOW\nREADY {0} / NEED {1}", status.Energy, status.Cost); break;
                 case HaloChargeNotice.Syncing: MoonkovLocalization.Set(label, "Syncing battery inventory..."); break;
                 default: MoonkovLocalization.Set(label, "Awaiting charge confirmation..."); break;

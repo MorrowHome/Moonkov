@@ -79,7 +79,7 @@ namespace Unity.MP_FPS.Client
             m_RefillOxygen.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_OxygenCanisters > 0 &&
                 RaidOxygenConsumables.CanConsume(m_State, ConsumableCatalog.Get(m_OxygenCode)));
             string message = m_Busy ? m_BusyMessage ?? "USING ITEM" : !string.IsNullOrEmpty(m_Feedback) ? m_Feedback :
-                !m_Ready ? "Waiting for health snapshot" : m_Medicines == 0 ? "Medical supplies must be in pockets or the chest rig." : "";
+                !m_Ready ? "Waiting for health snapshot" : m_Medicines == 0 ? "Medical supplies must be in pockets or the chest badge." : "";
             var status = m_Root.Q<Label>("healthMedicalStatus"); status.style.display = string.IsNullOrEmpty(message) ? DisplayStyle.None : DisplayStyle.Flex;
             MoonkovLocalization.Set(status, message);
         }

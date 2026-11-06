@@ -55,6 +55,7 @@ namespace Unity.MP_FPS
             m_DefenseWeapon=(Unity.MP_FPS.DollSinger.DollSingerHaloAim.HaloWeapon)(HaloAppearanceCatalog.CurrentWeapon(snapshot)-1);
             m_StandardCollar=snapshot.HeadDomeStandard;
             m_BackpackStyle=(byte)Mathf.Clamp(snapshot.SubspaceBackpack,0,4);
+            m_BadgeStyle=(byte)Mathf.Clamp(snapshot.SubspaceBadge,0,3);
             m_Charge=HaloEnergyRules.Energy(snapshot)/HaloEnergyRules.Maximum(snapshot);m_Energy=m_Charge;
             m_Regenerating=snapshot.ShieldRegenerating && snapshot.CurrentHealth>0 && (!snapshot.ClashEnabled || snapshot.ClashLife==ClashLife.Alive);
             if(!m_HasSequence)
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS
             var head=graph?.Equipped("Helmet");
             var snapshot=new PredictedPlayerGhost{CurrentHealth=1,HeadDomeEquipped=EnergyShieldEquipment.IsHeadDome(head?.Code),HeadDomeStandard=head?.Code==EnergyShieldEquipment.StandardHeadDomeCode};
             snapshot.SubspaceBackpack=EnergyShieldEquipment.BackpackStyle(graph?.Equipped("Backpack")?.Code);
+            snapshot.SubspaceBadge=EnergyShieldEquipment.BadgeStyle(graph?.Equipped("ChestRig")?.Code);
             Present(snapshot,false,false,null);
         }
         private static bool NewSequence(uint current,ref uint previous)
@@ -106,7 +108,7 @@ namespace Unity.MP_FPS
             if(!metal || !indicator){DisposePresentation();return false;}
             BuildCollar(metal,indicator);
             BuildVisor(metal,indicator);
-            FitEquipment();BuildEquipment(metal,indicator);
+            FitEquipment();BuildEquipment(metal,indicator);FitBadge(animator);
             Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Collar.gameObject);
             Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Device.gameObject);
             Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Subspace.gameObject);
@@ -138,7 +140,7 @@ namespace Unity.MP_FPS
                 m_Collar.gameObject.SetActive(m_HeadEquipped);
                 m_CollarNekoDetails.gameObject.SetActive(!m_StandardCollar);
                 m_CollarStandardDetails.gameObject.SetActive(m_StandardCollar);
-                UpdateVisor();UpdateEquipment();
+                UpdateVisor();UpdateEquipment();UpdateBadge();
             }
             var feet=m_LeftFoot&&m_RightFoot?(m_LeftFoot.position+m_RightFoot.position)*.5f:transform.position;
             float radius=Mathf.Max(.85f,Vector3.Distance(feet,m_Head.position)*.78f);
@@ -188,6 +190,7 @@ namespace Unity.MP_FPS
         {
             m_HeadEquipped=m_ShieldEquipped=m_Defending=m_Regenerating=m_HasSequence=false;
             if(m_HaloDefense)m_HaloDefense.Clear();m_BackpackStyle=0;
+            m_BadgeStyle=0;if(m_Badge)m_Badge.gameObject.SetActive(false);
             if(m_Subspace)m_Subspace.gameObject.SetActive(false);m_HitAt=m_BreakAt=m_RestoreAt=-100;
             GameManager.Instance?.SoundSystem?.Stop(m_Sound, .03f);m_Sound=null;if(m_ShellRenderer)m_ShellRenderer.enabled=false;
             if(m_VisorRenderer)m_VisorRenderer.enabled=false;
@@ -205,6 +208,7 @@ namespace Unity.MP_FPS
             m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;
             m_CollarNekoDetails=m_CollarStandardDetails=null;
             m_Subspace=null;m_ApertureRenderer=null;m_PackRings=null;m_PackLights=null;m_ChargeBars=null;
+            m_Badge=m_BadgeAnchor=null;m_BadgeModel=null;m_BadgeRenderers=null;m_BadgeBuiltStyle=0;
             if(m_GeometryRetained){EnergyShieldGeometry.Release();m_GeometryRetained=false;}m_Ready=false;ResetPresentation();
         }
         private void OnDisable()=>DisposePresentation();

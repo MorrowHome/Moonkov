@@ -341,11 +341,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ChestRig()
         {
-            Box(0x7b8987, 24, 13, 12, 26); Box(0x7b8987, 64, 13, 12, 26);
-            Shape(0x566763, new Vector2(23, 33), new Vector2(77, 33), new Vector2(82, 82), new Vector2(19, 82));
-            Box(0x87958e, 27, 37, 45, 16); Box(0x3c4c49, 24, 58, 15, 21); Box(0x3c4c49, 42, 58, 15, 21); Box(0x3c4c49, 60, 58, 16, 21);
-            Line(0xb5c0b5, 1, new Vector2(30, 44), new Vector2(69, 44));
-            Box(0xb0bbb2, 45, 49, 10, 5);
+            ChestBadge(6, 0xa89acb);
         }
         private void Backpack()
         {

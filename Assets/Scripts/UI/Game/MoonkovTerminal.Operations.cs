@@ -140,7 +140,7 @@ namespace Unity.MP_FPS.Client
             var host = m_Content.Q("operationEquipment");
             var snapshot = PlayerProfileClient.Inventory;
             string[] slots = { "Helmet", "ChestRig", "Backpack", "Primary" };
-            string[] labels = { "COLLAR", "CHEST RIG", "BACKPACK", "PRIMARY" };
+            string[] labels = { "COLLAR", "CHEST BADGE", "BACKPACK", "PRIMARY" };
             for (int i = 0; i < slots.Length; i++)
             {
                 var row = TerminalLayout.Clone("Components/OperationEquipmentRow", "equipmentRow");

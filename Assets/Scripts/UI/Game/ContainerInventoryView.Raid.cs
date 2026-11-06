@@ -138,7 +138,7 @@ namespace Unity.MP_FPS.Client
                 var art = new StashItemArt(item.Code); art.AddToClassList("field-container-art"); button.Add(art);
                 m_Tiles[item.Id] = button;
             }
-            string title = slot == "ChestRig" ? "胸挂" : slot == "Backpack" ? "背包" : "保险箱";
+            string title = slot == "ChestRig" ? "胸章" : slot == "Backpack" ? "背包" : "保险箱";
             button.tooltip = item == null ? title + "：拖入兼容装备" : MoonkovItemPresentation.Details(item.Code);
             var body = new VisualElement(); body.AddToClassList("field-container-body");
             var regions = group.Q("containerRegions"); regions.RemoveFromHierarchy();
@@ -241,7 +241,7 @@ namespace Unity.MP_FPS.Client
             foreach (string slot in new[] { "ChestRig", "Backpack" })
             {
                 var item = CorpseEquipment(tops, slot, shown); if (item != null) shown.Add(item.Id);
-                AddContainer(m_LootPane, item, slot == "ChestRig" ? "胸挂" : "背包", corpseSlot: slot);
+                AddContainer(m_LootPane, item, slot == "ChestRig" ? "胸章" : "背包", corpseSlot: slot);
             }
             AddContainer(m_LootPane, loot, "随身散装物品", shown, true);
         }

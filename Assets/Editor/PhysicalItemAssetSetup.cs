@@ -39,6 +39,7 @@ public static class PhysicalItemAssetSetup
             m.SetFloat("_Metallic",i>=2 && i<=4 ? 1:0);m.SetFloat("_Smoothness",1-Roughness[i]);m.enableInstancing=true;
             EditorUtility.SetDirty(m);materials.Add(m.name,m);
         }
+        foreach(var pair in ChestBadgeAssetSetup.EnsureMaterials())materials.Add(pair.Key,pair.Value);
         foreach(var d in definitions)
         {
             string modelPath=Root+"/Models/"+d.Code+".fbx";

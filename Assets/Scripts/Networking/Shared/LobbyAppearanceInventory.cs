@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Online
                 CharacterIndex = character >= 2 && character <= 4 ? character : 2,
                 PoseIndex = pose >= -1 && pose <= 3 ? pose : -1,
                 Headgear = Equipped(graph, "Helmet", ItemKind.Helmet),
+                ChestBadge = Equipped(graph, "ChestRig", ItemKind.Rig),
                 Backpack = Equipped(graph, "Backpack", ItemKind.Backpack),
                 Melee = Equipped(graph, "Melee", ItemKind.Melee),
                 Shield = Equipped(graph, "Shield", ItemKind.Shield) == "energy_shield_generator"
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS.Online
                 AddModule("halo_mooncore_recycler", slot);
             }
             Add(appearance.Headgear, "Helmet", ItemKind.Helmet);
+            Add(appearance.ChestBadge, "ChestRig", ItemKind.Rig);
             Add(appearance.Backpack, "Backpack", ItemKind.Backpack);
             Add(appearance.Melee, "Melee", ItemKind.Melee);
             if (appearance.Shield) Add("energy_shield_generator", "Shield", ItemKind.Shield);

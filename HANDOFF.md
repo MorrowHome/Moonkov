@@ -1,5 +1,17 @@
 # 项目交接
 
+## 胸章与可见穿戴（2026-11-07）
+
+- 原三种胸挂改为珐琅胸章。侦察款为四瓣蓝色，标准款为六瓣淡紫色，扩容款为八瓣金色。物品代码 `scout_rig`、`rig`、`field_rig`、`ChestRig` 槽和原有容量不变。库存、搜刮和教学名称统一为胸章，旧存档不迁移。
+- Blender 源文件保留在 `SourceData/Models/PhysicalItems`。`Tools/Art/chest_badges.py` 生成模型、透明图标和检查图，先输出到本地暂存目录。`ChestBadgeAssetSetup.Import()` 只更新这三项资源，保留 GUID。完整物品生成器也调用同一造型代码，不会恢复战术胸挂。
+- 穿戴复用 `EnergyShieldPresentation`。它直接使用库存和地面物品共用的正式预制体。胸前位置按身体和衣物的绑定姿势拟合，再跟随胸骨。不能把实例创建时的任意动作当作直立参考姿势，否则会贴歪。
+- `EnergyShieldEquipment.Synchronize()` 从真实装备槽写入 `SubspaceBadge`。菜单、局内快照和尸体预览共用外观路径，不修改库存或资源。新增了 Ghost 字段，客户端与服务器需同版本构建。
+- 在线和局域网小队共用 `LobbyAppearance.ChestBadge`。服务端只投影已装备的胸章代号。成员预览按 `ChestRig` 重建。换胸章会刷新外观并取消原准备状态。旧快照缺字段时按未装备处理，不传真实物品 ID 或胸章内容。
+- 每个胸章为一个闭合网格、2304 个三角面、三份共用材质，尺寸约 7–9 厘米。没有新增碰撞体或灯光。沿用背包的第一人称隐藏和远端装饰预算。
+- `Tools/Validation/ChestBadgeReview.cs` 的 `ReviewCurrentEditor()` 可在现有 Editor 的独立人物预览内验收，不切换运行模式、不启动联机、不写档案。本轮 151 项胸章检查、21 项小队公开外观检查、35 条双语和字体检查通过，64 件实体物品资源检查通过。临时人物场景全部回收。几何检查无错误或警告。实际人物、动作与绑定姿势对照图在 `LocalData/ChestBadgeReview`。未重建 Player。
+- 同一帧切换姿势并多次截图时，验收脚本需为临时人物开启 `forceMatrixRecalculationPerRender`，否则身体蒙皮可能沿用旧姿势。不要把旧蒙皮与新骨骼的位置差误判为装备穿模。此开关仅用于本轮私有验收对象。
+- 旧 `CharacterEquipmentPreviewChecks` 仍断言独立护盾发生器处于装备状态。当前防御已改用光环，该旧断言会失败。本轮没有修改这项旧检查，也不据此宣称全装备回归通过。
+
 ## Windows 启动与跨平台资源（2026-11-07）
 
 - 本地化不能在首场景前同步等待。原设置启用了同步初始化，界面还通过 `GetTable` 和 `SelectedLocale` 隐式等待。现改为异步表加载。未完成或失败时显示原文，表就绪后刷新已有文字和格式参数。读取语言不再阻塞，切换语言先异步等待初始化。

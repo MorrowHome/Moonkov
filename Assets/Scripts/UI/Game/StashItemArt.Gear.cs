@@ -4,6 +4,22 @@ namespace Unity.MP_FPS.Client
 {
     public sealed partial class StashItemArt
     {
+        private void ChestBadge(int lobes, uint accent)
+        {
+            var outline=new Vector2[64];
+            for(int i=0;i<outline.Length;i++)
+            {
+                float angle=i*Mathf.PI*2/outline.Length;
+                float radius=39*(.88f+.12f*Mathf.Cos(lobes*angle));
+                outline[i]=new Vector2(50+Mathf.Sin(angle)*radius,50+Mathf.Cos(angle)*radius);
+            }
+            Shape(0xc0c7cc,outline);
+            for(int i=0;i<outline.Length;i++)outline[i]=new Vector2(50,50)+(outline[i]-new Vector2(50,50))*.84f;
+            Shape(0xe8e5db,outline);
+            Shape(accent,new Vector2(50,31),new Vector2(55,45),new Vector2(69,50),new Vector2(55,55),
+                new Vector2(50,69),new Vector2(45,55),new Vector2(31,50),new Vector2(45,45));
+        }
+
         private void Disc(uint color,float x,float y,float radius)
         {
             m_Painter.fillColor=C(color);m_Painter.BeginPath();

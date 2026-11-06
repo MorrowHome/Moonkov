@@ -80,7 +80,7 @@ namespace Unity.MP_FPS.Client
             // current authoritative item by ID, rather than requiring object identity.
             var current = graph?.Find(item?.Id);
             if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || current == null || current.Code != item.Code || !CanBind(graph, current))
-            { Reason = "Equip weapons first. Keep usable supplies in your pockets or rig."; return false; }
+            { Reason = "Equip weapons first. Keep usable supplies in your pockets or badge."; return false; }
             item = current;
             for (int i = EquipmentSlots; i < Count; i++) if (m_Saved.Items[i] == item.Id) ClearEntry(i);
             ClearEntry(slot);

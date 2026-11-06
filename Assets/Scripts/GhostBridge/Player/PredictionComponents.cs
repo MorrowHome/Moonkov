@@ -95,6 +95,7 @@ public struct PredictedPlayerGhost : IComponentData
     public float ShieldEnergy { get => HaloEnergy; set => HaloEnergy = value; }
     public float ShieldRecoveryDelay { get => HaloRecoveryDelay; set => HaloRecoveryDelay = value; }
     [GhostField] public byte SubspaceBackpack; // Equipped inventory: 0 none, 1 light, 2 expedition, 3 cargo, 4 scout.
+    [GhostField] public byte SubspaceBadge; // Equipped ChestRig: 0 none, 1 scout, 2 standard, 3 field.
     [GhostField] public bool HeadDomeStandard;
     [GhostField] public uint ShieldHitSequence, ShieldBreakSequence, ShieldRestoreSequence;
     [GhostField] public float3 ShieldHitPoint;
