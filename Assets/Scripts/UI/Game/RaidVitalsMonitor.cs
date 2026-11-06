@@ -23,16 +23,18 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_HaloRow;
         private readonly Label m_HaloLabel;
         private bool m_HaloVisible;
+        private uint m_HaloWeapon = uint.MaxValue;
         private Color m_HaloLabelColor;
         private string m_LastWarning;
         private readonly Label m_OxygenLabel;
         private int m_LastOxygen = -1;
+        private int m_LastHaloEnergy = -1;
         private int m_LastGrace = -1;
         private int m_LastOxygenSeconds = -1;
 
         public RaidVitalsMonitor(Action<BodyPart> select = null)
         {
-            name = "vitals-monitor"; AddToClassList("vitals-monitor");
+            name = "vitals-monitor"; AddToClassList("vitals-monitor"); AddToClassList("moonkov-style-font");
             styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/RaidVitalsStyles"));
             pickingMode = select == null ? PickingMode.Ignore : PickingMode.Position;
             var upper = new VisualElement { pickingMode = PickingMode.Ignore }; upper.AddToClassList("vitals-upper"); Add(upper);
@@ -50,14 +52,14 @@ namespace Unity.MP_FPS.Client
                 var row = new VisualElement { name = "vitals-reserve-" + i, pickingMode = PickingMode.Ignore }; row.AddToClassList("vitals-reserve"); signals.Add(row);
                 // Keep existing resource IDs stable; put short-term stamina directly below oxygen.
                 if (i == StaminaReserve) signals.Insert(2, row);
-                if (i == 4) { m_HaloRow = row; row.style.display = DisplayStyle.None; }
+                if (i == 4) { m_HaloRow = row; row.AddToClassList("vitals-reserve-halo"); row.style.display = DisplayStyle.None; }
                 var label = new Label(captions[i]) { pickingMode = PickingMode.Ignore }; label.AddToClassList("vitals-reserve-label"); row.Add(label);
                 if (i == 0) m_OxygenLabel = label;
                 if (i == 4) m_HaloLabel = label;
                 var cells = new VisualElement { pickingMode = PickingMode.Ignore }; cells.AddToClassList("vitals-cells"); row.Add(cells);
-                m_Reserves[i] = new VisualElement[12];
-                for (int c = 0; c < 12; c++)
-                { var tile = new VisualElement { pickingMode = PickingMode.Ignore }; tile.AddToClassList("vitals-cell"); cells.Add(tile); m_Reserves[i][c] = tile; }
+                m_Reserves[i] = new VisualElement[i == 4 ? 1 : 10];
+                for (int c = 0; c < m_Reserves[i].Length; c++)
+                { var icon = new RaidReserveIcon(i); cells.Add(icon); m_Reserves[i][c] = icon; }
             }
             RegisterCallback<AttachToPanelEvent>(_ => MoonkovLocalization.Bind(this));
         }
@@ -82,13 +84,28 @@ namespace Unity.MP_FPS.Client
             if (m_HaloVisible != haloVisible)
             {
                 m_HaloVisible = haloVisible;
+                m_Counts[4] = -1;
                 m_HaloRow.style.display = haloVisible ? DisplayStyle.Flex : DisplayStyle.None;
             }
             float haloPercent = HaloEnergyRules.Energy(state) / HaloEnergyRules.Maximum(state) * 100;
+            int haloDisplay = haloVisible ? Mathf.FloorToInt(Mathf.Clamp(haloPercent, 0, 100)) : -1;
+            if (m_LastHaloEnergy != haloDisplay)
+            {
+                m_LastHaloEnergy = haloDisplay;
+                if (panel != null && haloDisplay >= 0) MoonkovLocalization.Set(m_HaloLabel, "{0} {1}%", "HALO", haloDisplay);
+                else m_HaloLabel.text = haloDisplay < 0 ? "HALO" : $"HALO {haloDisplay}%";
+            }
             Color labelColor = haloVisible && haloPercent <= 0 ? DangerColor : haloVisible && haloPercent <= 25 ? WarningColor : SignalColor;
             if (m_HaloLabelColor != labelColor) { m_HaloLabelColor = labelColor; m_HaloLabel.style.color = labelColor; }
             var appearance = HaloAppearanceCatalog.Current;
-            Color haloColor = appearance ? appearance.ForWeapon(HaloAppearanceCatalog.CurrentWeapon(state)).Color : SignalColor;
+            uint haloWeapon = HaloAppearanceCatalog.CurrentWeapon(state);
+            if (haloWeapon != m_HaloWeapon)
+            {
+                m_HaloWeapon = haloWeapon;
+                var artwork = RaidReserveIcon.HaloArtwork(haloWeapon);
+                foreach (RaidReserveIcon icon in m_Reserves[4]) icon.SetArtwork(artwork);
+            }
+            Color haloColor = appearance ? appearance.ForWeapon(haloWeapon).Color : SignalColor;
             Reserve(4, haloPercent, haloVisible, haloColor);
             string warning = signal.Warning;
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity && state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
@@ -123,28 +140,28 @@ namespace Unity.MP_FPS.Client
             else if (panel != null) MoonkovLocalization.Set(m_Warning, warning); else m_Warning.text = warning;
         }
 
-        private static Color ReserveColor(float value)
+        private static Color ReserveColor(float value, int index)
         {
             // Whole-percent steps preserve the style cache while the server drains fractional reserves.
             int percent = Mathf.RoundToInt(Mathf.Clamp(float.IsFinite(value) ? value : 0, 0, 100));
+            Color full = index == 2 ? (Color)new Color32(0, 162, 199, 255) :
+                index == 1 || index == 3 ? (Color)new Color32(255, 197, 61, 255) :
+                index == 5 ? (Color)new Color32(134, 234, 212, 255) : SignalColor;
             return percent <= 50 ? Color.Lerp(ReserveDangerColor, ReserveWarningColor, percent / 50f) :
-                Color.Lerp(ReserveWarningColor, SignalColor, (percent - 50) / 50f);
+                Color.Lerp(ReserveWarningColor, full, (percent - 50) / 50f);
         }
 
-        private void Reserve(int index, float value, bool ready) => Reserve(index, value, ready, ready ? ReserveColor(value) : SignalColor);
+        private void Reserve(int index, float value, bool ready) => Reserve(index, value, ready, ready ? ReserveColor(value, index) : SignalColor);
 
         private void Reserve(int index, float value, bool ready, Color color)
         {
-            int filled = ready ? RaidVitalSignal.ReserveCells(value, 12) : 0;
+            int filled = !ready ? 0 : index == 4 ? (value > 0 ? 1 : 0) : RaidVitalSignal.ReserveCells(value, m_Reserves[index].Length);
             if (m_Counts[index] == filled && m_Colors[index] == color) return;
             m_Counts[index] = filled; m_Colors[index] = color;
             for (int i = 0; i < m_Reserves[index].Length; i++)
             {
-                var tile = m_Reserves[index][i]; bool live = i < filled;
-                tile.style.backgroundColor = live ? color : Color.clear;
-                var line = live ? color : new Color(color.r, color.g, color.b, index == 4 ? .28f : .5f);
-                if (!ready && index != 4) line = new Color(.48f, .55f, .44f, .55f);
-                tile.style.borderLeftColor = tile.style.borderRightColor = tile.style.borderTopColor = tile.style.borderBottomColor = line;
+                var icon = (RaidReserveIcon)m_Reserves[index][i];
+                icon.Present(i < filled, color, ready);
             }
         }
 

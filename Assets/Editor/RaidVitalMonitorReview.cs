@@ -103,18 +103,18 @@ public sealed class RaidVitalMonitorReview : EditorWindow
         var w = Resources.FindObjectsOfTypeAll<RaidVitalMonitorReview>().First();
         int checks = 0;
         void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
-        int Filled(VisualElement monitor, int row) => monitor.Q("vitals-reserve-" + row).Query<VisualElement>(className: "vitals-cell")
-            .ToList().Count(cell => cell.style.backgroundColor.value.a > 0);
+        int Filled(VisualElement monitor, int row) => monitor.Q("vitals-reserve-" + row).Query<RaidReserveIcon>(className: "vitals-cell")
+            .ToList().Count(cell => cell.Filled);
         foreach (int scenario in new[] { 0, 4, 5, 6 })
         {
             w.Scenario(scenario);
             var tab = w.m_Host.Q("vitals-monitor");
             bool equipped = scenario != 6;
-            int expected = scenario == 0 ? 7 : scenario == 5 ? 12 : 0;
+            int expected = scenario == 0 || scenario == 5 ? 1 : 0;
             Check(Filled(w.m_Combat, 4) == expected && Filled(tab, 4) == expected, "HUD and health page must show the same normalized halo energy");
             Check((w.m_Combat.Q("vitals-reserve-4").style.display.value != DisplayStyle.None) == equipped,
                 "Unequipped halo row must disappear");
-            Check(Filled(w.m_Combat, 1) == 6 && Filled(tab, 1) == 6, "Halo changes must not change body nutrition");
+            Check(Filled(w.m_Combat, 1) == 5 && Filled(tab, 1) == 5, "Halo changes must not change body nutrition");
         }
         w.Scenario(0); w.m_State.Oxygen = 0;
         w.m_Combat.Present(w.m_State, haloNotice: HaloChargeNotice.LowEnergy);
@@ -131,7 +131,7 @@ public sealed class RaidVitalMonitorReview : EditorWindow
         int checks = 0;
         void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
         w.Scenario(0);
-        var bodyColor = w.m_Combat.Q("vitals-reserve-1").Q(className: "vitals-cell").style.backgroundColor.value;
+        var bodyColor = w.m_Combat.Q("vitals-reserve-1").Q<RaidReserveIcon>(className: "vitals-cell").Tint;
         foreach (var entry in catalog.Entries)
         {
             // Keep energy and cell count identical: color must still refresh when switching weapons.
@@ -139,21 +139,20 @@ public sealed class RaidVitalMonitorReview : EditorWindow
             w.m_Combat.Present(w.m_State); w.m_View.Present(w.m_State, 4, false, 2, 2, 1);
             foreach (var monitor in new VisualElement[] { w.m_Combat, w.m_Host.Q("vitals-monitor") })
             {
-                var cells = monitor.Q("vitals-reserve-4").Query<VisualElement>(className: "vitals-cell").ToList();
-                Check(cells.Take(7).All(cell => cell.style.backgroundColor.value == entry.Color), "Halo cells must match held weapon: " + entry.Weapon);
-                Check(cells.Skip(7).All(cell => cell.style.backgroundColor.value.a == 0 &&
-                    cell.style.borderTopColor.value == new Color(entry.Color.r, entry.Color.g, entry.Color.b, .28f)), "Empty halo cells lost weapon identity");
-                Check(monitor.Q("vitals-reserve-1").Q(className: "vitals-cell").style.backgroundColor.value == bodyColor,
+                var cells = monitor.Q("vitals-reserve-4").Query<RaidReserveIcon>(className: "vitals-cell").ToList();
+                Check(cells.Count == 1 && cells[0].Filled && cells[0].Tint == entry.Color && cells[0].Artwork == RaidReserveIcon.HaloArtwork(entry.Weapon), "Single halo image must match held weapon: " + entry.Weapon);
+                Check(monitor.Q("vitals-reserve-4").Q<Label>().text.Contains("62%"), "Halo percentage must show exact energy");
+                Check(monitor.Q("vitals-reserve-1").Q<RaidReserveIcon>(className: "vitals-cell").Tint == bodyColor,
                     "Weapon color leaked into body nutrition");
             }
         }
         w.Scenario(10);
         var low = w.m_Combat.Q("vitals-reserve-4");
-        Check(low.Q(className: "vitals-cell").style.backgroundColor.value == catalog.ForWeapon(DollSingerWeapons.Shotgun).Color,
+        Check(low.Q<RaidReserveIcon>(className: "vitals-cell").Tint == catalog.ForWeapon(DollSingerWeapons.Shotgun).Color,
             "Low energy must preserve the equipped halo color");
         Check(low.Q<Label>().style.color.value != RaidVitalsMonitor.SignalColor, "Low energy label lost its warning");
         w.m_State.HaloEnergy = 0; w.m_Combat.Present(w.m_State);
-        Check(low.Query<VisualElement>(className: "vitals-cell").ToList().All(cell => cell.style.backgroundColor.value.a == 0), "Empty halo has filled cells");
+        Check(low.Query<RaidReserveIcon>(className: "vitals-cell").ToList().All(cell => !cell.Filled), "Empty halo has filled cells");
         w.Scenario(0); w.SourceFont();
         return $"PASS: {checks} HUD/Tab weapon color, same-energy switching, empty-cell and low-energy warning checks.";
     }

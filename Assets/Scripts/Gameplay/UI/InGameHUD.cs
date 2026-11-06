@@ -109,9 +109,13 @@ namespace Unity.MP_FPS
             float panelWidth = m_RootElement.contentRect.width;
             float viewportWidth = Mathf.Min(Screen.width, panelWidth);
             bool compact = viewportWidth > 0 && viewportWidth < 1100;
-            m_VitalsPanel.style.width = compact ? 200 : 224;
-            // The quickbar keeps native pixel sizing even when PanelSettings scales the HUD down.
-            m_VitalsPanel.style.bottom = compact ? 112 * panelWidth / viewportWidth : 28;
+            float scale = viewportWidth > 0 ? Mathf.Max(1, panelWidth / viewportWidth) : 1;
+            m_VitalsPanel.style.width = compact ? 280 : 300;
+            // This absolute HUD has its own footprint; keep icons and text at readable screen sizes.
+            m_VitalsPanel.style.transformOrigin = new TransformOrigin(0, Length.Percent(100));
+            m_VitalsPanel.style.scale = new Scale(new Vector3(scale, scale, 1));
+            m_VitalsPanel.style.left = 24 * scale;
+            m_VitalsPanel.style.bottom = (compact ? 112 : 28) * scale;
         }
 
         private void DrawRifleHit(MeshGenerationContext context)
