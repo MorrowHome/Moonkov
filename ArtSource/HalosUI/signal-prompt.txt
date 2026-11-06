@@ -1,0 +1,4 @@
+工具：内置 image_gen。
+输入：Halos 原 staticBG 噪声的黑底预览。未使用用户的概念参考图作为生成输入。
+
+Use case: lighting-weather. Asset type: one background interference texture for an existing game analog terminal loading animation, wide 16:9, intended for subtle compositing behind the ORIGINAL unchanged gray command windows and original white emblem. Preserve the provided dense irregular monochrome phosphor grain, rough scanline character, nearly black foundation and abstract structure. Change only spectral coloration and light. Restrained deep ultramarine/cobalt blue, around #164bff, blooms unevenly through the existing grain in a few asymmetrical regions. Keep cold silver/white grain. Keep 70 percent near black, especially the middle third. No blue window borders, interface elements, panels, buttons, words, logos, repeating moons, circles, architecture, city, glossy gradient or decorative grid.

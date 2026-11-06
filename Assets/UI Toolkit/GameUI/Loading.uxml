@@ -1,17 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="GameUIStyleSheet.uss" />
-    <ui:Style src="MoonkovTerminal.uss" />
-    <ui:Style src="../../Resources/Moonkov/UI/AccessTheme.uss" />
-    <ui:VisualElement name="Canvas" class="canvas moonkov-login archive-ui archive-light archive-loading" picking-mode="Ignore">
-        <ui:VisualElement class="archive-loading-photo" picking-mode="Ignore" />
-        <ui:VisualElement name="Container" class="container container-in-game" picking-mode="Ignore">
-            <ui:Label text="LUNAR EXPEDITION" class="login-caption" />
-            <ui:Label text="PREPARING DESCENT" class="login-title" />
-            <ui:VisualElement name="ProgressBarLayout" picking-mode="Ignore">
-                <ui:Label name="LoadingStatus" text="Establishing the expedition..." />
-                <ui:ProgressBar high-value="1" value="0" picking-mode="Ignore" />
-            </ui:VisualElement>
-            <ui:Label text="The expedition continues while your pack is open. Stay aware of your surroundings." class="login-caption" />
+    <ui:Style src="../../Resources/Moonkov/UI/HalosAccessStyles.uss" />
+    <ui:VisualElement name="Canvas" class="canvas halos-ui halos-loading">
+        <ui:VisualElement class="halos-loading-brand" picking-mode="Ignore">
+            <ui:VisualElement class="halos-emblem" picking-mode="Ignore" />
+            <ui:VisualElement class="halos-wordmark" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ProgressBarLayout" class="halos-loading-progress" picking-mode="Ignore">
+            <ui:Label name="LoadingStatus" />
+            <ui:ProgressBar high-value="1" value="0" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

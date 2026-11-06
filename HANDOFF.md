@@ -1,5 +1,13 @@
 # 项目交接
 
+## Halos 登录与加载动画（2026-11-06）
+
+- 美术源为 Halos 仓库的 `Moonkov UIs`。原 GML 和资源哈希在 `ArtSource/HalosUI`。保留原标志、十个终端窗口的位置和打字逻辑。开场缩到约 3.2 秒。`MoonkovWordmark.svg` 补游戏名称。
+- 输入框和登录、注册、单机、退出四个按钮复用原登录图的框。输入区域高 52 像素。密码使用 UXML 的 `password` 属性；旧 `is-password-field` 不生效。
+- 鼠标左键可跳过装饰动画。界面不显示跳过提示。跳过不修改真实加载状态。战局加载继续使用原 `PageArt/Base.png`，终端和蓝色噪声叠在其上。用户的概念图只作风格参考。
+- 蓝色干扰纹理由内置 Image 工具在原噪声上生成。源图、提示和运行素材均已保留。不要把窗口顶边直接改成蓝色，也不要另加月牙装饰。减少动画会停止装饰调度。界面隐藏或销毁时暂停并解绑。
+- 单 Editor 编译通过。43 项原生 UI、原框复用、点击跳过、真实进度绑定和清理检查通过，覆盖实际 1280×691 与 800×600 面板。检查脚本为 `Tools/Validation/HalosAccessReview.cs`，通过 Pipeline `run_script` 调用。没有进入 Play、登录真实账号、联机或重建 Player。
+
 ## Tripo 3D 接入（2026-11-06）
 
 - 本机已安装官方 `tripo-cli` 0.11.2。使用国际站 `ov`，账号配置名为 `moonkov-ov`。CLI 命令显式传 `--profile moonkov-ov`，并设置 `TRIPO_CLIENT_APP=codex`。随包调用说明用 `tripo docs --llm` 读取。

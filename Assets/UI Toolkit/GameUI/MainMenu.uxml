@@ -4,8 +4,8 @@
     <ui:Style src="StashScreen.uss" />
     <ui:Style src="MoonkovTerminal.uss" />
     <ui:Style src="../../Resources/Moonkov/UI/AccessTheme.uss" />
-    <ui:Style src="../../Resources/Moonkov/UI/AccountProposal.uss" />
-    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background moonkov-login archive-ui archive-light archive-access">
+    <ui:Style src="../../Resources/Moonkov/UI/HalosAccessStyles.uss" />
+    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background moonkov-login archive-ui archive-light archive-access halos-ui halos-access">
         <ui:VisualElement name="HidingBackground" picking-mode="Ignore" class="background" />
         <ui:VisualElement class="archive-access-exhibit" picking-mode="Ignore"><ui:Label text="MOONKOV" class="archive-access-brand" /><ui:Label text="LUNAR EXPEDITION" class="archive-access-note" /></ui:VisualElement>
         <ui:VisualElement name="Container" picking-mode="Ignore" class="container">

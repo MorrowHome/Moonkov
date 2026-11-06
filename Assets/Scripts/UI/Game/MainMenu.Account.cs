@@ -26,10 +26,13 @@ namespace Unity.MP_FPS.Client
         private GlobalGameState m_LastStashGameState;
         private LunarBackdrop m_LoginMoon;
         private Button m_ProfileModeButton;
+        private HalosTerminalBackdrop m_LoginAnimation;
+        private Toggle m_AccessReduceMotion;
+        private VisualElement m_AccountCanvas;
 
         private void InitializeAccountPanel()
         {
-            var canvas = m_MainMenu.Q<VisualElement>("Canvas");
+            var canvas = m_AccountCanvas = m_MainMenu.Q<VisualElement>("Canvas");
             m_LoginMoon = new LunarBackdrop(BackdropMode.Login, canvas);
             m_LoginMoon.AddToClassList("terminal-scene-shade"); canvas.Insert(0, m_LoginMoon);
             m_AccountStop = new CancellationTokenSource();
@@ -37,6 +40,11 @@ namespace Unity.MP_FPS.Client
             m_ProfileModeButton.clicked += SwitchProfileMode;
             m_ConnectionPanel = m_MainMenu.Q<VisualElement>("ConnectionPanel");
             m_AccountPanel = TerminalLayout.Clone("AccountAccess", "AccountPanel");
+            m_AccountPanel.RegisterCallback<KeyDownEvent>(AccountKeyboardSubmit);
+            canvas.RegisterCallback<GeometryChangedEvent>(AccountGeometryChanged);
+            m_AccessReduceMotion = m_AccountPanel.Q<Toggle>("accessReduceMotion");
+            m_AccessReduceMotion.SetValueWithoutNotify(HalosTerminalBackdrop.PrefersReducedMotion);
+            m_AccessReduceMotion.RegisterValueChangedCallback(AccessMotionChanged);
             m_Username = m_AccountPanel.Q<TextField>("accountUsername");
             m_Username.SetValueWithoutNotify(AccountClient.DisplayName ?? "");
             m_Password = m_AccountPanel.Q<TextField>("accountPassword");
@@ -45,6 +53,7 @@ namespace Unity.MP_FPS.Client
             m_AccountPanel.Q<Button>("accountQuit").clicked += OnQuitPressed;
             m_AccountMessage = m_AccountPanel.Q<Label>("accountMessage");
             m_ConnectionPanel.parent.Insert(0, m_AccountPanel);
+            m_LoginAnimation = new HalosTerminalBackdrop(canvas, false, FocusAccountInput);
             m_LoggedInLabel = new Label();
             m_Logout = new Button(Logout) { text = "LOG OUT" };
             m_ConnectionPanel.Insert(0, m_LoggedInLabel); m_ConnectionPanel.Insert(1, m_Logout);
@@ -89,6 +98,8 @@ namespace Unity.MP_FPS.Client
             var canvas = m_MainMenu.Q("Canvas");
             canvas.EnableInClassList("archive-access-account", !loggedIn);
             canvas.AddToClassList("archive-login-plates");
+            m_LoginAnimation.Present(!loggedIn && GameSettings.Instance.GameState == GlobalGameState.MainMenu,
+                m_AccessReduceMotion.value);
             var modeHost = loggedIn ? canvas : m_AccountPanel.Q("accountSecondaryActions");
             if (m_ProfileModeButton.parent != modeHost)
             {
@@ -130,6 +141,7 @@ namespace Unity.MP_FPS.Client
         {
             await AccountAction(async ct =>
             {
+                MoonkovLocalization.Set(m_AccountMessage, register ? "Creating account..." : "Signing in...");
                 await PlayerProfileClient.AuthenticateAsync(m_AccountServiceUrl, m_Username.value, m_Password.value, register, ct);
                 m_Password.value = "";
                 m_AccountVerified = true;
@@ -188,6 +200,7 @@ namespace Unity.MP_FPS.Client
         private void StashSettingsChanged(object sender, BindablePropertyChangedEventArgs evt)
         {
             var gameState = GameSettings.Instance.GameState;
+            if (gameState != GlobalGameState.MainMenu) m_LoginAnimation?.Present(false, m_AccessReduceMotion.value);
             bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
             m_LastStashGameState = gameState;
             if (!returnedToMenu) return;
@@ -230,6 +243,10 @@ namespace Unity.MP_FPS.Client
 
         private void DisposeAccountPanel()
         {
+            m_LoginAnimation?.Dispose(); m_LoginAnimation = null;
+            m_AccountPanel?.UnregisterCallback<KeyDownEvent>(AccountKeyboardSubmit);
+            m_AccountCanvas?.UnregisterCallback<GeometryChangedEvent>(AccountGeometryChanged);
+            m_AccessReduceMotion?.UnregisterValueChangedCallback(AccessMotionChanged);
             m_LoginMoon?.Dispose(); m_LoginMoon?.RemoveFromHierarchy(); m_LoginMoon = null;
             m_AccountStop?.Cancel();
             if (m_ProfileModeButton != null) m_ProfileModeButton.clicked -= SwitchProfileMode;
@@ -239,7 +256,32 @@ namespace Unity.MP_FPS.Client
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             m_CarryCells?.RemoveFromHierarchy(); m_CarryNote?.RemoveFromHierarchy();
             m_AccountPanel?.RemoveFromHierarchy(); m_LoggedInLabel?.RemoveFromHierarchy(); m_Logout?.RemoveFromHierarchy();
-            m_AccountBusy = m_AccountVerified = false;
+            m_AccountBusy = m_AccountVerified = false; m_AccountCanvas = null;
+        }
+
+        private void AccountKeyboardSubmit(KeyDownEvent evt)
+        {
+            if (evt.keyCode != KeyCode.Return && evt.keyCode != KeyCode.KeypadEnter) return;
+            var target = evt.target as VisualElement;
+            if (target == null || (!m_Username.Contains(target) && !m_Password.Contains(target) && target != m_Username && target != m_Password)) return;
+            if (m_Login.enabledInHierarchy) RunAccountAction(false);
+            evt.StopPropagation();
+        }
+
+        private void AccountGeometryChanged(GeometryChangedEvent evt) =>
+            m_AccountCanvas?.EnableInClassList("halos-compact", evt.newRect.height < 800);
+
+        private void AccessMotionChanged(ChangeEvent<bool> evt)
+        {
+            PlayerPrefs.SetInt(HalosTerminalBackdrop.ReducedMotionPreference, evt.newValue ? 1 : 0);
+            m_LoginAnimation.Present(m_AccountPanel.style.display != DisplayStyle.None &&
+                GameSettings.Instance.GameState == GlobalGameState.MainMenu, evt.newValue);
+        }
+
+        private void FocusAccountInput()
+        {
+            if (m_AccountBusy || m_AccountPanel.style.display == DisplayStyle.None) return;
+            if (string.IsNullOrEmpty(m_Username.value)) m_Username.Focus(); else m_Password.Focus();
         }
     }
 }

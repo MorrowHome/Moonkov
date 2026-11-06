@@ -6307,6 +6307,18 @@ MonoBehaviour:
     m_Localized: Halo sentry
     m_Metadata:
       m_Items: []
+  - m_Id: 10874609237745664
+    m_Localized: Reduce motion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10874609237745665
+    m_Localized: Signing in...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10874609237745666
+    m_Localized: Creating account...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

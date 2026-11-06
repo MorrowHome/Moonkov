@@ -6280,6 +6280,18 @@ MonoBehaviour:
     m_Key: Halo sentry
     m_Metadata:
       m_Items: []
+  - m_Id: 10874609237745664
+    m_Key: Reduce motion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10874609237745665
+    m_Key: Signing in...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10874609237745666
+    m_Key: Creating account...
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
