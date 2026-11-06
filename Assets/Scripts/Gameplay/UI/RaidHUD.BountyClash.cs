@@ -63,7 +63,8 @@ namespace Unity.MP_FPS
         private Entity m_ClashCameraOwner;
         private Camera m_ClashCamera;
         private VisualElement m_ClashCargoParent;
-        public static bool GameplayActionsBlocked => PointerRequested || s_Active != null && s_Active.m_ClashActionsBlocked;
+        public static bool GameplayActionsBlocked => PointerRequested || s_Active != null &&
+            (s_Active.m_ClashActionsBlocked || Time.frameCount <= s_Active.m_MenuEscapeFrame);
         public static bool DarkSightRequested => s_Active != null && s_Active.CanReadClashInput && Keyboard.current != null && Keyboard.current.vKey.isPressed;
         private bool CanReadClashInput => m_ClashMode && m_Clash is { Approved: true, HasSnapshot: true } &&
             m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive && m_Clash.Snapshot.Connected &&

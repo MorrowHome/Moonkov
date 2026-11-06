@@ -10,6 +10,10 @@
 
 - 主菜单与仓库的账号模式、局域网和退出入口共用布局行。按钮保留至少 12 像素文字和 36 像素高度，窄屏按实际布局换行。仓库页头自动高度需要带 `#stashScreen` 的选择器，才能覆盖旧页面的固定高度。局域网入口移出原根节点后，事件与焦点使用缓存按钮；归位时插到遮罩之前，避免入口盖住弹窗。
 
+- Esc 先关闭最上层弹窗，再退出背包或当前页面。`TerminalWindows` 用冒泡顺序让子窗口先处理；局内记录已消费的帧，防止同一次 Esc 又打开暂停或触发战斗输入。暂停菜单不再依赖旧 EventSystem。开服与直连弹窗的 Esc 走原取消回调。
+
+- 本轮单 Editor 编译、250 项快捷栏规则、23 项局内输入与计数、45 项主菜单／仓库布局与层级、4 项连接弹窗 Esc 检查通过。覆盖 1280×720 与 800×600。RTT 使用注入的连接状态检查，未启动 Transport 或联机。预览已退出，MainMenu 场景未修改。记录在 `LocalData/HudInputReview`。未重新打包。
+
 ## Halos 登录与加载动画（2026-11-06）
 
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。

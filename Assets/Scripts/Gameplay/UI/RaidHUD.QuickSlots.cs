@@ -34,6 +34,12 @@ namespace Unity.MP_FPS
             if (s_Input == input) { s_Input = null; s_View = null; }
         }
         private static int SelectScrolledWeapon(int direction) => s_View && s_View.IsFirstPerson ? RaidHUD.RouteQuickSlotScroll(direction) : 0;
+        internal static bool CloseAdjustmentMenu()
+        {
+            if (!s_Input || !s_Input.LightAdjusting) return false;
+            s_Input.CancelLightAdjustment();
+            return true;
+        }
         internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
         internal static bool ScrolledThisFrame => s_Input && s_Input.isActiveAndEnabled && s_Input.CanReadPlayerInput && s_Input.Scroll != 0;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

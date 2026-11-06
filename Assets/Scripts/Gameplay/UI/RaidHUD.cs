@@ -76,6 +76,7 @@ namespace Unity.MP_FPS
         private float m_LootErrorUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
+        private int m_MenuEscapeFrame = -1;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
         public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
@@ -83,18 +84,35 @@ namespace Unity.MP_FPS
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
+            if (s_Active == null) return false;
+            if (s_Active.m_MenuEscapeFrame == Time.frameCount) return true;
+            if (!CloseActiveMenu()) return false;
+            s_Active.m_MenuEscapeFrame = Time.frameCount;
+            RaidQuickSlotInput.ReleasePrimary();
+            return true;
+        }
+        private static bool CloseActiveMenu()
+        {
             if (s_Active != null && s_Active.CloseChatForEscape()) return true;
             if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
             { s_Active.CloseRaidMapFromUI(); return true; }
             if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
             if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
-            if (!InventoryOpen) return false;
+            if (!InventoryOpen) return RaidQuickSlotInput.CloseAdjustmentMenu();
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
             s_Active.SetInventory(false); return true;
         }
 
+        private void OnMenuKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode != KeyCode.Escape || GameSettings.Instance.GameState != GlobalGameState.InGame ||
+                m_ChatView?.Composing == true) return;
+            if (CloseInventory()) evt.StopImmediatePropagation();
+        }
+
         private void OnEnable()
         {
+            m_MenuEscapeFrame = -1;
             m_ReturnGuidance.Reset();
             m_DeployRequestedRaid = 0;
             m_DeployRequestedSequence = 0;
@@ -103,6 +121,7 @@ namespace Unity.MP_FPS
             s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
             MoonkovAudio.BindUI(m_Root);
+            m_Root.RegisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             var rightRail = m_Root.Q<ScrollView>("raidRightRail");
@@ -989,6 +1008,7 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ClearInventoryBackdrop();
+            m_Root?.UnregisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
             if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
             m_ClashTaskToggle = null;

@@ -1,6 +1,5 @@
 using Unity.Properties;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
@@ -57,9 +56,11 @@ namespace Unity.MP_FPS
 
         void TogglePauseMenuVisibility(InputAction.CallbackContext obj)
         {
-            if (GameSettings.Instance.GameState != GlobalGameState.InGame || RaidHUD.CloseInventory()) return;
-            EventSystem.current.SetSelectedGameObject(transform.parent.GetComponentInChildren<PanelRaycaster>().gameObject);
-            GameSettings.Instance.IsPauseMenuOpen = !GameSettings.Instance.IsPauseMenuOpen;
+            if (!Application.isFocused || GameSettings.Instance.GameState != GlobalGameState.InGame) return;
+            if (GameSettings.Instance.IsPauseMenuOpen) { OnResumePressed(); return; }
+            if (RaidHUD.CloseInventory()) return;
+            GameSettings.Instance.IsPauseMenuOpen = true;
+            m_ResumeButton.Focus();
         }
 
         static void OnResumePressed() => GameSettings.Instance.IsPauseMenuOpen = false;
