@@ -1,4 +1,4 @@
-.shop-purchase { flex-direction: row; flex-grow: 1; min-height: 0; position: relative; color: #edeef0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
+.shop-purchase { --shop-item-bg: #18191b; --shop-item-hover: #212225; flex-direction: row; flex-grow: 1; min-height: 0; position: relative; color: #edeef0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
 .shop-purchase Label { letter-spacing: 0; }
 .shop-purchase-browser { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 16px; }
 .shop-purchase-search { flex-shrink: 0; margin: 0 0 8px; min-height: 36px; }
@@ -9,9 +9,20 @@
 .shop-purchase .shop-purchase-filter.is-selected { background-color: #0d2847; border-color: #70b8ff; color: #c2e6ff; }
 .shop-purchase-products { flex-grow: 1; min-height: 0; }
 .shop-purchase-grid { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
-.shop-purchase .shop-purchase-tile { flex-direction: column; flex-shrink: 0; height: 176px; margin: 0 8px 8px 0; padding: 8px; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-radius: 6px; letter-spacing: 0; transition-property: border-color, background-color; transition-duration: 0.14s; }
-.shop-purchase .shop-purchase-tile:hover { background-color: #212225; border-color: #5a6169; }
-.shop-purchase .shop-purchase-tile.is-selected, .shop-purchase .shop-purchase-tile:focus { background-color: #0d2847; border-color: #70b8ff; }
+/* Radix dark step 3 surfaces and step 4 hover tones. Selection keeps the item category visible. */
+.shop-purchase .shop-item-weapon { --shop-item-bg: #202248; --shop-item-hover: #262a65; }
+.shop-purchase .shop-item-equipment { --shop-item-bg: #0d2d2a; --shop-item-hover: #023b37; }
+.shop-purchase .shop-item-medical { --shop-item-bg: #132d21; --shop-item-hover: #113b29; }
+.shop-purchase .shop-item-food { --shop-item-bg: #28211d; --shop-item-hover: #322922; }
+.shop-purchase .shop-item-drink { --shop-item-bg: #0d2847; --shop-item-hover: #003362; }
+.shop-purchase .shop-item-oxygen { --shop-item-bg: #082c36; --shop-item-hover: #003848; }
+.shop-purchase .shop-item-energy { --shop-item-bg: #302008; --shop-item-hover: #362100; }
+.shop-purchase .shop-item-tactical { --shop-item-bg: #331e0b; --shop-item-hover: #462100; }
+.shop-purchase .shop-item-module { --shop-item-bg: #291f43; --shop-item-hover: #33255b; }
+.shop-purchase .shop-item-material { --shop-item-bg: #252423; --shop-item-hover: #2d2c2a; }
+.shop-purchase .shop-purchase-tile { flex-direction: column; flex-shrink: 0; height: 176px; margin: 0 8px 8px 0; padding: 8px; background-color: var(--shop-item-bg); border-width: 1px; border-color: #363a3f; border-radius: 6px; letter-spacing: 0; transition-property: border-color, background-color; transition-duration: 0.14s; }
+.shop-purchase .shop-purchase-tile:hover { background-color: var(--shop-item-hover); border-color: #5a6169; }
+.shop-purchase .shop-purchase-tile.is-selected, .shop-purchase .shop-purchase-tile:focus { border-color: #70b8ff; }
 .shop-purchase-tile-art { flex-grow: 1; min-height: 72px; margin-bottom: 6px; }
 .shop-purchase .shop-purchase-tile-name { height: 32px; flex-shrink: 0; color: #edeef0; font-size: 12px; white-space: normal; overflow: hidden; margin: 0; }
 .shop-purchase .shop-purchase-tile-price { height: 20px; flex-shrink: 0; color: #ffca16; font-size: 14px; margin: 3px 0 0; }
@@ -19,7 +30,7 @@
 .shop-purchase-empty { color: #b0b4ba; font-size: 14px; white-space: normal; padding: 28px 12px; }
 .shop-purchase-inspector { width: 34%; min-width: 280px; max-width: 400px; flex-shrink: 0; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-radius: 8px; }
 .shop-purchase-details { flex-grow: 1; min-height: 0; padding: 12px; }
-.shop-purchase-art { height: 204px; flex-shrink: 0; margin-bottom: 16px; background-color: #111113; border-radius: 5px; }
+.shop-purchase-art { height: 204px; flex-shrink: 0; margin-bottom: 16px; background-color: var(--shop-item-bg); border-radius: 5px; }
 .shop-purchase-inspector .item-information .inventory-tooltip-title { font-size: 18px; margin-bottom: 8px; }
 .shop-purchase-order { flex-shrink: 0; padding: 12px; border-top-width: 1px; border-top-color: #363a3f; }
 .shop-purchase .shop-purchase-notice, .shop-purchase .shop-purchase-reason { color: #ffca16; font-size: 12px; white-space: normal; margin: 0 0 8px; }
