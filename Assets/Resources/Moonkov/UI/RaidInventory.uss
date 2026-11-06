@@ -1,3 +1,4 @@
+@import url("ItemCategories.uss");
 .inventory-view.inventory-raid { --mk-surface: #101416; --mk-panel: #191f21; --mk-line: #414b4e; --mk-ink: #eeeee6; --mk-muted: #b3bcb9; --mk-accent: #c8cfaa; background-color: #101416; padding: 0; min-height: 0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
 .inventory-raid Label, .inventory-raid Button, .raid-inventory-window Label, .raid-inventory-window Button { -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); letter-spacing: 0; }
 .inventory-raid .inventory-body { min-height: 0; }
@@ -100,3 +101,13 @@
 .inventory-raid .field-search-hidden.field-search-current { border-color: #c8cfaa; }
 
 .inventory-view .inventory-item-tooltip { position: absolute; display: none; width: 400px; padding: 12px; background-color: #18191b; border-width: 1px; border-color: #363a3f; border-top-color: #70b8ff; border-radius: 6px; overflow: hidden; }
+
+/* Occupied items keep their category through focus and selection. Empty and unrevealed slots stay neutral. */
+.inventory-view.inventory-raid .item-category,
+.inventory-view.inventory-raid .item-category:focus,
+.inventory-view.inventory-raid .item-category.inventory-selected { background-color: var(--item-category-bg); }
+.inventory-view.inventory-raid .item-category:hover { background-color: var(--item-category-hover); }
+#raidInventory .inventory-view .item-category,
+#raidInventory .inventory-view .item-category:focus,
+#raidInventory .inventory-view .item-category.inventory-selected { background-color: var(--item-category-field-bg); }
+#raidInventory .inventory-view .item-category:hover { background-color: var(--item-category-field-hover); }

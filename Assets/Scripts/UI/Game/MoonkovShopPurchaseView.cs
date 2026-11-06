@@ -78,26 +78,6 @@ namespace Unity.MP_FPS.Client
         }
 
         private static InventoryItem NewItem(string code, int quantity = 1) => new InventoryItem { Id = "shop:" + code, Code = code, Quantity = quantity };
-        private static string CategoryClass(string code)
-        {
-            var tactical = TacticalItemRules.Find(code);
-            if (tactical != null && (tactical.Kind == TacticalItemKind.Vitality || tactical.Kind == TacticalItemKind.Stamina || tactical.Kind == TacticalItemKind.Antidote))
-                return "shop-item-medical";
-            return InventoryCatalog.Get(code)?.Kind switch
-            {
-                ItemKind.LongGun or ItemKind.Pistol or ItemKind.Melee => "shop-item-weapon",
-                ItemKind.Helmet or ItemKind.Shield or ItemKind.Rig or ItemKind.Backpack or ItemKind.SecureContainer or ItemKind.SpecialEquipment => "shop-item-equipment",
-                ItemKind.Medical => "shop-item-medical",
-                ItemKind.Food => "shop-item-food",
-                ItemKind.Drink => "shop-item-drink",
-                ItemKind.Oxygen => "shop-item-oxygen",
-                ItemKind.Cell => "shop-item-energy",
-                ItemKind.Throwable => "shop-item-tactical",
-                ItemKind.StorageModule or ItemKind.ShapingModule or ItemKind.UtilityModule => "shop-item-module",
-                ItemKind.Material => "shop-item-material",
-                _ => "shop-item-other"
-            };
-        }
         private ShopOffer Selected => m_Offers?.FirstOrDefault(offer => offer.Code == m_SelectedCode && offer.BuyDust >= 0);
         private bool Matches(ShopOffer offer)
         {
@@ -121,7 +101,7 @@ namespace Unity.MP_FPS.Client
             {
                 var captured = offer; var tile = new Button(() => Select(captured.Code));
                 tile.name = "purchaseProduct" + offer.Code; tile.AddToClassList("shop-purchase-tile");
-                tile.AddToClassList(CategoryClass(offer.Code));
+                MoonkovItemPresentation.ApplyCategory(tile, offer.Code);
                 var artHost = new VisualElement { pickingMode = PickingMode.Ignore }; artHost.AddToClassList("shop-purchase-tile-art");
                 var art = new StashItemArt(offer.Code) { pickingMode = PickingMode.Ignore }; art.style.flexGrow = 1; artHost.Add(art); tile.Add(artHost);
                 var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = false }; title.AddToClassList("shop-purchase-tile-name"); tile.Add(title); MoonkovLocalization.Set(title, offer.Name ?? InventoryCatalog.Get(offer.Code).Name);
@@ -165,8 +145,7 @@ namespace Unity.MP_FPS.Client
                 var definition = InventoryCatalog.Get(offer.Code); m_QuantityValue = Math.Max(1, Math.Min(definition.MaxStack, m_QuantityValue));
                 if (m_ArtCode != offer.Code)
                 {
-                    if (m_ArtCode != null) m_Art.RemoveFromClassList(CategoryClass(m_ArtCode));
-                    m_Art.AddToClassList(CategoryClass(offer.Code)); m_ArtCode = offer.Code; m_Art.Clear();
+                    MoonkovItemPresentation.ApplyCategory(m_Art, offer.Code); m_ArtCode = offer.Code; m_Art.Clear();
                     var art = new StashItemArt(offer.Code) { pickingMode = PickingMode.Ignore }; art.style.flexGrow = 1; m_Art.Add(art);
                 }
                 m_Information.Present(NewItem(offer.Code, m_QuantityValue), m_Graph);

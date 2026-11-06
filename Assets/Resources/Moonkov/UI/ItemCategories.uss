@@ -1,0 +1,12 @@
+/* Shared Radix dark step 3 surfaces and step 4 hover tones. */
+.item-category { --item-category-bg: #18191b; --item-category-hover: #212225; --item-category-field-bg: rgba(24, 25, 27, 0.64); --item-category-field-hover: rgba(33, 34, 37, 0.82); }
+.item-category-weapon { --item-category-bg: #202248; --item-category-hover: #262a65; --item-category-field-bg: rgba(32, 34, 72, 0.64); --item-category-field-hover: rgba(38, 42, 101, 0.82); }
+.item-category-equipment { --item-category-bg: #0d2d2a; --item-category-hover: #023b37; --item-category-field-bg: rgba(13, 45, 42, 0.64); --item-category-field-hover: rgba(2, 59, 55, 0.82); }
+.item-category-medical { --item-category-bg: #132d21; --item-category-hover: #113b29; --item-category-field-bg: rgba(19, 45, 33, 0.64); --item-category-field-hover: rgba(17, 59, 41, 0.82); }
+.item-category-food { --item-category-bg: #28211d; --item-category-hover: #322922; --item-category-field-bg: rgba(40, 33, 29, 0.64); --item-category-field-hover: rgba(50, 41, 34, 0.82); }
+.item-category-drink { --item-category-bg: #0d2847; --item-category-hover: #003362; --item-category-field-bg: rgba(13, 40, 71, 0.64); --item-category-field-hover: rgba(0, 51, 98, 0.82); }
+.item-category-oxygen { --item-category-bg: #082c36; --item-category-hover: #003848; --item-category-field-bg: rgba(8, 44, 54, 0.64); --item-category-field-hover: rgba(0, 56, 72, 0.82); }
+.item-category-energy { --item-category-bg: #302008; --item-category-hover: #362100; --item-category-field-bg: rgba(48, 32, 8, 0.64); --item-category-field-hover: rgba(54, 33, 0, 0.82); }
+.item-category-tactical { --item-category-bg: #331e0b; --item-category-hover: #462100; --item-category-field-bg: rgba(51, 30, 11, 0.64); --item-category-field-hover: rgba(70, 33, 0, 0.82); }
+.item-category-module { --item-category-bg: #291f43; --item-category-hover: #33255b; --item-category-field-bg: rgba(41, 31, 67, 0.64); --item-category-field-hover: rgba(51, 37, 91, 0.82); }
+.item-category-material { --item-category-bg: #252423; --item-category-hover: #2d2c2a; --item-category-field-bg: rgba(37, 36, 35, 0.64); --item-category-field-hover: rgba(45, 44, 42, 0.82); }
