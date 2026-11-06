@@ -202,6 +202,14 @@ namespace Unity.MP_FPS
         }
         private readonly System.Collections.Generic.Dictionary<int,string> m_DropVisualCodes = new System.Collections.Generic.Dictionary<int,string>();
         private readonly System.Collections.Generic.List<int> m_HiddenBags = new System.Collections.Generic.List<int>();
+        public bool TryGetCorpseAimPoint(int lootId, Camera camera, out Vector3 point)
+        {
+            point = default;
+            if (!camera || !m_DeathBags.TryGetValue(lootId, out var visual) || !visual ||
+                !visual.TryGetComponent<CorpseVisual>(out var corpse)) return false;
+            point = corpse.LootAimPoint(camera);
+            return true;
+        }
         public void ShowDeathBags(RaidDeathBagClientState state)
         {
             if(m_CorpseSettings==null || state==null)return;

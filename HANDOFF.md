@@ -265,6 +265,13 @@
 - 紧凑菜单打开期间不显示信息卡。Unity 在右键菜单打开时可能补发未按键的 `PointerEnterEvent`；用 `TerminalWindows.HasContext` 阻止它重新显示，不能只在按下时隐藏。
 - 本轮单 Editor 编译、66 项内容与数值检查，以及原生两列排版和语义配色检查通过。覆盖全部光环、配件、永久研究、普通物品用途和中英文新键。使用隔离面板和样例库存，没有进入 Play、联机或执行 Player 构建。样例在忽略目录 `Library/BuildValidation/ItemHoverContent/`。
 
+## 人形尸体搜刮提示（2026-11-06）
+
+- 修复瞄准倒地人形敌人却没有搜刮提示。旧目标停在死亡时的脚底坐标，实际身体会随死亡动画偏移约一米，超出原有 8 度瞄准辅助范围。
+- `CorpseVisual` 按实际倒地骨骼缓存交互边界，不读取为剔除而放大的渲染边界。`MoonRaidMap.TryGetCorpseAimPoint()` 按尸体 ID 提供身体目标，`RaidHUD.Interaction.cs` 用它选择搜刮对象。只在身体姿势或最终贴地位置变化时更新边界。
+- 距离与角色侧遮挡仍使用服务器的尸体坐标。镜头还须能看到身体目标。普通箱子、掉落物和机关沿用原判定。没有改库存、RPC 或存档结构。
+- 单 Editor 编译通过。`CorpseLootInteractionChecks.Run()` 的 99 项检查通过。三种 PMC 的 36 种身体部位与接近方向均可选中，旧目标在这 36 种情况均失败。另覆盖超距、两条遮挡路径、渲染边界和移除尸体。记录在忽略目录 `LocalData/CorpseLootBug/checks.txt`。未做正式战局、联机或 Player 验收。
+
 ## 连续搜刮与快捷收纳
 
 - 2026-11-05 修复格子拖放显示绿框、松手却回原位。`ContainerInventoryView.Drag` 收到未按键的移动事件时，不得立即取消；同一批输入中的 `PointerUp` 可能还未派发。漏收松手的清理改由面板调度器执行。正常松手立即提交，继续按住、新按下、失焦和关闭都会清理待执行回收。当前 Input System 的实际排序回放已复现修复前零请求、修复后一次请求。

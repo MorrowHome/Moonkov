@@ -65,9 +65,11 @@ namespace Unity.MP_FPS
 
         // A direct hit on the authored interaction surface beats every assisted candidate.
         // The small cone is angular, so aspect ratio does not change target selection.
-        public static float Score(Camera camera, Vector3 actor, Vector3 point, float range, Transform surface = null)
+        // Animated bodies can move their aim point without moving the server's access anchor.
+        public static float Score(Camera camera, Vector3 actor, Vector3 point, float range, Transform surface = null, Vector3? rangeAnchor = null)
         {
-            if (!camera || !camera.isActiveAndEnabled || Vector3.Distance(actor, point) > range) return -1;
+            Vector3 anchor = rangeAnchor ?? point;
+            if (!camera || !camera.isActiveAndEnabled || Vector3.Distance(actor, anchor) > range) return -1;
             Vector3 delta = point - camera.transform.position;
             float angle = Vector3.Angle(camera.transform.forward, delta);
             if (s_RayFrame != Time.frameCount || s_RayCamera != camera || s_RayOrigin != camera.transform.position || s_RayForward != camera.transform.forward)
@@ -78,8 +80,8 @@ namespace Unity.MP_FPS
             }
             bool direct = s_HasRayHit && surface && (s_RayHit.transform == surface || s_RayHit.transform.IsChildOf(surface));
             if (!direct && angle > AssistDegrees) return -1;
-            if (!Visible(camera.transform.position, point, surface) || !Visible(actor + Vector3.up * 1.4f, point, surface)) return -1;
-            return (direct ? 1000 : 100) - angle - Vector3.Distance(actor, point) * .01f;
+            if (!Visible(camera.transform.position, point, surface) || !Visible(actor + Vector3.up * 1.4f, anchor, surface)) return -1;
+            return (direct ? 1000 : 100) - angle - Vector3.Distance(actor, anchor) * .01f;
         }
 
         public static bool Visible(Vector3 eye, Vector3 point, Transform surface = null)

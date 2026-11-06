@@ -20,11 +20,11 @@ namespace Unity.MP_FPS
             int bestLoot = -1;
             float bestDistance = distance;
 
-            void Consider(int id, Vector3 point, Transform surface = null)
+            void Consider(int id, Vector3 point, Transform surface = null, Vector3? rangeAnchor = null)
             {
-                float score = RaidInteractionAim.Score(camera, actor, point, RaidRules.PickupRange, surface);
+                float score = RaidInteractionAim.Score(camera, actor, point, RaidRules.PickupRange, surface, rangeAnchor);
                 if (score <= m_WorldFocusScore) return;
-                m_WorldFocusScore = score; bestLoot = id; bestDistance = Vector3.Distance(actor, point);
+                m_WorldFocusScore = score; bestLoot = id; bestDistance = Vector3.Distance(actor, rangeAnchor ?? point);
             }
 
             // All loot kinds use the same aim/visibility rule. Proximity alone cannot pick a cache behind the player.
@@ -32,7 +32,13 @@ namespace Unity.MP_FPS
             for (int i = 0; i < map.LootPositions.Length; i++) Consider(i, map.LootPositions[i]);
             foreach (var bag in bags.Bags.Values)
                 if (bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex || !bag.Empty)
-                    Consider(bag.LootId, (Vector3)bag.Position + Vector3.up * .25f);
+                {
+                    Vector3 anchor = (Vector3)bag.Position + Vector3.up * .25f;
+                    if ((actor - anchor).sqrMagnitude > RaidRules.PickupRange * RaidRules.PickupRange) continue;
+                    Vector3 point = anchor;
+                    if (bag.CharacterIndex >= 0 && map.TryGetCorpseAimPoint(bag.LootId, camera, out var bodyPoint)) point = bodyPoint;
+                    Consider(bag.LootId, point, rangeAnchor: anchor);
+                }
             if (controls && RaidFurnitureLoot.Active)
             {
                 var drawers = RaidFurnitureLoot.Active.Drawers;
