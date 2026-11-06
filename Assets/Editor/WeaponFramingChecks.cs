@@ -91,8 +91,8 @@ public static class WeaponFramingChecks
         using (var f = new Fixture(rig))
         {
             var camera = f.View.camera;
-            Check(!f.Root.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")), "Unexpected action camera: " + rig);
-            Check(!camera.GetUniversalAdditionalCameraData().cameraStack.Any(c => c && c.name.Contains("Gesture")), "Action camera remained stacked");
+            Check(f.View.GestureProjectionCamera && !f.View.GestureProjectionActive, "Gesture projection must start inactive: " + rig);
+            Check(!f.View.GestureProjectionCamera.GetUniversalAdditionalCameraData().clearDepth, "Gestures cleared world depth");
             var action = f.Animator.gameObject.AddComponent<RaidActionPresentation>(); action.enabled = false;
             action.Configure(f.Animator, f.View, f.Animator.GetComponent<DollSingerHaloAim>(), rig);
             foreach (float pitch in new[] { -80f, -65f, 0f, 65f, 80f })
@@ -101,6 +101,7 @@ public static class WeaponFramingChecks
                 var position = camera.transform.position; var rotation = camera.transform.rotation; var projection = camera.projectionMatrix;
                 foreach (var kind in new[] { HandAction.Eat, HandAction.Drink, HandAction.Inject })
                 {
+                    f.View.PresentGesture(0);
                     string item = kind == HandAction.Eat ? "ration" : kind == HandAction.Drink ? "water" : "medkit";
                     var state = new PredictedPlayerGhost { CurrentHealth = 100, HandAction = (byte)kind, HandActionSequence = (uint)kind,
                         HandActionItem = item, HandActionDuration = 3, HandActionRemaining = 1.5f };
@@ -159,8 +160,8 @@ public static class WeaponFramingChecks
                     }
                 }
             }
-            Check(!f.Root.GetComponentsInChildren<Renderer>(true).Any(r => r.gameObject.layer == LayerMask.NameToLayer("FirstPersonOverlay")),
-                "Owner-only hand or prop copies remain: " + rig);
+            Check(f.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true).Count(r => r.gameObject.layer == LayerMask.NameToLayer("FirstPersonOverlay") && r.sharedMesh == f.OwnerMesh) == 1,
+                "Gesture presentation must share one connected owner mesh: " + rig);
             Check(f.Root.GetComponentsInChildren<RaidActionProp>(true).Length == 3, "Actions did not retain exactly one prop per item: " + rig);
             action.DisposePresentation();
         }

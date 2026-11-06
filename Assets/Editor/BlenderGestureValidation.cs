@@ -34,7 +34,7 @@ public static class BlenderGestureValidation
     private static Mesh armSurface;
     private static SkinnedMeshRenderer armRenderer;
     private static int[] armTriangles;
-    private static readonly Rect AimWindow = Rect.MinMaxRect(.49f, .49f, .51f, .51f);
+    private static readonly Rect AimWindow = Rect.MinMaxRect(.495f, .495f, .505f, .505f);
     private static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [MenuItem("Tools/Moonkov/Validate Blender Gestures In Playing Lab")]
@@ -149,7 +149,9 @@ public static class BlenderGestureValidation
     }
     private static void Visible(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex == 3)
+        if (DollSingerView.AimPoseBlend(lab.Halo.AimBlend) < .999f) return;
+        var handCamera = RenderedHandCamera(lab);
+        if (lab.WeaponIndex == 3 && !lab.Reloading)
         {
             Vector3 center = (bones["人指先.L"].position + bones["親指先.R"].position +
                 bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
@@ -157,18 +159,14 @@ public static class BlenderGestureValidation
             var owner = lab.PlayerView.camera;
             float pixels = new Vector2((uv.x-.5f)*owner.pixelWidth, (uv.y-.5f)*owner.pixelHeight).magnitude;
             Require(pixels < .5f, "Sniper frame centre drifted from crosshair: " + pixels + " pixels");
-            Require(!lab.Player.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")),
-                "Sniper added a separate hand projection");
-            // A normal optical zoom can crop the hands at the viewport edges.
-            // Do not force them back inside the screen and undo magnification.
-            return;
         }
         foreach (var name in new[] { "手首.L", "手首.R" })
         foreach (var bone in bones[name].GetComponentsInChildren<Transform>())
         {
-            var uv = lab.PlayerView.camera.WorldToViewportPoint(bone.position);
-            Require(float.IsFinite(uv.x) && float.IsFinite(uv.y) && float.IsFinite(uv.z), "Nonfinite hand projection: " + bone.name);
-            // Natural eye projection may crop the hands. ClearAim checks the actual sight line.
+            if (!bone.name.Contains("指") && !bone.name.StartsWith("手首")) continue;
+            var uv = handCamera.WorldToViewportPoint(bone.position);
+            Require(uv.z > handCamera.nearClipPlane && uv.x > .02f && uv.x < .98f && uv.y > .02f && uv.y < .98f,
+                "Cropped gesture: " + bone.name + " " + uv);
         }
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
