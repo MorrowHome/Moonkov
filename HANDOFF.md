@@ -4,6 +4,12 @@
 
 - 修改代码前确认 `BuildPipeline.isBuildingPlayer` 为 false。构建期间不要修改脚本，尤其是 Ghost 组件字段。Player 编译可能读到新文件，而 Editor 仍使用旧程序集，造成布局不一致并让整次构建失败。等待原构建结束后再修改和重编译，不另开 Editor。
 
+## Mac 构建 Windows 客户端（2026-11-06）
+
+- 本机已安装 Windows 构建支持。当前目标 Windows x64 / Player，后端 Mono。Auto Graphics API 仍开启，包含 Direct3D12 和 Direct3D11。Unity `6000.5.10f1` 在 Mac 上无法编译 STP 原生 16 位分支所需的 D3D DXC 内容；取消的恢复构建记录了 64 条此类错误。
+- 建议 Mac 构建只选 Direct3D11，保留 STP 和现有画质；尚未修改配置。三份 STP 的 32 个 Direct3D11 普通精度变体全部通过定点编译，Direct3D12 原生 16 位对照复现错误。完整构建和 Windows 运行仍待验证。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
+- 当前使用默认配置。`Windows.asset` 继承全局设置，`Windows Client.asset` 有独立 Player Settings 覆盖。修改时核对实际构建配置。保留五份运行时管线登记、光照贴图模式和已有变体裁剪；不要清理 Library。
+
 ## 本地 Windows 独立服构建（2026-11-06）
 
 - `Tools / Moonkov / Build Local Windows Server` 保留 Unity/Bee 和 SBP 增量缓存。Archive 是资源包归档。Addressables 的“LZ4”实际使用 LZ4HC，大包变化后仍需整包重新压缩。日常不要清理 `Library` 或使用 Clean Build。
@@ -157,7 +163,7 @@
 - 正式源网格约 997.69 MiB；458 张 512／BC6H／10 mip 反射约 916.07 MiB；4096×4096×30 的 BC5 统计数组为 480 MiB；30 张 BC6H 光照图含 mip 约 531 MiB。GPU 数据载荷仍约 2.86 GiB，关闭可读对应的 CPU 副本约 2.34 GiB。这是资产载荷估算，不是 Windows 实测峰值。源数据仍直接引用整图资源，本轮没有实现分区流式加载。
 - `SourceWorldLighting` 在第一台有效游戏相机剔除前选择局部反射。同一帧所有相机共用一组，最多 12 个；8192 最大纹理尺寸时最多 6 个。优先当前所在房间和附近可见包围盒，保留偏置减少边界切换。通常每 0.2 秒刷新，移动 1 米或转向 10 度会提前刷新。退出光照作用域会恢复原启用状态。原始 512 反射、包围盒和光照图不变；未覆盖区域使用已有全局反射，远处反射可能简化。
 - 预算按 URP 17.5 的 2048 基块及七级 mip 计算，并为上一帧缓存预留另一组。不可按 512 面尺寸直接估图集容量，也不可让每个相机各启用 12 个后累积到同一图集。该预算约束只管源世界探针，不宣称控制其他 Renderer 或其他系统的反射图集。
-- 单 Editor 编译通过，无编译错误或警告。`SourceWorldStartupChecks.Run()` 的 52 项检查通过，覆盖保存重载、像素和网格不变、预算、房间优先、相机切换、小显卡和恢复。458 个原生探针的隔离检查做了 200 次完整选择：平均 0.0668 ms，最大 0.0738 ms，托管分配 0，启用数最多 12。此数仅是本机选择逻辑开销，不是游戏帧时间或 Windows 性能验收。Unity 原生回读确认 30 光照图、458 张只读反射、只读统计数组和 7227 个角色探针完整。当前 Mac 未安装 Windows 构建支持，未做 Windows 打包或运行；没有另开 Editor、客户端或联机测试。
+- 单 Editor 编译通过，无编译错误或警告。`SourceWorldStartupChecks.Run()` 的 52 项检查通过，覆盖保存重载、像素和网格不变、预算、房间优先、相机切换、小显卡和恢复。458 个原生探针的隔离检查做了 200 次完整选择：平均 0.0668 ms，最大 0.0738 ms，托管分配 0，启用数最多 12。此数仅是本机选择逻辑开销，不是游戏帧时间或 Windows 性能验收。Unity 原生回读确认 30 光照图、458 张只读反射、只读统计数组和 7227 个角色探针完整。该轮 Mac 尚未安装 Windows 构建支持，未做 Windows 打包或运行；没有另开 Editor、客户端或联机测试。
 - 证据在本机忽略目录 `LocalData/SourceWorldStartupAudit`，含 `before.json`、`after.json`、`RuntimeAssets.state.json`、`Checks.txt` 和 `SelectionBenchmark.txt`。Editor 中仍有原有输入清理、尸体初始化和 Localization 异常，本次没有处理这些独立问题，也没有把它们视为资源优化造成。
 - 旧显示已核对：场景中 12204 个关闭的 MeshRenderer 材质列表均为空，对应 MeshFilter 没有残留显示网格。下方 10 月 30 日“保留网格、材质”是历史描述。碰撞引用仍保留，不应为省内存直接删除旧碰撞；该检查不展开 Prefab。
 
