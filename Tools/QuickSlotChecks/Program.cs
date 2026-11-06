@@ -144,6 +144,23 @@ Check(emptyHands.Items.Count == emptyCount && InventoryCatalog.Get("fists") == n
     Check(unarmed.NextWeaponSlot(fistsOnly, 1, 4) == -1 && unarmed.NextWeaponSlot(fistsOnly, -1, 4) == -1, "one available weapon never sends redundant equips");
     Check(wheel.Selected == 3 && wheelGraph.Version == version + 1, "cycle lookup does not select, consume or mutate inventory");
 }
+// Shipping hotbar storage must not persist identities, even if an old preference exists.
+{
+    var sessionGraph = InventoryGraph.Create(false); var sessionPrimary = sessionGraph.Equipped("Primary");
+    var transientStore = new QuickSlotPreferenceStore();
+    transientStore.Save("raid", new QuickSlotSave { Initialized = true });
+    Check(transientStore.Load("raid") == null, "production hotbar storage is nonpersistent");
+    var session = new QuickSlotBindings(transientStore); session.UseProfile("raid"); session.InitializeWeapons(sessionGraph);
+    Check(session.Bind(8, sessionPrimary, sessionGraph), "current raid accepts manual shortcuts");
+    session.UseProfile("raid"); Check(session[8] == sessionPrimary.Id, "ordinary refresh retains this raid's shortcuts");
+    session.Reset(); session.UseProfile("raid"); session.InitializeWeapons(sessionGraph);
+    Check(session[8] == null && session.Selected == -1, "new raid with same profile clears manual shortcuts and selection");
+    Check(session[0] == sessionGraph.Equipped("Primary")?.Id, "new raid rebuilds weapon slots from real equipment");
+    session.Bind(8, sessionPrimary, sessionGraph); session.UseProfile("other"); session.UseProfile("raid");
+    Check(session[8] == null, "changing profiles does not reload previous shortcuts");
+    var rebuilt = new QuickSlotBindings(transientStore); rebuilt.UseProfile("raid");
+    Check(rebuilt[8] == null, "recreated HUD does not restore saved item identities");
+}
 Console.WriteLine($"Quick slots: {count} checks passed; in-memory store only, no real preferences touched.");
 sealed class MemoryStore : IQuickSlotStore
 {

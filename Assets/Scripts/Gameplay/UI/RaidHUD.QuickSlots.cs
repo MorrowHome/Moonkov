@@ -231,7 +231,7 @@ namespace Unity.MP_FPS
                 m_QuickTacticalRequest = m_QuickTrackedTacticalRequest = m_QuickOwnerRequest = 0;
                 m_QuickOwnerError = InventoryError.None; m_QuickInteractionHintUntil = 0;
                 m_QuickOwnerFeedback = TacticalItemFeedback.None; m_QuickStatusUntil = 0;
-                m_QuickBindings.Deselect(); m_QuickWasTool = false;
+                m_QuickBindings.Reset(); m_QuickWasTool = false;
                 m_QuickView.Hide();
                 RaidQuickSlotInput.ReleasePrimary();
             }

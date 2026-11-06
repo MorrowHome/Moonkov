@@ -15,5 +15,6 @@
     <Compile Include="../../Assets/DollSinger/Runtime/HaloModule.cs" Link="HaloModule.cs" />
       <Compile Include="../../Assets/Scripts/Networking/Shared/EnergyGrenadeRules.cs" Link="EnergyGrenadeRules.cs" />
     <Compile Include="../../Assets/Scripts/UI/Game/QuickSlotBindings.cs" Link="QuickSlotBindings.cs" />
+    <Compile Include="../../Assets/Scripts/UI/Game/QuickSlotPreferenceStore.cs" Link="QuickSlotPreferenceStore.cs" />
   </ItemGroup>
 </Project>
