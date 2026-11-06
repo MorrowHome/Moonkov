@@ -21,6 +21,13 @@
 }
 .halos-noise { background-image: url("Halos/Noise.png"); background-size: cover; -unity-background-image-tint-color: #8da4ef; opacity: 0.045; }
 .halos-signal { background-image: url("Halos/SignalResidual.png"); background-size: cover; background-position: center; opacity: 0.12; }
+.halos-noise, .halos-signal { left: -4%; right: -4%; }
+.halos-shutter { position: absolute; left: 0; right: 0; height: 50%; background-color: #000000; overflow: hidden; }
+.halos-shutter-top { top: 0; }
+.halos-shutter-bottom { bottom: 0; }
+.halos-shutter-light { position: absolute; left: 0; right: 0; height: 200%; background-image: url("Halos/LightFader.png"); background-size: 100% 100%; }
+.halos-shutter-top .halos-shutter-light { top: 0; }
+.halos-shutter-bottom .halos-shutter-light { bottom: 0; scale: 1 -1; }
 .halos-stage { position: absolute; width: 1920px; height: 1080px; }
 .halos-terminal {
     position: absolute;
@@ -43,7 +50,7 @@
     align-items: center;
     justify-content: center;
 }
-.halos-access.halos-intro-active > .container { visibility: hidden; }
+.halos-access.halos-intro-active > .container { visibility: hidden; opacity: 0; }
 .halos-access.halos-reduced-motion Button { transition-duration: 0s; }
 .halos-intro .halos-emblem { width: 260px; height: 252px; }
 .halos-intro .halos-wordmark { width: 356px; height: 48px; margin-top: 24px; }
