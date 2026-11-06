@@ -14,7 +14,7 @@
         <ui:VisualElement class="online-controls">
             <ui:VisualElement class="online-personal">
                 <ui:DropdownField name="onlineCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
-                <ui:DropdownField name="onlinePose" label="姿态" choices="自动,戒备,侧身,低姿,待命" index="0" />
+                <ui:DropdownField name="onlinePose" label="姿态" choices="自动,抱臂,敬礼,比心,撒娇" index="0" />
             </ui:VisualElement>
             <ui:VisualElement name="onlineEntry" class="online-entry">
                 <ui:Button name="onlineCreate" text="创建小队" class="online-primary" />

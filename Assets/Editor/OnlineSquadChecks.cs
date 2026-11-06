@@ -80,7 +80,7 @@ public sealed class OnlineSquadChecks : EditorWindow
             Require(root.Q<VisualElement>("onlineMember1").Q<Label>(className: "online-member-name").text == "DOLLSINGER", "leader is not at the central stand");
             root.Q<DropdownField>("onlineCharacter").value = "SHIAN";
             Require(m_ChangedCharacter == 4, "character selector did not emit intent");
-            root.Q<DropdownField>("onlinePose").value = "低姿";
+            root.Q<DropdownField>("onlinePose").value = "比心";
             Require(m_ChangedPose == 2, "pose selector did not emit intent");
             Present();
             m_Snapshot.Members[0].Connected = false; m_Snapshot.Members[0].ReconnectSeconds = 40; Present();

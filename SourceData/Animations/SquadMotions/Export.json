@@ -1,0 +1,48 @@
+{
+  "source": "ArtSource/DollSinger/SquadMotions.blend",
+  "sourceSha256": "32ca9b0854df0caecb865a2085ae815a397da93d7c403d8deb9413d5df747666",
+  "motions": [
+    "ArmsCrossed",
+    "Salute",
+    "Heart",
+    "Coax"
+  ],
+  "rigs": [
+    {
+      "rig": "DollSinger",
+      "bones": 105,
+      "bytes": 1040793,
+      "maximumLoopSeamDegrees": 1.7075472925031877e-06,
+      "frames": 0,
+      "maximumContactResidualMetres": 0.0,
+      "maximumWeightedContactResidualMetres": 0.0,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 0.0
+    },
+    {
+      "rig": "HatsuneMiku",
+      "bones": 77,
+      "bytes": 723194,
+      "maximumLoopSeamDegrees": 1.7075472925031877e-06,
+      "frames": 244,
+      "maximumContactResidualMetres": 0.008281935202121352,
+      "maximumWeightedContactResidualMetres": 0.008281935202121352,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 6.621521024733171e-08
+    },
+    {
+      "rig": "Shian",
+      "bones": 72,
+      "bytes": 686923,
+      "maximumLoopSeamDegrees": 1.7075472925031877e-06,
+      "frames": 244,
+      "maximumContactResidualMetres": 0.005114311673767957,
+      "maximumWeightedContactResidualMetres": 0.0055668825410255555,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 1.3979912269264e-07
+    }
+  ]
+}

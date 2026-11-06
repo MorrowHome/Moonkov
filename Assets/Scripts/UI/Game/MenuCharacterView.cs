@@ -245,6 +245,9 @@ namespace Unity.MP_FPS.Client
             foreach (var renderer in m_Renderers)
             {
                 renderer.updateWhenOffscreen = true;
+                // Squad renders are requested manually, sometimes more than once
+                // per Editor update. Skin the final authored pose for each render.
+                if (m_SharedStage != null) renderer.forceMatrixRecalculationPerRender = true;
                 renderer.forceRenderingOff = false;
             }
             if (m_Renderers.Length == 0) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
@@ -410,6 +413,7 @@ namespace Unity.MP_FPS.Client
             m_EquipmentMelee?.PreparePresentation(dt);
             m_TwistFollowers?.RestoreBeforeAnimation();
             if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
+            m_SquadMotions?.RestoreBeforeAnimation();
             m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
             m_Model.transform.localPosition = Vector3.zero;
@@ -420,6 +424,7 @@ namespace Unity.MP_FPS.Client
             m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
             m_EquipmentMelee?.SamplePreviewIdle();
+            ApplySquadPose(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
             SampleEquipmentVisuals(dt);
@@ -580,6 +585,7 @@ namespace Unity.MP_FPS.Client
             m_Spring = null; m_HandAvoidance = null;
             m_TwistFollowers = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;
+            m_SquadMotions = null; m_SquadPose = -1; m_SquadReady = m_SquadSettled = false; m_SquadReadyPulse = 0;
             if (m_SharedStage != null) { m_Scene = default; return; }
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR
