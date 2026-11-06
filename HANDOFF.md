@@ -9,6 +9,7 @@
 
 ## Halos 登录与加载动画（2026-11-06）
 
+- 2026-11-07 同步 Halos `2511cfa` 的黑底终端原图。只更新共用的 `Terminal.png`，保留资源 GUID、蓝色干扰、按钮强调和进度条。蓝色属于原设计，不应统一去色。概念图只用于对照。用户确认新版三屏舱室主界面另做；本轮没有接入。
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
 - 进图补验：`GhostOwnerIsLocal` 是可开关组件。包含它的查询不能用 `GetSingletonEntity()`，即使先检查数量也会抛异常。`HaloScanClientSystem` 改为读取启用过滤后的实体数组，只接受一个本地角色。`HaloScanChecks.Run()` 的 42 项检查通过，包含 14 项真实客户端系统和所有权切换检查。单 Editor Play 使用隔离单机存档，经实际菜单进入 `TheophilusGameScene`，状态到达 `InGame`；W 键驱动角色移动，帧数持续增加，扫描系统保持启用且没有新增异常。没有登录真实账号、联机或重建 Player。
 - 美术源为 Halos 仓库的 `Moonkov UIs`。原 GML 和资源哈希在 `ArtSource/HalosUI`。保留原标志、十个终端窗口的位置和打字逻辑。开场缩到约 3.2 秒。`MoonkovWordmark.svg` 补游戏名称。
