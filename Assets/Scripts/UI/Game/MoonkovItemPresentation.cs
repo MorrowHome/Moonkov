@@ -71,6 +71,46 @@ namespace Unity.MP_FPS.Client
             return detail;
         }
 
+        public static string Purpose(string code)
+        {
+            string purpose;
+            switch (code)
+            {
+                case "rifle": case "compact": case "cicada": case "aegis":
+                    purpose = "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."; break;
+                case "pistol":
+                    purpose = "Revolver halo with strong individual shots. Uses the same energy pool as your other halos."; break;
+                case "shotgun": case "thorn":
+                    purpose = "Fires several pellets per shot for close-range combat. Total damage depends on how many pellets hit."; break;
+                case "sniper": case "vesper": case "nocturne":
+                    purpose = "Precision halo for aimed fire at distant targets. Uses shared halo energy."; break;
+                case "trine": case "rondo":
+                    purpose = "Fires a short burst with each trigger press. Each round spends shared halo energy."; break;
+                case "sundown": case "tempest":
+                    purpose = "Launches explosive projectiles that damage targets around the impact. Uses shared halo energy."; break;
+                case "medkit": return Description("med_gel");
+                case "ration":
+                    purpose = "Field food that restores energy and fullness. Keep drinking water nearby."; break;
+                case "water": return Description("electrolyte");
+                case "oxygen_canister":
+                    purpose = "Refills the life-support collar. Use from pockets or an equipped rig; excess oxygen is lost."; break;
+                case "secure_case":
+                    purpose = "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a rig before use. Weapons, worn gear and mission outputs cannot be stored inside."; break;
+                case "backpack": case "small_pack": case "sling_pack": case "cargo_pack":
+                    purpose = "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped rig before using them."; break;
+                case "rig":
+                    purpose = "Chest-mounted storage. Medical supplies, food, grenades and cells inside remain directly accessible."; break;
+                case "dust": purpose = "Used to buy supplies and fund halo research at the supplier."; break;
+                case "alloy": purpose = "Material for halo research and fabrication. Can also be sold to the supplier."; break;
+                default:
+                    purpose = Description(code);
+                    if (!string.IsNullOrEmpty(purpose)) return purpose;
+                    return InventoryCatalog.Get(code)?.Kind == ItemKind.Material
+                        ? MoonkovLocalization.Text("RECOVER AND SELL TO THE SUPPLIER") : "";
+            }
+            return MoonkovLocalization.Text(purpose);
+        }
+
         private static string Description(string code)
         {
             var organ=AlienBiology.Organ(code);if(organ!=null)return MoonkovLocalization.Text(organ.Description);

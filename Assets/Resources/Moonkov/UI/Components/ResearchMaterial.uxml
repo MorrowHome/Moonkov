@@ -3,7 +3,8 @@
         <ui:VisualElement name="materialArt" class="research-material-art" picking-mode="Ignore" />
         <ui:VisualElement class="research-material-copy">
             <ui:Label name="materialName" />
-            <ui:Label name="materialCount" />
+            <ui:Label name="materialShortage" class="research-material-shortage" />
         </ui:VisualElement>
+        <ui:Label name="materialCount" class="research-material-count" />
     </ui:VisualElement>
 </ui:UXML>

@@ -18,6 +18,98 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
+  - m_Id: 4381285036482194973
+    m_Localized: "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 324546037687662782
+    m_Localized: "Revolver halo with strong individual shots. Uses the same energy pool as your other halos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1786305602107089202
+    m_Localized: "Fires several pellets per shot for close-range combat. Total damage depends on how many pellets hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1942762119095226963
+    m_Localized: "Precision halo for aimed fire at distant targets. Uses shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2363673862440023973
+    m_Localized: "Fires a short burst with each trigger press. Each round spends shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7035938950564307084
+    m_Localized: "Launches explosive projectiles that damage targets around the impact. Uses shared halo energy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4419882054697928228
+    m_Localized: "Field food that restores energy and fullness. Keep drinking water nearby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404611389229118539
+    m_Localized: "Refills the life-support collar. Use from pockets or an equipped rig; excess oxygen is lost."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3776034184766986014
+    m_Localized: "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a rig before use. Weapons, worn gear and mission outputs cannot be stored inside."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8245630299633593916
+    m_Localized: "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped rig before using them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8537718928290244441
+    m_Localized: "Chest-mounted storage. Medical supplies, food, grenades and cells inside remain directly accessible."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 443644616408898108
+    m_Localized: "Used to buy supplies and fund halo research at the supplier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7021917314398656094
+    m_Localized: "Material for halo research and fabrication. Can also be sold to the supplier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 324593218587204434
+    m_Localized: "DAMAGE PER SHOT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2599071591148609780
+    m_Localized: "SHOT INTERVAL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7015755670951112884
+    m_Localized: "PROJECTILE SPEED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94825695614416
+    m_Localized: "BLAST RADIUS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8753459121695392509
+    m_Localized: "DAMAGE FALLOFF"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3009778842696292836
+    m_Localized: "No falloff"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4545135549698769734
+    m_Localized: "AIMED SPREAD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5354698553412171148
+    m_Localized: "BURST PAUSE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8759711896313403206
+    m_Localized: "SEMI-AUTOMATIC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1163323848018666525
+    m_Localized: "{0}-ROUND BURST"
+    m_Metadata:
+      m_Items: []
   - m_Id: 2838245376
     m_Localized: SHIP
     m_Metadata:
@@ -5824,6 +5916,327 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 10212965281161218
     m_Localized: Teammate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10611441567281152
+    m_Localized: FABRICATION RECIPE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075570548736
+    m_Localized: BIOLOGICAL UPGRADES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880384
+    m_Localized: MOONCORE ENGINEERING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880385
+    m_Localized: "Loading\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880386
+    m_Localized: Completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880387
+    m_Localized: Materials ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880388
+    m_Localized: Materials needed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880389
+    m_Localized: Create a module for your halo's power slot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880390
+    m_Localized: Unlock the Mooncore recycler fabrication recipe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880391
+    m_Localized: A permanent upgrade for all your halos.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880392
+    m_Localized: FABRICATED MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880393
+    m_Localized: PERMANENT UPGRADE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880394
+    m_Localized: Lower shot cost. Slower energy recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880395
+    m_Localized: More energy for shooting, defense and transfer. Upgrading does not
+      refill energy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880396
+    m_Localized: Tighter spread and lower handling penalties.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880397
+    m_Localized: Recover energy faster after the recovery delay.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880398
+    m_Localized: Increase the damage dealt by every halo weapon.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880399
+    m_Localized: Rifle, compact rifle and shotgun. Uses the power slot; replaces
+      a capacitor or rapid charge bridge. Shot costs round up.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880400
+    m_Localized: Knowledge is retained after death. Takes effect on your next deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880401
+    m_Localized: Extract a fragment from MC00 and store it. Other components come
+      from supply caches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880402
+    m_Localized: Recover alien organs and tissue, then place them in storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880403
+    m_Localized: RESEARCH COST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880404
+    m_Localized: MATERIAL COST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880405
+    m_Localized: "Loading storage\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880406
+    m_Localized: "Submitting\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880407
+    m_Localized: Confirmation pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880408
+    m_Localized: Storage unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880409
+    m_Localized: Unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880410
+    m_Localized: Recipe locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880411
+    m_Localized: Storage full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880412
+    m_Localized: Ready to fabricate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880413
+    m_Localized: Ready to research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880414
+    m_Localized: Recipe saved. Fabricating each module requires its own materials.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880415
+    m_Localized: Consumes these materials for 1 module in storage. Install it before
+      deploying; equipment can be lost on death.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880416
+    m_Localized: Consumes these materials once to unlock the recipe. The module is
+      fabricated separately.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880417
+    m_Localized: This upgrade is already saved. No more materials are required.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880418
+    m_Localized: Consumes these materials once. The upgrade is saved permanently.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880419
+    m_Localized: "Loading your storage and research records\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880420
+    m_Localized: Waiting for confirmation. Materials are charged only once.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880421
+    m_Localized: Check the last order before submitting another.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880422
+    m_Localized: Load your profile to view stored materials.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880423
+    m_Localized: Finish your raid or reconnect to use stored materials.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880424
+    m_Localized: Recipe unlocked. You can now fabricate a module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880425
+    m_Localized: This upgrade will apply on your next deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880426
+    m_Localized: Complete Mooncore stabilization research first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880427
+    m_Localized: Free a storage cell to fabricate this module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880428
+    m_Localized: Store the missing materials to continue.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880429
+    m_Localized: Creates 1 module. Installation is a separate step.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880430
+    m_Localized: Research is permanent.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880431
+    m_Localized: CONSUME & FABRICATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880432
+    m_Localized: CONSUME & RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880433
+    m_Localized: Owned {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880434
+    m_Localized: Installed {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880435
+    m_Localized: +60% damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880436
+    m_Localized: +40% energy capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880437
+    m_Localized: +33% energy recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880438
+    m_Localized: "\u221230% spread"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880439
+    m_Localized: Rifle shot cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880440
+    m_Localized: Shotgun shot cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880441
+    m_Localized: Energy recovery / s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880442
+    m_Localized: All halo damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880443
+    m_Localized: Shared energy capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880444
+    m_Localized: Energy recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880445
+    m_Localized: Halo spread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880446
+    m_Localized: Handling penalties
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880447
+    m_Localized: Mooncore stabilization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880448
+    m_Localized: Firepower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880449
+    m_Localized: Capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880450
+    m_Localized: Stability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880451
+    m_Localized: Need {0} more
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880452
+    m_Localized: RESEARCH PROJECTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880453
+    m_Localized: Research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880454
+    m_Localized: Fabricate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880455
+    m_Localized: OWNED / NEEDED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880456
+    m_Localized: VIEW STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880457
+    m_Localized: RESEARCH & FABRICATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10610075620880458
+    m_Localized: Use recovered materials for permanent upgrades and halo modules.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10618414471852032
+    m_Localized: Mooncore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10618414522183680
+    m_Localized: HAVE / NEED
     m_Metadata:
       m_Items: []
   - m_Id: 10624198874488832
