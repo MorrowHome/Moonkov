@@ -16,7 +16,10 @@ namespace Unity.MP_FPS.Client
         private readonly bool m_Loading;
         private readonly Action m_IntroFinished;
         private bool m_Visible, m_ReducedMotion, m_Skipped, m_IntroPlayed, m_Disposed;
-        private double m_Started;
+        private double m_Elapsed, m_IntroElapsed, m_LastTick = double.NaN;
+
+        // Authentication may finish first; presentation still owns the opening sequence.
+        public bool IntroPending => !m_Loading && !m_IntroPlayed && !m_ReducedMotion && !m_Disposed;
 
         private sealed class TerminalWindow
         {
@@ -112,25 +115,30 @@ namespace Unity.MP_FPS.Client
             m_Visible = visible;
             m_Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             m_Tick.Pause();
-            if (!visible) { FinishIntro(); return; }
+            m_LastTick = double.NaN;
+            if (!visible) { HideIntro(); return; }
             SettleSignal();
-            m_Started = TerminalMotion.Now; m_Skipped = reducedMotion;
-            m_Stage.style.display = reducedMotion || (!m_Loading && m_IntroPlayed) ? DisplayStyle.None : DisplayStyle.Flex;
+            if (m_Loading) m_Elapsed = 0;
+            m_Skipped = false;
+            m_Stage.style.display = reducedMotion ? DisplayStyle.None : DisplayStyle.Flex;
             if (m_Intro != null && !m_IntroPlayed && !reducedMotion)
             {
                 m_Host.AddToClassList("halos-intro-active"); m_Intro.style.display = DisplayStyle.Flex;
                 m_Intro.style.opacity = 0; m_Intro.Focus();
             }
             if (reducedMotion) FinishIntro();
-            else if (m_Loading || !m_IntroPlayed) { Tick(); m_Tick.Resume(); }
+            else m_Tick.Resume();
         }
 
         public void Skip()
         {
             if (!m_Visible || m_Disposed) return;
-            m_Skipped = true; m_Stage.style.display = DisplayStyle.None;
-            SettleSignal();
-            m_Tick.Pause(); FinishIntro();
+            if (m_Loading)
+            {
+                m_Skipped = true; m_Stage.style.display = DisplayStyle.None;
+                SettleSignal(); m_Tick.Pause();
+            }
+            else FinishIntro();
         }
         private void SkipIntroPointer(PointerDownEvent evt)
         {
@@ -147,12 +155,22 @@ namespace Unity.MP_FPS.Client
         private void Tick()
         {
             if (!m_Visible || m_ReducedMotion || m_Skipped) { m_Tick?.Pause(); return; }
-            double elapsed = TerminalMotion.Now - m_Started;
-            if (!m_Loading && elapsed >= IntroDuration)
+            if (!IsOnScreen()) { m_LastTick = double.NaN; return; }
+            double now = TerminalMotion.Now;
+            // Hidden panels and a blocked startup frame must not consume the whole intro.
+            double step = double.IsNaN(m_LastTick) ? 0 : Math.Max(0, Math.Min(.1, now - m_LastTick));
+            m_LastTick = now;
+            m_Elapsed += step;
+            if (IntroPending)
             {
-                m_Stage.style.display = DisplayStyle.None; SettleSignal(); m_Tick.Pause(); FinishIntro(); return;
+                m_IntroElapsed += step;
+                if (m_IntroElapsed >= IntroDuration)
+                {
+                    FinishIntro();
+                    if (!m_Visible || m_Disposed) return;
+                }
             }
-            double cycle = m_Loading ? elapsed % CycleDuration : elapsed;
+            double cycle = m_Elapsed % CycleDuration;
             for (int i = 0; i < m_Windows.Length; i++)
             {
                 var window = m_Windows[i];
@@ -166,10 +184,19 @@ namespace Unity.MP_FPS.Client
                 if (window.Characters == characters) continue;
                 window.Characters = characters; window.Text.text = window.Content.Substring(0, characters);
             }
-            float interference = Mathf.Sin((float)elapsed * 4.1f);
+            float interference = Mathf.Sin((float)m_Elapsed * 4.1f);
             m_Signal.style.opacity = .18f + .08f * interference;
-            m_Signal.style.translate = new Translate(interference * 7, Mathf.Sin((float)elapsed * 2.7f) * 2);
-            if (m_Intro != null) m_Intro.style.opacity = Mathf.Min(TerminalMotion.OutCubic(Mathf.Clamp01(((float)elapsed - 1.5f) / .45f)), Mathf.Clamp01((float)(IntroDuration - elapsed) / .2f));
+            m_Signal.style.translate = new Translate(interference * 7, Mathf.Sin((float)m_Elapsed * 2.7f) * 2);
+            if (IntroPending) m_Intro.style.opacity = Mathf.Min(TerminalMotion.OutCubic(Mathf.Clamp01(((float)m_IntroElapsed - 1.5f) / .45f)), Mathf.Clamp01((float)(IntroDuration - m_IntroElapsed) / .2f));
+        }
+
+        private bool IsOnScreen()
+        {
+            if (m_Root.panel == null || !(m_Root.layout.width > 0) || !(m_Root.layout.height > 0)) return false;
+            for (var element = m_Root; element != null; element = element.parent)
+                if (element.resolvedStyle.display == DisplayStyle.None ||
+                    element.resolvedStyle.visibility == Visibility.Hidden || element.resolvedStyle.opacity <= .001f) return false;
+            return true;
         }
 
         private void SettleSignal()
@@ -179,11 +206,15 @@ namespace Unity.MP_FPS.Client
 
         private void FinishIntro()
         {
-            if (m_Intro == null) return;
-            bool wasActive = m_Host.ClassListContains("halos-intro-active");
-            m_Host.RemoveFromClassList("halos-intro-active"); m_Intro.style.display = DisplayStyle.None;
-            if (wasActive || m_ReducedMotion) m_IntroPlayed = true;
-            if (wasActive && m_Visible) m_IntroFinished?.Invoke();
+            if (m_Intro == null || m_IntroPlayed) return;
+            m_IntroPlayed = true;
+            HideIntro();
+            if (m_Visible && !m_ReducedMotion) m_IntroFinished?.Invoke();
+        }
+        private void HideIntro()
+        {
+            m_Host.RemoveFromClassList("halos-intro-active");
+            if (m_Intro != null) m_Intro.style.display = DisplayStyle.None;
         }
         private void Resize(GeometryChangedEvent evt)
         {
@@ -191,15 +222,16 @@ namespace Unity.MP_FPS.Client
             m_Stage.style.left = (evt.newRect.width - 1920) * .5f; m_Stage.style.top = (evt.newRect.height - 1080) * .5f;
             m_Stage.style.scale = new Scale(Vector3.one * scale);
         }
-        private void Detached(DetachFromPanelEvent evt) => m_Tick.Pause();
+        private void Detached(DetachFromPanelEvent evt) { m_Tick.Pause(); m_LastTick = double.NaN; }
         private void Attached(AttachToPanelEvent evt)
         {
-            if (m_Visible && !m_ReducedMotion && !m_Skipped && (m_Loading || !m_IntroPlayed)) m_Tick.Resume();
+            m_LastTick = double.NaN;
+            if (m_Visible && !m_ReducedMotion && !m_Skipped) m_Tick.Resume();
         }
         public void Dispose()
         {
             if (m_Disposed) return;
-            m_Disposed = true; m_Visible = false; m_Tick.Pause(); FinishIntro();
+            m_Disposed = true; m_Visible = false; m_Tick.Pause(); HideIntro();
             m_Root.UnregisterCallback<GeometryChangedEvent>(Resize);
             m_Root.UnregisterCallback<DetachFromPanelEvent>(Detached);
             m_Root.UnregisterCallback<AttachToPanelEvent>(Attached);
