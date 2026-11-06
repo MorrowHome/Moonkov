@@ -2,13 +2,15 @@
     <ui:Style src="GameUIStyleSheet.uss" />
     <ui:Style src="../../Resources/Moonkov/UI/HalosAccessStyles.uss" />
     <ui:VisualElement name="Canvas" class="canvas halos-ui halos-loading">
-        <ui:VisualElement class="halos-loading-brand" picking-mode="Ignore">
-            <ui:VisualElement class="halos-emblem" picking-mode="Ignore" />
-            <ui:VisualElement class="halos-wordmark" picking-mode="Ignore" />
-        </ui:VisualElement>
-        <ui:VisualElement name="ProgressBarLayout" class="halos-loading-progress" picking-mode="Ignore">
-            <ui:Label name="LoadingStatus" />
-            <ui:ProgressBar high-value="1" value="0" picking-mode="Ignore" />
+        <ui:VisualElement class="halos-loading-content" picking-mode="Ignore">
+            <ui:VisualElement class="halos-loading-brand" picking-mode="Ignore">
+                <ui:VisualElement class="halos-emblem" picking-mode="Ignore" />
+                <ui:VisualElement class="halos-wordmark" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="ProgressBarLayout" class="halos-loading-progress" picking-mode="Ignore">
+                <ui:Label name="LoadingStatus" />
+                <ui:ProgressBar high-value="1" value="0" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

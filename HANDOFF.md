@@ -12,6 +12,7 @@
 
 - 2026-11-07 修正自动登录抢先隐藏开场的问题。验证账号可以并行进行，但进入仓库需等开场结束或用户跳过。开场在菜单就绪、面板可见后计时；隐藏、未挂载和启动阻塞不能直接耗尽 3.2 秒。减少动画设置仍可直接进入。
 - 登录开场结束后继续循环终端和蓝色干扰。登录跳过只结束开场；战局跳过仍只停止装饰，不改真实进度。隐藏时暂停，销毁时解绑；完成回调只触发一次。单 Editor 编译和公开 API 生命周期检查通过，未替用户进入 Play。
+- 战局加载改为居中的标志、游戏名称、状态和蓝色进度条。保留真实进度绑定和原背景。`Tools/Validation/AccessPresentationReview.cs` 的 15 项定向检查通过，覆盖隐藏计时、自动结束、跳过交接、持续动效、减少动画、清理和两种窗口尺寸的居中布局。已目视检查原生 800×630 预览；这不等于冷启动或 Player 性能验收。
 - 2026-11-07 同步 Halos `2511cfa` 的黑底终端原图。只更新共用的 `Terminal.png`，保留资源 GUID、蓝色干扰、按钮强调和进度条。蓝色属于原设计，不应统一去色。概念图只用于对照。用户确认新版三屏舱室主界面另做；本轮没有接入。
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
 - 进图补验：`GhostOwnerIsLocal` 是可开关组件。包含它的查询不能用 `GetSingletonEntity()`，即使先检查数量也会抛异常。`HaloScanClientSystem` 改为读取启用过滤后的实体数组，只接受一个本地角色。`HaloScanChecks.Run()` 的 42 项检查通过，包含 14 项真实客户端系统和所有权切换检查。单 Editor Play 使用隔离单机存档，经实际菜单进入 `TheophilusGameScene`，状态到达 `InGame`；W 键驱动角色移动，帧数持续增加，扫描系统保持启用且没有新增异常。没有登录真实账号、联机或重建 Player。

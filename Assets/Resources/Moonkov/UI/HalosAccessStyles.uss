@@ -91,11 +91,12 @@
 .halos-access.halos-compact .halos-account-brand .halos-wordmark { width: 270px; height: 36px; margin-top: 10px; }
 .halos-loading { background-image: url("PageArt/Base.png"); background-size: cover; background-position: center; -unity-background-image-tint-color: #687589; }
 .halos-loading .halos-stage { opacity: 0.38; }
-.halos-loading-brand { position: absolute; left: 6%; bottom: 29%; flex-direction: row; align-items: center; }
-.halos-loading-brand .halos-emblem { width: 64px; height: 62px; }
-.halos-loading-brand .halos-wordmark { width: 260px; height: 36px; margin-left: 20px; }
-.halos-loading-progress { position: absolute; left: 6%; width: 52%; bottom: 10%; padding: 24px; background-color: rgba(8,9,12,0.96); border-left-width: 4px; border-left-color: var(--halos-blue); }
-.halos-loading #LoadingStatus { color: var(--halos-text); font-size: 16px; white-space: normal; margin-bottom: 16px; -unity-text-align: middle-left; }
+.halos-loading-content { width: 360px; max-width: 90%; flex-shrink: 0; align-items: center; }
+.halos-loading-brand { align-items: center; margin-bottom: 32px; }
+.halos-loading-brand .halos-emblem { width: 210px; height: 204px; }
+.halos-loading-brand .halos-wordmark { width: 320px; height: 42px; margin-top: 16px; }
+.halos-loading-progress { width: 100%; padding: 20px 0; background-color: rgba(8,9,12,0.92); }
+.halos-loading #LoadingStatus { color: var(--halos-text); font-size: 16px; white-space: normal; margin: 0 12px 16px; -unity-text-align: middle-center; }
 .halos-loading ProgressBar { height: 3px; margin: 0; padding: 0; }
 .halos-loading .unity-progress-bar__background { height: 3px; min-height: 3px; background-color: #30343b; border-width: 0; border-radius: 0; }
 .halos-loading .unity-progress-bar__progress { height: 3px; min-height: 3px; background-color: var(--halos-blue); border-width: 0; border-radius: 0; }
