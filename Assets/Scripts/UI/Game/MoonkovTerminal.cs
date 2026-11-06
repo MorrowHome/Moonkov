@@ -333,7 +333,7 @@ namespace Unity.MP_FPS.Client
             vitalMotion.RegisterValueChangedCallback(e => PlayerPrefs.SetInt(RaidVitalsMonitor.AnimatePreference, e.newValue ? 1 : 0));
             var language = m_Content.Q<DropdownField>("language");
             language.choices = new List<string> { "简体中文", "English" };
-            language.SetValueWithoutNotify(UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans" ? "简体中文" : "English");
+            language.SetValueWithoutNotify(MoonkovLocalization.CurrentLocaleCode == "zh-Hans" ? "简体中文" : "English");
             language.RegisterValueChangedCallback(e =>
             {
                 MoonkovLocalization.Select(e.newValue == "简体中文" ? "zh-Hans" : "en");

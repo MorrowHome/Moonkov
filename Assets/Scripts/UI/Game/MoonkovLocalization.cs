@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UIElements;
 using FontAsset = UnityEngine.TextCore.Text.FontAsset;
 
@@ -19,9 +21,11 @@ namespace Unity.MP_FPS
         public const string Strings = "MoonkovUI", Fonts = "MoonkovFonts";
         private static readonly Dictionary<TextElement, Binding> s_Bindings = new Dictionary<TextElement, Binding>();
         private static LocalizedAsset<FontAsset> s_Font;
+        private static LocalizedStringTable s_Strings;
         private static FontAsset s_CurrentFont;
         private static FontAsset s_PreparedFont;
         private static bool s_Initialized;
+        private static int s_LocaleRequest;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset()
@@ -29,6 +33,9 @@ namespace Unity.MP_FPS
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Dispose();
             s_Bindings.Clear();
             if (s_Font != null) s_Font.AssetChanged -= FontChanged;
+            if (s_Strings != null) s_Strings.TableChanged -= StringTableChanged;
+            s_Strings = null;
+            s_LocaleRequest++;
             s_Font = null; s_CurrentFont = null; s_PreparedFont = null; s_Initialized = false;
         }
 
@@ -39,6 +46,34 @@ namespace Unity.MP_FPS
             s_Initialized = true;
             s_Font = new LocalizedAsset<FontAsset> { TableReference = Fonts, TableEntryReference = "UI" };
             s_Font.AssetChanged += FontChanged;
+            s_Strings = new LocalizedStringTable { TableReference = Strings };
+            s_Strings.TableChanged += StringTableChanged;
+        }
+
+        private static StringTable ReadyTable
+        {
+            get
+            {
+                var operation = s_Strings?.CurrentLoadingOperationHandle ?? default;
+                return operation.IsValid() && operation.IsDone && operation.Status == AsyncOperationStatus.Succeeded
+                    ? operation.Result : null;
+            }
+        }
+
+        private static void StringTableChanged(StringTable table)
+        {
+            // Initial UI renders source text; refresh it once the asynchronous table arrives.
+            foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Refresh();
+        }
+
+        public static string CurrentLocaleCode
+        {
+            get
+            {
+                var operation = LocalizationSettings.SelectedLocaleAsync;
+                return operation.IsDone && operation.Status == AsyncOperationStatus.Succeeded
+                    ? operation.Result?.Identifier.Code : PlayerPrefs.GetString("Moonkov.Locale", "zh-Hans");
+            }
         }
 
         private static void FontChanged(FontAsset font)
@@ -88,24 +123,35 @@ namespace Unity.MP_FPS
             }
             if (s_CurrentFont == null) return;
             element.style.unityFontDefinition = FontDefinition.FromSDFFont(s_CurrentFont);
-            if (LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans") element.style.letterSpacing = 0;
+            if (CurrentLocaleCode == "zh-Hans") element.style.letterSpacing = 0;
             else element.style.letterSpacing = StyleKeyword.Null;
         }
 
-        public static void Select(string code)
+        public static async void Select(string code)
         {
-            var locale = LocalizationSettings.AvailableLocales.GetLocale(code);
-            if (locale != null)
+            Initialize();
+            int request = ++s_LocaleRequest;
+            try
             {
+                var initialization = LocalizationSettings.InitializationOperation;
+                await initialization.Task;
+                if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return;
+                var locale = LocalizationSettings.AvailableLocales.GetLocale(code);
+                if (locale == null) return;
                 LocalizationSettings.SelectedLocale = locale;
                 PlayerPrefs.SetString("Moonkov.Locale", locale.Identifier.Code);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
             }
         }
 
         public static string Text(string source)
         {
             if (string.IsNullOrEmpty(source)) return source;
-            var table = LocalizationSettings.StringDatabase.GetTable(Strings);
+            Initialize();
+            var table = ReadyTable;
             return table?.GetEntry(source)?.LocalizedValue ?? source;
         }
 
@@ -150,6 +196,7 @@ namespace Unity.MP_FPS
             private string m_Source;
             private object[] m_Arguments;
             private LocalizedString m_String;
+            private bool m_Disposed;
             public Binding(TextElement element)
             {
                 Element = element;
@@ -162,15 +209,20 @@ namespace Unity.MP_FPS
                 if (same) for (int i = 0; i < arguments.Length; i++) if (!Equals(arguments[i], m_Arguments[i])) { same = false; break; }
                 if (same) return;
                 m_Source = source; m_Arguments = arguments;
+                Refresh();
+            }
+            public void Refresh()
+            {
+                if (m_Disposed || m_Arguments == null) return;
                 if (m_String != null) m_String.StringChanged -= Updated;
                 m_String = null;
-                var table = LocalizationSettings.StringDatabase.GetTable(Strings);
-                if (table?.GetEntry(source) != null)
+                var table = ReadyTable;
+                if (table?.GetEntry(m_Source) != null)
                 {
-                    m_String = new LocalizedString(Strings, source) { Arguments = TranslateArguments() };
+                    m_String = new LocalizedString(Strings, m_Source) { Arguments = TranslateArguments() };
                     m_String.StringChanged += Updated;
                 }
-                else Updated(arguments.Length == 0 ? source : string.Format(CultureInfo.CurrentCulture, source, arguments));
+                else Updated(m_Arguments.Length == 0 ? m_Source : string.Format(CultureInfo.CurrentCulture, m_Source, TranslateArguments()));
             }
             private object[] TranslateArguments()
             {
@@ -180,13 +232,15 @@ namespace Unity.MP_FPS
             }
             private void LocaleChanged(Locale locale)
             {
-                if (m_String != null) { m_String.Arguments = TranslateArguments(); m_String.RefreshString(); }
+                Refresh();
                 ApplyFont(Element);
             }
             private void Updated(string value) { Rendered = value; Element.text = value; }
             private void Detached(DetachFromPanelEvent evt) => Dispose();
             public void Dispose()
             {
+                if (m_Disposed) return;
+                m_Disposed = true;
                 if (m_String != null) m_String.StringChanged -= Updated;
                 LocalizationSettings.SelectedLocaleChanged -= LocaleChanged;
                 Element.UnregisterCallback<DetachFromPanelEvent>(Detached);

@@ -1,5 +1,12 @@
 # 项目交接
 
+## Windows 启动与跨平台资源（2026-11-07）
+
+- 本地化不能在首场景前同步等待。原设置启用了同步初始化，界面还通过 `GetTable` 和 `SelectedLocale` 隐式等待。现改为异步表加载。未完成或失败时显示原文，表就绪后刷新已有文字和格式参数。读取语言不再阻塞，切换语言先异步等待初始化。
+- Addressables 固定随 Player 构建，不再依赖 Mac 或 Windows 的个人 Editor 偏好。三个中文名分组使用纯哈希包文件名，避开跨平台压缩、解压时的文件名编码差异。语言名称和资源 GUID 不变。不要给旧包只替换 DLL；在 Mac 同步代码后重新正常构建，保留增量缓存。
+- `MoonkovPlayerBuildChecks.ValidateStartupAssets` 检查异步初始化、随包构建和非 ASCII 分组的包命名。`Build Chinese Localization` 会保持这些设置。
+- 单 Windows Editor 编译通过。`Tools/Validation/LocalizationStartupReview.cs` 用公开 API 检查，10 项构建设置、译文、格式参数、缺失词条回退和进度隔离检查通过。该次检查的本地化已初始化，不能代表冷启动或资源缺失包已验收。没有进入 Play、启动客户端或重建 Player。下一步验收为 Mac 重打 Windows 包后，冷启动显示登录动画，进图显示持续更新的加载界面。
+
 ## Halos 登录与加载动画（2026-11-06）
 
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。

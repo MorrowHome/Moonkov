@@ -1,4 +1,3 @@
-using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 using Unity.MP_FPS.Inventory;
 
@@ -30,7 +29,7 @@ namespace Unity.MP_FPS.Client
 
         public void Present(RaidResultManifest manifest)
         {
-            string locale = LocalizationSettings.SelectedLocale?.Identifier.Code;
+            string locale = MoonkovLocalization.CurrentLocaleCode;
             if (m_Presented && ReferenceEquals(manifest, m_Manifest) && locale == m_Locale) return;
             m_Presented = true; m_Manifest = manifest; m_Locale = locale;
             m_Host.Clear(); m_Host.scrollOffset = UnityEngine.Vector2.zero;
