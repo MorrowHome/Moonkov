@@ -16,7 +16,13 @@
     "objects/loginControl/Draw_0.gml": "f23fb7b6ae02effe19306a84404a1bea8459aac03f5c228dc71759a91e576378",
     "sprites/loginUI/bc396f0d-83e5-4977-9a57-adc2e22d8ab9.png": "6b08a69012209e63c67b388fd825ed5874148dc5def8b96cc363f6454b454599",
     "sprites/cmdPrompt/8b161ec1-f243-4298-849d-2ca2bf76bdc3.png": "7a2f3b9ea03f21f97648da2990090622bc9a590878d859c34f00ae82c506b5e9",
-    "sprites/staticBG/8fd7c65c-11d8-4f50-b57a-5bf77e2549a8.png": "087b5a13094b875170d3d19f08df925c394b3e9b1b179c5fb50cb16df6fdc9ff"
+    "sprites/staticBG/8fd7c65c-11d8-4f50-b57a-5bf77e2549a8.png": "087b5a13094b875170d3d19f08df925c394b3e9b1b179c5fb50cb16df6fdc9ff",
+    "objects/fader/Create_0.gml": "99a0c548deb879a72310f8d858e5e65f0e959cfc8b160d51b2c0771cf8a9242f",
+    "objects/fader/Step_0.gml": "c7518d07bd32ebc44ce85b620b843c7d4eca83e315b139cf2ba7dc44a2a47a29",
+    "objects/fader/Draw_0.gml": "0fe0a816a434787146df47537ea348d2a2a271ad21de51337d83857bf5e98e26",
+    "objects/fader/fader.yy": "c14decc7f9af45d8f9d367410ba683232ee5afaab087d475e3ec797d438f4560",
+    "sprites/lightFader/f3aab15d-baf1-468c-894f-18227d0b6dcd.png": "4e5b86a649bea6168ee42261e644f4d5ef184badc23b6fe904033f78cb21a978",
+    "options/main/options_main.yy": "3833ba58fca5e0a2b28862d308e45ec4e0aac0506fb4d6916514f69c8981b451"
   },
   "emblemCrop": [
     650,
@@ -33,5 +39,25 @@
     880,
     680,
     22
-  ]
+  ],
+  "rhythmUpdate": {
+    "commit": "2511cfad1a2ebb635839489ff3ee1242d8a4aa02",
+    "sourceRate": 60,
+    "omittedInitialBlackFrames": 260,
+    "windowStartFrames": [
+      0,
+      60,
+      112,
+      156,
+      192,
+      220,
+      240,
+      252,
+      256,
+      257
+    ],
+    "shutterFrame": 493,
+    "loginRevealFrame": 506,
+    "introEndFrame": 523
+  }
 }

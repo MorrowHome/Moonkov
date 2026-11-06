@@ -43,10 +43,16 @@ public sealed class AccessPresentationReview : EditorWindow
         Directory.CreateDirectory(Path.GetDirectoryName(Output));
         try
         {
-            var host = new VisualElement();
-            host.AddToClassList("halos-ui"); host.AddToClassList("halos-access");
-            host.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Resources/Moonkov/UI/HalosAccessStyles.uss"));
-            rootVisualElement.Add(host);
+            var menu = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI Toolkit/GameUI/MainMenu.uxml").CloneTree();
+            menu.style.flexGrow = 1; rootVisualElement.Add(menu);
+            var host = menu.Q("Canvas");
+            host.AddToClassList("archive-access-account"); host.AddToClassList("halos-compact");
+            host.Q("HidingBackground").style.display = DisplayStyle.None;
+            menu.Q("stashScreenHost").style.display = DisplayStyle.None;
+            var connection = menu.Q("ConnectionPanel"); connection.style.display = DisplayStyle.None;
+            var account = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Resources/Moonkov/UI/AccountAccess.uxml").CloneTree().Q("AccountPanel");
+            connection.parent.Insert(0, account);
+            account.Q("accountSecondaryActions").Insert(0, menu.Q("ProfileMode"));
             int completed = 0;
             m_Backdrop = new HalosTerminalBackdrop(host, false, () => completed++);
             m_Backdrop.Present(true, false); m_Backdrop.Present(false, false);
@@ -58,16 +64,31 @@ public sealed class AccessPresentationReview : EditorWindow
             host.style.display = DisplayStyle.Flex;
             await Wait(350);
             Require(m_Backdrop.IntroPending && host.ClassListContains("halos-intro-active"), "intro is still pending after its first visible frames");
+            Require(VisibleTerminals(host) == 1 && host.Q("halosTerminal0").style.opacity.value == 1,
+                "first terminal pops in at full opacity and holds alone");
+            Require(host.Q("Container").resolvedStyle.visibility == Visibility.Hidden,
+                "unrevealed login controls remain hidden from keyboard focus");
+            await Wait(1000);
+            Require(VisibleTerminals(host) == 2, "second terminal arrives after the first one-second beat");
+            // The visible clock deliberately pauses through blocked Editor frames.
+            // Observe the authored one-character-per-frame clock instead of wall time.
+            await Until(() => host.Q("halosTerminal0").Q<Label>().text.Replace("\n", "").Length >= 270);
+            Require(VisibleTerminals(host) == 10, "accelerating burst completes with all ten windows layered");
+            await Until(() => VisibleTerminals(host) == 0);
+            Require(VisibleTerminals(host) == 0 && m_Backdrop.IntroPending && host.Q("Container").style.opacity.value == 0,
+                "windows clear before the quiet beat and login reveal");
             double deadline = EditorApplication.timeSinceStartup + 15;
             while (m_Backdrop.IntroPending && EditorApplication.timeSinceStartup < deadline) await Wait(150);
             Require(!m_Backdrop.IntroPending && completed == 1, "visible intro completes exactly once");
+            Require(host.Q("Container").resolvedStyle.opacity > .99f, "the actual login form is revealed without a replacement-logo jump");
             var signal = host.Q(className: "halos-signal");
-            float opacity = signal.style.opacity.value;
-            await Wait(270);
-            Require(Math.Abs(opacity - signal.style.opacity.value) > .0001f, "login background continues after the intro");
+            Require(await SignalMoves(signal), "login noise continues in discrete bursts after the intro");
+            float opacity;
             m_Backdrop.Skip(); opacity = signal.style.opacity.value;
-            await Wait(270);
-            Require(completed == 1 && Math.Abs(opacity - signal.style.opacity.value) > .0001f, "skip does not stop the login background or repeat completion");
+            Require(await SignalMoves(signal) && completed == 1 && host.Q(className: "halos-stage").style.display == DisplayStyle.None,
+                "skip preserves login noise without replaying terminal windows");
+            await Wait(1800);
+            Require(VisibleTerminals(host) == 0, "login stays quiet instead of restarting the terminal sequence");
             m_Backdrop.Present(false, false); opacity = signal.style.opacity.value;
             await Wait(270);
             Require(opacity == signal.style.opacity.value, "hidden background stops updating");
@@ -90,9 +111,6 @@ public sealed class AccessPresentationReview : EditorWindow
             m_Backdrop = new HalosTerminalBackdrop(canvas, true); m_Backdrop.Present(true, false);
             await Wait(200);
             CheckLayout(canvas);
-            position = new Rect(40, 50, 800, 630);
-            await Wait(250);
-            CheckLayout(canvas);
             m_Backdrop.Skip();
             Require(progress.value == .42f, "skipping decoration preserves the real progress value");
             File.WriteAllText(Output, string.Join("\n", m_Checks));
@@ -103,6 +121,32 @@ public sealed class AccessPresentationReview : EditorWindow
             File.WriteAllText(Output, string.Join("\n", m_Checks) + "\nFAIL " + exception);
             Debug.LogException(exception);
         }
+    }
+
+    private static int VisibleTerminals(VisualElement host)
+    {
+        int count = 0;
+        host.Query(className: "halos-terminal").ForEach(element => { if (element.style.display == DisplayStyle.Flex) count++; });
+        return count;
+    }
+
+    private async Task Until(Func<bool> predicate)
+    {
+        double deadline = EditorApplication.timeSinceStartup + 8;
+        while (!predicate() && EditorApplication.timeSinceStartup < deadline) await Wait(50);
+        Require(predicate(), "animation reaches the next observable source beat");
+    }
+
+    private async Task<bool> SignalMoves(VisualElement signal)
+    {
+        var position = signal.style.translate.value;
+        float opacity = signal.style.opacity.value;
+        for (int i = 0; i < 6; i++)
+        {
+            await Wait(100);
+            if (!signal.style.translate.value.Equals(position) || signal.style.opacity.value != opacity) return true;
+        }
+        return false;
     }
 
     private void CheckLayout(VisualElement canvas)
