@@ -11,9 +11,11 @@ namespace Unity.MP_FPS.Client
         public const string ReducedMotionPreference = "Moonkov.AccessReducedMotion";
         // Four accelerating subdivisions accumulate a wall of windows before the release.
         private const int SourceRate = 60, BuildCompleteFrame = 264, ImpactFrame = 282, ClearFrame = 294;
-        private const int ShutterFrame = 330, ShutterFrames = 42, RevealFrame = 372, RevealFrames = 42;
-        private const int IntroFrames = 432, LoadingLoopFrames = 360, LiveTextWindows = 12;
-        private readonly VisualElement m_Host, m_Root, m_Stage, m_Noise, m_Signal, m_Impact, m_Intro, m_Content;
+        // Halos tail: black hold, 50 design pixels per frame, then an exponential reveal.
+        private const int ShutterFrame = ClearFrame + 60, ShutterFrames = 14, RevealFrame = ShutterFrame + 13;
+        private const int RevealFrames = 17, FlickerFrame = RevealFrame + RevealFrames, IntroFrames = FlickerFrame + 18;
+        private const int LoadingLoopFrames = 360, LiveTextWindows = 12;
+        private readonly VisualElement m_Host, m_Root, m_Stage, m_Noise, m_NoiseEcho, m_Signal, m_Impact, m_Intro, m_Content;
         private readonly VisualElement m_ShutterTop, m_ShutterBottom, m_LightTop, m_LightBottom;
         private readonly TerminalWindow[] m_Windows = new TerminalWindow[33];
         private readonly IVisualElementScheduledItem m_Tick;
@@ -23,6 +25,8 @@ namespace Unity.MP_FPS.Client
         private double m_Elapsed, m_IntroElapsed, m_LastTick = double.NaN;
         private readonly System.Random m_SignalRandom = new System.Random(1701);
         private int m_SignalFrame = -1, m_NextGlitchFrame, m_GlitchEndFrame;
+        private int m_NextLoginFlickerFrame = -1;
+        private float m_LoginOpacity = 1;
 
         // Authentication may finish first; presentation still owns the opening sequence.
         public bool IntroPending => !m_Loading && !m_IntroPlayed && !m_ReducedMotion && !m_Disposed;
@@ -47,6 +51,12 @@ namespace Unity.MP_FPS.Client
             m_Root = new VisualElement { name = "halosBackdrop", pickingMode = PickingMode.Ignore };
             m_Root.AddToClassList("halos-backdrop");
             m_Noise = AddDecoration(m_Root, "halos-noise");
+            if (!loading)
+            {
+                m_NoiseEcho = AddDecoration(m_Root, "halos-noise");
+                m_NoiseEcho.AddToClassList("halos-noise-echo");
+                m_NoiseEcho.style.opacity = 0;
+            }
             m_Signal = AddDecoration(m_Root, "halos-signal");
             if (!loading)
             {
@@ -268,26 +278,32 @@ namespace Unity.MP_FPS.Client
 
         private void PresentIntro(int frame)
         {
-            float opening = Mathf.Clamp01((frame - ShutterFrame) / (float)ShutterFrames);
+            int openingFrames = Math.Max(0, frame - ShutterFrame + 1);
             float height = m_Root.layout.height > 0 ? m_Root.layout.height : 1080f;
-            float distance = Mathf.SmoothStep(0, 1, opening) * height * .55f;
+            float distance = Math.Min(openingFrames, ShutterFrames) * 50f * height / 1080f;
             m_ShutterTop.style.display = m_ShutterBottom.style.display = DisplayStyle.Flex;
             m_ShutterTop.style.translate = new Translate(0, -distance);
             m_ShutterBottom.style.translate = new Translate(0, distance);
-            m_LightTop.style.opacity = m_LightBottom.style.opacity = .65f * Mathf.Sin(opening * Mathf.PI);
+            m_LightTop.style.opacity = m_LightBottom.style.opacity = 1 - Mathf.Pow(.75f, openingFrames);
             if (m_Content != null)
             {
                 m_Content.style.visibility = frame >= RevealFrame ? Visibility.Visible : Visibility.Hidden;
-                m_Content.style.opacity = Mathf.SmoothStep(0, 1, Mathf.Clamp01((frame - RevealFrame) / (float)RevealFrames));
+                if (frame < FlickerFrame)
+                    m_Content.style.opacity = 1 - Mathf.Pow(5f / 6, Math.Max(0, frame - RevealFrame + 1));
             }
         }
 
         private void PresentSignal(int frame)
         {
-            // Gentle brightness breathing, interrupted by brief, separated signal faults.
+            // Transform/opacity updates at 30 Hz; text layout is unaffected by noise flicker.
             if (frame / 2 == m_SignalFrame / 2 && m_SignalFrame >= 0) return;
             if (m_SignalFrame < 0) m_NextGlitchFrame = frame + 90;
             m_SignalFrame = frame;
+            if (!m_Loading && (m_IntroPlayed || m_IntroElapsed * SourceRate >= RevealFrame))
+            {
+                PresentLoginSignal(frame);
+                return;
+            }
             if (frame >= m_NextGlitchFrame)
             {
                 m_GlitchEndFrame = frame + 6;
@@ -301,6 +317,28 @@ namespace Unity.MP_FPS.Client
             m_Noise.style.opacity = .035f + .018f * breath + (glitch ? .02f : 0);
             m_Signal.style.translate = new Translate(offset, 0);
             m_Noise.style.translate = new Translate(-2 * offset, 0);
+        }
+
+        private void PresentLoginSignal(int frame)
+        {
+            int introFrame = (int)(m_IntroElapsed * SourceRate);
+            bool flickering = m_IntroPlayed || introFrame >= FlickerFrame;
+            if (flickering && (m_NextLoginFlickerFrame < 0 || frame >= m_NextLoginFlickerFrame))
+            {
+                m_LoginOpacity = .6f + .3f * (float)m_SignalRandom.NextDouble();
+                m_NextLoginFlickerFrame = frame + m_SignalRandom.Next(15, 31);
+            }
+            float opacity = flickering ? m_LoginOpacity : 1 - Mathf.Pow(5f / 6, Math.Max(0, introFrame - RevealFrame + 1));
+            if (flickering && m_Content != null) m_Content.style.opacity = opacity;
+            // loginControl.gml: alpha .6-.9, opposing static layers, stronger jitter
+            // in the final ten frames before the next irregular brightness change.
+            int range = m_NextLoginFlickerFrame - frame < 10 ? 20 : 5;
+            float offset = m_SignalRandom.Next(-range, range + 1) * m_Root.layout.width / 1920f;
+            m_Noise.style.opacity = m_NoiseEcho.style.opacity = Mathf.Max(0, opacity - .5f);
+            m_Noise.style.translate = new Translate(offset, 0);
+            m_NoiseEcho.style.translate = new Translate(-2 * offset, 0);
+            m_Signal.style.opacity = .12f * opacity;
+            m_Signal.style.translate = new Translate(0, 0);
         }
 
         private bool IsOnScreen()
@@ -317,8 +355,15 @@ namespace Unity.MP_FPS.Client
             m_Signal.style.opacity = .12f; m_Signal.style.translate = new Translate(0, 0);
             m_Noise.style.translate = new Translate(0, 0);
             m_Noise.style.opacity = .045f;
+            if (m_NoiseEcho != null)
+            {
+                m_NoiseEcho.style.opacity = 0;
+                m_NoiseEcho.style.translate = new Translate(0, 0);
+            }
             m_Impact.style.opacity = 0; m_Stage.style.translate = new Translate(0, 0);
             m_SignalFrame = -1; m_GlitchEndFrame = 0;
+            m_NextLoginFlickerFrame = -1; m_LoginOpacity = 1;
+            if (m_Content != null) m_Content.style.opacity = StyleKeyword.Null;
         }
 
         private void FinishIntro()
@@ -327,6 +372,8 @@ namespace Unity.MP_FPS.Client
             m_IntroPlayed = true;
             m_Stage.style.display = DisplayStyle.None;
             HideIntro();
+            if (m_Content != null && m_Visible && !m_ReducedMotion && m_NextLoginFlickerFrame >= 0)
+                m_Content.style.opacity = m_LoginOpacity;
             if (m_Visible && !m_ReducedMotion) m_IntroFinished?.Invoke();
         }
         private void HideIntro()
