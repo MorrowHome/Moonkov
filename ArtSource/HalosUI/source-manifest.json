@@ -1,6 +1,11 @@
 {
   "repository": "Halos",
   "commit": "2e84c81",
+  "terminalUpdate": {
+    "commit": "2511cfad1a2ebb635839489ff3ee1242d8a4aa02",
+    "source": "sprites/cmdPrompt/8b161ec1-f243-4298-849d-2ca2bf76bdc3.png",
+    "sha256": "7a2f3b9ea03f21f97648da2990090622bc9a590878d859c34f00ae82c506b5e9"
+  },
   "project": "Moonkov UIs",
   "sources": {
     "objects/loginAnim/Create_0.gml": "0b6b77e25c0e5575dcfe94e5be272bcaca8410f42de039c02c370a791d1115da",
@@ -10,7 +15,7 @@
     "objects/loginControl/Step_0.gml": "932377560f3905bbc89692415c03e8f2695b539e1d9e979964efc6e396fdc975",
     "objects/loginControl/Draw_0.gml": "f23fb7b6ae02effe19306a84404a1bea8459aac03f5c228dc71759a91e576378",
     "sprites/loginUI/bc396f0d-83e5-4977-9a57-adc2e22d8ab9.png": "6b08a69012209e63c67b388fd825ed5874148dc5def8b96cc363f6454b454599",
-    "sprites/cmdPrompt/8b161ec1-f243-4298-849d-2ca2bf76bdc3.png": "51a47fe649a88871c2b7b3d35a7d4fc2ac2f03a9db9e52b80e54cb633c547d5f",
+    "sprites/cmdPrompt/8b161ec1-f243-4298-849d-2ca2bf76bdc3.png": "7a2f3b9ea03f21f97648da2990090622bc9a590878d859c34f00ae82c506b5e9",
     "sprites/staticBG/8fd7c65c-11d8-4f50-b57a-5bf77e2549a8.png": "087b5a13094b875170d3d19f08df925c394b3e9b1b179c5fb50cb16df6fdc9ff"
   },
   "emblemCrop": [

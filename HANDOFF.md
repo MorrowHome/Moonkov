@@ -1,5 +1,12 @@
 # 项目交接
 
+## Windows 启动与跨平台资源（2026-11-07）
+
+- 本地化不能在首场景前同步等待。原设置启用了同步初始化，界面还通过 `GetTable` 和 `SelectedLocale` 隐式等待。现改为异步表加载。未完成或失败时显示原文，表就绪后刷新已有文字和格式参数。读取语言不再阻塞，切换语言先异步等待初始化。
+- Addressables 固定随 Player 构建，不再依赖 Mac 或 Windows 的个人 Editor 偏好。三个中文名分组使用纯哈希包文件名，避开跨平台压缩、解压时的文件名编码差异。语言名称和资源 GUID 不变。不要给旧包只替换 DLL；在 Mac 同步代码后重新正常构建，保留增量缓存。
+- `MoonkovPlayerBuildChecks.ValidateStartupAssets` 检查异步初始化、随包构建和非 ASCII 分组的包命名。`Build Chinese Localization` 会保持这些设置。
+- 单 Windows Editor 编译通过。`Tools/Validation/LocalizationStartupReview.cs` 用公开 API 检查，10 项构建设置、译文、格式参数、缺失词条回退和进度隔离检查通过。该次检查的本地化已初始化，不能代表冷启动或资源缺失包已验收。没有进入 Play、启动客户端或重建 Player。下一步验收为 Mac 重打 Windows 包后，冷启动显示登录动画，进图显示持续更新的加载界面。
+
 ## 界面与操作（2026-11-07）
 
 - 交互统一为 F。搜刮、设备、补给、拆陷阱和止血共用此键；E 保留侧身用途。中英文键帽、教学和设置提示同步更新。任务设备、世界控件及赏金救援／目标操作先取得本次按键，不能再触发搜刮或自救。
@@ -18,6 +25,7 @@
 
 ## Halos 登录与加载动画（2026-11-06）
 
+- 2026-11-07 同步 Halos `2511cfa` 的黑底终端原图。只更新共用的 `Terminal.png`，保留资源 GUID、蓝色干扰、按钮强调和进度条。蓝色属于原设计，不应统一去色。概念图只用于对照。用户确认新版三屏舱室主界面另做；本轮没有接入。
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
 - 进图补验：`GhostOwnerIsLocal` 是可开关组件。包含它的查询不能用 `GetSingletonEntity()`，即使先检查数量也会抛异常。`HaloScanClientSystem` 改为读取启用过滤后的实体数组，只接受一个本地角色。`HaloScanChecks.Run()` 的 42 项检查通过，包含 14 项真实客户端系统和所有权切换检查。单 Editor Play 使用隔离单机存档，经实际菜单进入 `TheophilusGameScene`，状态到达 `InGame`；W 键驱动角色移动，帧数持续增加，扫描系统保持启用且没有新增异常。没有登录真实账号、联机或重建 Player。
 - 美术源为 Halos 仓库的 `Moonkov UIs`。原 GML 和资源哈希在 `ArtSource/HalosUI`。保留原标志、十个终端窗口的位置和打字逻辑。开场缩到约 3.2 秒。`MoonkovWordmark.svg` 补游戏名称。

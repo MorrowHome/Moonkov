@@ -2,6 +2,9 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.Localization;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -37,7 +40,7 @@ public static class MoonkovLocalizationBuilder
         LocalizationSettings.StartupLocaleSelectors.Clear();
         LocalizationSettings.StartupLocaleSelectors.Add(new PlayerPrefLocaleSelector { PlayerPreferenceKey = "Moonkov.Locale" });
         LocalizationSettings.StartupLocaleSelectors.Add(new SpecificLocaleSelector { LocaleId = new LocaleIdentifier("zh-Hans") });
-        LocalizationSettings.InitializeSynchronously = true;
+        LocalizationSettings.InitializeSynchronously = false;
         EditorUtility.SetDirty(settings);
 
         var translations = JObject.Parse(File.ReadAllText(folder + "/Translations.json"));
@@ -65,6 +68,16 @@ public static class MoonkovLocalizationBuilder
         foreach (var reference in fonts.Tables) EditorUtility.SetDirty(reference.asset);
         EditorUtility.SetDirty(fonts); EditorUtility.SetDirty(fonts.SharedData);
         LocalizationEditorSettings.EditorEvents.RaiseCollectionModified(null, fonts);
+        var addressables = AddressableAssetSettingsDefaultObject.Settings;
+        addressables.BuildAddressablesWithPlayerBuild = AddressableAssetSettings.PlayerBuildOption.BuildWithPlayer;
+        EditorUtility.SetDirty(addressables);
+        foreach (var group in addressables.groups.Where(group => group != null && group.Name.Any(c => c > 127)))
+        {
+            var schema = group.GetSchema<BundledAssetGroupSchema>();
+            if (schema == null || !schema.IncludeInBuild) continue;
+            schema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.OnlyHash;
+            EditorUtility.SetDirty(schema);
+        }
         AssetDatabase.SaveAssets();
         Debug.Log("Moonkov localization: " + translations.Count + " bilingual strings; Chinese/English fonts registered.");
     }

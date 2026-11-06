@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -46,6 +50,7 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProc
     public static void Validate()
     {
         var errors = new List<string>();
+        ValidateStartupAssets(errors);
         var graphics = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/GraphicsSettings.asset")[0]);
         // BuildingBakedLighting installs non-directional atlases at runtime; scene analysis cannot infer them.
         if (graphics.FindProperty("m_LightmapStripping").intValue != 1 ||
@@ -104,6 +109,25 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProc
             throw new BuildFailedException("Moonkov player rendering preflight failed:\n" + string.Join("\n", errors));
         Debug.Log($"[Moonkov build] Rendering preflight passed: {scenes.Length} scenes, {materialCount} materials, {shaders.Count} shaders. " +
             "This checks configuration/dependencies; a new player build and visual acceptance are still required.");
+    }
+
+    public static void ValidateStartupAssets(List<string> errors)
+    {
+        var localization = AssetDatabase.LoadAssetAtPath<LocalizationSettings>("Assets/Localization/LocalizationSettings.asset");
+        if (!localization || new SerializedObject(localization).FindProperty("m_InitializeSynchronously").boolValue)
+            errors.Add("Localization must initialize asynchronously so the startup UI can render.");
+        var addressables = AddressableAssetSettingsDefaultObject.Settings;
+        if (!addressables || addressables.BuildAddressablesWithPlayerBuild != AddressableAssetSettings.PlayerBuildOption.BuildWithPlayer)
+            errors.Add("Addressables must build with the Player for the selected target, independently of host preferences.");
+        if (!addressables) return;
+        foreach (var group in addressables.groups.Where(group => group != null && group.Name.Any(c => c > 127)))
+        {
+            var schema = group.GetSchema<BundledAssetGroupSchema>();
+            if (schema == null || !schema.IncludeInBuild) continue;
+            if (schema.BundleNaming != BundledAssetGroupSchema.BundleNamingStyle.OnlyHash &&
+                schema.BundleNaming != BundledAssetGroupSchema.BundleNamingStyle.FileNameHash)
+                errors.Add("Use hash-only bundle filenames for portable packaging: " + group.Name);
+        }
     }
 
     // IncludeAdditionalRPAssets feeds URP's later stripper, but native keyword
