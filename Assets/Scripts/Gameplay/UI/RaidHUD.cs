@@ -118,6 +118,7 @@ namespace Unity.MP_FPS
             m_TaskToggle.clicked += ToggleTasks;
             SetTasksCollapsed(false);
             m_TaskPanel.style.display = DisplayStyle.None;
+            InitializeTelemetry();
             m_Minimap = new RaidMinimapView(m_Root);
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
@@ -443,10 +444,11 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
+            UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
             bool clash = PresentBountyClash();
@@ -991,6 +993,7 @@ namespace Unity.MP_FPS
             if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
             m_ClashTaskToggle = null;
             m_InteractionBindings?.Dispose(); m_InteractionBindings = null;
+            DisposeTelemetry();
             DisposeChat();
             DisposeCampaignHUD();
             ResetRaidCinematics();

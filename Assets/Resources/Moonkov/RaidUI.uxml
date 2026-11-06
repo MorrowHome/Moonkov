@@ -4,6 +4,7 @@
     <ui:Style src="UI/RaidMinimap.uss" />
     <ui:Style src="UI/RaidInventory.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
+        <ui:Label name="raidTelemetry" class="raid-telemetry moonkov-style-font" picking-mode="Ignore" />
         <ui:VisualElement name="raidTaskPanel" class="raid-task-panel" picking-mode="Ignore">
             <ui:Button name="raidTaskToggle" class="raid-task-toggle" focusable="false">
                 <ui:Label text="TASKS" class="raid-task-heading" picking-mode="Ignore" />
