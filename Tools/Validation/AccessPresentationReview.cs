@@ -68,21 +68,28 @@ public sealed class AccessPresentationReview : EditorWindow
                 "first terminal pops in at full opacity and holds alone");
             Require(host.Q("Container").resolvedStyle.visibility == Visibility.Hidden,
                 "unrevealed login controls remain hidden from keyboard focus");
-            await Wait(1000);
-            Require(VisibleTerminals(host) == 2, "second terminal arrives after the first one-second beat");
-            // The visible clock deliberately pauses through blocked Editor frames.
-            // Observe the authored one-character-per-frame clock instead of wall time.
-            await Until(() => host.Q("halosTerminal0").Q<Label>().text.Replace("\n", "").Length >= 270);
+            await Until(() => VisibleTerminals(host) == 10);
             Require(VisibleTerminals(host) == 10, "accelerating burst completes with all ten windows layered");
+            var terminalText = host.Q("halosTerminal0").Q<Label>();
+            Require(terminalText.text.Length > 200 && !terminalText.enableRichText && terminalText.text.IndexOfAny("[]{}<>/_:=+-#$".ToCharArray()) >= 0,
+                "fast terminal stream includes literal corruption symbols without markup parsing");
             await Until(() => VisibleTerminals(host) == 0);
             Require(VisibleTerminals(host) == 0 && m_Backdrop.IntroPending && host.Q("Container").style.opacity.value == 0,
                 "windows clear before the quiet beat and login reveal");
+            await Until(() => host.Q(className: "halos-shutter-top").style.translate.value.y.value < 0);
+            await Wait(250);
+            Require(m_Backdrop.IntroPending && host.Q("Container").style.opacity.value == 0,
+                "shutter movement has room to finish before the login fade");
+            await Until(() => host.Q("Container").style.opacity.value > 0);
+            await Wait(250);
+            Require(m_Backdrop.IntroPending && host.Q("Container").style.opacity.value < 1,
+                "login fade remains visible instead of snapping to completion");
             double deadline = EditorApplication.timeSinceStartup + 15;
             while (m_Backdrop.IntroPending && EditorApplication.timeSinceStartup < deadline) await Wait(150);
             Require(!m_Backdrop.IntroPending && completed == 1, "visible intro completes exactly once");
             Require(host.Q("Container").resolvedStyle.opacity > .99f, "the actual login form is revealed without a replacement-logo jump");
             var signal = host.Q(className: "halos-signal");
-            Require(await SignalMoves(signal), "login noise continues in discrete bursts after the intro");
+            Require(await SignalMoves(signal), "login background continues breathing after the intro");
             float opacity;
             m_Backdrop.Skip(); opacity = signal.style.opacity.value;
             Require(await SignalMoves(signal) && completed == 1 && host.Q(className: "halos-stage").style.display == DisplayStyle.None,
@@ -134,7 +141,7 @@ public sealed class AccessPresentationReview : EditorWindow
     {
         double deadline = EditorApplication.timeSinceStartup + 8;
         while (!predicate() && EditorApplication.timeSinceStartup < deadline) await Wait(50);
-        Require(predicate(), "animation reaches the next observable source beat");
+        Require(predicate(), "animation reaches the next observable beat");
     }
 
     private async Task<bool> SignalMoves(VisualElement signal)
