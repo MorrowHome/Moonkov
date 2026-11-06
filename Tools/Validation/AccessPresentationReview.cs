@@ -68,9 +68,23 @@ public sealed class AccessPresentationReview : EditorWindow
                 "first terminal pops in at full opacity and holds alone");
             Require(host.Q("Container").resolvedStyle.visibility == Visibility.Hidden,
                 "unrevealed login controls remain hidden from keyboard focus");
-            await Until(() => VisibleTerminals(host) == 10);
-            Require(VisibleTerminals(host) == 10, "accelerating burst completes with all ten windows layered");
+            await Until(() => VisibleTerminals(host) == 33);
+            await Wait(50);
+            Require(VisibleTerminals(host) == 33, "buildup retains all thirty-three windows at its peak");
+            bool inside = true;
+            for (int i = 1; i < 33; i++)
+            {
+                var bounds = host.Q("halosTerminal" + i).worldBound;
+                inside &= bounds.width > 0 && host.worldBound.Contains(bounds.min) && host.worldBound.Contains(bounds.max);
+            }
+            Require(inside, "stacked windows stay inside the visible canvas instead of building offscreen");
             var terminalText = host.Q("halosTerminal0").Q<Label>();
+            string retainedText = terminalText.text;
+            var newestText = host.Q("halosTerminal32").Q<Label>();
+            string liveText = newestText.text;
+            await Wait(100);
+            Require(terminalText.text == retainedText && newestText.text != liveText,
+                "covered text is retained while front windows continue scrolling");
             Require(terminalText.text.Length > 200 && !terminalText.enableRichText && terminalText.text.IndexOfAny("[]{}<>/_:=+-#$".ToCharArray()) >= 0,
                 "fast terminal stream includes literal corruption symbols without markup parsing");
             await Until(() => VisibleTerminals(host) == 0);

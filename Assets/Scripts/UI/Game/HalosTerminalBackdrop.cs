@@ -9,12 +9,13 @@ namespace Unity.MP_FPS.Client
     public sealed class HalosTerminalBackdrop : IDisposable
     {
         public const string ReducedMotionPreference = "Moonkov.AccessReducedMotion";
-        // A short terminal burst, a quiet beat, then a deliberate reveal and hold.
-        private const int SourceRate = 60, ShutterFrame = 206, ShutterFrames = 42;
-        private const int RevealFrame = 248, RevealFrames = 42, IntroFrames = 308, LoadingLoopFrames = 240;
-        private readonly VisualElement m_Host, m_Root, m_Stage, m_Noise, m_Signal, m_Intro, m_Content;
+        // Four accelerating subdivisions accumulate a wall of windows before the release.
+        private const int SourceRate = 60, BuildCompleteFrame = 264, ImpactFrame = 282, ClearFrame = 294;
+        private const int ShutterFrame = 330, ShutterFrames = 42, RevealFrame = 372, RevealFrames = 42;
+        private const int IntroFrames = 432, LoadingLoopFrames = 360, LiveTextWindows = 12;
+        private readonly VisualElement m_Host, m_Root, m_Stage, m_Noise, m_Signal, m_Impact, m_Intro, m_Content;
         private readonly VisualElement m_ShutterTop, m_ShutterBottom, m_LightTop, m_LightBottom;
-        private readonly TerminalWindow[] m_Windows = new TerminalWindow[10];
+        private readonly TerminalWindow[] m_Windows = new TerminalWindow[33];
         private readonly IVisualElementScheduledItem m_Tick;
         private readonly bool m_Loading;
         private readonly Action m_IntroFinished;
@@ -33,7 +34,7 @@ namespace Unity.MP_FPS.Client
             public string Content;
             public readonly char[] Scratch = new char[420];
             public int TextStep = -1;
-            public int Delay, Lifetime;
+            public int Delay;
         }
 
         public static bool PrefersReducedMotion => PlayerPrefs.GetInt(ReducedMotionPreference,
@@ -56,20 +57,13 @@ namespace Unity.MP_FPS.Client
                 m_LightBottom = AddDecoration(m_ShutterBottom, "halos-shutter-light");
             }
             m_Stage = AddDecoration(m_Root, "halos-stage");
+            m_Impact = AddDecoration(m_Root, "halos-impact");
             host.Insert(0, m_Root);
-            var frames = new[]
-            {
-                new Rect(0, 0, 1920, 1080), new Rect(300, 800, 768, 432),
-                new Rect(-400, 200, 768, 432), new Rect(400, -400, 768, 432),
-                new Rect(600, 900, 768, 432), new Rect(200, 100, 768, 432),
-                new Rect(-500, -300, 768, 432), new Rect(700, 500, 768, 432),
-                new Rect(1200, 200, 768, 432), new Rect(1300, 1000, 768, 432)
-            };
-            int[] starts = { 0, 22, 40, 54, 66, 76, 84, 90, 94, 96 };
-            int[] lifetimes = { 126, 122, 112, 102, 92, 82, 72, 66, 60, 56 };
+            int delay = 0;
             for (int i = 0; i < m_Windows.Length; i++)
             {
-                var frame = frames[i]; var window = AddDecoration(m_Stage, "halos-terminal");
+                if (i > 0) delay += i <= 4 ? 24 : i <= 12 ? 12 : i <= 20 ? 6 : 2;
+                var frame = TerminalFrame(i); var window = AddDecoration(m_Stage, "halos-terminal");
                 window.name = "halosTerminal" + i;
                 window.AddToClassList(i == 0 ? "halos-terminal-main" : "halos-terminal-small");
                 window.style.left = frame.x; window.style.top = frame.y;
@@ -79,7 +73,7 @@ namespace Unity.MP_FPS.Client
                 text.AddToClassList("halos-terminal-text"); text.AddToClassList("moonkov-style-font");
                 window.Add(text);
                 m_Windows[i] = new TerminalWindow { Element = window, Text = text, Content = TerminalText(i),
-                    Delay = starts[i], Lifetime = lifetimes[i] };
+                    Delay = delay };
             }
             if (!loading)
             {
@@ -98,6 +92,24 @@ namespace Unity.MP_FPS.Client
             m_Root.RegisterCallback<GeometryChangedEvent>(Resize);
             m_Root.RegisterCallback<DetachFromPanelEvent>(Detached);
             m_Root.RegisterCallback<AttachToPanelEvent>(Attached);
+        }
+
+        private static Rect TerminalFrame(int index)
+        {
+            if (index == 0) return new Rect(0, 0, 1920, 1080);
+            int group = (index - 1) % 4, layer = (index - 1) / 4;
+            var frame = group switch
+            {
+                0 => new Rect(70, 80, 680, 382),
+                1 => new Rect(1100, 60, 640, 360),
+                2 => new Rect(120, 500, 620, 340),
+                _ => new Rect(1110, 510, 620, 340)
+            };
+            // Later windows sit below earlier title bars, so accumulation stays visible.
+            frame.x += layer * (group % 2 == 0 ? 22 : -22);
+            frame.y += layer * 24;
+            frame.width += layer * 6; frame.height += layer * 3;
+            return frame;
         }
 
         private static VisualElement AddDecoration(VisualElement parent, string className)
@@ -193,22 +205,33 @@ namespace Unity.MP_FPS.Client
 
         private void PresentTerminals(int frame)
         {
+            int newest = 0;
+            while (newest + 1 < m_Windows.Length && frame >= m_Windows[newest + 1].Delay) newest++;
+            float intensity = Mathf.Clamp01(frame / (float)BuildCompleteFrame);
+            int beatFrames = frame < 96 ? 24 : frame < 192 ? 12 : frame < 240 ? 6 : 2;
+            bool onBeat = frame < ClearFrame && frame % beatFrames < 2;
+            m_Stage.style.translate = new Translate(onBeat ? ((frame / beatFrames) % 2 == 0 ? -1 : 1) * intensity * intensity * 6 : 0, 0);
+            float release = frame < ImpactFrame ? 1 : frame < ImpactFrame + 3 ? .35f :
+                frame < ImpactFrame + 6 ? 1 : Mathf.Clamp01((ClearFrame - frame) / 6f);
+            m_Impact.style.opacity = frame >= ImpactFrame && frame < ClearFrame ? .1f * (ClearFrame - frame) / (ClearFrame - ImpactFrame) :
+                onBeat ? .035f * intensity * intensity : 0;
             for (int i = 0; i < m_Windows.Length; i++)
             {
                 var window = m_Windows[i];
                 int age = frame - window.Delay;
-                float opacity = (float)Math.Pow(5.0 / 6, Math.Max(0, age - window.Lifetime + 1));
-                bool show = age >= 0 && opacity >= .1f;
+                bool show = age >= 0 && frame < ClearFrame;
                 window.Element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!show) continue;
                 int textStep = age / 4; // Chunked text updates at 15 Hz, independent of the 60 Hz reveal.
                 int key = textStep * 17 + i * 13;
                 bool dropout = age > 6 && key % 11 == 0;
-                window.Element.style.opacity = opacity * (dropout ? .65f : 1);
+                window.Element.style.opacity = release * (dropout ? .65f : 1);
                 window.Element.style.translate = new Translate(dropout ? (i % 2 == 0 ? 7 : -7) : 0, 0);
+                // Covered layers retain their last text; only the newest twelve keep scrolling.
+                if (i <= newest - LiveTextWindows) continue;
                 if (window.TextStep == textStep) continue;
                 window.TextStep = textStep;
-                int end = Math.Min(window.Content.Length, 24 + textStep * 24);
+                int end = Math.Min(window.Content.Length, 24 + textStep * (24 + (int)(intensity * 32)));
                 int length = Math.Min(end, window.Scratch.Length);
                 window.Content.CopyTo(end - length, window.Scratch, 0, length);
                 if (key % 7 == 0 || age < 6)
@@ -273,6 +296,7 @@ namespace Unity.MP_FPS.Client
             m_Signal.style.opacity = .12f; m_Signal.style.translate = new Translate(0, 0);
             m_Noise.style.translate = new Translate(0, 0);
             m_Noise.style.opacity = .045f;
+            m_Impact.style.opacity = 0; m_Stage.style.translate = new Translate(0, 0);
             m_SignalFrame = -1; m_GlitchEndFrame = 0;
         }
 
@@ -287,6 +311,7 @@ namespace Unity.MP_FPS.Client
         private void HideIntro()
         {
             m_Host.RemoveFromClassList("halos-intro-active");
+            m_Impact.style.opacity = 0; m_Stage.style.translate = new Translate(0, 0);
             if (m_Intro != null) m_Intro.style.display = DisplayStyle.None;
             if (m_Content != null)
             {
@@ -297,7 +322,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Resize(GeometryChangedEvent evt)
         {
-            float scale = Mathf.Max(evt.newRect.width / 1920f, evt.newRect.height / 1080f);
+            float scale = Mathf.Min(evt.newRect.width / 1920f, evt.newRect.height / 1080f);
             m_Stage.style.left = (evt.newRect.width - 1920) * .5f; m_Stage.style.top = (evt.newRect.height - 1080) * .5f;
             m_Stage.style.scale = new Scale(Vector3.one * scale);
         }
