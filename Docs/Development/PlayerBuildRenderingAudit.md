@@ -1,5 +1,53 @@
 # Windows 玩家包渲染检查（2026-10-23）
 
+## 2026-11-06：Mac 构建 Windows 客户端
+
+本机为 macOS，Unity 为 `6000.5.10f1`，URP 为 `17.5.0`。
+复用现有 Editor 检查。Windows 构建支持已安装；目标为 Windows x64 / Player，
+脚本后端为 Mono，Development Build 与 Script Debugging 均关闭。这些设置可保留。
+Windows IL2CPP 构建需要 Windows 主机；本机继续使用 Mono。
+
+当前 Windows 的 Auto Graphics API 开启，原生 API 返回 `Direct3D12, Direct3D11`。
+最近一次已取消的恢复构建有 65 条错误：1 条取消记录，64 条 STP 的 DXC 编译错误。
+其中 `StpSetup` 32 条，`StpPreTaa` 和 `StpTaa` 各 16 条。报错明确指出，
+本版本只能从 Windows Editor 使用 DXC 编译 D3D 着色器。
+
+STP 同时提供原生 16 位和普通 32 位路径。Apollo12Laptop 与 MC00Interior
+管线仍使用 STP，因此它们的计算着色器会参与客户端构建。
+单独关闭当前地图的 STP 不能排除其他已登记管线的需求。
+
+对三份 STP 计算着色器执行原生定点编译，目标均为 Windows x64：
+
+- Direct3D11 的 32 个非原生 16 位关键词组合全部通过。
+- Direct3D12 加 `UNITY_DEVICE_SUPPORTS_NATIVE_16BIT` 的对照用例复现相同 DXC 错误。
+- 不启用该关键词时，StpSetup 在 Direct3D11 和 Direct3D12 都生成有效 DXBC 字节码。
+  因此限制针对需要 DXC 的路径，不能笼统写成 Mac 无法构建任何 Direct3D12 内容。
+
+建议本机 Windows 客户端构建关闭 Auto Graphics API，只保留 Direct3D11。
+入口为 Windows 的 Player Settings > Other Settings > Rendering。
+Direct3D11 不支持上述原生 16 位功能，可使用已通过检查的 STP 普通精度路径。
+保留 STP、分辨率、光照和阴影配置。此建议尚未应用；完整构建与 Windows 运行画面
+尚未验证，不能根据定点编译保证整包成功或性能不变。
+
+当前活动配置是默认配置。`Windows.asset` 继承全局 Player Settings；
+`Windows Client.asset` 有独立 Player Settings 覆盖。后者目前也没有显式 Windows
+图形 API 列表，仍走自动选择。下次构建须核对实际使用的配置，不能只改全局设置
+就认定独立配置同步生效。服务器配置不在本次建议范围内。
+
+此前 Windows 构建优化仍有效：URP 未使用变体裁剪、包含场景管线、BRG 条件裁剪、
+普通实例化裁剪及两份保留材质、运行时光照贴图模式保留均在。
+五份运行时管线仍登记在 Quality Settings。不要为提速撤销这些渲染完整性设置。
+13824 个 Lit 变体在此前 Windows 构建记录中已出现，不能归因于本次换用 Mac。
+继续复用本机 Library 缓存，不执行 Clean Build。尚未测量调整图形 API 后的完整耗时。
+
+定点检查证据在忽略目录 `Library/BuildValidation/MacWindowsAudit`，包含
+`stp-variants.json`、`control-result.json` 和 `latest-build-errors.txt`。
+本轮没有修改项目构建设置、启动整包构建、进入 Play 或另开 Editor。
+
+参考：[Unity 6000.5 图形 API 配置](https://docs.unity.com/en-us/engine/6000.5/manual/platform-specific/cross-platform-features/graphics-apis/configure)、
+[DirectX 功能对照](https://docs.unity.com/en-us/engine/6000.5/manual/platform-specific/cross-platform-features/graphics-apis/using-dx11gl3features)、
+[IL2CPP 主机限制](https://docs.unity3d.com/jp/current/Manual/il2cpp-introduction.html)。
+
 ## 静止太阳：正式地图漏接时钟表现组件
 
 最新玩家包的阴影不动，源场景检查确认 `Theophilus Scene Lighting` 只有
