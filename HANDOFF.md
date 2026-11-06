@@ -38,6 +38,7 @@
 - 后端 `OnlineInstances.Address` 和公开客户端 `ServerAddress` 使用游戏入口。`OnlineInstances.ServerName` 和客户端 `GameServerName` 保留现有证书域名。`Enable-OnlineInstances.ps1` 现在要求显式填写 Address，并支持独立的 ServerName；不再默认复用账号域名。
 - 已修正本机后端、根目录公开配置和 `Build/TT` 公开配置，并在空闲状态更新后端。私有配置备份位于 `LocalData/backups/online-route-fix-20261106-143334`。未修改数据库、证书和 VPS 转发规则。VPS 的转发开关、UDP DNAT、回程规则和 WireGuard 握手已只读核对。没有启动客户端、创建战局或进行公网对局验收。
 - 后端编译 0 错误、0 警告并恢复 ready。部署脚本的语法、缺参提前拒绝和隔离配置写入通过；隔离检查确认游戏地址与证书名称可以不同，端口和无关配置不变。用户选择保留公网配置并自行打包，未把 TT 账号地址切成本机。
+- 当前直连实现优先使用 IPv4：`ClientSettings.ResolveAsync` 只选 IPv4，`GameConnection` 监听 `AnyIpv4`。只增加 AAAA 记录不能启用 IPv6 开服。移除游戏中转前，需确认有可入站的公网 IPv4；有 NAT 时还要能配置出口 UDP 映射。校园内网只放行本机防火墙，不能代替校园出口映射。客户端内网地址不能单独证明出口是否有公网地址。
 
 ## 公网联机与小队展示（2026-11-05）
 
