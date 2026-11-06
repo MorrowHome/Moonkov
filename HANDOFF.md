@@ -1,5 +1,14 @@
 # 项目交接
 
+## Tripo 3D 接入（2026-11-06）
+
+- 本机已安装官方 `tripo-cli` 0.11.2。使用国际站 `ov`，账号配置名为 `moonkov-ov`。CLI 命令显式传 `--profile moonkov-ov`，并设置 `TRIPO_CLIENT_APP=codex`。随包调用说明用 `tripo docs --llm` 读取。
+- Codex 全局 MCP 名为 `tripo`，启用 `full` 工具集。配置位于用户目录的 `.codex/config.toml`。启动使用 `/opt/homebrew/bin/node` 和 `/opt/homebrew/lib/node_modules/tripo-cli/dist/cli.js`，避免桌面环境找不到 Node。当前聊天也可直接使用 CLI。
+- 账号凭据仅保存在用户目录的 `.tripo/config.json`，权限为 `0600`。不要复制到仓库或聊天。需要重新授权时运行 `tripo login --region ov --profile moonkov-ov`，由用户在 Tripo 网页完成授权。
+- CLI/MCP 消耗开发者 API 积分，与 Studio 网页积分不互通。余额分别在开发者后台和 Studio 查看。见[官方积分说明](https://www.tripo3d.ai/help/api-plugins/tripo-studiotripo-api)。
+- 本轮通过 CLI 账号、网络和配置权限检查；MCP 握手、26 项工具发现及真实余额查询成功。验证时 API 余额为 0，冻结积分为 0。未提交生成任务，没有消耗积分。模型生成和 Unity 导入尚未验收。
+- 开始制作角色前，先确认外形、骨架和动作需求，再用 `--dry-run --json` 检查生成计划及可用的费用估算。后处理费用可能未计入估算。任务超时后续查原任务，不重复提交付费生成。
+
 ## 本地空间清理（2026-11-06）
 
 - 空间清理保留整个 `Library`、`Temp` 和 `.git/lfs`。不要清构建、导入或着色器缓存，不运行 Clean Build。
