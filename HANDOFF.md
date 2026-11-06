@@ -1,5 +1,9 @@
 # 项目交接
 
+## 界面与操作（2026-11-07）
+
+- 交互统一为 F。搜刮、设备、补给、拆陷阱和止血共用此键；E 保留侧身用途。中英文键帽、教学和设置提示同步更新。任务设备、世界控件及赏金救援／目标操作先取得本次按键，不能再触发搜刮或自救。
+
 ## Halos 登录与加载动画（2026-11-06）
 
 - 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。

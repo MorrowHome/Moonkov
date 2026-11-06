@@ -12,7 +12,7 @@ namespace Unity.MP_FPS
     public sealed partial class RaidHUD
     {
         private EntityQuery m_ClashQuery;
-        private bool m_ClashQueryCreated, m_ClashLobbyPointer, m_ClashActionsBlocked, m_ClashMode;
+        private bool m_ClashQueryCreated, m_ClashLobbyPointer, m_ClashActionsBlocked, m_ClashMode, m_ClashInteractionFocused;
         private BountyClashView m_ClashView;
         private BountyClashClientState m_Clash;
         private float m_NextSenseLease, m_NextReviveLease;
@@ -78,6 +78,7 @@ namespace Unity.MP_FPS
         }
         private bool PresentBountyClash()
         {
+            m_ClashInteractionFocused = false;
             m_ClashMode = BountyClashRuntime.Enabled(m_World.EntityManager);
             var cargo = m_Bag.parent;
             if (m_ClashMode && m_ClashCargoParent == null)
@@ -182,6 +183,7 @@ namespace Unity.MP_FPS
                 float distance = Vector3.Distance(position, member.Position);
                 if (distance < nearest) { nearest = distance; candidate = member.ParticipantId; reviveProgress = member.ReviveProgress; }
             }
+            m_ClashInteractionFocused = candidate >= 0;
             bool held = keyboard != null && keyboard.fKey.isPressed;
             if (candidate >= 0 && held)
             {
@@ -197,6 +199,7 @@ namespace Unity.MP_FPS
             bool near = Vector3.Distance(position, objective) <= 3;
             string hint = near && s.Bounty == ClashBountyState.Unbanished ? "[F] BANISH DEAD TARGET" :
                 near && s.Bounty == ClashBountyState.Ground ? "[F] PICK UP THE UNIQUE BOUNTY" : null;
+            m_ClashInteractionFocused = hint != null;
             m_ClashView.SetAction(hint);
             if (hint != null && keyboard != null && keyboard.fKey.wasPressedThisFrame)
                 SendClash(s.Bounty == ClashBountyState.Unbanished ? ClashIntent.Banish : ClashIntent.Pickup);

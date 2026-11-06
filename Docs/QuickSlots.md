@@ -28,7 +28,7 @@
 - RaidHUD：InitializeQuickSlots() / PresentQuickSlots(bool active) / DisposeQuickSlots()，由基础生命周期调用；不在独立 Update 中重复执行。
 - ContainerInventoryView：QuickSlotCandidate（悬停优先、选中后备）、QuickSlotDrop(item,panelPoint)、QuickSlotDragPreview。Drop 被消费后不发送 Move，不改变库存。
 - 统一 NextManualActionRequest / m_InventoryRequestId；owner 的同 RequestId Started→Completed/Interrupted 仍更新反馈，不能只观察 RequestId。
-- TryQuickTacticalInteraction(bool active) 在旧 E 交互前执行；命中陷阱/弹药箱或自身灭火止血后返回本帧已消费，不再同时打开旧容器。
+- TryQuickTacticalInteraction(bool active) 在容器交互前执行；命中陷阱/弹药箱或自身灭火止血后返回本帧已消费，不再同时打开旧容器。
 - E 查询使用实际 Ghost root 的 capsule 眼高（max(.3,height-.2)，默认高度1.8）和 PredictedPlayerGhost.ControllerState 的 Pitch/Yaw，完全与服务器一致。第三人称 orbit 相机距离不改变可达性；隔墙与跨楼层仍由客户端辅助查询和服务器复核。
 - 图形预览调用 TacticalItemsFeedback.SetSelectedItem(code/null)，服务器仍独立验明物品、距离、地面与消耗。SetPresentationBlocked 在菜单/文本/暗视/死亡隐藏；投掷物由 `GrenadePresentation` 显示，不再生成旧相机持物或固定远投轨迹。
 - 手雷阶段、引信、物品类型和 HoldId 已进入 Ghost，本人和观察者共用真实骨架动作。其他物品的选中持物仍仅本地显示；世界投掷物、陷阱和箱体沿用已有广播。客户端与服务器须使用相同协议版本。
@@ -88,9 +88,9 @@
 - `STAMINA BOOST {0:0}s`
 - `ANTIDOTE {0:0}s`
 - `DARK SIGHT / RELEASE V TO USE ITEMS`
-- `[E] RESUPPLY FROM AMMO BOX`
-- `[E] DISARM TRAP`
-- `[E] STOP BURNING / BLEEDING`
+- `[F] RESUPPLY FROM AMMO BOX`
+- `[F] DISARM TRAP`
+- `[F] STOP BURNING / BLEEDING`
 
 ## 单角色 Play 验收入口（原 UI 组持 Editor 令牌运行）
 
@@ -99,7 +99,7 @@
 - `Items()` 列真实图中的物品 ID/code/数量。打开真实背包及对应胸挂后，`BindViaKey(itemId,4)` 向实际 tile 发带目标及指针源的 UITK 悬停、数字事件；`BindViaDrag(itemId,5)` 驱动现有 Drag 操纵器并断言库存版本不变；`ClearViaRightClick(5)` 发成对右键按下/抬起，走实际右键回调。
 - 关闭背包并捕获输入后，`PressNumber(4)` 通过 InputSystem 排队且跨实际游戏帧释放；`ExpectSelected(4)` / `ExpectQuantity(itemId,N)` 检查选中且未消耗。`PressPrimary(aim:true)` 通过生产输入生成请求，`ExpectUseIntent(itemId,1)` 检查确切 ID 的单次实际 RPC 意图，`ExpectWeaponSuppressed()` 检查 Fire/Aim/Reload 被拦截。没有 Transport 时不宣称服务器已经扣物或完成动作。
 - `QuickSlotCancelInputChecks.Run(9)` 在同一现有 fixture 内运行：Use 尚无 Started 回包时按住 X，仅生成递增一次的 Cancel；显式注入 UI 确认后，原先按住的 X 仍不转成踮脚，松开再按 X 恢复正常踮脚。随后检查菜单和有实际焦点的 TextField 阻止重绑、选择与使用。每阶段都检查客户端数量/版本不变。输出独立 JSON，并明确标记 LocalUIOnly / NoTransport / ServerConsumptionTested=false。
-- 暗视使用 `HoldInput(3f,true,Key.V)`，只保持 V+RMB，不自动加入主键。E 使用角色 Ghost 的实际眼高/朝向，需另行验证第三人称相机后移仍可达，以及遮挡/楼层拒绝。
+- 暗视使用 `HoldInput(3f,true,Key.V)`，只保持 V+RMB，不自动加入主键。F 使用角色 Ghost 的实际眼高/朝向，需另行验证第三人称相机后移仍可达，以及遮挡/楼层拒绝。
 - `BountyClashUIFixture.End()` 先禁用 fixture HUD，再由 `QuickSlotPlayChecks.End()` 恢复原委托、绑定模型、此前 ValidationStore/Scope，移除虚拟键鼠和更新回调；然后销毁 fixture World/角色并恢复原场景运行状态。不会删除任何用户存档。
 - 服务器扣物、取消和效果由同一 Editor 内顺序运行的独立权威/Physics 检查覆盖。用户明确取消联机验收与多开，不以未运行 Transport、多 Editor 或多 client World 阻断完成。
 - 必须记录：实际 Frame 递增、真实 UITK 绑定/拖放/右键清除、选中前后数量/版本不变、主使用只发正确请求、工具抑制武器且切回恢复、失去访问/死亡清空选择、文本/菜单/倒地/暗视防误触。

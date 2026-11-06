@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Unity.MP_FPS
 {
     // One action owner for the raid HUD. Prompts read the same bindings that consume input.
-    // Separate actions preserve the existing keyboard controls while the pad shares one button.
+    // Separate actions share F / the west face button; target selection owns each press.
     public sealed class RaidInteractionBindings : IDisposable
     {
         private readonly InputActionMap m_Map = new InputActionMap("RaidInteraction");
@@ -19,7 +19,7 @@ namespace Unity.MP_FPS
             Operate = m_Map.AddAction("Operate", InputActionType.Button);
             Operate.AddBinding("<Keyboard>/f"); Operate.AddBinding("<Gamepad>/buttonWest");
             Loot = m_Map.AddAction("Loot", InputActionType.Button);
-            Loot.AddBinding("<Keyboard>/e"); Loot.AddBinding("<Gamepad>/buttonWest");
+            Loot.AddBinding("<Keyboard>/f"); Loot.AddBinding("<Gamepad>/buttonWest");
             Inspect = m_Map.AddAction("Inspect", InputActionType.Button);
             Inspect.AddBinding("<Keyboard>/i"); Inspect.AddBinding("<Gamepad>/leftShoulder");
             m_Map.Enable();

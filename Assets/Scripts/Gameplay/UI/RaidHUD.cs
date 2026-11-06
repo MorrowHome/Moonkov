@@ -512,7 +512,7 @@ namespace Unity.MP_FPS
             CloseLootWhenIdle();
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
-            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested &&
+            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
                 !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
@@ -643,9 +643,9 @@ namespace Unity.MP_FPS
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
-                : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
-            if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[F]  SEARCH FALLEN EXPEDITION")
+                : MoonkovLocalization.Format($"[F]  OPEN SUPPLY CACHE / {nearest + 1:00}");
+            if (prompt.StartsWith("[F]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
             MoonkovLocalization.Set(m_InteractionState, RaidFurnitureLoot.IsFurniture(nearest) ? "小型容器" : empty ? "EMPTY" : "CONTENTS");
             MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
