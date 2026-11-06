@@ -58,7 +58,8 @@ namespace Unity.MP_FPS
         protected override void OnUpdate()
         {
             double now = UnityEngine.Time.realtimeSinceStartupAsDouble;
-            Entity owner = m_Owner.CalculateEntityCount() == 1 ? m_Owner.GetSingletonEntity() : Entity.Null;
+            using var owners = m_Owner.ToEntityArray(Allocator.Temp);
+            Entity owner = owners.Length == 1 ? owners[0] : Entity.Null;
             var identity = owner != Entity.Null ? EntityManager.GetComponentData<GhostInstance>(owner) : default;
             bool alive = owner != Entity.Null && HaloSupportRules.CanProtect(EntityManager.GetComponentData<PredictedPlayerGhost>(owner));
             var ecb = new EntityCommandBuffer(Allocator.Temp);

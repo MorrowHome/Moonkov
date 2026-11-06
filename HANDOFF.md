@@ -2,12 +2,13 @@
 
 ## Halos 登录与加载动画（2026-11-06）
 
-- 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，自动结束开场、账号输入、仓库初始化与出战准备点击均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
+- 启动补验：Mac Editor 即使选择 Windows 构建目标，也不能调用 `user32.dll`。`UNITY_STANDALONE_WIN` 跟随构建目标，Windows 原生接口只能用 `UNITY_EDITOR_WIN || (UNITY_STANDALONE_WIN && !UNITY_EDITOR)`。开场复用系统减少动画设置后会走到此路径。已在真实 Play 复现登录初始化中断；修正后，开场自动结束、账号控件与仓库初始化、出战准备均通过。启动探针为 `HalosAccessReview.CheckStartupPreferences()`。
+- 进图补验：`GhostOwnerIsLocal` 是可开关组件。包含它的查询不能用 `GetSingletonEntity()`，即使先检查数量也会抛异常。`HaloScanClientSystem` 改为读取启用过滤后的实体数组，只接受一个本地角色。`HaloScanChecks.Run()` 的 42 项检查通过，包含 14 项真实客户端系统和所有权切换检查。单 Editor Play 使用隔离单机存档，经实际菜单进入 `TheophilusGameScene`，状态到达 `InGame`；W 键驱动角色移动，帧数持续增加，扫描系统保持启用且没有新增异常。没有登录真实账号、联机或重建 Player。
 - 美术源为 Halos 仓库的 `Moonkov UIs`。原 GML 和资源哈希在 `ArtSource/HalosUI`。保留原标志、十个终端窗口的位置和打字逻辑。开场缩到约 3.2 秒。`MoonkovWordmark.svg` 补游戏名称。
 - 输入框和登录、注册、单机、退出四个按钮复用原登录图的框。输入区域高 52 像素。密码使用 UXML 的 `password` 属性；旧 `is-password-field` 不生效。
 - 鼠标左键可跳过装饰动画。界面不显示跳过提示。跳过不修改真实加载状态。战局加载继续使用原 `PageArt/Base.png`，终端和蓝色噪声叠在其上。用户的概念图只作风格参考。
 - 蓝色干扰纹理由内置 Image 工具在原噪声上生成。源图、提示和运行素材均已保留。不要把窗口顶边直接改成蓝色，也不要另加月牙装饰。减少动画会停止装饰调度。界面隐藏或销毁时暂停并解绑。
-- 单 Editor 编译通过。43 项原生 UI、原框复用、点击跳过、真实进度绑定和清理检查通过，覆盖实际 1280×691 与 800×600 面板。检查脚本为 `Tools/Validation/HalosAccessReview.cs`，通过 Pipeline `run_script` 调用。没有进入 Play、登录真实账号、联机或重建 Player。
+- 单 Editor 编译通过。43 项原生 UI、原框复用、点击跳过、真实进度绑定和清理检查通过，覆盖实际 1280×691 与 800×600 面板。检查脚本为 `Tools/Validation/HalosAccessReview.cs`，通过 Pipeline `run_script` 调用。这 43 项属于原生界面检查；真实 Play 补验见上两条。
 
 ## Tripo 3D 接入（2026-11-06）
 

@@ -21,6 +21,7 @@ public static class HaloScanChecks
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode.");
         checks = 0;
+        CheckClientOwnerQueries();
         using var f = new HaloSupportChecks.Fixture();
         var a = f.Spawn(1, Vector3.zero); var b = f.Spawn(2, new Vector3(0, 0, 5));
         var enemy = f.Spawn(0, new Vector3(0, 0, 9));
@@ -91,5 +92,54 @@ public static class HaloScanChecks
         Check(buffered.HaloGuard && !buffered.Shoot, "Guard overrides a buffered weapon shot");
         string result = $"Halo scan: PASS ({checks} authority/client/wire checks).";
         Directory.CreateDirectory("LocalData/HaloAbilities"); File.WriteAllText("LocalData/HaloAbilities/scan-checks.txt", result); return result;
+    }
+
+    public static string ClientOwnerQueries()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode.");
+        checks = 0; CheckClientOwnerQueries();
+        return $"Halo scan client ownership: PASS ({checks} checks).";
+    }
+
+    private static void CheckClientOwnerQueries()
+    {
+        using var world = new World("Halo scan client ownership checks");
+        var manager = world.EntityManager;
+        manager.CreateEntity(typeof(NetworkStreamInGame));
+        var system = world.GetOrCreateSystemManaged<HaloScanClientSystem>();
+        var state = (HaloScanClientState)typeof(HaloScanClientSystem).GetField("m_State", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(system);
+        Entity Owner(int id)
+        {
+            var entity = manager.CreateEntity(typeof(PredictedPlayerGhost), typeof(GhostOwnerIsLocal), typeof(GhostInstance));
+            manager.SetComponentData(entity, new PredictedPlayerGhost { CurrentHealth = 100 });
+            manager.SetComponentData(entity, new GhostInstance { ghostId = id, spawnTick = new NetworkTick(1) });
+            manager.AddComponentObject(entity, new GhostGameObjectLink());
+            return entity;
+        }
+        uint sequence = 0;
+        void Pulse(int owner, bool accepted, string message)
+        {
+            var rpc = manager.CreateEntity(typeof(HaloScanPulseRpc), typeof(ReceiveRpcCommandRequest));
+            manager.SetComponentData(rpc, new HaloScanPulseRpc { OwnerGhostId = owner,
+                OwnerSpawnTick = new NetworkTick(1).SerializedData, Sequence = ++sequence });
+            system.Update();
+            Check(state.Active == accepted && (!accepted || state.Pulse.OwnerGhostId == owner), message);
+            Check(!manager.Exists(rpc), "Client consumes the pulse once: " + message);
+        }
+        Pulse(1, false, "No local owner rejects the pulse");
+        var local = Owner(1);
+        Pulse(1, true, "One enabled local owner receives the pulse without a singleton exception");
+        var other = Owner(2); manager.SetComponentEnabled<GhostOwnerIsLocal>(other, false);
+        Pulse(1, true, "Disabled remote owner does not displace the local owner");
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(local, false);
+        Pulse(1, false, "Disabled local owner cannot receive a pulse");
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(local, true);
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(other, true);
+        Pulse(1, false, "Ambiguous enabled owners do not select an arbitrary player");
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(local, false);
+        Pulse(1, false, "A different enabled owner cannot receive the previous owner's pulse");
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(local, true);
+        manager.SetComponentEnabled<GhostOwnerIsLocal>(other, false);
+        Pulse(1, true, "Restoring local ownership resumes valid pulses");
     }
 }
