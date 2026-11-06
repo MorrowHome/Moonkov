@@ -15,6 +15,38 @@ MonoBehaviour:
   m_TableCollectionName: MoonkovUI
   m_TableCollectionNameGuidString: a69c9372e952ad04d9ed096ac2b369d7
   m_Entries:
+  - m_Id: 1960680437654903865
+    m_Key: "WEAPONS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3651084985842741300
+    m_Key: "MODULES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8843005069518663594
+    m_Key: "FREE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2697414463538498625
+    m_Key: "{0} DUST"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6998400153559778892
+    m_Key: "CLAIM FREE SUPPLY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3400536231777273841
+    m_Key: "No matching supplies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8455071727572875977
+    m_Key: "INSUFFICIENT MOON DUST"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8073912189698713078
+    m_Key: "\u00d7 {0}"
+    m_Metadata:
+      m_Items: []
   - m_Id: 4381285036482194973
     m_Key: "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."
     m_Metadata:

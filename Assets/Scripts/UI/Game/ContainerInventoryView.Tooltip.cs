@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,33 +7,14 @@ namespace Unity.MP_FPS.Client
     public sealed partial class ContainerInventoryView
     {
         private VisualElement m_ItemTooltip, m_TooltipTarget;
-        private Label m_TooltipTitle, m_TooltipSummary, m_TooltipDetail, m_TooltipState;
         private string m_TooltipItemId;
         private Vector2 m_TooltipPointer;
-        private VisualElement m_TooltipStats;
-        private readonly VisualElement[] m_TooltipStatRows = new VisualElement[7];
-        private readonly Label[] m_TooltipStatLabels = new Label[7], m_TooltipStatValues = new Label[7];
-        private static readonly Regex s_TooltipNumbers = new Regex(@"(?<![A-Za-z0-9])[+-]?\d+(?:[.,]\d+)?(?:\s*(?:%|°|秒|分钟|米|s\b|m\b))?");
+        private MoonkovItemInformation m_ItemInformation;
 
         private void InitializeItemTooltip()
         {
             m_ItemTooltip = m_Root.Q("inventoryItemTooltip");
-            m_TooltipTitle = m_ItemTooltip.Q<Label>("tooltipTitle");
-            m_TooltipSummary = m_ItemTooltip.Q<Label>("tooltipSummary");
-            m_TooltipDetail = m_ItemTooltip.Q<Label>("tooltipDetail");
-            m_TooltipState = m_ItemTooltip.Q<Label>("tooltipState");
-            m_TooltipStats = m_ItemTooltip.Q("tooltipStats");
-            for (int i = 0; i < m_TooltipStatRows.Length; i++)
-            {
-                var row = new VisualElement { pickingMode = PickingMode.Ignore };
-                row.AddToClassList("inventory-tooltip-stat"); m_TooltipStats.Add(row); m_TooltipStatRows[i] = row;
-                m_TooltipStatLabels[i] = new Label { pickingMode = PickingMode.Ignore };
-                m_TooltipStatLabels[i].AddToClassList("inventory-tooltip-stat-label"); row.Add(m_TooltipStatLabels[i]);
-                m_TooltipStatValues[i] = new Label { name = "tooltipStatValue" + i, pickingMode = PickingMode.Ignore };
-                m_TooltipStatValues[i].AddToClassList("inventory-tooltip-stat-value"); row.Add(m_TooltipStatValues[i]);
-            }
-            m_TooltipStatValues[0].AddToClassList("inventory-tooltip-damage");
-            m_TooltipStatValues[2].AddToClassList("inventory-tooltip-energy");
+            m_ItemInformation = new MoonkovItemInformation(m_ItemTooltip);
             m_ItemTooltip.RegisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);
             m_Root.RegisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);
             m_Root.RegisterCallback<WheelEvent>(TooltipScrolled, TrickleDown.TrickleDown);
@@ -61,75 +41,10 @@ namespace Unity.MP_FPS.Client
                 HideItemTooltip();
                 return;
             }
-            var definition = InventoryCatalog.Get(item.Code);
-            MoonkovLocalization.Set(m_TooltipTitle, definition.Name);
-            bool module = HaloModules.FromCode(item.Code) != HaloModule.None;
-            string detail = module ? MoonkovLocalization.Text(WorkshopPurpose(item.Code)) : MoonkovItemPresentation.Purpose(item.Code);
-            m_TooltipDetail.text = TooltipNumbers(detail);
-            m_TooltipDetail.style.display = string.IsNullOrEmpty(detail) ? DisplayStyle.None : DisplayStyle.Flex;
-            string effect = module ? MoonkovLocalization.Text(WorkshopBenefit(item.Code)) : MoonkovItemPresentation.Effect(item.Code);
-            m_TooltipSummary.text = module ? effect : TooltipNumbers(effect, "#3dd68c");
-            m_TooltipSummary.style.display = string.IsNullOrEmpty(effect) ? DisplayStyle.None : DisplayStyle.Flex;
-            m_TooltipSummary.RemoveFromClassList("inventory-tooltip-mode");
-            RefreshTooltipWeapon(item);
-            string state = MoonkovItemPresentation.ItemState(item);
-            if (BatteryEnergy.IsCell(item))
-                state = MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
-            if (module) state = MoonkovLocalization.Text(WorkshopTradeoff(item.Code));
-            bool warning = module || (item.Code == "helmet" || item.Code == "energy_head_dome") && item.SuitOxygen >= 0 && item.SuitOxygen <= 20 ||
-                BatteryEnergy.IsCell(item) && BatteryEnergy.Stored(item) <= 0;
-            m_TooltipState.EnableInClassList("inventory-tooltip-warning", warning);
-            m_TooltipState.text = TooltipNumbers(state, warning ? "#ffca16" : "#7de2d1");
-            m_TooltipState.style.display = string.IsNullOrEmpty(state) ? DisplayStyle.None : DisplayStyle.Flex;
+            m_ItemInformation.Present(item, m_Graph, WorkshopWeaponRegistry);
+            if (!WorkshopWeaponRegistry) WorkshopWeaponRegistry = m_ItemInformation.WeaponRegistry;
             m_ItemTooltip.style.display = DisplayStyle.Flex;
             m_ItemTooltip.BringToFront();
-        }
-
-        private static string TooltipNumbers(string text, string color = "#7de2d1") =>
-            s_TooltipNumbers.Replace(text ?? "", match => "<color=" + (match.Value.StartsWith("-") ? "#ff9592" : color) + ">" + match.Value + "</color>");
-
-        private void TooltipStat(int index, string label, string value)
-        {
-            m_TooltipStatRows[index].style.display = DisplayStyle.Flex;
-            MoonkovLocalization.Set(m_TooltipStatLabels[index], label);
-            m_TooltipStatValues[index].text = value;
-        }
-
-        private void RefreshTooltipWeapon(InventoryItem item)
-        {
-            m_TooltipStats.style.display = DisplayStyle.None;
-            uint id = DollSingerWeapons.WeaponId(item.Code);
-            if (!DollSingerWeapons.IsHalo(id)) return;
-            if (!WorkshopWeaponRegistry)
-                WorkshopWeaponRegistry = WeaponManager.Instance ? WeaponManager.Instance.WeaponRegistry :
-                    Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings")?.WeaponRegistry;
-            var mask = HaloModules.Mask(m_Graph, item);
-            var weapon = WorkshopWeaponRegistry ? WorkshopWeaponRegistry.GetWeaponData(id, (ushort)mask) : null;
-            if (!weapon)
-            {
-                m_TooltipSummary.text = MoonkovLocalization.Text("Weapon data is unavailable.");
-                m_TooltipSummary.style.display = DisplayStyle.Flex;
-                return;
-            }
-            bool burst = weapon.BurstCount > 1 || id == DollSingerWeapons.Halo && (mask & HaloModule.PulseController) != 0;
-            int burstCount = weapon.BurstCount > 1 ? weapon.BurstCount : 3;
-            m_TooltipSummary.text = burst ? MoonkovLocalization.Format($"{burstCount}-ROUND BURST") :
-                MoonkovLocalization.Text(weapon.Automatic ? "AUTOMATIC" : "SEMI-AUTOMATIC");
-            m_TooltipSummary.style.display = DisplayStyle.Flex;
-            m_TooltipSummary.AddToClassList("inventory-tooltip-mode");
-            foreach (var row in m_TooltipStatRows) row.style.display = DisplayStyle.None;
-            int pellets = Mathf.Max(1, weapon.PelletCount);
-            TooltipStat(0, "DAMAGE PER SHOT", pellets > 1 ? $"{weapon.Damage * pellets:0.##} <color=#b0b4ba>({weapon.Damage:0.##} × {pellets})</color>" : $"{weapon.Damage:0.##}");
-            TooltipStat(1, "SHOT INTERVAL", $"{(weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs):0.###} s");
-            TooltipStat(2, "ENERGY PER ROUND", Mathf.Max(1, weapon.EnergyPerRound).ToString());
-            TooltipStat(3, weapon.Type == WeaponType.Projectile ? "PROJECTILE SPEED" : "RANGE",
-                weapon.Type == WeaponType.Projectile ? $"{weapon.ProjectileSpeed:0.##} m/s" : $"{weapon.HitscanRange:0.##} m");
-            if (weapon.Behavior == ProjectileBehavior.AreaOfEffect) TooltipStat(4, "BLAST RADIUS", $"{weapon.AoeRadius:0.##} m");
-            else TooltipStat(4, "DAMAGE FALLOFF", weapon.DamageFalloffEnd > weapon.DamageFalloffStart
-                ? $"{weapon.DamageFalloffStart:0.#}–{weapon.DamageFalloffEnd:0.#} m" : MoonkovLocalization.Text("No falloff"));
-            TooltipStat(5, "AIMED SPREAD", $"{weapon.SpreadDegrees:0.##}°");
-            if (burst) TooltipStat(6, "BURST PAUSE", $"{(weapon.BurstCount > 1 ? weapon.BurstCooldown : Mathf.Max(.42f, weapon.CooldownInMs)):0.###} s");
-            m_TooltipStats.style.display = DisplayStyle.Flex;
         }
 
         private void PlaceItemTooltip()

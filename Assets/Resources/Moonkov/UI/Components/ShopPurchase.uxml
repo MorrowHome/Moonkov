@@ -1,0 +1,28 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../ShopPurchase.uss" />
+    <ui:VisualElement name="shopPurchase" class="shop-purchase moonkov-style-font">
+        <ui:VisualElement class="shop-purchase-browser">
+            <ui:TextField name="purchaseSearch" label="SEARCH" class="shop-purchase-search" />
+            <ui:VisualElement name="purchaseFilters" class="shop-purchase-filters" />
+            <ui:ScrollView name="purchaseProducts" mode="Vertical" class="shop-purchase-products" />
+            <ui:Label name="purchaseEmpty" class="shop-purchase-empty" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="shop-purchase-inspector">
+            <ui:ScrollView name="purchaseDetails" mode="Vertical" class="shop-purchase-details">
+                <ui:VisualElement name="purchaseArt" class="shop-purchase-art" picking-mode="Ignore" />
+                <ui:VisualElement name="purchaseInformation" />
+            </ui:ScrollView>
+            <ui:VisualElement class="shop-purchase-order">
+                <ui:Label name="purchaseNotice" class="shop-purchase-notice" picking-mode="Ignore" />
+                <ui:VisualElement name="purchaseQuantity" class="shop-purchase-quantity">
+                    <ui:Button name="purchaseMinus" text="−" />
+                    <ui:Label name="purchaseAmount" picking-mode="Ignore" />
+                    <ui:Button name="purchasePlus" text="+" />
+                </ui:VisualElement>
+                <ui:Label name="purchaseReason" class="shop-purchase-reason" picking-mode="Ignore" />
+                <ui:Button name="purchaseBuy" text="BUY" class="shop-purchase-buy" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="purchaseTooltip" class="shop-purchase-tooltip" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

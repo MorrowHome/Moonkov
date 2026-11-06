@@ -32,12 +32,6 @@
         <ui:Label name="inventoryHint" class="inventory-hint" picking-mode="Ignore" />
         <ui:VisualElement name="inventoryQuickbarDock" class="field-quickbar-dock" picking-mode="Ignore" />
         <ui:VisualElement name="inventoryGhost" class="inventory-ghost" picking-mode="Ignore" />
-        <ui:VisualElement name="inventoryItemTooltip" class="inventory-item-tooltip" picking-mode="Ignore">
-            <ui:Label name="tooltipTitle" class="inventory-tooltip-title" picking-mode="Ignore" enable-rich-text="false" />
-            <ui:Label name="tooltipSummary" class="inventory-tooltip-summary" picking-mode="Ignore" />
-            <ui:Label name="tooltipDetail" class="inventory-tooltip-detail" picking-mode="Ignore" />
-            <ui:VisualElement name="tooltipStats" class="inventory-tooltip-stats" picking-mode="Ignore" />
-            <ui:Label name="tooltipState" class="inventory-tooltip-state" picking-mode="Ignore" />
-        </ui:VisualElement>
+        <ui:VisualElement name="inventoryItemTooltip" class="inventory-item-tooltip" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

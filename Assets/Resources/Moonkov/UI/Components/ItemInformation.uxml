@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../ItemInformation.uss" />
+    <ui:VisualElement name="itemInformation" class="item-information moonkov-style-font" picking-mode="Ignore">
+        <ui:Label name="tooltipTitle" class="inventory-tooltip-title" picking-mode="Ignore" enable-rich-text="false" />
+        <ui:Label name="tooltipSummary" class="inventory-tooltip-summary" picking-mode="Ignore" />
+        <ui:Label name="tooltipDetail" class="inventory-tooltip-detail" picking-mode="Ignore" />
+        <ui:VisualElement name="tooltipStats" class="inventory-tooltip-stats" picking-mode="Ignore" />
+        <ui:Label name="tooltipState" class="inventory-tooltip-state" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>
