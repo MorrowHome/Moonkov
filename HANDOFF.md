@@ -1,5 +1,14 @@
 # 项目交接
 
+## Tripo 3D 接入（2026-11-06）
+
+- 本机已安装官方 `tripo-cli` 0.11.2。使用国际站 `ov`，账号配置名为 `moonkov-ov`。CLI 命令显式传 `--profile moonkov-ov`，并设置 `TRIPO_CLIENT_APP=codex`。随包调用说明用 `tripo docs --llm` 读取。
+- Codex 全局 MCP 名为 `tripo`，启用 `full` 工具集。配置位于用户目录的 `.codex/config.toml`。启动使用 `/opt/homebrew/bin/node` 和 `/opt/homebrew/lib/node_modules/tripo-cli/dist/cli.js`，避免桌面环境找不到 Node。当前聊天也可直接使用 CLI。
+- 账号凭据仅保存在用户目录的 `.tripo/config.json`，权限为 `0600`。不要复制到仓库或聊天。需要重新授权时运行 `tripo login --region ov --profile moonkov-ov`，由用户在 Tripo 网页完成授权。
+- CLI/MCP 消耗开发者 API 积分，与 Studio 网页积分不互通。余额分别在开发者后台和 Studio 查看。见[官方积分说明](https://www.tripo3d.ai/help/api-plugins/tripo-studiotripo-api)。
+- 本轮通过 CLI 账号、网络和配置权限检查；MCP 握手、26 项工具发现及真实余额查询成功。验证时 API 余额为 0，冻结积分为 0。未提交生成任务，没有消耗积分。模型生成和 Unity 导入尚未验收。
+- 开始制作角色前，先确认外形、骨架和动作需求，再用 `--dry-run --json` 检查生成计划及可用的费用估算。后处理费用可能未计入估算。任务超时后续查原任务，不重复提交付费生成。
+
 ## 本地空间清理（2026-11-06）
 
 - 空间清理保留整个 `Library`、`Temp` 和 `.git/lfs`。不要清构建、导入或着色器缓存，不运行 Clean Build。
@@ -324,6 +333,11 @@
 - `CorpseVisual` 按实际倒地骨骼缓存交互边界，不读取为剔除而放大的渲染边界。`MoonRaidMap.TryGetCorpseAimPoint()` 按尸体 ID 提供身体目标，`RaidHUD.Interaction.cs` 用它选择搜刮对象。只在身体姿势或最终贴地位置变化时更新边界。
 - 距离与角色侧遮挡仍使用服务器的尸体坐标。镜头还须能看到身体目标。普通箱子、掉落物和机关沿用原判定。没有改库存、RPC 或存档结构。
 - 单 Editor 编译通过。`CorpseLootInteractionChecks.Run()` 的 99 项检查通过。三种 PMC 的 36 种身体部位与接近方向均可选中，旧目标在这 36 种情况均失败。另覆盖超距、两条遮挡路径、渲染边界和移除尸体。记录在忽略目录 `LocalData/CorpseLootBug/checks.txt`。未做正式战局、联机或 Player 验收。
+
+## 搜刮界面实时背景（2026-11-06）
+
+- 局内搜刮和背包已改为半透明底，背景实时轻度模糊，图标和文字保持清晰。样式限于 `#raidInventory`。不要改整个库存元素的 `opacity`，也不要改共享 `.raid-overlay`，以免影响仓库或结算。
+- 模糊复用本地角色相机，在 URP 后处理后、UI 合成前执行。两遍渲染，中间纹理为半分辨率。关闭时释放，缺少 HUD 更新时自动停用。UI Toolkit 不支持网页式 `backdrop-filter`，不要用无效 USS 代替实际渲染。原生渲染和界面共 24 项检查通过。实现、验收边界见[容器界面](Docs/ContainerInventory.md#局内搜刮背景2026-11-06)。
 
 ## 连续搜刮与快捷收纳
 

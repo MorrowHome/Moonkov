@@ -371,6 +371,7 @@ namespace Unity.MP_FPS
                 else RequestLoot(-1);
             }
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible) ClearInventoryBackdrop();
             if (visible) { UpdateInventoryView(); if(!m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
@@ -442,9 +443,9 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
@@ -457,6 +458,7 @@ namespace Unity.MP_FPS
             if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
+            UpdateInventoryBackdrop();
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
             if (settled && !m_WasSettled)
             {
@@ -984,6 +986,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            ClearInventoryBackdrop();
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
             if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
             m_ClashTaskToggle = null;
