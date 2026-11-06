@@ -350,6 +350,10 @@ MonoBehaviour:
     m_Key: Account service timed out. Please retry.
     m_Metadata:
       m_Items: []
+  - m_Id: 600127641482266744
+    m_Key: Loading your stash timed out. Please retry Login.
+    m_Metadata:
+      m_Items: []
   - m_Id: 2871799858
     m_Key: BACK
     m_Metadata:

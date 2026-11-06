@@ -99,7 +99,7 @@ namespace Unity.MP_FPS
                     Username = username.Trim(), Password = password,
                     GuestToken = register ? RaidGuestIdentity.GetToken(false) : null
                 }), Encoding.UTF8, "application/json");
-                using (var response = await Http().SendAsync(request, ct))
+                using (var response = await SendAccountRequestAsync(request, ct))
                 {
                     ThrowIfFailed(response.StatusCode);
                     var result = JsonConvert.DeserializeObject<LoginResult>(await response.Content.ReadAsStringAsync());
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS
             using (var request = new HttpRequestMessage(HttpMethod.Get, Address(baseUrl, "auth/me")))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                using (var response = await Http().SendAsync(request, ct))
+                using (var response = await SendAccountRequestAsync(request, ct, loadingStash: true))
                 {
                     if (token != Token) return;
                     if (response.StatusCode == HttpStatusCode.Unauthorized) { Clear(); return; }
@@ -159,7 +159,19 @@ namespace Unity.MP_FPS
             PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
         }
 
-        private static HttpClient Http() => s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) });
+        // Covers the full inventory download, not just the much smaller login response.
+        private static HttpClient Http() => s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
+        private static async Task<HttpResponseMessage> SendAccountRequestAsync(HttpRequestMessage request, CancellationToken ct, bool loadingStash = false)
+        {
+            string timeoutMessage = loadingStash ? "Loading your stash timed out. Please retry Login." : "Account service timed out. Please retry.";
+            try { return await Http().SendAsync(request, ct); }
+            catch (OperationCanceledException ex) when (!ct.IsCancellationRequested)
+            { throw new TimeoutException(timeoutMessage, ex); }
+            // Unity's Mono transport can surface a timeout as WebException instead.
+            catch (WebException ex) when (!ct.IsCancellationRequested &&
+                (ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.RequestCanceled))
+            { throw new TimeoutException(timeoutMessage, ex); }
+        }
         private static void ApplyProfile(Profile profile, long requestId)
         {
             if (profile == null || string.IsNullOrEmpty(profile.InventoryJson)) throw new InvalidOperationException("Account service returned no inventory. Update the persistence service.");

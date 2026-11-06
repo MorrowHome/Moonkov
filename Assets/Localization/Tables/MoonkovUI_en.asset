@@ -353,6 +353,10 @@ MonoBehaviour:
     m_Localized: Account service timed out. Please retry.
     m_Metadata:
       m_Items: []
+  - m_Id: 600127641482266744
+    m_Localized: Loading your stash timed out. Please retry Login.
+    m_Metadata:
+      m_Items: []
   - m_Id: 2871799858
     m_Localized: BACK
     m_Metadata:
