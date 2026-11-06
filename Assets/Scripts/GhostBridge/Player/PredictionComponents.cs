@@ -75,11 +75,15 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField(Quantization = 100)] public float HaloEnergy, HaloCapacity, HaloRecoveryDelay;
     [GhostField] public uint HaloRechargeSequence;
     [GhostField] public HaloTransferPhase HaloTransferPhase;
+    [GhostField] public HaloDeploymentMode HaloDeploymentMode;
     [GhostField] public Entity HaloTransferTarget;
     [GhostField(Quantization = 100)] public float HaloTransferRemaining;
     [GhostField(Quantization = 1000)] public float3 HaloTransferPoint;
     // A held gesture can start once. Release before acquiring another recipient.
-    public bool HaloTransferLatched;
+    public bool HaloTransferLatched, HaloGuardLatched;
+    public bool HaloAnchorLatched, HaloModeLatched;
+    public float HaloSentrySearchRemaining;
+    public Entity HaloSentryTarget;
     public uint HaloTransferWeapon;
     // Legacy presentation/test adapters. These are aliases, never separate resources.
     public bool ShieldEquipped { get => HaloEquipped; set => HaloEquipped = value; }

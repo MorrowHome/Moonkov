@@ -37,8 +37,10 @@ namespace Unity.MP_FPS
         public static bool InRange(float3 from, float3 to) => math.all(math.isfinite(from)) && math.all(math.isfinite(to)) &&
             math.distancesq(from, to) <= Range * Range;
 
-        public static void Begin(ref PredictedPlayerGhost sender, Entity target, float3 point)
+        public static void Begin(ref PredictedPlayerGhost sender, Entity target, float3 point,
+            HaloDeploymentMode mode = HaloDeploymentMode.Transfer)
         {
+            sender.HaloDeploymentMode = mode;
             sender.HaloTransferPhase = HaloTransferPhase.Extending;
             sender.HaloTransferRemaining = ExtendSeconds;
             sender.HaloTransferTarget = target;
@@ -57,10 +59,12 @@ namespace Unity.MP_FPS
             sender.HaloTransferPhase = HaloTransferPhase.Returning;
             sender.HaloTransferRemaining = ReturnSeconds;
             sender.HaloTransferTarget = Entity.Null;
+            sender.HaloSentryTarget = Entity.Null;
         }
 
         public static void Clear(ref PredictedPlayerGhost sender)
         {
+            sender.HaloDeploymentMode = HaloDeploymentMode.Transfer;
             sender.HaloTransferPhase = HaloTransferPhase.Idle;
             sender.HaloTransferRemaining = 0;
             sender.HaloTransferTarget = Entity.Null;

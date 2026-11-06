@@ -19,9 +19,22 @@ namespace Unity.MP_FPS
             m_Interaction.EnableInClassList("is-halo-transfer", true);
             m_Interaction.EnableInClassList("is-error", false);
             m_Interaction.EnableInClassList("is-empty", false);
-            MoonkovLocalization.Set(m_InteractionKey, TutorialRuntime.UsingGamepad ? "←" : "Y");
+            bool gamepad = TutorialRuntime.UsingGamepad;
+            MoonkovLocalization.Set(m_InteractionKey, gamepad ? "←" : "Y");
+            if (occupied && HaloSupportRules.Anchored(sender))
+            {
+                MoonkovLocalization.Set(m_InteractionKey, gamepad ? "RB+←" : "U");
+                MoonkovLocalization.Set(m_Prompt, sender.HaloTransferPhase == HaloTransferPhase.Returning ? "Halo returning" : "Recall halo");
+                m_InteractionDetails.style.display = DisplayStyle.Flex;
+                string mode = sender.HaloDeploymentMode == HaloDeploymentMode.Light ? "Halo lighting" :
+                    sender.HaloDeploymentMode == HaloDeploymentMode.Shield ? "Area shield" : "Halo sentry";
+                MoonkovLocalization.Set(m_InteractionState, "{0}  {1} Switch", MoonkovLocalization.Text(mode), gamepad ? "RB+→" : "K");
+                MoonkovLocalization.Set(m_InteractionRange, $"{Vector3.Distance(HaloTransferRules.Anchor(sender), sender.HaloTransferPoint):0.0} m");
+                return;
+            }
             MoonkovLocalization.Set(m_Prompt, sender.HaloTransferPhase == HaloTransferPhase.Returning ? "Halo returning" :
-                occupied ? "Transferring energy" : "Hold to transfer energy");
+                occupied ? sender.HaloDeploymentMode == HaloDeploymentMode.AllyGuard ? "Guarding teammate" : "Transferring energy" :
+                gamepad ? "Hold to transfer / LT to guard" : "Hold to transfer / RMB to guard");
             m_InteractionDetails.style.display = hasTarget ? DisplayStyle.Flex : DisplayStyle.None;
             if (!hasTarget) return;
             var receiver = m_World.EntityManager.GetComponentData<PredictedPlayerGhost>(target);

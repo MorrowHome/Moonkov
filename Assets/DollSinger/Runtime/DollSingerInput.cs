@@ -88,6 +88,9 @@ namespace Unity.MP_FPS.DollSinger
         public bool ReloadPressed { get; private set; }
         public bool DefenseHeld { get; private set; }
         public bool TransferHeld { get; private set; }
+        public bool GuardHeld { get; private set; }
+        public bool HaloAnchorHeld { get; private set; }
+        public bool HaloModeHeld { get; private set; }
         public int WeaponSlotPressed { get; private set; }
         public bool AltHeld { get; private set; }
         public float LeanTarget { get; private set; }
@@ -206,6 +209,8 @@ namespace Unity.MP_FPS.DollSinger
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
                 DefenseHeld = keyboard.tKey.isPressed;
                 TransferHeld = keyboard.yKey.isPressed;
+                HaloAnchorHeld = keyboard.uKey.isPressed;
+                HaloModeHeld = keyboard.kKey.isPressed;
                 int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
                     keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
                     keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
@@ -254,6 +259,12 @@ namespace Unity.MP_FPS.DollSinger
                 if (gamepad.buttonEast.wasPressedThisFrame || gamepad.dpad.down.wasPressedThisFrame || gamepad.buttonSouth.wasPressedThisFrame)
                     Stance = toggledStance;
                 if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
+                if (gamepad.rightShoulder.isPressed)
+                {
+                    HaloAnchorHeld |= gamepad.dpad.left.isPressed;
+                    HaloModeHeld |= gamepad.dpad.right.isPressed;
+                    if (HaloAnchorHeld || HaloModeHeld) { TransferHeld = DefenseHeld = false; Stance = toggledStance; }
+                }
             }
             // Holding a grenade needs physical button state even while gun fire is suppressed.
             bool grenade = GrenadeInput?.Invoke(FirePressed, FireHeld, AimPressed, AimHeld) == true;
@@ -264,6 +275,9 @@ namespace Unity.MP_FPS.DollSinger
                 FirePressed = FireHeld = false;
                 if (!held) suppressFireUntilRelease = false;
             }
+            GuardHeld = TransferHeld && AimHeld && !grenade;
+            if (HaloAnchorHeld || HaloModeHeld) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false; WeaponSlotPressed = 0; }
+            if (grenade) HaloAnchorHeld = HaloModeHeld = false;
             if (TransferHeld) { DefenseHeld = false; WeaponSlotPressed = 0; }
             if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
             if (grenade) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = DefenseHeld = TransferHeld = false; WeaponSlotPressed = 0; }
@@ -279,7 +293,8 @@ namespace Unity.MP_FPS.DollSinger
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
             AimPressed = false;
-            FireHeld = DefenseHeld = TransferHeld = false;
+            FireHeld = DefenseHeld = TransferHeld = GuardHeld = false;
+            HaloAnchorHeld = HaloModeHeld = false;
             Stance = toggledStance;
             AltHeld = false;
             LeanTarget = 0f;

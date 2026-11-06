@@ -1,4 +1,12 @@
 {
+  "Hold to transfer / RMB to guard": "按住传能 右键护卫",
+  "Hold to transfer / LT to guard": "按住传能 LT 护卫",
+  "{0}  {1} Switch": "{0}  {1} 切换",
+  "Recall halo": "召回光环",
+  "Halo sentry": "自动射击",
+  "Area shield": "区域护盾",
+  "Halo lighting": "悬浮照明",
+  "Guarding teammate": "正在护卫队友",
   "CRITICAL OXYGEN": "氧气告急",
   "OXYGEN DEPLETED": "氧气耗尽",
   "OXYGEN DEPLETED / {0}s": "氧气耗尽 / {0}秒",

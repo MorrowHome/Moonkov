@@ -252,7 +252,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     // Invoked by the existing predicted/server-confirmed shot effects path.
     // This is a cosmetic bolt; damage still belongs to the authoritative weapon system.
-    public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true, uint shotTick = 0)
+    public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true, uint shotTick = 0, Vector3? shotOrigin = null)
     {
         if (shotTick == 0) gestureShotTime = Time.time;
         else ObserveGestureShot(shotTick);
@@ -262,7 +262,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot(shotTick);
         if (ArsenalVisual) ArsenalVisual.PlayShot(shotTick);
         PlayDischarge(shotTick);
-        if (cosmeticFlight) FireCosmeticBolt(aimPoint);
+        if (cosmeticFlight) FireCosmeticBolt(aimPoint, shotOrigin);
     }
 
     public Color WeaponColor => ArsenalVisual ? ArsenalVisual.lightColor : visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor :
@@ -722,11 +722,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         return point;
     }
 
-    private void FireCosmeticBolt(Vector3? shotAimPoint = null) {
+    private void FireCosmeticBolt(Vector3? shotAimPoint = null, Vector3? shotOrigin = null) {
         if (!haloVisual || (!networkControlled && !playerCamera)) return;
         Vector3 forward = networkControlled ? networkDirection : playerCamera.transform.forward;
         Vector3 target = shotAimPoint ?? FindAimPoint();
-        Vector3 boltStart = haloVisual.position + forward * 0.02f;
+        Vector3 boltStart = shotOrigin ?? haloVisual.position + forward * 0.02f;
         Vector3 travel = target - boltStart;
         if (travel.sqrMagnitude < 0.0001f || (!networkControlled && Vector3.Dot(travel, forward) < 0.5f))
             travel = forward * boltMaxDistance;

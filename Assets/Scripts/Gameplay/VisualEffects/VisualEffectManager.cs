@@ -11,6 +11,8 @@ namespace Unity.MP_FPS
         public uint WeaponId;
         public uint ShotTick;
         public Unity.Mathematics.float3 AimPoint;
+        public bool HaloDeployed;
+        public Unity.Mathematics.float3 ShotOrigin;
     }
 
     public class VisualEffectManager : GhostSingleton<VisualEffectManager>, IUpdateServer, IUpdateClient, IGhostManager
@@ -43,9 +45,11 @@ namespace Unity.MP_FPS
         }
         public void Server_RequestRifleImpact(ClientRifleImpactRpc impact) => m_RifleImpactQueue.Enqueue(impact);
 
-        public void Server_RequestVfx(int ownerNetworkId, uint weaponId, Vector3 aimPoint, uint shotTick = 0)
+        public void Server_RequestVfx(int ownerNetworkId, uint weaponId, Vector3 aimPoint, uint shotTick = 0,
+            bool haloDeployed = false, Vector3 shotOrigin = default)
         {
-            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId, AimPoint = aimPoint, ShotTick = shotTick });
+            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId, AimPoint = aimPoint,
+                ShotTick = shotTick, HaloDeployed = haloDeployed, ShotOrigin = shotOrigin });
         }
 
         public void UpdateServer(float deltaTime)
@@ -83,9 +87,9 @@ namespace Unity.MP_FPS
                     }
                 }
 
-                // If the RPC is for the local player, skip it.
-                // The local player already spawned their own VFX in the prediction system.
-                if (localPlayerNetworkId != -1 && localPlayerNetworkId == rpc.OwnerNetworkId)
+                // Handheld shots are predicted locally. Autonomous shots are server-only,
+                // so their owner also needs this event, including its original world position.
+                if (!rpc.HaloDeployed && localPlayerNetworkId != -1 && localPlayerNetworkId == rpc.OwnerNetworkId)
                 {
                     continue;
                 }
@@ -99,7 +103,7 @@ namespace Unity.MP_FPS
                         if (player.GhostGameObject.Owner == rpc.OwnerNetworkId)
                         {
                             // Found the remote player. Spawn the effect.
-                            SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint, rpc.ShotTick);
+                            SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint, rpc.ShotTick, rpc.HaloDeployed, rpc.ShotOrigin);
                             break;
                         }
                     }
@@ -115,7 +119,8 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson, Vector3 aimPoint, uint shotTick = 0)
+        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson, Vector3 aimPoint, uint shotTick = 0,
+            bool haloDeployed = false, Vector3 shotOrigin = default)
         {
             try
             {
@@ -128,7 +133,7 @@ namespace Unity.MP_FPS
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
                 {
-                    dollSinger.PlayShot(aimPoint, weaponId, shotTick);
+                    dollSinger.PlayShot(aimPoint, weaponId, shotTick, haloDeployed, shotOrigin);
                     return;
                 }
                 if (weaponData != null)

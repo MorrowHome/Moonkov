@@ -13,6 +13,8 @@ public partial class ClientInputReaderSystem
 
     private void ReadHaloTransfer(Entity local, in PredictedPlayerGhost sender, bool allowed, ref PlayerInput input)
     {
+        input.SetFlag(PlayerInput.InputFlag.HaloAnchor, allowed && _dollSingerInput.HaloAnchorHeld);
+        input.SetFlag(PlayerInput.InputFlag.HaloMode, allowed && _dollSingerInput.HaloModeHeld);
         bool held = allowed && _dollSingerInput.TransferHeld && !input.FreeLooking && !input.FireSuppressed;
         HaloTransferCandidate = Entity.Null;
         var camera = _dollSingerPresentation.OwnedCamera;
@@ -24,7 +26,7 @@ public partial class ClientInputReaderSystem
             foreach (var (candidate, identity, owner, entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>,
                          RefRO<GhostInstance>, RefRO<GhostOwner>>().WithEntityAccess())
             {
-                if (entity == local || identity.ValueRO.ghostId <= 0 || !HaloTransferRules.CanReceive(candidate.ValueRO) ||
+                if (entity == local || identity.ValueRO.ghostId <= 0 || !HaloSupportRules.CanProtect(candidate.ValueRO) ||
                     !HaloTransferRules.Teammates(sender, candidate.ValueRO, true, owner.ValueRO.NetworkId > 0)) continue;
                 Vector3 to = HaloTransferRules.Anchor(candidate.ValueRO);
                 if (!HaloTransferRules.InRange(from, to)) continue;
@@ -41,6 +43,7 @@ public partial class ClientInputReaderSystem
         if (!held) _transferTarget = Entity.Null;
         _transferGestureHeld = held;
         input.SetFlag(PlayerInput.InputFlag.HaloTransfer, held);
+        input.SetFlag(PlayerInput.InputFlag.HaloGuard, held && _dollSingerInput.GuardHeld);
         if (held && EntityManager.HasComponent<GhostInstance>(_transferTarget))
         {
             var target = EntityManager.GetComponentData<GhostInstance>(_transferTarget);

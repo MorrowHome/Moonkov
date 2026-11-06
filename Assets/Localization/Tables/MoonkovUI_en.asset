@@ -5826,6 +5826,38 @@ MonoBehaviour:
     m_Localized: Teammate
     m_Metadata:
       m_Items: []
+  - m_Id: 10624198874488832
+    m_Localized: Recall halo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820480
+    m_Localized: '{0}  {1} Switch'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820481
+    m_Localized: Hold to transfer / LT to guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820482
+    m_Localized: Hold to transfer / RMB to guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820483
+    m_Localized: Guarding teammate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820484
+    m_Localized: Halo lighting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820485
+    m_Localized: Area shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10624198924820486
+    m_Localized: Halo sentry
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

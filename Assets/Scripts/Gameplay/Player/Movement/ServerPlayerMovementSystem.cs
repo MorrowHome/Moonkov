@@ -382,7 +382,8 @@ namespace Unity.MP_FPS
                     if (weaponData != null)
                     {
                         var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
-                        predictedPlayer.ValueRW.AimPoint = aimPoint;
+                        predictedPlayer.ValueRW.AimPoint = predictedPlayer.ValueRO.HaloDeploymentMode == HaloDeploymentMode.Sentry
+                            ? SentryLookPoint(predictedPlayer.ValueRO) : (float3)aimPoint;
                         bool wantsToReload = input.Reload;
                         bool wantsToShoot = !switchedWeapon && input.Shoot && !input.FireSuppressed;
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
@@ -399,13 +400,21 @@ namespace Unity.MP_FPS
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 
-                        if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, deltaTime))
+                        bool sentryShot = TrySentryShot(entity, ref predictedPlayer.ValueRW, weaponData, serverTick, out var sentryRay);
+                        if (sentryShot || HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon, deltaTime))
                         {
+                            if (sentryShot)
+                            {
+                                shotRay = sentryRay;
+                                aimPoint = shotRay.GetPoint(weaponData.HitscanRange);
+                                predictedPlayer.ValueRW.AimPoint = aimPoint;
+                            }
                             HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, deltaTime);
+                            if (sentryShot) predictedPlayer.ValueRW.WeaponCooldown = 0;
                             HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
 
-                            bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
+                            bool aimed = sentryShot || !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
                             if (weaponData.Type == WeaponType.Hitscan)
                             {
                                 shotRay = new Ray(shotRay.origin, WeaponSpread.Direction(shotRay.direction, weaponData, 0,
@@ -421,7 +430,7 @@ namespace Unity.MP_FPS
                             if (VisualEffectManager.ServerInstance != null)
                             {
                                 VisualEffectManager.ServerInstance.Server_RequestVfx(shooterNetworkId,
-                                    predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick);
+                                    predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick, sentryShot, shotOriginPosition);
                             }
 
                             switch (weaponData.Type)

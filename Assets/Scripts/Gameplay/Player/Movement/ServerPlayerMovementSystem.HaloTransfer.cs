@@ -28,12 +28,18 @@ namespace Unity.MP_FPS
                 var sender = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
                 bool fresh = TryReadTransferInput(actor, serverTick, out var input);
                 bool held = fresh && input.HaloTransfer;
-                bool start = held && !sender.HaloTransferLatched;
+                bool start = held && (!sender.HaloTransferLatched || input.HaloGuard && !sender.HaloGuardLatched);
                 bool wasLatched = sender.HaloTransferLatched;
-                if (fresh) sender.HaloTransferLatched = held;
+                bool wasGuard = sender.HaloGuardLatched;
+                bool wasAnchor = sender.HaloAnchorLatched, wasMode = sender.HaloModeLatched;
+                if (fresh) { sender.HaloTransferLatched = held; sender.HaloGuardLatched = input.HaloGuard; }
+                if (UpdateHaloAnchor(actor, ref sender, input, fresh, dt))
+                { EntityManager.SetComponentData(actor, sender); continue; }
                 if (!HaloTransferRules.Occupied(sender) && !start)
                 {
-                    if (wasLatched != sender.HaloTransferLatched) EntityManager.SetComponentData(actor, sender);
+                    if (wasLatched != sender.HaloTransferLatched || wasGuard != sender.HaloGuardLatched ||
+                        wasAnchor != sender.HaloAnchorLatched || wasMode != sender.HaloModeLatched)
+                        EntityManager.SetComponentData(actor, sender);
                     continue;
                 }
 
@@ -57,20 +63,27 @@ namespace Unity.MP_FPS
                         var identity = EntityManager.GetComponentData<GhostInstance>(target);
                         float3 from = HaloTransferRules.Anchor(sender), to = HaloTransferRules.Anchor(receiver);
                         valid = identity.ghostId == input.HaloTransferGhostId && identity.spawnTick.SerializedData == input.HaloTransferSpawnTick &&
-                            (!occupied || sender.HaloTransferWeapon == sender.EquippedWeaponID) && HaloTransferRules.CanReceive(receiver) &&
+                            (!occupied || sender.HaloTransferWeapon == sender.EquippedWeaponID) &&
+                            (input.HaloGuard ? HaloSupportRules.CanProtect(receiver) : HaloTransferRules.CanReceive(receiver)) &&
                             HaloTransferRules.Teammates(sender, receiver, IsHuman(actor), IsHuman(target)) &&
                             HaloTransferRules.InRange(from, to) && TransferVisible(actor, from, to);
                         if (valid && !occupied)
                         {
                             Vector3 forward = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0) * Vector3.forward;
                             valid = math.dot((float3)forward, math.normalizesafe(to - from)) >= .5f;
-                            if (valid) HaloTransferRules.Begin(ref sender, target, to);
+                            if (valid) HaloTransferRules.Begin(ref sender, target, to,
+                                input.HaloGuard ? HaloDeploymentMode.AllyGuard : HaloDeploymentMode.Transfer);
                         }
                         if (valid)
                         {
                             sender.HaloTransferPoint = to;
-                            HaloTransferRules.Transfer(ref sender, ref receiver, dt);
-                            EntityManager.SetComponentData(target, receiver);
+                            sender.HaloDeploymentMode = input.HaloGuard ? HaloDeploymentMode.AllyGuard : HaloDeploymentMode.Transfer;
+                            if (input.HaloGuard) HaloSupportRules.AdvanceDeployment(ref sender, dt);
+                            else
+                            {
+                                HaloTransferRules.Transfer(ref sender, ref receiver, dt);
+                                EntityManager.SetComponentData(target, receiver);
+                            }
                         }
                     }
                     if (!valid) HaloTransferRules.Recall(ref sender);
@@ -95,6 +108,38 @@ namespace Unity.MP_FPS
 
         private bool IsHuman(Entity actor) => EntityManager.HasComponent<GhostOwner>(actor) &&
             EntityManager.GetComponentData<GhostOwner>(actor).NetworkId > 0;
+
+        // Called by the authoritative damage boundary. Re-read each donor: several impacts
+        // in one tick must spend its current pool, including when the donor is the victim.
+        public float AbsorbHaloSupport(Entity victim, ref PredictedPlayerGhost health, float incoming,
+            uint tick, RaidDamageKind kind, float3 point)
+        {
+            if (!EnergyShieldRules.Blocks(kind) || !HaloSupportRules.CanProtect(health) || incoming <= 0) return incoming;
+            foreach (var actor in m_TransferActors)
+            {
+                if (!EntityManager.HasComponent<PredictedPlayerGhost>(actor)) continue;
+                var donor = actor == victim ? health : EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
+                bool guard = donor.HaloDeploymentMode == HaloDeploymentMode.AllyGuard && donor.HaloTransferTarget == victim;
+                bool area = donor.HaloDeploymentMode == HaloDeploymentMode.Shield &&
+                    HaloSupportRules.Within(donor.HaloTransferPoint - new float3(0, .6f, 0), HaloTransferRules.Anchor(health), HaloSupportRules.ShieldRadius);
+                if (donor.HaloTransferPhase != HaloTransferPhase.Sending || (!guard && !area) || !HaloTransferRules.CanSend(donor) ||
+                    donor.HaloTransferWeapon != donor.EquippedWeaponID || !ActiveTransferActor(actor, false) ||
+                    !ActiveTransferActor(victim, true) || !HaloTransferRules.Teammates(donor, health, IsHuman(actor), IsHuman(victim)) ||
+                    (guard ? !HaloTransferRules.InRange(HaloTransferRules.Anchor(donor), HaloTransferRules.Anchor(health)) :
+                        !HaloSupportRules.Within(HaloTransferRules.Anchor(donor), donor.HaloTransferPoint, HaloSupportRules.LeashRange)) ||
+                    !TransferVisible(actor, guard ? HaloTransferRules.Anchor(donor) : donor.HaloTransferPoint, HaloTransferRules.Anchor(health))) continue;
+                float absorbed = HaloSupportRules.Absorb(ref donor, incoming, tick, kind, point);
+                if (absorbed <= 0) continue;
+                if (actor == victim) health = donor;
+                else
+                {
+                    EntityManager.SetComponentData(actor, donor);
+                    HaloSupportRules.RecordHit(ref health, absorbed, incoming, tick, point);
+                }
+                return incoming - absorbed;
+            }
+            return incoming;
+        }
 
         private bool ActiveTransferActor(Entity actor, bool allowBot)
         {

@@ -413,7 +413,7 @@ namespace Unity.MP_FPS
             }
         }
 
-        public void PlayShot(Vector3 aimPoint, uint weaponId, uint shotTick = 0)
+        public void PlayShot(Vector3 aimPoint, uint weaponId, uint shotTick = 0, bool haloDeployed = false, Vector3 shotOrigin = default)
         {
             if (m_Linked && Role != MultiplayerRole.Server)
             {
@@ -425,7 +425,7 @@ namespace Unity.MP_FPS
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
                 m_Halo.GestureReleaseSeconds = profile?.GestureReleaseSeconds ?? 0;
-                if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive &&
+                if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive && !m_HaloOccupied && !haloDeployed &&
                     m_Input.CanReadPlayerInput && WeaponHandsAvailable && !m_Input.LightAdjusting)
                 {
                     float interval = weapon == null ? .35f :
@@ -441,8 +441,8 @@ namespace Unity.MP_FPS
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, profile?.BodyCrossfade ?? .045f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);
-                    bool owned = Role == MultiplayerRole.ClientOwned;
-                    Vector3 origin = m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
+                    bool owned = Role == MultiplayerRole.ClientOwned && !m_HaloOccupied && !haloDeployed;
+                    Vector3 origin = haloDeployed ? shotOrigin : m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
                     float bodyGain = Mathf.Lerp(1, profile?.SustainedBodyGain ?? .9f, m_ShotSoundPressure);
                     m_RifleBodySound = MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weapon?.WeaponFireSfx,
                         origin, bodyGain, owned ? .08f : 1f);
@@ -452,10 +452,10 @@ namespace Unity.MP_FPS
                 }
                 else
                 {
-                    MoonkovAudio.Play(weapon?.WeaponFireSfx, transform.position);
-                    MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, transform.position);
+                    MoonkovAudio.Play(weapon?.WeaponFireSfx, haloDeployed ? shotOrigin : transform.position);
+                    MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, haloDeployed ? shotOrigin : transform.position);
                 }
-                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick);
+                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick, haloDeployed ? shotOrigin : (Vector3?)null);
             }
         }
 

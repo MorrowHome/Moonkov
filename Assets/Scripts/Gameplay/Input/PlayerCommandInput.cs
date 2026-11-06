@@ -23,7 +23,10 @@ public struct PlayerInput
         FireHeld = 1 << 13,
         FireSuppressed = 1 << 14,
         HaloDefense = 1 << 15,
-        HaloTransfer = 1 << 16
+        HaloTransfer = 1 << 16,
+        HaloGuard = 1 << 17,
+        HaloAnchor = 1 << 18,
+        HaloMode = 1 << 19
     }
 
     public float2 MoveInput;
@@ -58,6 +61,9 @@ public struct PlayerInput
     public bool FireSuppressed => (InputFlags & (uint)InputFlag.FireSuppressed) != 0;
     public bool HaloDefense => (InputFlags & (uint)InputFlag.HaloDefense) != 0;
     public bool HaloTransfer => (InputFlags & (uint)InputFlag.HaloTransfer) != 0;
+    public bool HaloGuard => HaloTransfer && (InputFlags & (uint)InputFlag.HaloGuard) != 0;
+    public bool HaloAnchor => (InputFlags & (uint)InputFlag.HaloAnchor) != 0;
+    public bool HaloMode => (InputFlags & (uint)InputFlag.HaloMode) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
@@ -87,7 +93,8 @@ public struct PlayerInput
         const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
             InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
-            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer);
+            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer | InputFlag.HaloGuard |
+            InputFlag.HaloAnchor | InputFlag.HaloMode);
         result.InputFlags &= knownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
@@ -122,9 +129,15 @@ public struct PlayerInput
 
     private void ApplyTransferIntent()
     {
+        if (FreeLooking || FireSuppressed)
+        { SetFlag(InputFlag.HaloAnchor, false); SetFlag(InputFlag.HaloMode, false); }
+        if (HaloAnchor || HaloMode)
+            InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload | InputFlag.HaloDefense |
+                InputFlag.HaloTransfer | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
         if (FreeLooking || FireSuppressed) SetFlag(InputFlag.HaloTransfer, false);
         if (!HaloTransfer)
         {
+            SetFlag(InputFlag.HaloGuard, false);
             HaloTransferGhostId = 0;
             HaloTransferSpawnTick = 0;
             return;

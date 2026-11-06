@@ -164,6 +164,17 @@ namespace Unity.MP_FPS
         }
         // Combat calls once per physical impact, before anatomical distribution.
         // Hypoxia, nutrition and other physiological damage keep using Damage/Set directly.
+        public static float CombatDamage(Unity.Entities.EntityManager manager, Unity.Entities.Entity victim,
+            ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick,
+            RaidDamageKind kind, Unity.Mathematics.float3 impactPoint = default)
+        {
+            if (!EnergyShieldRules.Alive(state) || !float.IsFinite(amount) || amount <= 0 ||
+                part != BodyPart.Auto && Maximum(part) <= 0) return 0;
+            var movement = manager.World.GetExistingSystemManaged<ServerPlayerMovementSystem>();
+            if (movement != null) amount = movement.AbsorbHaloSupport(victim, ref state, amount, tick, kind, impactPoint);
+            return CombatDamage(ref state, part, amount, tick, kind, impactPoint);
+        }
+
         public static float CombatDamage(ref PredictedPlayerGhost state,BodyPart part,float amount,uint tick,
             RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
         {
