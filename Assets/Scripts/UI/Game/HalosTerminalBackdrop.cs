@@ -94,23 +94,44 @@ namespace Unity.MP_FPS.Client
             m_Root.RegisterCallback<AttachToPanelEvent>(Attached);
         }
 
-        private static Rect TerminalFrame(int index)
+        // Irregular, interleaved positions: wide consoles, tall traces and small popups
+        // overlap across the center instead of growing in tidy quadrant staircases.
+        private static Rect TerminalFrame(int index) => index switch
         {
-            if (index == 0) return new Rect(0, 0, 1920, 1080);
-            int group = (index - 1) % 4, layer = (index - 1) / 4;
-            var frame = group switch
-            {
-                0 => new Rect(70, 80, 680, 382),
-                1 => new Rect(1100, 60, 640, 360),
-                2 => new Rect(120, 500, 620, 340),
-                _ => new Rect(1110, 510, 620, 340)
-            };
-            // Later windows sit below earlier title bars, so accumulation stays visible.
-            frame.x += layer * (group % 2 == 0 ? 22 : -22);
-            frame.y += layer * 24;
-            frame.width += layer * 6; frame.height += layer * 3;
-            return frame;
-        }
+            0 => new Rect(0, 0, 1920, 1080),
+            1 => new Rect(100, 172, 1070, 610),
+            2 => new Rect(1324, 66, 460, 720),
+            3 => new Rect(650, 750, 1070, 250),
+            4 => new Rect(256, 47, 760, 360),
+            5 => new Rect(66, 636, 660, 350),
+            6 => new Rect(1110, 282, 700, 430),
+            7 => new Rect(525, 380, 550, 470),
+            8 => new Rect(810, 96, 1040, 270),
+            9 => new Rect(118, 330, 860, 250),
+            10 => new Rect(1128, 670, 620, 340),
+            11 => new Rect(620, 190, 790, 590),
+            12 => new Rect(42, 59, 520, 400),
+            13 => new Rect(1404, 410, 370, 550),
+            14 => new Rect(360, 588, 970, 310),
+            15 => new Rect(973, 37, 590, 350),
+            16 => new Rect(177, 419, 440, 590),
+            17 => new Rect(710, 480, 1070, 390),
+            18 => new Rect(1050, 130, 450, 670),
+            19 => new Rect(426, 74, 790, 250),
+            20 => new Rect(70, 788, 810, 230),
+            21 => new Rect(798, 278, 640, 390),
+            22 => new Rect(1210, 546, 610, 430),
+            23 => new Rect(203, 254, 520, 330),
+            24 => new Rect(510, 690, 880, 280),
+            25 => new Rect(1124, 45, 640, 250),
+            26 => new Rect(54, 492, 470, 510),
+            27 => new Rect(552, 364, 770, 340),
+            28 => new Rect(1307, 318, 510, 360),
+            29 => new Rect(324, 116, 650, 270),
+            30 => new Rect(1092, 767, 690, 250),
+            31 => new Rect(220, 665, 560, 270),
+            _ => new Rect(839, 533, 740, 360)
+        };
 
         private static VisualElement AddDecoration(VisualElement parent, string className)
         {
