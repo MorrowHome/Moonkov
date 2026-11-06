@@ -5,6 +5,7 @@
 - 本地化不能在首场景前同步等待。原设置启用了同步初始化，界面还通过 `GetTable` 和 `SelectedLocale` 隐式等待。现改为异步表加载。未完成或失败时显示原文，表就绪后刷新已有文字和格式参数。读取语言不再阻塞，切换语言先异步等待初始化。
 - Addressables 固定随 Player 构建，不再依赖 Mac 或 Windows 的个人 Editor 偏好。三个中文名分组使用纯哈希包文件名，避开跨平台压缩、解压时的文件名编码差异。语言名称和资源 GUID 不变。不要给旧包只替换 DLL；在 Mac 同步代码后重新正常构建，保留增量缓存。
 - `MoonkovPlayerBuildChecks.ValidateStartupAssets` 检查异步初始化、随包构建和非 ASCII 分组的包命名。`Build Chinese Localization` 会保持这些设置。
+- 菜单使用独立的 UI 角色展示，不再加载旧 `GameScene` 样例地图和菜单客户端世界。仅异步加载 `Persistents`，完成后才标记菜单就绪。战局创建世界的流程不变。登录页也不再构造被样式隐藏的旧月球相机；旧代码只检查 `display`，会继续渲染 `visibility: hidden` 的月球。性能收益尚未在冷启动 Player 中计时。
 - 单 Windows Editor 编译通过。`Tools/Validation/LocalizationStartupReview.cs` 用公开 API 检查，10 项构建设置、译文、格式参数、缺失词条回退和进度隔离检查通过。该次检查的本地化已初始化，不能代表冷启动或资源缺失包已验收。没有进入 Play、启动客户端或重建 Player。下一步验收为 Mac 重打 Windows 包后，冷启动显示登录动画，进图显示持续更新的加载界面。
 
 ## Halos 登录与加载动画（2026-11-06）

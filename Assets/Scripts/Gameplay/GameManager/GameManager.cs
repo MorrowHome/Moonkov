@@ -132,7 +132,7 @@ namespace Unity.MP_FPS
             // Ensures it only ever loads once
             if (!SceneManager.GetSceneByName("Persistents").isLoaded)
             {
-                SceneManager.LoadScene("Scenes/Persistents", LoadSceneMode.Additive);
+                await SceneManager.LoadSceneAsync("Scenes/Persistents", LoadSceneMode.Additive);
             }
         }
 
@@ -148,10 +148,12 @@ namespace Unity.MP_FPS
         {
             DestroyLocalSimulationWorld();
             EnergyShieldFittingData.Clear();
-            var clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            await ScenesLoader.LoadMenuPreviewAsync(clientWorld);
-            GameSettings.Instance.MainMenuSceneLoaded = true;
+            // The full-screen menu renders its own previews. Loading the old sample map
+            // and a NetCode client world here only delays the first usable menu frame.
+            if (!SceneManager.GetSceneByName("Persistents").isLoaded)
+                await SceneManager.LoadSceneAsync("Scenes/Persistents", LoadSceneMode.Additive);
             cancellationToken.ThrowIfCancellationRequested();
+            GameSettings.Instance.MainMenuSceneLoaded = true;
         }
 
         /// <summary>

@@ -24,7 +24,6 @@ namespace Unity.MP_FPS.Client
         private Label m_CarryNote;
         private string m_AccountError;
         private GlobalGameState m_LastStashGameState;
-        private LunarBackdrop m_LoginMoon;
         private Button m_ProfileModeButton;
         private HalosTerminalBackdrop m_LoginAnimation;
         private Toggle m_AccessReduceMotion;
@@ -33,8 +32,6 @@ namespace Unity.MP_FPS.Client
         private void InitializeAccountPanel()
         {
             var canvas = m_AccountCanvas = m_MainMenu.Q<VisualElement>("Canvas");
-            m_LoginMoon = new LunarBackdrop(BackdropMode.Login, canvas);
-            m_LoginMoon.AddToClassList("terminal-scene-shade"); canvas.Insert(0, m_LoginMoon);
             m_AccountStop = new CancellationTokenSource();
             m_ProfileModeButton = m_MainMenu.Q<Button>("ProfileMode");
             m_ProfileModeButton.clicked += SwitchProfileMode;
@@ -109,7 +106,6 @@ namespace Unity.MP_FPS.Client
                 m_ProfileModeButton.RemoveFromHierarchy();
                 if (loggedIn) modeHost.Add(m_ProfileModeButton); else modeHost.Insert(0, m_ProfileModeButton);
             }
-            m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
@@ -255,7 +251,6 @@ namespace Unity.MP_FPS.Client
             m_AccountPanel?.UnregisterCallback<KeyDownEvent>(AccountKeyboardSubmit);
             m_AccountCanvas?.UnregisterCallback<GeometryChangedEvent>(AccountGeometryChanged);
             m_AccessReduceMotion?.UnregisterValueChangedCallback(AccessMotionChanged);
-            m_LoginMoon?.Dispose(); m_LoginMoon?.RemoveFromHierarchy(); m_LoginMoon = null;
             m_AccountStop?.Cancel();
             if (m_ProfileModeButton != null) m_ProfileModeButton.clicked -= SwitchProfileMode;
             GameSettings.Instance.propertyChanged -= StashSettingsChanged;
