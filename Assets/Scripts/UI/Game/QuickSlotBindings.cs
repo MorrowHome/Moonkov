@@ -101,6 +101,20 @@ namespace Unity.MP_FPS.Client
         }
         public InventoryItem SelectedItem(InventoryGraph graph)
         { Validate(graph); return Selected >= 0 ? graph?.Find(this[Selected]) : null; }
+        public int NextWeaponSlot(InventoryGraph graph, int direction, int equippedSlot)
+        {
+            if (graph == null || direction == 0) return -1;
+            int step = Math.Sign(direction);
+            int current = Selected >= 0 && Selected < EquipmentSlots ? Selected : equippedSlot - 1;
+            if (current < 0 || current >= EquipmentSlots) current = step > 0 ? -1 : EquipmentSlots;
+            // Equipment already supplies every weapon in 1–4; 5–9 may repeat them or hold consumables.
+            for (int offset = 1; offset <= EquipmentSlots; offset++)
+            {
+                int slot = (current + step * offset + EquipmentSlots) % EquipmentSlots;
+                if (slot != current && Available(slot, graph)) return slot;
+            }
+            return -1;
+        }
     }
     [Serializable]
     public sealed class QuickSlotSave

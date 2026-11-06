@@ -4,11 +4,11 @@
 
 ## 玩家路径
 
-首次有效配置只将当前真实装备武器设为 1/2/3；保存或主动清除后不再自动填充，后续换装/新 ID 需要显式绑定。
+1–4 自动跟随主武器、副武器、手枪和近战装备。没有近战装备时，4 显示拳头。5–9 保存玩家的物品绑定。
 
-局内快捷栏默认隐藏。滚动鼠标滚轮或按 1–9 后显示 2 秒，再用 0.6 秒淡出；再次操作会重新计时。滚轮沿用原视角行为，只额外唤出栏位。隐藏不改变选中物品。背包内的绑定栏始终可见。
+局内快捷栏默认隐藏。滚动鼠标滚轮或按 1–9 后显示 2 秒，再用 0.6 秒淡出；再次操作会重新计时。第一人称下，滚轮上拨选上一个武器，下拨选下一个，在 1–4 间循环并跳过空位和失效装备。第三人称滚轮仍调整相机距离。同一帧按数字键时优先直接选槽。隐藏不改变选中物品。背包内的绑定栏始终可见。
 
-1. 在战局打开背包，悬停或选择已装备武器、按原规则可访问的可用物品（食物饮水可在随身背包，医疗/氧气/战术道具须口袋或胸挂），按 1–9 绑定；也可将实际物品拖入下方格子。右键槽位清除。不可从搜刮容器、仓库或未装备武器绑定。
+1. 在战局打开背包，悬停或选择已装备武器、按原规则可访问的可用物品（食物饮水可在随身背包，医疗/氧气/战术道具须口袋或胸挂），按 5–9 绑定；也可将实际物品拖入对应格子。右键槽位清除。1–4 随装备变化，不接受手动绑定或清除。不可从搜刮容器、仓库或未装备武器绑定。
 2. 关闭背包，数字键选中。投掷物同时取出到手中，不启用、不扣物。武器按该物品当前真实装备槽切换；道具显示名字、数量，并拦截旧武器 Fire/Aim/Reload。松开当前主键后重新按主键才使用，数字键本身不消耗。
 3. 所有投掷物统一走 `RaidGrenadeThrowRpc` 的 Equip/Prime/Release/Stow/Drop。G 取出或收回，按住左键远投、右键低抛，松开投掷。启用后可以温雷，X 丢下，不能收回。普通医疗和食物仍走原 RPC；注射、布设等用 `RaidTacticalItemActionRpc`。没有客户端扣物或指定落点。
 4. 注射、布设等耗时请求发出后、Started 回包前，以及服务器报告耗时动作期间，X、菜单或数字切换意图均可请求取消；该数字不会同时选择下一物品。同一次按住 X 不会在取消回包后转成踮脚，松开后的下一次独立 X 恢复踮脚。移动/受伤等中断仍由服务器裁决。取消反馈只提示检查背包，不声称服务器必然未扣物。安全持雷时选择其他槽位，会先收回再选择；已启用的雷必须投出或丢下。
@@ -24,7 +24,7 @@
 
 ## 集成契约
 
-- Presentation：RaidQuickSlotInput.Bind(input) / Unbind(input)。DollSingerInput 可选委托 QuickSlotSelection(int number)->真实武器槽 或 0，QuickSlotPrimaryUse(bool pressed)->是否抑制武器。`GrenadeInput` 在武器按键抑制前接收真实按下/按住状态，避免温雷被误判为松手。只在拥有者实际战局安装。
+- Presentation：RaidQuickSlotInput.Bind(input, view) / Unbind(input)。DollSingerInput 可选委托 QuickSlotSelection(int number) 和 QuickSlotScrollSelection(int direction) 返回真实武器槽或 0；滚轮只在拥有者第一人称视角生效，解绑时清除。没有当前选中武器时，从实际装备槽开始循环；连续操作先跟随本地选中槽，避免回包延迟打乱顺序。QuickSlotPrimaryUse(bool pressed) 决定是否抑制武器。`GrenadeInput` 在武器按键抑制前接收真实按下/按住状态，避免温雷被误判为松手。只在拥有者实际战局安装。
 - RaidHUD：InitializeQuickSlots() / PresentQuickSlots(bool active) / DisposeQuickSlots()，由基础生命周期调用；不在独立 Update 中重复执行。
 - ContainerInventoryView：QuickSlotCandidate（悬停优先、选中后备）、QuickSlotDrop(item,panelPoint)、QuickSlotDragPreview。Drop 被消费后不发送 Move，不改变库存。
 - 统一 NextManualActionRequest / m_InventoryRequestId；owner 的同 RequestId Started→Completed/Interrupted 仍更新反馈，不能只观察 RequestId。
@@ -34,6 +34,8 @@
 - 手雷阶段、引信、物品类型和 HoldId 已进入 Ghost，本人和观察者共用真实骨架动作。其他物品的选中持物仍仅本地显示；世界投掷物、陷阱和箱体沿用已有广播。客户端与服务器须使用相同协议版本。
 
 ## 验证记录
+
+- 2026-11-06：第一人称滚轮选武器通过单 Editor 编译、243 项快捷栏规则检查和 28 项真实输入检查。覆盖双向循环、实际枪械装备、近战请求、空位／失效装备、数字键优先、第三人称缩放、文本／背包／暂停／倒地保护和回调解绑。使用单角色无连接 fixture；近战只验发送请求，没有模拟服务器处理。记录在 `LocalData/QuickSlotScrollReview`。
 
 - 2026-11-05：放大与按需显示通过单 Editor 编译、28 项原生布局检查、20 项真实输入／计时检查和 20 项实际 Game View 缩放检查。覆盖 800、960、1100、1280 宽度、数字键选中、滚轮重新计时、逐渐淡出、背包常显、文本／暂停／倒地保护。使用单角色无连接 fixture，没有联机或正式战局验收。记录和 Game View 截图在忽略目录 `LocalData/QuickSlotRevealReview`。
 

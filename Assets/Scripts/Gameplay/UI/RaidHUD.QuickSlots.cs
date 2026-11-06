@@ -11,12 +11,15 @@ namespace Unity.MP_FPS
     public static class RaidQuickSlotInput
     {
         private static DollSingerInput s_Input;
-        public static void Bind(DollSingerInput input)
+        private static DollSingerView s_View;
+        public static void Bind(DollSingerInput input, DollSingerView view = null)
         {
             if (!input) return;
             if (s_Input && s_Input != input) Unbind(s_Input);
+            if (s_Input != input || view) s_View = view;
             s_Input = input;
             input.QuickSlotSelection = RaidHUD.RouteQuickSlotSelection;
+            input.QuickSlotScrollSelection = SelectScrolledWeapon;
             input.DarkSightMode = RaidHUD.UsesDarkSightViewKey;
             input.QuickSlotPrimaryUse = RaidHUD.RouteQuickSlotPrimary;
             input.MeleeAttackInput = RaidHUD.RouteMeleeInput;
@@ -26,13 +29,15 @@ namespace Unity.MP_FPS
         {
             if (!input) return;
             input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null; input.MeleeAttackInput = null;
+            input.QuickSlotScrollSelection = null;
             input.GrenadeInput = null;
-            if (s_Input == input) s_Input = null;
+            if (s_Input == input) { s_Input = null; s_View = null; }
         }
+        private static int SelectScrolledWeapon(int direction) => s_View && s_View.IsFirstPerson ? RaidHUD.RouteQuickSlotScroll(direction) : 0;
         internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
         internal static bool ScrolledThisFrame => s_Input && s_Input.isActiveAndEnabled && s_Input.CanReadPlayerInput && s_Input.Scroll != 0;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() => s_Input = null;
+        private static void Reset() { s_Input = null; s_View = null; }
     }
 
     // The controller shares one button across mission, world control and
@@ -97,6 +102,7 @@ namespace Unity.MP_FPS
         }
         internal static bool UsesDarkSightViewKey() => s_Active != null && s_Active.m_ClashMode;
         internal static int RouteQuickSlotSelection(int number) => s_Active != null ? s_Active.SelectQuickSlot(number) : 0;
+        internal static int RouteQuickSlotScroll(int direction) => s_Active != null ? s_Active.ScrollQuickWeapon(direction) : 0;
         internal static bool RouteQuickSlotPrimary(bool pressed) => s_Active != null && s_Active.UseQuickSlot(pressed);
 
         private void InitializeQuickSlots()
@@ -137,6 +143,16 @@ namespace Unity.MP_FPS
             return true; // A rejected hotbar drop must never become an inventory move.
         }
         private void QuickNotice(string message) { m_QuickStatus = message; m_QuickStatusUntil = Time.unscaledTime + 3; }
+        private int ScrollQuickWeapon(int direction)
+        {
+            if (m_QuickBindings == null || direction == 0 || !QuickAlive) return 0;
+            var graph = QuickGraph;
+            m_QuickBindings.UseProfile(QuickPreferenceScope);
+            m_QuickBindings.InitializeWeapons(graph);
+            m_QuickBindings.Validate(graph);
+            int slot = m_QuickBindings.NextWeaponSlot(graph, direction, m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().EquippedWeaponSlot);
+            return slot < 0 ? 0 : SelectQuickSlot(slot + 1);
+        }
         private int SelectQuickSlot(int number)
         {
             if (m_QuickBindings == null) return 0;

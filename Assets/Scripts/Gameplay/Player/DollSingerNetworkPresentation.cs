@@ -294,7 +294,7 @@ namespace Unity.MP_FPS
             if (m_ViewActivated) return m_View.camera;
             m_ViewActivated = true;
             m_Input.GameplayInputBlocked = () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
-            RaidQuickSlotInput.Bind(m_Input);
+            RaidQuickSlotInput.Bind(m_Input, m_View);
             m_Input.TimedActionInputActive = () => RaidHUD.TimedActionInputActive;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             m_Input.DevelopmentStyleToggle = Moon.MoonSilverPrint.ToggleDevelopmentStyle;
