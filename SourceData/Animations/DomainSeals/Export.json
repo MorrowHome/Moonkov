@@ -1,0 +1,86 @@
+{
+  "source": "ArtSource/DollSinger/DomainSeals.blend",
+  "sourceSha256": "b9b7cde8a5078cea419033700c10d90b84934758ddbb672a97f61918de70bf76",
+  "changedMotionIds": [
+    6,
+    7,
+    9,
+    10,
+    12,
+    13
+  ],
+  "protectedMotionIds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    8,
+    11
+  ],
+  "clips": 180,
+  "installed": true,
+  "rigs": [
+    {
+      "rig": "HatsuneMiku",
+      "frames": 4482,
+      "maximumContactResidualMetres": 0.003167479022786893,
+      "maximumWeightedContactResidualMetres": 0.003167479022786893,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.0,
+      "maximumWristSolveErrorMetres": 6.62152102763694e-08
+    },
+    {
+      "rig": "Shian",
+      "frames": 4482,
+      "maximumContactResidualMetres": 0.0019563287107621846,
+      "maximumWeightedContactResidualMetres": 0.0019563287107621846,
+      "maximumSniperContactResidualMetres": 0.0,
+      "maximumReachAdjustmentMetres": 0.02894305684462237,
+      "maximumWristSolveErrorMetres": 1.397991227277517e-07
+    },
+    {
+      "rig": "DollSinger",
+      "revision": "59cbf94c6904",
+      "protectedMotionIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        8,
+        11
+      ],
+      "bytes": 38870604
+    },
+    {
+      "rig": "HatsuneMiku",
+      "revision": "1ecde1b813b0",
+      "protectedMotionIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        8,
+        11
+      ],
+      "bytes": 26461106
+    },
+    {
+      "rig": "Shian",
+      "revision": "b269af947f06",
+      "protectedMotionIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        8,
+        11
+      ],
+      "bytes": 25343662
+    }
+  ],
+  "installation": "Height-adjusted saved Actions; all three previous library hashes and seven protected motions verified before install."
+}

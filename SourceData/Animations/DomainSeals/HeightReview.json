@@ -1,0 +1,22 @@
+{
+  "scope": "Before/after hand-height revision; only six unprotected motions.",
+  "sourceSha256": "b9b7cde8a5078cea419033700c10d90b84934758ddbb672a97f61918de70bf76",
+  "boneTranslationsOrScalesAdded": false,
+  "rigs": [
+    {
+      "rig": "DollSinger",
+      "fingerRotationComparisons": 179280,
+      "maximumFingerShapeChangeDegrees": 0.00010106314511107128
+    },
+    {
+      "rig": "HatsuneMiku",
+      "fingerRotationComparisons": 179280,
+      "maximumFingerShapeChangeDegrees": 9.829897580255795e-05
+    },
+    {
+      "rig": "Shian",
+      "fingerRotationComparisons": 179280,
+      "maximumFingerShapeChangeDegrees": 9.094993828560488e-05
+    }
+  ]
+}

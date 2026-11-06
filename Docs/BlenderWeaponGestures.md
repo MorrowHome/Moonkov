@@ -1,5 +1,7 @@
 # Blender 手势动作
 
+本页保留四种基础动作的旧流程。当前正式库包含十三种动作，不能用下述四武器导出直接覆盖。六种领域手印的新源和保留规则见 [领域手印动作](DomainSeals.md)。
+
 四种武器均在 `ArtSource/DollSinger/WeaponGestures.blend` 中制作并保存为 Blender Actions。现有 `LuoTianYi_DollSinger.fbx` 的蒙皮、手指和扭转辅助骨骼完整，本任务不需要原始 MMD 模型。
 
 - Rifle_ThunderSeal「雷轨·交叉剑诀」：双手剑指交叉，射击时右手向前突刺并弹动中指；装填时左手旋印。两手前后分层，避免指节互穿。
