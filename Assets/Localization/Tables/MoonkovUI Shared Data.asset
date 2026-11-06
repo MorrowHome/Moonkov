@@ -6292,6 +6292,14 @@ MonoBehaviour:
     m_Key: Creating account...
     m_Metadata:
       m_Items: []
+  - m_Id: 11001418348486656
+    m_Key: STAMINA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11001418352680960
+    m_Key: FATIGUED
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

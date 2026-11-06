@@ -6319,6 +6319,14 @@ MonoBehaviour:
     m_Localized: Creating account...
     m_Metadata:
       m_Items: []
+  - m_Id: 11001418348486656
+    m_Localized: STAMINA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11001418352680960
+    m_Localized: FATIGUED
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

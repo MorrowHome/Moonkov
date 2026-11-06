@@ -69,6 +69,8 @@ namespace Unity.MP_FPS
             state.LeftLegHealth = state.RightLegHealth = 65;
             if(!state.ProtectionInitialized)RaidOxygen.Initialize(ref state);
             RaidNutrition.Initialize(ref state);
+            state.TacticalSprintStamina = TacticalSprintRules.Capacity;
+            state.TacticalSprintExhausted = false;
             Synchronize(ref state);
         }
         private static void Synchronize(ref PredictedPlayerGhost state)

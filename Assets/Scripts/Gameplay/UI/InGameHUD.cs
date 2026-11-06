@@ -212,7 +212,7 @@ namespace Unity.MP_FPS
             bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
             m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;
-            m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 302 : 284;
+            m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 320 : 302;
 
             // Update Ammo Label
             if (m_AmmoLabel != null)

@@ -16,9 +16,10 @@ namespace Unity.MP_FPS.Client
         private readonly RaidBodyDiagram m_Body;
         private readonly VitalWaveform m_Wave;
         private readonly Label m_Warning;
-        private readonly VisualElement[][] m_Reserves = new VisualElement[5][];
-        private readonly int[] m_Counts = { -1, -1, -1, -1, -1 };
-        private readonly Color[] m_Colors = new Color[5];
+        private const int StaminaReserve = 5;
+        private readonly VisualElement[][] m_Reserves = new VisualElement[6][];
+        private readonly int[] m_Counts = { -1, -1, -1, -1, -1, -1 };
+        private readonly Color[] m_Colors = new Color[6];
         private readonly VisualElement m_HaloRow;
         private readonly Label m_HaloLabel;
         private bool m_HaloVisible;
@@ -43,10 +44,12 @@ namespace Unity.MP_FPS.Client
             m_Wave = new VitalWaveform(); trace.Add(m_Wave);
             m_Warning = new Label { name = "vitals-warning", pickingMode = PickingMode.Ignore };
             m_Warning.AddToClassList("vitals-warning"); signals.Add(m_Warning); Add(signals);
-            string[] captions = { "O₂", "BODY ENERGY", "HYDRATION", "STOMACH", "HALO" };
+            string[] captions = { "O₂", "BODY ENERGY", "HYDRATION", "STOMACH", "HALO", "STAMINA" };
             for (int i = 0; i < captions.Length; i++)
             {
                 var row = new VisualElement { name = "vitals-reserve-" + i, pickingMode = PickingMode.Ignore }; row.AddToClassList("vitals-reserve"); signals.Add(row);
+                // Keep existing resource IDs stable; put short-term stamina directly below oxygen.
+                if (i == StaminaReserve) signals.Insert(2, row);
                 if (i == 4) { m_HaloRow = row; row.style.display = DisplayStyle.None; }
                 var label = new Label(captions[i]) { pickingMode = PickingMode.Ignore }; label.AddToClassList("vitals-reserve-label"); row.Add(label);
                 if (i == 0) m_OxygenLabel = label;
@@ -74,6 +77,7 @@ namespace Unity.MP_FPS.Client
             Reserve(1, state.Energy, signal.Ready);
             Reserve(2, state.Hydration, signal.Ready);
             Reserve(3, state.Satiety, signal.Ready);
+            Reserve(StaminaReserve, state.TacticalSprintStamina / TacticalSprintRules.Capacity * 100, signal.Ready);
             bool haloVisible = signal.Ready && state.HaloEnergyInitialized && state.HaloEquipped;
             if (m_HaloVisible != haloVisible)
             {
@@ -94,6 +98,7 @@ namespace Unity.MP_FPS.Client
                 warning = haloNotice == HaloChargeNotice.LowEnergy ? "NO BATTERY READY" :
                     haloNotice == HaloChargeNotice.MoveCells ? "BATTERY OUT OF REACH" :
                     haloNotice == HaloChargeNotice.Full ? "HALO FULL" : "";
+            if (string.IsNullOrEmpty(warning) && signal.Alive && state.TacticalSprintExhausted) warning = "FATIGUED";
             int grace = warning == "OXYGEN DEPLETED" ? Mathf.CeilToInt(state.OxygenGraceRemaining) : -1;
             float estimate = warning == "OXYGEN REFILLING" ? RaidOxygen.RefillSeconds(state) :
                 warning == "LOW OXYGEN" || warning == "CRITICAL OXYGEN" ? RaidOxygen.RemainingSeconds(state) : float.PositiveInfinity;
