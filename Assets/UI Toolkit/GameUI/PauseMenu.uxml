@@ -6,10 +6,13 @@
         <ui:VisualElement name="Container" picking-mode="Ignore" class="container container-in-game">
             <ui:VisualElement name="UIWrapper" picking-mode="Ignore">
                 <ui:VisualElement name="InGamePanel" picking-mode="Ignore">
-                    <ui:Label text="MOONKOV / MENU" class="pause-caption" picking-mode="Ignore" />
+                    <ui:Label text="MOONKOV" class="pause-caption" picking-mode="Ignore" />
                     <ui:Instance template="ActionCard" name="ResumeCard">
                         <ui:AttributeOverrides element-name="actionTitle" text="Resume" />
                         <ui:AttributeOverrides element-name="actionIndex" text="01" />
+                    </ui:Instance>
+                    <ui:Instance template="ActionCard" name="SettingsCard">
+                        <ui:AttributeOverrides element-name="actionTitle" text="SETTINGS" />
                     </ui:Instance>
                     <ui:Instance template="ActionCard" name="MainMenuCard">
                         <ui:AttributeOverrides element-name="actionTitle" text="Main Menu" />
@@ -21,6 +24,13 @@
                     </ui:Instance>
                 </ui:VisualElement>
             </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="PauseSettings" class="pause-settings" style="display: none;">
+            <ui:VisualElement class="pause-settings-header">
+                <ui:Label text="SETTINGS" class="pause-settings-title" />
+                <ui:Button name="SettingsBackButton" text="BACK" />
+            </ui:VisualElement>
+            <ui:VisualElement name="PauseSettingsContent" class="pause-settings-content" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

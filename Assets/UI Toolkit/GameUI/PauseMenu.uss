@@ -4,3 +4,24 @@
 .moonkov-pause .pause-caption { color: #b1b6c6; font-size: 12px; letter-spacing: 3px; margin-bottom: 20px; }
 .moonkov-pause .mk-button { background-color: rgba(16, 17, 22, 0.92); }
 .moonkov-pause .mk-action-title { -unity-text-align: middle-left; }
+.moonkov-pause .mk-action-index { display: none; }
+.moonkov-pause .mk-action-arrow { bottom: auto; top: 16px; }
+.moonkov-pause .mk-button { justify-content: center; padding-top: 0; padding-bottom: 0; }
+.moonkov-pause .pause-settings { max-width: 92%; height: 85%; min-height: 0; background-color: #18191b; color: #edeef0; border-width: 1px; border-color: #43484e; }
+.moonkov-pause .pause-settings-header { flex-direction: row; justify-content: space-between; align-items: center; flex-shrink: 0; margin-bottom: 12px; }
+.moonkov-pause .pause-settings-header Button { min-width: 90px; margin: 0; padding: 4px 16px; }
+.moonkov-pause .pause-settings-content, .moonkov-pause .archive-settings-page, .moonkov-pause .view-settings-scroll { flex-grow: 1; min-height: 0; }
+.moonkov-pause .archive-settings-exhibit, .moonkov-pause .archive-settings-banner, .moonkov-pause .terminal-keys, .moonkov-pause .terminal-copy { display: none; }
+.moonkov-pause .archive-settings-row { flex-direction: row; align-items: center; flex-shrink: 0; padding: 4px 10px; margin-bottom: 8px; background-color: #202327; }
+.moonkov-pause .terminal-slider, .moonkov-pause .terminal-language, .moonkov-pause .terminal-toggle { flex-grow: 1; min-width: 0; margin: 0; padding: 0; }
+.moonkov-pause .unity-base-field__label { color: #edeef0; white-space: normal; }
+.moonkov-pause .unity-base-popup-field__input { background-color: #272a2d; color: #edeef0; border-color: #43484e; }
+.moonkov-pause .pause-settings Button { background-color: #202327; color: #edeef0; border-width: 1px; border-color: #43484e; }
+.moonkov-pause .pause-settings Button:hover { background-color: #272a2d; border-color: #5a6169; }
+.moonkov-pause .pause-settings Button:focus { border-color: #164bff; }
+.moonkov-pause .archive-audio-value { min-width: 64px; -unity-text-align: middle-right; margin-left: 8px; }
+.moonkov-pause .terminal-heading { margin: 12px 0; }
+.moonkov-pause .view-settings-reset { align-self: flex-start; margin: 0 0 16px; padding: 4px 14px; }
+.moonkov-pause .unity-base-slider__tracker { height: 4px; border-width: 0; background-color: #43484e; }
+.moonkov-pause .archive-slider-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #164bff; }
+.moonkov-pause .unity-base-slider__dragger { background-color: #edeef0; }

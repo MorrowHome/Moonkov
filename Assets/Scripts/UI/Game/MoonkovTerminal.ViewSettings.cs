@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,22 +8,56 @@ namespace Unity.MP_FPS.Client
 {
     public sealed partial class MoonkovTerminal
     {
-        private void BindViewSettings()
+        // The lobby and pause menu edit the same live settings and persistence path.
+        internal static void BindSettings(VisualElement content, Action languageChanged = null)
         {
-            m_Content.Q<VisualElement>(className: "archive-settings-page").styleSheets.Add(
+            BindViewSettings(content);
+            BindAudioSlider(content, "audioMaster", "Master", MoonkovAudio.MasterVolume);
+            BindAudioSlider(content, "audioEffects", "Effects", MoonkovAudio.EffectsVolume);
+            BindAudioSlider(content, "audioInterface", "Interface", MoonkovAudio.InterfaceVolume);
+            var hud = content.Q<Toggle>("alwaysShowHUD");
+            hud.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0);
+            hud.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("Moonkov.AlwaysShowHUD", e.newValue ? 1 : 0));
+            var vitalMotion = content.Q<Toggle>("animateVitalSignal");
+            vitalMotion.SetValueWithoutNotify(PlayerPrefs.GetInt(RaidVitalsMonitor.AnimatePreference, 1) != 0);
+            vitalMotion.RegisterValueChangedCallback(e => PlayerPrefs.SetInt(RaidVitalsMonitor.AnimatePreference, e.newValue ? 1 : 0));
+            var language = content.Q<DropdownField>("language");
+            language.choices = new List<string> { "简体中文", "English" };
+            language.SetValueWithoutNotify(UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans" ? "简体中文" : "English");
+            language.RegisterValueChangedCallback(e =>
+            {
+                MoonkovLocalization.Select(e.newValue == "简体中文" ? "zh-Hans" : "en");
+                languageChanged?.Invoke();
+            });
+        }
+
+        private static void BindAudioSlider(VisualElement content, string name, string channel, float value)
+        {
+            var slider = content.Q<Slider>(name); slider.SetValueWithoutNotify(value);
+            var readout = content.Q<Label>(name + "Value");
+            var tracker = slider.Q(className: "unity-base-slider__tracker");
+            var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("archive-slider-fill"); tracker?.Add(fill);
+            void Present(float v) { MoonkovLocalization.Set(readout, "{0:0}%", v * 100); fill.style.width = Length.Percent(v * 100); }
+            Present(value);
+            slider.RegisterValueChangedCallback(e => { MoonkovAudio.SetVolume(channel, e.newValue); Present(e.newValue); });
+        }
+
+        private static void BindViewSettings(VisualElement content)
+        {
+            content.Q<VisualElement>(className: "archive-settings-page").styleSheets.Add(
                 Resources.Load<StyleSheet>("Moonkov/UI/ViewSettings"));
-            var mouse = m_Content.Q<Slider>("lookMouse");
-            var aim = m_Content.Q<Slider>("lookAim");
-            var fov = m_Content.Q<Slider>("lookFov");
-            var reset = m_Content.Q<Button>("lookReset");
+            var mouse = content.Q<Slider>("lookMouse");
+            var aim = content.Q<Slider>("lookAim");
+            var fov = content.Q<Slider>("lookFov");
+            var reset = content.Q<Button>("lookReset");
             void Present()
             {
                 mouse.SetValueWithoutNotify(DollSingerViewSettings.MouseSensitivity);
                 aim.SetValueWithoutNotify(DollSingerViewSettings.AimSensitivity);
                 fov.SetValueWithoutNotify(DollSingerViewSettings.WorldFieldOfView);
-                m_Content.Q<Label>("lookMouseValue").text = mouse.value.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture);
-                m_Content.Q<Label>("lookAimValue").text = aim.value.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture) + "×";
-                m_Content.Q<Label>("lookFovValue").text = fov.value.ToString("0", System.Globalization.CultureInfo.CurrentCulture) + "°";
+                content.Q<Label>("lookMouseValue").text = mouse.value.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture);
+                content.Q<Label>("lookAimValue").text = aim.value.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture) + "×";
+                content.Q<Label>("lookFovValue").text = fov.value.ToString("0", System.Globalization.CultureInfo.CurrentCulture) + "°";
             }
             var save = reset.schedule.Execute(DollSingerViewSettings.Save);
             save.Pause();

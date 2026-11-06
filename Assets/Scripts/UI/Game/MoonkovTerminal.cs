@@ -321,34 +321,7 @@ namespace Unity.MP_FPS.Client
         private void Settings()
         {
             TerminalLayout.Populate(m_Content, "Settings");
-            BindViewSettings();
-            BindAudioSlider("audioMaster", "Master", MoonkovAudio.MasterVolume);
-            BindAudioSlider("audioEffects", "Effects", MoonkovAudio.EffectsVolume);
-            BindAudioSlider("audioInterface", "Interface", MoonkovAudio.InterfaceVolume);
-            var hud = m_Content.Q<Toggle>("alwaysShowHUD");
-            hud.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0);
-            hud.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("Moonkov.AlwaysShowHUD", e.newValue ? 1 : 0));
-            var vitalMotion = m_Content.Q<Toggle>("animateVitalSignal");
-            vitalMotion.SetValueWithoutNotify(PlayerPrefs.GetInt(RaidVitalsMonitor.AnimatePreference, 1) != 0);
-            vitalMotion.RegisterValueChangedCallback(e => PlayerPrefs.SetInt(RaidVitalsMonitor.AnimatePreference, e.newValue ? 1 : 0));
-            var language = m_Content.Q<DropdownField>("language");
-            language.choices = new List<string> { "简体中文", "English" };
-            language.SetValueWithoutNotify(UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans" ? "简体中文" : "English");
-            language.RegisterValueChangedCallback(e =>
-            {
-                MoonkovLocalization.Select(e.newValue == "简体中文" ? "zh-Hans" : "en");
-                Navigate(8);
-            });
-        }
-        private void BindAudioSlider(string name, string channel, float value)
-        {
-            var slider = m_Content.Q<Slider>(name); slider.SetValueWithoutNotify(value);
-            var readout = m_Content.Q<Label>(name + "Value");
-            var tracker = slider.Q(className: "unity-base-slider__tracker");
-            var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("archive-slider-fill"); tracker?.Add(fill);
-            void Present(float v) { MoonkovLocalization.Set(readout, "{0:0}%", v * 100); fill.style.width = Length.Percent(v * 100); }
-            Present(value);
-            slider.RegisterValueChangedCallback(e => { MoonkovAudio.SetVolume(channel, e.newValue); Present(e.newValue); });
+            BindSettings(m_Content, () => Navigate(8));
         }
         private void NavGeometryChanged(GeometryChangedEvent evt) => MoveIndicator(false);
         private void ContentGeometryChanged(GeometryChangedEvent evt) { UpdateHomeMenuSize(); ApplyPageTheme(); }
