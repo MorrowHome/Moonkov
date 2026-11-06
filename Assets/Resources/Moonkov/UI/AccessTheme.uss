@@ -71,3 +71,14 @@
 .archive-loading > .container { top: auto; bottom: 10%; left: 6%; width: 52%; padding: 24px; background-color: rgba(8,9,12,0.96); border-left-width: 4px; border-left-color: #164bff; }
 .archive-loading .login-title { color: #f1f2ed; }
 .archive-loading .login-caption, .archive-loading #LoadingStatus { color: #bfc6d1; }
+
+/* Account and LAN controls share the header flow instead of screen coordinates. */
+.archive-access .stash-menu-actions { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 12px; }
+.archive-access .stash-menu-actions Button, .archive-access #ProfileMode.menu-entry-docked, .archive-access #lanEntry.lan-entry-docked { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; min-width: 0; height: 36px; min-height: 36px; margin: 0 0 0 8px; padding: 6px 12px; font-size: 12px; border-width: 1px; border-color: #43484e; color: #edeef0; background-color: #202327; }
+.archive-access .stash-menu-actions Button:hover { background-color: #272a2d; border-color: #5a6169; }
+.archive-access .stash-menu-actions Button:active { background-color: #2e3135; }
+.archive-access .stash-header .stash-account { flex-shrink: 1; min-width: 0; max-width: 180px; margin-right: 0; }
+.archive-access .stash-header .stash-account-name { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.archive-access #stashScreen .stash-header { flex-wrap: wrap; height: auto; min-height: 68px; padding-top: 8px; padding-bottom: 8px; }
+.archive-access #stashScreen .stash-page-heading { min-width: 0; flex-shrink: 1; }
+.archive-access .moonkov-terminal .stash-menu-actions { margin-left: auto; }

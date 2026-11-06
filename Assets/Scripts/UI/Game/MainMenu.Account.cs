@@ -100,12 +100,14 @@ namespace Unity.MP_FPS.Client
             canvas.AddToClassList("archive-login-plates");
             m_LoginAnimation.Present(!loggedIn && GameSettings.Instance.GameState == GlobalGameState.MainMenu,
                 m_AccessReduceMotion.value);
-            var modeHost = loggedIn ? canvas : m_AccountPanel.Q("accountSecondaryActions");
+            var modeHost = loggedIn ? (showStash ? m_MainMenu.Q("stashMenuActions") : m_ConnectionPanel) : m_AccountPanel.Q("accountSecondaryActions");
+            m_ProfileModeButton.EnableInClassList("menu-entry-docked", loggedIn);
             if (m_ProfileModeButton.parent != modeHost)
             {
                 m_ProfileModeButton.RemoveFromHierarchy();
-                if (loggedIn) modeHost.Add(m_ProfileModeButton); else modeHost.Insert(0, m_ProfileModeButton);
+                modeHost.Insert(0, m_ProfileModeButton);
             }
+            m_LanRoom?.SetEntryHost(loggedIn ? modeHost : null);
             m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;

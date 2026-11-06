@@ -18,7 +18,9 @@
                 <ui:Label name="stashAccountName" class="stash-account-name" />
                 <ui:Label text="PERSONAL STASH" class="stash-eyebrow" />
             </ui:VisualElement>
-            <ui:Button name="stashLogout" text="LOG OUT" class="stash-small-button" />
+            <ui:VisualElement name="stashMenuActions" class="stash-menu-actions">
+                <ui:Button name="stashLogout" text="LOG OUT" class="stash-small-button" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:Instance template="PrimaryNavigation" name="terminalNav" class="archive-navigation-host" />
         <ui:VisualElement class="stash-body">

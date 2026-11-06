@@ -13,6 +13,7 @@ namespace Unity.MP_FPS.Client
                 () => { m_LobbyOpen = false; PresentLobby(); });
             LanRoomClient.Changed += LanProfileChanged;
             LanProfileChanged();
+            UpdateAccountPanel();
         }
         private void LanProfileChanged()
         {

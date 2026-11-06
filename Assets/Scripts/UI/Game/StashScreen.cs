@@ -83,6 +83,7 @@ namespace Unity.MP_FPS.Client
             m_Grid.Add(m_EmptyTitle); m_Grid.Add(m_EmptyDescription);
             BuildEquipment();
             InitializeTerminal();
+            InitializeHeaderActions();
             m_Search.SetValueWithoutNotify("");
             MoonkovLocalization.Set(m_Sort, "SORT");
             Select(null);
@@ -198,6 +199,7 @@ namespace Unity.MP_FPS.Client
 
         public void Dispose()
         {
+            DisposeHeaderActions();
             if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged -= PresentCharacterName;
             m_All.clicked -= All; m_Materials.clicked -= Materials; m_Energy.clicked -= Energy;
             m_Sort.clicked -= Sort; m_Refresh.clicked -= m_OnRefresh; m_Logout.clicked -= m_OnLogout;
