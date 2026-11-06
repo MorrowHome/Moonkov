@@ -1,5 +1,11 @@
 # 项目交接
 
+## 本地空间清理（2026-11-06）
+
+- 空间清理保留整个 `Library`、`Temp` 和 `.git/lfs`。不要清构建、导入或着色器缓存，不运行 Clean Build。
+- 已按用户确认移除 `LocalData/Performance60` 的旧测帧应用，以及 `LocalData/ViewDistanceReview` 下三份旧测帧应用。原始数据、截图、测试脚本和状态备份仍保留。再次使用旧启动脚本前，先重建对应的 `.app`。
+- `LocalData/SourceFidelity20261028` 包含地图几何、烘焙和反射中间数据，不能作为普通临时目录整体删除。保留 `SourceData` 和 `ArtSource`。删除旧日志前检查文件占用，保留当前 Editor、导入器和 Shader 编译日志。
+
 ## 构建期间的源码约束
 
 - 修改代码前确认 `BuildPipeline.isBuildingPlayer` 为 false。构建期间不要修改脚本，尤其是 Ghost 组件字段。Player 编译可能读到新文件，而 Editor 仍使用旧程序集，造成布局不一致并让整次构建失败。等待原构建结束后再修改和重编译，不另开 Editor。
