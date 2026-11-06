@@ -9,9 +9,9 @@ namespace Unity.MP_FPS.Client
     public sealed class HalosTerminalBackdrop : IDisposable
     {
         public const string ReducedMotionPreference = "Moonkov.AccessReducedMotion";
-        // Halos runs at 60 Hz. Only its initial 260-frame black wait is omitted.
-        // Last window: frame 257; shutter: 493; login reveal: 506; settled: 523.
-        private const int SourceRate = 60, ShutterFrame = 493, RevealFrame = 506, IntroFrames = 523;
+        // A short terminal burst, a quiet beat, then a deliberate reveal and hold.
+        private const int SourceRate = 60, ShutterFrame = 206, ShutterFrames = 42;
+        private const int RevealFrame = 248, RevealFrames = 42, IntroFrames = 308, LoadingLoopFrames = 240;
         private readonly VisualElement m_Host, m_Root, m_Stage, m_Noise, m_Signal, m_Intro, m_Content;
         private readonly VisualElement m_ShutterTop, m_ShutterBottom, m_LightTop, m_LightBottom;
         private readonly TerminalWindow[] m_Windows = new TerminalWindow[10];
@@ -21,8 +21,7 @@ namespace Unity.MP_FPS.Client
         private bool m_Visible, m_ReducedMotion, m_Skipped, m_IntroPlayed, m_Disposed;
         private double m_Elapsed, m_IntroElapsed, m_LastTick = double.NaN;
         private readonly System.Random m_SignalRandom = new System.Random(1701);
-        private int m_SignalFrame = -1, m_FlickerRemaining = 30;
-        private float m_SignalLevel = 1;
+        private int m_SignalFrame = -1, m_NextGlitchFrame, m_GlitchEndFrame;
 
         // Authentication may finish first; presentation still owns the opening sequence.
         public bool IntroPending => !m_Loading && !m_IntroPlayed && !m_ReducedMotion && !m_Disposed;
@@ -32,8 +31,8 @@ namespace Unity.MP_FPS.Client
             public VisualElement Element;
             public Label Text;
             public string Content;
-            public int[] TextEnds;
-            public int Characters = -1;
+            public readonly char[] Scratch = new char[420];
+            public int TextStep = -1;
             public int Delay, Lifetime;
         }
 
@@ -66,7 +65,8 @@ namespace Unity.MP_FPS.Client
                 new Rect(-500, -300, 768, 432), new Rect(700, 500, 768, 432),
                 new Rect(1200, 200, 768, 432), new Rect(1300, 1000, 768, 432)
             };
-            int delay = 0;
+            int[] starts = { 0, 22, 40, 54, 66, 76, 84, 90, 94, 96 };
+            int[] lifetimes = { 126, 122, 112, 102, 92, 82, 72, 66, 60, 56 };
             for (int i = 0; i < m_Windows.Length; i++)
             {
                 var frame = frames[i]; var window = AddDecoration(m_Stage, "halos-terminal");
@@ -75,13 +75,11 @@ namespace Unity.MP_FPS.Client
                 window.style.left = frame.x; window.style.top = frame.y;
                 window.style.width = frame.width; window.style.height = frame.height;
                 window.style.display = DisplayStyle.None;
-                var text = new Label { pickingMode = PickingMode.Ignore };
+                var text = new Label { pickingMode = PickingMode.Ignore, enableRichText = false };
                 text.AddToClassList("halos-terminal-text"); text.AddToClassList("moonkov-style-font");
                 window.Add(text);
-                string content = TerminalText(i, out var textEnds);
-                m_Windows[i] = new TerminalWindow { Element = window, Text = text, Content = content, TextEnds = textEnds,
-                    Delay = delay, Lifetime = i == 0 ? 350 : 300 - i * 20 };
-                delay += Math.Max(1, 60 - i * 8);
+                m_Windows[i] = new TerminalWindow { Element = window, Text = text, Content = TerminalText(i),
+                    Delay = starts[i], Lifetime = lifetimes[i] };
             }
             if (!loading)
             {
@@ -108,18 +106,16 @@ namespace Unity.MP_FPS.Client
             element.AddToClassList(className); parent.Add(element); return element;
         }
 
-        private static string TerminalText(int seed, out int[] textEnds)
+        private static string TerminalText(int seed)
         {
-            const string letters = "1234567890qwertyuiopasdfghjklzxcvbnm";
+            const string letters = "0123456789ABCDEF0123456789abcdef[]{}<>/_:=+-#$";
             int[] lineLengths = { 6, 12, 18, 35, 13, 26, 3 };
-            var random = new System.Random(901 + seed); var text = new StringBuilder(512);
-            textEnds = new int[365];
+            var random = new System.Random(901 + seed); var text = new StringBuilder(1024);
             int line = 0, target = lineLengths[random.Next(lineLengths.Length)];
-            for (int frame = 1; frame < textEnds.Length; frame++)
+            while (text.Length < 1024)
             {
                 text.Append(letters[random.Next(letters.Length)]);
                 if (++line == target) { text.Append('\n'); line = 0; target = lineLengths[random.Next(lineLengths.Length)]; }
-                textEnds[frame] = text.Length;
             }
             return text.ToString();
         }
@@ -189,8 +185,7 @@ namespace Unity.MP_FPS.Client
                     if (!m_Visible || m_Disposed) return;
                 }
             }
-            int frame = (int)((m_Loading ? m_Elapsed : m_IntroElapsed) * SourceRate);
-            if (m_Loading) frame %= IntroFrames;
+            int frame = m_Loading ? (int)(m_Elapsed * SourceRate) % LoadingLoopFrames : (int)(m_IntroElapsed * SourceRate);
             if (m_Loading || IntroPending) PresentTerminals(frame);
             if (IntroPending) PresentIntro(frame);
             PresentSignal((int)(m_Elapsed * SourceRate));
@@ -206,44 +201,60 @@ namespace Unity.MP_FPS.Client
                 bool show = age >= 0 && opacity >= .1f;
                 window.Element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!show) continue;
-                // Original windows pop in, hold, then decay by one sixth per source frame.
-                window.Element.style.opacity = opacity;
-                int characters = window.TextEnds[Math.Min(age + 1, window.TextEnds.Length - 1)];
-                if (window.Characters == characters) continue;
-                window.Characters = characters; window.Text.text = window.Content.Substring(0, characters);
+                int textStep = age / 4; // Chunked text updates at 15 Hz, independent of the 60 Hz reveal.
+                int key = textStep * 17 + i * 13;
+                bool dropout = age > 6 && key % 11 == 0;
+                window.Element.style.opacity = opacity * (dropout ? .65f : 1);
+                window.Element.style.translate = new Translate(dropout ? (i % 2 == 0 ? 7 : -7) : 0, 0);
+                if (window.TextStep == textStep) continue;
+                window.TextStep = textStep;
+                int end = Math.Min(window.Content.Length, 24 + textStep * 24);
+                int length = Math.Min(end, window.Scratch.Length);
+                window.Content.CopyTo(end - length, window.Scratch, 0, length);
+                if (key % 7 == 0 || age < 6)
+                {
+                    const string corruption = "#%/<>[]{}_=01";
+                    for (int j = 0; j < length; j++)
+                        if (window.Scratch[j] != '\n' && (j + key) % 9 == 0)
+                            window.Scratch[j] = corruption[(j * 7 + key) % corruption.Length];
+                }
+                window.Text.text = new string(window.Scratch, 0, length);
             }
         }
 
         private void PresentIntro(int frame)
         {
-            int opening = Math.Clamp(frame - ShutterFrame + 1, 0, 14);
+            float opening = Mathf.Clamp01((frame - ShutterFrame) / (float)ShutterFrames);
             float height = m_Root.layout.height > 0 ? m_Root.layout.height : 1080f;
-            float distance = opening * 50f * height / 1080f;
+            float distance = Mathf.SmoothStep(0, 1, opening) * height * .55f;
             m_ShutterTop.style.display = m_ShutterBottom.style.display = DisplayStyle.Flex;
             m_ShutterTop.style.translate = new Translate(0, -distance);
             m_ShutterBottom.style.translate = new Translate(0, distance);
-            m_LightTop.style.opacity = m_LightBottom.style.opacity = 1 - (float)Math.Pow(.75, opening);
+            m_LightTop.style.opacity = m_LightBottom.style.opacity = .65f * Mathf.Sin(opening * Mathf.PI);
             if (m_Content != null)
             {
                 m_Content.style.visibility = frame >= RevealFrame ? Visibility.Visible : Visibility.Hidden;
-                m_Content.style.opacity = 1 - (float)Math.Pow(5.0 / 6, Math.Max(0, frame - RevealFrame + 1));
+                m_Content.style.opacity = Mathf.SmoothStep(0, 1, Mathf.Clamp01((frame - RevealFrame) / (float)RevealFrames));
             }
         }
 
         private void PresentSignal(int frame)
         {
-            // Two opposed noise layers step on alternate source frames; no sinusoidal drift.
+            // Gentle brightness breathing, interrupted by brief, separated signal faults.
             if (frame / 2 == m_SignalFrame / 2 && m_SignalFrame >= 0) return;
-            m_FlickerRemaining -= m_SignalFrame < 0 ? 0 : frame - m_SignalFrame;
+            if (m_SignalFrame < 0) m_NextGlitchFrame = frame + 90;
             m_SignalFrame = frame;
-            if (m_FlickerRemaining < 0)
+            if (frame >= m_NextGlitchFrame)
             {
-                m_SignalLevel = .6f + (float)m_SignalRandom.NextDouble() * .3f;
-                m_FlickerRemaining = m_SignalRandom.Next(15, 31);
+                m_GlitchEndFrame = frame + 6;
+                m_NextGlitchFrame = frame + m_SignalRandom.Next(90, 181);
             }
-            int shake = m_SignalRandom.Next(m_FlickerRemaining < 10 ? -20 : -5, m_FlickerRemaining < 10 ? 21 : 6);
+            bool glitch = frame < m_GlitchEndFrame;
+            float breath = .5f - .5f * Mathf.Cos(frame * Mathf.PI * 2 / 216f);
+            int shake = glitch ? m_SignalRandom.Next(-10, 11) : 0;
             float offset = shake * m_Root.layout.width / 1920f;
-            m_Signal.style.opacity = .36f * (m_SignalLevel - .5f);
+            m_Signal.style.opacity = .07f + .05f * breath + (glitch ? .045f : 0);
+            m_Noise.style.opacity = .035f + .018f * breath + (glitch ? .02f : 0);
             m_Signal.style.translate = new Translate(offset, 0);
             m_Noise.style.translate = new Translate(-2 * offset, 0);
         }
@@ -261,7 +272,8 @@ namespace Unity.MP_FPS.Client
         {
             m_Signal.style.opacity = .12f; m_Signal.style.translate = new Translate(0, 0);
             m_Noise.style.translate = new Translate(0, 0);
-            m_SignalFrame = -1; m_FlickerRemaining = 30; m_SignalLevel = 1;
+            m_Noise.style.opacity = .045f;
+            m_SignalFrame = -1; m_GlitchEndFrame = 0;
         }
 
         private void FinishIntro()

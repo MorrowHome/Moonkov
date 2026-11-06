@@ -59,5 +59,45 @@
     "shutterFrame": 493,
     "loginRevealFrame": 506,
     "introEndFrame": 523
+  },
+  "runtimeMotion": {
+    "referenceRate": 60,
+    "terminalStartFrames": [
+      0,
+      22,
+      40,
+      54,
+      66,
+      76,
+      84,
+      90,
+      94,
+      96
+    ],
+    "terminalLifetimeFrames": [
+      126,
+      122,
+      112,
+      102,
+      92,
+      82,
+      72,
+      66,
+      60,
+      56
+    ],
+    "terminalTextUpdateRate": 15,
+    "shutterFrame": 206,
+    "shutterDurationFrames": 42,
+    "loginRevealFrame": 248,
+    "loginFadeFrames": 42,
+    "introEndFrame": 308,
+    "loadingLoopFrames": 240,
+    "breathingPeriodFrames": 216,
+    "glitchDurationFrames": 6,
+    "glitchIntervalFrames": [
+      90,
+      180
+    ]
   }
 }
