@@ -1,0 +1,245 @@
+{
+  "source": "Halos / Moonkov UIs",
+  "commit": "2511cfad1a2ebb635839489ff3ee1242d8a4aa02",
+  "assets": [
+    {
+      "output": "Left0.png",
+      "source": "sprites/MRUI_left/d6d087c3-86a5-4769-9572-f0cf7111df88.png",
+      "crop": [
+        448,
+        802,
+        622,
+        948
+      ],
+      "sourceSha256": "706947af8bba6112131234f4fede7fcb6608055a3256cea2bd222dce9cfcca45"
+    },
+    {
+      "output": "Left0Hover.png",
+      "source": "sprites/MRUI_left/4b0d6b71-dabb-42c1-9aa9-e622d4bbd192.png",
+      "crop": [
+        448,
+        802,
+        622,
+        948
+      ],
+      "sourceSha256": "c180b447b2f64b6a337501c1281a4334a3e6044f63976fdf5029f781e9ac89d7"
+    },
+    {
+      "output": "Left1.png",
+      "source": "sprites/MRUI_left/4d4e599b-2c53-414f-9981-54a51a7b72bc.png",
+      "crop": [
+        191,
+        372,
+        315,
+        485
+      ],
+      "sourceSha256": "ba283b752b517a7e5771bca6bc7a0541148c26a859a6dd57042d2998208f228a"
+    },
+    {
+      "output": "Left1Hover.png",
+      "source": "sprites/MRUI_left/1ba2a8c6-877d-4975-bd19-a46800924e69.png",
+      "crop": [
+        191,
+        372,
+        315,
+        485
+      ],
+      "sourceSha256": "4ddec285d5ced5f051dd6b3fe52461c44c72aa5608dffe4bf9147d4e675b5d3d"
+    },
+    {
+      "output": "Left2.png",
+      "source": "sprites/MRUI_left/ac332ceb-e366-48c7-820e-1909c7c37632.png",
+      "crop": [
+        842,
+        555,
+        1009,
+        704
+      ],
+      "sourceSha256": "6fd3710a4a965730c7b1c85e0c79776ead0f1a8699e08c395d1484588e1f7c01"
+    },
+    {
+      "output": "Left2Hover.png",
+      "source": "sprites/MRUI_left/9ed1abb0-ce4d-438c-9bcc-7760cca9f8f4.png",
+      "crop": [
+        842,
+        555,
+        1009,
+        704
+      ],
+      "sourceSha256": "5f5f864df180db67384a1fe56c5fe7b13768d831e54c388a688d24eb5fb78239"
+    },
+    {
+      "output": "Mid0.png",
+      "source": "sprites/MRUI_mid/a8ba2d7f-eaa3-42bd-8ba6-64742597e75b.png",
+      "crop": [
+        648,
+        751,
+        1058,
+        1123
+      ],
+      "sourceSha256": "f5331f55025a92193d8a199b337e3dfa0943e88118528cd7c2f526ca651e21ac"
+    },
+    {
+      "output": "Mid0Hover.png",
+      "source": "sprites/MRUI_mid/d61ee619-eae7-4a5a-ada1-7d3c11b9ef3b.png",
+      "crop": [
+        648,
+        751,
+        1058,
+        1123
+      ],
+      "sourceSha256": "528830355372fb6545a86baf7cc323c8782a2b96ebe0f63b25124f4e0a542a77"
+    },
+    {
+      "output": "Mid1.png",
+      "source": "sprites/MRUI_mid/1433e208-5d4f-443c-a1b3-190e8b348a79.png",
+      "crop": [
+        344,
+        174,
+        707,
+        528
+      ],
+      "sourceSha256": "6a1c85be7372e7aab68f5b98295c331d97c8bbf2f8dc7ec95665a08e3203c7da"
+    },
+    {
+      "output": "Mid1Hover.png",
+      "source": "sprites/MRUI_mid/4aaf63f8-ac92-42ca-8c95-aab68d03eac2.png",
+      "crop": [
+        344,
+        174,
+        707,
+        528
+      ],
+      "sourceSha256": "f7260112dd6c76ca60e21235fa1e76e703528c487a206b7232049b7962ba7483"
+    },
+    {
+      "output": "Right0.png",
+      "source": "sprites/MRUI_right/ba951939-85f6-4424-bc55-3387fa87a2f3.png",
+      "crop": [
+        959,
+        578,
+        1058,
+        705
+      ],
+      "sourceSha256": "8403a91842cc78d9f3a4496c9fbdce01bf4d679852b4e2c4723015ef04be5870"
+    },
+    {
+      "output": "Right0Hover.png",
+      "source": "sprites/MRUI_right/f471ecee-c622-4ff5-b1c6-04761d4c26c0.png",
+      "crop": [
+        959,
+        578,
+        1058,
+        705
+      ],
+      "sourceSha256": "75f9e9da64e8f6c7dec9ed1d9ecbf70ff887b831d5f2b4b2a4a981c8c1e0adbf"
+    },
+    {
+      "output": "Right1.png",
+      "source": "sprites/MRUI_right/7be17f42-362f-40be-895b-40b9e5ff991f.png",
+      "crop": [
+        658,
+        812,
+        780,
+        929
+      ],
+      "sourceSha256": "dc4ca98d23978e9363115951964a21b8a05f93aec354778ea2b0ba8b9b2cc821"
+    },
+    {
+      "output": "Right1Hover.png",
+      "source": "sprites/MRUI_right/7edf3d31-d039-4913-94b9-c6580a78c181.png",
+      "crop": [
+        658,
+        812,
+        780,
+        929
+      ],
+      "sourceSha256": "0badf24b8ab236f57dd710d9a98ff7aea02ec8021b5df7000a9ffa8d580490c6"
+    },
+    {
+      "output": "Right2.png",
+      "source": "sprites/MRUI_right/a095cdb0-ca55-40d9-85e9-de786d997810.png",
+      "crop": [
+        250,
+        286,
+        439,
+        459
+      ],
+      "sourceSha256": "5900cecafdf774d3c713fae58919e9bf94e361aaff4addd49b8e436da15d5c4f"
+    },
+    {
+      "output": "Right2Hover.png",
+      "source": "sprites/MRUI_right/e337ec77-6c22-4c01-b6de-3aed39bcc844.png",
+      "crop": [
+        250,
+        286,
+        439,
+        459
+      ],
+      "sourceSha256": "8b92380b064113e11a7e5a8380454dd9d24d6c9b3fb4db5dc256ef729c3c040b"
+    },
+    {
+      "output": "Moon.png",
+      "source": "sprites/moon/e9767510-07a0-4b5d-b701-8ce51c9e800a.png",
+      "sourceSha256": "bce85ba2bcb18230a5837e467df4f54ec474fa694722bc68870d8f86798b996f"
+    },
+    {
+      "output": "Room0.png",
+      "source": "sprites/mainRoomBG/d3e27dbc-0873-4462-bed4-718ab62bf82b.png",
+      "sourceSha256": "e70fa5ab00a2bbe0ddae4e2c7936bd71d23ae28cb4cd54eaf37965a0a9bedbbb"
+    },
+    {
+      "output": "Room1.png",
+      "source": "sprites/mainRoomBG/f66978f5-4482-49ef-a7e0-fb12ce186dd2.png",
+      "sourceSha256": "f46f86d7ce98c3b95b0628782fabddcfaa99de5e2289651816013ef40af1fde8"
+    },
+    {
+      "output": "Room2.png",
+      "source": "sprites/mainRoomBG/f2b4472f-777c-4188-9b55-22c66c8779ad.png",
+      "sourceSha256": "63aefe35b706bb1241b6b797ce7668680d4ec6d478a5efe0e01cb024ac39f1d3"
+    },
+    {
+      "output": "Tablet.png",
+      "source": "sprites/tabletParts/f7892d16-8719-47cc-83a1-cba6cb852e2a.png",
+      "sourceSha256": "ceded8c3caabafe37541d200be65e0d6bfbcab644af9c43455b6c0a0c34ba74e"
+    },
+    {
+      "output": "Arrow.png",
+      "source": "sprites/screenButton/07d1da7e-51d5-4896-af1f-eed59daac4ca.png",
+      "sourceSha256": "07991322e87bb16e6544451455cba274cc8e73777a04bfd3e70d301470c33601"
+    },
+    {
+      "output": "Lights0.png",
+      "source": "sprites/mainRoomLights/c28bd37f-e779-442a-b46c-9c360c982bda.png",
+      "crop": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "sourceSha256": "668ad1c0475fef4c5a6147b655b57ebed2a6ca5b4d09b956c471960b35ad690c"
+    },
+    {
+      "output": "Lights1.png",
+      "source": "sprites/mainRoomLights/c28bd37f-e779-442a-b46c-9c360c982bda.png",
+      "crop": [
+        1920,
+        0,
+        3840,
+        1080
+      ],
+      "sourceSha256": "668ad1c0475fef4c5a6147b655b57ebed2a6ca5b4d09b956c471960b35ad690c"
+    },
+    {
+      "output": "Lights2.png",
+      "source": "sprites/mainRoomLights/c28bd37f-e779-442a-b46c-9c360c982bda.png",
+      "crop": [
+        3840,
+        0,
+        5720,
+        1080
+      ],
+      "sourceSha256": "668ad1c0475fef4c5a6147b655b57ebed2a6ca5b4d09b956c471960b35ad690c"
+    }
+  ]
+}

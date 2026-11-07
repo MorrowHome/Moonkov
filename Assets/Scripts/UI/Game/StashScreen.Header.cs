@@ -23,7 +23,7 @@ namespace Unity.MP_FPS.Client
                 if (m_HeaderButtons[i].parent != m_HeaderActions)
                 { SizeHeaderButton(m_HeaderButtons[i], null); m_HeaderButtons.RemoveAt(i); }
             if (m_Host.worldBound.width <= 0 || Screen.width <= 0) return;
-            float scale = Mathf.Max(1, m_Host.worldBound.width / Screen.width);
+            float scale = m_Preview ? 1 : Mathf.Max(1, m_Host.worldBound.width / Screen.width);
             bool changed = !Mathf.Approximately(scale, m_HeaderScale) || m_HeaderButtons.Count != m_HeaderActions.childCount;
             if (!changed) return;
             foreach (var button in m_HeaderButtons) SizeHeaderButton(button, null);
