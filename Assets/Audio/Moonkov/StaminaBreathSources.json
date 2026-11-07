@@ -1,0 +1,12 @@
+{
+  "source": "Assets/Audio/Moonkov/Clips/Raid/SuitBreath.wav",
+  "source_sha256": "05d8bf7cac79b7b93c9a3ddba96e3a300a6638fe61ebb958db0f1ac1eb9af154",
+  "author": "mikeask",
+  "license": "CC0-1.0",
+  "source_page": "https://opengameart.org/content/breathing-tired",
+  "upstream_manifest": "Assets/Audio/Moonkov/RaidAudioSources.json",
+  "processing": "Existing helmet breath; atempo 1.5 preserves pitch; DC removal; 8 ms fades; peak 0.4; 48 kHz mono PCM16.",
+  "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav",
+  "seconds": 2.231333333333333,
+  "sha256": "edfa30c02918e38de490d96a98c073fc2753490c3f543261b8fe5002901f88d5"
+}

@@ -1,3 +1,6 @@
+using UnityEngine;
+using Unity.MP_FPS.DollSinger;
+
 namespace Unity.MP_FPS
 {
     public enum OxygenUrgency : byte { None, Low, Critical, Depleted }
@@ -41,22 +44,31 @@ namespace Unity.MP_FPS
         public static OxygenBreath Breath(in PredictedPlayerGhost state)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0) return default;
+            float stamina = float.IsFinite(state.TacticalSprintStamina) ? state.TacticalSprintStamina : TacticalSprintRules.Capacity;
+            float fatigue = 1 - Mathf.Clamp01(stamina / TacticalSprintRules.Capacity);
+            if (state.MeleeEpoch != 0 && float.IsFinite(state.MeleeStamina))
+                fatigue = Mathf.Max(fatigue, 1 - Mathf.Clamp01(state.MeleeStamina / MeleeRules.StaminaCapacity));
+            // Recovery follows the actual reserves, including after the player releases sprint.
+            float effort = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.12f, 1, fatigue));
+            if (state.ControllerState.Sprinting && state.ControllerState.MovementSpeed > .1f)
+                effort = Mathf.Max(effort, .35f);
+            if (state.TacticalSprintExhausted) effort = Mathf.Max(effort, .85f);
+            if (state.CurrentHealth < state.MaxHealth * .35f) effort = Mathf.Max(effort, .55f);
             var urgency = Urgency(state);
-            if (urgency == OxygenUrgency.Depleted) return new OxygenBreath(true, 2.4f, 1.15f, 120);
-            if (urgency == OxygenUrgency.Critical) return new OxygenBreath(true, 2.8f, 1f, 100);
-            if (urgency == OxygenUrgency.Low) return new OxygenBreath(true, 3.3f, .85f, 45);
-            bool effort = state.ControllerState.Sprinting && state.ControllerState.MovementSpeed > .1f ||
-                state.CurrentHealth < state.MaxHealth * .35f;
-            return effort ? new OxygenBreath(true, 3.2f, 1f, 100) :
-                !state.BreathableAir ? new OxygenBreath(true, 4.1f, .65f, -15) : default;
+            if (urgency == OxygenUrgency.Depleted) effort = 1;
+            else if (urgency == OxygenUrgency.Critical) effort = Mathf.Max(effort, .75f);
+            else if (urgency == OxygenUrgency.Low) effort = Mathf.Max(effort, .45f);
+            if (state.BreathableAir && effort <= .01f) return default;
+            return new OxygenBreath(true, Mathf.Lerp(4.1f, 2.4f, effort),
+                Mathf.Lerp(.7f, 1.25f, effort), Mathf.Lerp(0, 60, effort), effort >= .3f);
         }
     }
 
     public readonly struct OxygenBreath
     {
-        public readonly bool Audible;
+        public readonly bool Audible, Exerted;
         public readonly float Interval, Volume, Pitch;
-        public OxygenBreath(bool audible, float interval, float volume, float pitch)
-        { Audible = audible; Interval = interval; Volume = volume; Pitch = pitch; }
+        public OxygenBreath(bool audible, float interval, float volume, float pitch, bool exerted = false)
+        { Audible = audible; Interval = interval; Volume = volume; Pitch = pitch; Exerted = exerted; }
     }
 }

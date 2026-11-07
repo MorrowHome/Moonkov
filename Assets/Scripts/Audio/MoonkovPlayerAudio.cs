@@ -23,8 +23,8 @@ namespace Unity.MP_FPS
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
         private UnityEngine.CharacterController m_Capsule;
         private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound, m_ReloadSound;
-        private float m_LastStepTime = -1, m_BreathAt, m_HeartAt;
-        private OxygenBreath m_Breath;
+        private float m_LastStepTime = -1, m_HeartAt;
+        private readonly MoonkovBreathingAudio m_Breath = new MoonkovBreathingAudio();
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
         private SoundSystem.SoundInfo m_OxygenSupplySound;
         private float m_OxygenSupplyRetryAt;
@@ -60,8 +60,7 @@ namespace Unity.MP_FPS
                 m_LootSequence = ghost.LootSearchSequence;m_WasLootSearching=ghost.LootSearching;
                 m_ConsumableSequence = ghost.ConsumableUseSequence;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
-                m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
-                m_Breath = MoonkovOxygenFeedback.Breath(ghost);
+                m_HeartAt = Time.unscaledTime + 1;
                 m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 return; // A late join must not replay historical events.
@@ -123,7 +122,6 @@ namespace Unity.MP_FPS
             if (owned && (cry || groan))
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
-                m_BreathAt = Time.unscaledTime + 1.2f;
             }
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
             if (owned || m_OxygenSupplySound != null) UpdateOxygenSupply(ghost, library, position, owned);
@@ -131,22 +129,17 @@ namespace Unity.MP_FPS
             if (owned && ghost.CurrentHealth > 0)
             {
                 var breath = MoonkovOxygenFeedback.Breath(ghost);
-                if (breath.Audible != m_Breath.Audible || breath.Interval != m_Breath.Interval)
+                if (!breath.Audible && m_BreathSound != null)
                 {
                     GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .3f);
                     m_BreathSound = null;
-                    m_BreathAt = Time.unscaledTime + .45f;
-                    m_Breath = breath;
                 }
-                if (Time.unscaledTime >= m_BreathAt)
+                bool voiceBusy = m_PainSound?.Handle?.IsValid() == true || m_GroanSound?.Handle?.IsValid() == true ||
+                    m_BreathSound?.Handle?.IsValid() == true || cry || groan;
+                if (m_Breath.Observe(breath, Time.unscaledTime, voiceBusy))
                 {
-                    // Keep one breath emitter even if a clip outlasts its cadence.
-                    GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .08f);
-                    m_BreathSound = null;
-                    if (breath.Audible)
-                        m_BreathSound = MoonkovAudio.PlayWeaponLayer(library.SuitBreath, position,
-                            breath.Volume, 0, breath.Pitch);
-                    m_BreathAt = Time.unscaledTime + (breath.Audible ? breath.Interval : 4.1f);
+                    var bank = breath.Exerted && library.SuitBreathEffort ? library.SuitBreathEffort : library.SuitBreath;
+                    m_BreathSound = MoonkovAudio.PlayWeaponLayer(bank, position, breath.Volume, 0, breath.Pitch);
                 }
                 if (ghost.CurrentHealth < ghost.MaxHealth * .28f && Time.unscaledTime >= m_HeartAt)
                 {
@@ -155,6 +148,7 @@ namespace Unity.MP_FPS
                 }
             }
             else if (owned) Stop();
+            else StopBreathing();
             if (ghost.CurrentHealth > 0 && m_Stance != ghost.ControllerState.Stance)
             {
                 m_StanceSound = LocalOrWorld(library.StanceChange, position, owned,
@@ -238,11 +232,18 @@ namespace Unity.MP_FPS
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
-            system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
+            StopBreathing();
             system?.Stop(m_OxygenSupplySound, .12f); m_OxygenSupplySound = null; m_OxygenSupplyRetryAt = 0;
             system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);
             m_BreathSound = m_HeartSound = m_WallSound = m_MovementSound = m_StanceSound = null;
             m_Wall.Reset();
+        }
+        private void StopBreathing()
+        {
+            var system = GameManager.Instance?.SoundSystem;
+            system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
+            m_BreathSound = m_HeartSound = null;
+            m_Breath.Reset();
         }
         private void UpdateOxygenSupply(in PredictedPlayerGhost ghost, MoonkovAudioLibrary library, Vector3 position, bool owned)
         {
