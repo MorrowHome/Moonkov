@@ -72,7 +72,7 @@ namespace Unity.MP_FPS.Client
 
         private void OpenPreview(bool moon)
         {
-            if (m_Disposed || !m_Visible || m_Busy || Room != 1 || IsOpening || IsPreviewOpen || m_TabletState > 0) return;
+            if (m_Disposed || !m_Visible || m_Busy || Room != 1 || IsMoving || IsOpening || IsPreviewOpen || m_TabletState > 0) return;
             IsPreviewOpen = true; m_PreviewMoonSelected = moon; m_Edge = 0;
             m_Owner.AddToClassList("halos-subject-open");
             ReleaseHomeCharacter(); UpdateInput();

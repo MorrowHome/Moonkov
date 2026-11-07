@@ -27,12 +27,20 @@ public sealed class HalosMainRoomReview : EditorWindow
     }
     public static void Check()
     {
-        Open(); GetWindow<HalosMainRoomReview>().RunChecks();
+        Open(); var window = GetWindow<HalosMainRoomReview>();
+        window.rootVisualElement.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); window.RunChecks();
     }
     [MenuItem("Tools/Moonkov/Check Halos Subject Previews")]
     public static void CheckSubjects()
     {
-        Open(); GetWindow<HalosMainRoomReview>().RunSubjectChecks();
+        Open(); var window = GetWindow<HalosMainRoomReview>();
+        window.rootVisualElement.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); window.RunSubjectChecks();
+    }
+    [MenuItem("Tools/Moonkov/Check Halos Room Sliding")]
+    public static void CheckSliding()
+    {
+        Open(); var window = GetWindow<HalosMainRoomReview>();
+        window.rootVisualElement.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); window.RunSlideChecks();
     }
     public void CreateGUI()
     {
@@ -42,6 +50,7 @@ public sealed class HalosMainRoomReview : EditorWindow
     {
         m_Isolated?.Dispose(); m_Isolated = null;
         m_Screen?.Dispose(); rootVisualElement.Clear();
+        rootVisualElement.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
         var host = new VisualElement(); host.style.flexGrow = 1;
         host.AddToClassList("archive-access");
         host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/AccessTheme"));
@@ -223,7 +232,52 @@ public sealed class HalosMainRoomReview : EditorWindow
             File.WriteAllLines(output, m_Checks); Debug.Log("HALOS_SUBJECT_REVIEW_PASS " + m_Checks.Count);
         }
         catch (Exception error) { m_Checks.Add("FAIL " + error); File.WriteAllLines(output, m_Checks); Debug.LogException(error); }
-        finally { m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0); }
+        finally
+        {
+            m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0);
+            rootVisualElement.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
+        }
+    }
+    private async void RunSlideChecks()
+    {
+        const string output = "LocalData/HalosHomeReview/slide-checks.txt";
+        VisualElement host = null; m_Checks.Clear();
+        try
+        {
+            m_Screen.NavigatePage(7); await Wait(100);
+            host = new VisualElement(); host.style.position = Position.Absolute;
+            host.style.left = host.style.right = host.style.top = host.style.bottom = 0;
+            host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HalosMainRoomStyles"));
+            host.Add(new VisualElement()); rootVisualElement.Add(host);
+            int routed = 0;
+            m_Isolated = new HalosMainRoom(host, _ => routed++); m_Isolated.Show(false);
+            await Until(() => m_Isolated.Root.Q<Image>("halosRoomPortrait").image != null);
+            var world = m_Isolated.Root.Q("halosRoomWorld");
+            float X() => world.style.translate.value.x.value;
+            Require(!HalosTerminalBackdrop.PrefersReducedMotion, "animated preview uses enabled motion preference");
+            host.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
+            float start = X(); m_Isolated.MoveRoom(1);
+            Require(m_Isolated.IsMoving && X() == start, "edge turn starts without an immediate position jump");
+            await Wait(160);
+            Require(m_Isolated.IsMoving && X() < start - 1 && X() > -3839, "room travels through intermediate positions");
+            m_Isolated.Open(8); m_Isolated.OpenMoonPreview(); m_Isolated.MoveRoom(-1);
+            Require(routed == 0 && !m_Isolated.IsPreviewOpen && m_Isolated.Room == 2, "movement blocks navigation and direction interruption");
+            await Until(() => !m_Isolated.IsMoving);
+            Require(Mathf.Abs(X() + 3840) < .1f, "slide finishes exactly on the next room");
+            await Until(() => { m_Isolated.MoveRoom(-1); return m_Isolated.IsMoving; }); await Wait(160);
+            Require(m_Isolated.IsMoving && X() > -3839 && X() < -1921, "reverse slide also moves through intermediate positions");
+            m_Isolated.Hide(); m_Isolated.Show(false);
+            Require(!m_Isolated.IsMoving && Mathf.Abs(X() + 1920) < .1f, "reopening settles a cancelled slide at its chosen room");
+            host.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); m_Isolated.MoveRoom(-1);
+            Require(!m_Isolated.IsMoving && X() == 0, "nonanimated presentation keeps immediate navigation");
+            File.WriteAllLines(output, m_Checks); Debug.Log("HALOS_SLIDE_REVIEW_PASS " + m_Checks.Count);
+        }
+        catch (Exception error) { m_Checks.Add("FAIL " + error); File.WriteAllLines(output, m_Checks); Debug.LogException(error); }
+        finally
+        {
+            m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0);
+            rootVisualElement.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
+        }
     }
     private static void Drag(VisualElement target)
     {
