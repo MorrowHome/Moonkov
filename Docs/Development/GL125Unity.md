@@ -9,6 +9,7 @@
 - `GL125WorldAssets` 导入 Unity 原生网格、材质和光照图。URP Lit 使用实际能直接映射的基色、法线及 PBR 参数。复杂程序材质使用近似参数。角色探针基于新版灯位和新碰撞估算。局部反射需要单独制作。
 - `GL125SceneInstall` 保留气闸、任务设备、补氧区和搜刮规则。旧抽屉的交互引用改为独立位置锚点。气闸结构传声引用指向新版 MC00 碰撞。灯钮按废弃处理。
 - `GL125AirlockInstall.Install(工作目录)` 接入 MC00 东 EVA、西货运和北人员三处。西、北的内外门叶按原门框尺寸制作。每处有室内和室外呼叫台，舱内有去室内和去室外两台。按 F 后，气闸先关另一扇门，再均压并开启目标门。门洞有人时禁止关闭，关门中有人进入时反开并取消本次请求。
+- `Tools/Blender/build_gl125_lifts.py Evaluated PreparedQuality LiftStage` 从原渲染和碰撞中拆出四台电梯的 47 组活动部件。`GL125LiftInstall.Install(LiftStage)` 写入正式场景。UL39 北侧直达上升 51 米，中央塔 N62 上升 48.3 米，FT55 上下两台各上升 1.3 米。每台有上下站呼叫和舱内换层，共 12 个控制点。N62 上站饰条随门叶移动。FT55 的开门行程在源动画基础上加高，使站立的玩家可以通过。
 
 Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放分批网格。`PreparedQuality` 存放 Unity 输入和烘焙回执。室内使用 `bake_gl125.py --scale 2`，55 和 59 号使用 `--scale 4`。超采样结果放入 `LightmapsHQ`，按运行时尺寸写出。仅更新光照时执行 `GL125SceneInstall.UpdateSupersampledLighting(工作目录)`。
 
@@ -21,5 +22,7 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 2026-11-07 修复碰撞。旧名字筛选漏掉多座厂房外壳、楼板和井壁。MC00 东侧 L1 S21 的旧碰撞仍含 7 块已移除面板。621 个新结构碰撞块取代 486 个旧块。66 栋重排建筑的 132 个墙面和地面采样全部命中，20 个其他结构点和 5 个薄板背面通过，旧面板的 12 个空气墙采样全部清空。354 项玩法检查通过。1 个敌人出生点从地形接缝横移 0.45 米。回执为 `UnityCollisionRepair.txt`，备份为 `TheophilusGameScene.before-GL125Collision.unity`。实际走图和性能待 Play 验收。
 
 2026-11-07 修复 MC00 室内呼叫。旧按钮落在内门靠舱侧，且直接开门受压差限制。新版 12 台控制台均通过实际玩家瞄准选取检查。三处气闸的均压循环、互锁、六扇门的开关通行和气压区通过编辑器检查。压力及互锁规则共 35 项通过。回执为 `UnityAirlocks.txt`，备份为 `TheophilusGameScene.before-GL125Airlocks.unity`。实际 Play 与联机待验收。
+
+2026-11-08 接入全部四台电梯。正式安装验证覆盖 12 个按钮的瞄准选取、双向行程和两站门洞。重开场景后，用正式角色的碰撞尺寸和移动控制器验证了静止乘客双向随车，以及关门时遇人反开。回执和切换前备份在 `20261108`。活动部件用场景光照探针取光。更新静态碰撞时，同一碰撞清单复用电梯剔除块。更换碰撞清单后需重新拆分并安装，避免门叶或轿厢留在原位。联机版本需要客户端与服务端一起更新。
 
 旧 `SourceFidelity/World` 工作副本清理释放约 6.1 GiB。共享的 `SourceWorldForwardRenderer.asset` 和对应 `.meta` 保留。清理回执为 `OldWorldRemoval.json`。回退需要从替换前提交一起恢复正式场景、战术地图底图和旧 World 目录，再用 `git lfs checkout` 恢复旧目录的大文件。切换前场景的独立副本是 `TheophilusGameScene.before-GL125.unity`。

@@ -322,10 +322,21 @@ public class FirstPersonController : MonoBehaviour
     public void ApplyStanceCapsule(DollSingerStance stance) =>
         DollSingerStances.Apply(m_Controller, stance, m_StandingHeight, m_StandingCenter);
 
+    private float LiftCarryOffset(in ControllerState state)
+    {
+        if (state.MovementType != MovementType.Standing || !m_Controller || !m_Controller.enabled) return 0;
+        var feet = (Vector3)state.CurrentPosition + (Quaternion)state.CurrentRotation * m_Controller.center -
+            Vector3.up * (m_Controller.height * .5f);
+        return RaidLift.CarryHeight(feet);
+    }
+
+    public bool NeedsLiftCarry(in ControllerState state) => LiftCarryOffset(state) != 0;
+
     public void ApplyMovementUpdate(ref ControllerState state, in ControllerConsts consts,
         in float3 accumulatedMovement, float deltaTime)
     {
         DollSingerStances.Apply(m_Controller, state.Stance, m_StandingHeight, m_StandingCenter);
+        state.CurrentPosition.y += LiftCarryOffset(state);
         ApplyMove(ref state, consts, accumulatedMovement, deltaTime);
         GroundedCheck(ref state, consts);
 

@@ -95,8 +95,8 @@ namespace Unity.MP_FPS
             if (!HasSelection || m_Root == null) return;
             m_NextRender = Time.unscaledTime + .1f;
             var selected = m_Selection.Selected;
-            MoonkovLocalization.Set(m_Action, selected.Airlock ? selected.Airlock.DisplayName : selected.Light.Label);
-            MoonkovLocalization.Set(m_Caption, selected.Airlock ? "AIRLOCK CONTROL" : "LIGHTING CONTROL");
+            MoonkovLocalization.Set(m_Action, selected.Label);
+            MoonkovLocalization.Set(m_Caption, selected.Airlock ? "AIRLOCK CONTROL" : selected.Lift ? "ELEVATOR CONTROL" : "LIGHTING CONTROL");
             bool gamepad = Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame &&
                 (Keyboard.current == null || !Keyboard.current.anyKey.isPressed);
             MoonkovLocalization.Set(m_Key, BindingLabel ?? (gamepad ? "X" : "F"));
@@ -109,6 +109,17 @@ namespace Unity.MP_FPS
                 var feedback = selected.Airlock.DisplayFeedback;
                 MoonkovLocalization.Set(m_Feedback, AirlockButton.FeedbackText(feedback));
                 blocked = feedback != AirlockFeedback.Accepted;
+            }
+            else if (selected.Lift)
+            {
+                var state = selected.Lift.Owner.State;
+                MoonkovLocalization.Set(m_Pressure, state.Phase == RaidLiftPhase.Docked
+                    ? state.Dock == 0 ? "LOWER FLOOR" : "UPPER FLOOR"
+                    : "ELEVATOR MOVING");
+                var feedback = selected.Lift.Feedback;
+                blocked = feedback != AirlockFeedback.Accepted && feedback != AirlockFeedback.Equalizing;
+                MoonkovLocalization.Set(m_Feedback, feedback == AirlockFeedback.Accepted || feedback == AirlockFeedback.Equalizing
+                    ? "" : feedback == AirlockFeedback.Unavailable ? "ELEVATOR UNAVAILABLE" : AirlockButton.FeedbackText(feedback));
             }
             else
             {
@@ -142,7 +153,7 @@ namespace Unity.MP_FPS
             for (int i = 0; i < count; i++)
             {
                 var target = m_Selection.Choices[i];
-                MoonkovLocalization.Set(m_Rows[i], target.Airlock ? target.Airlock.DisplayName : target.Light.Label);
+                MoonkovLocalization.Set(m_Rows[i], target.Label);
                 bool active = target.Equals(selected); if (active) index = i;
                 m_Rows[i].EnableInClassList("is-selected", active);
             }

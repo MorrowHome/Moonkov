@@ -326,7 +326,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
             if (isFinalPredictionTick || predictedPlayer.ValueRO.RequestApplyMovement)
             {
-                if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f)
+                if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f ||
+                    controllerLink.Controller.NeedsLiftCarry(predictedPlayer.ValueRO.ControllerState))
                 {
                     controllerLink.Controller.ApplyMovementUpdate(ref predictedPlayer.ValueRW.ControllerState,
                         controllerConsts,

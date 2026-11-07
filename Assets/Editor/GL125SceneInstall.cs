@@ -101,7 +101,6 @@ public static class GL125SceneInstall
         RequireEditMode();
         var assets = ReadStage(stage);
         var chunks = assets.StaticCollision;
-        assets.ImportChunks(chunks);
         string backup = Path.Combine(stage, "TheophilusGameScene.before-GL125Collision.unity");
         if (!File.Exists(backup)) File.Copy(FormalScene, backup);
         var previous = SceneManager.GetActiveScene();
@@ -110,6 +109,8 @@ public static class GL125SceneInstall
         {
             SceneManager.SetActiveScene(scene);
             var world = scene.GetRootGameObjects().Single(root => root.name == WorldName).transform;
+            var overrides = GL125LiftInstall.CollisionOverrides(world, Path.Combine(stage, "PreparedQuality", "StaticCollision", "Collision.json"));
+            assets.ImportChunks(chunks);
             var collision = world.Find("Static collision");
             var structure = world.Find("MC00 structural collision");
             if (!collision || !structure) throw new InvalidOperationException("GL125 collision roots are missing.");
@@ -120,7 +121,7 @@ public static class GL125SceneInstall
             int layer = LayerMask.NameToLayer("Ground");
             if (layer < 0) throw new InvalidOperationException("Ground layer is missing.");
             foreach (var chunk in chunks)
-                AddColliderChunk(chunk, collision, structure, assets.MeshFor(chunk), layer);
+                AddColliderChunk(chunk, collision, structure, overrides.TryGetValue(chunk.name, out var split) ? split : assets.MeshFor(chunk), layer);
             Physics.SyncTransforms();
             string gameplay = ValidateGameplay(scene, world);
             EditorSceneManager.MarkSceneDirty(scene);

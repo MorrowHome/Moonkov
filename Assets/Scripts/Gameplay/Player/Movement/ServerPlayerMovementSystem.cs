@@ -623,7 +623,8 @@ namespace Unity.MP_FPS
                          .WithEntityAccess())
             {
                 var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
-                if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f)
+                if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f ||
+                    controllerLink.Controller.NeedsLiftCarry(predictedPlayer.ValueRO.ControllerState))
                 {
                     bool wasLanding = predictedPlayer.ValueRO.ControllerState.LandTriggered;
                     bool wasGrounded = predictedPlayer.ValueRO.ControllerState.MovementType == FirstPersonController.MovementType.Standing;

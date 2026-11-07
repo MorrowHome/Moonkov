@@ -6472,6 +6472,34 @@ MonoBehaviour:
       an equipped badge. Unused charge is retained.
     m_Metadata:
       m_Items: []
+  - m_Id: 11362953679613952
+    m_Key: ELEVATOR CONTROL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722816
+    m_Key: CALL ELEVATOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722817
+    m_Key: SELECT OTHER FLOOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722818
+    m_Key: LOWER FLOOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722819
+    m_Key: UPPER FLOOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722820
+    m_Key: ELEVATOR MOVING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11362953746722821
+    m_Key: ELEVATOR UNAVAILABLE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -12,17 +12,21 @@ namespace Unity.MP_FPS
     {
         public readonly AirlockButton Airlock;
         public readonly LightSwitchButton Light;
-        public RaidInteractionTarget(AirlockButton button) { Airlock = button; Light = null; }
-        public RaidInteractionTarget(LightSwitchButton button) { Light = button; Airlock = null; }
-        public bool IsValid => Airlock || Light;
-        public Vector3 Center => Airlock ? Airlock.InteractionCenter : Light ? Light.InteractionCenter : default;
-        public string Name => Airlock ? Airlock.DisplayName : Light ? MoonkovLocalization.Text(Light.Label) : "";
-        public string Id => Airlock ? Airlock.ButtonId : Light ? Light.SwitchId : "";
-        public Transform Surface => Airlock ? Airlock.transform : Light ? Light.transform : null;
-        public bool InRange(Vector3 actor) => Airlock ? Airlock.InRange(actor) : Light && Light.InRange(actor);
+        public readonly RaidLiftButton Lift;
+        public RaidInteractionTarget(AirlockButton button) : this() { Airlock = button; }
+        public RaidInteractionTarget(LightSwitchButton button) : this() { Light = button; }
+        public RaidInteractionTarget(RaidLiftButton button) : this() { Lift = button; }
+        public bool IsValid => Airlock || Light || Lift;
+        public Vector3 Center => Airlock ? Airlock.InteractionCenter : Light ? Light.InteractionCenter : Lift ? Lift.Center : default;
+        public string Label => Airlock ? Airlock.DisplayName : Light ? Light.Label : Lift ? Lift.Label : "";
+        public string Name => MoonkovLocalization.Text(Label);
+        public string Id => Airlock ? Airlock.ButtonId : Light ? Light.SwitchId : Lift ? Lift.ButtonId : "";
+        public Transform Surface => Airlock ? Airlock.transform : Light ? Light.transform : Lift ? Lift.transform : null;
+        public bool InRange(Vector3 actor) => Airlock ? Airlock.InRange(actor) : Light ? Light.InRange(actor) : Lift && Lift.InRange(actor);
         public bool SameGroup(RaidInteractionTarget other)
         {
             if (!IsValid || !other.IsValid || (Center - other.Center).sqrMagnitude > .75f * .75f) return false;
+            if (Lift || other.Lift) return Lift && Lift == other.Lift;
             return Airlock && other.Airlock ? Airlock.Owner == other.Airlock.Owner && Airlock.BankSide == other.Airlock.BankSide
                 : Light && other.Light && Light.Controls == other.Light.Controls && Light.transform.parent == other.Light.transform.parent;
         }
@@ -32,17 +36,19 @@ namespace Unity.MP_FPS
             if (delta.sqrMagnitude < .0001f) return true;
             if (!UnityEngine.Physics.Raycast(origin, delta.normalized, out var hit, delta.magnitude, UnityEngine.Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return true;
             return Airlock ? hit.collider.GetComponentInParent<AirlockButton>() == Airlock
-                : Light && hit.collider.GetComponentInParent<LightSwitchButton>() == Light;
+                : Light ? hit.collider.GetComponentInParent<LightSwitchButton>() == Light
+                : Lift && hit.collider.GetComponentInParent<RaidLiftButton>() == Lift;
         }
         public bool Press(Vector3 actor, World world)
         {
             if (!InRange(actor)) return false;
             if (Airlock) { Airlock.Press(actor, world); return true; }
+            if (Lift) return Lift.Press(actor, world);
             return Light && LightSwitchNetworkContext.Press(world, Light);
         }
-        public bool Equals(RaidInteractionTarget other) => Airlock == other.Airlock && Light == other.Light;
+        public bool Equals(RaidInteractionTarget other) => Airlock == other.Airlock && Light == other.Light && Lift == other.Lift;
         public override bool Equals(object obj) => obj is RaidInteractionTarget other && Equals(other);
-        public override int GetHashCode() => Airlock ? Airlock.GetEntityId().GetHashCode() : Light ? Light.GetEntityId().GetHashCode() : 0;
+        public override int GetHashCode() => Surface ? Surface.GetEntityId().GetHashCode() : 0;
     }
 
     public sealed class RaidInteractionSelection
@@ -60,6 +66,7 @@ namespace Unity.MP_FPS
             m_Candidates.Clear();
             foreach (var button in AirlockButton.Active) if (button) m_Candidates.Add(new RaidInteractionTarget(button));
             foreach (var button in LightSwitchButton.Active) if (button) m_Candidates.Add(new RaidInteractionTarget(button));
+            foreach (var button in RaidLiftButton.Active) if (button) m_Candidates.Add(new RaidInteractionTarget(button));
             var focus = default(RaidInteractionTarget);
             float best = -1;
             foreach (var target in m_Candidates)

@@ -65,6 +65,20 @@ def write_mesh(path, vertices, submeshes):
             np.asarray(triangles, dtype="<u4").tofile(stream)
 
 
+def read_mesh(path):
+    with path.open("rb") as stream:
+        magic, count, stride, parts = struct.unpack("<4sIII", stream.read(16))
+        if magic != b"GLM1" or stride not in (3, 10):
+            raise ValueError(f"Unexpected packed mesh format in {path}")
+        vertices = np.fromfile(stream, dtype="<f4", count=count * stride).reshape(count, stride)
+        sections = []
+        for _ in range(parts):
+            material, count = struct.unpack("<iI", stream.read(8))
+            indices = np.fromfile(stream, dtype="<u4", count=count).reshape(-1, 3)
+            sections.append((material, indices))
+    return vertices, sections
+
+
 def cell_parts(triangles, step):
     points = triangles[:, :, :3].mean(axis=1)
     coords = np.floor(points / step).astype(np.int32)
