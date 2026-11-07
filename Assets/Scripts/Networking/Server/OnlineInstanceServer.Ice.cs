@@ -33,6 +33,7 @@ namespace Unity.MP_FPS
         public static bool Selected => OnlineInstanceServer.Managed &&
             Environment.GetEnvironmentVariable("MOON_INSTANCE_CONNECTION") == OnlineNetworkProtocol.P2P;
         public static bool Available => Selected && s_Transport != null && !s_Transport.IsDisposed;
+        internal static EmbeddedIceTransport DiagnosticTransport => Available ? s_Transport : null;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Reset()

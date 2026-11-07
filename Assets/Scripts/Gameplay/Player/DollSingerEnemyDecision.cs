@@ -65,14 +65,27 @@ namespace Unity.MP_FPS
             {
                 if (brain.Visible)
                 {
-                    Consider(PmcAction.Engage, 50 + brain.Aggression * 12, "confirmed opponent; deliberate bursts");
-                    if (brain.IsClashBot && !brain.Leaving && brain.Suppression < .3f && HasClashCoveringAlly(brain, now))
-                        Consider(PmcAction.Flank, 78, "partner has a firing window; take the other approach lane");
-                    // Finish the chosen angle before reconsidering it; failed paths may abort it.
+                    bool betweenBursts = now >= brain.BurstUntil && now < brain.NextBurst;
                     bool flanking = brain.Action == PmcAction.Flank && now - brain.ActionStarted < 6 &&
                         HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
-                    if (!brain.Leaving && brain.Suppression < .4f && (!brain.IsClashBot || flanking || HasClashCoveringAlly(brain, now)) && (flanking ||
-                        brain.Action == PmcAction.Engage && now >= brain.NextFlank && now - brain.ActionStarted > 5))
+                    bool coveringAlly = brain.IsClashBot && HasClashCoveringAlly(brain, now);
+                    bool calm = !brain.Leaving && brain.Suppression < .3f && now - brain.LastDamage >= 3;
+                    // Fire first. Reposition in a later burst pause, or finish an
+                    // already chosen angle; fresh damage restores counterfire priority.
+                    bool squadFlank = calm && coveringAlly && betweenBursts;
+                    bool flankOpening = calm && (!brain.IsClashBot || flanking || coveringAlly) &&
+                        (flanking || betweenBursts && brain.Action == PmcAction.Engage &&
+                            now >= brain.NextFlank && now - brain.ActionStarted > 8);
+                    // An armed PMC should contest a visible opponent before minor
+                    // pressure or routine flanking. Serious suppression still wins cover.
+                    bool readyToFight = health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
+                        !energyLow && brain.Suppression <= .7f;
+                    Consider(PmcAction.Engage, (readyToFight && !squadFlank && !flankOpening ? 82 : 50) + brain.Aggression * 12,
+                        "confirmed opponent; prioritize deliberate return fire");
+                    if (squadFlank)
+                        Consider(PmcAction.Flank, 78, "partner has a firing window; take the other approach lane");
+                    // Finish the chosen angle before reconsidering it; failed paths may abort it.
+                    if (flankOpening)
                         Consider(PmcAction.Flank, 64 + brain.Aggression * 8, "change the firing angle after an inconclusive duel");
                 }
                 else if (!brain.Leaving && confirmed && seenAge < m_Tuning.MemorySeconds)

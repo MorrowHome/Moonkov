@@ -9,6 +9,7 @@ namespace Unity.MP_FPS
         public SoundDef ShieldImpact, ShieldBreak, ShieldRestore;
         public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
         public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;
+        public SoundDef MeleeEffort;
         public SoundDef Consume, PlayerPain, PlayerGroan;
         public SoundDef EatBite, DrinkSip, BottleOpen, PacketOpen, InjectorCap, InjectorPress;
         public SoundDef Equipment, Container, LootSearchWorld, Jump, Land, Hit, Death;
@@ -20,6 +21,7 @@ namespace Unity.MP_FPS
         public SoundDef AlienSwing, AlienSpit, AlienImpact, AlienWetMove, AlienHeavyStep, AlienGrip, AlienBossVoice;
         public SoundDef Aim, Light, DryFire, ReloadReady, Medical, Pickup, OxygenRefill;
         public SoundDef SuitBreath, Heartbeat, SuitWarning, ExtractStart, ExtractCancel, ExtractTick;
+        public SoundDef SuitBreathEffort;
         public SoundDef OxygenSupply;
         public SoundDef ShipInterior;
         public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;

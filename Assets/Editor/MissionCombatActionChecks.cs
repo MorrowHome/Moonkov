@@ -27,7 +27,7 @@ public static class MissionCombatActionChecks
     public static string Run()
     {
         s_Checks = 0;
-        for (int kind = 0; kind < 10; kind++)
+        for (int kind = 0; kind < 9; kind++)
         {
             var health = Health();
             var actor = new RaidMissionWorld.Actor { Key = "player", Node = 0, Request = 1 };
@@ -46,9 +46,8 @@ public static class MissionCombatActionChecks
                 case 6: health.ControllerState.IsReloadingState=true; break;
                 case 7: health.WeaponEquipRemaining=.2f; break;
                 case 8: health.CurrentHealth--; break;
-                case 9: position.x=.76f; break;
             }
-            Check(actor.Interrupted(health,position), "Combat, movement or weapon action interrupts: " + kind);
+            Check(actor.Interrupted(health,position), "Combat or weapon action interrupts: " + kind);
             if (actor.Interrupted(health,position)) operation.Cancel(actor.Key);
             Check(operation.Renew(actor.Key, 1, 3.1) == MissionActionResult.Stale && !operation.Completed(0),
                 "Interrupted final renewal cannot complete the operation: " + kind);
@@ -80,7 +79,7 @@ public static class MissionCombatActionChecks
         var uninterrupted = Operation();
         Check(uninterrupted.Begin(normalActor.Key, 1, 0, 1, 0) == MissionActionResult.Started &&
               uninterrupted.Renew(normalActor.Key, 1, 1.5) == MissionActionResult.Running &&
-              !normalActor.Interrupted(normal,new float3(.75f,0,0)) && uninterrupted.Renew(normalActor.Key, 1, 3.1) == MissionActionResult.Completed,
+              !normalActor.Interrupted(normal,new float3(2,0,0)) && uninterrupted.Renew(normalActor.Key, 1, 3.1) == MissionActionResult.Completed,
             "An uninterrupted hold still completes");
         return "PASS " + s_Checks + " mission combat action checks";
     }

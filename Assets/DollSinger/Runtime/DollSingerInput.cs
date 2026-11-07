@@ -88,6 +88,8 @@ namespace Unity.MP_FPS.DollSinger
         }
         public bool ReloadPressed { get; private set; }
         public bool DefenseHeld { get; private set; }
+        public static bool DefenseButtonHeld => Keyboard.current?.tKey.isPressed == true ||
+            Gamepad.current != null && Gamepad.current.dpad.right.isPressed && !Gamepad.current.rightShoulder.isPressed;
         public bool TransferHeld { get; private set; }
         public bool GuardHeld { get; private set; }
         public bool HaloAnchorHeld { get; private set; }
@@ -289,7 +291,8 @@ namespace Unity.MP_FPS.DollSinger
             if (HaloAnchorHeld || HaloModeHeld) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false; WeaponSlotPressed = 0; }
             if (grenade) HaloAnchorHeld = HaloModeHeld = HaloScanHeld = false;
             if (TransferHeld) { DefenseHeld = false; WeaponSlotPressed = 0; }
-            if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
+            if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = false;
+            if (TransferHeld) ReloadPressed = false;
             if (grenade) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = DefenseHeld = TransferHeld = false; WeaponSlotPressed = 0; }
             if (!grenade && MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }

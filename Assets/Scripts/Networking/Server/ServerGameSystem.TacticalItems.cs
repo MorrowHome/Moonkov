@@ -147,7 +147,7 @@ namespace Unity.MP_FPS
                 {var inventory=GetRaidInventory(ref state,pair.Key);inventory.TacticalPending=false;inventory.LastSentVersion=-1;}
             world.Uses.Clear();world.Feedbacks.Clear();world.Objects.Clear();world.Statuses.Clear();world.Epoch++;
             foreach(var health in SystemAPI.Query<RefRW<PredictedPlayerGhost>>())
-            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;health.ValueRW.TacticalSprintStamina=100;health.ValueRW.TacticalSprintExhausted=false;
+            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;health.ValueRW.TacticalBleeding=false;health.ValueRW.TacticalSprintStamina=100;health.ValueRW.TacticalSprintExhausted=false;
                 health.ValueRW.PendingBulletWound=0;health.ValueRW.PendingBulletWoundSource=default;}
             TacticalBroadcast(ecb,world,null,true);
         }
@@ -190,7 +190,7 @@ namespace Unity.MP_FPS
                 var inventory=GetRaidInventory(ref state,connection);
                 bool actorValid=TacticalActor(ref state,connection,out var player,out var health,out var root);
                 bool valid=actorValid && inventory.TacticalPending && inventory.RaidId==use.RaidId && inventory.Graph.Version==use.Version;
-                valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
+                valid=valid && player==use.Player &&
                     !RaidHealth.HandsBusy(health) &&
                     (use.Action==TacticalItemAction.Extinguish ? RaidHealth.SelfTreatmentDamageUnchanged(health,use.DamageSequence,use.ShieldHit) :
                         health.LastHitTick==use.Hit && health.NonPhysiologicalDamageSequence==use.DamageSequence &&
@@ -371,7 +371,7 @@ namespace Unity.MP_FPS
             var validation=TacticalItemRules.Validate(inventory.Graph,use.ItemId,use.Version,out _);
             if(validation!=InventoryError.None)return validation;
             Vector3 position=root.transform.position,velocity=default;
-            if(definition.Deployable && (!TacticalPlacement(root,health,world,out position)||Vector3.Distance(position,use.Placement)>.6f))return InventoryError.Inaccessible;
+            if(definition.Deployable && !TacticalPlacement(root,health,world,out position))return InventoryError.Inaccessible;
             if(definition.Throwable && !TacticalThrow(root,health,world,out position,out velocity))return InventoryError.Inaccessible;
             if((definition.Deployable||definition.Throwable) && !TacticalCapacity(world,definition,use.Player,position))return InventoryError.Full;
             if(definition.Kind==TacticalItemKind.Vitality && !TacticalCanHeal(health))return InventoryError.Invalid;
@@ -577,7 +577,8 @@ namespace Unity.MP_FPS
                 bool canHurt=health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
                 if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=0;}
                 health.TacticalWireSeconds=TacticalRemaining(status.Wire,now);health.TacticalCoughSeconds=TacticalRemaining(status.Cough,now);
-                health.TacticalPoisonSeconds=TacticalRemaining(status.Poison,now);SystemAPI.SetComponent(victim,health);
+                health.TacticalPoisonSeconds=TacticalRemaining(status.Poison,now);
+                health.TacticalBleeding=status.Bleed>now;SystemAPI.SetComponent(victim,health);
                 if(!canHurt)continue;
                 bool treating=false;
                 foreach(var pending in world.Uses.Values)if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish){treating=true;break;}

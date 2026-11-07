@@ -257,10 +257,10 @@ namespace Unity.MP_FPS
             PmcResourceActions.SafeWindow(brain, health, tutorial, safe, now) && health.ShieldEquipped &&
             float.IsFinite(health.ShieldEnergy) && health.ShieldEnergy >= 0 && health.ShieldEnergy <= RechargeThreshold;
 
-        public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize)
+        public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize, WeaponData weapon = null)
         {
             if (inventory == null || !health.HaloEquipped || HaloEnergyRules.Energy(health) > RechargeThreshold) return false;
-            return HaloEnergyInventory.RechargeFirst(ref health, inventory);
+            return HaloEnergyInventory.RechargeFirst(ref health, inventory, weapon);
         }
     }
 
@@ -623,7 +623,7 @@ namespace Unity.MP_FPS
         public bool LocalRaidExit, LocalExitObserved;
         public double NextLocalExitCheck;
         public Vector3 AimOffset = Vector3.up * 1.15f;
-        public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY;
+        public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY, LightGlare;
         public float ExtractionProgress, ActionScore;
         // A server-assigned identity, never a fabricated transport connection.
         public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;

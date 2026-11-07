@@ -6,12 +6,14 @@ namespace Unity.MP_FPS
     // Consumes rendered snapshots once, never the prediction replay loop.
     public sealed class MoonkovMeleeAudio
     {
-        [System.Flags] public enum Cues { None = 0, Equip = 1, Swing = 2, Hit = 4 }
+        [System.Flags] public enum Cues { None = 0, Equip = 1, Swing = 2, Hit = 4, Effort = 8 }
         private bool m_Initialized;
         private int m_Epoch;
         private byte m_Weapon;
         private uint m_Attack, m_Hit, m_Cancel;
         private bool m_PendingSwing;
+        private SoundSystem.SoundInfo m_EffortSound;
+        public bool VoicePlaying => m_EffortSound?.Handle?.IsValid() == true;
 
         public Cues Observe(in PredictedPlayerGhost state)
         {
@@ -41,29 +43,51 @@ namespace Unity.MP_FPS
                 {
                     m_PendingSwing = false;
                     if (state.MeleeElapsed < timing.Windup + timing.Active + .1f &&
-                        state.MeleePhase != (byte)MeleePhase.Idle) cues |= Cues.Swing;
+                        state.MeleePhase != (byte)MeleePhase.Idle)
+                    {
+                        cues |= Cues.Swing;
+                        if ((MeleeWeaponKind)state.MeleeAttackWeapon == MeleeWeaponKind.Fists) cues |= Cues.Effort;
+                    }
                 }
             }
             return cues;
         }
 
-        public void Update(in PredictedPlayerGhost state, Vector3 position, bool owned)
+        public bool Update(in PredictedPlayerGhost state, Vector3 position, bool owned, bool allowVoice = true)
         {
+            if (!allowVoice || !EnergyShieldRules.Alive(state) || state.ClashDarkSight ||
+                m_Initialized && (m_Epoch != state.MeleeEpoch || m_Cancel != state.MeleeCancelSequence || m_Weapon != state.MeleeWeapon)) Stop();
             var cues = Observe(state);
             var library = MoonkovAudio.Library;
-            if (!library) return;
+            if (!library) return false;
+            bool effort = false;
             if ((cues & Cues.Equip) != 0)
                 MoonkovAudio.PlayWeaponLayer(library.Equipment, position, .65f, owned ? 0 : 1);
             if ((cues & Cues.Swing) != 0)
             {
                 bool sword = (MeleeWeaponKind)state.MeleeAttackWeapon == MeleeWeaponKind.EnergySword;
+                bool fists = (MeleeWeaponKind)state.MeleeAttackWeapon == MeleeWeaponKind.Fists;
                 bool heavy = (MeleeAttackKind)state.MeleeAttack == MeleeAttackKind.Heavy;
                 MoonkovAudio.PlayWeaponLayer(sword ? library.MeleeEnergySwing : library.MeleeSwing,
-                    position, heavy ? 1 : .7f, owned ? .1f : 1, heavy ? -160 : 40);
+                    position, fists ? (heavy ? .38f : .24f) : (heavy ? 1 : .7f), owned ? .1f : 1, heavy ? -160 : 40);
+                if ((cues & Cues.Effort) != 0 && allowVoice)
+                {
+                    Stop();
+                    m_EffortSound = MoonkovAudio.PlayWeaponLayer(library.MeleeEffort, position + Vector3.up * 1.4f,
+                        heavy ? 1 : .82f, owned ? .05f : 1);
+                    effort = m_EffortSound != null;
+                }
             }
             if ((cues & Cues.Hit) != 0)
                 MoonkovAudio.Play(state.MeleeHitBlocked ? library.MeleeBlocked : library.MeleeImpact,
                     state.MeleeHitPoint, .8f);
+            return effort;
+        }
+
+        public void Stop()
+        {
+            GameManager.Instance?.SoundSystem?.Stop(m_EffortSound, .04f);
+            m_EffortSound = null;
         }
     }
 }

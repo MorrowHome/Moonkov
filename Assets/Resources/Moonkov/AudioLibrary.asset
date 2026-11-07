@@ -29,6 +29,7 @@ MonoBehaviour:
   MeleeEnergySwing: {fileID: 11400000, guid: 5b17d7ef7c1e7454799cfad1de9dc162, type: 2}
   MeleeImpact: {fileID: 11400000, guid: 9ffa710eed8d1472ca20079eafef4d88, type: 2}
   MeleeBlocked: {fileID: 11400000, guid: 26b61b63dc7454aef85fc8d372a076de, type: 2}
+  MeleeEffort: {fileID: 11400000, guid: 23814b8d9438848e4b4bbe55e6b363c4, type: 2}
   Consume: {fileID: 11400000, guid: 90d6d70b5efa4907970c2856d18083a9, type: 2}
   PlayerPain: {fileID: 11400000, guid: 0a75118876143417eac2caab872f7a30, type: 2}
   PlayerGroan: {fileID: 11400000, guid: 70d513a3113764267af7f42935730751, type: 2}
@@ -83,6 +84,7 @@ MonoBehaviour:
   ExtractStart: {fileID: 11400000, guid: c9a5cd419b5844e4aa91bc1d3ed3d190, type: 2}
   ExtractCancel: {fileID: 11400000, guid: c2197aa8a3f44492eb92eb8fb48854ff, type: 2}
   ExtractTick: {fileID: 11400000, guid: 28e7d4409b4994afcbe9b5b4ccc0e952, type: 2}
+  SuitBreathEffort: {fileID: 11400000, guid: e1bff0ec88b4942f7bda58b81af45a5c, type: 2}
   OxygenSupply: {fileID: 11400000, guid: 159b75ad441a3b94997ed895834cb52e, type: 2}
   ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}
   AccessCarrier: {fileID: 11400000, guid: 12b15eecdab584efebb38bfd93a3ccf8, type: 2}

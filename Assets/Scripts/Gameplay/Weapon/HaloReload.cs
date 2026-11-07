@@ -26,6 +26,29 @@ namespace Unity.MP_FPS
             state.ControllerState.IsReloadingState = state.ReloadDuration > 0;
         }
 
+        // The server reserves one battery transfer. Neither prediction nor an early
+        // fire request can spend it before the shared reload timeline completes.
+        public static void BeginEnergyCharge(ref PredictedPlayerGhost state, WeaponData weapon, int energy)
+        {
+            state.HaloRechargeEnergy = energy;
+            float fraction = Mathf.Clamp01(energy / HaloEnergyRules.Maximum(state));
+            state.ReloadDuration = Mathf.Max(.5f, (weapon ? weapon.ReloadTime : 2.4f) *
+                (.25f + .75f * fraction) * RaidHealth.HandlingMultiplier(state));
+            state.ReloadTimer = state.ReloadDuration;
+            state.ControllerState.IsReloadingState = true;
+            state.ReloadTargetAmmo = weapon ? Mathf.Min(weapon.MagazineSize,
+                Mathf.FloorToInt((HaloEnergyRules.Energy(state) + energy) / Mathf.Max(1, weapon.EnergyPerRound))) : 0;
+            state.HaloRegenerating = false;
+            HaloModuleFire.Reset(ref state);
+        }
+
+        public static void Tick(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime)
+        {
+            if (!state.ControllerState.IsReloadingState || !float.IsFinite(deltaTime) || deltaTime <= 0) return;
+            state.ReloadTimer = Mathf.Max(0, state.ReloadTimer - deltaTime);
+            if (state.ReloadTimer <= 0) DollSingerWeapons.CompleteReload(ref state, weapon);
+        }
+
         public static float Total(in PredictedPlayerGhost state, WeaponData weapon) =>
             state.ReloadDuration > 0 ? state.ReloadDuration : Mathf.Max(.01f,
                 (weapon ? weapon.ReloadTime : 1) * RaidHealth.HandlingMultiplier(state));

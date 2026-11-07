@@ -115,7 +115,12 @@ namespace Unity.MP_FPS
                             string itemId = r.ItemId.ToString();
                             var item = inventory.Graph.Find(itemId);
                             if(item?.Code=="cells")
-                                inventory.Error=HaloEnergyInventory.Recharge(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion);
+                            {
+                                var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(ghost.ValueRO.EquippedWeaponID, ghost.ValueRO.EquippedModules);
+                                inventory.Error=HaloEnergyInventory.Recharge(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion,weapon);
+                                if (inventory.Error == InventoryError.None)
+                                    ghost.ValueRW.LastReloadTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick;
+                            }
                             else if(TryGetLivingPosition(ref state,player,out var usePosition))
                             {
                                 inventory.Error=inventory.BeginConsumable(ghost.ValueRO,itemId,r.ExpectedVersion,usePosition,SystemAPI.Time.ElapsedTime);
@@ -249,6 +254,7 @@ namespace Unity.MP_FPS
                     return new RaidSearchFootprint {Id=item.Id,Region=item.Region,X=item.X,Y=item.Y,
                         Width=item.Rotated ? definition.Height : definition.Width,Height=item.Rotated ? definition.Width : definition.Height};
                 }).ToList(),searchTotal<0 ? 0 : inventory.SearchSecondsPerItem);
+            inventory.RecordProtectionSnapshot();
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

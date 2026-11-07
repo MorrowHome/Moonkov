@@ -115,8 +115,9 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipPistol, canRead && _dollSingerInput.WeaponSlotPressed == 3);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
-                playerInput.SetFlag(PlayerInput.InputFlag.HaloDefense, canRead && _dollSingerInput.DefenseHeld &&
-                    !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected);
+                playerInput.SetFlag(PlayerInput.InputFlag.HaloDefense, !RaidHUD.DarkSightRequested &&
+                    (canRead && _dollSingerInput.DefenseHeld && !RaidHUD.QuickSlotToolSelected ||
+                     RaidHUD.InventoryDefenseAllowed && DollSingerInput.DefenseButtonHeld));
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
                 ReadHaloTransfer(currentLocalPlayer, equipped, canFire, ref playerInput);

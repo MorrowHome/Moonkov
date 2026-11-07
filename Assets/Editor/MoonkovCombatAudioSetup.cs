@@ -25,6 +25,9 @@ public static class MoonkovCombatAudioSetup
         lib.TacticalGas = Bank("TacticalGas", lib.OxygenRefill, -16, 22, 120, 4);
         lib.TacticalCough = Bank("TacticalCough", lib.SuitBreath, -17, 18, 120, 4);
         EditorUtility.SetDirty(lib); AssetDatabase.SaveAssetIfDirty(lib);
+        MoonkovMeleeVoiceSetup.Install();
+        MoonkovBodyImpactAudioSetup.Install();
+        MoonkovCoughAudioSetup.Install();
     }
     static SoundDef Load(string name) => AssetDatabase.LoadAssetAtPath<SoundDef>(Root + name + ".asset");
     static SoundDef Bank(string name, SoundDef source, float db, float range, int priority, int voices)

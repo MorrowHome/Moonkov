@@ -8,6 +8,9 @@ namespace Unity.MP_FPS.Client
     public class LoadingScreen : MonoBehaviour
     {
         private HalosTerminalBackdrop m_Backdrop;
+        private VisualElement m_Root;
+        private Label m_Hint;
+        private float m_HintScale = -1;
         static class UIElementNames
         {
             public const string LoadingStatus = "LoadingStatus";
@@ -16,6 +19,7 @@ namespace Unity.MP_FPS.Client
         void OnEnable()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
+            m_Root = root; m_Hint = root.Q<Label>("LoadingHint"); m_HintScale = -1;
             MoonkovLocalization.Bind(root);
             m_Backdrop = new HalosTerminalBackdrop(root.Q("Canvas"), true);
             GameSettings.Instance.propertyChanged += LoadingSettingsChanged;
@@ -45,6 +49,14 @@ namespace Unity.MP_FPS.Client
         }
 
         private void LoadingSettingsChanged(object sender, BindablePropertyChangedEventArgs evt) => PresentAnimation();
+        private void Update()
+        {
+            if (m_Hint == null || !(m_Root.resolvedStyle.width > 0)) return;
+            float scale = Mathf.Max(1, m_Root.resolvedStyle.width / Mathf.Max(1, Screen.width));
+            if (Mathf.Approximately(scale, m_HintScale)) return;
+            m_HintScale = scale;
+            m_Hint.style.fontSize = 14 * scale;
+        }
         private void PresentAnimation() => m_Backdrop.Present(
             GameSettings.Instance.GameState == GlobalGameState.Loading, HalosTerminalBackdrop.PrefersReducedMotion);
 
@@ -52,6 +64,7 @@ namespace Unity.MP_FPS.Client
         {
             GameSettings.Instance.propertyChanged -= LoadingSettingsChanged;
             m_Backdrop?.Dispose(); m_Backdrop = null;
+            m_Root = null; m_Hint = null;
         }
     }
 }

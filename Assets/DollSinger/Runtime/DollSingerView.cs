@@ -120,10 +120,10 @@ public class DollSingerView : MonoBehaviour
     public Camera GestureProjectionCamera => gestureProjection?.Camera;
     public bool GestureProjectionActive => gestureProjection != null && gestureProjection.Active;
 
-    public void PresentGesture(float poseBlend)
+    public void PresentGesture(float poseBlend, bool viewfinder = false)
     {
         gestureProjection?.Present(firstPersonPresentationActive && firstPerson && viewBlend > .99f && poseBlend > .0001f,
-            poseBlend, firstPersonFieldOfView);
+            poseBlend, firstPersonFieldOfView, viewfinder);
     }
     private SkinnedMeshRenderer fullShadowRenderer;
     private ShadowCastingMode thirdPersonShadowMode;

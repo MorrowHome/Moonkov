@@ -26,6 +26,7 @@ public static class MoonkovPainAudioChecks
         Require(!voice.Observe(health.LastImpactTick, true, 2.2f), "Rapid hits stacked voices");
         Require(!voice.Observe(health.LastImpactTick, true, 4), "Suppressed cry was queued");
         health.ShieldEquipped = true; health.ShieldCharge = 100;
+        HaloEnergyRules.SetDefense(ref health, true);
         RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1, 123, RaidDamageKind.Bullet);
         Require(!voice.Observe(health.LastImpactTick, true, 5), "Fully shielded hit cried");
         health.ShieldCharge = .5f;

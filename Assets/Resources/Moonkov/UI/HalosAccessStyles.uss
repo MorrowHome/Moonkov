@@ -106,6 +106,7 @@
 .halos-loading-brand .halos-wordmark { width: 320px; height: 42px; margin-top: 16px; }
 .halos-loading-progress { width: 100%; padding: 20px 0; background-color: rgba(8,9,12,0.92); }
 .halos-loading #LoadingStatus { color: var(--halos-text); font-size: 16px; white-space: normal; margin: 0 12px 16px; -unity-text-align: middle-center; }
+.halos-loading .halos-loading-hint { color: var(--halos-text); font-size: 14px; white-space: normal; margin: 16px 12px 0; -unity-text-align: middle-center; }
 .halos-loading ProgressBar { height: 3px; margin: 0; padding: 0; }
 .halos-loading .unity-progress-bar__background { height: 3px; min-height: 3px; background-color: #30343b; border-width: 0; border-radius: 0; }
 .halos-loading .unity-progress-bar__progress { height: 3px; min-height: 3px; background-color: var(--halos-blue); border-width: 0; border-radius: 0; }

@@ -93,11 +93,11 @@ namespace Unity.MP_FPS
                 ? EntityManager.GetComponentObject<RaidInventoryState>(connection).Graph : null;
         }
 
-        private bool TryRechargeHalo(Entity player, ref PredictedPlayerGhost state)
+        private bool TryRechargeHalo(Entity player, ref PredictedPlayerGhost state, WeaponData weapon)
         {
             if (!DollSingerWeapons.IsHalo(state.EquippedWeaponID)) return false;
             if (EntityManager.HasComponent<DollSingerEnemyBrain>(player))
-                return HaloEnergyInventory.RechargeFirst(ref state, EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory);
+                return HaloEnergyInventory.RechargeFirst(ref state, EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory, weapon);
             if (!ghostOwnerLookup.HasComponent(player) || !SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
             int owner = ghostOwnerLookup[player].NetworkId;
             if (owner <= 0 || owner >= clients.Length) return false;
@@ -109,7 +109,7 @@ namespace Unity.MP_FPS
             var session = EntityManager.GetComponentData<RaidSession>(connection);
             var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
             if (session.Phase != RaidPhase.Active || inventory.RaidId != session.RaidId || inventory.ActionPending ||
-                !HaloEnergyInventory.RechargeFirst(ref state, inventory.Graph)) return false;
+                !HaloEnergyInventory.RechargeFirst(ref state, inventory.Graph, weapon)) return false;
             RaidInventoryState.UpdateTotals(inventory.Graph, ref session);
             inventory.LastSentVersion = -1;
             EntityManager.SetComponentData(connection, session);
@@ -325,14 +325,9 @@ namespace Unity.MP_FPS
 
                 if (predictedPlayer.ValueRO.ControllerState.IsReloadingState)
                 {
-                    predictedPlayer.ValueRW.ReloadTimer -= deltaTime;
-                    if (predictedPlayer.ValueRO.ReloadTimer <= 0f)
-                    {
-                        var weaponData =
-                            WeaponManager.Instance.WeaponRegistry.GetWeaponData(
-                                predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
-                        DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
-                    }
+                    var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(
+                        predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
+                    HaloReload.Tick(ref predictedPlayer.ValueRW, weaponData, deltaTime);
                 }
             }
 
@@ -390,7 +385,7 @@ namespace Unity.MP_FPS
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                         bool halo = DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID);
-                        if (halo && wantsToReload && !input.HaloDefense && TryRechargeHalo(entity, ref predictedPlayer.ValueRW))
+                        if (halo && wantsToReload && TryRechargeHalo(entity, ref predictedPlayer.ValueRW, weaponData))
                         {
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                             HaloEnergyRules.RefreshAmmo(ref predictedPlayer.ValueRW, weaponData);
@@ -414,6 +409,7 @@ namespace Unity.MP_FPS
                             if (sentryShot) predictedPlayer.ValueRW.WeaponCooldown = 0;
                             HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
+                            if (sentryShot) predictedPlayer.ValueRW.LastSentryShotTick = serverTick;
 
                             bool aimed = sentryShot || !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
                             if (weaponData.Type == WeaponType.Hitscan)

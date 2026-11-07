@@ -1,5 +1,6 @@
 .raid-ui { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: #ECECE6; -unity-font-definition: url("../../UI Toolkit/Fonts/Inter-Regular.ttf"); }
 .raid-ui Label { color: #ECECE6; -unity-text-align: middle-left; white-space: normal; }
+.raid-ui .raid-self-aid-hint { position: absolute; left: 16px; top: 78px; max-width: 70%; margin: 0; padding: 6px 10px; font-size: 14px; color: #ffb3ba; background-color: rgba(59, 18, 25, 0.92); display: none; }
 .raid-grenade { font-size: 13px; color: rgb(117, 224, 255); margin-top: 2px; white-space: normal; }
 .raid-status { position: absolute; left: 3%; bottom: 4%; padding: 18px 22px; background-color: rgba(7, 8, 10, 0.78); border-left-width: 3px; border-left-color: #FFE11A; border-radius: 0; }
 .raid-caption { font-size: 10px; letter-spacing: 3px; margin-bottom: 14px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
@@ -105,4 +106,4 @@
 /* Oxygen and nutrition are now consolidated in the transparent vital monitor. */
 #raidOxygenPanel, #raidOxygenWarning { display: none; }
 
-.raid-ui .raid-telemetry { position: absolute; left: 16px; top: 16px; margin: 0; padding: 4px 8px; font-size: 12px; color: #edeef0; background-color: rgba(24, 25, 27, 0.72); white-space: nowrap; display: none; }
+.raid-ui .raid-telemetry { position: absolute; left: 16px; top: 16px; margin: 0; padding: 4px 8px; font-size: 12px; -unity-font-definition: url("../../Localization/Fonts/NotoSansCJKsc-Regular.otf"); color: #edeef0; background-color: rgba(24, 25, 27, 0.72); white-space: normal; display: none; }

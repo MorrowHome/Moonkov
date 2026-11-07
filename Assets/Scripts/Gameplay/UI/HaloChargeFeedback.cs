@@ -47,7 +47,7 @@ namespace Unity.MP_FPS
         {
             Context(player);
             bool emptyFire = !player.HaloEnergyInitialized && input.Shoot && input.Aim && player.CurrentAmmo <= 0;
-            if (!input.HaloDefense && (input.Reload || emptyFire && !m_EmptyFireHeld) && !player.ControllerState.IsReloadingState &&
+            if ((input.Reload || emptyFire && !m_EmptyFireHeld) && !player.ControllerState.IsReloadingState &&
                 player.CurrentHealth > 0 && player.WeaponEquipRemaining <= 0 && player.InventoryWeapons && DollSingerWeapons.IsHalo(player.EquippedWeaponID) &&
                 now - m_AttemptAt >= .35f)
             { m_AttemptAt = now; m_ReadyUntil = 0; }
@@ -66,6 +66,12 @@ namespace Unity.MP_FPS
                 m_HasRechargeSequence = true; m_RechargeSequence = player.HaloRechargeSequence;
                 int current = Mathf.FloorToInt(HaloEnergyRules.Energy(player));
                 int maximum = Mathf.RoundToInt(HaloEnergyRules.Maximum(player));
+                if (player.ControllerState.IsReloadingState && player.HaloRechargeEnergy > 0)
+                {
+                    m_AttemptAt = float.NegativeInfinity;
+                    return new HaloChargeStatus(HaloChargeNotice.Charging, Mathf.Min(maximum, current + Mathf.RoundToInt(player.HaloRechargeEnergy)), maximum,
+                        Mathf.Max(0, player.ReloadTimer), HaloReload.Progress(player, weapon));
+                }
                 if (now < m_ReadyUntil) return new HaloChargeStatus(HaloChargeNotice.Ready, current, maximum);
                 if (now - m_AttemptAt >= 2.5f) return default;
                 if (current >= maximum) return new HaloChargeStatus(HaloChargeNotice.Full, current, maximum);

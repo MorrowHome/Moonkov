@@ -35,7 +35,8 @@ public static class MoonkovRaidAudioSetup
         foreach (string name in new[] { "Aim", "Light", "DryFire", "ReloadReady", "Medical", "Pickup", "OxygenRefill" })
             typeof(MoonkovAudioLibrary).GetField(name).SetValue(lib,
                 Bank(name, name, 1, name == "Aim" ? -23 : -17, SoundDef.MixRole.Interaction, 0, 3, .12f));
-        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -22, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
         lib.Heartbeat = Bank("Heartbeat", "Heartbeat", 1, -24, SoundDef.MixRole.Suit, 0, 1, 1);
         lib.SuitWarning = Bank("SuitWarning", "SuitWarning", 1, -18, SoundDef.MixRole.Suit, 0, 1, 3);
         lib.ExtractStart = Bank("ExtractStart", "ExtractStart", 1, -18, SoundDef.MixRole.Suit, 0, 1, .5f);
@@ -54,7 +55,31 @@ public static class MoonkovRaidAudioSetup
         AssetDatabase.Refresh();
         MoonkovAudioDetailSetup.Install();
         MoonkovAlienAudioSetup.Install();
+        InstallBreathing();
         Debug.Log("Raid audio installed: recorded contact/vocal banks, suit/detail cues and pooled mix policies.");
+    }
+    [MenuItem("Moonkov/Audio/Install stamina breathing")]
+    public static void InstallBreathing()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Use Edit mode");
+        const string clipPath = Root + "Clips/Raid/SuitBreathEffort.wav";
+        var importer = AssetImporter.GetAtPath(clipPath) as AudioImporter;
+        if (!importer) throw new InvalidOperationException("Build the effort breath first");
+        var settings = importer.defaultSampleSettings;
+        settings.loadType = AudioClipLoadType.DecompressOnLoad;
+        settings.compressionFormat = AudioCompressionFormat.PCM;
+        settings.preloadAudioData = true;
+        settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
+        settings.sampleRateOverride = 48000;
+        importer.defaultSampleSettings = settings; importer.forceToMono = true;
+        var serialized = new SerializedObject(importer);
+        // Match the existing calm breath's imported peak so effort cannot become quieter.
+        serialized.FindProperty("m_Normalize").boolValue = true;
+        serialized.ApplyModifiedPropertiesWithoutUndo(); importer.SaveAndReimport();
+        var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
+        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
+        EditorUtility.SetDirty(lib); AssetDatabase.SaveAssetIfDirty(lib);
     }
     private static SoundDef Bank(string name, string prefix, int count, float db, SoundDef.MixRole role,
         float range, int voices, float interval)

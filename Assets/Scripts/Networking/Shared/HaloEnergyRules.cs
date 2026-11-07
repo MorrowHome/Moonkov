@@ -36,7 +36,16 @@ namespace Unity.MP_FPS
                 state.HaloEnergyInitialized = true;
             }
             state.HaloEnergy = Energy(state);
-            if (!state.HaloEquipped || !EnergyShieldRules.Alive(state)) Release(ref state);
+            if (!state.HaloEquipped || !EnergyShieldRules.Alive(state))
+            {
+                Release(ref state);
+                if (state.HaloRechargeEnergy > 0)
+                {
+                    state.HaloRechargeEnergy = state.ReloadTimer = state.ReloadDuration = 0;
+                    state.ReloadTargetAmmo = 0;
+                    state.ControllerState.IsReloadingState = false;
+                }
+            }
         }
         private static readonly string[] s_Slots = { "Primary", "Secondary", "Pistol" };
 
@@ -54,8 +63,9 @@ namespace Unity.MP_FPS
 
         public static bool CanDefend(in PredictedPlayerGhost state) => state.HaloEquipped &&
             EnergyShieldRules.Alive(state) && (!state.ClashEnabled || state.ClashCanAct) &&
-            !GrenadeHandling.Occupied(state) && !state.ConsumingSupply && state.HandAction == 0 && state.MeleePhase == 0 &&
-            !state.ControllerState.IsReloadingState && state.WeaponEquipRemaining <= 0 && !state.ClashDarkSight && !HaloTransferRules.Occupied(state);
+            !GrenadeHandling.Occupied(state) && !state.ConsumingSupply &&
+            (state.HandAction == 0 || state.HandAction == (byte)Unity.MP_FPS.DollSinger.HandAction.Search) && state.MeleePhase == 0 &&
+            (!state.ControllerState.IsReloadingState || state.HaloRechargeEnergy > 0) && state.WeaponEquipRemaining <= 0 && !state.ClashDarkSight && !HaloTransferRules.Occupied(state);
 
         public static void Release(ref PredictedPlayerGhost state)
         { state.HaloDefending = false; state.HaloDefenseHeld = false; }
@@ -68,8 +78,7 @@ namespace Unity.MP_FPS
             state.HaloDefending = state.HaloDefenseHeld && !state.HaloDefenseBroken && Energy(state) > 0;
             if (state.HaloDefending && !wasDefending) state.ShieldRestoreSequence++;
             if (!state.HaloDefenseHeld) return;
-            state.HaloRecoveryDelay = RecoveryDelay;
-            state.HaloRegenerating = false;
+            // Holding the barrier is free. Only an actual energy spend restarts recovery.
             HaloModuleFire.Reset(ref state);
             state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
         }
@@ -108,7 +117,8 @@ namespace Unity.MP_FPS
             { Release(ref state); return; }
             if (!float.IsFinite(dt) || dt <= 0) return;
             state.HaloEnergy = Energy(state);
-            if (state.HaloDefenseHeld || HaloTransferRules.Occupied(state)) { state.HaloRecoveryDelay = RecoveryDelay; return; }
+            if (HaloTransferRules.Occupied(state)) { state.HaloRecoveryDelay = RecoveryDelay; return; }
+            if (state.HaloRechargeEnergy > 0) return;
             float delay = float.IsFinite(state.HaloRecoveryDelay) ? Mathf.Max(0, state.HaloRecoveryDelay) : RecoveryDelay;
             state.HaloRecoveryDelay = Mathf.Max(0, delay - dt);
             float active = Mathf.Max(0, dt - delay);
@@ -123,13 +133,14 @@ namespace Unity.MP_FPS
     {
         public static bool CanRecharge(in PredictedPlayerGhost state, InventoryGraph graph, InventoryItem cell) =>
             graph != null && HaloEnergyRules.HasHalo(graph) && state.HaloEquipped && EnergyShieldRules.Alive(state) &&
-            (!state.ClashEnabled || state.ClashCanAct) && !state.HaloDefenseHeld && !RaidHealth.HandsBusy(state) &&
+            (!state.ClashEnabled || state.ClashCanAct) && !GrenadeHandling.Occupied(state) && !HaloTransferRules.Occupied(state) &&
+            !state.ControllerState.IsReloadingState && state.HaloRechargeEnergy <= 0 && state.WeaponEquipRemaining <= 0 &&
             !state.ConsumingSupply && state.HandAction == 0 && state.MeleePhase == 0 &&
             HaloEnergyRules.Energy(state) <= HaloEnergyRules.Maximum(state) - 1 && cell != null && BatteryEnergy.IsCell(cell) &&
             graph.Carried(cell) && (cell.Parent == InventoryCatalog.Pockets || cell.Parent == graph.Equipped("ChestRig")?.Id) &&
             BatteryEnergy.Stored(cell) > 0;
 
-        public static InventoryError Recharge(ref PredictedPlayerGhost state, InventoryGraph graph, string cellId, int expectedVersion)
+        public static InventoryError Recharge(ref PredictedPlayerGhost state, InventoryGraph graph, string cellId, int expectedVersion, WeaponData weapon = null)
         {
             if (graph == null) return InventoryError.Invalid;
             if (graph.Version != expectedVersion) return InventoryError.Stale;
@@ -141,18 +152,17 @@ namespace Unity.MP_FPS
             if (transferred <= 0) return InventoryError.Invalid;
             BatteryEnergy.Spend(cell, transferred);
             if (cell.Quantity == 0) graph.Items.Remove(cell);
-            state.HaloEnergy = Mathf.Min(HaloEnergyRules.Maximum(state), HaloEnergyRules.Energy(state) + transferred);
-            state.HaloRechargeSequence++;
+            HaloReload.BeginEnergyCharge(ref state, weapon, transferred);
             graph.Version++;
             return InventoryError.None;
         }
 
-        public static bool RechargeFirst(ref PredictedPlayerGhost state, InventoryGraph graph)
+        public static bool RechargeFirst(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponData weapon = null)
         {
             if (graph == null) return false;
             foreach (var cell in graph.Items)
                 if (CanRecharge(state, graph, cell))
-                    return Recharge(ref state, graph, cell.Id, graph.Version) == InventoryError.None;
+                    return Recharge(ref state, graph, cell.Id, graph.Version, weapon) == InventoryError.None;
             return false;
         }
     }

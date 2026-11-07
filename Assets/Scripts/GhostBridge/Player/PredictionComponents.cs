@@ -60,10 +60,12 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public int ClashTeam;
     [GhostField] public float ClashMaxHealthFraction;
     [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
+    [GhostField] public bool TacticalBleeding;
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
     [GhostField(Quantization = 100)] public float CarriedWeight;
     [GhostField] public bool ConsumingSupply;
+    [GhostField] public bool TimedActionActive;
     // Presentation only. Inventory and tactical systems retain all use/consumption authority.
     [GhostField] public byte HandAction;
     [GhostField] public uint HandActionSequence;
@@ -73,6 +75,9 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool HeadDomeEquipped;
     [GhostField] public bool HaloEquipped, HaloEnergyInitialized, HaloDefending, HaloDefenseHeld, HaloDefenseBroken, HaloRegenerating;
     [GhostField(Quantization = 100)] public float HaloEnergy, HaloCapacity, HaloRecoveryDelay;
+    [GhostField(Quantization = 100)] public float HaloRechargeEnergy;
+    [GhostField(Quantization = 100)] public float HaloLightGlare;
+    [GhostField(Quantization = 100)] public float3 HaloGlareSource;
     [GhostField] public uint HaloRechargeSequence;
     [GhostField] public HaloTransferPhase HaloTransferPhase;
     [GhostField] public HaloDeploymentMode HaloDeploymentMode;
@@ -175,6 +180,8 @@ public struct PredictedPlayerGhost : IComponentData
     // Tissue impact presentation; physiological/status ticks must not retrigger impact audio.
     [GhostField] public uint LastImpactTick;
     [GhostField] public uint LastShotTick;
+    // Server action guard. Autonomous sentry fire does not occupy the searching player's hands.
+    public uint LastSentryShotTick;
     [GhostField] public uint LastJumpTick;
     [GhostField] public uint LastLandTick;
     [GhostField] public uint LastReloadTick;

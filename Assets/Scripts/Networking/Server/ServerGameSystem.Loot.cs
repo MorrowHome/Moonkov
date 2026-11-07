@@ -185,7 +185,7 @@ namespace Unity.MP_FPS
                         bool eligible=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && session.Phase==RaidPhase.Active &&
                             !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) && (r.LootId==-1 ||
                             !caches.IsEmptyDrop(r.LootId) && CanAccessLoot(ref state,connection,r.LootId,session));
-                        bool weaponBusy=eligible && r.LootId>=0 && RaidHealth.HandsBusy(SystemAPI.GetComponent<PredictedPlayerGhost>(
+                        bool weaponBusy=eligible && r.LootId>=0 && RaidHealth.SearchHandsBusy(SystemAPI.GetComponent<PredictedPlayerGhost>(
                             SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity));
                         bool accepted=eligible && !weaponBusy;
                         if(accepted)

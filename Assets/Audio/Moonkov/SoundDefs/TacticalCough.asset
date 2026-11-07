@@ -15,9 +15,9 @@ MonoBehaviour:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
   Role: 6
-  Priority: 120
+  Priority: 72
   MaxVoices: 4
-  MinimumInterval: 0.035
+  MinimumInterval: 0
   Occlusion: 1
   MixerGroup: 1
   BasePitchInCents: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
   PlaybackType: 1
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 8cb681d9951d944f498f3740dea76862, type: 3}
+  - {fileID: 8300000, guid: 776360ab615524deab07c939179db697, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -38,19 +38,19 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -19
-    VolumeMax: -17
+    VolumeMin: -12
+    VolumeMax: -11
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:
     VolumeDistMin: 1.5
-    VolumeDistMax: 18
+    VolumeDistMax: 25
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
     LPFRollOffCurveType: 0
     LPF_MinCutoff: 1500
-    LPF_MaxDistance: 18
+    LPF_MaxDistance: 25
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0

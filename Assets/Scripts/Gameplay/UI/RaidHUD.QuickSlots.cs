@@ -61,6 +61,9 @@ namespace Unity.MP_FPS
     {
         private QuickSlotBindings m_QuickBindings;
         private QuickSlotView m_QuickView;
+        private Label m_SelfAidHint;
+        private string m_SelfAidKey;
+        private float m_SelfAidScale = -1;
         private bool m_QuickWasTool, m_QuickActive;
         private string m_QuickStatus;
         private float m_QuickStatusUntil;
@@ -113,6 +116,8 @@ namespace Unity.MP_FPS
 
         private void InitializeQuickSlots()
         {
+            m_SelfAidHint = m_Root.Q<Label>("raidSelfAidHint");
+            m_SelfAidKey = null; m_SelfAidScale = -1;
             m_QuickBindings = new QuickSlotBindings(new QuickSlotPreferenceStore());
             m_QuickView = new QuickSlotView(m_Root, slot =>
             {
@@ -267,6 +272,7 @@ namespace Unity.MP_FPS
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
             { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
+            PresentSelfAidHint(owner, m_QuickActive && !menu && !DarkSightRequested && !QuickManualBusy);
             bool canReveal = m_QuickActive && !menu && !DarkSightRequested && Application.isFocused &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
             if (!canReveal) m_QuickView.Hide();
@@ -288,6 +294,26 @@ namespace Unity.MP_FPS
             if (status == null && !m_InventoryVisible) status = QuickSprintCaption(owner);
             m_QuickView.Element.EnableInClassList("quick-slots-exhausted", m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
             m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested, m_InventoryVisible, status);
+        }
+        private void PresentSelfAidHint(in TacticalItemOwnerRpc owner, bool visible)
+        {
+            if (m_SelfAidHint == null) return;
+            visible &= owner.BleedSeconds > 0;
+            m_SelfAidHint.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible) return;
+            string key = m_InteractionBindings == null ? "F" : m_InteractionBindings.Label(m_InteractionBindings.Loot);
+            if (m_SelfAidKey != key)
+            {
+                m_SelfAidKey = key;
+                MoonkovLocalization.Set(m_SelfAidHint, "Hold {0} to stop bleeding", key);
+            }
+            float scale = Mathf.Max(1, m_Root.resolvedStyle.width / Mathf.Max(1, Screen.width));
+            if (Mathf.Approximately(scale, m_SelfAidScale)) return;
+            m_SelfAidScale = scale;
+            m_SelfAidHint.style.fontSize = 14 * scale;
+            m_SelfAidHint.style.left = 16 * scale; m_SelfAidHint.style.top = 78 * scale;
+            m_SelfAidHint.style.paddingLeft = m_SelfAidHint.style.paddingRight = 10 * scale;
+            m_SelfAidHint.style.paddingTop = m_SelfAidHint.style.paddingBottom = 6 * scale;
         }
         private static string QuickSprintCaption(in TacticalItemOwnerRpc owner)
         {
@@ -331,7 +357,7 @@ namespace Unity.MP_FPS
         }
         private static string QuickFeedback(TacticalItemFeedback feedback) => feedback switch
         {
-            TacticalItemFeedback.Started => "Item action started. Keep still; X cancels.",
+            TacticalItemFeedback.Started => "Item action started. Movement slowed; X cancels.",
             TacticalItemFeedback.Completed => "Item action completed.",
             TacticalItemFeedback.Cancelled => "Cancellation processed. Check inventory.",
             TacticalItemFeedback.Interrupted => "Item action interrupted. Nothing consumed.",
@@ -351,6 +377,8 @@ namespace Unity.MP_FPS
             m_Root.UnregisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);
             m_InventoryView.QuickSlotDrop = null; m_InventoryView.QuickSlotDragPreview = null;
             m_QuickView?.Dispose(); m_QuickView = null; m_QuickBindings = null; m_QuickWasTool = false;
+            if (m_SelfAidHint != null) m_SelfAidHint.style.display = DisplayStyle.None;
+            m_SelfAidHint = null;
         }
     }
 }

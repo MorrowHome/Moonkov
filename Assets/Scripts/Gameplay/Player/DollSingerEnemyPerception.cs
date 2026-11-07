@@ -40,7 +40,7 @@ namespace Unity.MP_FPS
                 float distance = offset.magnitude;
                 float angle = Vector3.Angle(Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward, offset);
                 float cone = now - brain.LastDamage < 2 ? 95 : m_Tuning.HalfViewAngle;
-                if (distance > range * light || angle > cone) continue;
+                if (distance > range * light * HaloLightGlareRules.SightScale(brain.LightGlare) || angle > cone) continue;
                 int exposed = 0;
                 if (candidate.Alien)
                 {
@@ -67,6 +67,7 @@ namespace Unity.MP_FPS
                 float clarity = Mathf.Lerp(1.5f, .45f, distance / Mathf.Max(1, range * light));
                 clarity *= exposed / 3f * Mathf.Lerp(1, .65f, angle / Mathf.Max(1, cone));
                 clarity *= contact.Velocity.magnitude > 2 ? 1.25f : 1;
+                clarity *= HaloLightGlareRules.SightScale(brain.LightGlare);
                 contact.Suspicion = Mathf.Clamp01(contact.Suspicion + observationStep *
                     (clarity / Mathf.Max(.1f, m_Tuning.RecognitionSeconds) + .28f));
                 contact.Position = candidate.Position;

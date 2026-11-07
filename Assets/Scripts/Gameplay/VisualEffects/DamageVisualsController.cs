@@ -21,6 +21,11 @@ namespace Unity.MP_FPS
         private FullScreenPassWrapper m_InjuryPass,m_MucusPass;
         private bool m_VeinsRetained;
         private float m_MucusRemaining,m_MucusElapsed;
+        private Material m_GlareMaterial;
+        private FullScreenPassWrapper m_GlarePass;
+        private float m_GlareStrength;
+        private Vector2 m_GlareViewport=new Vector2(.5f,.5f);
+        private static readonly int Glare=Shader.PropertyToID("_Glare");
         private static readonly int Vitals=Shader.PropertyToID("_VitalState"),Wounds=Shader.PropertyToID("_WoundState"),
             FeedbackTime=Shader.PropertyToID("_FeedbackTime"),Veins=Shader.PropertyToID("_VeinMask"),Intensity=Shader.PropertyToID("_Intensity");
 
@@ -35,11 +40,11 @@ namespace Unity.MP_FPS
         {
             var ghost=m_Player?m_Player.GhostGameObject:null;
             if(!ghost || ghost.Role!=MultiplayerRole.ClientOwned || !ghost.GhostEntityExists() || !ghost.GhostHasComponent<PredictedPlayerGhost>())
-            {m_Injury.Reset();m_MucusRemaining=0;return;}
+            {m_Injury.Reset();m_MucusRemaining=m_GlareStrength=0;return;}
             var state=ghost.ReadGhostComponentData<PredictedPlayerGhost>();
             m_Injury.Present(state,Time.unscaledDeltaTime,fadeSpeed);
             if(state.CurrentHealth>0 || m_Injury.Active)EnsureInjuryMaterial();
-            UpdateInjuryMaterial();UpdateMucus(state);
+            UpdateInjuryMaterial();UpdateMucus(state);UpdateGlare(state);
         }
         private void EnsureInjuryMaterial()
         {
@@ -84,6 +89,25 @@ namespace Unity.MP_FPS
             if(camera.TryGetComponent<UniversalAdditionalCameraData>(out var data) && data.renderType==CameraRenderType.Overlay)return;
             if(effectStrength>0 && m_Injury.Active)m_InjuryPass?.EnqueuePass(camera);
             if(m_MucusRemaining>0)m_MucusPass?.EnqueuePass(camera);
+            if(m_GlareStrength>.001f)m_GlarePass?.EnqueuePass(camera);
+        }
+
+        private void UpdateGlare(in PredictedPlayerGhost state)
+        {
+            var camera=m_Player.GetPlayerCamera();
+            if(!camera){m_GlareStrength=0;return;}
+            Vector3 viewport=camera.WorldToViewportPoint(state.HaloGlareSource);
+            float target=state.CurrentHealth>0 && viewport.z>0 ? Mathf.Clamp01(state.HaloLightGlare)*effectStrength : 0;
+            if(target>0)m_GlareViewport=new Vector2(Mathf.Clamp01(viewport.x),Mathf.Clamp01(viewport.y));
+            m_GlareStrength=Mathf.MoveTowards(m_GlareStrength,target,Time.unscaledDeltaTime*(target>m_GlareStrength?4:2));
+            if(m_GlareStrength<=.001f)return;
+            if(!m_GlareMaterial)
+            {
+                var shader=Resources.Load<Shader>("Moonkov/HaloLightGlareScreen");if(!shader)return;
+                m_GlareMaterial=new Material(shader){name="Local camera / aimed light glare",hideFlags=HideFlags.HideAndDontSave};
+                m_GlarePass=new FullScreenPassWrapper("_HaloLightGlare",m_GlareMaterial,0,false,false,(RenderPassEvent)603);
+            }
+            m_GlareMaterial.SetVector(Glare,new Vector4(m_GlareViewport.x,m_GlareViewport.y,camera.aspect,m_GlareStrength));
         }
 
         // Preserve the existing trigger API for explicit presentation callers.
@@ -100,6 +124,7 @@ namespace Unity.MP_FPS
         {
             RenderPipelineManager.beginCameraRendering-=InjectRenderPass;
             m_Injury.Reset();m_MucusRemaining=m_MucusElapsed=0;
+            m_GlareStrength=0;DestroyPrivate(m_GlareMaterial);m_GlareMaterial=null;m_GlarePass=null;
             DestroyPrivate(m_InjuryMaterial);DestroyPrivate(m_MucusMaterial);
             m_InjuryMaterial=m_MucusMaterial=null;m_InjuryPass=m_MucusPass=null;
             if(m_VeinsRetained){InjuryVeinMask.Release();m_VeinsRetained=false;}

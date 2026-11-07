@@ -1,0 +1,23 @@
+{
+  "author": "OwlStorm / Ashe Kirk / Owlish Media",
+  "title": "Cough Female",
+  "license": "CC0-1.0",
+  "source_page": "https://freesound.org/people/OwlStorm/sounds/151213/",
+  "download_url": "https://cdn.freesound.org/previews/151/151213_140737-hq.mp3",
+  "download_date": "2026-11-08",
+  "processing": "Public high-quality MP3 preview; full performance, original pitch/speed; HP90/LP10000; DC removal; 8 ms fades; peak 0.72; 48 kHz mono PCM16.",
+  "sources": [
+    {
+      "asset": "SourceData/Audio/Cough/OwlStorm/CoughFemale.mp3",
+      "sha256": "8e019dfb7af6e4441c8304c0e705ef61e6610a8bcaf50d5230e2404c2adc6703"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Cough/CoughFemale.wav",
+      "source": "SourceData/Audio/Cough/OwlStorm/CoughFemale.mp3",
+      "seconds": 1.1147708333333333,
+      "sha256": "ea0a8daf492c8a79939bd760bebe4872159ad298e0e83e9236ade5ecc889b3a1"
+    }
+  ]
+}

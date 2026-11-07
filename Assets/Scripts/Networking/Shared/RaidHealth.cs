@@ -245,7 +245,7 @@ namespace Unity.MP_FPS
             FirstPersonController.ControllerConsts constants)
             {
             constants=TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
-            if(state.ConsumingSupply)
+            if(state.ConsumingSupply || state.TimedActionActive || state.ControllerState.IsReloadingState)
             {
                 constants.Walk.Speed=Mathf.Min(constants.Walk.Speed,RaidNutrition.SupplyUseMaxSpeed);
                 constants.Sprint.Speed=Mathf.Min(constants.Sprint.Speed,RaidNutrition.SupplyUseMaxSpeed);
@@ -254,6 +254,9 @@ namespace Unity.MP_FPS
         }
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
         public static bool HandsBusy(in PredictedPlayerGhost state) => GrenadeHandling.Occupied(state) || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
+        public static bool SearchHandsBusy(in PredictedPlayerGhost state) => GrenadeHandling.Occupied(state) ||
+            state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0 ||
+            HaloTransferRules.Occupied(state) && !HaloSupportRules.Anchored(state);
         // Self-treatment can continue through physiological damage, but not a new
         // external injury or a hit fully absorbed by the shield.
         public static bool SelfTreatmentDamageUnchanged(in PredictedPlayerGhost state,uint damageSequence,uint shieldSequence) =>
@@ -289,7 +292,7 @@ namespace Unity.MP_FPS
             if(state.ClashEnabled && state.ClashDarkSight)
             {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);
                 input.SetFlag(PlayerInput.InputFlag.FireHeld,false);input.SetFlag(PlayerInput.InputFlag.FireSuppressed,true);}
-            if (state.ConsumingSupply || !RaidNutrition.CanSprint(state))
+            if (state.ConsumingSupply || state.TimedActionActive || state.ControllerState.IsReloadingState || !RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;
         }

@@ -5,6 +5,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.MP_FPS;
+using Unity.MP_FPS.DollSinger;
+using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Transforms;
@@ -12,6 +14,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using BodyPart = Unity.MP_FPS.BodyPart;
 
 public static class HaloSupportChecks
@@ -128,6 +131,89 @@ public static class HaloSupportChecks
         Directory.CreateDirectory("LocalData/HaloAbilities"); File.WriteAllText("LocalData/HaloAbilities/support-checks.txt", result); return result;
     }
 
+    private delegate void LootHandler(ref ServerGameSystem system, ref SystemState state, EntityCommandBuffer commands);
+    private delegate void LootRefresh(ref ServerGameSystem system, ref SystemState state, Entity connection, RaidSession session);
+    public static string RunSearch()
+    {
+        if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Use Edit mode.");
+        checks=0;using var f=new Fixture(true);var em=f.Manager;var previous=MoonRaidMap.Active;
+        var origin=new Vector3(20000,0,20000);var actor=f.Spawn(1,origin);
+        var mapObject=new GameObject("Read-only loot map");mapObject.SetActive(false);SceneManager.MoveGameObjectToScene(mapObject,f.Root.scene);mapObject.transform.SetParent(f.Root.transform);
+        var map=mapObject.AddComponent<MoonRaidMap>();
+        typeof(MoonRaidMap).GetField("m_LootPositions",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(map,new[]{origin+Vector3.forward*2});
+        var handle=f.World.GetOrCreateSystem<ServerGameSystem>();
+        var hands=f.World.GetOrCreateSystemManaged<RaidHandActionSystem>();
+        using var connections=em.CreateEntityQuery(typeof(JoinedClient),typeof(RaidSession));var connection=connections.GetSingletonEntity();
+        em.SetComponentData(connection,new RaidSession{RaidId=7,Phase=RaidPhase.Active});
+        var inventory=new RaidInventoryState{Graph=InventoryGraph.Create(false),RaidId=7};em.AddComponentObject(connection,inventory);
+        using var lootQuery=em.CreateEntityQuery(typeof(RaidLootWorld));
+        var caches=em.GetComponentObject<RaidLootContainers>(lootQuery.GetSingletonEntity());caches.Initialize(1,null,map);
+        var process=(LootHandler)typeof(ServerGameSystem).GetMethod("HandleLootRequests",BindingFlags.Instance|BindingFlags.NonPublic).CreateDelegate(typeof(LootHandler));
+        var refresh=(LootRefresh)typeof(ServerGameSystem).GetMethod("RefreshLootAccess",BindingFlags.Instance|BindingFlags.NonPublic).CreateDelegate(typeof(LootRefresh));
+        uint request=0;double now=1;
+        void Open()
+        {
+            f.World.SetTime(new Unity.Core.TimeData(now,.02f));var rpc=em.CreateEntity();em.AddComponentData(rpc,new RaidLootOpenRpc{RaidId=7,RequestId=++request,LootId=0});
+            em.AddComponentData(rpc,new ReceiveRpcCommandRequest{SourceConnection=connection});
+            ref var system=ref f.World.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);ref var state=ref f.World.Unmanaged.ResolveSystemStateRef(handle);
+            using var ecb=new EntityCommandBuffer(Allocator.Temp);process(ref system,ref state,ecb);ecb.Playback(em);hands.Update();
+        }
+        void Refresh(double time)
+        {
+            now=time;f.World.SetTime(new Unity.Core.TimeData(time,.02f));
+            ref var system=ref f.World.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);ref var state=ref f.World.Unmanaged.ResolveSystemStateRef(handle);
+            refresh(ref system,ref state,connection,em.GetComponentData<RaidSession>(connection));hands.Update();
+        }
+        try
+        {
+            typeof(MoonRaidMap).GetProperty("Active").SetValue(null,map);
+            foreach(int mode in new[]{-1,(int)HaloDeploymentMode.Light,(int)HaloDeploymentMode.Shield,(int)HaloDeploymentMode.Sentry})
+            {
+                inventory.CloseLoot();inventory.ClearSearchRecords();var state=f.State(actor);state.HandAction=0;HaloTransferRules.Clear(ref state);HaloEnergyRules.Release(ref state);
+                if(mode<0)HaloEnergyRules.SetDefense(ref state,true);
+                else {state.HaloDeploymentMode=(HaloDeploymentMode)mode;state.HaloTransferPhase=HaloTransferPhase.Sending;state.HaloTransferWeapon=state.EquippedWeaponID;state.HaloTransferPoint=origin+new Vector3(0,1.6f,2);}
+                f.Set(actor,state);Open();
+                Check(inventory.Error==InventoryError.None && inventory.DissectingLootId==0,"Server accepts search with defense/deployed halo: "+mode);
+                state=f.State(actor);Check(state.HandAction==(byte)HandAction.Search && state.TimedActionActive,"Search publishes its real hand action and slowdown: "+mode);
+                if(mode<0)
+                {HaloEnergyRules.SetDefense(ref state,true);f.Set(actor,state);Check(state.HaloDefending,"Holding T remains defensive after search starts");}
+                else
+                {f.Input(actor,default);f.Step(.1f);Check(f.State(actor).HaloTransferPhase==HaloTransferPhase.Sending,"Search cannot recall the deployed halo: "+mode);}
+                if(mode==(int)HaloDeploymentMode.Sentry)
+                {state=f.State(actor);state.LastShotTick=state.LastSentryShotTick=f.Tick;f.Set(actor,state);}
+                double end=inventory.DissectionUntil;Refresh(end-.01);
+                Check(inventory.DissectingLootId==0 && inventory.OpenedLootId<0,"Concurrent search respects its deadline: "+mode);
+                Refresh(end);Check(inventory.OpenedLootId==0 && !inventory.ActionPending,"Concurrent search completes: "+mode);
+                now+=1;
+            }
+            inventory.CloseLoot();inventory.ClearSearchRecords();var busy=f.State(actor);HaloTransferRules.Clear(ref busy);HaloEnergyRules.Release(ref busy);busy.ControllerState.IsReloadingState=true;f.Set(actor,busy);Open();
+            Check(inventory.Error==InventoryError.Inaccessible && inventory.DissectingLootId<0,"Reload still blocks search");
+            busy.ControllerState.IsReloadingState=false;busy.HaloTransferPhase=HaloTransferPhase.Sending;busy.HaloDeploymentMode=HaloDeploymentMode.Transfer;f.Set(actor,busy);Open();
+            Check(inventory.Error==InventoryError.Inaccessible && inventory.DissectingLootId<0,"Held teammate transfer retains its hand restriction");
+            var input=new PlayerInput();input.SetFlag(PlayerInput.InputFlag.FireSuppressed,true);input.SetFlag(PlayerInput.InputFlag.HaloDefense,true);input.SetFlag(PlayerInput.InputFlag.Shoot,true);
+            var sanitized=input.Sanitized();Check(sanitized.HaloDefense && !sanitized.Shoot,"Inventory input suppresses shooting without clearing defense");
+
+            var oldSettings=GameSettings.Instance;var oldHud=typeof(RaidHUD).GetField("s_Active",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
+            var hudObject=new GameObject("Inactive inventory input fixture");hudObject.SetActive(false);SceneManager.MoveGameObjectToScene(hudObject,f.Root.scene);hudObject.transform.SetParent(f.Root.transform);var hud=hudObject.AddComponent<RaidHUD>();
+            void Set(string name,object value)=>typeof(RaidHUD).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(hud,value);
+            try
+            {
+                var settings=(GameSettings)Activator.CreateInstance(typeof(GameSettings),true);typeof(GameSettings).GetProperty("Instance").SetValue(null,settings);
+                typeof(GameSettings).GetField("m_GameState",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(settings,GlobalGameState.InGame);
+                typeof(RaidHUD).GetField("s_Active",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,hud);
+                Set("m_World",f.World);Set("m_PlayerQuery",em.CreateEntityQuery(typeof(PredictedPlayerGhost)));Set("m_Root",new VisualElement());
+                Set("m_Snapshot",new RaidSnapshotV2Rpc{RaidId=7,Phase=RaidPhase.Active});Set("m_InventoryVisible",true);
+                Check(RaidHUD.InventoryDefenseAllowed,"Open loot inventory allows defense input");
+                Set("m_MissionDetailsVisible",true);Check(!RaidHUD.InventoryDefenseAllowed,"Mission details do not leak defense input");Set("m_MissionDetailsVisible",false);
+                Set("m_ClashActionsBlocked",true);Check(!RaidHUD.InventoryDefenseAllowed,"Downed players cannot defend through inventory");Set("m_ClashActionsBlocked",false);
+                Set("m_InventoryVisible",false);Check(!RaidHUD.InventoryDefenseAllowed,"Closed inventory removes the input exception");
+            }
+            finally{typeof(RaidHUD).GetField("s_Active",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,oldHud);typeof(GameSettings).GetProperty("Instance").SetValue(null,oldSettings);}
+        }
+        finally{typeof(MoonRaidMap).GetProperty("Active").SetValue(null,previous);}
+        return $"Halo search: PASS ({checks} server, deployment and inventory input checks).";
+    }
+
     internal sealed class Fixture : IDisposable
     {
         internal readonly World World = new("Halo abilities isolated checks");
@@ -138,11 +224,17 @@ public static class HaloSupportChecks
         private readonly Entity maps;
         private int nextGhost;
         internal uint Tick = 100;
-        internal Fixture()
+        internal Fixture(bool lootSystem = false)
         {
             System = World.CreateSystemManaged<ServerPlayerMovementSystem>();
             scene = EditorSceneManager.NewPreviewScene(); Root = new GameObject("Halo abilities fixture"); SceneManager.MoveGameObjectToScene(Root, scene);
-            maps = Manager.CreateEntity(); Manager.AddBuffer<ClientsMap>(maps).ResizeUninitialized(4);
+            if (lootSystem)
+            {
+                World.GetOrCreateSystem<ServerGameSystem>();
+                using var query = Manager.CreateEntityQuery(typeof(ClientsMap)); maps = query.GetSingletonEntity();
+                Manager.GetBuffer<ClientsMap>(maps).Resize(4, NativeArrayOptions.ClearMemory);
+            }
+            else { maps = Manager.CreateEntity(); Manager.AddBuffer<ClientsMap>(maps).Resize(4, NativeArrayOptions.ClearMemory); }
         }
         internal Entity Spawn(int owner, Vector3 point, float energy = 100)
         {

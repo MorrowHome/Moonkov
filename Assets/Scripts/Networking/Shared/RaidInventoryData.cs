@@ -155,6 +155,25 @@ namespace Unity.MP_FPS
         public int RaidId;
         public int MissionFirstsBefore, MissionFirstsSaved;
         public int LastSentVersion = -1;
+        private string m_SentHeadDomeItem;
+        private int m_SentOxygenPercent = -2;
+        // Item details show whole percentages. The live HUD already reads the
+        // precise Ghost oxygen, so sub-percent changes need no full inventory RPC.
+        public bool ProtectionDisplayChanged
+        {
+            get
+            {
+                var dome = Graph?.Equipped("Helmet");
+                return EnergyShieldEquipment.IsHeadDome(dome?.Code) &&
+                    (dome.Id != m_SentHeadDomeItem || UnityEngine.Mathf.RoundToInt(dome.SuitOxygen) != m_SentOxygenPercent);
+            }
+        }
+        public void RecordProtectionSnapshot()
+        {
+            var dome = Graph?.Equipped("Helmet");
+            m_SentHeadDomeItem = dome?.Id;
+            m_SentOxygenPercent = dome == null ? -2 : UnityEngine.Mathf.RoundToInt(dome.SuitOxygen);
+        }
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int OpenedLootId=-1, LastSentLootVersion=-1;
@@ -238,7 +257,6 @@ namespace Unity.MP_FPS
         {
             if(MedicalItemId==null)return;
             string reason=!accessible ? "治疗中断：玩家死亡、断线或战局已结束。" :
-                !MedicalIsConsumable && Unity.Mathematics.math.distancesq(position,MedicalOrigin)>ItemActionMovementLimit*ItemActionMovementLimit ? "治疗中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=MedicalDamageSequence ||
                     health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
@@ -302,7 +320,7 @@ namespace Unity.MP_FPS
         public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
         public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0,int searchItems=1,InventoryGraph searchCache=null)
         {
-            if(RaidHealth.HandsBusy(health))return false;
+            if(RaidHealth.SearchHandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;
             SearchSecondsPerItem=System.Math.Max(.1f,seconds);SearchItemCount=System.Math.Max(1,searchItems);
             DissectionUntil=now+SearchSecondsPerItem*SearchItemCount;
@@ -320,10 +338,10 @@ namespace Unity.MP_FPS
             bool contentsChanged=caches.RefillStates.TryGetValue(DissectingLootId,out var refill) && refill.RefillCount!=DissectionGeneration;
             string reason=!accessible ? "搜索中断：离开范围、死亡或战局结束。" :
                 contentsChanged ? "搜索中断：容器内容已刷新。" :
-                Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=DissectionDamageSequence || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
-                health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
-                health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
+                health.LastShotTick!=DissectionShotTick && health.LastShotTick!=health.LastSentryShotTick ||
+                    health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
+                health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.SearchHandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
             if(reason==null && now<DissectionUntil)
             {
                 caches.Containers.TryGetValue(DissectingLootId,out var cache);

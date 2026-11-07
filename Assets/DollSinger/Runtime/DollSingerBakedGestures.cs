@@ -175,7 +175,7 @@ namespace Unity.MP_FPS.DollSinger
             Motion motion = library.motions[weapon - 1];
             float reloadLowering = reloading ? Mathf.Sin(Mathf.PI * Mathf.Clamp01(reloadProgress)) : 0;
             sniperReloadOffset = weapon == 4 && reloading
-                ? .10f * Mathf.SmoothStep(0, 1, Mathf.Min(reloadProgress, 1 - reloadProgress) / .12f) : 0;
+                ? .04f * Mathf.SmoothStep(0, 1, Mathf.Min(reloadProgress, 1 - reloadProgress) / .12f) : 0;
             shotAge = ShotSampleTime(shotAge, motion.fireSeconds, releaseSeconds);
             Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
@@ -304,11 +304,11 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 origin = eye.transform.position - eye.transform.up * sniperReloadOffset, forward = eye.transform.forward;
             // Both hands move by one common offset, preserving the authored finger
             // contacts and frame orientation. Keep the target inside BOTH arms' reach.
-            float minimum = eye.nearClipPlane + .06f, maximum = .45f;
+            float minimum = eye.nearClipPlane + .06f, maximum = .32f;
             if (!Reach(leftUpperArm, leftForearm, leftHand) || !Reach(rightUpperArm, rightForearm, rightHand) || minimum > maximum) return;
-            float depth = Mathf.Clamp(Vector3.Dot(center - origin, forward), minimum, maximum);
-            // A frame very near the eye clips sleeves and hands even before zoom.
-            depth = Mathf.Clamp(Mathf.Max(.38f, depth), minimum, maximum);
+            // Hold the frame at the eye instead of pushing it towards full arm
+            // extension. The common reach interval still protects both arms.
+            float depth = Mathf.Clamp(.20f, minimum, maximum);
             Vector3 offset = (origin + forward * depth - center) * Mathf.SmoothStep(0, 1, blend);
             Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset);
             Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset);

@@ -1,0 +1,8 @@
+Long player groans
+Sky Rae, commissioned and published by Galacti-Chron for Star Shift.
+Dying Voices - Female - RPG
+https://opengameart.org/content/dying-voices-female-rpg
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+License verified 2026-11-08. The publisher explicitly permits commercial use and redistribution without attribution.
+Moonkov edits: three complete vocal takes, filtered, slightly slowed with pitch preserved, normalized and faded.
+Source filenames and input/output SHA-256: Assets/Audio/Moonkov/PlayerGroanSources.json.

@@ -16,8 +16,24 @@ public static class MoonkovDistressAudioSetup
         if (create) sound = UnityEngine.Object.Instantiate(lib.PlayerPain);
         else EditorUtility.CopySerialized(lib.PlayerPain, sound);
         sound.name = "PlayerGroan";
-        sound.PitchAndVolumeInfo.VolumeMin = -16; sound.PitchAndVolumeInfo.VolumeMax = -14;
-        sound.Priority = 115; sound.MaxVoices = 4;
+        sound.Clips.Clear();
+        for (int i = 1; i <= 3; i++)
+        {
+            string clipPath = "Assets/Audio/Moonkov/Clips/PlayerGroan/PlayerGroan" + i + ".wav";
+            var importer = AssetImporter.GetAtPath(clipPath) as AudioImporter;
+            if (!importer) throw new InvalidOperationException("Missing " + clipPath);
+            var settings = importer.defaultSampleSettings;
+            settings.loadType = AudioClipLoadType.DecompressOnLoad;
+            settings.compressionFormat = AudioCompressionFormat.PCM; settings.preloadAudioData = true;
+            settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate; settings.sampleRateOverride = 48000;
+            importer.defaultSampleSettings = settings; importer.forceToMono = true; importer.loadInBackground = false;
+            var serialized = new SerializedObject(importer);
+            serialized.FindProperty("m_Normalize").boolValue = false;
+            serialized.ApplyModifiedPropertiesWithoutUndo(); importer.SaveAndReimport();
+            sound.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath));
+        }
+        sound.PitchAndVolumeInfo.VolumeMin = -12; sound.PitchAndVolumeInfo.VolumeMax = -11;
+        sound.Priority = 75; sound.MaxVoices = 4;
         sound.DistanceInfo.VolumeDistMax = sound.DistanceInfo.LPF_MaxDistance = 12;
         if (create) AssetDatabase.CreateAsset(sound, path); else EditorUtility.SetDirty(sound);
         AssetDatabase.SaveAssetIfDirty(sound);

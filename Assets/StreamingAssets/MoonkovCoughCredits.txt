@@ -1,0 +1,7 @@
+Cough Female by OwlStorm / Ashe Kirk / Owlish Media.
+https://freesound.org/people/OwlStorm/sounds/151213/
+License: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/).
+Source: public high-quality MP3 preview. Complete performance, original pitch/speed.
+Edits: HP90/LP10000 filtering, DC removal, 8 ms fades, peak normalization.
+Original: SourceData/Audio/Cough/OwlStorm/CoughFemale.mp3.
+Recipe and hashes: Assets/Audio/Moonkov/CoughSources.json.

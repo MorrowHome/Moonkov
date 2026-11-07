@@ -1,0 +1,46 @@
+{
+  "author": "Cici Fyre / cicifyre",
+  "title": "Female RPG Voice Starter Pack, Type 1 attacks",
+  "license": "CC0-1.0",
+  "source_page": "https://opengameart.org/content/female-rpg-voice-starter-pack",
+  "download_url": "https://opengameart.org/sites/default/files/RPG%20Voice%20Starter%20Pack.zip",
+  "download_date": "2026-11-08",
+  "processing": "Complete attack efforts; original pitch and timing; HP90/LP11000; DC removal; 4 ms fades; peak 0.72; 48 kHz mono PCM16.",
+  "sources": [
+    {
+      "asset": "SourceData/Audio/MeleeVoice/CiciFyre/attack1.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/attack1.wav",
+      "sha256": "38e077d2d80c90145e8bac00570de801c16740bb1491c99de97bfe4383b5f77f"
+    },
+    {
+      "asset": "SourceData/Audio/MeleeVoice/CiciFyre/attack2.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/attack2.wav",
+      "sha256": "69a216663bf891596edc19adf7f9c69fe08610c310a5634123beeeac5f9f24fa"
+    },
+    {
+      "asset": "SourceData/Audio/MeleeVoice/CiciFyre/attack3.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/attack3.wav",
+      "sha256": "4d1056bcebd93b8d7d2b849e94716d9275d4340d930cf7815339758bcca172c0"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/MeleeVoice/MeleeEffort1.wav",
+      "source": "SourceData/Audio/MeleeVoice/CiciFyre/attack1.wav",
+      "seconds": 0.365125,
+      "sha256": "26baf48012286660641d49471ae7565a9bf445ee5d5d0f8197a3256134f69022"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/MeleeVoice/MeleeEffort2.wav",
+      "source": "SourceData/Audio/MeleeVoice/CiciFyre/attack2.wav",
+      "seconds": 0.40647916666666667,
+      "sha256": "980b09b45f0d52cfa51cbd49edae7b7e39602b33c44c96f0dc7df7123f73b27b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/MeleeVoice/MeleeEffort3.wav",
+      "source": "SourceData/Audio/MeleeVoice/CiciFyre/attack3.wav",
+      "seconds": 0.40647916666666667,
+      "sha256": "2fa6fdf7814be279b097020173642af28dac2a5a544e3a5c60a4acc872717202"
+    }
+  ]
+}

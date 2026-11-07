@@ -85,6 +85,8 @@ public static class GestureReadabilityRuntimeChecks
                         Check(view.GestureProjectionActive && halo.AimBlend > .99f, "Gesture did not raise");
                         Check(Vector3.Distance(world.transform.position, view.GestureProjectionCamera.transform.position) < .00001f, "Projection moved eye");
                         Check(Quaternion.Angle(world.transform.rotation, view.GestureProjectionCamera.transform.rotation) < .001f, "Projection changed look");
+                        Check(Mathf.Abs(view.GestureProjectionCamera.fieldOfView - (weapon == 4 ? 70f : 110f)) < .01f,
+                            "Weapon switch did not settle to its gesture lens");
                         Capture("weapon-" + weapon);
                     });
                 }

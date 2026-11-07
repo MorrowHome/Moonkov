@@ -196,7 +196,7 @@ namespace Unity.MP_FPS.Client
                 case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
                 case "helmet": description = "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."; break;
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
-                case "cells": description = "Instantly restores up to 100 halo energy. Keep batteries in pockets or an equipped badge. Unused charge is retained."; break;
+                case "cells": description = "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
