@@ -25,9 +25,8 @@ namespace Unity.MP_FPS.Client
         }
         private const string ArtPath = "Moonkov/UI/Halos/MainRoom/";
         private static readonly string[] PageNames = { "SHIP", "STASH", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
-        private readonly VisualElement m_Viewport, m_World;
-        private readonly Image m_Tablet, m_LeftArrow, m_RightArrow;
-        private readonly Button m_Left, m_Right;
+        private readonly VisualElement m_Viewport, m_World, m_Left, m_Right;
+        private readonly Image m_Tablet;
         private readonly List<Monitor> m_Monitors = new List<Monitor>();
         private readonly Image[] m_Lights = new Image[3];
         private readonly System.Random m_Random = new System.Random();
@@ -51,13 +50,9 @@ namespace Unity.MP_FPS.Client
             Root = tree.Q("halosOriginalHome"); Root.RemoveFromHierarchy(); parent.Insert(1, Root);
             m_Viewport = Root.Q("halosRoomViewport"); m_World = Root.Q("halosRoomWorld");
             m_Tablet = Root.Q<Image>("halosRoomTablet"); m_Tablet.image = Load("Tablet"); m_Tablet.scaleMode = ScaleMode.StretchToFill;
-            m_LeftArrow = Root.Q<Image>("halosRoomArrowLeft"); m_RightArrow = Root.Q<Image>("halosRoomArrowRight");
-            m_LeftArrow.image = m_RightArrow.image = Load("Arrow");
-            m_LeftArrow.scaleMode = m_RightArrow.scaleMode = ScaleMode.StretchToFill;
-            m_Left = Root.Q<Button>("halosRoomLeft"); m_Right = Root.Q<Button>("halosRoomRight");
-            m_Left.clicked += Left; m_Right.clicked += Right;
-            m_Left.RegisterCallback<PointerEnterEvent>(_ => m_Edge = -1);
-            m_Right.RegisterCallback<PointerEnterEvent>(_ => m_Edge = 1);
+            m_Left = Root.Q("halosRoomLeft"); m_Right = Root.Q("halosRoomRight");
+            m_Left.RegisterCallback<PointerEnterEvent>(_ => EnterEdge(-1));
+            m_Right.RegisterCallback<PointerEnterEvent>(_ => EnterEdge(1));
             m_Left.RegisterCallback<PointerLeaveEvent>(_ => m_Edge = 0);
             m_Right.RegisterCallback<PointerLeaveEvent>(_ => m_Edge = 0);
             Sprite(m_World, "Moon", new Rect(2010, 0, 1536, 1536));
@@ -130,6 +125,11 @@ namespace Unity.MP_FPS.Client
         }
         private void Left() => MoveRoom(-1);
         private void Right() => MoveRoom(1);
+        private void EnterEdge(int direction)
+        {
+            m_Edge = direction;
+            MoveRoom(direction);
+        }
         private void KeyDown(KeyDownEvent evt)
         {
             if (evt.keyCode == KeyCode.LeftArrow) { Left(); evt.StopPropagation(); }
@@ -194,9 +194,6 @@ namespace Unity.MP_FPS.Client
             float y = m_TabletState >= 80 ? 0 : m_TabletState >= 40 ? 540 * (1 - m_TabletState / 80) :
                 m_TabletState >= 15 ? 270 : 270 + (15 - m_TabletState) * 85;
             m_Tablet.style.scale = new Scale(new Vector3(scale, scale, 1)); m_Tablet.style.translate = new Translate(0, y);
-            float arrowAlpha = Mathf.Clamp01((100 - m_TabletState - m_Cooldown * 2) / 200);
-            m_LeftArrow.style.opacity = Room > 0 ? arrowAlpha : 0;
-            m_RightArrow.style.opacity = Room < 2 ? arrowAlpha : 0;
             UpdateInput();
         }
         private void UpdateInput()

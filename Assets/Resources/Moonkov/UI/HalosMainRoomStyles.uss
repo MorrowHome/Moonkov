@@ -29,11 +29,10 @@
 }
 .halos-room-world { position: absolute; left: 0; top: 0; width: 5760px; height: 1080px; }
 .halos-room-sprite { position: absolute; }
-.halos-room-tablet, .halos-room-arrow {
+.halos-room-tablet {
     position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
     transform-origin: 50% 50%;
 }
-.halos-room-arrow-left { scale: -1 1; }
 #halosOriginalHome .halos-room-hit {
     position: absolute; padding: 0; margin: 0; border-width: 0; border-radius: 0;
     background-color: transparent; background-image: none; opacity: 1;
@@ -41,5 +40,6 @@
 #halosOriginalHome .halos-room-hit:hover,
 #halosOriginalHome .halos-room-hit:active { background-color: transparent; }
 #halosOriginalHome .halos-room-hit:focus { border-width: 2px; border-color: #dce7f2; }
-.halos-room-left { left: 0; top: 350px; width: 200px; height: 350px; }
-.halos-room-right { left: 1720px; top: 350px; width: 200px; height: 350px; }
+.halos-room-edge { position: absolute; top: 0; bottom: 0; width: 200px; }
+.halos-room-left { left: 0; }
+.halos-room-right { right: 0; }

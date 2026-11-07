@@ -3,10 +3,8 @@
         <ui:VisualElement name="halosRoomViewport" class="halos-room-viewport">
             <ui:VisualElement name="halosRoomWorld" class="halos-room-world" />
             <ui:Image name="halosRoomTablet" class="halos-room-tablet" picking-mode="Ignore" />
-            <ui:Image name="halosRoomArrowLeft" class="halos-room-arrow halos-room-arrow-left" picking-mode="Ignore" />
-            <ui:Image name="halosRoomArrowRight" class="halos-room-arrow" picking-mode="Ignore" />
-            <ui:Button name="halosRoomLeft" class="halos-room-hit halos-room-left" tooltip="←" />
-            <ui:Button name="halosRoomRight" class="halos-room-hit halos-room-right" tooltip="→" />
+            <ui:VisualElement name="halosRoomLeft" class="halos-room-edge halos-room-left" />
+            <ui:VisualElement name="halosRoomRight" class="halos-room-edge halos-room-right" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
