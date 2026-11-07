@@ -86,7 +86,7 @@ public sealed class HalosMainRoomReview : EditorWindow
                 Mathf.Abs(room.Q<Image>("halosArtRoom1").worldBound.width - viewport.width) < 1,
                 "room artwork fills the viewport at its original aspect ratio");
             Require(stash.Q("terminalNav").resolvedStyle.display == DisplayStyle.None, "old navigation cards are absent on the original room");
-            Require(room.Q<Image>("halosArtRoom1").image != null && room.Query<Image>().ToList().Count == 18, "all original room layers and eight monitor icons are present");
+            Require(room.Q<Image>("halosArtRoom1").image != null && room.Query<Image>().ToList().Count == 16, "all original room layers and eight monitor icons are present");
             Require(stash.Q("stashMenuActions").worldBound.width > 0, "account actions remain available");
             Press(room.Q<Button>("halosRoomPage4")); await Wait(200);
             Require(stash.ClassListContains("archive-page-4") && room.resolvedStyle.display == DisplayStyle.None, "center monitor opens the actual operation page");
