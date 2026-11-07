@@ -31,7 +31,7 @@ cmake -S "$script_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
 cmake --build "$build_dir" --parallel 2
 plugin="$build_dir/libmoon_ice.dylib"
-lipo -verify_arch arm64 x86_64 "$plugin"
+lipo "$plugin" -verify_arch arm64 x86_64
 codesign --force --sign - "$plugin"
 codesign --verify --strict "$plugin"
 ctest --test-dir "$build_dir" --output-on-failure
