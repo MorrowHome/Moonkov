@@ -1,0 +1,34 @@
+Moonkov opening and login audio
+
+Human ambience derived from "Indoor adult murmur, medium group.wav"
+by SpliceSound, https://freesound.org/people/SpliceSound/sounds/260122/
+License: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+Source used: publicly available high-quality MP3 preview.
+Changes: time stretch, layers, filtering, short reflections, loop crossfade.
+
+Login glitches derived from "Static / ScatterNoise1.mp3" by xhunterko
+https://opengameart.org/content/static
+License: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+Changes: short excerpts, bandpass filtering, stereo delay, amplitude gating.
+
+Window pop derived from "Pop sounds", pop1.wav
+by EZduzziteh, https://opengameart.org/content/pop-sounds-0
+License: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+Changes: silence trimming, transient saturation, short low punch and high snap layers.
+Original pitch/speed, no pitch variation.
+
+Shutter impact body derived from "DSGNImpt_Deep Cinematic Impact 2_ZAZZ"
+by zazz.sound.design, https://freesound.org/people/zazz.sound.design/sounds/754421/
+License: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+Source used: publicly available high-quality MP3 preview.
+Changes: onset trim, band filtering, layered mix, short reflections, reverse/rise.
+
+Shutter impact texture derived from "Sci-Fi Impact" by Kierham
+https://freesound.org/people/Kierham/sounds/646831/
+License: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+Source used: publicly available high-quality MP3 preview.
+Changes: onset trim, band filtering, layered mix, short reflections, reverse/rise.
+
+Receiver noise, pop transient layers, signal break and saturated noise rise:
+original offline sound design for Moonkov.
+Recipe: Tools/Audio/build_access_audio.py

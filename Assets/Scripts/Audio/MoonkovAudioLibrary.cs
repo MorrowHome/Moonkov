@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
         public SoundDef SuitBreath, Heartbeat, SuitWarning, ExtractStart, ExtractCancel, ExtractTick;
         public SoundDef OxygenSupply;
         public SoundDef ShipInterior;
+        public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;
         // Layered deployment confirmation (success gong + android voice).
         public SoundDef DeployConfirm;
     }

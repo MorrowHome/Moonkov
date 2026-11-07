@@ -21,6 +21,7 @@ namespace Unity.MP_FPS.Client
         private readonly IVisualElementScheduledItem m_Tick;
         private readonly bool m_Loading;
         private readonly Action m_IntroFinished;
+        private readonly HalosAccessAudio m_Audio;
         private bool m_Visible, m_ReducedMotion, m_Skipped, m_IntroPlayed, m_Disposed;
         private double m_Elapsed, m_IntroElapsed, m_LastTick = double.NaN;
         private readonly System.Random m_SignalRandom = new System.Random(1701);
@@ -44,10 +45,11 @@ namespace Unity.MP_FPS.Client
         public static bool PrefersReducedMotion => PlayerPrefs.GetInt(ReducedMotionPreference,
             OnlineSquadStage.SystemReducedMotion ? 1 : 0) != 0;
 
-        public HalosTerminalBackdrop(VisualElement host, bool loading, Action introFinished = null)
+        public HalosTerminalBackdrop(VisualElement host, bool loading, Action introFinished = null, HalosAccessAudio audio = null)
         {
             m_Host = host ?? throw new ArgumentNullException(nameof(host));
             m_Loading = loading; m_IntroFinished = introFinished;
+            m_Audio = loading ? null : audio ?? new HalosAccessAudio();
             m_Root = new VisualElement { name = "halosBackdrop", pickingMode = PickingMode.Ignore };
             m_Root.AddToClassList("halos-backdrop");
             m_Noise = AddDecoration(m_Root, "halos-noise");
@@ -174,7 +176,7 @@ namespace Unity.MP_FPS.Client
             m_Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             m_Tick.Pause();
             m_LastTick = double.NaN;
-            if (!visible) { HideIntro(); return; }
+            if (!visible) { m_Audio?.Suspend(); HideIntro(); return; }
             SettleSignal();
             if (m_Loading) m_Elapsed = 0;
             m_Skipped = false;
@@ -184,8 +186,8 @@ namespace Unity.MP_FPS.Client
                 m_Host.AddToClassList("halos-intro-active"); m_Intro.style.display = DisplayStyle.Flex;
                 PresentIntro((int)(m_IntroElapsed * SourceRate)); m_Intro.Focus();
             }
-            if (reducedMotion) FinishIntro();
-            else m_Tick.Resume();
+            if (reducedMotion) { m_Audio?.SkipIntro(); FinishIntro(); }
+            if (!reducedMotion || !m_Loading) m_Tick.Resume();
         }
 
         public void Skip()
@@ -196,7 +198,7 @@ namespace Unity.MP_FPS.Client
                 m_Skipped = true; m_Stage.style.display = DisplayStyle.None;
                 SettleSignal(); m_Tick.Pause();
             }
-            else FinishIntro();
+            else { m_Audio?.SkipIntro(); FinishIntro(); }
         }
         private void SkipIntroPointer(PointerDownEvent evt)
         {
@@ -212,13 +214,18 @@ namespace Unity.MP_FPS.Client
 
         private void Tick()
         {
-            if (!m_Visible || m_ReducedMotion || m_Skipped) { m_Tick?.Pause(); return; }
-            if (!IsOnScreen()) { m_LastTick = double.NaN; return; }
+            if (!m_Visible || (m_ReducedMotion && m_Loading) || m_Skipped) { m_Tick?.Pause(); return; }
+            if (!IsOnScreen()) { m_Audio?.Suspend(); m_LastTick = double.NaN; return; }
             double now = TerminalMotion.Now;
             // Hidden panels and a blocked startup frame must not consume the whole intro.
             double step = double.IsNaN(m_LastTick) ? 0 : Math.Max(0, Math.Min(.1, now - m_LastTick));
             m_LastTick = now;
             m_Elapsed += step;
+            if (m_ReducedMotion)
+            {
+                m_Audio?.Present(HalosAccessAudio.Stage.Login, 0, (float)step);
+                return;
+            }
             if (IntroPending)
             {
                 m_IntroElapsed += step;
@@ -229,6 +236,11 @@ namespace Unity.MP_FPS.Client
                 }
             }
             int frame = m_Loading ? (int)(m_Elapsed * SourceRate) % LoadingLoopFrames : (int)(m_IntroElapsed * SourceRate);
+            var audioStage = !IntroPending || frame >= RevealFrame ? HalosAccessAudio.Stage.Login :
+                frame >= ShutterFrame ? HalosAccessAudio.Stage.Shutter :
+                frame >= ClearFrame ? HalosAccessAudio.Stage.Blackout :
+                frame >= ImpactFrame ? HalosAccessAudio.Stage.Cut : HalosAccessAudio.Stage.Build;
+            m_Audio?.Present(audioStage, Mathf.Clamp01(frame / (float)BuildCompleteFrame), (float)step);
             if (m_Loading || IntroPending) PresentTerminals(frame);
             if (IntroPending) PresentIntro(frame);
             PresentSignal((int)(m_Elapsed * SourceRate));
@@ -239,6 +251,7 @@ namespace Unity.MP_FPS.Client
             int newest = 0;
             while (newest + 1 < m_Windows.Length && frame >= m_Windows[newest + 1].Delay) newest++;
             float intensity = Mathf.Clamp01(frame / (float)BuildCompleteFrame);
+            m_Audio?.TerminalOpened(newest, intensity);
             int beatFrames = frame < 96 ? 24 : frame < 192 ? 12 : frame < 240 ? 6 : 2;
             bool onBeat = frame < ClearFrame && frame % beatFrames < 2;
             m_Stage.style.translate = new Translate(onBeat ? ((frame / beatFrames) % 2 == 0 ? -1 : 1) * intensity * intensity * 6 : 0, 0);
@@ -327,6 +340,7 @@ namespace Unity.MP_FPS.Client
             {
                 m_LoginOpacity = .6f + .3f * (float)m_SignalRandom.NextDouble();
                 m_NextLoginFlickerFrame = frame + m_SignalRandom.Next(15, 31);
+                m_Audio?.LoginFlicker();
             }
             float opacity = flickering ? m_LoginOpacity : 1 - Mathf.Pow(5f / 6, Math.Max(0, introFrame - RevealFrame + 1));
             if (flickering && m_Content != null) m_Content.style.opacity = opacity;
@@ -394,16 +408,17 @@ namespace Unity.MP_FPS.Client
             m_Stage.style.left = (evt.newRect.width - 1920) * .5f; m_Stage.style.top = (evt.newRect.height - 1080) * .5f;
             m_Stage.style.scale = new Scale(Vector3.one * scale);
         }
-        private void Detached(DetachFromPanelEvent evt) { m_Tick.Pause(); m_LastTick = double.NaN; }
+        private void Detached(DetachFromPanelEvent evt) { m_Audio?.Suspend(); m_Tick.Pause(); m_LastTick = double.NaN; }
         private void Attached(AttachToPanelEvent evt)
         {
             m_LastTick = double.NaN;
-            if (m_Visible && !m_ReducedMotion && !m_Skipped) m_Tick.Resume();
+            if (m_Visible && (!m_ReducedMotion || !m_Loading) && !m_Skipped) m_Tick.Resume();
         }
         public void Dispose()
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Visible = false; m_Tick.Pause(); HideIntro();
+            m_Audio?.Dispose();
             m_Root.UnregisterCallback<GeometryChangedEvent>(Resize);
             m_Root.UnregisterCallback<DetachFromPanelEvent>(Detached);
             m_Root.UnregisterCallback<AttachToPanelEvent>(Attached);
