@@ -38,8 +38,7 @@ public sealed class LanRoomPreview : EditorWindow
         };
         LanRoomPresentation.Rooms(tree, rooms, _ => { });
         LanRoomPresentation.Page(tree, page);
-        var squad = window.m_Squad = new LanSquadStage();
-        tree.Q(page == LanRoomPage.Lobby ? "lanStageLobbyHost" : "lanStageEntryHost").Add(squad.Element);
+        var squad = window.m_Squad = new LanSquadStage(tree.Q("lanModal"));
         squad.Stage.ReducedMotion = true;
         tree.Q<Toggle>("lanReduceMotion").SetValueWithoutNotify(true);
         if (page == LanRoomPage.Lobby)

@@ -48,7 +48,7 @@ public static class LanSquadChecks
             change.PoseIndex = 0; Reject(() => server.Handle(change), "Appearance changed during map load");
         }
         var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/LanRoomPanel").CloneTree();
-        foreach (string name in new[] { "lanStageEntryHost", "lanStageLobbyHost", "lanCharacter", "lanPose", "lanReduceMotion", "lanReady", "lanStart", "lanAddress" })
+        foreach (string name in new[] { "lanStageHost", "lanStagePagerHost", "lanCharacter", "lanPose", "lanReduceMotion", "lanReady", "lanStart", "lanAddress" })
             Expect(tree.Q(name) != null, "Missing LAN control: " + name);
         if (!LanRoomClient.Active)
         {

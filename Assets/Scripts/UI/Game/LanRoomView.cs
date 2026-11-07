@@ -33,7 +33,7 @@ namespace Unity.MP_FPS.Client
             m_Container.pickingMode = PickingMode.Ignore;
             m_Container.style.position = Position.Absolute; m_Container.style.left = m_Container.style.top = 0;
             host.Add(m_Container); m_Root = m_Container.Q(className: "lan-layer"); m_Modal = m_Root.Q("lanModal");
-            m_Squad = new LanSquadStage();
+            m_Squad = new LanSquadStage(m_Modal);
             m_Root.Q<TextField>("lanPlayerName").value = PlayerPrefs.GetString("Moonkov.LAN.Name", "Operator");
             m_Root.Q<TextField>("lanAddress").value = PlayerPrefs.GetString("Moonkov.LAN.Address", "192.168.1.100");
             m_Root.Q<DropdownField>("lanCharacter").RegisterValueChangedCallback(_ => AppearanceChanged());
@@ -195,8 +195,6 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             bool active = LanRoomClient.Active;
-            var stageHost = m_Root.Q(active ? "lanStageLobbyHost" : "lanStageEntryHost");
-            if (m_Squad.Element.parent != stageHost) stageHost.Add(m_Squad.Element);
             var character = m_Root.Q<DropdownField>("lanCharacter");
             character.SetValueWithoutNotify(character.choices[Mathf.Clamp(GameSettings.Instance.PlayerCharacter - 2, 0, 2)]);
             var pose = m_Root.Q<DropdownField>("lanPose"); pose.SetValueWithoutNotify(pose.choices[LanRoomClient.PoseIndex + 1]);
@@ -204,7 +202,6 @@ namespace Unity.MP_FPS.Client
             m_Squad.Present(active ? LanRoomClient.Room : null, LanRoomClient.MemberId, m_Root.Q<TextField>("lanPlayerName").value,
                 new LobbyAppearance { CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = LanRoomClient.PoseIndex });
             m_Squad.SetVisible(!m_Modal.ClassListContains("lan-hidden"));
-            m_Root.EnableInClassList("lan-large-room", active && LanRoomClient.Room.Members.Length > 4);
             if (active) m_Page = LanRoomPage.Lobby; else if (m_Page == LanRoomPage.Lobby) m_Page = LanRoomPage.Browse;
             LanRoomPresentation.Page(m_Root, m_Page);
             m_Root.Q<TextField>("lanPlayerName").SetEnabled(!active && !m_Busy);
@@ -242,6 +239,7 @@ namespace Unity.MP_FPS.Client
     {
         public static void Page(VisualElement root, LanRoomPage page)
         {
+            root.Q("lanModal").EnableInClassList("lan-in-room", page == LanRoomPage.Lobby);
             root.Q("lanBrowser").EnableInClassList("lan-hidden", page == LanRoomPage.Lobby);
             root.Q("lanLobby").EnableInClassList("lan-hidden", page != LanRoomPage.Lobby);
             var pages = new[] { "lanBrowsePage", "lanCreatePage", "lanDirectPage" };
@@ -280,13 +278,13 @@ namespace Unity.MP_FPS.Client
         public static string ModeName(RaidGameMode mode) => mode == RaidGameMode.BountyClash ? "极速赏金" : "远征";
         public static void Lobby(VisualElement root, LanRoomSnapshot room, string localId, bool host, bool ready, bool busy, string address, bool rebuildRoster = true)
         {
-            root.Q<Label>("lanRoomHeading").enableRichText = false; root.Q<Label>("lanRoomHeading").text = room.Name;
-            root.Q<Label>("lanRoomMeta").text = $"{ModeName(room.Mode)} / {room.Members.Length}/{room.Capacity} 位干员";
+            var heading = root.Q<Label>("lanRoomHeading");
+            heading.enableRichText = false; heading.text = room.Name; heading.tooltip = room.Name;
+            root.Q<Label>("lanRoomMeta").text = $"{ModeName(room.Mode)}  {room.Members.Length}/{room.Capacity} 人";
             int count = room.Members.Count(m => m.Host || m.Ready);
             root.Q<Label>("lanReadyCount").text = $"{count}/{room.Members.Length} 已就绪";
             root.Q<Label>("lanHostAddress").text = address;
-            root.Q<Label>("lanBriefing").text = room.Mode == RaidGameMode.BountyClash
-                ? "进入集结区后组队，至少两队准备后开战。" : "";
+            root.Q("lanRosterDetails").EnableInClassList("lan-hidden", room.Members.Length <= 4);
             if (rebuildRoster)
             {
                 var list = root.Q<ScrollView>("lanMembers"); list.Clear();
@@ -312,9 +310,15 @@ namespace Unity.MP_FPS.Client
             var waiting = room.Members.FirstOrDefault(m => !m.Host && !m.Ready);
             root.Q<Label>("lanLaunchTitle").text = room.Phase == LanRoomPhase.Preparing ? "房主正在加载地图" : room.Phase == LanRoomPhase.Returning ? "等待成员返回房间" : !lobby ? "对局进行中" : waiting == null ? "全员就绪" : "等待成员准备";
             root.Q<Label>("lanLaunchHint").enableRichText = false;
-            root.Q<Label>("lanLaunchHint").text = !lobby ? "加载与结算期间请保持连接。" : waiting != null ? $"{waiting.Name} 尚未准备" : host ? "确认装备后，即可带领小队出发。" : "等待房主发起对局。";
+            var hint = root.Q<Label>("lanLaunchHint");
+            hint.text = !lobby ? "" : waiting != null ? $"{waiting.Name} 尚未准备"
+                : !host ? "等待房主出发" : room.Mode == RaidGameMode.BountyClash ? "进入集结区后组队" : "";
+            hint.EnableInClassList("lan-hidden", hint.text.Length == 0);
         }
         public static void Status(VisualElement root, string message, bool error)
-        { var label = root.Q<Label>("lanStatus"); label.text = message; label.EnableInClassList("lan-error", error); }
+        {
+            root.Q("lanNotice").EnableInClassList("lan-hidden", string.IsNullOrWhiteSpace(message));
+            var label = root.Q<Label>("lanStatus"); label.text = message; label.EnableInClassList("lan-error", error);
+        }
     }
 }

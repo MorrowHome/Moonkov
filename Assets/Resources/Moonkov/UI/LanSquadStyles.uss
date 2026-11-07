@@ -1,77 +1,149 @@
-/* Radix Slate dark surfaces and Blue interaction states, shared with the online squad. */
-.lan-layer.lan-squad-ui .lan-screen { background-color: #111113; color: #edeef0; }
-.lan-squad-ui .lan-backdrop { display: none; }
-.lan-squad-ui .lan-shell { padding: 24px 32px 16px; }
-.lan-squad-ui .lan-header { margin-bottom: 12px; min-height: 44px; }
+/* Slate glass surfaces and Blue states, over a single full-screen squad camera. */
+.lan-layer.lan-squad-ui .lan-screen { background-color: #080a0f; color: #edeef0; }
+.lan-stage-host, .lan-squad-stage, .lan-stage-image, .lan-stage-members {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+}
+.lan-stage-image { min-width: 0; min-height: 0; }
+.lan-stage-members { display: none; }
+.lan-in-room .lan-stage-members { display: flex; }
+
+.lan-squad-ui .lan-shell { padding: 22px 26px; }
+.lan-squad-ui .lan-glass {
+    background-color: rgba(19,22,29,0.79);
+    border-width: 1px;
+    border-color: rgba(222,235,255,0.19);
+    border-top-color: rgba(234,242,255,0.28);
+    border-bottom-color: rgba(222,235,255,0.12);
+    border-radius: 15px;
+    overflow: hidden;
+}
+.lan-glass-image { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.lan-squad-ui .lan-header { align-self: flex-start; min-height: 44px; margin: 0 0 8px; padding: 4px 14px 4px 4px; }
+.lan-squad-ui .lan-title { margin: 0 0 0 11px; }
 .lan-layer.lan-squad-ui Label, .lan-layer.lan-squad-ui Button,
 .lan-layer.lan-squad-ui .unity-base-field__input, .lan-layer.lan-squad-ui .unity-base-field__label { font-size: 14px; }
-.lan-layer.lan-squad-ui .lan-title, .lan-layer.lan-squad-ui .lan-room-title { font-size: 22px; }
+.lan-layer.lan-squad-ui .lan-title, .lan-layer.lan-squad-ui .lan-room-title,
+.lan-layer.lan-squad-ui .lan-section-title { font-size: 20px; }
 .lan-layer.lan-squad-ui .lan-muted, .lan-layer.lan-squad-ui .lan-row-detail,
 .lan-layer.lan-squad-ui .lan-count, .lan-layer.lan-squad-ui .lan-stage-state,
 .lan-layer.lan-squad-ui .lan-member-role, .lan-layer.lan-squad-ui .lan-member-state,
-.lan-layer.lan-squad-ui .lan-status, .lan-layer.lan-squad-ui .lan-field-label { font-size: 12px; color: #b0b4ba; }
+.lan-layer.lan-squad-ui .lan-status, .lan-layer.lan-squad-ui .lan-field-label,
+.lan-layer.lan-squad-ui .lan-mode-description { font-size: 12px; }
 .lan-squad-ui .lan-entry { font-size: 14px; background-color: #1b2a39; border-color: #435261; color: #c2e6ff; }
-.lan-squad-ui .lan-screen Button { border-radius: 4px; color: #edeef0; transition-duration: 0.15s; }
-.lan-squad-ui .lan-screen Button:hover { background-color: #272a2d; }
+
+.lan-squad-ui .lan-screen Button {
+    min-height: 36px; padding: 6px 12px; border-radius: 9px;
+    color: #edeef0; transition-duration: 0.15s;
+}
+.lan-squad-ui .lan-screen Button:hover { background-color: rgba(228,239,255,0.13); }
 .lan-squad-ui .lan-screen Button:focus { border-color: #70b8ff; }
-.lan-squad-ui .lan-screen .lan-primary { background-color: #0090ff; color: #fff; }
+.lan-squad-ui .lan-screen Button:active { background-color: rgba(228,239,255,0.23); }
+.lan-squad-ui .lan-screen .lan-primary { min-width: 104px; background-color: #0090ff; color: #fff; }
 .lan-squad-ui .lan-screen .lan-primary:hover { background-color: #3b9eff; }
-.lan-squad-ui .lan-screen .lan-primary:disabled { background-color: #1b2a39; color: #777b84; }
-.lan-squad-ui .lan-screen .lan-secondary { background-color: #18191b; border-color: #43484e; }
-.lan-squad-ui .lan-field .unity-base-field__input, .lan-squad-ui .lan-identity .unity-base-field__input { background-color: #212225; border-color: #363a3f; color: #edeef0; }
-.lan-squad-ui .lan-screen .lan-room-row, .lan-squad-ui .lan-screen .lan-mode-choice { background-color: #212225; border-color: #363a3f; }
-.lan-squad-ui .lan-screen .lan-mode-choice.lan-selected { background-color: #1b2a39; border-color: #70b8ff; }
-.lan-squad-ui .lan-navigation { margin-bottom: 12px; border-color: #363a3f; }
-.lan-squad-ui .lan-screen .lan-tab { padding: 8px 14px; margin-right: 8px; min-height: 40px; }
-.lan-squad-ui .lan-screen .lan-tab.lan-selected { border-bottom-color: #70b8ff; }
-.lan-squad-ui .lan-personal { flex-direction: row; align-items: center; margin-bottom: 12px; min-height: 36px; flex-shrink: 0; }
-.lan-squad-ui .lan-personal .unity-base-field { margin: 0 18px 0 0; }
-.lan-squad-ui .lan-personal .unity-base-field__label { min-width: 34px; color: #b0b4ba; }
-.lan-squad-ui .lan-personal .unity-popup-field__input { min-width: 142px; background-color: #212225; border-color: #363a3f; }
-.lan-squad-ui .lan-personal Toggle { margin-left: auto; }
-.lan-squad-ui .lan-identity { margin-right: 18px; }
-.lan-squad-ui .lan-primary-area { flex-grow: 0; flex-basis: auto; width: 390px; margin-right: 20px; padding: 18px; background-color: #18191b; border-radius: 4px; }
-.lan-squad-ui .lan-companion { flex-grow: 1; flex-basis: 0; padding: 0; min-width: 0; max-width: none; border-width: 0; background-color: #111113; }
-.lan-preview-host .lan-stage-members { display: none; }
-.lan-squad-ui .lan-lobby-content { flex-grow: 1; min-height: 0; margin-bottom: 12px; }
-.lan-squad-ui .lan-lobby-stage { flex-grow: 1; min-width: 0; min-height: 0; }
-.lan-squad-ui .lan-briefing { flex-grow: 0; flex-basis: auto; width: 270px; margin-left: 22px; padding: 16px; border-radius: 4px; background-color: #18191b; }
-.lan-squad-ui .lan-roster { flex-grow: 0; flex-basis: auto; margin: 0; padding: 0; background-color: transparent; }
-.lan-squad-ui .lan-roster-heading { flex-direction: column; align-items: flex-start; margin-bottom: 12px; }
-.lan-squad-ui .lan-room-title { margin-bottom: 12px; }
-.lan-squad-ui .lan-count { margin-top: 8px; }
-.lan-squad-ui .lan-members { display: none; }
-.lan-squad-ui.lan-large-room .lan-members { display: flex; max-height: 210px; margin-top: 12px; }
-.lan-squad-ui .lan-member-row { padding: 8px 0; min-height: 48px; border-color: #363a3f; }
+.lan-squad-ui .lan-screen .lan-primary:disabled { background-color: #1b2a39; border-color: #2c3d51; color: #a4abb6; }
+.lan-squad-ui .lan-screen .lan-secondary, .lan-squad-ui .lan-screen .lan-back {
+    background-color: rgba(228,239,255,0.08); border-color: rgba(228,239,255,0.15);
+}
+.lan-squad-ui .lan-screen .lan-secondary:hover, .lan-squad-ui .lan-screen .lan-back:hover {
+    background-color: rgba(228,239,255,0.17);
+}
+.lan-squad-ui .lan-screen .lan-quiet:hover { color: #ffdbdc; background-color: rgba(217,64,79,0.18); }
+.lan-squad-ui .lan-screen .lan-back { min-width: 62px; }
+.lan-squad-ui .lan-screen .unity-base-field__input {
+    min-height: 34px; padding: 5px 9px; border-radius: 8px;
+    background-color: rgba(229,237,254,0.08); border-color: rgba(229,237,254,0.16); color: #edeef0;
+}
+.lan-squad-ui .lan-screen .unity-base-field__input:focus { border-color: #70b8ff; }
+.lan-squad-ui .lan-screen .unity-toggle__input { min-height: 26px; padding: 0; background-color: transparent; border-width: 0; }
+.lan-squad-ui .lan-screen .unity-toggle__text { color: #edeef0; }
+.lan-squad-ui .lan-personal { align-self: flex-start; flex-shrink: 0; margin: 0 0 8px; padding: 1px 11px; }
+.lan-squad-ui .lan-personal > .unity-foldout__toggle { min-height: 33px; margin: 0; padding: 4px 3px; }
+.lan-squad-ui .lan-personal > .unity-foldout__content { margin: 0 0 7px; }
+.lan-squad-ui .lan-personal .unity-base-field__label { min-width: 42px; color: #d4d9e0; }
+.lan-squad-ui .lan-personal .unity-popup-field__input { min-width: 134px; }
+.lan-squad-ui .lan-personal .unity-base-field { margin: 0 0 5px; }
+
+.lan-squad-ui .lan-browser {
+    width: 422px; max-width: 100%; flex-grow: 1; min-height: 0; align-self: flex-start;
+    margin-bottom: 31px; padding: 12px;
+}
+.lan-squad-ui .lan-navigation { margin-bottom: 11px; border-width: 0; }
+.lan-squad-ui .lan-screen .lan-tab { min-height: 34px; margin-right: 5px; padding: 5px 11px; }
+.lan-squad-ui .lan-screen .lan-tab.lan-selected { background-color: #26354a; border-color: #536b8c; color: #e8f4ff; }
+.lan-squad-ui .lan-browser .lan-identity { flex-direction: row; align-items: center; width: auto; margin: 0 0 10px; }
+.lan-squad-ui .lan-browser .lan-identity .unity-base-field__label { display: flex; margin: 0 10px 0 0; }
+.lan-squad-ui .lan-primary-area {
+    flex-grow: 1; flex-basis: auto; min-height: 0; width: 100%;
+    margin: 0; padding: 0; background-color: transparent;
+}
+.lan-squad-ui .lan-list-heading { margin-bottom: 10px; }
+.lan-squad-ui .lan-list-heading .lan-count { margin-left: 8px; }
+.lan-squad-ui .lan-room-art { width: 43px; height: 43px; margin-right: 9px; }
+.lan-squad-ui .lan-screen .lan-room-row, .lan-squad-ui .lan-screen .lan-mode-choice {
+    background-color: rgba(229,237,254,0.065); border-color: rgba(229,237,254,0.12); border-radius: 9px;
+}
+.lan-squad-ui .lan-screen .lan-room-row:hover { background-color: rgba(229,237,254,0.13); }
+.lan-squad-ui .lan-screen .lan-room-row { min-height: 61px; padding: 7px 8px; margin-bottom: 5px; }
+.lan-squad-ui .lan-row-title { margin-bottom: 3px; }
+.lan-squad-ui .lan-row-count { margin: 0 7px; }
+.lan-squad-ui .lan-screen .lan-mode-choice.lan-selected { background-color: #26354a; border-color: #70b8ff; }
+.lan-squad-ui .lan-mode-choices { margin-bottom: 12px; }
+.lan-squad-ui .lan-screen .lan-mode-choice { min-height: 60px; margin-right: 6px; }
+.lan-squad-ui .lan-form-action { border-width: 0; padding-top: 6px; margin-top: 4px; }
+.lan-squad-ui .lan-empty-state { min-height: 80px; padding: 10px; }
+
+.lan-squad-ui .lan-lobby {
+    position: absolute; top: 22px; right: 26px; bottom: 22px; left: 26px;
+    justify-content: space-between; align-items: flex-end;
+}
+.lan-squad-ui .lan-briefing {
+    width: 248px; max-width: 48%; min-width: 0; max-height: 64%;
+    flex-grow: 0; flex-basis: auto; flex-shrink: 1; padding: 12px 13px 8px;
+}
+.lan-squad-ui .lan-room-title {
+    margin: 0 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lan-squad-ui .lan-roster-heading { flex-wrap: wrap; margin-bottom: 3px; align-items: center; }
+.lan-squad-ui .lan-roster-heading .lan-copy { margin: 0 7px 3px 0; }
+.lan-squad-ui .lan-roster-heading .lan-count { color: #b9e0ff; margin: 0 0 3px; flex-grow: 0; }
+.lan-squad-ui .lan-room-details { flex-shrink: 1; min-height: 0; }
+.lan-squad-ui .lan-room-details .lan-advanced { margin: 0; }
+.lan-squad-ui .lan-room-details .lan-advanced > .unity-foldout__toggle { margin: 0; padding: 5px 0; min-height: 28px; }
+.lan-squad-ui .lan-room-details .lan-advanced > .unity-foldout__content { margin: 1px 0 7px; }
+.lan-squad-ui .lan-address { color: #cdd7e5; font-size: 12px; margin: 0 0 6px; }
+.lan-squad-ui .lan-members { max-height: 166px; }
+.lan-squad-ui .lan-member-row { min-height: 42px; padding: 5px 0; border-color: rgba(222,235,255,0.15); }
 .lan-squad-ui .lan-member-avatar { display: none; }
-.lan-squad-ui .lan-member-copy { margin-left: 0; }
-.lan-squad-ui .lan-copy, .lan-squad-ui .lan-section-title { color: #edeef0; }
-.lan-squad-ui .lan-briefing .lan-copy { white-space: normal; }
-.lan-squad-ui .lan-connection { margin-top: 18px; border-color: #363a3f; }
-.lan-squad-ui .lan-address { color: #b0b4ba; font-size: 12px; }
-.lan-squad-ui .lan-launch-bar { padding: 14px 0 0; background-color: transparent; border-top-width: 1px; border-color: #363a3f; flex-shrink: 0; }
-.lan-squad-ui .lan-footer { margin-top: 10px; padding-top: 0; border-width: 0; }
-.lan-squad-stage { flex-grow: 1; min-width: 0; min-height: 0; }
-.lan-stage-image { flex-grow: 1; min-height: 100px; }
-.lan-stage-members { position: relative; height: 76px; margin-top: 6px; flex-shrink: 0; }
-.lan-stage-member { position: absolute; top: 0; width: 23%; padding: 0 4px; align-items: center; }
-.lan-stage-name { -unity-font-style: bold; white-space: normal; -unity-text-align: middle-center; }
-.lan-stage-state { white-space: normal; -unity-text-align: middle-center; margin-top: 4px; }
-.lan-stage-member.is-self .lan-stage-name { color: #c2e6ff; }
-.lan-stage-member.is-ready .lan-stage-state { color: #70b8ff; }
-.lan-stage-member.is-empty .lan-stage-name { color: #777b84; }
-.lan-stage-pager { flex-direction: row; align-items: center; justify-content: center; min-height: 34px; flex-shrink: 0; }
-.lan-stage-pager Label { margin: 0 14px; color: #b0b4ba; }
-.lan-squad-ui.lan-compact .lan-shell { padding: 16px 20px 12px; }
-.lan-squad-ui.lan-compact .lan-primary-area { width: 340px; padding: 14px; margin-right: 12px; }
-.lan-squad-ui.lan-compact .lan-briefing { width: 230px; margin-left: 12px; padding: 12px; }
-.lan-squad-ui.lan-compact .lan-launch-bar Button { min-width: 100px; padding: 8px 10px; }
-.lan-squad-ui.lan-small .lan-primary-area { width: 300px; }
-.lan-squad-ui.lan-small .lan-companion { display: flex; min-width: 0; }
-.lan-squad-ui.lan-small .lan-identity { width: 160px; }
-.lan-squad-ui.lan-small .lan-briefing { display: flex; width: 200px; }
-.lan-squad-ui.lan-small .lan-personal .unity-base-field { margin-right: 8px; }
-.lan-squad-ui.lan-small .lan-personal .unity-popup-field__input { min-width: 110px; }
+.lan-squad-ui .lan-member-copy { margin: 0; }
+.lan-stage-pager { flex-direction: row; align-items: center; justify-content: space-between; margin: 3px 0; }
+.lan-squad-ui .lan-stage-pager Button { min-height: 28px; padding: 3px 7px; }
+.lan-squad-ui .lan-stage-pager Label { color: #d4d9e0; }
+
+.lan-stage-member { position: absolute; top: 0; width: 23%; align-items: center; }
+.lan-stage-member.is-empty { display: none; }
+.lan-squad-ui .lan-member-badge { max-width: 100%; padding: 4px 10px; align-items: center; border-radius: 12px; }
+.lan-stage-name, .lan-stage-state { margin: 0; padding: 0; }
+.lan-stage-name { -unity-font-style: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.lan-stage-state { white-space: nowrap; color: #d1d6df; }
+.lan-stage-member.is-self .lan-member-badge { border-color: rgba(173,219,255,0.52); }
+.lan-stage-member.is-ready .lan-stage-state { color: #b9e0ff; }
+
+.lan-squad-ui .lan-launch-bar { margin: 0; padding: 6px; flex-wrap: nowrap; }
+.lan-squad-ui .lan-launch-bar Button { min-width: 0; margin: 0 0 0 5px; }
+.lan-squad-ui .lan-launch-bar .lan-primary { min-width: 106px; }
+.lan-squad-ui .lan-launch-summary { flex-grow: 0; max-width: 210px; padding: 0 6px 0 7px; margin: 0; }
+.lan-squad-ui .lan-launch-summary Label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lan-squad-ui .lan-launch-bar .lan-muted { margin: 2px 0 0; color: #cdd1d9; }
+.lan-squad-ui .lan-footer { position: absolute; bottom: 22px; left: 26px; max-width: 35%; margin: 0; padding: 5px 11px; }
+.lan-squad-ui .lan-status { color: #e3e7ee; }
+.lan-squad-ui .lan-status.lan-error { color: #ffb7c1; }
+
+.lan-squad-ui.lan-compact .lan-shell { padding: 16px; }
+.lan-squad-ui.lan-compact .lan-lobby { top: 16px; right: 16px; bottom: 16px; left: 16px; }
+.lan-squad-ui.lan-compact .lan-footer { bottom: 16px; left: 16px; max-width: 32%; }
+.lan-squad-ui.lan-small .lan-briefing { display: flex; width: 208px; padding: 9px 10px 6px; }
+.lan-squad-ui.lan-small .lan-launch-summary { max-width: 140px; }
+.lan-squad-ui.lan-small .lan-footer { max-width: 24%; }
+.lan-squad-ui.lan-small .lan-browser { width: 366px; }
 .lan-squad-ui.lan-small .lan-mode-choices { flex-direction: column; }
-.lan-squad-ui.lan-small .lan-launch-summary { display: none; }
 .lan-squad-ui.lan-reduced-motion Button { transition-duration: 0s; }

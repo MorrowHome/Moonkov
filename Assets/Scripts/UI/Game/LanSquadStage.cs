@@ -8,42 +8,54 @@ namespace Unity.MP_FPS.Client
 {
     public sealed class LanSquadStage : IDisposable
     {
-        public VisualElement Element { get; } = new VisualElement { name = "lanSquadStage" };
+        public VisualElement Element { get; } = new VisualElement { name = "lanSquadStage", pickingMode = PickingMode.Ignore };
         public OnlineSquadStage Stage { get; }
         public int PageIndex { get; private set; }
         public int PageCount => Mathf.Max(1, (m_Members.Length + 3) / 4);
         private readonly VisualElement[] m_Cards = new VisualElement[4];
         private readonly Label[] m_Names = new Label[4], m_States = new Label[4];
         private readonly LobbyMember[] m_Slots = new LobbyMember[4];
+        private readonly VisualElement m_Badges;
         private readonly VisualElement m_Pager;
         private readonly Label m_PageLabel;
         private readonly Button m_Previous, m_Next;
+        private readonly LanSquadGlass m_Glass;
         private LanMember[] m_Members = Array.Empty<LanMember>();
         private LanRoomSnapshot m_Room;
         private string m_LocalId, m_RoomId;
         private bool m_Visible;
 
-        public LanSquadStage()
+        public LanSquadStage(VisualElement screen = null)
         {
             Element.AddToClassList("lan-squad-stage");
             var image = new Image { name = "lanStageImage", pickingMode = PickingMode.Ignore };
             image.AddToClassList("lan-stage-image"); Element.Add(image);
-            Stage = new OnlineSquadStage(image);
+            Stage = new OnlineSquadStage(image, fillViewport: true);
             Stage.FramingChanged += AlignCards;
-            var members = new VisualElement { name = "lanStageMembers" }; members.AddToClassList("lan-stage-members"); Element.Add(members);
+            m_Badges = new VisualElement { name = "lanStageMembers", pickingMode = PickingMode.Ignore };
+            m_Badges.style.visibility = Visibility.Hidden;
+            m_Badges.AddToClassList("lan-stage-members"); Element.Add(m_Badges);
             for (int i = 0; i < 4; i++)
             {
-                var card = m_Cards[i] = new VisualElement { name = "lanStageMember" + i };
+                var card = m_Cards[i] = new VisualElement { name = "lanStageMember" + i, pickingMode = PickingMode.Ignore };
                 card.AddToClassList("lan-stage-member");
+                card.AddToClassList("lan-glass");
+                card.AddToClassList("lan-member-badge");
                 var name = m_Names[i] = new Label { enableRichText = false }; name.AddToClassList("lan-stage-name"); card.Add(name);
                 var state = m_States[i] = new Label { enableRichText = false }; state.AddToClassList("lan-stage-state"); card.Add(state);
-                members.Add(card);
+                m_Badges.Add(card);
             }
-            m_Pager = new VisualElement { name = "lanStagePager" }; m_Pager.AddToClassList("lan-stage-pager"); Element.Add(m_Pager);
+            m_Pager = new VisualElement { name = "lanStagePager" }; m_Pager.AddToClassList("lan-stage-pager");
             m_Previous = new Button(() => SelectPage(PageIndex - 1)) { name = "lanPreviousSquad", text = "上一组" };
             m_PageLabel = new Label { name = "lanSquadPage" };
             m_Next = new Button(() => SelectPage(PageIndex + 1)) { name = "lanNextSquad", text = "下一组" };
             m_Pager.Add(m_Previous); m_Pager.Add(m_PageLabel); m_Pager.Add(m_Next);
+            (screen?.Q("lanStagePagerHost") ?? Element).Add(m_Pager);
+            if (screen != null)
+            {
+                screen.Q("lanStageHost").Add(Element);
+                m_Glass = new LanSquadGlass(screen, image, Stage);
+            }
         }
 
         public void Present(LanRoomSnapshot room, string localId, string localName, LobbyAppearance preview)
@@ -98,12 +110,28 @@ namespace Unity.MP_FPS.Client
             AlignCards();
         }
 
-        private void AlignCards() => Stage.AlignMemberCards(m_Cards);
+        private void AlignCards()
+        {
+            Stage.AlignMemberCards(m_Cards);
+            m_Badges.style.visibility = Stage.Target != null ? Visibility.Visible : Visibility.Hidden;
+        }
         public void SetVisible(bool visible)
         {
             m_Visible = visible;
-            if (visible) Stage.Present(m_Slots); else Stage.Suspend();
+            if (visible) Stage.Present(m_Slots);
+            else
+            {
+                Stage.Suspend();
+                m_Badges.style.visibility = Visibility.Hidden;
+            }
         }
-        public void Dispose() { Stage.FramingChanged -= AlignCards; Stage.Dispose(); Element.RemoveFromHierarchy(); }
+        public void Dispose()
+        {
+            Stage.FramingChanged -= AlignCards;
+            m_Glass?.Dispose();
+            Stage.Dispose();
+            m_Pager.RemoveFromHierarchy();
+            Element.RemoveFromHierarchy();
+        }
     }
 }

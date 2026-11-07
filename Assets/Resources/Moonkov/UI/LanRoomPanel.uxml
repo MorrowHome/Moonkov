@@ -1,21 +1,27 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="LanSquadStyles.uss" /><Style src="LanRoomPanel.uss" />
+    <ui:Style src="LanRoomPanel.uss" />
+    <ui:Style src="LanSquadStyles.uss" />
     <ui:VisualElement class="lan-layer moonkov-style-font lan-squad-ui" picking-mode="Ignore">
         <ui:Button name="lanEntry" text="局域网联机" class="lan-entry" />
         <ui:VisualElement name="lanModal" class="lan-screen lan-hidden">
-            <ui:VisualElement class="lan-backdrop" picking-mode="Ignore" />
-            <ui:VisualElement class="lan-shell">
-                <ui:VisualElement class="lan-header">
-                    <ui:VisualElement class="lan-heading"><ui:Label text="局域网小队" class="lan-title" /></ui:VisualElement>
-                    <ui:TextField name="lanPlayerName" label="干员代号" value="Operator" max-length="20" class="lan-identity" />
-                    <ui:Button name="lanClose" text="返回" class="lan-secondary lan-back" />
-                </ui:VisualElement><ui:VisualElement class="lan-personal"><ui:DropdownField xmlns:ui="UnityEngine.UIElements" name="lanCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" /><ui:DropdownField xmlns:ui="UnityEngine.UIElements" name="lanPose" label="姿势" choices="自动,戒备,侧身,低姿,待命" index="0" /><ui:Toggle xmlns:ui="UnityEngine.UIElements" name="lanReduceMotion" label="减少动态效果" /></ui:VisualElement>
-                <ui:VisualElement name="lanBrowser" class="lan-browser">
+            <ui:VisualElement name="lanStageHost" class="lan-stage-host" picking-mode="Ignore" />
+            <ui:VisualElement class="lan-shell" picking-mode="Ignore">
+                <ui:VisualElement class="lan-header lan-glass">
+                    <ui:Button name="lanClose" text="返回" class="lan-back" />
+                    <ui:Label text="局域网小队" class="lan-title" />
+                </ui:VisualElement>
+                <ui:Foldout text="外观" class="lan-personal lan-glass" value="false">
+                    <ui:DropdownField name="lanCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
+                    <ui:DropdownField name="lanPose" label="姿势" choices="自动,戒备,侧身,低姿,待命" index="0" />
+                    <ui:Toggle name="lanReduceMotion" label="减少动态效果" />
+                </ui:Foldout>
+                <ui:VisualElement name="lanBrowser" class="lan-browser lan-glass">
                     <ui:VisualElement class="lan-navigation">
                         <ui:Button name="lanBrowseTab" text="寻找房间" class="lan-tab lan-selected" />
                         <ui:Button name="lanCreateTab" text="创建房间" class="lan-tab" />
                         <ui:Button name="lanDirectTab" text="IP 直连" class="lan-tab" />
                     </ui:VisualElement>
+                    <ui:TextField name="lanPlayerName" label="干员代号" value="Operator" max-length="20" class="lan-field lan-identity" />
                     <ui:VisualElement class="lan-workspace">
                         <ui:VisualElement class="lan-primary-area">
                             <ui:VisualElement name="lanBrowsePage" class="lan-page">
@@ -43,17 +49,41 @@
                                 <ui:VisualElement class="lan-form-action"><ui:Label text="默认房间端口为 7978。" class="lan-muted" /><ui:Button name="lanJoin" text="加入房间" class="lan-primary" /></ui:VisualElement>
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement name="lanStageEntryHost" class="lan-companion lan-preview-host"></ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="lanLobby" class="lan-lobby lan-hidden">
-                    <ui:VisualElement class="lan-lobby-content"><ui:VisualElement name="lanStageLobbyHost" class="lan-lobby-stage" />
-
-                        <ui:ScrollView class="lan-briefing" horizontal-scroller-visibility="Hidden"><ui:VisualElement class="lan-roster"><ui:Label name="lanRoomHeading" class="lan-room-title" /><ui:VisualElement class="lan-roster-heading"><ui:Label name="lanRoomMeta" class="lan-copy" /><ui:Label name="lanReadyCount" class="lan-count" /></ui:VisualElement><ui:ScrollView name="lanMembers" class="lan-members" horizontal-scroller-visibility="Hidden" /></ui:VisualElement><ui:Label name="lanBriefing" class="lan-copy" /><ui:Foldout text="邀请与连接信息" class="lan-advanced lan-connection" value="false"><ui:Label name="lanHostAddress" class="lan-address" /><ui:Button name="lanCopy" text="复制 IPv4 地址" class="lan-secondary" /></ui:Foldout></ui:ScrollView>
+                <ui:VisualElement name="lanLobby" class="lan-lobby lan-hidden" picking-mode="Ignore">
+                    <ui:VisualElement class="lan-briefing lan-glass">
+                        <ui:Label name="lanRoomHeading" class="lan-room-title" />
+                        <ui:VisualElement class="lan-roster-heading">
+                            <ui:Label name="lanRoomMeta" class="lan-copy" />
+                            <ui:Label name="lanReadyCount" class="lan-count" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="lanStagePagerHost" />
+                        <ui:ScrollView class="lan-room-details" horizontal-scroller-visibility="Hidden">
+                            <ui:Foldout name="lanRosterDetails" text="全部成员" class="lan-advanced lan-roster-details lan-hidden" value="false">
+                                <ui:ScrollView name="lanMembers" class="lan-members" horizontal-scroller-visibility="Hidden" />
+                            </ui:Foldout>
+                            <ui:Foldout text="邀请与连接" class="lan-advanced lan-connection" value="false">
+                                <ui:Label name="lanHostAddress" class="lan-address" />
+                                <ui:Button name="lanCopy" text="复制 IPv4 地址" class="lan-secondary" />
+                            </ui:Foldout>
+                        </ui:ScrollView>
                     </ui:VisualElement>
-                    <ui:VisualElement class="lan-launch-bar"><ui:VisualElement class="lan-launch-summary"><ui:Label name="lanLaunchTitle" text="等待成员准备" class="lan-launch-title" /><ui:Label name="lanLaunchHint" class="lan-muted" /></ui:VisualElement><ui:Button name="lanLeave" text="离开房间" class="lan-quiet" /><ui:Button name="lanEquipment" text="整理装备" class="lan-secondary" /><ui:Button name="lanReady" text="准备就绪" class="lan-primary" /><ui:Button name="lanStart" text="开始远征" class="lan-primary" /></ui:VisualElement>
+                    <ui:VisualElement class="lan-launch-bar lan-glass">
+                        <ui:VisualElement class="lan-launch-summary">
+                            <ui:Label name="lanLaunchTitle" class="lan-launch-title" />
+                            <ui:Label name="lanLaunchHint" class="lan-muted" />
+                        </ui:VisualElement>
+                        <ui:Button name="lanLeave" text="离开房间" class="lan-quiet" />
+                        <ui:Button name="lanEquipment" text="整理装备" class="lan-secondary" />
+                        <ui:Button name="lanReady" text="准备就绪" class="lan-primary" />
+                        <ui:Button name="lanStart" text="开始远征" class="lan-primary" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="lan-footer"><ui:VisualElement name="lanStatusDot" class="lan-status-dot" /><ui:Label name="lanStatus" text="连接同一网络，即可加入房间。" class="lan-status" /></ui:VisualElement>
+                <ui:VisualElement name="lanNotice" class="lan-footer lan-glass lan-hidden">
+                    <ui:VisualElement name="lanStatusDot" class="lan-status-dot" />
+                    <ui:Label name="lanStatus" class="lan-status" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

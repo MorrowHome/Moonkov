@@ -18,12 +18,14 @@ namespace Unity.MP_FPS.Client
         private const int StageLayer = 5;
         private const int MaxTargetEdge = 3072;
         private const int MaxTargetPixels = 3_000_000;
+        private const float FullscreenBottomClearance = 138f;
         private static readonly Vector3[] SlotPositions =
         {
             new Vector3(-1.59f, 0, -.24f), new Vector3(-.53f, 0, .13f),
             new Vector3(.53f, 0, -.03f), new Vector3(1.59f, 0, -.32f)
         };
         private readonly Image m_Image;
+        private readonly bool m_FillViewport;
         private readonly MenuCharacterView[] m_Actors = new MenuCharacterView[4];
         private readonly LobbyAppearance[] m_Appearances = new LobbyAppearance[4];
         private readonly string[] m_Ids = new string[4];
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS.Client
         private bool m_Disposed, m_Dirty = true, m_PreviewScene;
         private double m_LastTime;
         public event Action FramingChanged;
+        internal event Action<RenderTexture> FrameChanged;
         private bool m_ReducedMotion;
         public bool ReducedMotion
         {
@@ -63,11 +66,12 @@ namespace Unity.MP_FPS.Client
         public Scene DisplayScene => m_Scene;
         public int ActorCount { get { int count = 0; foreach (var actor in m_Actors) if (actor != null) count++; return count; } }
 
-        public OnlineSquadStage(Image image)
+        public OnlineSquadStage(Image image, bool fillViewport = false)
         {
             m_Image = image ?? throw new ArgumentNullException(nameof(image));
+            m_FillViewport = fillViewport;
             m_Image.pickingMode = PickingMode.Ignore;
-            m_Image.scaleMode = ScaleMode.ScaleToFit;
+            m_Image.scaleMode = fillViewport ? ScaleMode.StretchToFill : ScaleMode.ScaleToFit;
             m_Image.RegisterCallback<DetachFromPanelEvent>(Detached);
             m_LastTime = Time.realtimeSinceStartupAsDouble;
             m_Timer = image.schedule.Execute(Tick).Every(33);
@@ -161,23 +165,35 @@ namespace Unity.MP_FPS.Client
             {
                 m_Camera.aspect = (float)width / height;
                 float tangent = Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad);
-                float distance = Mathf.Max(1.05f, 2.45f / m_Camera.aspect) / tangent + .23f;
-                Vector3 focus = m_Root.transform.position + new Vector3(0, .93f, 0);
+                float halfHeight = m_FillViewport ? Mathf.Max(1.39f, 590f / viewport.y) : 1.05f;
+                float distance = Mathf.Max(halfHeight, 2.45f / m_Camera.aspect) / tangent + .23f;
+                // The full-screen stage needs room beneath the boots for the badges and action dock.
+                float floorSpace = (distance - SlotPositions[1].z) * tangent;
+                float focusY = m_FillViewport
+                    ? Mathf.Clamp((1f - 2f * FullscreenBottomClearance / viewport.y) * floorSpace, .3f, .87f)
+                    : .93f;
+                Vector3 focus = m_Root.transform.position + new Vector3(0, focusY, 0);
                 m_Camera.transform.position = focus + new Vector3(0, .12f, distance);
                 m_Camera.transform.LookAt(focus);
             }
             RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
             m_Image.MarkDirtyRepaint(); m_Dirty = false;
             if (framing) FramingChanged?.Invoke();
+            FrameChanged?.Invoke(m_Target);
         }
 
         public float SlotViewportX(int slot)
         {
             if (m_Camera == null || slot < 0 || slot >= 4) return 1 - (slot + .5f) / 4;
+            float x = ProjectSlot(slot).x;
+            if (m_FillViewport) return x;
             // Match the Image's ScaleToFit when the integer render target is slightly narrower.
             float imageWidth = Mathf.Min(1f, m_Camera.aspect * m_Viewport.y / m_Viewport.x);
-            return .5f + (m_Camera.WorldToViewportPoint(m_Root.transform.position + SlotPositions[slot]).x - .5f) * imageWidth;
+            return .5f + (x - .5f) * imageWidth;
         }
+
+        private Vector3 ProjectSlot(int slot) =>
+            m_Camera.WorldToViewportPoint(m_Root.transform.position + SlotPositions[slot]);
 
         internal void AlignMemberCards(VisualElement[] cards)
         {
@@ -187,6 +203,11 @@ namespace Unity.MP_FPS.Client
                 float before = i > 0 ? Mathf.Abs(center - SlotViewportX(i - 1)) : 1f;
                 float after = i < cards.Length - 1 ? Mathf.Abs(center - SlotViewportX(i + 1)) : 1f;
                 float width = Mathf.Clamp(Mathf.Min(before, after) - .012f, 0, .23f);
+                if (m_FillViewport && m_Camera != null)
+                {
+                    width = Mathf.Min(width, 120f / m_Viewport.x);
+                    cards[i].style.top = Length.Percent((1f - ProjectSlot(i).y + 10f / m_Viewport.y) * 100f);
+                }
                 cards[i].style.width = Length.Percent(width * 100f);
                 cards[i].style.left = Length.Percent(Mathf.Clamp(center - width * .5f, 0, 1 - width) * 100f);
             }
@@ -223,7 +244,12 @@ namespace Unity.MP_FPS.Client
         { m_Actors[index]?.Dispose(); m_Actors[index] = null; m_Appearances[index] = null; m_Ids[index] = null; }
         private void Detached(DetachFromPanelEvent evt) => Suspend();
         private void ReleaseTarget()
-        { m_Image.image = null; if (m_Target == null) return; m_Target.Release(); Destroy(m_Target); m_Target = null; }
+        {
+            m_Image.image = null;
+            if (m_Target == null) return;
+            m_Target.Release(); Destroy(m_Target); m_Target = null;
+            FrameChanged?.Invoke(null);
+        }
         public void Suspend()
         {
             for (int i = 0; i < 4; i++) ReleaseActor(i);
@@ -243,7 +269,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Timer.Pause(); m_Image.UnregisterCallback<DetachFromPanelEvent>(Detached);
-            Suspend(); FramingChanged = null;
+            Suspend(); FramingChanged = null; FrameChanged = null;
         }
     }
 }

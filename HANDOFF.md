@@ -138,7 +138,8 @@
 - 定向检查入口为 `Tools/Moonkov/Check LAN Squad`。使用 `LocalData/LanSquadReview/` 隔离资料，不启动游戏客户端。原生样例预览为 `Moonkov/Networking/LAN Lobby UI Preview`。Windows 可用 `PrintWindow` 读取本 Editor 的预览窗口，无需鼠标操作；不要反射重放 UI 面板 Render/Repaint。
 - 单 Editor 编译通过，27 项角色同步、准备取消、外观隐私、32 人翻页、界面构造释放和操作权限检查通过。已目视检查 1280×720 的原生四人样例界面与找房页，并确认创建按钮留在可视范围。预览在 `LocalData/LanSquadReview/`。没有打包或进行真实多人入场验收。
 - 2026-11-07 更换共用小队场景。观察窗复用 `Moonkov/UI/Halos/MainRoom/Moon`，舱内布置暖色顶灯和冷色轮廓光。站位与名牌共用相机投影。调整镜头后一起检查。
-- 渲染按面板像素密度分配，最长边不超过 3072 像素，总像素不超过 300 万。1280×720 的原生四人窗口在 2 倍缩放下使用 1868×730、4× MSAA。名字区域互不重叠。关闭窗口已确认释放渲染纹理、临时网格和材质。截图在 `LocalData/LanSquadReview/observation-cabin.png`。
+- LAN 场景铺满窗口，角色名牌跟随脚下投影。外观、邀请和完整成员列表按需展开。入口页和房间页共用同一个场景容器，切换时不用移动预览层级。矮窗口为底部操作区留空间。
+- 渲染按面板像素密度分配，最长边不超过 3072 像素，总像素不超过 300 万。磨砂面板裁切同一张模糊底图，底图最长边 512 像素。1280×720 的原生四人窗口实测 2309×1299。960×540 时名牌和操作区互不重叠。截图在 `LocalData/LanSquadReview/squad-fullscreen-glass.png`。
 
 ## 公网联机与小队展示（2026-11-05）
 
