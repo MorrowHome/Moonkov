@@ -8,19 +8,27 @@ using Unity.MP_FPS.Online;
 public sealed class OnlineConnectionBuildMetadata : IPreprocessBuildWithReport, IPostprocessBuildWithReport
 {
     public int callbackOrder => 100;
-    public void OnPreprocessBuild(BuildReport report)
+    public void OnPreprocessBuild(BuildReport report) => ValidatePlugin(report.summary.platform);
+
+    internal static void ValidatePlugin(BuildTarget target)
     {
-        if (report.summary.platform != BuildTarget.StandaloneWindows64) return;
-        const string plugin = "Assets/Plugins/EmbeddedIce/Windows/x86_64/moon_ice.dll";
+        bool mac = target == BuildTarget.StandaloneOSX;
+        if (!mac && target != BuildTarget.StandaloneWindows64) return;
+        string plugin = mac ? "Assets/Plugins/EmbeddedIce/macOS/libmoon_ice.dylib"
+            : "Assets/Plugins/EmbeddedIce/Windows/x86_64/moon_ice.dll";
         if (!File.Exists(plugin))
-            throw new BuildFailedException("Missing embedded P2P plugin. Restore Git LFS files or run Tools/Networking/EmbeddedIce/Build.ps1 -InstallPlugin.");
+            throw new BuildFailedException($"Missing embedded P2P plugin: {plugin}. Restore Git LFS content before building.");
         using var file = new BinaryReader(File.OpenRead(plugin));
-        if (file.BaseStream.Length < 64 || file.ReadUInt16() != 0x5a4d)
-            throw new BuildFailedException("Embedded P2P plugin is not a Windows DLL. Restore its Git LFS content before building.");
+        bool valid = file.BaseStream.Length >= 64 &&
+            (mac ? file.ReadUInt32() == 0xbebafeca : file.ReadUInt16() == 0x5a4d);
+        if (!valid)
+            throw new BuildFailedException($"Embedded P2P plugin is not a valid {(mac ? "universal macOS library" : "Windows DLL")}. Restore its Git LFS content before building.");
+        if (!(AssetImporter.GetAtPath(plugin) is PluginImporter importer) || !importer.GetCompatibleWithPlatform(target))
+            throw new BuildFailedException($"Embedded P2P plugin is excluded from {target}. Restore its plugin import settings before building.");
     }
     public void OnPostprocessBuild(BuildReport report)
     {
-        if (report.summary.platform != BuildTarget.StandaloneWindows64) return;
+        if (report.summary.platform != BuildTarget.StandaloneWindows64 && report.summary.platform != BuildTarget.StandaloneOSX) return;
         string directory = Path.GetDirectoryName(Path.GetFullPath(report.summary.outputPath));
         File.WriteAllText(Path.Combine(directory, "moon-network-protocol.txt"), OnlineNetworkProtocol.Version.ToString());
     }

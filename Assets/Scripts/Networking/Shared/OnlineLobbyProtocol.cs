@@ -36,6 +36,7 @@ namespace Unity.MP_FPS.Online
         public string ConnectionPath, IceHostId, IceHostAddress, IceStunHost;
         public int NetworkProtocol, IceStunPort;
         public bool IceAvailable;
+        public bool CanRetry, CanLeave;
         public int Port;
         public bool PublicQueue;
         public LobbyMember[] Members = Array.Empty<LobbyMember>();

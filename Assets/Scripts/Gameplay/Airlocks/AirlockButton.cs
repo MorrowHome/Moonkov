@@ -64,7 +64,16 @@ namespace Unity.MP_FPS
             if (m_Indicator)
             {
                 if (m_Block == null) m_Block = new MaterialPropertyBlock();
-                m_Indicator.GetPropertyBlock(m_Block); m_Block.SetColor("_BaseColor", feedback == AirlockFeedback.Accepted ? Color.green : Color.red);
+                m_Indicator.GetPropertyBlock(m_Block);
+                if (m_Command == AirlockCommand.CycleInner || m_Command == AirlockCommand.CycleOuter)
+                {
+                    var color = feedback == AirlockFeedback.Accepted ? new Color(.2f, .92f, .55f) :
+                        feedback == AirlockFeedback.Equalizing || feedback == AirlockFeedback.Pending ? new Color(1f, .53f, .09f) :
+                        new Color(1f, .21f, .13f);
+                    m_Block.SetColor("_BaseColor", color);
+                    m_Block.SetColor("_EmissionColor", color * .65f);
+                }
+                else m_Block.SetColor("_BaseColor", feedback == AirlockFeedback.Accepted ? Color.green : Color.red);
                 m_Indicator.SetPropertyBlock(m_Block);
             }
         }

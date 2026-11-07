@@ -26,7 +26,7 @@ namespace Unity.MP_FPS.Client
             m_LobbyBusy = m_LobbyPolling = false;
             m_SquadVisible = false;
             m_LobbyRefreshTask = Task.CompletedTask;
-            m_SquadPanel = new OnlineSquadPanel(LobbyAction, ShowStash, () => OnlineLobbyClient.Join(retry: true), (character, pose) =>
+            m_SquadPanel = new OnlineSquadPanel(LobbyAction, ShowStash, () => LobbyAction(new LobbyAction { Action = "retry" }), (character, pose) =>
             {
                 GameSettings.Instance.PlayerCharacter = character;
                 OnlineLobbyClient.SelectedPose = pose;
@@ -83,6 +83,11 @@ namespace Unity.MP_FPS.Client
                 lifetime.Token.ThrowIfCancellationRequested();
                 if (action.Action == "return") await OnlineLobbyClient.RetryReturnAsync(lifetime.Token);
                 else await OnlineLobbyClient.ActAsync(action, lifetime.Token);
+                if (action.Action == "retry")
+                {
+                    if (SessionReconnect.Available) GameManager.Instance.ReconnectLastGameAsync();
+                    else OnlineLobbyClient.Join(retry: true);
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex) { m_LobbyError = ex.Message; }

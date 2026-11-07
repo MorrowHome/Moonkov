@@ -141,7 +141,8 @@
 - `INetworkInterface` 的 Windows 托管包装必须用 struct。打洞和数据收发共用 ICE agent。每个上下文最多 64 个对端，接收队列默认 256 包；原生回调只入队。driver 独占上下文并负责释放，不能重复包装。STUN 主机名先在可取消的协商层解析，避免销毁时等待原生 DNS。适配器每批会完成前置 jobs，真实战局的 CPU 和帧时间尚未验收。
 - UTP 6.5 的 `Connect` 会用远端 `Custom` 地址自动绑定。ICE 适配器须接受本上下文已登记的对端地址；只接受 `LocalEndpoint` 会在打洞成功后返回空连接，触发 `Stale NetworkStreamConnection` 并立即断开。这是逻辑绑定，不改变物理网卡或公网候选。隔离检查现从未绑定的客户端启动，并沿用服务端 `AnyIpv4` 监听流程；现有单 Editor 编译通过，38 项检查通过，含自动绑定、DTLS 双向数据和错误证书名称拒绝。未重新打包或验收真实战局。
 - 服务端 ICE 实现位于 `Assets/Scripts/Networking/Server/OnlineInstanceServer.Ice.cs`。Unity 曾识别原文件为 MonoScript，却未将其纳入编译清单；保留 GUID 重新登记文件后恢复。遇到类似缺类型错误，应核对实际编译清单，不能只看磁盘文件或导入成功。此次现有单 Editor 编译通过，0 错误、0 警告；未进入 Play、打包或联机。
-- Mac 切到 Windows 目标后，Editor 也会定义 `UNITY_STANDALONE_WIN`。这不会让 Mac 加载 `moon_ice.dll`。合入 P2P 后，打开的 Editor 需完成资源刷新。打包前确认已加载协议 2 的脚本和构建回调，且插件导入目标是 Windows x64。大厅 39 项、协商 16 项离线检查通过，未做公网打洞或 DTLS 入场验收。
+- Mac 切到 Windows 目标后，Editor 也会定义 `UNITY_STANDALONE_WIN`。不能据此判断宿主系统。Mac 的 `DllNotFoundException / dlopen moon_ice` 曾发生在创建 ICE 上下文时，根本没发起打洞。现按 `Application.platform` 判断运行系统，并增加 `Assets/Plugins/EmbeddedIce/macOS/libmoon_ice.dylib`。通用库包含 arm64 和 x86_64，只启用 macOS Editor 和 Player；Windows 插件保持独立。两种库都由 Git LFS 保存。Mac 更新项目后须拿到真实二进制并等待导入完成。
+- macOS 原生库由 `Tools/Networking/EmbeddedIce/Build-macOS.sh` 或 `Embedded ICE macOS` 工作流构建，仍固定 libjuice v1.7.4，ABI 和联机协议未变。[构建 42367470298](https://github.com/MorrowHome/Moonkov/actions/runs/42367470298) 的通用架构、签名与原生检查通过。现有 Windows Editor 编译无错误，Windows 原生加载及两种平台的构建前检查通过。未启动额外 Editor、重新打包游戏或验收 Mac 跨网入场。
 - 全量接入前，固定源码构建及 65 项原生断言、32 项单 Editor 隔离断言通过。覆盖 NetCode 管线、DTLS 双向 64/1200 字节、释放及错误服务器名称。错误名称在普通 UDP 和 ICE 都未建立应用连接，均返回 `MaxConnectionAttempts=2`，不是明确的认证失败回码。报告在忽略目录 `LocalData/EmbeddedIce/`。用户随后要求直接接入、不追加测试；这些底层结果不能代表完整新流程或跨网络联机已通过。未构建 Player、进入 Play 或测量公网延迟。
 - 战局 UDP 打洞不会自动加速仓库 HTTPS；完整仓库直连还需常驻的可靠账号请求通道，不能依赖按局退出的 Unity 服务器。
 - 本机已安装并登录官方 Tailscale 1.104.5。现有 VPN 使用两条 `/1` 路由，Tailscale 默认绑定校园网网卡时，控制端登录连接无法建立。仅在 Tailscale 服务的 `Environment` 中增加 `TS_BIND_TO_INTERFACE_BY_ROUTE=1` 后，控制连接按系统路由经过 VPN，登录恢复。该选项已核对当前版本源码；升级后需重新确认。原服务环境备份在忽略目录 `LocalData/P2PTrial/`。
@@ -182,6 +183,8 @@
 - 账号服务与项目数据库已恢复。公网账号 `/auth/me` 无凭证请求返回预期 401。更新前完成私有配置和数据库备份，位于忽略目录 `LocalData/backups/online-squad-20261105-170423`。空闲独立服不监听 UDP 是正常设计，不能与账号服务停止混为一谈。
 - 双端已从 `f04ce9b2` 重建。独立服为 `Build/MoonServer/MoonServer.exe`，朋友客户端为 `D:/MoonkovBuilds/OnlineSquad-20261105/Moonkov.exe`。两端 `BuildSource.txt` 一致，构建均为 0 错误。客户端已附公网配置、公开 CA 和联机说明；调试符号单独保存在同级 `OnlineSquad-20261105-symbols`。没有分发 Editor 覆盖或服务器私有配置。实例协议标记 `1` 仍不校验完整构建版本，旧包不要混用。
 - 大厅现有 30 秒心跳超时和 90 秒重连宽限。离线会取消准备和排队；超时成员离队后自动转交队长。新增队长移除成员接口。活动战局名单不受大厅清理影响。39 项生命周期检查通过。此为大厅规则，战局内角色恢复仍走原有路径。
+- 加载失败或取消后退回界面，不能自动上报大厅 `return`，否则未入场席位会被标为已返回，重试和离队按钮一起消失。后端快照现提供 `CanRetry`、`CanLeave`。重试先经后端恢复未入场席位，沿用开局后 5 分钟入场窗口；已结算的角色不能重新进入本局。未入场或已结算的成员可单独离队，保留其他队友的战局和席位。仍有未结算装备时拒绝离队。
+- 上述操作要求账号后端能力 `lobby-entry-actions-v1`，本机后端已更新。52 项大厅规则检查、6 项原生界面样例检查通过，覆盖失败后按钮显示、点击回调、等待禁用和单独离队。现有单 Editor 编译通过，0 错误、0 警告。未重新打包或做联机验收。客户端也须更新源码或游戏包。
 - 默认在线入口经过仓库出战准备，最终按钮已改为“进入小队”。成员协议已补角色、姿势和公开装备外观。服务端从真实账号装备生成快照，不采信客户端装备，也不发送真实物品 ID、背包内容或弹药数。更改配置会取消自身准备，排队时则取消排队；活动战局外观不再更改。15 项外观检查通过。
 - 原生小队页已接入整备舱内 1–4 人同框、真实角色和装备。2026-11-06 将四种姿态改为抱臂、敬礼、比心、撒娇。保留自动 `-1` 和姿态 `0–3` 编号，不改账号服务协议。准备时敬礼 1.2 秒，然后回到所选姿态。三个角色均可重复选择。队长居中，名字和准备状态跟随站位。原有高级连接和战局重连按钮继续复用；返回仓库后不自动进图。
 - 小队动作源为 `ArtSource/DollSinger/SquadMotions.blend`。包含四个独立 `Squad_` Action 和静音 NLA 轨，每段 4 秒、61 个采样帧。手工改动后先保存，再用本机 Blender 运行 `Tools/Blender/export_squad_motions.py`。导出器只读动作源，并离线适配三套骨架。`squad_motions.py` 会重建此文件，不能用来导出手工修改。运行时只插值缓存的骨旋转，腿部保留原待机，切换过渡为 0.25 秒。可爱姿态复用现有面部形变。小队动作时收起手持近战道具，装备信息不变。
@@ -380,6 +383,7 @@
 
 - 正式场景已替换为 GL125，入口和场景 GUID 沿用。新版地形已更新战术地图底图。Editor 重开通过。定向检查覆盖出生、气闸、任务设备、补氧、撤离、搜刮及 U40 和 U62 两处新接路。其余待确认入口、Play 和 Player 帧率待验收。
 - 静态碰撞已按当前可见结构重建。厂房外壳、井壁和薄板背面通过定向检查。MC00 东侧 L1 S21 的旧面板空气墙已移除。后续通过 `build_gl125_collision.py` 更新独立碰撞清单，保留原光照烘焙哈希。
+- MC00 东 EVA、西货运和北人员三处均已接气闸。室内外各有呼叫台，舱内按去向选台。F 会关另一扇门、均压、开目标门。12 台控制台的瞄准选取、六扇门的通行和气压区通过编辑器检查。正式重装工具为 `GL125AirlockInstall.Install()`。
 - Blender OptiX 预烘 74 张线性光照图。MC00 的 28 张用 2 倍或 4 倍超采样。程序材质和角色探针使用近似。灯钮按废弃处理。导入、回执和同机位对照见 [GL125 地图接入](Docs/Development/GL125Unity.md)。
 - 旧整图专用资源已从工作副本清理。旧 `World/Lighting/SourceWorldForwardRenderer.asset` 仍供现有渲染管线使用。D 盘保留旧 LFS 对象和切换前场景，回退见接入文档。
 

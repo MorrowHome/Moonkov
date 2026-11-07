@@ -343,14 +343,16 @@ public static class GL125SceneInstall
     private static string ValidateGameplay(Scene scene, Transform world, bool checkSupport = true)
     {
         var roots = scene.GetRootGameObjects();
-        var airlock = Components<AirlockController>(roots).Single();
+        var airlocks = Components<AirlockController>(roots).ToArray();
         var buttons = Components<AirlockButton>(roots).ToArray();
         var site = Components<RaidMissionSite>(roots).Single();
         var devices = Components<RaidMissionDevice>(roots).ToArray();
         var oxygen = Components<OxygenRefillZone>(roots).Single();
         var map = Components<MoonRaidMap>(roots).Single();
         var furniture = Components<RaidFurnitureLoot>(roots).Single();
-        if (buttons.Length != 8 || buttons.Any(b => b.Owner != airlock || !b.isActiveAndEnabled) ||
+        if (airlocks.Length == 0 || airlocks.Any(owner => !buttons.Any(b => b.Owner == owner)) ||
+            buttons.Any(b => !airlocks.Contains(b.Owner) || !b.isActiveAndEnabled) ||
+            buttons.Select(b => b.ButtonId).Distinct().Count() != buttons.Length ||
             site.Anchors.Length != 5 || devices.Length != 5 || devices.Any(d => site.Anchor(d.AnchorId) == null) || !oxygen.Powered ||
             furniture.Drawers.Any(drawer => drawer == null || !drawer.Target))
             throw new InvalidOperationException("The original airlock, mission, or oxygen references are incomplete.");
@@ -390,17 +392,20 @@ public static class GL125SceneInstall
         Ground("Oxygen station", oxygen.transform.TransformPoint(new Vector3(0, .06f, 1.05f)), .45f);
         Ground("GL125 U40 connection", new Vector3(2177.87f, 236.73f, 2462.91f), .25f);
         Ground("GL125 U62 connection", new Vector3(2109.36f, 262.16f, 2535.97f), .25f);
-        var airlockData = new SerializedObject(airlock);
-        foreach (string name in new[] { "m_OuterAperture", "m_InnerAperture" })
+        foreach (var airlock in airlocks)
         {
-            var aperture = airlockData.FindProperty(name).objectReferenceValue as Collider;
-            if (!aperture) throw new InvalidOperationException($"Missing airlock aperture {name}.");
-            var forward = aperture.transform.forward;
-            var origin = aperture.bounds.center - forward * .5f;
-            if (Physics.RaycastAll(origin, forward, 1, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)
-                .Any(hit => hit.collider.transform.IsChildOf(world)))
-                failures.Add(name + " is obstructed by the new static world");
-            checks++;
+            var airlockData = new SerializedObject(airlock);
+            foreach (string name in new[] { "m_OuterAperture", "m_InnerAperture" })
+            {
+                var aperture = airlockData.FindProperty(name).objectReferenceValue as Collider;
+                if (!aperture) throw new InvalidOperationException($"Missing airlock aperture {name}.");
+                var forward = aperture.transform.forward;
+                var origin = aperture.bounds.center - forward * .5f;
+                if (Physics.RaycastAll(origin, forward, 1, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)
+                    .Any(hit => hit.collider.transform.IsChildOf(world)))
+                    failures.Add(airlock.AirlockId + " " + name + " is obstructed by the new static world");
+                checks++;
+            }
         }
         string spawnPath = Path.Combine(Path.GetDirectoryName(FormalScene)!, "TheophilusSpawnPointsSubScene.unity").Replace('\\', '/');
         var spawnScene = SceneManager.GetSceneByPath(spawnPath);

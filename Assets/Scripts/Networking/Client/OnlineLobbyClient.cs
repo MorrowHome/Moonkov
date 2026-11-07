@@ -38,10 +38,11 @@ namespace Unity.MP_FPS
             !string.IsNullOrEmpty(InstanceId) && s_Account == PlayerProfileClient.LocalPreferenceScope;
         public static string LastAttempt { get; private set; }
         private static string s_Account;
+        private static bool s_PreserveFailedJoin;
         public static string Error { get; private set; }
         public static int SelectedPose { get; set; } = -1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; }
+        static void Reset() { Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; s_PreserveFailedJoin = false; }
         public static async Task RefreshAsync(CancellationToken ct)
         {
             string scope = PlayerProfileClient.LocalPreferenceScope;
@@ -49,7 +50,14 @@ namespace Unity.MP_FPS
             Snapshot = await AccountClient.LobbyAsync(null, ct);
         }
         public static async Task ActAsync(LobbyAction action, CancellationToken ct)
-        { Snapshot = await AccountClient.LobbyAsync(action, ct); Error = null; }
+        {
+            Snapshot = await AccountClient.LobbyAsync(action, ct); Error = null;
+            if (action.Action == "leave")
+            {
+                InstanceId = ServerName = LastAttempt = null; s_PreserveFailedJoin = false;
+                SessionReconnect.Dismiss();
+            }
+        }
         public static void Join(bool retry = false)
         {
             var s = Snapshot;
@@ -58,6 +66,7 @@ namespace Unity.MP_FPS
             { Error = "大厅连接协议不匹配，请更新账号后端与独立服务器。"; return; }
             foreach (var member in s.Members) if (member.PlayerId == s.SelfId && member.Returned) return;
             InstanceId = s.InstanceId; ServerName = s.ServerName; LastAttempt = s.InstanceId;
+            s_PreserveFailedJoin = false;
             Error = null;
             // Always retain the public game entrance. P2P uses separate ICE endpoints.
             ConnectionSettings.Instance.IPAddress = s.Address;
@@ -68,9 +77,12 @@ namespace Unity.MP_FPS
             ConnectionSettings.Instance.ResumeOnly = false;
             GameManager.Instance.StartGameAsync(CreationType.ConnectAndJoin);
         }
+        public static void PreserveFailedJoin()
+        { if (InInstance) s_PreserveFailedJoin = true; }
         public static async Task ReturnedAsync()
         {
-            if (!InInstance || SessionReconnect.Available) return;
+            bool preserve = s_PreserveFailedJoin; s_PreserveFailedJoin = false;
+            if (!InInstance || SessionReconnect.Available || preserve) return;
             try
             {
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(12));

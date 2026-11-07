@@ -42,6 +42,26 @@ public static class AirlockRuleValidation
         Check(!rules.ApplySnapshot(snapshot,true), "invalid double-open snapshot rejected", passed);
         snapshot = rules.State; snapshot.PressureKPa = float.NaN;
         Check(!rules.ApplySnapshot(snapshot,true), "non-finite snapshot rejected", passed);
+        var cycle = new AirlockRules(settings);
+        Check(cycle.Request(AirlockCommand.CycleInner) == AirlockFeedback.Accepted && cycle.State.Equalizing,
+            "the indoor control starts pressurization from vacuum", passed);
+        Check(cycle.Request(AirlockCommand.CycleOuter) == AirlockFeedback.Equalizing && cycle.OuterSealed,
+            "a second control cannot change the active cycle", passed);
+        cycle.Tick(settings.PressurizeSeconds);
+        cycle.Tick(settings.DoorTravelSeconds);
+        Check(cycle.State.InnerFraction == 1 && cycle.OuterSealed, "one indoor request opens the inner door at safe pressure", passed);
+        Check(cycle.Request(AirlockCommand.CycleOuter, innerObstructed: true) == AirlockFeedback.Obstructed,
+            "a cycle cannot close an occupied doorway", passed);
+        cycle.Request(AirlockCommand.CycleOuter);
+        cycle.Tick(.05f, innerObstructed: true);
+        Check(cycle.State.InnerOpening && !cycle.State.Equalizing && cycle.OuterSealed,
+            "an intrusion cancels the queued cycle and reopens the moving door", passed);
+        cycle.Tick(settings.DoorTravelSeconds);
+        cycle.Request(AirlockCommand.CycleOuter);
+        cycle.Tick(settings.DoorTravelSeconds);
+        cycle.Tick(settings.DepressurizeSeconds);
+        cycle.Tick(settings.DoorTravelSeconds);
+        Check(cycle.State.OuterFraction == 1 && cycle.InnerSealed && !cycle.Breathable, "one outbound request closes, vents and opens", passed);
         var vacuum = default(AtmosphereSample); var air = new AtmosphereSample("room",101.325f,.21f,true);
         Check(AirlockAcoustics.Gain(AirlockSoundPath.Airborne,air,vacuum,false) == 0, "no external air sound in vacuum", passed);
         Check(AirlockAcoustics.Gain(AirlockSoundPath.HelmetInternal,vacuum,vacuum,false) == 1, "helmet channel survives vacuum", passed);
