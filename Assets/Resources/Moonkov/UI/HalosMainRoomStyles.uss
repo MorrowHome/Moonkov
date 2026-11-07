@@ -44,9 +44,9 @@
 .halos-room-edge { position: absolute; top: 0; bottom: 0; width: 200px; }
 .halos-room-left { left: 0; }
 .halos-room-right { right: 0; }
-.halos-room-character { position: absolute; left: 2890px; top: 160px; width: 1000px; height: 1120px; }
+.halos-room-character { position: absolute; left: 2860px; top: 78px; width: 1040px; height: 1090px; }
 #halosOriginalHome .halos-room-portrait { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
-#halosOriginalHome .halos-character-hit { left: 270px; top: 170px; width: 470px; height: 750px; }
+#halosOriginalHome .halos-character-hit { left: 300px; top: 146px; width: 455px; height: 850px; }
 #halosOriginalHome .halos-moon-hit { left: 2375px; top: 115px; width: 995px; height: 630px; }
 .halos-subject-preview {
     display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0;

@@ -537,12 +537,11 @@ namespace Unity.MP_FPS.Client
             var focus = m_Bounds.center;
             if (m_HomePose && m_Head != null)
             {
-                // A foreground observer is framed from the waist up. Full-body bounds
-                // would put the feet on the illustrated desk and flatten the room's depth.
+                // Keep the foreground framing through the skirt and upper legs during the turn.
                 var hips = m_Animator.GetBoneTransform(HumanBodyBones.Hips);
                 float torso = m_Head.position.y - hips.position.y;
-                float top = m_Head.position.y + torso * 1.15f;
-                float bottom = hips.position.y - torso * .1f;
+                float top = Mathf.Max(m_Head.position.y + torso * .88f, m_Bounds.max.y) + torso * .07f;
+                float bottom = hips.position.y - torso * .91f;
                 focus.y = (top + bottom) * .5f;
                 distance = (top - bottom) * .5f / verticalTangent + torso * .25f;
             }

@@ -181,10 +181,12 @@ public sealed class HalosMainRoomReview : EditorWindow
             Require(model.forward.z < -.7f && model.forward.x > .3f, "home actor faces away and left toward the Moon");
             Require(home.worldBound.center.x > root.worldBound.center.x && home.worldBound.height > root.worldBound.height,
                 "home actor uses the enlarged right foreground framing");
-            var hips = model.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
-            var hipPoint = homeCamera.WorldToViewportPoint(hips.position);
-            float hipY = home.LocalToWorld(new Vector2(hipPoint.x * home.contentRect.width, (1 - hipPoint.y) * home.contentRect.height)).y;
-            Require(hipY >= root.worldBound.yMax, "lower body is cropped below the screen, not standing on the desk");
+            var animator = model.GetComponent<Animator>();
+            var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+            var knee = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
+            var thigh = homeCamera.WorldToViewportPoint(Vector3.Lerp(hips.position, knee.position, .35f));
+            float thighY = home.LocalToWorld(new Vector2(thigh.x * home.contentRect.width, (1 - thigh.y) * home.contentRect.height)).y;
+            Require(thighY < root.worldBound.yMax, "foreground framing includes the waist and upper thigh");
             float modelTop = model.GetComponentsInChildren<SkinnedMeshRenderer>().Max(r => r.bounds.max.y);
             Require(homeCamera.WorldToViewportPoint(new Vector3(0, modelTop, 0)).y < 1,
                 "upper-body framing keeps the head inside the render target");
