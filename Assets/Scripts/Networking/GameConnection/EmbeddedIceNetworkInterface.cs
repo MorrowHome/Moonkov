@@ -19,9 +19,11 @@ namespace Unity.MP_FPS.EmbeddedNetworking
                 throw new ArgumentException("UTP datagram exceeds the ICE bridge capacity.");
             return 0;
         }
-        // NetCode Listen and UTP auto-bind use AnyIpv4. The actual ICE sockets are
-        // already bound to the selected physical address when peers are created.
+        // NetCode Listen binds AnyIpv4. UTP Connect auto-binds a Custom endpoint
+        // using the remote peer address, not LocalEndpoint. Both are logical binds:
+        // ICE sockets are already bound to the selected physical address.
         public int Bind(NetworkEndpoint endpoint) => endpoint == LocalEndpoint ||
+            m_Transport.HasPeerEndpoint(endpoint) ||
             endpoint.Family == NetworkFamily.Ipv4 && endpoint.WithPort(0) == NetworkEndpoint.AnyIpv4 ? 0 : -1;
         public int Listen() => 0;
         public JobHandle ScheduleReceive(ref ReceiveJobArguments arguments, JobHandle dependency)

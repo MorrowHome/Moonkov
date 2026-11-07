@@ -131,6 +131,7 @@
 - 胸章外观还要求常驻账号后端支持 `LobbyAppearance.ChestBadge`。只更新 Unity，旧后端会漏回传胸章，小队便一直显示「同步出战配置」。更新共享大厅字段或外观映射后，须重编译并重启 `MoonPersistence`。启动脚本现要求 `lobby-chest-badge-v1` 能力。此次已更新后端，并在现有 Windows Editor 确认双方胸章一致、同步提示消失、准备按钮可用；未进入战局。胸章仍沿用内部道具编码 `rig`，不迁移或改写库存。
 - SDP 只通过已登录账号与已有服务器密钥交换，只保存在内存中 45 秒。客户端协商总时限为 20 秒，服务端每 500 毫秒取一次请求。打洞绑定物理网卡；同机客户端两端过滤内网候选，只尝试公网 NAT 回流，失败不转本机。绑定地址不等于已证明流量绕过系统 VPN。
 - `INetworkInterface` 的 Windows 托管包装必须用 struct。打洞和数据收发共用 ICE agent。每个上下文最多 64 个对端，接收队列默认 256 包；原生回调只入队。driver 独占上下文并负责释放，不能重复包装。STUN 主机名先在可取消的协商层解析，避免销毁时等待原生 DNS。适配器每批会完成前置 jobs，真实战局的 CPU 和帧时间尚未验收。
+- UTP 6.5 的 `Connect` 会用远端 `Custom` 地址自动绑定。ICE 适配器须接受本上下文已登记的对端地址；只接受 `LocalEndpoint` 会在打洞成功后返回空连接，触发 `Stale NetworkStreamConnection` 并立即断开。这是逻辑绑定，不改变物理网卡或公网候选。隔离检查现从未绑定的客户端启动，并沿用服务端 `AnyIpv4` 监听流程；现有单 Editor 编译通过，38 项检查通过，含自动绑定、DTLS 双向数据和错误证书名称拒绝。未重新打包或验收真实战局。
 - 服务端 ICE 实现位于 `Assets/Scripts/Networking/Server/OnlineInstanceServer.Ice.cs`。Unity 曾识别原文件为 MonoScript，却未将其纳入编译清单；保留 GUID 重新登记文件后恢复。遇到类似缺类型错误，应核对实际编译清单，不能只看磁盘文件或导入成功。此次现有单 Editor 编译通过，0 错误、0 警告；未进入 Play、打包或联机。
 - Mac 切到 Windows 目标后，Editor 也会定义 `UNITY_STANDALONE_WIN`。这不会让 Mac 加载 `moon_ice.dll`。合入 P2P 后，打开的 Editor 需完成资源刷新。打包前确认已加载协议 2 的脚本和构建回调，且插件导入目标是 Windows x64。大厅 39 项、协商 16 项离线检查通过，未做公网打洞或 DTLS 入场验收。
 - 全量接入前，固定源码构建及 65 项原生断言、32 项单 Editor 隔离断言通过。覆盖 NetCode 管线、DTLS 双向 64/1200 字节、释放及错误服务器名称。错误名称在普通 UDP 和 ICE 都未建立应用连接，均返回 `MaxConnectionAttempts=2`，不是明确的认证失败回码。报告在忽略目录 `LocalData/EmbeddedIce/`。用户随后要求直接接入、不追加测试；这些底层结果不能代表完整新流程或跨网络联机已通过。未构建 Player、进入 Play 或测量公网延迟。

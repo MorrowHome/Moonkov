@@ -93,6 +93,11 @@ namespace Unity.MP_FPS.EmbeddedNetworking
             lock (m_Gate) { ThrowIfDisposed(); return m_Endpoints[peer]; }
         }
 
+        internal bool HasPeerEndpoint(NetworkEndpoint endpoint)
+        {
+            lock (m_Gate) { ThrowIfDisposed(); return m_Peers.ContainsKey(endpoint); }
+        }
+
         public void Gather(int peer)
         {
             lock (m_Gate) { ThrowIfDisposed(); Check(Native.mice_gather(m_Handle, peer), "gather"); }

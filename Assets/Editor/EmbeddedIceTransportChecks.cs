@@ -209,9 +209,8 @@ public static class EmbeddedIceTransportChecks
                     : DefaultDriverBuilder.CreateServerNetworkDriver(m_ServerIce.CreateNetworkInterface(), serverSettings).driver;
             }
             finally { clientSettings.Dispose(); serverSettings.Dispose(); }
-            var clientEndpoint = m_UdpBaseline ? NetworkEndpoint.LoopbackIpv4 : m_ClientIce.LocalEndpoint;
-            var serverEndpoint = m_UdpBaseline ? NetworkEndpoint.LoopbackIpv4 : m_ServerIce.LocalEndpoint;
-            Require(m_Client.Bind(clientEndpoint) == 0 && m_Server.Bind(serverEndpoint) == 0, "isolated endpoint bind");
+            var serverEndpoint = m_UdpBaseline ? NetworkEndpoint.LoopbackIpv4 : NetworkEndpoint.AnyIpv4;
+            Require(m_Server.Bind(serverEndpoint) == 0, "server endpoint bind");
             Require(m_Server.Listen() == 0, "UTP listen");
             if (!m_RejectName)
             {
@@ -219,7 +218,10 @@ public static class EmbeddedIceTransportChecks
                 try { m_ClientIce.CreateNetworkInterface(); } catch (InvalidOperationException) { duplicateRejected = true; }
                 Require(duplicateRejected, "duplicate driver ownership rejected");
             }
+            // Match NetCode's production path: Connect must auto-bind the client.
+            Require(!m_Client.Bound, "client starts unbound");
             m_Connection = m_Client.Connect(m_UdpBaseline ? m_Server.GetLocalEndpoint() : m_ClientIce.GetEndpoint(m_ClientPeer));
+            Require(m_Client.Bound && m_Connection.IsCreated, "client auto-bind creates a valid connection");
         }
         static NetworkSettings Settings()
         {
