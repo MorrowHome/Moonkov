@@ -12,6 +12,13 @@ namespace Unity.MP_FPS
         public static bool HasPendingFire(in PredictedPlayerGhost state) =>
             state.HaloPendingShot || state.BurstRemaining > 0 || state.FireBufferRemaining > 0;
 
+        internal static bool HasRaisedIntent(in PredictedPlayerGhost state) =>
+            state.HipFireHoldRemaining > 0 || HasPendingFire(state);
+
+        internal static bool FireBlocked(in PredictedPlayerGhost state, in PlayerInput input) =>
+            GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer || state.HaloDefenseHeld ||
+            HaloTransferRules.Occupied(state) || input.FireSuppressed || input.FreeLooking || state.CurrentHealth <= 0;
+
         public static void Reset(ref PredictedPlayerGhost state)
         {
             state.BurstRemaining = 0;
@@ -74,8 +81,7 @@ namespace Unity.MP_FPS
         {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
-            bool blocked = GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
-            if (blocked)
+            if (switched || weapon == null || FireBlocked(state, input))
             {
                 Reset(ref state);
                 state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
@@ -98,7 +104,7 @@ namespace Unity.MP_FPS
             if (!wasReady && input.Shoot && (!state.ControllerState.IsReloadingState || reloadEnding) &&
                 (state.CurrentAmmo > 0 || reloadEnding))
                 state.HaloPendingShot = true;
-            bool raised = input.Aim || state.HipFireHoldRemaining > 0 || HasPendingFire(state);
+            bool raised = input.Aim || HasRaisedIntent(state);
             state.WeaponRaiseProgress = Mathf.MoveTowards(state.WeaponRaiseProgress, raised ? 1 : 0,
                 step / ((raised ? DollSingerHaloAim.RaiseSeconds : DollSingerHaloAim.LowerSeconds) * RaidHealth.HandlingMultiplier(state)));
             if (state.ControllerState.IsReloadingState && !reloadEnding) state.HaloPendingShot = false;

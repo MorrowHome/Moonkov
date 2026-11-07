@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Unity.Mathematics;
 using Unity.MP_FPS;
 using Unity.MP_FPS.DollSinger;
 using UnityEditor;
@@ -16,12 +17,15 @@ public static class MoonkovHipFireChecks
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode.");
         assertions = 0;
         var registry = AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab");
+        var movement = prefab.GetComponent<PredictedPlayerControllerConstsAuthoring>().BuildControllerConsts();
         foreach (float dt in new[] { 1f / 30, 1f / 60, 1f / 144 })
         {
             CheckWindup(registry, dt);
             CheckHeldTrigger(registry, dt);
             CheckTransition(registry, dt);
             CheckAimRelease(registry, dt);
+            CheckHipFacing(registry, movement, dt);
         }
         CheckCancellation(registry);
         CheckEquipAndReload(registry);
@@ -30,7 +34,7 @@ public static class MoonkovHipFireChecks
         CheckPresentation();
         CheckOwnedReleasePresentation();
         Debug.Log($"Hip fire checks passed: {assertions} assertions; 30/60/144 Hz windup, single click, held auto/semi/burst, " +
-            "ADS handoff/release, cancellation, deterministic spread, stronger/slower recoil, separate pose and lens.");
+            "ADS handoff/release, third-person facing, cancellation, deterministic spread, stronger/slower recoil, separate pose and lens.");
     }
 
     private static PredictedPlayerGhost Ready(uint id) => new PredictedPlayerGhost
@@ -51,6 +55,52 @@ public static class MoonkovHipFireChecks
         bool fired = HaloModuleFire.TryFire(ref state, weapon, input, switched, dt);
         if (fired) { state.CurrentAmmo--; HaloModuleFire.CommitShot(ref state, weapon, dt); }
         return fired;
+    }
+
+    private static void CheckHipFacing(WeaponRegistry registry, FirstPersonController.ControllerConsts consts, float dt)
+    {
+        var state = Ready(DollSingerWeapons.Revolver);
+        var weapon = registry.GetWeaponData(state.EquippedWeaponID);
+        state.ControllerState.CurrentRotation = quaternion.identity;
+        state.ControllerState.GroundNormal = math.up();
+
+        float BodyYaw() => ((Quaternion)state.ControllerState.CurrentRotation).eulerAngles.y;
+
+        float3 Look(float yaw, PlayerInput input)
+        {
+            input.LookYawPitchDegrees = new float2(yaw, 0);
+            input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
+            input = RaidHealth.RestrictInput(state, input);
+            Step(ref state, weapon, input, dt);
+            float3 move = default;
+            FirstPersonController.AccumulateMovement(ref state.ControllerState, ref move, input, consts, dt, null,
+                DollSingerWeapons.FacesView(state, input));
+            return move;
+        }
+
+        Look(90, Intent());
+        Require(Mathf.Abs(BodyYaw()) < .01f, "Idle third-person orbit turned the body.");
+        Look(90, Intent(shoot: true, held: true));
+        Require(BodyYaw() > .01f && !state.ControllerState.Aiming, "Hip-fire windup did not turn the body without ADS.");
+
+        var strafe = new PlayerInput { MoveInput = new float2(-1, 0) };
+        float3 move = default;
+        for (int i = 0; i < Mathf.CeilToInt(.9f / dt); i++) move = Look(90, strafe);
+        Require(state.WeaponRaiseProgress >= .999f && Mathf.Abs(Mathf.DeltaAngle(BodyYaw(), 90)) < 1f &&
+            !state.ControllerState.Aiming, "Body stopped following the view during the hip-fire hold.");
+        Require(move.z > 0 && Mathf.Abs(move.x) < .001f, "Turning to the view changed camera-relative strafing.");
+
+        for (int i = 0; i < Mathf.CeilToInt(1.4f / dt); i++) Look(90, Intent());
+        float restingYaw = BodyYaw();
+        Look(-45, Intent());
+        Require(Mathf.Abs(Mathf.DeltaAngle(restingYaw, BodyYaw())) < .01f, "Body followed idle orbit after lowering.");
+
+        Look(-45, Intent(shoot: true, held: true));
+        float interruptedYaw = BodyYaw();
+        var blocked = Intent();
+        blocked.SetFlag(PlayerInput.InputFlag.FireSuppressed, true);
+        Look(135, blocked);
+        Require(Mathf.Abs(Mathf.DeltaAngle(interruptedYaw, BodyYaw())) < .01f, "Suppressed fire kept turning the body.");
     }
 
     private static void CheckWindup(WeaponRegistry registry, float dt)

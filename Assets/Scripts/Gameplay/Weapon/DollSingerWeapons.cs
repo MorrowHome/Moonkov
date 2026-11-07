@@ -7,6 +7,12 @@ namespace Unity.MP_FPS
     {
         public const uint Halo = 2, Revolver = 3, Shotgun = 4, Sniper = 5, Cicada = 6, Trine = 7, Aegis = 8, Vesper = 9, Thorn = 10, Sundown = 11, Rondo = 12, Tempest = 13, Nocturne = 14, None = uint.MaxValue;
         public static bool IsHalo(uint id) => id >= Halo && id <= Nocturne;
+        // Hip fire follows the view during the same window as the raised hand pose.
+        // Keep ADS separate: the motor already reads input.Aim for that case.
+        public static bool FacesView(in PredictedPlayerGhost state, in PlayerInput input) =>
+            state.CurrentHealth > 0 && !state.ClashDarkSight && (state.MeleeWeapon != 0 ||
+                IsHalo(state.EquippedWeaponID) && HaloModuleFire.HasRaisedIntent(state) && !HaloModuleFire.FireBlocked(state, input));
+
         public static uint WeaponId(string code) => code == "rifle" || code == "compact" ? Halo :
             code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : code == "sniper" ? Sniper :
             code == "cicada" ? Cicada : code == "trine" ? Trine : code == "aegis" ? Aegis : code == "vesper" ? Vesper : code == "thorn" ? Thorn : code == "sundown" ? Sundown : code == "rondo" ? Rondo : code == "tempest" ? Tempest : code == "nocturne" ? Nocturne : None;

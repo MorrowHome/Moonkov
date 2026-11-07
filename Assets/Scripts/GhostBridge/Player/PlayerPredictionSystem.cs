@@ -275,11 +275,12 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
                         }
                         DollSingerWeapons.StoreAmmo(ref predictedPlayer.ValueRW);
+                        var movementInput = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
                         FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                             ref predictedPlayer.ValueRW.AccumulatedMovement,
-                            RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
+                            movementInput,
                             RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT, controllerLink.Controller,
-                            predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 && !predictedPlayer.ValueRO.ClashDarkSight);
+                            DollSingerWeapons.FacesView(predictedPlayer.ValueRO, movementInput));
 
                         if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
                         {

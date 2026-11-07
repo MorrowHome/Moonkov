@@ -589,12 +589,13 @@ namespace Unity.MP_FPS
                         var commandInput = commands[i + predictedClient.BeginInputIndex];
                         if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRO.InputIndex, out var input))
                         {
+                            var movementInput = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
                             FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                                 ref predictedPlayer.ValueRW.AccumulatedMovement,
-                                RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
+                                movementInput,
                                 RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts),
                                 movementDt, SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity).Controller,
-                                predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 && !predictedPlayer.ValueRO.ClashDarkSight);
+                                DollSingerWeapons.FacesView(predictedPlayer.ValueRO, movementInput));
                         }
                     }
 
