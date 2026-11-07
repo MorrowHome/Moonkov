@@ -7,7 +7,8 @@ void Reject(Action act, string why) { try { act(); } catch (InvalidOperationExce
 var service = new OnlineLobbies();
 LobbySnapshot Get(Guid id) => service.Snapshot(id, now, "game.example", "game.example", 7979);
 void Act(Guid id, string op, string code = "", string mode = "Coop", bool ready = false, int team = 0, bool queue = false) =>
-    service.Act(id, "Operator", false, new LobbyAction { Action = op, Code = code, Mode = mode, Ready = ready, Team = team, PublicQueue = queue }, now);
+    service.Act(id, "Operator", false, new LobbyAction { Action = op, Code = code, Mode = mode,
+        ConnectionPath = OnlineNetworkProtocol.P2P, Ready = ready, Team = team, PublicQueue = queue }, now);
 Guid a = Guid.NewGuid(), b = Guid.NewGuid(), c = Guid.NewGuid(), d = Guid.NewGuid(), e = Guid.NewGuid();
 Act(a, "create"); string code = Get(a).Code;
 Act(b, "join", code); Act(c, "join", code); Act(d, "join", code);
@@ -24,8 +25,8 @@ Act(a, "start"); var first = service.Allocate(now)!;
 Check(first.Seats.Count == 4 && first.Seats.All(s => s.Team == 0), "Coop seats were not allied");
 Check(service.Allocate(now) == null && Get(a).Address == null, "Second map allocated or endpoint advertised before ready");
 Reject(() => service.Admission(a, first.Id, now), "Admission before scene ready");
-Reject(() => service.Ready(first.Id, now, 2), "Wrong server protocol accepted");
-service.Ready(first.Id, now, 1);
+Reject(() => service.Ready(first.Id, now, OnlineNetworkProtocol.Version + 1, true), "Wrong server protocol accepted");
+service.Ready(first.Id, now, OnlineNetworkProtocol.Version, true);
 Check(Get(a).Address == "game.example", "Ready server not advertised");
 Reject(() => service.Admission(e, first.Id, now), "Uninvited player admitted");
 Reject(() => service.Admission(a, "another-raid", now), "Cross-instance admission accepted");

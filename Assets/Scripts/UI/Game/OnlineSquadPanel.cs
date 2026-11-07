@@ -63,8 +63,10 @@ namespace Unity.MP_FPS.Client
             Element.Q<Button>("onlineReturn").clicked += () => Emit("return");
             void Settings() => m_Action?.Invoke(new LobbyAction { Action = "settings",
                 Mode = Element.Q<RadioButtonGroup>("onlineMode").value == 0 ? "Coop" : "Versus",
+                ConnectionPath = Element.Q<RadioButtonGroup>("onlineConnection").value == 0 ? OnlineNetworkProtocol.P2P : OnlineNetworkProtocol.Vps,
                 PublicQueue = Element.Q<Toggle>("onlinePublic").value });
             Element.Q<RadioButtonGroup>("onlineMode").RegisterValueChangedCallback(_ => Settings());
+            Element.Q<RadioButtonGroup>("onlineConnection").RegisterValueChangedCallback(_ => Settings());
             Element.Q<Toggle>("onlinePublic").RegisterValueChangedCallback(_ => Settings());
             Element.Q<RadioButtonGroup>("onlineTeam").RegisterValueChangedCallback(e => m_Action?.Invoke(new LobbyAction { Action = "team", Team = e.newValue }));
             void Appearance() => appearanceChanged?.Invoke(Element.Q<DropdownField>("onlineCharacter").index + 2,
@@ -146,6 +148,7 @@ namespace Unity.MP_FPS.Client
             {
                 Element.Q("onlineSettings").SetEnabled(lobby && leader && !busy);
                 Element.Q<RadioButtonGroup>("onlineMode").SetValueWithoutNotify(snapshot.Mode == "Coop" ? 0 : 1);
+                Element.Q<RadioButtonGroup>("onlineConnection").SetValueWithoutNotify(snapshot.ConnectionPath == OnlineNetworkProtocol.Vps ? 1 : 0);
                 Element.Q<Toggle>("onlinePublic").SetValueWithoutNotify(snapshot.PublicQueue);
                 var team = Element.Q<RadioButtonGroup>("onlineTeam");
                 team.style.display = snapshot.Mode == "Versus" && !snapshot.PublicQueue ? DisplayStyle.Flex : DisplayStyle.None;

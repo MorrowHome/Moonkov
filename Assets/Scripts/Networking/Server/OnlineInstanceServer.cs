@@ -36,9 +36,14 @@ namespace Unity.MP_FPS
             var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path));
             using var http = new HttpClient { BaseAddress = new Uri(config.BackendUrl.TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(10) };
             http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
-            using var content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceEvent { InstanceId = InstanceId, Kind = "ready", Protocol = 1 }), Encoding.UTF8, "application/json");
+            using var content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceEvent
+            {
+                InstanceId = InstanceId, Kind = "ready", Protocol = Online.OnlineNetworkProtocol.Version,
+                IceAvailable = OnlineIceServer.Available, IceHostId = OnlineIceServer.HostId, IceHostAddress = OnlineIceServer.BindAddress
+            }), Encoding.UTF8, "application/json");
             using var response = await http.PostAsync("internal/instances/event", content);
             response.EnsureSuccessStatusCode();
+            OnlineIceServer.Start();
             Debug.Log("[Online] Fresh instance ready: " + InstanceId);
         }
     }

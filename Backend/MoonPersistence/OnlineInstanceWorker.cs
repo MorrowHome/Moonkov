@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using Unity.MP_FPS.Online;
 
 public sealed class OnlineInstanceOptions
 {
@@ -10,6 +11,9 @@ public sealed class OnlineInstanceOptions
     public string Address { get; set; } = "moon.morrowhome.site";
     public string ServerName { get; set; } = "moon.morrowhome.site";
     public int Port { get; set; } = 7979;
+    public string IceStunHost { get; set; } = "stun.cloudflare.com";
+    public int IceStunPort { get; set; } = 3478;
+    public string IceBindAddress { get; set; } = "";
 }
 
 // No shell commands, no extra Editor, no client processes. The process lease is
@@ -100,11 +104,11 @@ public sealed class OnlineInstanceWorker(OnlineLobbies lobbies, OnlineInstanceOp
         var root = Path.GetFullPath(options.ProjectRoot);
         var exe = Path.GetFullPath(Path.Combine(root, options.Executable));
         if (!File.Exists(exe)) throw new InvalidOperationException("请先构建当前版本独立服务器。");
-        string protocolFile = Path.Combine(Path.GetDirectoryName(exe)!, "online-instance-protocol.txt");
-        if (!File.Exists(protocolFile) || File.ReadAllText(protocolFile).Trim() != "1")
-            throw new InvalidOperationException("独立服尚未更新到每局实例协议，请重新构建服务器。");
+        string protocolFile = Path.Combine(Path.GetDirectoryName(exe)!, "moon-network-protocol.txt");
+        if (!File.Exists(protocolFile) || File.ReadAllText(protocolFile).Trim() != OnlineNetworkProtocol.Version.ToString())
+            throw new InvalidOperationException("独立服尚未更新到 P2P/VPS 选线版本，请重新构建服务器。");
         if (!File.Exists(Path.Combine(root, "moon-server.local.json"))) throw new InvalidOperationException("缺少服务器后端配置。");
-        if (IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners().Any(e => e.Port == options.Port))
+        if (active.ConnectionPath == OnlineNetworkProtocol.Vps && IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners().Any(e => e.Port == options.Port))
             throw new InvalidOperationException($"UDP {options.Port} 被旧服务器占用，请停止旧常驻服后重试。");
         string folder = Path.Combine(root, "LocalData/instances", active.Id);
         Directory.CreateDirectory(folder);
@@ -119,6 +123,10 @@ public sealed class OnlineInstanceWorker(OnlineLobbies lobbies, OnlineInstanceOp
         start.Environment["MOON_SERVER_SHUTDOWN_FILE"] = stopFile;
         start.Environment["MOON_INSTANCE_ID"] = active.Id;
         start.Environment["MOON_INSTANCE_MODE"] = active.Mode;
+        start.Environment["MOON_INSTANCE_CONNECTION"] = active.ConnectionPath;
+        start.Environment["MOON_ICE_STUN_HOST"] = options.IceStunHost;
+        start.Environment["MOON_ICE_STUN_PORT"] = options.IceStunPort.ToString();
+        start.Environment["MOON_ICE_BIND_ADDRESS"] = options.IceBindAddress;
         process = Process.Start(start) ?? throw new InvalidOperationException("启动进程失败。");
         lease = new Lease(process.Id, process.StartTime.ToUniversalTime().Ticks, active.Id, exe, stopFile);
         File.WriteAllText(LeaseFile, JsonSerializer.Serialize(lease));

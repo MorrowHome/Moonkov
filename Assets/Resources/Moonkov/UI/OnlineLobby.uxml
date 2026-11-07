@@ -24,6 +24,7 @@
             <ui:VisualElement name="onlineParty" class="online-party">
                 <ui:VisualElement name="onlineSettings" class="online-settings">
                     <ui:RadioButtonGroup name="onlineMode" label="玩法" choices="合作,好友对抗" value="0" />
+                    <ui:RadioButtonGroup name="onlineConnection" label="连接方式" choices="P2P 直连,VPS 中转" value="0" />
                     <ui:Toggle name="onlinePublic" label="寻找其他队伍" />
                 </ui:VisualElement>
                 <ui:RadioButtonGroup name="onlineTeam" label="队伍" choices="A 队,B 队" value="0" />

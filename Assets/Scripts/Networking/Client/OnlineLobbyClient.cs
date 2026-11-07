@@ -18,7 +18,7 @@ namespace Unity.MP_FPS
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl)) throw new InvalidOperationException("请先登录在线账号。");
             using var request = new HttpRequestMessage(action == null ? HttpMethod.Get : HttpMethod.Post,
                 Address(s_BaseUrl, (action == null ? "auth/lobby" : "auth/lobby/action") +
-                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose));
+                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose + "&networkProtocol=" + OnlineNetworkProtocol.Version));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             if (action != null) request.Content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
@@ -54,13 +54,13 @@ namespace Unity.MP_FPS
         {
             var s = Snapshot;
             if (s?.Phase != "Ready" || string.IsNullOrEmpty(s.Address) || s.InstanceId == LastAttempt && !retry) return;
+            if (s.NetworkProtocol != OnlineNetworkProtocol.Version || !OnlineNetworkProtocol.ValidPath(s.ConnectionPath))
+            { Error = "大厅连接协议不匹配，请更新账号后端与独立服务器。"; return; }
             foreach (var member in s.Members) if (member.PlayerId == s.SelfId && member.Returned) return;
             InstanceId = s.InstanceId; ServerName = s.ServerName; LastAttempt = s.InstanceId;
             Error = null;
-            // A localhost account-service override identifies this same host PC.
-            // Keep certificate identity separate from the transport IP (DTLS SNI).
-            bool local = Uri.TryCreate(ClientSettings.AccountServiceUrl, UriKind.Absolute, out var service) && service.IsLoopback;
-            ConnectionSettings.Instance.IPAddress = local ? "127.0.0.1" : s.Address;
+            // Always retain the public game entrance. P2P uses separate ICE endpoints.
+            ConnectionSettings.Instance.IPAddress = s.Address;
             ConnectionSettings.Instance.Port = s.Port.ToString();
             ConnectionSettings.Instance.ConnectionError = null;
             GameSettings.Instance.ConnectionMode = 1;

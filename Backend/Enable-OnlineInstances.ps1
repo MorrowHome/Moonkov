@@ -7,8 +7,8 @@ $Address = $Address.Trim()
 # The transport address may be an IP while the existing DTLS certificate names a domain.
 $ServerName = if ([string]::IsNullOrWhiteSpace($ServerName)) { $Address } else { $ServerName.Trim() }
 $projectRoot = Split-Path $PSScriptRoot -Parent
-$marker = Join-Path $projectRoot 'Build/MoonServer/online-instance-protocol.txt'
-if (!(Test-Path -LiteralPath $marker) -or (Get-Content -LiteralPath $marker -Raw).Trim() -ne '1') { throw 'Build the new dedicated server before enabling party instances.' }
+$marker = Join-Path $projectRoot 'Build/MoonServer/moon-network-protocol.txt'
+if (!(Test-Path -LiteralPath $marker) -or (Get-Content -LiteralPath $marker -Raw).Trim() -ne '2') { throw 'Build the P2P/VPS dedicated server before enabling party instances.' }
 $configPath = Join-Path $PSScriptRoot 'MoonPersistence/appsettings.local.json'
 $configuration = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
 $backup = Join-Path $projectRoot ('LocalData/backups/online-instances-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))

@@ -22,6 +22,7 @@ public sealed class OnlineLobbies
         public string Code { get; set; } = "";
         public Guid Leader { get; set; }
         public string Mode { get; set; } = "Coop";
+        public string ConnectionPath { get; set; } = OnlineNetworkProtocol.P2P;
         public string Phase { get; set; } = "Lobby";
         public string Message { get; set; } = "";
         public bool PublicQueue { get; set; }
@@ -41,6 +42,11 @@ public sealed class OnlineLobbies
     {
         public string Id { get; set; } = "";
         public string Mode { get; set; } = "Coop";
+        // Persisted allocations from protocol 1 were VPS sessions.
+        public string ConnectionPath { get; set; } = OnlineNetworkProtocol.Vps;
+        public bool IceAvailable { get; set; }
+        public string? IceHostId { get; set; }
+        public string? IceHostAddress { get; set; }
         public string Phase { get; set; } = "Starting";
         public DateTime Created { get; set; }
         public DateTime ReadyAt { get; set; }
@@ -113,6 +119,8 @@ public sealed class OnlineLobbies
                 SelfId = id.ToString(), Code = p.Code, LeaderId = p.Leader.ToString(), Mode = p.Mode,
                 Phase = a == null ? p.Phase : a.Phase, InstanceId = a?.Id, PublicQueue = p.PublicQueue,
                 Address = a?.Phase == "Ready" ? address : null, ServerName = serverName, Port = port, Message = p.Message,
+                NetworkProtocol = OnlineNetworkProtocol.Version, ConnectionPath = a?.ConnectionPath ?? p.ConnectionPath,
+                IceAvailable = a?.IceAvailable ?? false, IceHostId = a?.IceHostId, IceHostAddress = a?.IceHostAddress,
                 Members = p.Members.Select(m => new LobbyMember { PlayerId = m.Id.ToString(), Name = m.Name,
                     Ready = m.Ready, Team = m.Team, Appearance = m.Appearance.Copy(), Connected = now - m.Seen < HeartbeatTimeout,
                     ReconnectSeconds = Math.Max(0, (int)Math.Ceiling((ReconnectGrace - (now - m.Seen)).TotalSeconds)),
@@ -195,7 +203,8 @@ public sealed class OnlineLobbies
                     {
                         case "settings":
                             Require(p.Leader == id && request.Mode is "Coop" or "Versus", "只有队长可选择合作或对抗。");
-                            Reset(p); p.Mode = request.Mode; p.PublicQueue = request.PublicQueue; break;
+                            Require(OnlineNetworkProtocol.ValidPath(request.ConnectionPath), "请选择 P2P 直连或 VPS 中转。");
+                            Reset(p); p.Mode = request.Mode; p.PublicQueue = request.PublicQueue; p.ConnectionPath = request.ConnectionPath; break;
                         case "team":
                             Require(request.Team is 0 or 1, "请选择 A 队或 B 队。"); Reset(p); me.Team = request.Team; break;
                         case "ready": me.Ready = request.Ready; break;
@@ -234,7 +243,7 @@ public sealed class OnlineLobbies
                 chosen = new List<Party> { first };
                 if (first.PublicQueue)
                 {
-                    foreach (var other in queued.Where(p => p != first && p.PublicQueue && p.Mode == first.Mode))
+                    foreach (var other in queued.Where(p => p != first && p.PublicQueue && p.Mode == first.Mode && p.ConnectionPath == first.ConnectionPath))
                         if (chosen.Sum(p => p.Members.Count) + other.Members.Count <= 4) chosen.Add(other);
                     if (first.Mode == "Versus" && chosen.Count < 2) { chosen = null; continue; }
                     // Coop never waits for strangers; public queue just allows another ready party to join this allocation.
@@ -242,7 +251,8 @@ public sealed class OnlineLobbies
                 break;
             }
             if (chosen == null || chosen.Count == 0) { if (changed) Save(); return null; }
-            var a = new Allocation { Id = Guid.NewGuid().ToString("N"), Mode = chosen[0].Mode, Created = now };
+            var a = new Allocation { Id = Guid.NewGuid().ToString("N"), Mode = chosen[0].Mode,
+                ConnectionPath = chosen[0].ConnectionPath, Created = now };
             for (int i = 0; i < chosen.Count; i++)
             {
                 var p = chosen[i]; p.Instance = a.Id; p.Phase = "Starting"; p.Message = "正在为本局加载全新地图。";
@@ -251,12 +261,19 @@ public sealed class OnlineLobbies
             state.Active = a; Save(); return Current();
         }
     }
-    public void Ready(string instance, DateTime now, int protocol)
+    public void Ready(string instance, DateTime now, int protocol, bool iceAvailable = false, string? iceHostId = null, string? iceHostAddress = null)
     {
         lock (gate)
         {
-            Require(state.Active?.Id == instance && protocol == 1, "对局实例或协议不匹配。");
-            if (state.Active!.Phase == "Starting") { state.Active.Phase = "Ready"; state.Active.ReadyAt = now; Save(); }
+            Require(state.Active?.Id == instance && protocol == OnlineNetworkProtocol.Version, "对局实例或协议不匹配，请同步更新独立服务器。");
+            Require(state.Active!.ConnectionPath != OnlineNetworkProtocol.P2P || iceAvailable, "本局选择了 P2P，但独立服务器未启用内置连接模块。");
+            if (state.Active.Phase == "Starting")
+            {
+                state.Active.IceAvailable = iceAvailable;
+                state.Active.IceHostId = iceHostId;
+                state.Active.IceHostAddress = iceHostAddress;
+                state.Active.Phase = "Ready"; state.Active.ReadyAt = now; Save();
+            }
         }
     }
     public (string Instance, int Team) Admission(Guid id, string instance, DateTime now, bool consume = false)

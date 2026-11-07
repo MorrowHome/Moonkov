@@ -203,7 +203,7 @@ namespace Unity.MP_FPS
             if (string.IsNullOrEmpty(token)) throw new InvalidOperationException("Sign in before starting a raid.");
             bool allocated = OnlineLobbyClient.InInstance;
             using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, allocated ? "auth/lobby/game-ticket" : "auth/game-ticket"));
-            if (allocated) request.Content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceCredential { InstanceId = OnlineLobbyClient.InstanceId }), Encoding.UTF8, "application/json");
+            if (allocated) request.Content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceCredential { InstanceId = OnlineLobbyClient.InstanceId, Protocol = Online.OnlineNetworkProtocol.Version }), Encoding.UTF8, "application/json");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             using var response = await Http().SendAsync(request, ct);
             string body = await response.Content.ReadAsStringAsync();

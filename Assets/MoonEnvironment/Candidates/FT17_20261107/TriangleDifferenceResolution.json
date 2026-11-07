@@ -1,0 +1,69 @@
+{
+  "allNonzeroTriangleCountsMatch": false,
+  "maxRelativeAreaError": 0.00023222647376660888,
+  "objects": [
+    {
+      "name": "FL103_OTHER20_GB97_N_Receiving__B1_cargo_leaf_reinforcement_-1",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 5.7718345611246245e-05,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FL103_OTHER20_GB97_N_Receiving__B1_cargo_leaf_reinforcement_1",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 5.771848867039269e-05,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FL103_OTHER20_GB97_N_Receiving__B1_window_protected_glass0",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 7.94977956766603e-05,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FL103_OTHER20_GB97_N_Receiving__B1_window_protected_glass1",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 7.876702006406021e-05,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FL103_OTHER20_GB97_W_Service__B2_hatch_window",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 0.00023222647376660888,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FL103_OTHER20_GB97_W_Service__B2_personnel_hatch",
+      "sameNonzeroTriangleCount": true,
+      "surfaceAreaRelativeError": 6.0051986969380204e-05,
+      "sourceZeroTriangles": 24,
+      "unityZeroTriangles": 0
+    },
+    {
+      "name": "FT09_Precise_Natural_North_Cut",
+      "sameNonzeroTriangleCount": false,
+      "surfaceAreaRelativeError": 1.0607030962686817e-06,
+      "sourceZeroTriangles": 23,
+      "unityZeroTriangles": 14
+    },
+    {
+      "name": "FT09_Preserved_Precise_Central_Low_Cut",
+      "sameNonzeroTriangleCount": false,
+      "surfaceAreaRelativeError": 7.5652034049517305e-06,
+      "sourceZeroTriangles": 286,
+      "unityZeroTriangles": 50
+    },
+    {
+      "name": "FT09_Preserved_Preserved_North_Stair_Cut",
+      "sameNonzeroTriangleCount": false,
+      "surfaceAreaRelativeError": 2.3443464104139354e-06,
+      "sourceZeroTriangles": 147,
+      "unityZeroTriangles": 42
+    }
+  ]
+}

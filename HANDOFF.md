@@ -107,6 +107,20 @@
 - 账号 HTTP 请求上限改为 30 秒，覆盖响应正文下载。仓库读取超时单独提示重新登录。主动取消仍保留取消语义；不会自动重放登录或注册请求，不重置账号和库存。
 - 用户原 Editor 在检查期间退出。没有另开 Editor。复用已有 Editor 编译参数，在忽略目录独立编译主程序集，0 错误、20 条未涉及本次文件的警告。使用 Unity 自带 Mono 调用该程序集，13 项定向传输检查通过，包含 11 秒正文延迟、两种超时提示、主动取消和不重放。结果在 `LocalData/OnlineLoginBug/`。未打包、未进入 Play，旧 Player 不会自动获得这项源码修改。
 
+## 内置 P2P 与每局选线（2026-11-07）
+
+- 用户明确要求玩家只安装游戏，不额外下载 VPN。Tailscale 仅作线路排查，不是发布依赖。Mac 暂时不可用，可继续内置方案研究；跨网络结果不能用同机自连或同一局域网的成功代替。用户自己的游戏客户端仍须走公网入口。
+- 已接入 Windows x64 libjuice v1.7.4、UTP 6.5.0 和现有 DTLS。队长在小队准备阶段选择「P2P 直连」或「VPS 中转」，新队伍默认 P2P。修改后全队取消准备；排队与开局后锁定，公开匹配只合并同线路队伍。P2P 失败直接断开，不自动切 VPS。见[当前实现与打包说明](Tools/Networking/EmbeddedIce/README.md)和[选型研究](Docs/EmbeddedNetworkingResearch-20261107.md)。
+- 账号后端已编译并更新，功能标记为 `embedded-ice-v2`。下一次必须同步打包 Windows x64 客户端与独立服务器；构建回调写入 `moon-network-protocol.txt=2`。旧服务器包会被拒绝启动，旧客户端会提示更新。原生 DLL 由 Git LFS 保存，许可随包发布。数据库和现有公网入口未更改。
+- SDP 只通过已登录账号与已有服务器密钥交换，只保存在内存中 45 秒。客户端协商总时限为 20 秒，服务端每 500 毫秒取一次请求。打洞绑定物理网卡；同机客户端两端过滤内网候选，只尝试公网 NAT 回流，失败不转本机。绑定地址不等于已证明流量绕过系统 VPN。
+- `INetworkInterface` 的 Windows 托管包装必须用 struct。打洞和数据收发共用 ICE agent。每个上下文最多 64 个对端，接收队列默认 256 包；原生回调只入队。driver 独占上下文并负责释放，不能重复包装。STUN 主机名先在可取消的协商层解析，避免销毁时等待原生 DNS。适配器每批会完成前置 jobs，真实战局的 CPU 和帧时间尚未验收。
+- 服务端 ICE 实现位于 `Assets/Scripts/Networking/Server/OnlineInstanceServer.Ice.cs`。Unity 曾识别原文件为 MonoScript，却未将其纳入编译清单；保留 GUID 重新登记文件后恢复。遇到类似缺类型错误，应核对实际编译清单，不能只看磁盘文件或导入成功。此次现有单 Editor 编译通过，0 错误、0 警告；未进入 Play、打包或联机。
+- 全量接入前，固定源码构建及 65 项原生断言、32 项单 Editor 隔离断言通过。覆盖 NetCode 管线、DTLS 双向 64/1200 字节、释放及错误服务器名称。错误名称在普通 UDP 和 ICE 都未建立应用连接，均返回 `MaxConnectionAttempts=2`，不是明确的认证失败回码。报告在忽略目录 `LocalData/EmbeddedIce/`。用户随后要求直接接入、不追加测试；这些底层结果不能代表完整新流程或跨网络联机已通过。未构建 Player、进入 Play 或测量公网延迟。
+- 战局 UDP 打洞不会自动加速仓库 HTTPS；完整仓库直连还需常驻的可靠账号请求通道，不能依赖按局退出的 Unity 服务器。
+- 本机已安装并登录官方 Tailscale 1.104.5。现有 VPN 使用两条 `/1` 路由，Tailscale 默认绑定校园网网卡时，控制端登录连接无法建立。仅在 Tailscale 服务的 `Environment` 中增加 `TS_BIND_TO_INTERFACE_BY_ROUTE=1` 后，控制连接按系统路由经过 VPN，登录恢复。该选项已核对当前版本源码；升级后需重新确认。原服务环境备份在忽略目录 `LocalData/P2PTrial/`。
+- 测试配置关闭 `accept-dns` 和 `accept-routes`，不使用出口节点。没有更改游戏入口、数据库监听、现有 VPN 或 VPS 的主机路由。后续判断 `direct` 时仍要核对实际物理出口，不能把经其他 VPN 的直连算作校园网直连。
+- 绑定校园网地址的 `tailscale netcheck` 返回 `UDP=true`、`MappingVariesByDestIP=false`、`IPv6=false`。这只是本端 STUN 预检；尚无 Mac 对端的直连、往返延迟或丢包结论，不等于游戏联机验收。
+
 ## 校园网公网隧道（2026-11-06）
 
 - 本机账号后端正常时，公网登录仍可能因 WireGuard 中断而超时。此次原 UDP 51820 无法完成握手；本机抓包有校园网物理网卡出站，VPS 未收到。改用 UDP 443 后握手和回源恢复。证据只定位到原端口通路，不认定具体拦截设备。
@@ -121,7 +135,7 @@
 - 后端 `OnlineInstances.Address` 和公开客户端 `ServerAddress` 使用游戏入口。`OnlineInstances.ServerName` 和客户端 `GameServerName` 保留现有证书域名。`Enable-OnlineInstances.ps1` 现在要求显式填写 Address，并支持独立的 ServerName；不再默认复用账号域名。
 - 已修正本机后端、根目录公开配置和 `Build/TT` 公开配置，并在空闲状态更新后端。私有配置备份位于 `LocalData/backups/online-route-fix-20261106-143334`。未修改数据库、证书和 VPS 转发规则。VPS 的转发开关、UDP DNAT、回程规则和 WireGuard 握手已只读核对。没有启动客户端、创建战局或进行公网对局验收。
 - 后端编译 0 错误、0 警告并恢复 ready。部署脚本的语法、缺参提前拒绝和隔离配置写入通过；隔离检查确认游戏地址与证书名称可以不同，端口和无关配置不变。用户选择保留公网配置并自行打包，未把 TT 账号地址切成本机。
-- 当前直连实现优先使用 IPv4：`ClientSettings.ResolveAsync` 只选 IPv4，`GameConnection` 监听 `AnyIpv4`。只增加 AAAA 记录不能启用 IPv6 开服。移除游戏中转前，需确认有可入站的公网 IPv4；有 NAT 时还要能配置出口 UDP 映射。校园内网只放行本机防火墙，不能代替校园出口映射。客户端内网地址不能单独证明出口是否有公网地址。
+- 当前直连实现优先使用 IPv4：`ClientSettings.ResolveAsync` 只选 IPv4，`GameConnection` 监听 `AnyIpv4`。只增加 AAAA 记录不能启用 IPv6 开服。按现有普通直连入口开服，需要可入站的公网 IPv4 或校园出口 UDP 映射；P2P 打洞是另一条路线，需要两端网络层配合并实测，不能只改服务器地址。校园内网只放行本机防火墙，不能代替校园出口映射。客户端内网地址不能单独证明出口是否有公网地址。
 
 ## 局域网小队界面（2026-11-06）
 

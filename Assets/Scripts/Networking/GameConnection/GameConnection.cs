@@ -37,6 +37,8 @@ namespace Unity.MP_FPS
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
+        public EmbeddedIceClientSession IceSession { get; private set; }
+        public void ReleaseIce() { IceSession?.Dispose(); IceSession = null; }
 
         public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(false, ct);
         public static Task<GameConnection> JoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(true, ct);
@@ -152,12 +154,25 @@ namespace Unity.MP_FPS
 
         public void UseLocalServerEndpoint(NetworkEndpoint endpoint) => ConnectEndpoint = endpoint;
 
-        public static async Task<GameConnection> ConnectGameAsync()
+        public static async Task<GameConnection> ConnectGameAsync(CancellationToken ct = default)
         {
+            if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && OnlineLobbyClient.InInstance)
+            {
+                var snapshot = OnlineLobbyClient.Snapshot;
+                if (snapshot?.InstanceId != OnlineLobbyClient.InstanceId || !Online.OnlineNetworkProtocol.ValidPath(snapshot.ConnectionPath))
+                    throw new InvalidOperationException("战局连接方式无效，请返回小队刷新。");
+                if (snapshot.ConnectionPath == Online.OnlineNetworkProtocol.P2P)
+                {
+                    var ice = await EmbeddedIceClientSession.ConnectAsync(snapshot, ct);
+                    return new GameConnection { IceSession = ice, ListenEndpoint = ice.Transport.LocalEndpoint,
+                        ConnectEndpoint = ice.Endpoint, SessionConnectionType = NetworkType.Direct };
+                }
+            }
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
             // A host name cannot be stored in a NetworkEndpoint, so resolve one here. This is what
             // lets the shipped settings file name the server by domain instead of by address.
             string address = await ClientSettings.ResolveAsync(ConnectionSettings.Instance.IPAddress);
+            ct.ThrowIfCancellationRequested();
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = NetworkEndpoint.AnyIpv4;
             gameConnection.ConnectEndpoint = NetworkEndpoint.Parse(address, port);
