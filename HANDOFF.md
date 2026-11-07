@@ -47,6 +47,7 @@
 - Esc 先关闭最上层弹窗，再退出背包或当前页面。`TerminalWindows` 用冒泡顺序让子窗口先处理；局内记录已消费的帧，防止同一次 Esc 又打开暂停或触发战斗输入。暂停菜单不再依赖旧 EventSystem。开服与直连弹窗的 Esc 走原取消回调。
 
 - 局内 Esc 菜单提供继续、设置、主菜单和退出。设置复用 `MoonkovTerminal.BindSettings` 与现有存储，灵敏度、视野和音量即时生效。Esc 先关语言下拉框，再退设置页，最后继续游戏；下拉框由 UI Toolkit 在 InputAction 之后消费按键。退出设置时清理视图，外部关闭菜单时也重置层级。菜单字号按实际屏幕补偿，覆盖 1280×720 和 800×600。单 Editor 编译和 45 项原生界面／输入检查通过，记录在 `LocalData/PauseSettingsReview`。未重新打包。
+- 当前输入和全局状态只在进入 Play 时初始化。运行中重编译脚本可能清空 `GameInput.Actions` 和 `GameSettings.Instance`，让暂停菜单绑定报空引用、Esc 无响应。先结束 Play，再重新进入；不要在失效会话中继续验收。已按正式场景的菜单排序层复测，45 项 Esc、设置及小窗口检查通过，菜单资源无需重建。
 
 - 本轮单 Editor 编译、250 项快捷栏规则、23 项局内输入与计数、45 项主菜单／仓库布局与层级、4 项连接弹窗 Esc 检查通过。覆盖 1280×720 与 800×600。RTT 使用注入的连接状态检查，未启动 Transport 或联机。预览已退出，MainMenu 场景未修改。记录在 `LocalData/HudInputReview`。未重新打包。
 
