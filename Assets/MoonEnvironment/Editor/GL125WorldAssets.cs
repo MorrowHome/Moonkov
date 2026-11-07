@@ -23,7 +23,7 @@ namespace Unity.MP_FPS.Moon.Editor
 
         [Serializable] public sealed class Chunk
         {
-            public string name, file;
+            public string name, file, sha256;
             public int atlas, vertices, triangles;
             public float[] origin;
             public int[] materials;
@@ -68,11 +68,21 @@ namespace Unity.MP_FPS.Moon.Editor
             public int version, id, size, samples, coveredPixels, supersample;
         }
 
+        [Serializable] private sealed class CollisionManifest
+        {
+            public int version;
+            public string worldHash;
+            public Chunk[] chunks;
+        }
+
         private readonly Manifest manifest;
         private readonly string prepared, evaluated, worldHash;
+        private Chunk[] staticCollision;
+        private string staticCollisionId;
         private readonly Dictionary<string, Mesh> meshes = new();
         private readonly Dictionary<int, Material> materials = new();
-        public IReadOnlyList<Chunk> Chunks => manifest.chunks;
+        public IEnumerable<Chunk> Chunks => manifest.chunks.Where(chunk => chunk.atlas >= 0);
+        public IReadOnlyList<Chunk> StaticCollision => staticCollision ??= ReadStaticCollision();
         public IReadOnlyList<LightSpec> Lights => manifest.lights;
         public int AtlasCount => manifest.atlases.Length;
         public IEnumerable<int> InteriorAtlasIndices => manifest.chunks
@@ -92,8 +102,7 @@ namespace Unity.MP_FPS.Moon.Editor
             this.prepared = Path.GetFullPath(prepared);
             this.evaluated = Path.GetFullPath(evaluated);
             string path = Path.Combine(this.prepared, "World.json");
-            using (var sha = SHA256.Create())
-            using (var stream = File.OpenRead(path)) worldHash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+            using (var stream = File.OpenRead(path)) worldHash = ContentHash(stream);
             manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(path));
             if (manifest == null || manifest.version != 1 || manifest.sourceHash != SourceHash ||
                 manifest.chunks.Length == 0 || manifest.atlases.Length == 0 ||
@@ -101,6 +110,25 @@ namespace Unity.MP_FPS.Moon.Editor
                 manifest.chunks.Any(c => c.atlas < -1 || c.atlas >= AtlasCount) ||
                 manifest.chunks.Select(c => c.name).Distinct().Count() != manifest.chunks.Length)
                 throw new InvalidDataException("GL125 export manifest does not match the current map contract.");
+        }
+
+        private Chunk[] ReadStaticCollision()
+        {
+            string path = Path.Combine(prepared, "StaticCollision", "Collision.json");
+            var data = JsonUtility.FromJson<CollisionManifest>(File.ReadAllText(path));
+            if (data == null || data.version != 1 || data.worldHash != worldHash || data.chunks == null ||
+                data.chunks.Length == 0 || data.chunks.Any(c => c.atlas != -1 || !c.collider || c.sha256?.Length != 64 ||
+                    c.vertices < 3 || c.triangles < 1 || c.origin?.Length != 3) ||
+                data.chunks.Select(c => c.name).Distinct().Count() != data.chunks.Length)
+                throw new InvalidDataException("GL125 static collision does not match the current render manifest.");
+            using (var stream = File.OpenRead(path)) staticCollisionId = ContentHash(stream).Substring(0, 12);
+            return data.chunks;
+        }
+
+        private static string ContentHash(Stream stream)
+        {
+            using var sha = SHA256.Create();
+            return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
         }
 
         public Texture2D[] ImportLightmaps(IEnumerable<int> atlasIndices, IEnumerable<int> supersampledIndices = null)
@@ -145,7 +173,7 @@ namespace Unity.MP_FPS.Moon.Editor
                 var batch = group.OrderBy(c => c.name, StringComparer.Ordinal).ToArray();
                 if (group.Key >= 0) ImportBundle("Atlas_" + group.Key.ToString("000"), batch);
                 else for (int start = 0; start < batch.Length; start += 32)
-                    ImportBundle("Collision_" + (start / 32).ToString("000"), batch.Skip(start).Take(32).ToArray());
+                    ImportBundle($"Structure_{staticCollisionId}_{start / 32:000}", batch.Skip(start).Take(32).ToArray());
             }
         }
 
@@ -285,12 +313,16 @@ namespace Unity.MP_FPS.Moon.Editor
         {
             if (chunk.file != chunk.name + ".bytes" || Path.GetFileName(chunk.file) != chunk.file)
                 throw new InvalidDataException($"Invalid GL125 mesh file name {chunk.file}.");
-            using var stream = File.OpenRead(Path.Combine(prepared, "Meshes", chunk.file));
+            bool visual = chunk.atlas >= 0;
+            string folder = visual ? prepared : Path.Combine(prepared, "StaticCollision");
+            using var stream = File.OpenRead(Path.Combine(folder, "Meshes", chunk.file));
+            if (!visual && ContentHash(stream) != chunk.sha256)
+                throw new InvalidDataException($"GL125 static collision mesh hash changed: {chunk.name}.");
+            stream.Position = 0;
             using var reader = new BinaryReader(stream);
             if (reader.ReadUInt32() != 0x314d4c47 || reader.ReadInt32() != chunk.vertices)
                 throw new InvalidDataException($"Invalid GL125 mesh header {chunk.name}.");
             int stride = reader.ReadInt32(), submeshCount = reader.ReadInt32();
-            bool visual = chunk.atlas >= 0;
             if (stride != (visual ? 10 : 3) || submeshCount != (visual ? chunk.materials.Length : 1))
                 throw new InvalidDataException($"Invalid GL125 mesh layout {chunk.name}.");
 

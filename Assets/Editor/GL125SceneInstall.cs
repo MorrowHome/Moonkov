@@ -49,8 +49,9 @@ public static class GL125SceneInstall
     {
         RequireEditMode();
         var assets = ReadStage(stage);
+        var chunks = assets.Chunks.Concat(assets.StaticCollision).ToArray();
         var maps = assets.ImportLightmaps(Enumerable.Range(0, assets.AtlasCount), assets.InteriorAtlasIndices);
-        assets.ImportChunks(assets.Chunks);
+        assets.ImportChunks(chunks);
         var previous = SceneManager.GetActiveScene();
         string backup = Path.Combine(stage, "TheophilusGameScene.before-GL125.unity");
         if (!File.Exists(backup)) File.Copy(FormalScene, backup);
@@ -63,7 +64,7 @@ public static class GL125SceneInstall
                 throw new InvalidOperationException("The saved formal map is not the expected pre-GL125 scene.");
             var airlock = Components<AirlockController>(roots).Single();
             if (OldWorldRoots.Contains(airlock.transform.root.name)) airlock.transform.SetParent(null, true);
-            var root = BuildWorld(scene, assets, assets.Chunks, out var bindings);
+            var root = BuildWorld(scene, assets, chunks, out var bindings);
             var sun = MakeSun(root.transform, assets);
             var lighting = Components<MoonSceneLighting>(roots).Single();
             ConfigureLighting(lighting, sun);
@@ -79,7 +80,7 @@ public static class GL125SceneInstall
 
             var probes = BuildProbes(assets);
             root.AddComponent<BlenderLightmapSet>().Configure(maps, bindings.ToArray(), probes);
-            if (bindings.Count != assets.Chunks.Count(c => c.atlas >= 0) ||
+            if (bindings.Count != assets.Chunks.Count() ||
                 LightmapSettings.lightmaps.Length != assets.AtlasCount || LightmapSettings.lightProbes != probes)
                 throw new InvalidOperationException("Incomplete GL125 scene lighting binding.");
             EditorSceneManager.MarkSceneDirty(scene);
@@ -91,6 +92,46 @@ public static class GL125SceneInstall
         finally
         {
             CloseShell(scene);
+            SceneManager.SetActiveScene(previous);
+        }
+    }
+
+    public static string ReplaceStaticCollision(string stage)
+    {
+        RequireEditMode();
+        var assets = ReadStage(stage);
+        var chunks = assets.StaticCollision;
+        assets.ImportChunks(chunks);
+        string backup = Path.Combine(stage, "TheophilusGameScene.before-GL125Collision.unity");
+        if (!File.Exists(backup)) File.Copy(FormalScene, backup);
+        var previous = SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.OpenScene(FormalScene, OpenSceneMode.Additive);
+        try
+        {
+            SceneManager.SetActiveScene(scene);
+            var world = scene.GetRootGameObjects().Single(root => root.name == WorldName).transform;
+            var collision = world.Find("Static collision");
+            var structure = world.Find("MC00 structural collision");
+            if (!collision || !structure) throw new InvalidOperationException("GL125 collision roots are missing.");
+            var oldChunks = collision.Cast<Transform>().Concat(structure.Cast<Transform>()).ToArray();
+            if (oldChunks.Length == 0 || oldChunks.Any(chunk => !chunk.GetComponent<MeshCollider>() || chunk.childCount != 0))
+                throw new InvalidOperationException("Unexpected contents in the generated collision roots.");
+            foreach (var chunk in oldChunks) Object.DestroyImmediate(chunk.gameObject);
+            int layer = LayerMask.NameToLayer("Ground");
+            if (layer < 0) throw new InvalidOperationException("Ground layer is missing.");
+            foreach (var chunk in chunks)
+                AddColliderChunk(chunk, collision, structure, assets.MeshFor(chunk), layer);
+            Physics.SyncTransforms();
+            string gameplay = ValidateGameplay(scene, world);
+            EditorSceneManager.MarkSceneDirty(scene);
+            if (!EditorSceneManager.SaveScene(scene)) throw new IOException("Unity did not save the repaired GL125 collision.");
+            string result = $"Replaced {oldChunks.Length} static collider chunks with {chunks.Count} current surface chunks. {gameplay}";
+            File.WriteAllText(Path.Combine(stage, "UnityCollisionRepair.txt"), result);
+            return result;
+        }
+        finally
+        {
+            EditorSceneManager.CloseScene(scene, true);
             SceneManager.SetActiveScene(previous);
         }
     }
@@ -116,15 +157,11 @@ public static class GL125SceneInstall
             RebindAirlockAudio(airlock, structure);
             RetireOldRoots(scene, roots);
             int layer = LayerMask.NameToLayer("Ground");
-            foreach (var chunk in assets.Chunks.Where(c => c.collider))
+            foreach (var chunk in assets.Chunks.Where(c => c.collider).Concat(assets.StaticCollision))
             {
-                var obj = new GameObject(chunk.name) { layer = layer };
-                var origin = GL125WorldAssets.ToUnity(chunk.origin);
-                obj.transform.SetParent(IsMc00Structure(chunk, origin) ? structure : root.transform, false);
-                obj.transform.localPosition = origin;
                 var mesh = assets.ReadCollider(chunk);
                 temporaryMeshes.Add(mesh);
-                obj.AddComponent<MeshCollider>().sharedMesh = mesh;
+                AddColliderChunk(chunk, root.transform, structure, mesh, layer);
             }
             Physics.SyncTransforms();
             return ValidateGameplay(scene, root.transform);
@@ -232,6 +269,15 @@ public static class GL125SceneInstall
     private static bool IsMc00Structure(GL125WorldAssets.Chunk chunk, Vector3 origin) => chunk.atlas < 0 &&
         Mathf.Abs(origin.x - 1614.54f) < 85f && Mathf.Abs(origin.z - 2149.01f) < 85f && origin.y >= 200 && origin.y <= 278;
 
+    private static void AddColliderChunk(GL125WorldAssets.Chunk chunk, Transform collision, Transform structure, Mesh mesh, int layer)
+    {
+        var origin = GL125WorldAssets.ToUnity(chunk.origin);
+        var obj = new GameObject(chunk.name) { layer = layer };
+        obj.transform.SetParent(IsMc00Structure(chunk, origin) ? structure : collision, false);
+        obj.transform.localPosition = origin;
+        obj.AddComponent<MeshCollider>().sharedMesh = mesh;
+    }
+
     private static void RebindAirlockAudio(AirlockController airlock, Transform structure)
     {
         var audio = airlock.GetComponent<AirlockAudio>();
@@ -321,6 +367,19 @@ public static class GL125SceneInstall
                 .OrderBy(h => Mathf.Abs(h.point.y - point.y)).FirstOrDefault();
             return support.collider != null;
         }
+        bool TryAdjacentEnemyGround(Vector3 point, out RaycastHit support)
+        {
+            foreach (var direction in new[] { Vector3.right, Vector3.forward, Vector3.left, Vector3.back })
+            {
+                if (!TryGround(point + direction * .45f, .4f, out support)) continue;
+                var feet = support.point + Vector3.up * .06f;
+                if (!Physics.OverlapCapsule(feet + Vector3.up * .32f, feet + Vector3.up * 1.4f, .27f,
+                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)
+                    .Any(hit => hit.transform.IsChildOf(world))) return true;
+            }
+            support = default;
+            return false;
+        }
         void Ground(string label, Vector3 point, float allowance)
         {
             if (!TryGround(point, allowance, out _))
@@ -368,13 +427,15 @@ public static class GL125SceneInstall
         {
             var array = authored.FindProperty(arrayName);
             var normals = arrayName == "m_LootPositions" ? authored.FindProperty("m_LootGroundNormals") : null;
-            bool canAdjustHeight = normals != null || arrayName == "m_EnemySpawnPositions";
+            bool enemySpawns = arrayName == "m_EnemySpawnPositions";
+            bool canAdjust = normals != null || enemySpawns;
             for (int i = 0; i < array.arraySize; i++)
             {
                 var slot = array.GetArrayElementAtIndex(i);
                 var position = slot.vector3Value;
                 bool supported = TryGround(position, 1.0f, out _);
-                if (!supported && canAdjustHeight && TryGround(position, 4.0f, out var hit))
+                if (!supported && canAdjust && (TryGround(position, 4.0f, out var hit) ||
+                    (enemySpawns && TryAdjacentEnemyGround(position, out hit))))
                 {
                     slot.vector3Value = hit.point + Vector3.up * .06f;
                     if (normals != null && i < normals.arraySize) normals.GetArrayElementAtIndex(i).vector3Value = hit.normal;
@@ -388,7 +449,7 @@ public static class GL125SceneInstall
         Ground("Main extraction", authored.FindProperty("m_ExtractionPosition").vector3Value, 1.0f);
         if (failures.Count != 0) throw new InvalidOperationException($"GL125 has no verified support at {failures.Count}/{checks} route points:\n" + string.Join("\n", failures));
         authored.ApplyModifiedPropertiesWithoutUndo();
-        return $"{checks} physics checks, {moved} heights adjusted. {bindings}";
+        return $"{checks} physics checks, {moved} point positions adjusted. {bindings}";
     }
 
     private static LightProbes BuildProbes(GL125WorldAssets assets)

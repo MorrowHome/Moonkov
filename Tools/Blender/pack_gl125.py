@@ -14,7 +14,6 @@ import struct
 import time
 
 import numpy as np
-import xatlas
 
 
 FAR_TERRAIN = "FT09_Unchanged_Outside_Display"
@@ -162,6 +161,8 @@ def atlas_groups(art):
 
 
 def pack_charts(meshes, density):
+    import xatlas
+
     atlas = xatlas.Atlas()
     topology = []
     for triangles in meshes:
