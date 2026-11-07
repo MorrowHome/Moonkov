@@ -200,7 +200,7 @@ public sealed class OnlineSquadChecks : EditorWindow
                 Require(animator.runtimeAnimatorController == null && !animator.fireEvents, "preview actor has gameplay animation events");
             }
             CheckRotation(image, objects.Single(t => t.GetComponent<Camera>() != null).GetComponent<Camera>(),
-                objects.First(t => t.GetComponent<Animator>() != null));
+                objects.Select(t => t.GetComponent<Animator>()).Where(a => a != null).ToArray());
             m_View.SetVisible(false);
             Require(m_View.Stage.ActorCount == 0 && m_View.Stage.Target == null && frost == null &&
                 EditorSceneManager.previewSceneCount == m_SceneCount, "hidden page leaked actors, textures or scene");
@@ -227,11 +227,18 @@ public sealed class OnlineSquadChecks : EditorWindow
         finally { Close(); }
     }
 
-    private void CheckRotation(Image image, Camera camera, Transform actor)
+    private void CheckRotation(Image image, Camera camera, Animator[] actors)
     {
-        Vector2 from = image.worldBound.center, to = from + Vector2.right * 120;
-        Require(image.panel.Pick(from) == image, "the stage does not receive drags outside the cards");
-        Quaternion original = actor.rotation;
+        var actor = actors[0].transform;
+        Rect rect = image.contentRect;
+        Vector3 chest = camera.WorldToViewportPoint(actors[0].GetBoneTransform(HumanBodyBones.Chest).position);
+        Vector2 from = image.LocalToWorld(new Vector2(rect.xMin + chest.x * rect.width, rect.yMax - chest.y * rect.height));
+        Vector2 to = from + Vector2.right * 120;
+        Require(image.panel.Pick(from) == image, "the actor cannot receive a drag through the overlay");
+        Quaternion[] rotations = actors.Select(a => a.transform.rotation).ToArray();
+        Quaternion original = rotations[0];
+        var cameraPosition = camera.transform.position;
+        var cameraRotation = camera.transform.rotation;
         Vector3 grabbed = Quaternion.Inverse(original) * -camera.transform.forward;
         using (var evt = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = from }))
             image.SendEvent(evt);
@@ -241,14 +248,17 @@ public sealed class OnlineSquadChecks : EditorWindow
             image.SendEvent(evt);
         m_View.Stage.RenderForEditor(image.contentRect.size);
         Require(Vector3.Dot(actor.rotation * grabbed, camera.transform.right) > .05f &&
-            !image.HasPointerCapture(PointerId.mousePointerId), "right drag did not move the squad right and release capture");
+            !image.HasPointerCapture(PointerId.mousePointerId), "right drag did not turn the selected actor and release capture");
+        Require(actors.Skip(1).Select((a, i) => Quaternion.Angle(a.transform.rotation, rotations[i + 1])).All(angle => angle < .1f) &&
+            camera.transform.position == cameraPosition && camera.transform.rotation == cameraRotation,
+            "dragging an actor moved the camera or another squad member");
 
         using (var evt = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, clickCount = 2, mousePosition = from }))
             image.SendEvent(evt);
         using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = from }))
             image.SendEvent(evt);
         m_View.Stage.RenderForEditor(image.contentRect.size);
-        Require(Quaternion.Angle(actor.rotation, original) < .1f, "double-click did not restore the squad pose");
+        Require(Quaternion.Angle(actor.rotation, original) < .1f, "double-click did not restore the selected actor's pose");
     }
 
     private void OnDisable() { m_View?.Dispose(); m_View = null; }

@@ -15,6 +15,15 @@ namespace Unity.MP_FPS.Client
         internal float SquadInspectionYaw { get; set; }
         internal Transform SquadRoot => m_Stage != null ? m_Stage.transform : null;
 
+        internal bool HitSquadModel(Ray ray)
+        {
+            if (m_Renderers == null) return false;
+            foreach (var renderer in m_Renderers)
+                if (renderer && renderer.enabled && renderer.gameObject.activeInHierarchy && renderer.bounds.IntersectRay(ray))
+                    return true;
+            return false;
+        }
+
         internal void PresentSquad(LobbyAppearance appearance, int slot, bool ready)
         {
             if (m_SharedStage == null) return;

@@ -37,7 +37,8 @@ namespace Unity.MP_FPS.Client
         private Vector2 m_Viewport;
         private float m_PixelsPerPoint;
         private int m_DragPointer = -1;
-        private float m_LastDragX, m_InspectionYaw;
+        private float m_LastDragX;
+        private MenuCharacterView m_DragActor;
         private bool m_Disposed, m_Dirty = true, m_PreviewScene;
         private double m_LastTime;
         public event Action FramingChanged;
@@ -72,7 +73,7 @@ namespace Unity.MP_FPS.Client
             m_Image = image ?? throw new ArgumentNullException(nameof(image));
             m_Image.pickingMode = PickingMode.Position;
             m_Image.scaleMode = ScaleMode.StretchToFill;
-            m_Image.tooltip = MoonkovLocalization.Text("左键拖动旋转小队 / 双击回正");
+            m_Image.tooltip = MoonkovLocalization.Text("拖动人物旋转 / 双击人物回正");
             m_Image.RegisterCallback<PointerDownEvent>(BeginTurn);
             m_Image.RegisterCallback<PointerMoveEvent>(Turn);
             m_Image.RegisterCallback<PointerUpEvent>(EndTurn);
@@ -87,27 +88,52 @@ namespace Unity.MP_FPS.Client
         {
             if (m_DragPointer >= 0 || m_Target == null || evt.target != m_Image || evt.button != 0 ||
                 evt.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+            Vector2 local = m_Image.WorldToLocal(evt.position);
+            var actor = PickActor(local);
+            if (actor == null) return;
             if (evt.clickCount >= 2)
             {
-                m_InspectionYaw = 0;
+                actor.SquadInspectionYaw = 0;
                 m_Dirty = true;
             }
             else
             {
                 m_DragPointer = evt.pointerId;
-                m_LastDragX = m_Image.WorldToLocal(evt.position).x;
+                m_DragActor = actor;
+                m_LastDragX = local.x;
                 m_Image.CapturePointer(evt.pointerId);
             }
             evt.StopPropagation();
         }
 
+        private MenuCharacterView PickActor(Vector2 local)
+        {
+            Rect rect = m_Image.contentRect;
+            if (m_Camera == null || rect.width <= 0 || rect.height <= 0 || !rect.Contains(local)) return null;
+            var point = new Vector2((local.x - rect.xMin) / rect.width, (rect.yMax - local.y) / rect.height);
+            Ray ray = m_Camera.ViewportPointToRay(point);
+            MenuCharacterView selected = null;
+            float closest = float.PositiveInfinity;
+            for (int i = 0; i < m_Actors.Length; i++)
+            {
+                var actor = m_Actors[i];
+                if (actor == null || !actor.HitSquadModel(ray)) continue;
+                // Hair and costumes may extend into the neighboring stand.
+                float offset = Mathf.Abs(ProjectSlot(i).x - point.x);
+                if (offset >= closest) continue;
+                selected = actor;
+                closest = offset;
+            }
+            return selected;
+        }
+
         private void Turn(PointerMoveEvent evt)
         {
-            if (evt.pointerId != m_DragPointer || !m_Image.HasPointerCapture(evt.pointerId)) return;
+            if (m_DragActor == null || evt.pointerId != m_DragPointer || !m_Image.HasPointerCapture(evt.pointerId)) return;
             if ((evt.pressedButtons & 1) == 0) { StopTurn(); return; }
             float x = m_Image.WorldToLocal(evt.position).x;
             // Both character cameras look along -Z, so negative yaw follows a rightward drag.
-            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw - (x - m_LastDragX) * 360f /
+            m_DragActor.SquadInspectionYaw = Mathf.Repeat(m_DragActor.SquadInspectionYaw - (x - m_LastDragX) * 360f /
                 Mathf.Max(1, m_Image.contentRect.width) + 180f, 360f) - 180f;
             m_LastDragX = x;
             m_Dirty = true;
@@ -127,6 +153,7 @@ namespace Unity.MP_FPS.Client
         {
             int pointer = m_DragPointer;
             m_DragPointer = -1;
+            m_DragActor = null;
             if (pointer >= 0 && m_Image.HasPointerCapture(pointer)) m_Image.ReleasePointer(pointer);
         }
 
@@ -187,7 +214,6 @@ namespace Unity.MP_FPS.Client
             foreach (var actor in m_Actors)
             {
                 if (actor == null) continue;
-                actor.SquadInspectionYaw = m_InspectionYaw;
                 if (settle) actor.SettleSquadPose();
                 else actor.Advance(Mathf.Clamp(dt, 0, .1f));
             }
@@ -289,7 +315,10 @@ namespace Unity.MP_FPS.Client
             child.transform.SetParent(m_Root.transform, false); return child;
         }
         private void ReleaseActor(int index)
-        { m_Actors[index]?.Dispose(); m_Actors[index] = null; m_Appearances[index] = null; m_Ids[index] = null; }
+        {
+            if (m_DragActor != null && m_DragActor == m_Actors[index]) StopTurn();
+            m_Actors[index]?.Dispose(); m_Actors[index] = null; m_Appearances[index] = null; m_Ids[index] = null;
+        }
         private void Detached(DetachFromPanelEvent evt) => Suspend();
         private void ReleaseTarget()
         {
@@ -301,7 +330,6 @@ namespace Unity.MP_FPS.Client
         public void Suspend()
         {
             StopTurn();
-            m_InspectionYaw = 0;
             for (int i = 0; i < 4; i++) ReleaseActor(i);
             ReleaseTarget();
             if (m_Root != null) { m_Root.SetActive(false); Destroy(m_Root); m_Root = null; }
