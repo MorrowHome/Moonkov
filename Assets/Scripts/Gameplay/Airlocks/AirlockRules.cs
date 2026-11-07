@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AirlockCommand : byte { OpenOuter, CloseOuter, OpenInner, CloseInner, EqualizeInside, EqualizeOutside, CancelEqualization }
+    public enum AirlockCommand : byte
+    {
+        OpenOuter, CloseOuter, OpenInner, CloseInner, EqualizeInside, EqualizeOutside, CancelEqualization,
+        CycleOuter, CycleInner
+    }
     public enum AirlockFeedback : byte { Accepted, OtherDoorNotSealed, PressureMismatch, Equalizing, DoorsNotSealed, Obstructed, OutOfRange, Unavailable, StaleRequest, Pending }
 
     [Serializable]
@@ -45,6 +49,7 @@ namespace Unity.MP_FPS
     // Owns the pressure/interlock rules; transforms, sounds, transport and oxygen remain separate.
     public sealed class AirlockRules
     {
+        private AirlockCommand? m_Cycle;
         public AirlockSettings Settings { get; }
         public AirlockState State { get; private set; }
         public bool OuterSealed => State.OuterFraction <= Settings.SealedFractionTolerance && !State.OuterOpening;
@@ -62,6 +67,7 @@ namespace Unity.MP_FPS
         public AirlockFeedback Check(AirlockCommand command, bool outerObstructed = false, bool innerObstructed = false)
         {
             if (!Settings.IsValid) return AirlockFeedback.Unavailable;
+            if (m_Cycle.HasValue && command != AirlockCommand.CancelEqualization) return AirlockFeedback.Equalizing;
             switch (command)
             {
                 case AirlockCommand.OpenOuter:
@@ -79,6 +85,12 @@ namespace Unity.MP_FPS
                 case AirlockCommand.EqualizeInside:
                 case AirlockCommand.EqualizeOutside:
                     return OuterSealed && InnerSealed ? AirlockFeedback.Accepted : AirlockFeedback.DoorsNotSealed;
+                case AirlockCommand.CycleOuter:
+                    if (State.Equalizing) return AirlockFeedback.Equalizing;
+                    return !InnerSealed && innerObstructed ? AirlockFeedback.Obstructed : AirlockFeedback.Accepted;
+                case AirlockCommand.CycleInner:
+                    if (State.Equalizing) return AirlockFeedback.Equalizing;
+                    return !OuterSealed && outerObstructed ? AirlockFeedback.Obstructed : AirlockFeedback.Accepted;
                 case AirlockCommand.CancelEqualization: return AirlockFeedback.Accepted;
                 default: return AirlockFeedback.Unavailable;
             }
@@ -97,10 +109,42 @@ namespace Unity.MP_FPS
                     case AirlockCommand.CloseInner: s.InnerOpening = false; break;
                     case AirlockCommand.EqualizeInside: s.TargetInside = true; s.Equalizing = true; break;
                     case AirlockCommand.EqualizeOutside: s.TargetInside = false; s.Equalizing = true; break;
-                    case AirlockCommand.CancelEqualization: s.Equalizing = false; break;
+                    case AirlockCommand.CycleOuter:
+                        m_Cycle = command;
+                        s.InnerOpening = false;
+                        AdvanceCycle(ref s);
+                        break;
+                    case AirlockCommand.CycleInner:
+                        m_Cycle = command;
+                        s.OuterOpening = false;
+                        AdvanceCycle(ref s);
+                        break;
+                    case AirlockCommand.CancelEqualization: s.Equalizing = false; m_Cycle = null; break;
                 }
             }
             s.Revision++; State = s; return s.Feedback;
+        }
+
+        private void AdvanceCycle(ref AirlockState state)
+        {
+            if (!m_Cycle.HasValue || state.Equalizing) return;
+            bool inside = m_Cycle == AirlockCommand.CycleInner;
+            bool outerSealed = state.OuterFraction <= Settings.SealedFractionTolerance && !state.OuterOpening;
+            bool innerSealed = state.InnerFraction <= Settings.SealedFractionTolerance && !state.InnerOpening;
+            if (inside ? !outerSealed : !innerSealed) return;
+            float target = inside ? Settings.InsidePressureKPa : Settings.OutsidePressureKPa;
+            if (Mathf.Abs(state.PressureKPa - target) <= Settings.OpeningPressureToleranceKPa)
+            {
+                if (inside) state.InnerOpening = true;
+                else state.OuterOpening = true;
+                m_Cycle = null;
+                state.Feedback = AirlockFeedback.Accepted;
+            }
+            else if (outerSealed && innerSealed)
+            {
+                state.TargetInside = inside;
+                state.Equalizing = true;
+            }
         }
 
         public void Tick(float dt, bool outerObstructed = false, bool innerObstructed = false,
@@ -109,8 +153,8 @@ namespace Unity.MP_FPS
             if (!AirlockSettings.Finite(dt) || dt <= 0 || !Settings.IsValid) return;
             var s = State;
             // Reverse a closing door if someone enters its fixed aperture sensor mid-motion.
-            if (!s.OuterOpening && s.OuterFraction > 0 && outerObstructed) { s.OuterOpening = true; s.Feedback = AirlockFeedback.Obstructed; }
-            if (!s.InnerOpening && s.InnerFraction > 0 && innerObstructed) { s.InnerOpening = true; s.Feedback = AirlockFeedback.Obstructed; }
+            if (!s.OuterOpening && s.OuterFraction > 0 && outerObstructed) { s.OuterOpening = true; s.Feedback = AirlockFeedback.Obstructed; m_Cycle = null; }
+            if (!s.InnerOpening && s.InnerFraction > 0 && innerObstructed) { s.InnerOpening = true; s.Feedback = AirlockFeedback.Obstructed; m_Cycle = null; }
             bool outerHeld = s.OuterOpening && outerOpeningBlocked, innerHeld = s.InnerOpening && innerOpeningBlocked;
             if (outerHeld || innerHeld) s.Feedback = AirlockFeedback.Obstructed;
             else if (s.Feedback == AirlockFeedback.Obstructed && !outerObstructed && !innerObstructed) s.Feedback = AirlockFeedback.Accepted;
@@ -119,7 +163,7 @@ namespace Unity.MP_FPS
             if (s.Equalizing)
             {
                 if (s.OuterOpening || s.InnerOpening || s.OuterFraction > Settings.SealedFractionTolerance || s.InnerFraction > Settings.SealedFractionTolerance)
-                { s.Equalizing = false; s.Feedback = AirlockFeedback.DoorsNotSealed; }
+                { s.Equalizing = false; s.Feedback = AirlockFeedback.DoorsNotSealed; m_Cycle = null; }
                 else
                 {
                     float target = s.TargetInside ? Settings.InsidePressureKPa : Settings.OutsidePressureKPa;
@@ -132,6 +176,7 @@ namespace Unity.MP_FPS
             if (s.OuterFraction > Settings.SealedFractionTolerance) s.PressureKPa = Settings.OutsidePressureKPa;
             else if (s.InnerFraction > Settings.SealedFractionTolerance) s.PressureKPa = Settings.InsidePressureKPa;
             s.PressureKPa = Mathf.Clamp(s.PressureKPa, Settings.OutsidePressureKPa, Settings.InsidePressureKPa);
+            AdvanceCycle(ref s);
             if (s.PressureKPa != State.PressureKPa || s.OuterFraction != State.OuterFraction || s.InnerFraction != State.InnerFraction ||
                 s.OuterOpening != State.OuterOpening || s.InnerOpening != State.InnerOpening || s.Equalizing != State.Equalizing || s.Feedback != State.Feedback)
             { s.Revision++; State = s; }
@@ -146,6 +191,7 @@ namespace Unity.MP_FPS
                 (state.InnerFraction > Settings.SealedFractionTolerance || state.InnerOpening) ||
                 state.Equalizing && (state.OuterFraction > Settings.SealedFractionTolerance || state.InnerFraction > Settings.SealedFractionTolerance || state.OuterOpening || state.InnerOpening) ||
                 !freshSession && state.Revision <= State.Revision) return false;
+            m_Cycle = null;
             State = state; return true;
         }
     }

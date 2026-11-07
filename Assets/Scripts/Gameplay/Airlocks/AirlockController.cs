@@ -102,14 +102,16 @@ namespace Unity.MP_FPS
             m_Rules.Tick(dt,outerClose,innerClose,outerOpen,innerOpen);
             Present();
         }
+        private bool OuterCloseBlocked(AirlockCommand command) =>
+            (command == AirlockCommand.CloseOuter || command == AirlockCommand.CycleInner && !m_Rules.OuterSealed) && Obstructed(m_OuterAperture);
+        private bool InnerCloseBlocked(AirlockCommand command) =>
+            (command == AirlockCommand.CloseInner || command == AirlockCommand.CycleOuter && !m_Rules.InnerSealed) && Obstructed(m_InnerAperture);
         public AirlockFeedback Check(AirlockCommand command) => Ready ?
-            m_Rules.Check(command, command == AirlockCommand.CloseOuter && Obstructed(m_OuterAperture),
-                command == AirlockCommand.CloseInner && Obstructed(m_InnerAperture)) : AirlockFeedback.Unavailable;
+            m_Rules.Check(command, OuterCloseBlocked(command), InnerCloseBlocked(command)) : AirlockFeedback.Unavailable;
         public AirlockFeedback RequestAuthoritative(AirlockCommand command)
         {
             if (!Ready) return AirlockFeedback.Unavailable;
-            var result = m_Rules.Request(command, command == AirlockCommand.CloseOuter && Obstructed(m_OuterAperture),
-                command == AirlockCommand.CloseInner && Obstructed(m_InnerAperture));
+            var result = m_Rules.Request(command, OuterCloseBlocked(command), InnerCloseBlocked(command));
             Present(); return result;
         }
         public bool ApplyNetworkState(AirlockState state, bool newSession)
