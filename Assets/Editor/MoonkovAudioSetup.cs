@@ -201,6 +201,7 @@ public static class MoonkovAudioSetup
         if (overwriteExisting) RetuneLegacySpawnSound();
         ApplyImportSettings();
         AssetDatabase.SaveAssets();
+        if (overwriteExisting) MoonkovBodyImpactAudioSetup.Install();
         Debug.Log($"Moonkov audio: {written} SoundDefs written, {kept} left as they were, " +
                   $"{CountClips()} clips in the table.");
     }

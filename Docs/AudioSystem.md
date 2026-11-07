@@ -1,5 +1,12 @@
 # Moonkov 音效系统
 
+## 2026-11-08 身体命中与格挡
+
+- 修正素材错配。原普通受击和步枪身体命中使用金属盾牌撞击，其他三类枪械身体命中使用硬物碰撞。现改为三条 0.32–0.39 秒的闷击实录。近战身体命中同步更换。相邻不重复。格挡改用真正的金属盾牌录音。
+- 新录音由 StarNinjas 击打纸板制作，以衣物覆盖下的撞击为拟音目标。授权 CC0。裁去录音空白，保留表演速度和音高，去除低频噪声及尖锐高频。来源、原文件和哈希见 `BodyImpactSources.json` 与 `SourceData/Audio/BodyImpact/README.md`。许可随构建分发。
+- 六个身体命中库继续使用 SFX 和原有距离、电平。补齐遮挡与每库 6 路并发，保留完整尾音。没有新增每次受击的音源层、网络消息或伤害逻辑。
+- 重建用 `Tools/Audio/build_body_impact_audio.py`。绑定用 `MoonkovBodyImpactAudioSetup.Install()`，通用音库和战斗音库的重建会调用它。原枪械及伤害回归通过，身体命中与格挡的原生声音池完整播放、轮换和回收通过。
+
 ## 2026-11-08 挥拳发力人声
 
 - 拳头增加三条 0.36–0.41 秒的真人发力声。使用 Cici Fyre 的 Type 1 attack 录音，与现有受击短叫为同一演员和声线。保留原音高和节奏，相邻不重复。来源为 CC0，记录见 `MeleeVoiceSources.json`，许可随 `MoonkovMeleeVoiceCredits.txt` 打包。

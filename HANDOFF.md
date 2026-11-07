@@ -892,6 +892,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 普通受击、近战及四个枪械身体命中库改用三条 CC0 闷击实录。原金属盾牌录音移作近战格挡。重建用 `MoonkovBodyImpactAudioSetup.Install()`。不要再把 `Character/Hit.wav` 当作身体撞击源，该文件实际是金属盾牌。详见[音效系统](Docs/AudioSystem.md#2026-11-08-身体命中与格挡)。
+
 - `Hit` 是护甲撞击录音，不是人的叫声。受伤人声使用独立的 `AudioLibrary.PlayerPain`，保留原撞击声。
 - 挨打短叫只观察 `LastImpactTick`。不要改回观察血量下降或 `LastHitTick`，否则缺氧、流血和中毒会连续惨叫。护盾完全吸收不叫，穿盾伤害仍会叫。
 - `MoonkovPainAudio` 按角色限制为至少 1.1 秒一次。冷却中收到的事件直接消耗，不排队补叫。首次快照和死亡角色静音。声音池上限不是每人冷却的替代。

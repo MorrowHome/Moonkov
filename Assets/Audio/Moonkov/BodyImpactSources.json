@@ -1,0 +1,49 @@
+{
+  "author": "StarNinjas",
+  "title": "10 Impact/Shield Blocks",
+  "license": "CC0-1.0",
+  "source_page": "https://opengameart.org/content/10-impactshield-blocks",
+  "download_url": "https://opengameart.org/sites/default/files/impact_-_starninjas.zip",
+  "download_date": "2026-11-08",
+  "processing": "Recorded cardboard impacts used as body-contact Foley; trim recording silence, preserve performance speed/pitch; HP55/LP6500; DC removal; 2 ms fades; peak 0.72; 48 kHz mono PCM16.",
+  "sources": [
+    {
+      "asset": "SourceData/Audio/BodyImpact/StarNinjas/impact1.ogg",
+      "archive_entry": "impact.1.ogg",
+      "sha256": "00787cc514099b2e7f7b6b77a973f8c484863ef640326ebb318ba5d7791bf48e"
+    },
+    {
+      "asset": "SourceData/Audio/BodyImpact/StarNinjas/impact2.ogg",
+      "archive_entry": "impact.2.ogg",
+      "sha256": "694ca0394d9c4ce49b96738f429bf6ec209610fd1163ede0e8ebf3fada41931e"
+    },
+    {
+      "asset": "SourceData/Audio/BodyImpact/StarNinjas/impact3.ogg",
+      "archive_entry": "impact.3.ogg",
+      "sha256": "0323ef813b34fcf63f0d9f63b6d5318029305e95a44f7ce88cdff17210f83dc9"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/BodyImpact/BodyImpact1.wav",
+      "source": "SourceData/Audio/BodyImpact/StarNinjas/impact1.ogg",
+      "trim_start": 0.20685416666666667,
+      "seconds": 0.3882291666666667,
+      "sha256": "cfbbfcc4c9106892f032498b68994b822a2ae8a900816de1247923c852d3a0d1"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/BodyImpact/BodyImpact2.wav",
+      "source": "SourceData/Audio/BodyImpact/StarNinjas/impact2.ogg",
+      "trim_start": 0.13733333333333334,
+      "seconds": 0.35029166666666667,
+      "sha256": "6d8b1f4e523814e54ed30b4cce3614329823d6089e5217253bc85b491055bfa5"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/BodyImpact/BodyImpact3.wav",
+      "source": "SourceData/Audio/BodyImpact/StarNinjas/impact3.ogg",
+      "trim_start": 0.33779166666666666,
+      "seconds": 0.31833333333333336,
+      "sha256": "a8323093d9b923a04dc3bdcc8aadc242ddc7aa0c82dbc2b106ae6a92aae514ee"
+    }
+  ]
+}

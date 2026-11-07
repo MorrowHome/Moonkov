@@ -1,0 +1,7 @@
+Body contact Foley: StarNinjas, "10 Impact/Shield Blocks".
+https://opengameart.org/content/10-impactshield-blocks
+License: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/).
+Recorded cardboard impacts. Edited with silence trim, HP55/LP6500 filtering,
+DC removal, 2 ms fades and peak normalization. Original timing and pitch.
+Originals: SourceData/Audio/BodyImpact/StarNinjas/impact1.ogg through impact3.ogg.
+Recipe and hashes: Assets/Audio/Moonkov/BodyImpactSources.json.
