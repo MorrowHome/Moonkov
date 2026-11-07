@@ -28,6 +28,7 @@
     transform-origin: 0 0; overflow: hidden;
 }
 .halos-room-world { position: absolute; left: 0; top: 0; width: 5760px; height: 1080px; }
+.halos-room-parallax { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 50% 50%; }
 .halos-room-sprite { position: absolute; }
 .halos-room-tablet {
     position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
