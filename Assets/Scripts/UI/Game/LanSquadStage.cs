@@ -98,11 +98,7 @@ namespace Unity.MP_FPS.Client
             AlignCards();
         }
 
-        private void AlignCards()
-        {
-            for (int i = 0; i < 4; i++)
-                m_Cards[i].style.left = Length.Percent(Mathf.Clamp(Stage.SlotViewportX(i) * 100 - 11.5f, 0, 77));
-        }
+        private void AlignCards() => Stage.AlignMemberCards(m_Cards);
         public void SetVisible(bool visible)
         {
             m_Visible = visible;

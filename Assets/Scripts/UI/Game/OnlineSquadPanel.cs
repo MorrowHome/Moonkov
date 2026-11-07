@@ -178,11 +178,7 @@ namespace Unity.MP_FPS.Client
             statusLabel.EnableInClassList("is-error", !string.IsNullOrEmpty(error));
         }
 
-        private void AlignMembers()
-        {
-            for (int i = 0; i < 4; i++)
-                m_Cards[i].style.left = new Length(Mathf.Clamp(Stage.SlotViewportX(i) * 100 - 10.5f, 0, 79), LengthUnit.Percent);
-        }
+        private void AlignMembers() => Stage.AlignMemberCards(m_Cards);
         public void Dispose()
         { if (m_Disposed) return; m_Disposed = true; Stage.FramingChanged -= AlignMembers; Stage.Dispose(); Element.RemoveFromHierarchy(); }
     }
