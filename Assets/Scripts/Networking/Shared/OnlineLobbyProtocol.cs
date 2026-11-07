@@ -22,12 +22,12 @@ namespace Unity.MP_FPS.Online
     [Serializable] public sealed class LobbyAppearance
     {
         public int CharacterIndex = 2, PoseIndex = -1;
-        public string Weapon = "", Headgear = "", Backpack = "", Melee = "";
+        public string Weapon = "", Headgear = "", ChestBadge = "", Backpack = "", Melee = "";
         public ushort Modules;
         public bool Shield;
         public bool SameAs(LobbyAppearance other) => other != null && CharacterIndex == other.CharacterIndex &&
             PoseIndex == other.PoseIndex && Weapon == other.Weapon && Headgear == other.Headgear &&
-            Backpack == other.Backpack && Melee == other.Melee && Modules == other.Modules && Shield == other.Shield;
+            ChestBadge == other.ChestBadge && Backpack == other.Backpack && Melee == other.Melee && Modules == other.Modules && Shield == other.Shield;
         public LobbyAppearance Copy() => (LobbyAppearance)MemberwiseClone();
     }
     [Serializable] public sealed class LobbySnapshot

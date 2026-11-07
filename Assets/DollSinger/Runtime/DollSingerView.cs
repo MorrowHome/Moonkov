@@ -116,6 +116,15 @@ public class DollSingerView : MonoBehaviour
     private Material[] thirdPersonMaterials;
     private UnityEngine.Mesh thirdPersonMesh;
     private UnityEngine.Mesh firstPersonMesh;
+    private DollSingerGestureProjection gestureProjection;
+    public Camera GestureProjectionCamera => gestureProjection?.Camera;
+    public bool GestureProjectionActive => gestureProjection != null && gestureProjection.Active;
+
+    public void PresentGesture(float poseBlend)
+    {
+        gestureProjection?.Present(firstPersonPresentationActive && firstPerson && viewBlend > .99f && poseBlend > .0001f,
+            poseBlend, firstPersonFieldOfView);
+    }
     private SkinnedMeshRenderer fullShadowRenderer;
     private ShadowCastingMode thirdPersonShadowMode;
     private bool thirdPersonForceRenderingOff;
@@ -561,6 +570,7 @@ public class DollSingerView : MonoBehaviour
         if (!firstPersonMesh) return;
         if (animator && animator.isHuman)
             torsoClearance = new DollSingerTorsoClearance(bodyRenderer, animator, firstPersonMesh);
+        gestureProjection = new DollSingerGestureProjection(camera, bodyRenderer, firstPersonMesh);
 
         var shadowObject = new GameObject("FirstPersonFullShadow (Runtime)");
         shadowObject.transform.SetParent(bodyRenderer.transform, false);
@@ -698,16 +708,20 @@ public class DollSingerView : MonoBehaviour
     private void BeforeCameraCull(Camera renderingCamera)
     {
         if (!bodyRenderer || !firstPersonMesh) return;
+        gestureProjection?.BeforeCamera(renderingCamera);
         cameraMeshStates.Push(new CameraMeshState { camera = renderingCamera, firstPersonMesh = renderingFirstPersonMesh,
             forceRenderingOff = bodyRenderer.forceRenderingOff });
-        // Every action uses this same connected body and the world's projection.
-        // Observer cameras and shadows retain the complete head.
+        // Weapon gestures share the eye but retain readable size during zoom.
+        // Other actions, observers and shadows keep their existing projection.
         bool ownerCamera = renderingCamera == camera || renderingCamera == TransitionCamera;
         SetCameraMesh(firstPersonPresentationActive && ownerCamera);
+        if (firstPersonPresentationActive && renderingCamera == camera && GestureProjectionActive)
+            bodyRenderer.forceRenderingOff = true;
     }
 
     private void AfterCameraRender(Camera renderingCamera)
     {
+        gestureProjection?.AfterCamera();
         if (!bodyRenderer || cameraMeshStates.Count == 0) return;
         if (cameraMeshStates.Peek().camera != renderingCamera)
         {
@@ -742,6 +756,7 @@ public class DollSingerView : MonoBehaviour
 
     private void ReleaseFirstPersonPresentation()
     {
+        gestureProjection?.Dispose(); gestureProjection = null;
         cameraMeshStates.Clear();
         if (bodyRenderer)
         {

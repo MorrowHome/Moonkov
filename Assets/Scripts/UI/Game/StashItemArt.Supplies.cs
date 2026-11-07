@@ -64,21 +64,12 @@ namespace Unity.MP_FPS.Client
 
         private void ScoutRig()
         {
-            Box(0xa18e62, 27, 13, 10, 33); Box(0xa18e62, 63, 13, 10, 33);
-            Shape(0x7d7251, new Vector2(18, 44), new Vector2(81, 44), new Vector2(77, 79), new Vector2(22, 79));
-            for (int x = 24; x <= 64; x += 20)
-            { Box(0xb3a172, x, 47, 16, 26); Box(0xd0bf90, x, 47, 16, 7); Box(0x655e48, x + 6, 55, 4, 6); }
-            Line(0xd7cba6, 2, new Vector2(29, 15), new Vector2(29, 38));
+            ChestBadge(4, 0x6eb4cc);
         }
 
         private void FieldRig()
         {
-            Box(0x688077, 21, 10, 16, 26); Box(0x688077, 63, 10, 16, 26);
-            Shape(0x3c5751, new Vector2(18, 32), new Vector2(82, 32), new Vector2(88, 88), new Vector2(12, 88));
-            for (int y = 37; y <= 62; y += 25)
-                for (int x = 20; x <= 64; x += 22)
-                { Box(0x829589, x, y, 17, 21); Box(0xaabb9e, x, y, 17, 6); Box(0x344d46, x + 7, y + 7, 4, 7); }
-            Box(0xc7c9b1, 44, 24, 12, 7);
+            ChestBadge(8, 0xd6ad6b);
         }
 
         private void SlingPack()

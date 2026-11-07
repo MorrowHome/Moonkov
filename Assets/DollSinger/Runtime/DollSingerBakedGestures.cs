@@ -42,6 +42,10 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Transform leftIndexTip, leftThumbTip, rightThumbTip;
         private readonly Transform leftUpperArm, leftForearm, leftHand, rightUpperArm, rightForearm, rightHand;
         private readonly Vector3 neutralEyeFromChest;
+        private readonly Vector3[] presentationOffsets;
+        private Vector3 previousPresentationOffset;
+        private float sniperReloadOffset;
+        private const float SupportElbowAngle = 60f;
         private readonly Transform body;
         private readonly DollSingerMovement movement;
         private int currentWeapon;
@@ -99,7 +103,49 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 eye = leftEye && rightEye ? (leftEye.position + rightEye.position) * .5f :
                 head.position + body.rotation * new Vector3(0, .08f, .05f);
             neutralEyeFromChest = Quaternion.Inverse(chest.rotation * Quaternion.Inverse(library.chestBindRotation)) * (eye - chest.position);
+            presentationOffsets = CalibratePresentation(chest, eye);
         }
+
+        private Vector3[] CalibratePresentation(Transform chest, Vector3 eye)
+        {
+            var offsets = new Vector3[library.motions.Length];
+            Quaternion basis = chest.rotation * Quaternion.Inverse(library.chestBindRotation);
+            Quaternion inverse = Quaternion.Inverse(basis);
+            Vector3 pivot = (leftShoulder.position + rightShoulder.position) * .5f;
+            // Measure the neutral gesture once. A fixed offset leaves the whole
+            // fire/reload animation intact; it never chases animated screen bounds.
+            for (int weapon = 1; weapon <= offsets.Length; weapon++)
+            {
+                if (weapon == 4) continue;
+                for (int i = 0; i < bones.Length; i++) bones[i].localRotation = Read(library.motions[weapon - 1].pose, 0, i);
+                Quaternion correction = PointsWithIndex(weapon)
+                    ? Quaternion.FromToRotation(rightIndexTip.position - rightIndex.position, basis * Vector3.forward)
+                    : Quaternion.identity;
+                Vector3 min = Vector3.one * float.PositiveInfinity, max = Vector3.one * float.NegativeInfinity;
+                for (int i = 0; i < bones.Length; i++)
+                {
+                    if (!library.bones[i].Contains("指") && !library.bones[i].StartsWith("手首")) continue;
+                    Vector3 point = inverse * (pivot + correction * (bones[i].position - pivot) - eye);
+                    min = Vector3.Min(min, point); max = Vector3.Max(max, point);
+                }
+                // The pair stays horizontally centred. Leave only a small gap
+                // above the fingers, never move the whole gesture to one side.
+                float height = -(max.y - min.y) * .5f - .015f;
+                if (weapon == 1) height -= .013f;
+                if (weapon == 7 || weapon == 13) height -= .005f;
+                if (weapon == 2) height -= .02f;
+                if (weapon == 3) height -= .05f;
+                // These tall, open signs flank the sight point. Keep their lower
+                // fingers visible instead of forcing their entire silhouette below it.
+                if (weapon == 6 || weapon == 9 || weapon == 11) height += .03f;
+                Vector3 center = new Vector3(0, height, .26f);
+                offsets[weapon - 1] = center - (min + max) * .5f;
+            }
+            RestoreBeforeAnimation();
+            return offsets;
+        }
+
+        private static bool PointsWithIndex(int weapon) => weapon == 2 || weapon == 5 || weapon == 8 || weapon == 11;
 
         public bool IsFiring(int weapon, float shotAge, float releaseSeconds = 0) => weapon >= 1 && weapon <= library.motions.Length &&
             shotAge >= 0 && shotAge < (releaseSeconds > 0 ? releaseSeconds : library.motions[weapon - 1].fireSeconds);
@@ -127,6 +173,9 @@ namespace Unity.MP_FPS.DollSinger
         {
             if (blend <= .0001f || weapon < 1 || weapon > library.motions.Length) { initialized = false; return; }
             Motion motion = library.motions[weapon - 1];
+            float reloadLowering = reloading ? Mathf.Sin(Mathf.PI * Mathf.Clamp01(reloadProgress)) : 0;
+            sniperReloadOffset = weapon == 4 && reloading
+                ? .10f * Mathf.SmoothStep(0, 1, Mathf.Min(reloadProgress, 1 - reloadProgress) / .12f) : 0;
             shotAge = ShotSampleTime(shotAge, motion.fireSeconds, releaseSeconds);
             Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
@@ -145,6 +194,7 @@ namespace Unity.MP_FPS.DollSinger
             if (currentWeapon != weapon)
             {
                 Array.Copy(target, previous, target.Length);
+                previousPresentationOffset = currentWeapon > 0 ? presentationOffsets[currentWeapon - 1] : presentationOffsets[weapon - 1];
                 currentWeapon = weapon; transition = initialized ? 0 : 1;
             }
             transition = Mathf.MoveTowards(transition, 1, (deltaTime < 0 ? Time.deltaTime : deltaTime) / Mathf.Max(.01f, transitionSeconds));
@@ -180,7 +230,8 @@ namespace Unity.MP_FPS.DollSinger
             // Interpolating complete arm chains can slightly change their combined
             // orientation between authored pitch poses. Align the pointing pair as
             // one unit; never turn the wrist or fingers independently.
-            if ((weapon == 2 || weapon == 5 || weapon == 8 || weapon == 11 || weapon == 13) && aimDirection.sqrMagnitude > .001f)
+            // Nocturne now raises its middle fingers; its folded index is not an aiming ray.
+            if (PointsWithIndex(weapon) && aimDirection.sqrMagnitude > .001f)
             {
                 Vector3 index = correction * (rightIndexTip.position - rightIndex.position);
                 correction = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(index, aimDirection), blend) * correction;
@@ -190,25 +241,48 @@ namespace Unity.MP_FPS.DollSinger
             RotateShoulder(rightShoulder, pivot, correction);
             if (eyeRelative)
             {
-                // Aim the authored motion around the real eye. Pitch-specific
-                // bakes were framed by the removed hand camera and can cover the
-                // reticle when looking down. Keep the neutral animation's metre
-                // offsets, including fire/reload movement; never fit screen bounds.
+                // Place the complete gesture around the tiny reticle window. Both hands get
+                // one fixed offset; finger detail, contact and recoil stay authored.
                 Vector3 neutralEye = chest.position + authoredBasis * neutralEyeFromChest;
-                MoveHands((eye.transform.position - (pivot + correction * (neutralEye - pivot))) * blend);
+                Vector3 framing = Vector3.Lerp(previousPresentationOffset, presentationOffsets[weapon - 1], mix);
+                if (weapon == 1 && reloading)
+                    framing.y -= .052f * Mathf.SmoothStep(0, 1, Mathf.Min(reloadProgress, 1 - reloadProgress) / .2f);
+                if (weapon == 2 || weapon == 5 || weapon == 8)
+                    framing.y -= (weapon == 2 ? .015f : .025f) * reloadLowering;
+                if (weapon == 3) framing.y += .05f * reloadLowering;
+                MoveHands((eye.transform.position + aimBasis * framing - (pivot + correction * (neutralEye - pivot))) * blend,
+                    weapon == 2 ? -eye.transform.up : Vector3.zero, eye.transform.right, blend);
             }
         }
 
-        private void MoveHands(Vector3 offset)
+        private void MoveHands(Vector3 offset, Vector3 bendDirection, Vector3 right, float bendBlend)
         {
             if (offset.sqrMagnitude < .00000001f) return;
-            // A common translation preserves finger contacts. Stop at the first
-            // arm's physical reach instead of stretching bones or shifting the eye.
+            // Project the common target into both arms' reach. Sliding along the
+            // reach boundary lets a short arm raise its hand even when it cannot
+            // move further forward. Never stretch bones or separate the hands.
+            for (int i = 0; i < 8; i++)
+            {
+                Constrain(leftUpperArm, leftForearm, leftHand);
+                Constrain(rightUpperArm, rightForearm, rightHand);
+            }
             float fraction = Mathf.Min(ReachFraction(leftUpperArm, leftForearm, leftHand, offset),
                 ReachFraction(rightUpperArm, rightForearm, rightHand, offset));
             offset *= fraction;
-            Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset);
-            Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset);
+            // Tuck the supporting elbow beneath the crossed wrists. A long cuff
+            // must not cut across the reticle when the player looks steeply up.
+            bool guideElbows = bendDirection.sqrMagnitude > .001f;
+            Vector3 leftPole = guideElbows ? Quaternion.AngleAxis(SupportElbowAngle, Vector3.Cross(bendDirection, right)) * bendDirection : Vector3.zero;
+            Vector3 rightPole = guideElbows ? bendDirection + right * .75f : Vector3.zero;
+            Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset, leftPole, bendBlend);
+            Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset, rightPole, bendBlend);
+
+            void Constrain(Transform upper, Transform lower, Transform hand)
+            {
+                float reach = Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position) - .001f;
+                Vector3 origin = upper.position - hand.position;
+                offset = origin + Vector3.ClampMagnitude(offset - origin, reach);
+            }
         }
 
         private static float ReachFraction(Transform upper, Transform lower, Transform hand, Vector3 offset)
@@ -216,6 +290,7 @@ namespace Unity.MP_FPS.DollSinger
             float length = Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position);
             Vector3 from = hand.position - upper.position;
             float a = offset.sqrMagnitude, b = Vector3.Dot(from, offset);
+            if (a < .0000000001f) return 1;
             float c = from.sqrMagnitude - length * length;
             return Mathf.Clamp01((-b + Mathf.Sqrt(Mathf.Max(0, b * b - a * c))) / a);
         }
@@ -226,14 +301,14 @@ namespace Unity.MP_FPS.DollSinger
             if (!eye || blend <= .0001f || !leftUpperArm || !leftForearm || !leftHand ||
                 !rightUpperArm || !rightForearm || !rightHand) return;
             Vector3 center = (leftIndexTip.position + rightThumbTip.position + rightIndexTip.position + leftThumbTip.position) * .25f;
-            Vector3 origin = eye.transform.position, forward = eye.transform.forward;
+            Vector3 origin = eye.transform.position - eye.transform.up * sniperReloadOffset, forward = eye.transform.forward;
             // Both hands move by one common offset, preserving the authored finger
             // contacts and frame orientation. Keep the target inside BOTH arms' reach.
-            float minimum = eye.nearClipPlane + .06f, maximum = .32f;
+            float minimum = eye.nearClipPlane + .06f, maximum = .45f;
             if (!Reach(leftUpperArm, leftForearm, leftHand) || !Reach(rightUpperArm, rightForearm, rightHand) || minimum > maximum) return;
             float depth = Mathf.Clamp(Vector3.Dot(center - origin, forward), minimum, maximum);
             // A frame very near the eye clips sleeves and hands even before zoom.
-            depth = Mathf.Clamp(Mathf.Max(.24f, depth), minimum, maximum);
+            depth = Mathf.Clamp(Mathf.Max(.38f, depth), minimum, maximum);
             Vector3 offset = (origin + forward * depth - center) * Mathf.SmoothStep(0, 1, blend);
             Solve(leftUpperArm, leftForearm, leftHand, leftHand.position + offset);
             Solve(rightUpperArm, rightForearm, rightHand, rightHand.position + offset);
@@ -252,7 +327,7 @@ namespace Unity.MP_FPS.DollSinger
             }
         }
 
-        private static void Solve(Transform upper, Transform lower, Transform hand, Vector3 target)
+        private static void Solve(Transform upper, Transform lower, Transform hand, Vector3 target, Vector3 bendDirection = default, float bendBlend = 0)
         {
             Vector3 shoulder = upper.position, elbow = lower.position, wrist = hand.position;
             Quaternion handRotation = hand.rotation;
@@ -265,6 +340,8 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 bend = Vector3.ProjectOnPlane(elbow - shoulder, direction);
             if (bend.sqrMagnitude < .000001f) bend = Vector3.ProjectOnPlane(upper.up, direction);
             if (bend.sqrMagnitude < .000001f) bend = Vector3.Cross(direction, upper.right);
+            Vector3 pole = Vector3.ProjectOnPlane(bendDirection, direction);
+            if (pole.sqrMagnitude > .000001f) bend = Vector3.Slerp(bend.normalized, pole.normalized, bendBlend);
             float along = (upperLength * upperLength + reach * reach - lowerLength * lowerLength) / (2 * reach);
             Vector3 solvedElbow = shoulder + direction * along + bend.normalized * Mathf.Sqrt(Mathf.Max(0, upperLength * upperLength - along * along));
             upper.rotation = Quaternion.FromToRotation(elbow - shoulder, solvedElbow - shoulder) * upper.rotation;

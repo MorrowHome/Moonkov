@@ -52,7 +52,8 @@ namespace Unity.MP_FPS
                 new Entry("circuit_board", 22, 1, 2), new Entry("copper_coil", 20, 1, 2),
                 new Entry("ceramic_plate", 16, 1, 2), new Entry("optical_sensor", 10),
                 new Entry("data_drive", 6), new Entry("helium3_sample", 4),
-                new Entry("quantum_core", 2), new Entry("black_box", 2)
+                new Entry("quantum_core", 2), new Entry("black_box", 2),
+                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
             }, 2, 3),
             new Table(new[] { new Entry("cells", 1, 2, 4) }, new[]
             {
@@ -66,8 +67,47 @@ namespace Unity.MP_FPS
                 new Entry("concertina_trip_mine", 2), new Entry("poison_trip_mine", 2), new Entry("ammo_box", 2), new Entry("helmet", 8), new Entry("rig", 6), new Entry("compact", 3),
                 new Entry("pistol", 3), new Entry("shotgun", 2), new Entry("sniper", 1),
                 new Entry("optical_sensor", 8), new Entry("data_drive", 6),
-                new Entry("black_box", 3), new Entry("quantum_core", 1)
+                new Entry("black_box", 3), new Entry("quantum_core", 1),
+                new Entry("rifle", 3), new Entry("cicada", 2), new Entry("trine", 2),
+                new Entry("aegis", 1), new Entry("vesper", 1), new Entry("thorn", 1),
+                new Entry("nocturne", 1), new Entry("tempest", 1), new Entry("rondo", 1), new Entry("sundown", 1),
+                new Entry("energy_head_dome", 4), new Entry("energy_shield_generator", 4),
+                new Entry("energy_sword", 3), new Entry("dagger", 5), new Entry("backpack", 3),
+                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
             }, 2, 4)
+        };
+
+        // Every full cache gets one roll from this pool before its remaining themed rolls.
+        // Keep mission outputs, alien harvests, personal secure cases and the research-only
+        // mooncore recycler on their existing acquisition paths.
+        private static readonly Entry[] SharedPool =
+        {
+            new Entry("ration", 16, 1, 2), new Entry("water", 16),
+            new Entry("energy_gel", 14, 1, 2), new Entry("protein_bar", 14, 1, 2), new Entry("electrolyte", 12),
+            new Entry("medkit", 14, 1, 2), new Entry("med_gel", 14, 1, 2), new Entry("trauma_kit", 6),
+            new Entry("oxygen_canister", 16, 1, 2), new Entry("oxygen_reserve", 7), new Entry("cells", 18, 1, 3),
+            new Entry("dust", 12, 2, 5), new Entry("alloy", 10, 1, 2),
+            new Entry("circuit_board", 12, 1, 2), new Entry("copper_coil", 10, 1, 2), new Entry("ceramic_plate", 8, 1, 2),
+            new Entry("optical_sensor", 6), new Entry("data_drive", 3), new Entry("helium3_sample", 2),
+            new Entry("quantum_core", 1), new Entry("black_box", 1),
+            new Entry("halo_capacitor", 3), new Entry("halo_charge_bridge", 3),
+            new Entry("halo_focus_lens", 2), new Entry("halo_fan_array", 2),
+            new Entry("halo_pulse_controller", 2), new Entry("halo_hit_marker", 2),
+            new Entry("energy_grenade", 8, 1, 2), new Entry("vitality_shot", 3),
+            new Entry("stamina_shot", 3), new Entry("antidote_shot", 3),
+            new Entry("dynamite_bundle", 2), new Entry("frag_bomb", 3), new Entry("fire_bomb", 2),
+            new Entry("smoke_grenade", 4), new Entry("choke_bomb", 4), new Entry("alert_trip_mine", 2),
+            new Entry("concertina_trip_mine", 2), new Entry("poison_trip_mine", 2), new Entry("ammo_box", 2),
+            new Entry("helmet", 4), new Entry("energy_head_dome", 2), new Entry("energy_shield_generator", 3),
+            new Entry("energy_sword", 2), new Entry("dagger", 4),
+            new Entry("rifle", 3), new Entry("compact", 3), new Entry("pistol", 4),
+            new Entry("shotgun", 2), new Entry("sniper", 1),
+            new Entry("cicada", 1), new Entry("trine", 1), new Entry("aegis", 1),
+            new Entry("vesper", 1), new Entry("thorn", 1), new Entry("nocturne", 1),
+            new Entry("tempest", 1), new Entry("rondo", 1), new Entry("sundown", 1),
+            new Entry("rig", 3), new Entry("scout_rig", 4), new Entry("field_rig", 2),
+            new Entry("small_pack", 4), new Entry("sling_pack", 5), new Entry("backpack", 2), new Entry("cargo_pack", 1),
+            new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
         };
 
         private static readonly Entry[][] DrawerPools =
@@ -126,34 +166,41 @@ namespace Unity.MP_FPS
             foreach (var entry in table.Guaranteed)
                 if (!TryAdd(graph, entry, random))
                     throw new InvalidOperationException("Guaranteed loot cannot fit " + entry.Code);
-            // Draw without replacement so one rare result cannot consume every roll.
-            // Oversized optional results are skipped and another entry is drawn. A cargo
-            // pack can therefore share a standard cache without overflowing its 6x5 grid.
-            var used = new bool[table.Pool.Length];
-            // Optional content packs may not be registered in every build.
-            for (int i = 0; i < used.Length; i++) used[i] = InventoryCatalog.Get(table.Pool[i].Code) == null;
             int rolls = random.Next(table.MinimumRolls, table.MaximumRolls + 1);
-            int placed = 0;
-            while (placed < rolls)
-            {
-                int total = 0;
-                for (int i = 0; i < table.Pool.Length; i++) if (!used[i]) total += table.Pool[i].Weight;
-                if (total == 0) break;
-                int ticket = random.Next(total);
-                for (int i = 0; i < table.Pool.Length; i++)
-                {
-                    if (used[i]) continue;
-                    ticket -= table.Pool[i].Weight;
-                    if (ticket >= 0) continue;
-                    used[i] = true;
-                    if (TryAdd(graph, table.Pool[i], random)) placed++;
-                    break;
-                }
-            }
+            AddRandom(graph, SharedPool, 1, random);
+            AddRandom(graph, table.Pool, rolls - 1, random);
             if (graph.Validate() != InventoryError.None)
                 throw new InvalidOperationException("Generated loot does not fit its cache.");
             graph.Version = 1;
             return graph;
+        }
+
+        private static void AddRandom(InventoryGraph graph, Entry[] pool, int rolls, Random random)
+        {
+            // Draw without replacement so one rare result cannot consume every roll.
+            // Oversized optional results are skipped and another entry is drawn. A cargo
+            // pack can therefore share a standard cache without overflowing its 6x5 grid.
+            var used = new bool[pool.Length];
+            // Skip missing content packs and codes already placed by another pool or guarantee.
+            for (int i = 0; i < used.Length; i++)
+                used[i] = InventoryCatalog.Get(pool[i].Code) == null || graph.Count(pool[i].Code) > 0;
+            int placed = 0;
+            while (placed < rolls)
+            {
+                int total = 0;
+                for (int i = 0; i < pool.Length; i++) if (!used[i]) total += pool[i].Weight;
+                if (total == 0) break;
+                int ticket = random.Next(total);
+                for (int i = 0; i < pool.Length; i++)
+                {
+                    if (used[i]) continue;
+                    ticket -= pool[i].Weight;
+                    if (ticket >= 0) continue;
+                    used[i] = true;
+                    if (TryAdd(graph, pool[i], random)) placed++;
+                    break;
+                }
+            }
         }
 
         private static bool TryAdd(InventoryGraph graph, Entry entry, Random random)

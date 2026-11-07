@@ -13,7 +13,7 @@ ShopCommand Command(InventoryGraph graph, ShopOperation operation, string? code 
     new() { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = graph.Version, Operation = operation, Code = code!, Quantity = quantity, ItemId = item! };
 await ClientCatalogChecks.Run(Check);
 QuickMoveChecks.Run(Check);
-foreach (string code in new[] { "rifle", "pistol", "shotgun", "sniper", "cells", "medkit", "ration", "water", "oxygen_canister" })
+foreach (string code in new[] { "rifle", "pistol", "shotgun", "sniper", "cells", "medkit", "ration", "water", "oxygen_canister", "helmet", "energy_head_dome" })
 {
     Check(ShopCatalog.Find(code).BuyDust == 0 && ShopCatalog.Find(code).FreeSupplyRestricted, code + " remains free with an advertised sale restriction");
     var empty = InventoryGraph.Create(starter: false);

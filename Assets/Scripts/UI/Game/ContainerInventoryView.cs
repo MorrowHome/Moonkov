@@ -146,7 +146,7 @@ namespace Unity.MP_FPS.Client
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "RETIRED EQUIPMENT" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "RETIRED EQUIPMENT" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST BADGE" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
@@ -292,14 +292,14 @@ namespace Unity.MP_FPS.Client
                 MoonkovLocalization.Set(m_Weight, "Waiting for inventory snapshot");
                 MoonkovLocalization.Set(m_Message, "Loading carried inventory from the server…");
                 AddContainer(m_ContainerPane, null, "POCKETS");
-                AddContainer(m_ContainerPane, null, "CHEST RIG");
+                AddContainer(m_ContainerPane, null, "CHEST BADGE");
                 AddContainer(m_ContainerPane, null, "BACKPACK");
                 if (m_Stash) AddContainer(m_StashPane, null, "PERSONAL STORAGE");
                 if (!m_Stash) RenderRaidLoot(null);
                 return;
             }
             RefreshWeight();
-            AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
+            AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST BADGE");
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddSpecialEquipment();
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
@@ -316,8 +316,8 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
             if (item?.Code == "stash" || item?.Code == "loot" && (!compact || m_SearchTotal>=0))
                 group.Q("containerTitle").style.display = DisplayStyle.None;
-            if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK" || title == "保险箱"))
-                AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
+            if (pane == m_ContainerPane && (title == "CHEST BADGE" || title == "BACKPACK" || title == "保险箱"))
+                AddContainerEquipmentSlot(group, item, title == "CHEST BADGE" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
             if (corpseSlot != null) AddCorpseContainerSlot(group, item, corpseSlot);
             var caption = group.Q<Label>("containerCaption");
             if (item == null)
@@ -430,7 +430,7 @@ namespace Unity.MP_FPS.Client
                     m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
                 });
                 recharge.SetEnabled(!m_Busy && m_ReadOnlyReason == null && (ShieldRechargeAvailable?.Invoke(item) ?? false));
-                recharge.tooltip = MoonkovLocalization.Text("Requires halo energy below maximum and a charged battery in pockets or an equipped rig.");
+                recharge.tooltip = MoonkovLocalization.Text("Requires halo energy below maximum and a charged battery in pockets or an equipped badge.");
             }
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
                 MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
@@ -439,7 +439,7 @@ namespace Unity.MP_FPS.Client
                     m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
                 });
             else if (m_UseConsumable != null && ConsumableCatalog.Get(item.Code)?.Oxygen > 0 && m_Graph.Carried(item))
-                Text(window, "Move the oxygen canister to a pocket or equipped chest rig before use.", "inventory-caption");
+                Text(window, "Move the oxygen canister to a pocket or equipped chest badge before use.", "inventory-caption");
             if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
                 MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
                 {

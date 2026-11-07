@@ -501,8 +501,8 @@ namespace Unity.MP_FPS
             switch (error)
             {
                 case InventoryError.Full: case InventoryError.Bounds: case InventoryError.Collision:
-                    return "空间不足：每件任务产物需要 1×1 空位。先整理口袋、胸挂或背包，再从输出槽取走。";
-                case InventoryError.Incompatible: return "该装备槽不能放任务产物，请选择口袋、胸挂或背包空位。";
+                    return "空间不足：每件任务产物需要 1×1 空位。先整理口袋、胸章或背包，再从输出槽取走。";
+                case InventoryError.Incompatible: return "该装备槽不能放任务产物，请选择口袋、胸章或背包空位。";
                 case InventoryError.Overweight: return "携带重量已达上限，先移出部分物品再取任务产物。";
                 case InventoryError.Missing: return "这件产物已不在原位置，可能已被取走，请等待库存刷新后确认。";
                 case InventoryError.Stale: return "库存或输出槽已有变化，请等待界面刷新后重试。";

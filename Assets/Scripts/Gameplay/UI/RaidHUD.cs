@@ -435,7 +435,8 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
             for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Deploy.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            // Keep one owner for result actions; tutorial raids must return through the ship.
+            m_Deploy.style.display = m_ResultStep == 2 && !m_TutorialConfigured ? DisplayStyle.Flex : DisplayStyle.None;
             m_Return.style.display = DisplayStyle.Flex;
             m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
         }
@@ -920,7 +921,7 @@ namespace Unity.MP_FPS
             bool oxygenSupply = definition != null && definition.Oxygen > 0;
             if (!(shieldSupply ? CanRechargeShieldCell(item) : oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
             {
-                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
+                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped badge." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
                     "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
                 MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }

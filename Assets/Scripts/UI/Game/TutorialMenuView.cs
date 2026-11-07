@@ -59,8 +59,8 @@ namespace Unity.MP_FPS.Client
             m_Title.text = PlayerProfileClient.IsTutorialPractice ? "教学练习" : "第一次月面行动";
             m_Copy.text = m_Message ?? (intro ? TutorialRules.Introduction[state.IntroPage] : !active ? "本次练习已结束。可以返回正式档案。" :
                 (prep & TutorialRules.Equipped) == 0 ? "装备一件光环。打开仓库，把武器拖入对应装备栏。" :
-                (prep & TutorialRules.Cells) == 0 ? "带上电池。放入口袋或胸挂，战斗时才能取用。" :
-                (prep & TutorialRules.Medicine) == 0 ? "带上医疗注射器。放入口袋或胸挂，为回程留出余量。" :
+                (prep & TutorialRules.Cells) == 0 ? "带上电池。放入口袋或胸章，战斗时才能取用。" :
+                (prep & TutorialRules.Medicine) == 0 ? "带上医疗注射器。放入口袋或胸章，为回程留出余量。" :
                 "沈禾：装备齐了。前往 MC00 入口登记，记住撤离点的方向。样本只有成功带回才算入库。");
             m_Next.text = intro ? "继续" : prep == 7 ? "准备出战" : "打开仓库";
             m_Next.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;

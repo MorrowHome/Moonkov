@@ -23,7 +23,8 @@ public static class FirstPersonWeaponRuntimeChecks
         Action<ScriptableRenderContext, Camera> handler = null;
         handler = (_, rendered) =>
         {
-            if (rendered != camera) return;
+            var view = camera.GetComponentInParent<DollSingerView>();
+            if (rendered != (view && view.GestureProjectionActive ? view.GestureProjectionCamera : camera)) return;
             RenderPipelineManager.endCameraRendering -= handler;
             try { sample?.Invoke(); done.TrySetResult(true); }
             catch (Exception e) { done.TrySetException(e); }
@@ -101,7 +102,8 @@ public static class FirstPersonWeaponRuntimeChecks
                         {
                             Check(halo.AimBlend > .99f, rig + " did not raise " + weapon);
                             Check(Quaternion.Angle(camera.transform.rotation, Quaternion.Euler(pitch, 0, 0)) < .1f, rig + " gesture moved eye direction");
-                            Check(!root.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")), "Extra gesture camera");
+                            Check(view.GestureProjectionActive && Vector3.Distance(view.GestureProjectionCamera.transform.position, camera.transform.position) < .00001f,
+                                "Gesture projection left the eye");
                             if (weapon == DollSingerHaloAim.HaloWeapon.Sniper)
                             {
                                 Vector3 center = (bones["人指先.L"].position + bones["親指先.R"].position + bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
@@ -131,7 +133,7 @@ public static class FirstPersonWeaponRuntimeChecks
                     {
                         Check(melee.OwnsHandPose && melee.PoseBlend > .99f, rig + " melee pose missing");
                         Check(Quaternion.Angle(camera.transform.rotation, Quaternion.identity) < .1f, rig + " melee rotated camera");
-                        Check(!root.GetComponentsInChildren<Renderer>(true).Any(r => r.gameObject.layer == LayerMask.NameToLayer("FirstPersonOverlay")), "Melee bypassed world depth");
+                        Check(!view.GestureProjectionActive, "Melee retained the weapon projection");
                         Capture(weapon.ToString());
                     });
                     state.Suppressed = true; melee.SetPresentation(state); await Frame(camera);

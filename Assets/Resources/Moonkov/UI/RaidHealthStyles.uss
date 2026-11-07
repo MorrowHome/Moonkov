@@ -1,7 +1,7 @@
 .raid-health-page { flex-grow: 1; min-height: 0; padding: 28px 36px; background-color: #101416; }
 .health-diagram { flex-grow: 1; min-height: 210px; max-height: 380px; margin-bottom: 22px; }
 .health-diagram .vitals-reserve { height: 26px; }
-.health-diagram .vitals-cells { height: 10px; }
+.health-diagram .vitals-cells { height: 22px; max-width: 240px; }
 .health-actions { flex-direction: row; flex-shrink: 0; margin-bottom: 14px; }
 .raid-ui .raid-health-page .health-actions Button { flex-grow: 1; flex-basis: 0; min-width: 0; height: 36px; margin: 0 10px 0 0; padding: 4px 10px; color: #c4e1ff; background-color: #1d2c36; border-width: 1px; border-color: #536d7f; border-radius: 3px; font-size: 14px; letter-spacing: 0; }
 .raid-ui .raid-health-page #healthTreat { background-color: #c4e1ff; color: #16242e; }
@@ -14,3 +14,6 @@
 .health-diagram { align-self: center; width: 100%; max-width: 450px; }
 .health-diagram .vitals-body { width: 65%; }
 .health-diagram .vitals-signals { padding-left: 0; padding-top: 20px; }
+
+.health-diagram .vitals-reserve-halo { height: 38px; }
+.health-diagram .vitals-reserve-halo .vitals-cells { height: 36px; }

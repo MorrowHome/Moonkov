@@ -34,7 +34,7 @@ public static class BlenderGestureValidation
     private static Mesh armSurface;
     private static SkinnedMeshRenderer armRenderer;
     private static int[] armTriangles;
-    private static readonly Rect AimWindow = Rect.MinMaxRect(.49f, .49f, .51f, .51f);
+    private static readonly Rect AimWindow = Rect.MinMaxRect(.495f, .495f, .505f, .505f);
     private static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [MenuItem("Tools/Moonkov/Validate Blender Gestures In Playing Lab")]
@@ -149,7 +149,9 @@ public static class BlenderGestureValidation
     }
     private static void Visible(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex == 3)
+        if (DollSingerView.AimPoseBlend(lab.Halo.AimBlend) < .999f) return;
+        var handCamera = RenderedHandCamera(lab);
+        if (lab.WeaponIndex == 3 && !lab.Reloading)
         {
             Vector3 center = (bones["人指先.L"].position + bones["親指先.R"].position +
                 bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
@@ -157,23 +159,19 @@ public static class BlenderGestureValidation
             var owner = lab.PlayerView.camera;
             float pixels = new Vector2((uv.x-.5f)*owner.pixelWidth, (uv.y-.5f)*owner.pixelHeight).magnitude;
             Require(pixels < .5f, "Sniper frame centre drifted from crosshair: " + pixels + " pixels");
-            Require(!lab.Player.GetComponentsInChildren<Camera>(true).Any(c => c.name.Contains("Gesture")),
-                "Sniper added a separate hand projection");
-            // A normal optical zoom can crop the hands at the viewport edges.
-            // Do not force them back inside the screen and undo magnification.
-            return;
         }
         foreach (var name in new[] { "手首.L", "手首.R" })
         foreach (var bone in bones[name].GetComponentsInChildren<Transform>())
         {
-            var uv = lab.PlayerView.camera.WorldToViewportPoint(bone.position);
-            Require(float.IsFinite(uv.x) && float.IsFinite(uv.y) && float.IsFinite(uv.z), "Nonfinite hand projection: " + bone.name);
-            // Natural eye projection may crop the hands. ClearAim checks the actual sight line.
+            if (!bone.name.Contains("指") && !bone.name.StartsWith("手首")) continue;
+            var uv = handCamera.WorldToViewportPoint(bone.position);
+            Require(uv.z > handCamera.nearClipPlane && uv.x > .02f && uv.x < .98f && uv.y > .02f && uv.y < .98f,
+                "Cropped gesture: " + bone.name + " " + uv);
         }
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10 && lab.WeaponIndex != 12) return;
+        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10) return;
         var camera = lab.PlayerView.camera;
         Vector2 a = camera.WorldToViewportPoint(bones["人指１.R"].position);
         Vector2 b = camera.WorldToViewportPoint(bones["人指先.R"].position);
@@ -184,13 +182,25 @@ public static class BlenderGestureValidation
     }
     // A settled pose must leave the reticle clear. Natural hands may enter the
     // surrounding view and cross it while raising/lowering; do not reframe them.
+    private static Camera RenderedHandCamera(WeaponGestureLab lab)
+    {
+        // The camera task may supply a separate projection. Keep these gesture
+        // checks compatible with both presentations and inspect the one rendered.
+        var type=typeof(DollSingerView);
+        if(type.GetProperty("GestureProjectionActive")?.GetValue(lab.PlayerView) is bool active && active)
+        {
+            var camera=type.GetProperty("GestureProjectionCamera")?.GetValue(lab.PlayerView) as Camera;
+            if(camera) return camera;
+        }
+        return lab.PlayerView.camera;
+    }
     private static void ClearAim(WeaponGestureLab lab)
     {
         if (DollSingerView.AimPoseBlend(lab.Halo.AimBlend) < .999f) return;
         // Compensate the FBX hierarchy scale before applying localToWorldMatrix.
         armRenderer.BakeMesh(armSurface, true);
         var vertices = armSurface.vertices;
-        var camera = lab.PlayerView.camera;
+        var camera = RenderedHandCamera(lab);
         var world = armRenderer.transform.localToWorldMatrix;
         var projected = new Vector3[vertices.Length];
         var used = new bool[vertices.Length];
@@ -291,7 +301,7 @@ public static class BlenderGestureValidation
         {
             lab.SelectWeapon(weapon); yield return new WaitForSeconds(.6f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
-            FingerFan(lab,bones);
+            SealShape(lab,bones);
             if (weapon == 3) Shape(bones, lab.PlayerView.camera, report);
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Output + $"/{weapon + 1}-idle.png")); yield return new WaitForEndOfFrame();
             Vector3 offhand = bones["手首.L"].position;
@@ -328,7 +338,7 @@ public static class BlenderGestureValidation
             lab.PlayerView.camera.aspect = aspect;
             yield return new WaitForSeconds(.4f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error,Compare(bake,lab,bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones); HeadLook(lab, bones);
-            FingerFan(lab,bones);
+            SealShape(lab,bones);
         }
         // Reproduce looking up continuously, rather than only checking settled
         // endpoints. The hand projection must not retain another angle's fit.
@@ -445,16 +455,46 @@ public static class BlenderGestureValidation
             UnityEngine.Object.Destroy(texture);RenderTexture.active=previous;
         }
     }
-    private static void FingerFan(WeaponGestureLab lab, Dictionary<string,Transform> bones)
+    private static void SealShape(WeaponGestureLab lab, Dictionary<string,Transform> bones)
     {
-        if(lab.WeaponIndex!=5&&lab.WeaponIndex!=8)return;
-        var names=lab.WeaponIndex==5?new[]{"人指先.R","中指先.R","薬指先.R"}:new[]{"親指先.R","人指先.R","中指先.R","薬指先.R","小指先.R"};
-        var camera=lab.PlayerView.camera;
-        var pixel=new Vector2(camera.pixelWidth,camera.pixelHeight);
-        for(int i=0;i<names.Length;i++)for(int j=i+1;j<names.Length;j++)
+        var camera=RenderedHandCamera(lab);
+        if(lab.PlayerView.IsFirstPerson && Mathf.Abs(Vector3.Dot(camera.transform.forward, Vector3.up))<.01f)
         {
-            Vector2 a=camera.WorldToViewportPoint(bones[names[i]].position),b=camera.WorldToViewportPoint(bones[names[j]].position);
-            Require(Vector2.Scale(a-b,pixel).magnitude>10,"Fan fingers overlap in first person: weapon "+lab.WeaponIndex+" "+names[i]+"/"+names[j]);
+            string[] landmarks=lab.WeaponIndex switch
+            {
+                5=>new[]{"人指先.R","中指先.R","中指２.R"},
+                6=>new[]{"中指先.R","中指先.L","人指先.R","親指先.R"},
+                8=>new[]{"中指先.R","人指先.R","親指先.R"},
+                9=>new[]{"中指先.R","中指先.L","親指先.R"},
+                11=>new[]{"人指先.R","人指先.L","中指先.R","中指先.L"},
+                12=>new[]{"中指先.R","中指先.L","親指先.R"},
+                _=>null
+            };
+            if(landmarks!=null) foreach(string name in landmarks)
+            {
+                Vector3 uv=camera.WorldToViewportPoint(bones[name].position);
+                Require(uv.z>camera.nearClipPlane && uv.x>.02f && uv.x<.98f && uv.y>.02f && uv.y<.96f,
+                    "Domain seal contact is outside the actual first-person view: weapon "+lab.WeaponIndex+" "+name+" "+uv);
+            }
+        }
+        if(lab.WeaponIndex!=5&&lab.WeaponIndex!=8)return;
+        if(lab.WeaponIndex==8)
+        {
+            Require(Vector3.Distance(bones["親指先.R"].position,bones["人指先.R"].position)<.006f,
+                "Hakari thumb/index seal opened.");
+            foreach(var digit in new[]{"中指","薬指","小指"})
+                Require(Vector3.Angle(bones[digit+"２.R"].position-bones[digit+"１.R"].position,
+                    bones[digit+"先.R"].position-bones[digit+"３.R"].position)<8,
+                    "Hakari raised fingers bent: "+digit);
+        }
+        else
+        {
+            Require(Vector3.Angle(bones["人指２.R"].position-bones["人指１.R"].position,
+                bones["人指先.R"].position-bones["人指３.R"].position)<2,
+                "Gojo straight index bent.");
+            Require(Vector3.Angle(bones["中指２.R"].position-bones["中指１.R"].position,
+                bones["中指先.R"].position-bones["中指３.R"].position)>20,
+                "Gojo middle finger lost its crossing hook.");
         }
     }
     private static IEnumerator CheckOrdinaryTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,

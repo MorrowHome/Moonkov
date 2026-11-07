@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         private readonly NavMeshPath m_SpawnPath = new NavMeshPath();
         private Unity.Mathematics.Random m_SpawnRandom;
         private readonly PmcCharacterRoster m_Characters = new PmcCharacterRoster();
+        private readonly PmcWeaponLoadout m_Weapons = new PmcWeaponLoadout();
         private bool m_PopulationStarted;
         private int m_InitialRemaining, m_ReinforcementsRemaining, m_SpawnSerial;
         private double m_PopulationStartedAt, m_NextPopulationCheck, m_NextInitialAttempt, m_NextReinforcement;
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS
         {
             m_PopulationStarted = false;
             m_Characters.Reset();
+            m_Weapons.Reset();
             m_InitialRemaining = m_ReinforcementsRemaining = m_SpawnSerial = 0;
             m_PopulationStartedAt = m_NextPopulationCheck = m_NextInitialAttempt = m_NextReinforcement = 0;
             m_NextBuild = m_NextTargets = 0;
@@ -253,7 +255,6 @@ namespace Unity.MP_FPS
             EntityManager.SetComponentData(player, new GhostOwner { NetworkId = id });
             EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * (clash.HasValue ? 0 : .1f),
                 quaternion.RotateY(math.radians(yaw))));
-            int ammo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2)?.MagazineSize ?? 30;
             var healthState = new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
                 EquippedWeaponID = DollSingerWeapons.None, CurrentAmmo = 0, InventoryWeapons = true,
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None };
@@ -272,12 +273,11 @@ namespace Unity.MP_FPS
             EntityManager.SetComponentEnabled<PlayerCharacterInitialized>(player, false);
             EntityManager.AddComponentData(player, new PlayerClientCommandInputLookup { ClientCommandInputEntity = input });
             EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input, CharacterIndex = characterIndex });
-            var inventory = InventoryGraph.Create(stash: false);
-            inventory.Equipped("Primary").LoadedAmmo = ammo;
+            bool tutorial = TutorialRuntime.Enabled(EntityManager);
+            var inventory = m_Weapons.Create(WeaponManager.Instance.WeaponRegistry, tutorial, clash.HasValue, ref m_SpawnRandom);
             // A finite raid loadout; unused medicine remains in the normal death inventory.
             inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
-            bool tutorial = TutorialRuntime.Enabled(EntityManager);
             bool suit = PmcLifeSupport.TryEquip(inventory, clash.HasValue, tutorial);
             if (suit)
             {

@@ -27,7 +27,7 @@ namespace Unity.MP_FPS.Client
             : Issue == DepartureEquipmentIssue.Halo ? EmergencyAvailable
                 ? "No halo weapon remains. Emergency supplies are available."
                 : "No halo equipped. Open storage to equip one."
-            : Issue == DepartureEquipmentIssue.Medicine ? "Place medical supplies in pockets or your chest rig."
+            : Issue == DepartureEquipmentIssue.Medicine ? "Place medical supplies in pockets or your chest badge."
             : "Halo equipped. Medicine accessible.";
         public string Action => EmergencyAvailable ? "EMERGENCY SUPPLY" : "OPEN STORAGE";
     }

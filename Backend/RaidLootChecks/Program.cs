@@ -38,6 +38,68 @@ foreach (RaidLootProfile profile in Enum.GetValues<RaidLootProfile>())
     Check(compositions.Count > 1, "Profile needs varied contents");
 }
 
+// Every full-cache profile must reach the ordinary catalog, without bypassing
+// mission, harvest, personal secure-container or research acquisition rules.
+var eligible = InventoryCatalog.Definitions.Values.Where(definition =>
+    definition.Kind != ItemKind.Root && definition.Kind != ItemKind.SecureContainer &&
+    !definition.Code.StartsWith("alien_", StringComparison.Ordinal) &&
+    !MissionInventory.IsArtifact(definition.Code) && definition.Code != "halo_mooncore_recycler")
+    .Select(definition => definition.Code).ToHashSet();
+var profiles = Enum.GetValues<RaidLootProfile>();
+var themeScores = new int[profiles.Length, profiles.Length];
+Func<ItemDefinition, bool>[] themes =
+{
+    definition => definition.Kind is ItemKind.Food or ItemKind.Drink or ItemKind.Oxygen,
+    definition => definition.Kind == ItemKind.Medical || definition.Code.EndsWith("_shot", StringComparison.Ordinal),
+    definition => definition.Kind == ItemKind.Material,
+    definition => definition.Kind is ItemKind.Helmet or ItemKind.Shield or ItemKind.Melee or
+        ItemKind.LongGun or ItemKind.Pistol or ItemKind.Rig or ItemKind.Backpack or ItemKind.SpecialEquipment or
+        ItemKind.StorageModule or ItemKind.ShapingModule or ItemKind.UtilityModule
+};
+const int varietySamples = 4096;
+foreach (var profile in profiles)
+{
+    var counts = eligible.ToDictionary(code => code, _ => 0);
+    for (int seed = 0; seed < varietySamples; seed++)
+    {
+        var graph = RaidLootTable.Create(profile, new Random(seed + (int)profile * varietySamples));
+        Check(graph.Validate() == InventoryError.None && graph.LootRows == 5, "Varied cache exceeds standard bounds");
+        var contents = graph.Items.Where(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root).ToArray();
+        int guarantees = profile is RaidLootProfile.Supplies or RaidLootProfile.Industrial ? 2 : 1;
+        Check(contents.Length >= guarantees + 2 && contents.Length <= guarantees + (profile == RaidLootProfile.Equipment ? 4 : 3),
+            "Variety changed the number of loot rolls");
+        Check(contents.Select(item => item.Code).Distinct().Count() == contents.Length, "Shared and themed rolls duplicated an item code");
+        foreach (var item in contents)
+        {
+            Check(eligible.Contains(item.Code), "Cache bypassed restricted acquisition: " + item.Code);
+            Check(item.Parent == LootInventoryExchange.Root && item.FoundInRaid && !item.EmergencySupply && ids.Add(item.Id),
+                "Varied loot lost ownership, provenance or a unique ID");
+            counts[item.Code]++;
+            for (int theme = 0; theme < themes.Length; theme++)
+                if (themes[theme](InventoryCatalog.Get(item.Code))) themeScores[(int)profile, theme]++;
+        }
+        generated++;
+    }
+    Check(counts.Values.All(count => count > 0), profile + " cannot reach: " + string.Join(", ", counts.Where(pair => pair.Value == 0).Select(pair => pair.Key)));
+    Check(counts["quantum_core"] < counts["cells"] && counts["sundown"] < counts["ration"], "Rare results overwhelmed ordinary supplies");
+    Console.WriteLine($"{profile}: {eligible.Count}/{eligible.Count} ordinary items reached in {varietySamples} valid cache samples.");
+}
+foreach (var profile in profiles)
+    foreach (var other in profiles)
+        if (profile != other)
+            Check(themeScores[(int)profile, (int)profile] > themeScores[(int)other, (int)profile], profile + " lost its loot preference");
+Check(Composition(RaidLootTable.Create((RaidLootProfile)(-1), new Random(77))) ==
+    Composition(RaidLootTable.Create(RaidLootProfile.Supplies, new Random(77))), "Invalid profile no longer falls back to supplies");
+foreach (var profile in profiles)
+    for (int seed = 0; seed < 128; seed++)
+    {
+        var drawer = RaidLootTable.CreateDrawer(profile, new Random(seed));
+        Check(drawer.Validate() == InventoryError.None && drawer.Items.Count(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root) <= 2,
+            "Small drawers inherited full-cache quantities");
+        Check(drawer.Items.All(item => InventoryCatalog.Get(item.Code).Kind == ItemKind.Root || eligible.Contains(item.Code)),
+            "Drawer bypassed restricted acquisition");
+    }
+
 var random = new Random(42);
 var cache = RaidLootTable.Create(RaidLootProfile.Supplies, random);
 var refill = new RaidLootRefillState(RaidLootProfile.Supplies);

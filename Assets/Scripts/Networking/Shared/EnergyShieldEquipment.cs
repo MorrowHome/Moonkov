@@ -10,6 +10,8 @@ namespace Unity.MP_FPS
         public const string StandardHeadDomeCode="helmet";
         public static bool IsHeadDome(string code) => code==HeadDomeCode || code=="helmet";
         public static byte BackpackStyle(string code) => code=="sling_pack"?(byte)1:code=="backpack"?(byte)2:code=="cargo_pack"?(byte)3:code=="small_pack"?(byte)4:(byte)0;
+        public static byte BadgeStyle(string code) => code=="scout_rig"?(byte)1:code=="rig"?(byte)2:code=="field_rig"?(byte)3:(byte)0;
+        public static string BadgeCode(byte style) => style==1?"scout_rig":style==2?"rig":style==3?"field_rig":null;
         private static float Load(float value) => value==-1?100:EnergyShieldRules.Resource(value);
 
         // Like SaveActiveAmmo: server resource changes do not invalidate structural inventory actions.
@@ -24,6 +26,7 @@ namespace Unity.MP_FPS
         {
             Flush(ref state,graph);
             state.SubspaceBackpack=BackpackStyle(graph?.Equipped("Backpack")?.Code);
+            state.SubspaceBadge=BadgeStyle(graph?.Equipped("ChestRig")?.Code);
             HaloEnergyRules.Synchronize(ref state,graph);
             var dome=graph?.Equipped("Helmet");if(!IsHeadDome(dome?.Code))dome=null;
             string domeId=dome?.Id??"";

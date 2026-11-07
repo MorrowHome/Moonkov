@@ -6319,6 +6319,187 @@ MonoBehaviour:
     m_Localized: Creating account...
     m_Metadata:
       m_Items: []
+  - m_Id: 11001418348486656
+    m_Localized: STAMINA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11001418352680960
+    m_Localized: FATIGUED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993440100352
+    m_Localized: Refills the life-support collar. Use from pockets or an equipped
+      badge; excess oxygen is lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071872
+    m_Localized: Protects its contents after death or timeout when equipped. Supplies
+      must be moved to pockets or a badge before use. Weapons, worn gear and mission
+      outputs cannot be stored inside.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071873
+    m_Localized: Carries extra loot and supplies. Move medical items, food and cells
+      into pockets or an equipped badge before using them.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071874
+    m_Localized: A chest badge with subspace storage. Medical supplies, food, grenades
+      and cells inside remain directly accessible.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071875
+    m_Localized: A back-mounted scout subspace anchor with one ring, paired stabilizer
+      fins and a 4x4 storage grid. Carried weight still applies. Move supplies to
+      pockets or a badge before use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071876
+    m_Localized: A compact back-mounted subspace anchor with one capacity ring and
+      a 3x4 storage grid. Carried weight still applies. Move supplies to pockets
+      or a badge before use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071877
+    m_Localized: A back-mounted subspace anchor with two capacity rings and a 5x6
+      storage grid. Carried weight still applies. Move supplies to pockets or a badge
+      before use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071878
+    m_Localized: A large back-mounted subspace anchor with three capacity rings and
+      a 6x7 storage grid. Carried weight still applies. Move supplies to pockets
+      or a badge before use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071879
+    m_Localized: A visible waist-mounted shield projector with charge indicators.
+      Equip in the shield slot. Absorbs combat damage before health; excess damage
+      passes through. After 6 seconds without a hit, restores 8 shield per second
+      and spends 0.5 energy per shield. Recharge using charged cells in pockets or
+      an equipped badge. Does not block suffocation, hunger or thirst.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071880
+    m_Localized: Requires an equipped shield with space for energy, and charged cells
+      in pockets or an equipped badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071881
+    m_Localized: 'Cannot recharge shield: equip a generator with space for energy
+      and use charged cells from pockets or an equipped badge.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071882
+    m_Localized: Equip in the shield slot. Absorbs combat damage before health; excess
+      damage passes through. After 6 seconds without a hit, restores 8 shield per
+      second and spends 0.5 energy per shield. Recharge using charged cells in pockets
+      or an equipped badge. Does not block suffocation, hunger or thirst.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071883
+    m_Localized: Stored battery energy powers weapon reloading and shield recharging.
+      Move cells to pockets or an equipped badge before use. Recharging the shield
+      consumes only the energy transferred.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071884
+    m_Localized: '[G] throws from pockets or an equipped badge. Bounces, then releases
+      an energy blast after 3 seconds. Cover blocks the blast; nearby damage can
+      kill the thrower. Move grenades out of backpacks before throwing.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071885
+    m_Localized: 'Canister: +40% oxygen. Use supplies in pockets or the chest badge;
+      excess oxygen is lost.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071886
+    m_Localized: OXYGEN / +40 RESERVE / USE FROM POCKETS OR CHEST BADGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071887
+    m_Localized: Move the oxygen canister to a pocket or equipped chest badge before
+      use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071888
+    m_Localized: Medical supplies must be in pockets or the chest badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071889
+    m_Localized: CHEST BADGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071890
+    m_Localized: R-04 Subspace badge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071891
+    m_Localized: R-02 Scout badge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071892
+    m_Localized: R-06 Field badge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071893
+    m_Localized: Compact first aid for a selected body part. Keep it in pockets or
+      an equipped badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071894
+    m_Localized: High-capacity single-use treatment for a selected body part. Use
+      from an equipped badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071895
+    m_Localized: A large suit-air refill. Use from an equipped badge; excess oxygen
+      is lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071896
+    m_Localized: A small enamel chest badge with three subspace compartments. Keeps
+      medical supplies and cells accessible.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071897
+    m_Localized: A large enamel chest badge with three broad subspace compartments.
+      Keeps larger medical and oxygen supplies within reach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071898
+    m_Localized: A light backpack for short scavenging trips. Move medicine, oxygen
+      and cells into the badge before use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993461071899
+    m_Localized: 'Next cylinder: +{0:0}% oxygen. Keep it in pockets or the chest
+      badge; excess oxygen is lost.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993465266176
+    m_Localized: Equip weapons first. Keep usable supplies in your pockets or badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993465266177
+    m_Localized: Place medical supplies in pockets or your chest badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993465266178
+    m_Localized: Move cells to pockets or your chest badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993465266179
+    m_Localized: Requires halo energy below maximum and a charged battery in pockets
+      or an equipped badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11007993465266180
+    m_Localized: Instantly restores up to 100 halo energy. Keep batteries in pockets
+      or an equipped badge. Unused charge is retained.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

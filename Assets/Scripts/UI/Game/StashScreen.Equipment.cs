@@ -14,7 +14,7 @@ namespace Unity.MP_FPS.Client
         private StashEquipmentGuides m_Guides;
         private LoadoutSlot m_HoverSlot;
         private static readonly LoadoutSlot[] s_SlotOrder = { LoadoutSlot.Helmet, LoadoutSlot.ChestRig, LoadoutSlot.Pistol, LoadoutSlot.Backpack, LoadoutSlot.Primary, LoadoutSlot.Secondary };
-        private static string SlotName(LoadoutSlot slot) => slot == LoadoutSlot.Helmet ? "COLLAR" : slot == LoadoutSlot.ChestRig ? "CHEST RIG" : slot == LoadoutSlot.Primary ? "PRIMARY WEAPON" : slot == LoadoutSlot.Secondary ? "SECONDARY WEAPON" : slot.ToString().ToUpperInvariant();
+        private static string SlotName(LoadoutSlot slot) => slot == LoadoutSlot.Helmet ? "COLLAR" : slot == LoadoutSlot.ChestRig ? "CHEST BADGE" : slot == LoadoutSlot.Primary ? "PRIMARY WEAPON" : slot == LoadoutSlot.Secondary ? "SECONDARY WEAPON" : slot.ToString().ToUpperInvariant();
         private Stack FindStack(string id) { foreach (var item in m_Stacks) if (item.Name == id) return item; return null; }
         private Stack Equipped(LoadoutSlot slot) => FindStack(m_Loadout?.At(slot));
 
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS.Client
             Sample("AR-7 Field rifle", "AR-7", EquipmentKind.LongGun, StashArtKind.Rifle, 4, 2),
             Sample("M-12 Compact rifle", "M-12", EquipmentKind.LongGun, StashArtKind.Rifle, 3, 2),
             Sample("P-03 Sidearm", "P-03", EquipmentKind.Pistol, StashArtKind.Pistol, 2, 1),
-            Sample("R-04 Chest rig", "R-04", EquipmentKind.ChestRig, StashArtKind.ChestRig, 2, 3),
+            Sample("R-04 Subspace badge", "R-04", EquipmentKind.ChestRig, StashArtKind.ChestRig, 2, 3),
             Sample("B-08 Expedition pack", "B-08", EquipmentKind.Backpack, StashArtKind.Backpack, 3, 3)
         };
         private static Stack Sample(string name, string shortName, EquipmentKind kind, StashArtKind art, int width, int height) =>

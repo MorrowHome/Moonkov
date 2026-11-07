@@ -226,7 +226,7 @@
   },
   {
     "code": "rig",
-    "name": "R-04 Chest rig",
+    "name": "R-04 Subspace badge",
     "kind": "Rig"
   },
   {
@@ -256,12 +256,12 @@
   },
   {
     "code": "scout_rig",
-    "name": "R-02 Scout rig",
+    "name": "R-02 Scout badge",
     "kind": "Rig"
   },
   {
     "code": "field_rig",
-    "name": "R-06 Field rig",
+    "name": "R-06 Field badge",
     "kind": "Rig"
   },
   {

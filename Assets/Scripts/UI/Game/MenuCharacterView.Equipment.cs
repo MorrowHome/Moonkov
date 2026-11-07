@@ -130,7 +130,7 @@ namespace Unity.MP_FPS.Client
         {
             if (!m_EquipmentHasSnapshot || m_Model == null) return;
             var snapshot = m_EquipmentSnapshot;
-            if (!m_Protection && (snapshot.HeadDomeEquipped || snapshot.ShieldEquipped || snapshot.SubspaceBackpack != 0))
+            if (!m_Protection && (snapshot.HeadDomeEquipped || snapshot.ShieldEquipped || snapshot.SubspaceBackpack != 0 || snapshot.SubspaceBadge != 0))
                 m_Protection = m_Model.GetComponent<EnergyShieldPresentation>() ?? m_Model.AddComponent<EnergyShieldPresentation>();
             if (!m_Protection) return;
             m_Protection.PresentationAudioEnabled = false;

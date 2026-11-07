@@ -1,0 +1,94 @@
+{
+  "source": "ArtSource/DollSinger/DomainSeals.blend",
+  "sourceSha256": "b9b7cde8a5078cea419033700c10d90b84934758ddbb672a97f61918de70bf76",
+  "passed": true,
+  "unchangedReferenceMesh": true,
+  "protectedSourceActionsUnchanged": true,
+  "sourceUnchanged": true,
+  "staticSurfaceSamples": [
+    {
+      "weapon": 6,
+      "character": "Gojo",
+      "contacts": [
+        {
+          "a": "中指.R",
+          "b": "人指.R",
+          "trianglePairs": 10,
+          "maximumDepthMm": 0.7644,
+          "expectedSoftContact": true
+        }
+      ]
+    },
+    {
+      "weapon": 7,
+      "character": "Sukuna",
+      "contacts": []
+    },
+    {
+      "weapon": 9,
+      "character": "Hakari",
+      "contacts": []
+    },
+    {
+      "weapon": 10,
+      "character": "Kenjaku",
+      "contacts": []
+    },
+    {
+      "weapon": 12,
+      "character": "Megumi",
+      "contacts": [
+        {
+          "a": "人指.L",
+          "b": "親指.L",
+          "trianglePairs": 6,
+          "maximumDepthMm": 1.9076,
+          "expectedSoftContact": true
+        },
+        {
+          "a": "人指.R",
+          "b": "親指.R",
+          "trianglePairs": 6,
+          "maximumDepthMm": 1.9075,
+          "expectedSoftContact": true
+        }
+      ]
+    },
+    {
+      "weapon": 13,
+      "character": "Yuji",
+      "contacts": [
+        {
+          "a": "人指.L",
+          "b": "親指.L",
+          "trianglePairs": 18,
+          "maximumDepthMm": 0.2967,
+          "expectedSoftContact": true
+        },
+        {
+          "a": "人指.R",
+          "b": "親指.R",
+          "trianglePairs": 18,
+          "maximumDepthMm": 0.2956,
+          "expectedSoftContact": true
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "shapeSamples": 432,
+  "maximumFingerShapeErrorDegrees": 1.7302844014466245e-05,
+  "contactToleranceMm": 2,
+  "attachmentSeamsExcluded": true,
+  "referenceMeshQA": {
+    "errors": [
+      "z-fighting: DollSinger_Body (1558 overlapping coplanar tri pairs)"
+    ],
+    "warnings": [
+      "DollSinger_Body: degenerate faces=133 zero-len edges=8",
+      "DollSinger_Body: duplicate verts=24818 loose verts=0",
+      "hidden back-to-back faces: DollSinger_Body (4188 pairs) - delete to save tris"
+    ]
+  },
+  "scope": "Six neutral skin surfaces, all Action finger-shape samples; native Unity skin views and actual first-person checks are separate."
+}

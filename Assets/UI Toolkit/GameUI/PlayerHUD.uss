@@ -40,5 +40,5 @@
 #reticle-container { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 #weapon-info-container { width: 250px; border-right-color: #164bff; background-color: rgba(8,9,12,0.94); }
 #ammo-label { font-size: 32px; white-space: normal; max-width: 100%; }
-#health-info-container { position: absolute; left: 28px; bottom: 28px; width: 224px; height: 284px; }
+#health-info-container { position: absolute; left: 28px; bottom: 28px; width: 224px; height: 302px; }
 #health-body-host { flex-grow: 1; min-height: 0; }

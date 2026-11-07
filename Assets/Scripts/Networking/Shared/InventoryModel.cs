@@ -115,16 +115,16 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("halo_fan_array", "Fan array", ItemKind.ShapingModule, 1, 1, 1, .2f),
                 new ItemDefinition("halo_pulse_controller", "Pulse controller", ItemKind.ShapingModule, 1, 1, 1, .15f),
                 new ItemDefinition("halo_hit_marker", "Hit marker", ItemKind.UtilityModule, 1, 1, 1, .1f),
-                new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
+                new ItemDefinition("rig", "R-04 Subspace badge", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("backpack", "B-08 Expedition subspace pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
                 new ItemDefinition("secure_case", "S-04 个人保险箱", ItemKind.SecureContainer, 2, 2, 1, .8f, new InventoryRegion("main", 2, 2)),
                 new ItemDefinition("survey_compass", "C-01 月面指南针", ItemKind.SpecialEquipment, 1, 1, 1, .15f),
                 new ItemDefinition("laser_rangefinder", "R-500 激光测距仪", ItemKind.SpecialEquipment, 1, 1, 1, .35f),
                 new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
-                new ItemDefinition("scout_rig", "R-02 Scout rig", ItemKind.Rig, 2, 2, 1, .5f,
+                new ItemDefinition("scout_rig", "R-02 Scout badge", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
-                new ItemDefinition("field_rig", "R-06 Field rig", ItemKind.Rig, 3, 3, 1, 1.4f,
+                new ItemDefinition("field_rig", "R-06 Field badge", ItemKind.Rig, 3, 3, 1, 1.4f,
                     new InventoryRegion("left", 2, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 2, 2)),
                 new ItemDefinition("sling_pack", "B-03 Light subspace pack", ItemKind.Backpack, 2, 2, 1, .45f, new InventoryRegion("main", 3, 4)),
                 new ItemDefinition("cargo_pack", "B-12 Cargo subspace pack", ItemKind.Backpack, 4, 4, 1, 2.8f, new InventoryRegion("main", 6, 7))
@@ -447,7 +447,7 @@ namespace Unity.MP_FPS.Inventory
             (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
 
         // Food/water may be used from any carried bag. Emergency suit canisters
-        // must be immediately accessible in a pocket or the equipped chest rig.
+        // must be immediately accessible in a pocket or the equipped chest badge.
         // Joined loot snapshots and the personal stash are never consumable here.
         public bool ConsumableAccessible(InventoryItem item) => item != null &&
             ConsumableCatalog.Get(item.Code) != null && Carried(item) &&

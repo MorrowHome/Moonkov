@@ -509,14 +509,34 @@ namespace Unity.MP_FPS
         public static int PreferredSlot(in PredictedPlayerGhost health, float distance)
         {
             if (!health.InventoryWeapons || health.CurrentHealth <= 0 || RaidHealth.HandsBusy(health) ||
-                !float.IsFinite(distance) || distance < 0) return 0;
-            uint desired = distance <= 11 ? DollSingerWeapons.Shotgun : distance >= 18 ? DollSingerWeapons.Halo : DollSingerWeapons.None;
-            if (desired == DollSingerWeapons.None || health.EquippedWeaponID == desired) return 0;
-            if (health.PrimaryWeaponID == desired && health.PrimaryAmmo > 0 && health.EquippedWeaponSlot != 1) return 1;
-            if (health.SecondaryWeaponID == desired && health.SecondaryAmmo > 0 && health.EquippedWeaponSlot != 2) return 2;
-            if (health.PistolWeaponID == desired && health.PistolAmmo > 0 && health.EquippedWeaponSlot != 3) return 3;
-            return 0;
+                !float.IsFinite(distance) || distance < 0 || distance > 11 && distance < 18) return 0;
+            int best = health.CurrentAmmo > 0 ? Suitability(health.EquippedWeaponID, distance) : -1;
+            int preferred = 0;
+            for (int slot = 1; slot <= 3; slot++)
+            {
+                if (slot == health.EquippedWeaponSlot) continue;
+                uint weapon = slot == 1 ? health.PrimaryWeaponID : slot == 2 ? health.SecondaryWeaponID : health.PistolWeaponID;
+                int ammo = slot == 1 ? health.PrimaryAmmo : slot == 2 ? health.SecondaryAmmo : health.PistolAmmo;
+                int score = ammo > 0 ? Suitability(weapon, distance) : -1;
+                if (score <= best) continue;
+                best = score;
+                preferred = slot;
+            }
+            return preferred;
         }
+
+        private static int Suitability(uint weapon, float distance) => weapon switch
+        {
+            DollSingerWeapons.Shotgun or DollSingerWeapons.Thorn => distance <= 11 ? 6 : 1,
+            DollSingerWeapons.Cicada => distance <= 11 ? 5 : distance >= 50 ? 1 : 2,
+            DollSingerWeapons.Halo or DollSingerWeapons.Trine or DollSingerWeapons.Aegis or DollSingerWeapons.Rondo =>
+                distance <= 11 ? 3 : 4,
+            DollSingerWeapons.Sniper => distance <= 11 ? 1 : distance >= 50 ? 6 : 3,
+            DollSingerWeapons.Vesper => distance <= 11 ? 2 : distance >= 50 ? 5 : 4,
+            DollSingerWeapons.Nocturne => distance <= 11 ? 1 : distance >= 50 ? 5 : 3,
+            DollSingerWeapons.Revolver => distance <= 11 ? 2 : 1,
+            _ => -1
+        };
     }
 
     public static class PmcUnknownAttack

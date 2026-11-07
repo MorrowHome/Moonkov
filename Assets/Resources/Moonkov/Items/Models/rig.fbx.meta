@@ -7,23 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Item_ceramic.002
-    second: {fileID: 2100000, guid: 0a5015dac5a0b456abfd6f86f569ebfa, type: 2}
+      name: Badge_Alloy
+    second: {fileID: 2100000, guid: 78b2145f95d22418384e4d32fcf00a8b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Item_dark.002
-    second: {fileID: 2100000, guid: 40e116f393eb943bc997f120effee314, type: 2}
+      name: Badge_Enamel
+    second: {fileID: 2100000, guid: 79ff3b82c02024008a7b5e1837b24530, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Item_green.002
-    second: {fileID: 2100000, guid: 66fbea96f2b774bab97101e7da4fa37d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Item_steel.002
-    second: {fileID: 2100000, guid: ef1e17b08d0a0484c9af3f5ea632cd79, type: 2}
+      name: Badge_Standard
+    second: {fileID: 2100000, guid: f622072c5a8b64f80b06acc8296128ab, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -36,10 +31,10 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
-    motionNodeName:
-    animationImportErrors:
-    animationImportWarnings:
-    animationRetargetingWarnings:
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
@@ -116,7 +111,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName:
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
@@ -129,6 +124,6 @@ ModelImporter:
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

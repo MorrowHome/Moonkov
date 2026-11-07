@@ -165,13 +165,13 @@ namespace Unity.MP_FPS.Client
                     purpose = "Field food that restores energy and fullness. Keep drinking water nearby."; break;
                 case "water": return Description("electrolyte");
                 case "oxygen_canister":
-                    purpose = "Refills the life-support collar. Use from pockets or an equipped rig; excess oxygen is lost."; break;
+                    purpose = "Refills the life-support collar. Use from pockets or an equipped badge; excess oxygen is lost."; break;
                 case "secure_case":
-                    purpose = "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a rig before use. Weapons, worn gear and mission outputs cannot be stored inside."; break;
+                    purpose = "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a badge before use. Weapons, worn gear and mission outputs cannot be stored inside."; break;
                 case "backpack": case "small_pack": case "sling_pack": case "cargo_pack":
-                    purpose = "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped rig before using them."; break;
+                    purpose = "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped badge before using them."; break;
                 case "rig":
-                    purpose = "Chest-mounted storage. Medical supplies, food, grenades and cells inside remain directly accessible."; break;
+                    purpose = "A chest badge with subspace storage. Medical supplies, food, grenades and cells inside remain directly accessible."; break;
                 case "dust": purpose = "Used to buy supplies and fund halo research at the supplier."; break;
                 case "alloy": purpose = "Material for halo research and fabrication. Can also be sold to the supplier."; break;
                 default:
@@ -189,14 +189,14 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
-                case "secure_case": description = "装备在中栏保险箱槽后，箱体与内部 2×2 格物品在死亡或超时结算时保留。仅保护仍在箱内的物品；不计成功撤离或任务首次回收。禁止武器、穿戴装备、嵌套容器和任务产物。箱内补给须先移至衣兜或胸挂才能使用。"; break;
+                case "secure_case": description = "装备在中栏保险箱槽后，箱体与内部 2×2 格物品在死亡或超时结算时保留。仅保护仍在箱内的物品；不计成功撤离或任务首次回收。禁止武器、穿戴装备、嵌套容器和任务产物。箱内补给须先移至衣兜或胸章才能使用。"; break;
                 case "survey_compass": description = "装入任意特殊装备槽后，HUD 自动显示当前视线的罗盘方位。0° 为世界北向（+Z）。死亡和超时保留；放在普通背包中不生效且会掉落。"; break;
                 case "laser_rangefinder": description = "装入任意特殊装备槽后，HUD 自动显示视线首个实体表面的距离，上限 500m；无命中显示超出量程，不透墙。死亡和超时保留；普通背包中不生效且会掉落。"; break;
                 case "energy_shield_generator": description = "Legacy generator. Defense now uses the halo and its shared energy. Can be stored or sold."; break;
                 case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
                 case "helmet": description = "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."; break;
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
-                case "cells": description = "Instantly restores up to 100 halo energy. Keep batteries in pockets or an equipped rig. Unused charge is retained."; break;
+                case "cells": description = "Instantly restores up to 100 halo energy. Keep batteries in pockets or an equipped badge. Unused charge is retained."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
@@ -209,23 +209,23 @@ namespace Unity.MP_FPS.Client
                 case "concertina_trip_mine": description = "Place on nearby clear ground with a 3-second action. Any player crossing the line releases concertina wire, causing damage, bleeding and slowed movement. Dynamite can clear wire."; break;
                 case "poison_trip_mine": description = "Place on nearby clear ground with a 3-second action. Any player crossing the line releases poison. Choke clouds clear tactical poison; antidote protects against it."; break;
                 case "ammo_box": description = "Place with a 3-second action. Stores 400 energy; each 2-second resupply transfers up to 100, subject to inventory space. Expires after 120 seconds. Does not grant a free weapon reload."; break;
-                case "energy_grenade": description = "[G] throws from pockets or an equipped rig. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill the thrower. Move grenades out of backpacks before throwing."; break;
+                case "energy_grenade": description = "[G] throws from pockets or an equipped badge. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill the thrower. Move grenades out of backpacks before throwing."; break;
                 case "alien_raw_meat": description = "Dissect alien remains to harvest. Restores living tissue and energy, but causes severe thirst. Cannot revive destroyed body parts."; break;
                 case "alien_tissue": description = "Alien tissue harvested by dissection. Keep it as a biological specimen."; break;
                 case "alien_core": description = "A boss nucleus preserved as a rare biological specimen."; break;
                 case "alien_neural_core": description = "Extract and store for permanent halo research, or eat now for +30% halo damage for 60s. Causes severe thirst. Reusing refreshes duration; does not stack."; break;
-                case "med_gel": description = "Compact first aid for a selected body part. Keep it in pockets or an equipped rig."; break;
-                case "trauma_kit": description = "High-capacity single-use treatment for a selected body part. Use from an equipped rig."; break;
+                case "med_gel": description = "Compact first aid for a selected body part. Keep it in pockets or an equipped badge."; break;
+                case "trauma_kit": description = "High-capacity single-use treatment for a selected body part. Use from an equipped badge."; break;
                 case "energy_gel": description = "A light snack with low stomach occupancy. Consumes a little hydration."; break;
                 case "protein_bar": description = "Dense field food. Plan drinking water alongside its energy recovery."; break;
                 case "electrolyte": description = "Compact drinking supply with low stomach occupancy."; break;
-                case "oxygen_reserve": description = "A large suit-air refill. Use from an equipped rig; excess oxygen is lost."; break;
-                case "scout_rig": description = "Light chest storage with three narrow compartments. Keeps medical supplies and cells accessible."; break;
-                case "field_rig": description = "Roomy chest storage with three broad compartments. Carries larger medical and oxygen supplies within reach."; break;
-                case "small_pack": description = "A back-mounted scout subspace anchor with one ring, paired stabilizer fins and a 4x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
-                case "backpack": description = "A back-mounted subspace anchor with two capacity rings and a 5x6 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
-                case "sling_pack": description = "A compact back-mounted subspace anchor with one capacity ring and a 3x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
-                case "cargo_pack": description = "A large back-mounted subspace anchor with three capacity rings and a 6x7 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
+                case "oxygen_reserve": description = "A large suit-air refill. Use from an equipped badge; excess oxygen is lost."; break;
+                case "scout_rig": description = "A small enamel chest badge with three subspace compartments. Keeps medical supplies and cells accessible."; break;
+                case "field_rig": description = "A large enamel chest badge with three broad subspace compartments. Keeps larger medical and oxygen supplies within reach."; break;
+                case "small_pack": description = "A back-mounted scout subspace anchor with one ring, paired stabilizer fins and a 4x4 storage grid. Carried weight still applies. Move supplies to pockets or a badge before use."; break;
+                case "backpack": description = "A back-mounted subspace anchor with two capacity rings and a 5x6 storage grid. Carried weight still applies. Move supplies to pockets or a badge before use."; break;
+                case "sling_pack": description = "A compact back-mounted subspace anchor with one capacity ring and a 3x4 storage grid. Carried weight still applies. Move supplies to pockets or a badge before use."; break;
+                case "cargo_pack": description = "A large back-mounted subspace anchor with three capacity rings and a 6x7 storage grid. Carried weight still applies. Move supplies to pockets or a badge before use."; break;
                 case "circuit_board": description = "Recovered control electronics. Trade goods for the lunar supplier."; break;
                 case "copper_coil": description = "A dense industrial induction coil. Its sale value comes with extra carried weight."; break;
                 case "ceramic_plate": description = "Industrial ceramic stock. A trade good, not wearable armor."; break;
