@@ -180,6 +180,7 @@
 - 小队使用手动渲染请求。预览蒙皮必须开启 `forceMatrixRecalculationPerRender`，否则同一次 Editor 更新内重新摆骨后，截图仍可能使用旧蒙皮。不要只用骨坐标判定画面正确。三角色检查入口为 `Tools/Moonkov/Check Squad Motions`，动态预览入口为 `Capture Squad Motion Preview`。检查与截图使用样例外观，不登录、不进入 Play、不启动客户端。结果位于 `LocalData/SquadMotionReview`。
 - 在线和 LAN 共用全屏 `OnlineSquadStage` 与 `SquadGlass`。每屏一台相机，最长边 3072 像素、总像素 300 万封顶。磨砂区域裁切同一张最长边 512 像素的底图。隐藏时释放纹理和场景。
 - 在线队伍码在右上，匹配和出发在右下。队长可展开“管理成员”移除队员。沿用高级连接和原战局重连控件。编辑器样例入口为 `Moonkov/Networking/Online Lobby UI Preview`，使用隔离数据。
+- 两个小队页都可在场景上左键拖拽。队员各自在原地转身，名牌随站位，双击回正。收起页面时释放拖拽捕获。减少动态效果时仍可手动旋转。
 - Resources 下 UXML 会生成同名内嵌 StyleSheet。用 `Resources.Load<StyleSheet>` 加载与 UXML 同名的 USS，可能拿到空的内嵌样式。小队样式改为独立名称 `OnlineSquadStyles`，并直接挂到实际页面根。动态名字按玩家数据直接显示，不把昵称当作译文。
 - 后端编译 0 错误、0 警告。39 项大厅、15 项外观和 7 项票据检查通过。单 Editor 编译和原生检查通过。没有进入 Play、启动游戏客户端、开启对局或进行公网 UDP 验收。
 - 本次发布预检查 9 项通过，包含证书、后端身份、公网 401 和空闲实例槽。客户端构建保留 4303 条工程警告，其中 4278 条为现有着色器警告，本次小队相关警告为 0。不能称为全工程零警告。构建后恢复 Player 子目标，关闭本轮批处理 Editor，还原自动生成的 URP 预筛选字段和 lilToon 设置。四人页面的 Player 帧时间和跨设备完整对局仍待用户实测。

@@ -11,6 +11,8 @@ namespace Unity.MP_FPS.Client
         private float m_SquadReadyPulse;
         private SquadBakedMotions m_SquadMotions;
         private bool m_SquadSettled;
+        private float m_SquadPoseYaw;
+        internal float SquadInspectionYaw { get; set; }
         internal Transform SquadRoot => m_Stage != null ? m_Stage.transform : null;
 
         internal void PresentSquad(LobbyAppearance appearance, int slot, bool ready)
@@ -44,9 +46,9 @@ namespace Unity.MP_FPS.Client
             if (m_Stage != null)
             {
                 int pose = m_SquadReadyPulse > 0 ? 1 : m_SquadPose;
-                var facing = Quaternion.Euler(0, pose == 0 ? 12 : pose == 1 ? 8 : pose == 2 ? 6 : -4, 0);
-                m_Stage.transform.localRotation = dt > 0
-                    ? Quaternion.Slerp(m_Stage.transform.localRotation, facing, 1 - Mathf.Exp(-dt * 10)) : facing;
+                float facing = pose == 0 ? 12 : pose == 1 ? 8 : pose == 2 ? 6 : -4;
+                m_SquadPoseYaw = dt > 0 ? Mathf.LerpAngle(m_SquadPoseYaw, facing, 1 - Mathf.Exp(-dt * 10)) : facing;
+                m_Stage.transform.localRotation = Quaternion.Euler(0, m_SquadPoseYaw + SquadInspectionYaw, 0);
             }
         }
 

@@ -148,6 +148,8 @@ public sealed class OnlineSquadChecks : EditorWindow
                 Require(head && float.IsFinite(head.position.x) && float.IsFinite(head.position.y), "actor pose is invalid");
                 Require(animator.runtimeAnimatorController == null && !animator.fireEvents, "preview actor has gameplay animation events");
             }
+            CheckRotation(image, objects.Single(t => t.GetComponent<Camera>() != null).GetComponent<Camera>(),
+                objects.First(t => t.GetComponent<Animator>() != null));
             m_View.SetVisible(false);
             Require(m_View.Stage.ActorCount == 0 && m_View.Stage.Target == null && frost == null &&
                 EditorSceneManager.previewSceneCount == m_SceneCount, "hidden page leaked actors, textures or scene");
@@ -172,6 +174,30 @@ public sealed class OnlineSquadChecks : EditorWindow
             Debug.LogException(ex);
         }
         finally { Close(); }
+    }
+
+    private void CheckRotation(Image image, Camera camera, Transform actor)
+    {
+        Vector2 from = image.worldBound.center, to = from + Vector2.right * 120;
+        Require(image.panel.Pick(from) == image, "the stage does not receive drags outside the cards");
+        Quaternion original = actor.rotation;
+        Vector3 grabbed = Quaternion.Inverse(original) * -camera.transform.forward;
+        using (var evt = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = from }))
+            image.SendEvent(evt);
+        using (var evt = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = to }))
+            image.SendEvent(evt);
+        using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = to }))
+            image.SendEvent(evt);
+        m_View.Stage.RenderForEditor(image.contentRect.size);
+        Require(Vector3.Dot(actor.rotation * grabbed, camera.transform.right) > .05f &&
+            !image.HasPointerCapture(PointerId.mousePointerId), "right drag did not move the squad right and release capture");
+
+        using (var evt = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, clickCount = 2, mousePosition = from }))
+            image.SendEvent(evt);
+        using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = from }))
+            image.SendEvent(evt);
+        m_View.Stage.RenderForEditor(image.contentRect.size);
+        Require(Quaternion.Angle(actor.rotation, original) < .1f, "double-click did not restore the squad pose");
     }
 
     private void OnDisable() { m_View?.Dispose(); m_View = null; }

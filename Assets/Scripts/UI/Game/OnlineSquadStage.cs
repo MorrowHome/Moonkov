@@ -36,6 +36,8 @@ namespace Unity.MP_FPS.Client
         private RenderTexture m_Target;
         private Vector2 m_Viewport;
         private float m_PixelsPerPoint;
+        private int m_DragPointer = -1;
+        private float m_LastDragX, m_InspectionYaw;
         private bool m_Disposed, m_Dirty = true, m_PreviewScene;
         private double m_LastTime;
         public event Action FramingChanged;
@@ -68,11 +70,64 @@ namespace Unity.MP_FPS.Client
         public OnlineSquadStage(Image image)
         {
             m_Image = image ?? throw new ArgumentNullException(nameof(image));
-            m_Image.pickingMode = PickingMode.Ignore;
+            m_Image.pickingMode = PickingMode.Position;
             m_Image.scaleMode = ScaleMode.StretchToFill;
+            m_Image.tooltip = MoonkovLocalization.Text("左键拖动旋转小队 / 双击回正");
+            m_Image.RegisterCallback<PointerDownEvent>(BeginTurn);
+            m_Image.RegisterCallback<PointerMoveEvent>(Turn);
+            m_Image.RegisterCallback<PointerUpEvent>(EndTurn);
+            m_Image.RegisterCallback<PointerCancelEvent>(CancelTurn);
+            m_Image.RegisterCallback<PointerCaptureOutEvent>(TurnCaptureLost);
             m_Image.RegisterCallback<DetachFromPanelEvent>(Detached);
             m_LastTime = Time.realtimeSinceStartupAsDouble;
             m_Timer = image.schedule.Execute(Tick).Every(33);
+        }
+
+        private void BeginTurn(PointerDownEvent evt)
+        {
+            if (m_DragPointer >= 0 || m_Target == null || evt.target != m_Image || evt.button != 0 ||
+                evt.pointerType != UnityEngine.UIElements.PointerType.mouse) return;
+            if (evt.clickCount >= 2)
+            {
+                m_InspectionYaw = 0;
+                m_Dirty = true;
+            }
+            else
+            {
+                m_DragPointer = evt.pointerId;
+                m_LastDragX = m_Image.WorldToLocal(evt.position).x;
+                m_Image.CapturePointer(evt.pointerId);
+            }
+            evt.StopPropagation();
+        }
+
+        private void Turn(PointerMoveEvent evt)
+        {
+            if (evt.pointerId != m_DragPointer || !m_Image.HasPointerCapture(evt.pointerId)) return;
+            if ((evt.pressedButtons & 1) == 0) { StopTurn(); return; }
+            float x = m_Image.WorldToLocal(evt.position).x;
+            // Both character cameras look along -Z, so negative yaw follows a rightward drag.
+            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw - (x - m_LastDragX) * 360f /
+                Mathf.Max(1, m_Image.contentRect.width) + 180f, 360f) - 180f;
+            m_LastDragX = x;
+            m_Dirty = true;
+            evt.StopPropagation();
+        }
+
+        private void EndTurn(PointerUpEvent evt)
+        {
+            if (evt.pointerId != m_DragPointer || evt.button != 0) return;
+            StopTurn();
+            evt.StopPropagation();
+        }
+
+        private void CancelTurn(PointerCancelEvent evt) { if (evt.pointerId == m_DragPointer) StopTurn(); }
+        private void TurnCaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) StopTurn(); }
+        private void StopTurn()
+        {
+            int pointer = m_DragPointer;
+            m_DragPointer = -1;
+            if (pointer >= 0 && m_Image.HasPointerCapture(pointer)) m_Image.ReleasePointer(pointer);
         }
 
         public void Present(LobbyMember[] members)
@@ -128,9 +183,14 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed || !float.IsFinite(viewport.x) || !float.IsFinite(viewport.y) || viewport.x < 2 || viewport.y < 2) return;
             if (m_Root == null) CreateStage();
-            if (dt == 0 && !TerminalMotion.Animate(m_Image))
-                foreach (var actor in m_Actors) actor?.SettleSquadPose();
-            foreach (var actor in m_Actors) actor?.Advance(Mathf.Clamp(dt, 0, .1f));
+            bool settle = dt == 0 && !TerminalMotion.Animate(m_Image);
+            foreach (var actor in m_Actors)
+            {
+                if (actor == null) continue;
+                actor.SquadInspectionYaw = m_InspectionYaw;
+                if (settle) actor.SettleSquadPose();
+                else actor.Advance(Mathf.Clamp(dt, 0, .1f));
+            }
             m_PixelsPerPoint = m_Image.panel != null ? m_Image.scaledPixelsPerPoint : 1;
             float edgeScale = Mathf.Min(MaxTargetEdge, SystemInfo.maxTextureSize) / Mathf.Max(viewport.x, viewport.y);
             float areaScale = Mathf.Sqrt(MaxTargetPixels / (viewport.x * viewport.y));
@@ -240,6 +300,8 @@ namespace Unity.MP_FPS.Client
         }
         public void Suspend()
         {
+            StopTurn();
+            m_InspectionYaw = 0;
             for (int i = 0; i < 4; i++) ReleaseActor(i);
             ReleaseTarget();
             if (m_Root != null) { m_Root.SetActive(false); Destroy(m_Root); m_Root = null; }
@@ -257,6 +319,11 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Timer.Pause();
+            m_Image.UnregisterCallback<PointerDownEvent>(BeginTurn);
+            m_Image.UnregisterCallback<PointerMoveEvent>(Turn);
+            m_Image.UnregisterCallback<PointerUpEvent>(EndTurn);
+            m_Image.UnregisterCallback<PointerCancelEvent>(CancelTurn);
+            m_Image.UnregisterCallback<PointerCaptureOutEvent>(TurnCaptureLost);
             m_Image.UnregisterCallback<DetachFromPanelEvent>(Detached);
             Suspend(); FramingChanged = null; FrameChanged = null;
         }
