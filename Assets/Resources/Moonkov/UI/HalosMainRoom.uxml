@@ -1,12 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="halosOriginalHome" class="halos-original-room">
         <ui:VisualElement name="halosRoomViewport" class="halos-room-viewport">
-            <ui:VisualElement name="halosRoomWorld" class="halos-room-world">
-                <ui:VisualElement name="halosRoomCharacter" class="halos-room-character" picking-mode="Ignore">
-                    <ui:Image name="halosRoomPortrait" class="halos-room-portrait" picking-mode="Ignore" />
-                    <ui:Button name="halosRoomInspectCharacter" class="halos-room-hit halos-character-hit" tooltip="角色预览" />
+            <ui:VisualElement name="halosRoomParallax" class="halos-room-parallax">
+                <ui:VisualElement name="halosRoomWorld" class="halos-room-world">
+                    <ui:VisualElement name="halosRoomCharacter" class="halos-room-character" picking-mode="Ignore">
+                        <ui:Image name="halosRoomPortrait" class="halos-room-portrait" picking-mode="Ignore" />
+                        <ui:Button name="halosRoomInspectCharacter" class="halos-room-hit halos-character-hit" tooltip="角色预览" />
+                    </ui:VisualElement>
+                    <ui:Button name="halosRoomInspectMoon" class="halos-room-hit halos-moon-hit" tooltip="月球预览" />
                 </ui:VisualElement>
-                <ui:Button name="halosRoomInspectMoon" class="halos-room-hit halos-moon-hit" tooltip="月球预览" />
             </ui:VisualElement>
             <ui:Image name="halosRoomTablet" class="halos-room-tablet" picking-mode="Ignore" />
             <ui:VisualElement name="halosRoomLeft" class="halos-room-edge halos-room-left" />

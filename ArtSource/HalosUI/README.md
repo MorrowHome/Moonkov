@@ -28,4 +28,5 @@
 - `Tools/Moonkov/Halos Original Room Review` 打开原生预览。`HalosMainRoomReview.Check()` 检查真实页面接入、八个入口、忙碌、动画取消、隐藏和清理。该检查不进入 Play，也不操作账号。
 - `HalosMainRoomReview.CheckSubjects()` 检查右侧半身取景、渲染尺寸、角色和月球预览的输入、返回及资源释放。窗口保留原生预览供观察，不操作 Play 开关。
 - 原生预览默认播放动效。`HalosMainRoomReview.CheckSliding()` 检查连续横移、反向切页、途中禁用、隐藏取消和静态回退。实际主体和背景共用世界层移动，不叠加替代图片。
+- 鼠标视差使用现有图层。月球、舱室和人物依次增加移动幅度，使用 0.24 秒平滑跟随，移出后回正。动态状态预留 4% 缩放，防止移动时露出边缘；左右翻页感应区保持固定。减少动画和独立预览停用视差。检查入口为 `HalosMainRoomReview.CheckParallax()`。
 - `HalosMainRoom.uxml` 和 `HalosMainRoomStyles.uss` 必须保持不同的资源名，避免 `Resources.Load<StyleSheet>` 命中布局文件的 `inlineStyle` 子资源。

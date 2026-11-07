@@ -26,8 +26,8 @@ namespace Unity.MP_FPS.Client
         private const string ArtPath = "Moonkov/UI/Halos/MainRoom/";
         private const float RoomSlideSeconds = .65f;
         private static readonly string[] PageNames = { "SHIP", "STASH", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
-        private readonly VisualElement m_Owner, m_Viewport, m_World, m_Left, m_Right;
-        private readonly Image m_Tablet;
+        private readonly VisualElement m_Owner, m_Viewport, m_ParallaxLayer, m_World, m_Left, m_Right;
+        private readonly Image m_Tablet, m_Moon;
         private readonly List<Monitor> m_Monitors = new List<Monitor>();
         private readonly Image[] m_Lights = new Image[3];
         private readonly System.Random m_Random = new System.Random();
@@ -52,13 +52,14 @@ namespace Unity.MP_FPS.Client
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/HalosMainRoom").CloneTree();
             Root = tree.Q("halosOriginalHome"); Root.RemoveFromHierarchy(); parent.Insert(1, Root);
             m_Viewport = Root.Q("halosRoomViewport"); m_World = Root.Q("halosRoomWorld");
+            m_ParallaxLayer = Root.Q("halosRoomParallax");
             m_Tablet = Root.Q<Image>("halosRoomTablet"); m_Tablet.image = Load("Tablet"); m_Tablet.scaleMode = ScaleMode.StretchToFill;
             m_Left = Root.Q("halosRoomLeft"); m_Right = Root.Q("halosRoomRight");
             m_Left.RegisterCallback<PointerEnterEvent>(_ => EnterEdge(-1));
             m_Right.RegisterCallback<PointerEnterEvent>(_ => EnterEdge(1));
             m_Left.RegisterCallback<PointerLeaveEvent>(_ => m_Edge = 0);
             m_Right.RegisterCallback<PointerLeaveEvent>(_ => m_Edge = 0);
-            Sprite(m_World, "Moon", new Rect(2010, 0, 1536, 1536));
+            m_Moon = Sprite(m_World, "Moon", new Rect(2010, 0, 1536, 1536));
             for (int i = 0; i < 3; i++) Sprite(m_World, "Room" + i, new Rect(i * 1920, 0, 1920, 1080));
             for (int i = 0; i < 3; i++)
                 m_Lights[i] = Sprite(m_World, "Lights" + i, new Rect(i * 1920, 0, i == 2 ? 1880 : 1920, 1080));
@@ -80,6 +81,8 @@ namespace Unity.MP_FPS.Client
             Root.RegisterCallback<GeometryChangedEvent>(Resize);
             Root.RegisterCallback<KeyDownEvent>(KeyDown);
             Root.RegisterCallback<DetachFromPanelEvent>(Detached);
+            Root.RegisterCallback<PointerMoveEvent>(TrackParallax);
+            Root.RegisterCallback<PointerLeaveEvent>(LeaveParallax);
             m_LastTime = TerminalMotion.Now;
             m_Timer = Root.schedule.Execute(Tick).Every(16);
             Paint();
@@ -101,6 +104,7 @@ namespace Unity.MP_FPS.Client
         public void Show(bool returning)
         {
             ClosePreview(false);
+            ResetParallax();
             m_Visible = true; m_Opened = null; m_Edge = 0;
             m_Camera = Room * 1920; m_SlideAge = RoomSlideSeconds; m_Cooldown = 0;
             Root.style.display = DisplayStyle.Flex;
@@ -111,6 +115,7 @@ namespace Unity.MP_FPS.Client
         public void Hide()
         {
             ClosePreview(false); ReleaseHomeCharacter();
+            ResetParallax();
             m_Visible = false; m_Opened = null; m_Edge = 0;
             m_Timer.Pause(); Root.style.display = DisplayStyle.None;
         }
@@ -152,6 +157,7 @@ namespace Unity.MP_FPS.Client
         {
             if (evt.target != Root) return;
             m_Opened = null; m_Edge = 0; ClosePreview(false); ReleaseHomeCharacter();
+            ResetParallax();
         }
         private void Resize(GeometryChangedEvent evt)
         {
@@ -169,10 +175,11 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None)
                 {
                     if (IsOpening) { m_Opened = null; m_TabletState = 0; }
-                    m_Edge = 0; ClosePreview(false); ReleaseHomeCharacter(); return;
+                    m_Edge = 0; ClosePreview(false); ReleaseHomeCharacter(); ResetParallax(); return;
                 }
             if (IsPreviewOpen) return;
             bool animate = Animate;
+            AdvanceParallax(frames / 60, animate);
             if (!animate)
             {
                 m_Camera = Room * 1920; m_SlideAge = RoomSlideSeconds; m_Cooldown = 0;
@@ -207,6 +214,7 @@ namespace Unity.MP_FPS.Client
         private void Paint()
         {
             m_World.style.translate = new Translate(-m_Camera, 0);
+            PaintParallax();
             foreach (var monitor in m_Monitors)
             {
                 bool hover = m_TabletState == 0 && monitor.Art.room == Room && (monitor.Pointed || monitor.Focused);
@@ -239,6 +247,7 @@ namespace Unity.MP_FPS.Client
             ClosePreview(false); ReleaseHomeCharacter();
             Root.UnregisterCallback<GeometryChangedEvent>(Resize); Root.UnregisterCallback<KeyDownEvent>(KeyDown);
             Root.UnregisterCallback<DetachFromPanelEvent>(Detached); Root.RemoveFromHierarchy();
+            Root.UnregisterCallback<PointerMoveEvent>(TrackParallax); Root.UnregisterCallback<PointerLeaveEvent>(LeaveParallax);
         }
     }
 }

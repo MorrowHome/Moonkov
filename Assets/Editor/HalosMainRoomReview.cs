@@ -42,6 +42,12 @@ public sealed class HalosMainRoomReview : EditorWindow
         Open(); var window = GetWindow<HalosMainRoomReview>();
         window.rootVisualElement.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); window.RunSlideChecks();
     }
+    [MenuItem("Tools/Moonkov/Check Halos Mouse Parallax")]
+    public static void CheckParallax()
+    {
+        Open(); var window = GetWindow<HalosMainRoomReview>();
+        window.rootVisualElement.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); window.RunParallaxChecks();
+    }
     public void CreateGUI()
     {
         if (!EditorApplication.isPlayingOrWillChangePlaymode) CreatePreview();
@@ -271,6 +277,60 @@ public sealed class HalosMainRoomReview : EditorWindow
             host.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); m_Isolated.MoveRoom(-1);
             Require(!m_Isolated.IsMoving && X() == 0, "nonanimated presentation keeps immediate navigation");
             File.WriteAllLines(output, m_Checks); Debug.Log("HALOS_SLIDE_REVIEW_PASS " + m_Checks.Count);
+        }
+        catch (Exception error) { m_Checks.Add("FAIL " + error); File.WriteAllLines(output, m_Checks); Debug.LogException(error); }
+        finally
+        {
+            m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0);
+            rootVisualElement.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
+        }
+    }
+    private async void RunParallaxChecks()
+    {
+        const string output = "LocalData/HalosHomeReview/parallax-checks.txt";
+        VisualElement host = null; m_Checks.Clear();
+        try
+        {
+            m_Screen.NavigatePage(7); await Wait(100);
+            host = new VisualElement(); host.style.position = Position.Absolute;
+            host.style.left = host.style.right = host.style.top = host.style.bottom = 0;
+            host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HalosMainRoomStyles"));
+            host.Add(new VisualElement()); rootVisualElement.Add(host);
+            m_Isolated = new HalosMainRoom(host, _ => { }); m_Isolated.Show(false);
+            var root = m_Isolated.Root;
+            await Until(() => root.Q<Image>("halosRoomPortrait").image != null);
+            var layer = root.Q("halosRoomParallax"); var viewport = root.Q("halosRoomViewport");
+            var edge = root.Q("halosRoomRight").worldBound;
+            float X() => layer.style.translate.value.x.value;
+            void Point()
+            {
+                var at = viewport.worldBound.center + new Vector2(viewport.worldBound.width * .3f, -viewport.worldBound.height * .25f);
+                using var e = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseMove, mousePosition = at });
+                root.SendEvent(e);
+            }
+            Require(!HalosTerminalBackdrop.PrefersReducedMotion, "parallax check uses enabled motion preference");
+            host.AddToClassList(TerminalMotion.LiveEditorPreviewClass); Point();
+            Require(X() == 0, "pointer move does not instantly snap the room");
+            await Wait(100);
+            Require(X() > 0 && X() < 12, "room follows with smooth damping");
+            await Wait(650);
+            float moon = root.Q("halosArtMoon").style.translate.value.x.value;
+            float actor = root.Q("halosRoomCharacter").style.translate.value.x.value;
+            Require(X() > 10 && moon < 0 && X() + moon > 0 && actor > 0, "Moon travels least and foreground actor travels most in the pointer direction");
+            Require(root.Q("halosRoomRight").worldBound == edge, "edge navigation zones remain fixed");
+            var hit = root.Q<Button>("halosRoomInspectCharacter");
+            Require(root.panel.Pick(hit.worldBound.center) == hit, "character hit area follows its visible layer");
+            var bounds = layer.worldBound; var visible = viewport.worldBound;
+            Require(bounds.xMin <= visible.xMin && bounds.yMin <= visible.yMin && bounds.xMax >= visible.xMax && bounds.yMax >= visible.yMax,
+                "overscan covers the viewport during diagonal motion");
+            using (var leave = PointerLeaveEvent.GetPooled()) { leave.target = root; root.SendEvent(leave); }
+            await Wait(700);
+            Require(Mathf.Abs(X()) < .3f, "leaving the room smoothly returns it to center");
+            Point(); await Wait(200); m_Isolated.OpenMoonPreview(); m_Isolated.ClosePreview();
+            Require(X() == 0, "returning from inspection clears prior mouse drift");
+            Point(); await Wait(100); host.RemoveFromClassList(TerminalMotion.LiveEditorPreviewClass); await Wait(100);
+            Require(X() == 0 && layer.style.scale.value.value.x == 1, "nonanimated presentation removes drift and overscan");
+            File.WriteAllLines(output, m_Checks); Debug.Log("HALOS_PARALLAX_REVIEW_PASS " + m_Checks.Count);
         }
         catch (Exception error) { m_Checks.Add("FAIL " + error); File.WriteAllLines(output, m_Checks); Debug.LogException(error); }
         finally

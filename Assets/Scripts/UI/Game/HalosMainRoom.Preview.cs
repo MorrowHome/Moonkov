@@ -74,6 +74,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed || !m_Visible || m_Busy || Room != 1 || IsMoving || IsOpening || IsPreviewOpen || m_TabletState > 0) return;
             IsPreviewOpen = true; m_PreviewMoonSelected = moon; m_Edge = 0;
+            ResetParallax();
             m_Owner.AddToClassList("halos-subject-open");
             ReleaseHomeCharacter(); UpdateInput();
             m_Viewport.style.display = DisplayStyle.None;
