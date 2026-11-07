@@ -42,10 +42,12 @@ namespace Unity.MP_FPS.EmbeddedNetworking
 
         public EmbeddedIceTransport(int receiveCapacity = 256)
         {
-            // An Editor's build target does not identify its host OS.
+            // An Editor's build target does not identify its host OS. Dedicated
+            // servers also have their own RuntimePlatform values on the same OS.
             var platform = Application.platform;
             if (platform != RuntimePlatform.WindowsEditor && platform != RuntimePlatform.WindowsPlayer &&
-                platform != RuntimePlatform.OSXEditor && platform != RuntimePlatform.OSXPlayer)
+                platform != RuntimePlatform.WindowsServer && platform != RuntimePlatform.OSXEditor &&
+                platform != RuntimePlatform.OSXPlayer && platform != RuntimePlatform.OSXServer)
                 throw new PlatformNotSupportedException("内置 P2P 当前支持 Windows x64 和 macOS。");
             if (IntPtr.Size != 8) throw new PlatformNotSupportedException("Embedded ICE requires a 64-bit process.");
             if (receiveCapacity < 8 || receiveCapacity > 4096) throw new ArgumentOutOfRangeException(nameof(receiveCapacity));
