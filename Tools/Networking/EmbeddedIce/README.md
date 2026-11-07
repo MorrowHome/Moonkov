@@ -66,6 +66,16 @@ bash Tools/Networking/EmbeddedIce/Build-macOS.sh --install-plugin
 
 也可使用仓库的 `Embedded ICE macOS` 工作流生成通用库。工作流只构建原生模块，不运行 Unity 或打包整个游戏。库以 Git LFS 保存；Mac 更新项目后须确保拿到真实二进制，而非 LFS 指针。构建前会检查对应平台的库及导入设置。Unity 的原生插件规则见[官方说明](https://docs.unity3d.com/cn/2022.3/Manual/PluginsForDesktop.html)。
 
+## 高延迟记录
+
+- P2P 连接建立后，客户端和独立服每 10 秒向各自日志写入一组 `[NetDiag]`。只读取本地计数，不发探测包或额外 RPC。
+- 记录每条连接的 RTT、抖动、待发送 RPC 字节数和输入滞后 tick。另记当前进程的更新频率、最长更新间隔、ICE 收发速率、接收队列、丢弃及发送错误。一次 Unity 帧内的多次模拟不重复计帧。
+- ICE 计数属于整个进程。服务器的该组计数是所有玩家合计，不能当作某一个玩家的流量。快照接收／丢失数只在客户端有效，服务端显示 `n/a`。首条 `baseline=True` 尚无区间速率；连接 World 停止采样或传输上下文更换后重置。
+- Windows 默认客户端日志在 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\FPS_Template\Player.log`。按局启动的服务器日志在项目的 `LocalData/instances/<本局目录>/server.log`。覆盖启动参数可能改变日志位置。
+- 对照同一时段的两端记录。高 RTT 同时出现较长更新间隔，需要继续查进程停顿；RPC 或 ICE 队列持续增长，需要查发送量和收发处理。两端更新正常且无本地积压时，再检查外网线路与丢包。计数只能缩小范围，不能单凭一条记录定因。
+- 不记录账号、地址、SDP、令牌或数据包内容。常规健康连接也保留低频样本，便于对比自行恢复和玩家死亡前后。
+- `Tools/Validation/RaidNetworkDiagnosticsReview.cs` 通过隔离 ECS 和空原生队列检查采样、限频、恢复及清理。没有创建 ICE 对端、socket 或游戏客户端，不能代替 Windows 跨网验收。
+
 ## 已有证据与本次边界
 
 Windows 原生模块有 65 项断言通过。单 Editor 的底层检查已覆盖客户端自动绑定，共 38 项断言通过，包含 NetCode 管线、DTLS 双向 64/1200 字节和资源释放。错误服务器名称在普通 UDP 与 ICE 下都未建立应用连接，均返回 `MaxConnectionAttempts=2`，不能把它当作明确的认证失败回码。

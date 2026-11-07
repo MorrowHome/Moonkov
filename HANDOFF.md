@@ -37,6 +37,7 @@
 - `Tools/Validation/InputTickReview.cs` 在单 Editor 的隔离客户端 World 中调用真实输入系统。修改前 88 项中有 20 项失败；修改后全部通过。覆盖高延迟、同一 tick 连续输入、单次开火保留、延迟变化、Host 空帧和无效时钟。Unity 编译为 0 错误、0 警告。未启动网络、进入 Play 或重打包；这项修复不代表公网 Ping 已降低，Windows 三机回归仍待验收。
 - `UpdateProtectionGear` 原先每半秒因光环或生命维持装备而重发整份库存。现只在项圈显示的整数氧气百分比或物品身份变化时补发；库存修改、动作回执和搜刮进度仍照常发送。实际氧气继续以完整精度写入物品和 Ghost，HUD 精度不变。光环能量不再触发库存重发。
 - 隔离服务器持有 12 项物品，静止 60 秒时，原逻辑重复发送 1560 个分片、591840 字节 JSON；修改后该组重复发送为零。此数值不含协议开销，也不是公网带宽或 Ping 测量。`Tools/Validation/InventoryTrafficReview.cs` 的 19 项检查、库存序列化／交互检查、83 项搜索和 54 项能量回归通过。结果在 `LocalData/WanLatencyReview20261108`。
+- `RaidNetworkDiagnosticsSystem` 为 P2P 两端每 10 秒写入本地 `[NetDiag]`。包含每条连接的 RTT、RPC 积压和输入滞后，以及进程更新间隔和原生 ICE 计数。不发额外包，不记地址、账号或 SDP。字段含义和日志路径见 [P2P 说明](Tools/Networking/EmbeddedIce/README.md#高延迟记录)。11 项隔离采样、限频、恢复及清理检查通过，编译 0 错误、0 警告。未重新打包或进行跨网联机，真实高 Ping 仍未闭环。
 
 ## Fork 恢复 Git stash
 
