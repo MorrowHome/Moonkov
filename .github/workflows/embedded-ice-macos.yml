@@ -1,0 +1,33 @@
+name: Embedded ICE macOS
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - '.github/workflows/embedded-ice-macos.yml'
+      - 'Tools/Networking/EmbeddedIce/CMakeLists.txt'
+      - 'Tools/Networking/EmbeddedIce/Build-macOS.sh'
+      - 'Tools/Networking/EmbeddedIce/*.cpp'
+      - 'Tools/Networking/EmbeddedIce/*.h'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-plugin:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          sparse-checkout: Tools/Networking/EmbeddedIce
+          persist-credentials: false
+      - name: Build and check universal plugin
+        run: bash Tools/Networking/EmbeddedIce/Build-macOS.sh
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: moon-ice-macos-universal
+          path: LocalData/EmbeddedIce/native-build-macos/libmoon_ice.dylib
+          if-no-files-found: error
+          retention-days: 7

@@ -1,9 +1,11 @@
 #pragma once
 #include <stdint.h>
-#ifdef MOON_ICE_EXPORTS
+#if defined(_WIN32) && defined(MOON_ICE_EXPORTS)
 #define MICE_API __declspec(dllexport)
-#else
+#elif defined(_WIN32)
 #define MICE_API __declspec(dllimport)
+#else
+#define MICE_API __attribute__((visibility("default")))
 #endif
 
 // All calls on a context must be serialized by its owner. Callbacks never enter
