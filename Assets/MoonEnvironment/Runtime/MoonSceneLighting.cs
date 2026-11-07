@@ -21,7 +21,7 @@ namespace Unity.MP_FPS.Moon
         private Texture previousCustomReflection;
         public bool UsesSourceStaticLighting => sourceStaticLighting;
         public void ConfigureSourceStaticLighting(SourceWorldLightingData data) => sourceStaticLighting = data;
-        public enum ClockMode { GameplayDay, MeanLunarOrbit }
+        public enum ClockMode { GameplayDay, MeanLunarOrbit, Fixed }
         [Header("Sky time (existing server clock is the only time source)")]
         [SerializeField] private ClockMode clockMode = ClockMode.MeanLunarOrbit;
         [Tooltip("UTC date at game hour zero. Mean orbit only: no libration or eclipses.")]
@@ -165,7 +165,7 @@ namespace Unity.MP_FPS.Moon
 
         public void ApplyTimeOfDay(double totalHours)
         {
-            if (sourceStaticLighting) return;
+            if (sourceStaticLighting || clockMode == ClockMode.Fixed) return;
             if (!applied || !sun) return;
             if (clockMode == ClockMode.MeanLunarOrbit)
             {

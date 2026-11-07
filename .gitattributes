@@ -102,3 +102,5 @@ SourceData/Models/RebuildR22FootAndRing/Resume20261022/R21RingCloneBefore.asset.
 Assets/MoonEnvironment/Variants/SourceFidelity/World/Meshes/*.asset filter=lfs diff=lfs merge=lfs -text
 Assets/MoonEnvironment/Variants/SourceFidelity/World/Lighting/*.asset filter=lfs diff=lfs merge=lfs -text
 Assets/MoonEnvironment/Variants/SourceFidelity/World/Reflections/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/GL125/Meshes/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/GL125/Lighting/*.asset filter=lfs diff=lfs merge=lfs -text

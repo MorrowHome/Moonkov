@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -28,9 +29,21 @@ public static class RaidMapBackgroundBake
         if (EditorApplication.isPlayingOrWillChangePlaymode || scene.name != "TheophilusGameScene")
             throw new InvalidOperationException("Open the formal Theophilus scene in Edit Mode first.");
         var terrain = Array.FindAll(Terrain.activeTerrains, tile => tile.gameObject.scene == scene);
-        if (terrain.Length == 0) throw new InvalidOperationException("Scene has no terrain.");
-        var bounds = new Bounds(terrain[0].transform.position + terrain[0].terrainData.size * .5f, terrain[0].terrainData.size);
-        foreach (var tile in terrain) bounds.Encapsulate(new Bounds(tile.transform.position + tile.terrainData.size * .5f, tile.terrainData.size));
+        Bounds bounds;
+        if (terrain.Length != 0)
+        {
+            bounds = new Bounds(terrain[0].transform.position + terrain[0].terrainData.size * .5f, terrain[0].terrainData.size);
+            foreach (var tile in terrain) bounds.Encapsulate(new Bounds(tile.transform.position + tile.terrainData.size * .5f, tile.terrainData.size));
+        }
+        else
+        {
+            var world = Array.Find(scene.GetRootGameObjects(), root => root.name == "GL125 World");
+            var tiles = world ? world.GetComponentsInChildren<MeshRenderer>().Where(r => r.name.StartsWith("DEM_", StringComparison.Ordinal)).ToArray()
+                              : Array.Empty<MeshRenderer>();
+            if (tiles.Length == 0) throw new InvalidOperationException("Scene has no terrain or GL125 DEM tiles.");
+            bounds = tiles[0].bounds;
+            foreach (var tile in tiles) bounds.Encapsulate(tile.bounds);
+        }
         float span = Mathf.Max(bounds.size.x, bounds.size.z);
         var preview = EditorSceneManager.NewPreviewScene();
         RenderTexture target = null; Texture2D pixels = null;
@@ -61,7 +74,7 @@ public static class RaidMapBackgroundBake
             File.WriteAllBytes(path, pixels.EncodeToPNG());
             var metadata = new Metadata { scene = scene.name, source = scene.path, centerX = bounds.center.x, centerZ = bounds.center.z,
                 span = span, projection = "orthographic, +Z north at image top; static scene geometry only" };
-            var baseRoot = Array.Find(scene.GetRootGameObjects(), root => root.name == "MC00_ROOT_Standard_YUp_Frame");
+            var baseRoot = Array.Find(scene.GetRootGameObjects(), root => root.name == "MC00_ROOT_Standard_YUp_Frame" || root.name == "MC00 Pressurized Interior");
             if (baseRoot) metadata.landmarks = new[] { new Landmark { name = "MC00 BASE", x = baseRoot.transform.position.x, z = baseRoot.transform.position.z } };
             File.WriteAllText(Folder + "/TheophilusSatelliteBounds.json", JsonUtility.ToJson(metadata, true) + "\n");
             AssetDatabase.ImportAsset(path);

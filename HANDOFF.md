@@ -338,7 +338,13 @@
 - 源文件 6 组交互物件几何检查通过。724 帧骨架往返与 52 帧蒙皮抽查通过，接触压缩最多约 2.2 毫米。源检查见 `BlenderValidation.json`。Unity 接入完成 2495 项编辑检查、174 项服务端检查和 175 项实际播放检查。包含启用的瞄准组件、保存骨旋转、三套蒙皮、真实音源、重复快照、相机和清理。针尖距实际手臂表面约 1–2.5 毫米。摘要见 `SourceData/Animations/Survival/RuntimeValidation.json`。未做正式战局、联机或 Player 构建验收。
 - 运行时检查必须在指定游戏相机的 `endCameraRendering` 回调内采样。SceneView 重绘也会发出渲染回调。普通 await 恢复时可能处在 Update 与 LateUpdate 之间，不能据此判断骨架被覆盖。短音效按实际 AudioSource 播放记录检查。
 
-## 整图静态外观还原（Windows，已安装，本地提交完成）
+## Theophilus 正式地图 GL125（2026-11-07）
+
+- 正式场景已替换为 GL125，入口和场景 GUID 沿用。新版地形已更新战术地图底图。Editor 重开通过。定向检查覆盖出生、气闸、任务设备、补氧、撤离、搜刮及 U40 和 U62 两处新接路。其余待确认入口、Play 和 Player 帧率待验收。
+- Blender OptiX 预烘 74 张线性光照图。MC00 的 28 张用 2 倍或 4 倍超采样。程序材质和角色探针使用近似。灯钮按废弃处理。导入、回执和同机位对照见 [GL125 地图接入](Docs/Development/GL125Unity.md)。
+- 旧整图专用资源已从工作副本清理。旧 `World/Lighting/SourceWorldForwardRenderer.asset` 仍供现有渲染管线使用。D 盘保留旧 LFS 对象和切换前场景，回退见接入文档。
+
+## 上一版整图静态外观还原（Windows 历史记录）
 
 - 2026-10-30 已继续清掉 8 组遗漏的旧建筑、道路和装饰显示，共 4369 个渲染器。旧入口、环形概念建筑、西侧折返楼梯、脚印、R08、R09–R18、R19、R23 接缝展示层均关闭。只改显示标志，保留网格、材质、碰撞和玩法。修改前后 47029 条碰撞／网格引用／玩法记录完全一致，16126 个碰撞体不变。新版 3359 个渲染器保留；另保留气闸 56、任务设备 33、氧气站 11 个功能渲染器。安装检查会拒绝任何未归入玩法的旧显示或仍绘制的旧地形。回退为 `World/TheophilusGameScene.before-legacy-visual-fix.unity`，回执为 `World/LegacyVisualRetirement.txt`。本轮仅 Editor 定向检查，没有另开战局、截图或推送。
 
