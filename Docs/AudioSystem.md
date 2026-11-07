@@ -1,5 +1,16 @@
 # Moonkov 音效系统
 
+## 2026-11-07 开场与登录
+
+- 33 扇开场窗口各播放一次相同 pop。保留原音高与速度，不随堆叠变调，也不随机变调。用瞬态饱和、短低频撞击和高频起音增强冲击，音库增益为 -8 dB。同一帧出现多扇窗口时仍逐一触发。最多保留 8 个 pop 句柄，复用原声音池。第 4.7 秒集中闪断，第 4.9 秒进入安静黑场。
+- 第 5.9 秒揭幕播放分层科幻 impact：深沉冲击作主体，力场纹理提供边缘和空间感。登录画面显现时，淡入白噪声、低设备声和远处模糊人声。登录 glitch 仅在真实亮度变化时触发，间隔至少 3.5 秒。
+- 登录成功后，从确认渐暗开始播放 0.75 秒 rise 与反向 impact，末段叠加变密的高频颗粒与饱和失真，冲到顶点后在完全闭合时骤停。目标页面揭幕时再播放 impact。保留源素材设计的混响与立体声尾音，总长 3.2 秒；正常揭幕结束后不截断。取消、隐藏或销毁会停止声音；重复刷新账号状态不会重播。
+- `HalosTerminalBackdrop` 和 `HalosAccessTransition` 各自持有 `HalosAccessAudio`。沿用 `SoundSystem`、`Menu` 混音组、界面音量和总音量。登录期间暂停飞船音乐，进入主界面后恢复。减少动画时只保留登录环境声。战局加载不复播此音效组。
+- 9 条 48 kHz 立体声素材约 7.02 MB。两条环境循环使用 Vorbis 内存压缩，短音使用预加载 PCM。游戏运行时不生成音频，也不新增实时混响。安装入口为 `Moonkov/Audio/Install opening and login audio`；引用写入音频库。
+- 人声、pop、glitch 和 impact 使用网上的 CC0 素材。来源和处理记录见 [素材说明](../SourceData/Audio/Access/README.md) 与 `AccessAudioSources.json`。许可随 `MoonkovAccessAudioCredits.txt` 打包。生成脚本为 `Tools/Audio/build_access_audio.py`。
+- `Tools/Validation/AccessAudioReview.cs` 的 `Check()` 通过 79 项原生界面与声音请求检查，覆盖逐窗触发、幕帘同步、静音黑场、跳过、减少动画和清理。`CheckPlayback()` 沿用 Inspector 的真实发声路径，33 次 pop 与正反 impact 的 AudioSource 播放、原音高、非零增益和 Menu 路由通过。预览对象已回收。
+- 单 Editor 编译通过。9 条成品与 5 份源文件哈希、格式、峰值、直流偏移和循环接缝通过。最后一轮只加强 pop 音色与增益、rise 末段，时序不变；已重新生成并导入。没有重新打包，自动检查不代表主观听感验收。
+
 ## 2026-10-24 十三把武器换弹差异化
 
 13 把武器分别绑定专用 `WeaponReloadSfx`，每库 3 条等长录音变体，RandomNotLast 禁止相邻重复。轻型 Cicada/Vesper 使用清脆小机构，Revolver/Rondo 使用转轮动作，Shotgun/Thorn/Tempest 使用不同装填节奏，Aegis/Sundown 强调低沉机械重量，Trine/Nocturne 使用多段/成对卡扣，Halo/Sniper 保持各自充能与拉栓节奏。不是仅对一条通用声音随机调音高：机械录音切片、动作间隔、滤波和充能底层分别编排。

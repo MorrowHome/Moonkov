@@ -92,6 +92,7 @@ namespace Unity.MP_FPS.Client
             bool loggedIn = m_AccessTransition.Present(authenticated, !m_LoginAnimation.IntroPending,
                 accessVisible, m_AccessReduceMotion.value);
             bool transitioning = m_AccessTransition.IsRunning;
+            GameManager.Instance?.GetComponent<MoonkovAudioEnvironment>()?.SetAccessVisible(!loggedIn);
             if (!loggedIn || PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan) m_LobbyOpen = false;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
             m_ProfileModeButton.SetEnabled(!transitioning && !PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);

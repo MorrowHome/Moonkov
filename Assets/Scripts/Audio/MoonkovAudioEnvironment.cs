@@ -8,6 +8,13 @@ namespace Unity.MP_FPS
         private SoundSystem.SoundInfo m_Interior;
         private ISoundSystem m_System;
         private bool m_OnShip;
+        private bool m_AccessVisible = true, m_MenuActive;
+
+        public void SetAccessVisible(bool visible)
+        {
+            m_AccessVisible = visible;
+            if (visible) { StopInterior(); m_OnShip = false; }
+        }
         private void Start()
         {
             m_System = GameManager.Instance != null ? GameManager.Instance.SoundSystem : null;
@@ -17,8 +24,11 @@ namespace Unity.MP_FPS
         private void Update()
         {
             if (GameSettings.Instance == null) return;
-            bool ship = SceneManager.GetActiveScene().name == GameManager.MainMenuSceneName &&
+            bool menu = SceneManager.GetActiveScene().name == GameManager.MainMenuSceneName &&
                 GameSettings.Instance.GameState != GlobalGameState.InGame;
+            if (menu && !m_MenuActive) EnsureListener();
+            m_MenuActive = menu;
+            bool ship = menu && !m_AccessVisible;
             if (ship == m_OnShip) return;
             m_OnShip = ship;
             if (ship)
@@ -49,7 +59,7 @@ namespace Unity.MP_FPS
             if (m_Interior != null) m_System?.Stop(m_Interior, .5f);
             m_Interior = null;
         }
-        private void OnDisable() { StopInterior(); m_OnShip = false; }
+        private void OnDisable() { StopInterior(); m_OnShip = false; m_MenuActive = false; }
         private void OnApplicationQuit() => PlayerPrefs.Save();
     }
 }

@@ -1,0 +1,153 @@
+{
+  "sample_rate": 48000,
+  "channels": 2,
+  "format": "PCM16",
+  "sources": [
+    {
+      "title": "Indoor adult murmur, medium group.wav",
+      "author": "SpliceSound",
+      "license": "CC0-1.0",
+      "page": "https://freesound.org/people/SpliceSound/sounds/260122/",
+      "download": "https://cdn.freesound.org/previews/260/260122_1480854-hq.mp3",
+      "file": "SourceData/Audio/Access/IndoorMurmur.mp3",
+      "sha256": "4f4c9d381aa31ebaa4d354a74121f94653f831043b4c165ebe4d3d26bb55b94e"
+    },
+    {
+      "title": "Static / ScatterNoise1.mp3",
+      "author": "xhunterko",
+      "license": "CC0-1.0",
+      "page": "https://opengameart.org/content/static",
+      "download": "https://opengameart.org/sites/default/files/ScatterNoise1.mp3",
+      "file": "SourceData/Audio/Access/ScatterNoise1.mp3",
+      "sha256": "712bc6b549d189e112433f609dc0d3a6f07f2d7458f73a08a915c50a1903f124"
+    },
+    {
+      "title": "DSGNImpt_Deep Cinematic Impact 2_ZAZZ",
+      "author": "zazz.sound.design",
+      "license": "CC0-1.0",
+      "page": "https://freesound.org/people/zazz.sound.design/sounds/754421/",
+      "download": "https://cdn.freesound.org/previews/754/754421_726853-hq.mp3",
+      "file": "SourceData/Audio/Access/DeepImpact.mp3",
+      "sha256": "e18334a16967069ebf59cc6a8d108045f67d51d8bc65b4f87f9085afb87f523a"
+    },
+    {
+      "title": "Sci-Fi Impact",
+      "author": "Kierham",
+      "license": "CC0-1.0",
+      "page": "https://freesound.org/people/Kierham/sounds/646831/",
+      "download": "https://cdn.freesound.org/previews/646/646831_11617040-hq.mp3",
+      "file": "SourceData/Audio/Access/ForceFieldImpact.mp3",
+      "sha256": "8a058a70dab0c854900d5bf1de775d0ce8bc9f58141413c25e1add3b8f576bf6"
+    },
+    {
+      "title": "Pop sounds / pop1.wav",
+      "author": "EZduzziteh",
+      "license": "CC0-1.0",
+      "page": "https://opengameart.org/content/pop-sounds-0",
+      "download": "https://opengameart.org/sites/default/files/pop1.wav",
+      "file": "SourceData/Audio/Access/Pop1.wav",
+      "sha256": "758416a61890a61f4e1f00a65531e75e7d867cad1e96392d829860b8aa3a66f6"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessCarrier.wav",
+      "seconds": 8.0,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -17.82,
+      "loop": true,
+      "seam_jump": 0.08324776300137104,
+      "recipe": "Periodic filtered white noise with quiet 67/134 Hz equipment hum; 8 s loop",
+      "source": "Original synthesis",
+      "sha256": "316a794d3c64edba58c49b2d141719534ab576699e75804ecca990ddfb7db90c"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessRoom.wav",
+      "seconds": 24.0,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -17.34,
+      "loop": true,
+      "seam_jump": 0.03676250336021472,
+      "recipe": "CC0 human walla stretched, layered, HP190/LP1300, short diffuse reflections, soft peak compression; filtered white noise; 2 s loop crossfade",
+      "source": "SpliceSound 260122 + original synthesis",
+      "sha256": "a57f13b65f8cff71522b250f23c75087cbeb1cc81f526d6df378ba6af5785bb9"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessTerminal1.wav",
+      "seconds": 0.059875,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -17.08,
+      "loop": false,
+      "seam_jump": 3.01289421764717e-35,
+      "recipe": "CC0 pop1 at original pitch/speed; driven transient, short 118 Hz punch and 1.8-6 kHz snap; one fixed sample for all windows",
+      "source": "EZduzziteh Pop sounds + original transient layers",
+      "sha256": "2c8897025803f72a95f7afc6192b754b3ae6b4919da1219c5c285ee964dfcf5e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessCut.wav",
+      "seconds": 0.2,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -19.74,
+      "loop": false,
+      "seam_jump": 1.4148841734910275e-36,
+      "recipe": "200 ms three-part signal break matching the 4.7 s visual flash and 4.9 s clear",
+      "source": "Original synthesis",
+      "sha256": "e9e507cc9efdd5e4405ceb1b2e3349a5fe445fc46ebc358870279c0961348188"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessReveal.wav",
+      "seconds": 3.2,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -24.71,
+      "loop": false,
+      "seam_jump": 1.2480431997884414e-35,
+      "recipe": "Deep Cinematic Impact body + Sci-Fi Impact force-field edge; original stereo space, short reflections and 3.2 s release",
+      "source": "zazz.sound.design 754421 + Kierham 646831",
+      "sha256": "b8fd752271625b452228c48125c6e5f860088d0621c87a74752b01c8d247e18a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessClose.wav",
+      "seconds": 0.75,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -15.16,
+      "loop": false,
+      "seam_jump": 2.008107677037771e-33,
+      "recipe": "Reversed layered impact, widening rise, accelerating rough upper edge and saturated final crest; 750 ms buildup then a 2 ms cut at full closure",
+      "source": "zazz.sound.design 754421 + Kierham 646831 + original riser",
+      "sha256": "7aa261025000b9f116ae40b96600623c2daf46eef5e12cd63110486baed511c2"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessGlitch1.wav",
+      "seconds": 0.075,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -19.12,
+      "loop": false,
+      "seam_jump": 6.779870881725991e-35,
+      "recipe": "CC0 ScatterNoise1 slice at 8.80 s; bandpass, narrow stereo delay and soft gating; 75-140 ms",
+      "source": "xhunterko ScatterNoise1",
+      "sha256": "16b7e656e0ba4f7e51dde007a691bdbbb93707a49d7f1571697a442b536f5e8a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessGlitch2.wav",
+      "seconds": 0.11,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -19.09,
+      "loop": false,
+      "seam_jump": 1.71037502483715e-34,
+      "recipe": "CC0 ScatterNoise1 slice at 14.50 s; bandpass, narrow stereo delay and soft gating; 75-140 ms",
+      "source": "xhunterko ScatterNoise1",
+      "sha256": "42ac3a9f13401e07a70aeed9ccad10408798eba32fdb834f264c3541fbd77e53"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Access/AccessGlitch3.wav",
+      "seconds": 0.14,
+      "peak_dbfs": -4.01,
+      "rms_dbfs": -17.26,
+      "loop": false,
+      "seam_jump": 8.92774538998747e-35,
+      "recipe": "CC0 ScatterNoise1 slice at 20.20 s; bandpass, narrow stereo delay and soft gating; 75-140 ms",
+      "source": "xhunterko ScatterNoise1",
+      "sha256": "9a723c77295814f7c448c8f49e77becb886a9bf83f7015758882c16b7498d5dc"
+    }
+  ]
+}
