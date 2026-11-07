@@ -245,6 +245,7 @@ namespace Unity.MP_FPS.Client
             if (m_Disposed) return;
             m_Disposed = true; m_Opened = null; m_Timer.Pause();
             ClosePreview(false); ReleaseHomeCharacter();
+            m_CharacterHit.clickable.clickedWithEventInfo -= CharacterClicked;
             Root.UnregisterCallback<GeometryChangedEvent>(Resize); Root.UnregisterCallback<KeyDownEvent>(KeyDown);
             Root.UnregisterCallback<DetachFromPanelEvent>(Detached); Root.RemoveFromHierarchy();
             Root.UnregisterCallback<PointerMoveEvent>(TrackParallax); Root.UnregisterCallback<PointerLeaveEvent>(LeaveParallax);

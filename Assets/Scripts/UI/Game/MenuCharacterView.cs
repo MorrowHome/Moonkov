@@ -172,7 +172,7 @@ namespace Unity.MP_FPS.Client
         private void ApplyOrientation()
         {
             if (m_Model != null)
-                m_Model.transform.localRotation = Quaternion.Euler(0, m_HomePose ? 150 : m_Settings.Yaw +
+                m_Model.transform.localRotation = Quaternion.Euler(0, m_HomePose ? HomeYaw : m_Settings.Yaw +
                     (m_Inspected ? m_InspectionYaw : m_PoseTurn), 0);
         }
 
@@ -368,7 +368,7 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
             if (!visible) { ReleaseStage(); return; }
             if (m_Camera == null) CreateStage();
-            if(!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion)
+            if ((!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion) && !HomeReactionActive)
             {
                 var size=Element.contentRect.size;
                 if(m_Target==null || size!=m_EditorViewport || m_ViewDirty)
@@ -386,6 +386,12 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed || m_Settings == null) return;
             if (m_Model == null) CreateStage();
+            float reactionDt = dt;
+            if (HomeReactionActive)
+            {
+                AdvanceHomeReaction(dt);
+                if (m_HomeReducedMotion) dt = 0;
+            }
             m_Remaining -= dt;
             m_BaseTime += dt;
             var idle = m_Settings.Motions[0];
@@ -421,8 +427,9 @@ namespace Unity.MP_FPS.Client
             m_HandAvoidance?.PreparePresentation(dt, preserveHands);
             m_EquipmentMelee?.PreparePresentation(dt);
             m_TwistFollowers?.RestoreBeforeAnimation();
-            if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
+            if (m_GestureActive || gestureActive || m_HomeSniperShowing) m_Gestures?.RestoreBeforeAnimation();
             m_SquadMotions?.RestoreBeforeAnimation();
+            m_HomeMotions?.RestoreBeforeAnimation();
             m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
             m_Model.transform.localPosition = Vector3.zero;
@@ -435,11 +442,16 @@ namespace Unity.MP_FPS.Client
             m_EquipmentMelee?.SamplePreviewIdle();
             ApplySquadPose(dt);
             if (m_HomePose && m_Head != null)
-                m_Head.rotation = Quaternion.AngleAxis(-20, Vector3.up) *
-                    Quaternion.AngleAxis(-10, m_Model.transform.right) * m_Head.rotation;
-            m_Spring?.SimulatePresentation(dt);
+            {
+                float lookOutside = 1 - m_HomeFacing;
+                m_Head.rotation = Quaternion.AngleAxis(-20 * lookOutside, Vector3.up) *
+                    Quaternion.AngleAxis(-10 * lookOutside, m_Model.transform.right) * m_Head.rotation;
+            }
             UpdateHalo();
+            ApplyHomeReactionPose(reactionDt);
+            m_Spring?.SimulatePresentation(dt);
             SampleEquipmentVisuals(dt);
+            PlayHomeShot();
             if (m_Protection) m_Protection.SetPreviewHaloColor(PreviewHaloColor);
             if(m_Protection)m_Protection.SimulatePresentation();
         }
@@ -595,6 +607,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ReleaseStage()
         {
+            ReleaseHomeReaction();
             ReleaseEquipmentVisuals();
             StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_ViewDirty = false; Zoom = 1;
             if (m_Graph.IsValid()) m_Graph.Destroy();

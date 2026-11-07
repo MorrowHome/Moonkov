@@ -41,6 +41,8 @@ namespace Unity.MP_FPS.Client
         public int PreviewLoadedAmmo { get; private set; }
         public int PreviewMagazineCapacity { get; private set; }
         public Color PreviewHaloColor => m_EquipmentHaloColor;
+        private DollSingerHaloAim.HaloWeapon DisplayedPreviewWeapon => m_HomeSniperShowing
+            ? DollSingerHaloAim.HaloWeapon.Sniper : EquippedPreviewWeapon;
 
         [Serializable] private struct SerializedHaloPose { public float hhh; }
 
@@ -259,7 +261,7 @@ namespace Unity.MP_FPS.Client
 
         private ArsenalHaloVisual EquippedArsenal()
         {
-            foreach (var visual in m_EquipmentArsenal) if (visual && visual.weapon == EquippedPreviewWeapon) return visual;
+            foreach (var visual in m_EquipmentArsenal) if (visual && visual.weapon == DisplayedPreviewWeapon) return visual;
             return null;
         }
 
@@ -272,7 +274,8 @@ namespace Unity.MP_FPS.Client
                 m_EquipmentDischarge?.Clear();
                 m_EquipmentAppliedWeapon = PreviewWeaponId; m_EquipmentAppliedItem = PreviewWeaponItemId;
             }
-            var weapon = EquippedPreviewWeapon;
+            var weapon = DisplayedPreviewWeapon;
+            int sniperAmmo = m_HomeSniperShowing ? (m_HomeShotFired ? 0 : 1) : PreviewLoadedAmmo;
             m_Halo.gameObject.SetActive(weapon != DollSingerHaloAim.HaloWeapon.None);
             m_EquipmentRifle?.SetMagazineCapacity(PreviewMagazineCapacity);
             m_EquipmentShotgun?.SetModuleProfile(weapon == DollSingerHaloAim.HaloWeapon.Shotgun ? PreviewModules : (ushort)0,
@@ -280,7 +283,7 @@ namespace Unity.MP_FPS.Client
             m_EquipmentRifle?.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Rifle, PreviewLoadedAmmo);
             m_EquipmentShotgun?.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Shotgun, PreviewLoadedAmmo);
             m_EquipmentRevolver?.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Revolver, PreviewLoadedAmmo);
-            m_EquipmentSniper?.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Sniper, PreviewLoadedAmmo);
+            m_EquipmentSniper?.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Sniper, sniperAmmo);
             foreach (var visual in m_EquipmentArsenal) if (visual) visual.SetEquipped(visual.weapon == weapon);
             foreach (var stroke in m_EquipmentCore) if (stroke) stroke.enabled = weapon == DollSingerHaloAim.HaloWeapon.Rifle && !m_EquipmentRifle;
             foreach (var stroke in m_EquipmentGlow) if (stroke) stroke.enabled = weapon == DollSingerHaloAim.HaloWeapon.Rifle && !m_EquipmentRifle;
@@ -290,8 +293,11 @@ namespace Unity.MP_FPS.Client
                 m_EquipmentShotTick, m_EquipmentReloadTick, m_EquipmentReloadTarget);
             m_EquipmentRevolver?.SetNetworkState(PreviewLoadedAmmo, m_EquipmentReloading, m_EquipmentReloadProgress,
                 m_EquipmentShotTick, m_EquipmentReloadTick);
-            m_EquipmentSniper?.SetNetworkState(PreviewLoadedAmmo, m_EquipmentReloading, m_EquipmentReloadProgress,
-                m_EquipmentShotTick, m_EquipmentReloadTick, m_EquipmentReloadTarget);
+            if (m_HomeSniperShowing)
+                m_EquipmentSniper?.SetNetworkState(sniperAmmo, false, 0, 0, 0, sniperAmmo);
+            else
+                m_EquipmentSniper?.SetNetworkState(sniperAmmo, m_EquipmentReloading, m_EquipmentReloadProgress,
+                    m_EquipmentShotTick, m_EquipmentReloadTick, m_EquipmentReloadTarget);
             EquippedArsenal()?.SetNetworkState(PreviewLoadedAmmo, PreviewMagazineCapacity, m_EquipmentReloading,
                 m_EquipmentReloadProgress, m_EquipmentShotTick, m_EquipmentReloadTick, m_EquipmentReloadTarget, m_EquipmentBurstIndex);
             var module = weapon == DollSingerHaloAim.HaloWeapon.Rifle ? m_EquipmentRifleModules :
@@ -335,10 +341,11 @@ namespace Unity.MP_FPS.Client
             float scale = Mathf.Lerp(m_EquipmentSource.idleHaloScale, m_EquipmentSource.aimedHaloScale, t);
             var parentScale = m_Halo.parent.lossyScale;
             m_Halo.localScale = new Vector3(scale / Mathf.Max(.001f, parentScale.x), scale / Mathf.Max(.001f, parentScale.y), scale / Mathf.Max(.001f, parentScale.z));
-            m_EquipmentHaloColor = arsenal ? arsenal.lightColor : EquippedPreviewWeapon == DollSingerHaloAim.HaloWeapon.Rifle && m_EquipmentRifle ? m_EquipmentRifle.lightColor :
-                EquippedPreviewWeapon == DollSingerHaloAim.HaloWeapon.Shotgun && m_EquipmentShotgun ? m_EquipmentShotgun.lightColor :
-                EquippedPreviewWeapon == DollSingerHaloAim.HaloWeapon.Revolver && m_EquipmentRevolver ? m_EquipmentRevolver.lightColor :
-                EquippedPreviewWeapon == DollSingerHaloAim.HaloWeapon.Sniper && m_EquipmentSniper ? m_EquipmentSniper.lightColor :
+            var weapon = DisplayedPreviewWeapon;
+            m_EquipmentHaloColor = arsenal ? arsenal.lightColor : weapon == DollSingerHaloAim.HaloWeapon.Rifle && m_EquipmentRifle ? m_EquipmentRifle.lightColor :
+                weapon == DollSingerHaloAim.HaloWeapon.Shotgun && m_EquipmentShotgun ? m_EquipmentShotgun.lightColor :
+                weapon == DollSingerHaloAim.HaloWeapon.Revolver && m_EquipmentRevolver ? m_EquipmentRevolver.lightColor :
+                weapon == DollSingerHaloAim.HaloWeapon.Sniper && m_EquipmentSniper ? m_EquipmentSniper.lightColor :
                 Color.Lerp(m_EquipmentSource.idleHaloColor, m_EquipmentSource.aimedHaloColor, t);
             foreach (var stroke in m_EquipmentCore) if (stroke) stroke.startColor = stroke.endColor = m_EquipmentHaloColor;
             var glow = m_EquipmentHaloColor; glow.a = m_EquipmentSource.glowAlpha;
@@ -368,7 +375,7 @@ namespace Unity.MP_FPS.Client
             if (!light) return;
             light.color = new Color(m_EquipmentHaloColor.r, m_EquipmentHaloColor.g, m_EquipmentHaloColor.b, 1);
             light.intensity = intensity; light.range = range;
-            light.enabled = m_EquipmentLightEnabled && m_EquipmentSource.haloLightEnabled && EquippedPreviewWeapon != DollSingerHaloAim.HaloWeapon.None;
+            light.enabled = m_EquipmentLightEnabled && m_EquipmentSource.haloLightEnabled && DisplayedPreviewWeapon != DollSingerHaloAim.HaloWeapon.None;
         }
 
         private void ReleaseEquipmentVisuals()

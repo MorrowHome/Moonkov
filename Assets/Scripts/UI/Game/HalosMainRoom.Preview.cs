@@ -6,6 +6,7 @@ namespace Unity.MP_FPS.Client
 {
     public sealed partial class HalosMainRoom
     {
+        private const long CharacterDoubleClickMilliseconds = 320;
         private VisualElement m_CharacterHost, m_Preview, m_PreviewStage;
         private Image m_HomePortrait;
         private Button m_CharacterHit, m_MoonHit, m_PreviewBack;
@@ -13,6 +14,7 @@ namespace Unity.MP_FPS.Client
         private MenuMoonView m_PreviewMoon;
         private InventoryGraph m_Equipment;
         private IVisualElementScheduledItem m_PreviewFade;
+        private IVisualElementScheduledItem m_CharacterClick;
         private bool m_PreviewMoonSelected;
         public bool IsPreviewOpen { get; private set; }
 
@@ -25,7 +27,7 @@ namespace Unity.MP_FPS.Client
             // The window hit area and actor sit behind the original monitor controls.
             m_MoonHit.RemoveFromHierarchy(); m_World.Add(m_MoonHit);
             m_CharacterHost.RemoveFromHierarchy(); m_World.Add(m_CharacterHost);
-            m_CharacterHit.clicked += OpenCharacterPreview;
+            m_CharacterHit.clickable.clickedWithEventInfo += CharacterClicked;
             m_MoonHit.clicked += OpenMoonPreview;
             m_Preview = Root.Q("halosSubjectPreview");
             m_PreviewStage = Root.Q("halosSubjectStage");
@@ -47,6 +49,7 @@ namespace Unity.MP_FPS.Client
 
         private void UpdateSubjectInput(bool ready)
         {
+            if (!ready) CancelCharacterClick();
             m_CharacterHit.SetEnabled(ready); m_MoonHit.SetEnabled(ready);
             m_CharacterHit.style.display = m_MoonHit.style.display = ready ? DisplayStyle.Flex : DisplayStyle.None;
         }
@@ -64,7 +67,37 @@ namespace Unity.MP_FPS.Client
 
         private void ReleaseHomeCharacter()
         {
+            CancelCharacterClick();
             m_HomeCharacter?.Dispose(); m_HomeCharacter = null;
+        }
+
+        private void CharacterClicked(EventBase evt)
+        {
+            if (evt is not IMouseEvent &&
+                (evt is not IPointerEvent pointer || pointer.pointerType != UnityEngine.UIElements.PointerType.mouse))
+            {
+                CancelCharacterClick();
+                OpenCharacterPreview();
+                return;
+            }
+            if (m_HomeCharacter?.HomeReactionActive == true) return;
+            if (m_CharacterClick != null)
+            {
+                CancelCharacterClick();
+                m_HomeCharacter?.PlayHomeReaction();
+                return;
+            }
+            m_CharacterClick = m_CharacterHit.schedule.Execute(() =>
+            {
+                m_CharacterClick = null;
+                OpenCharacterPreview();
+            }).StartingIn(CharacterDoubleClickMilliseconds);
+        }
+
+        private void CancelCharacterClick()
+        {
+            m_CharacterClick?.Pause();
+            m_CharacterClick = null;
         }
 
         public void OpenCharacterPreview() => OpenPreview(false);

@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client
 {
-    // Only the lobby owns these tracks. Gameplay and the individual portraits
-    // keep their existing animation graph and equipment gestures.
+    // The squad and home reactions sample the same authored upper-body poses.
     internal sealed class SquadBakedMotions
     {
         [Serializable] private sealed class Motion
@@ -37,7 +36,7 @@ namespace Unity.MP_FPS.Client
         {
             public SkinnedMeshRenderer Renderer;
             public int Index, Kind;
-            public float Weight;
+            public float Weight, Baseline;
         }
 
         public SquadBakedMotions(Animator animator, int character)
@@ -78,7 +77,8 @@ namespace Unity.MP_FPS.Client
                 foreach (var entry in new[] { ("まばたき", 0), ("口角上げ", 1), ("笑い", 2), ("困る", 3), ("真面目", 4), ("ウィンク", 5), ("ω", 6) })
                 {
                     int index = mesh.GetBlendShapeIndex(entry.Item1);
-                    if (index >= 0) m_Expressions.Add(new Expression { Renderer = renderer, Index = index, Kind = entry.Item2 });
+                    if (index >= 0) m_Expressions.Add(new Expression { Renderer = renderer, Index = index, Kind = entry.Item2,
+                        Baseline = renderer.GetBlendShapeWeight(index) });
                 }
             }
         }
@@ -88,7 +88,13 @@ namespace Unity.MP_FPS.Client
             for (int i = 0; i < m_Bones.Length; i++) m_Bones[i].localRotation = m_Bind[i];
         }
 
-        public void Apply(int pose, double time, float dt, bool settle)
+        public void RestoreExpressions()
+        {
+            foreach (var expression in m_Expressions)
+                expression.Renderer.SetBlendShapeWeight(expression.Index, expression.Baseline);
+        }
+
+        public void Apply(int pose, double time, float dt, bool settle, float overlay = 1)
         {
             pose = Mathf.Clamp(pose, 0, 3);
             if (pose != m_Pose)
@@ -107,7 +113,8 @@ namespace Unity.MP_FPS.Client
             {
                 var q = Quaternion.Slerp(Read(motion.rotations, a * stride + i * 4), Read(motion.rotations, b * stride + i * 4), frame - a);
                 m_Current[i] = Quaternion.Slerp(m_From[i], q, blend);
-                m_Bones[i].localRotation = m_Current[i];
+                m_Bones[i].localRotation = overlay >= 1
+                    ? m_Current[i] : Quaternion.Slerp(m_Bones[i].localRotation, m_Current[i], overlay);
             }
             float blink = settle ? 0 : Mathf.Clamp01(1 - Mathf.Abs(phase - .82f) / .035f) * 90;
             float expressionBlend = settle ? 1 : 1 - Mathf.Exp(-dt * 14);
@@ -126,7 +133,7 @@ namespace Unity.MP_FPS.Client
                     _ => 0
                 };
                 e.Weight = Mathf.Lerp(e.Weight, target, expressionBlend);
-                e.Renderer.SetBlendShapeWeight(e.Index, e.Weight);
+                e.Renderer.SetBlendShapeWeight(e.Index, Mathf.Lerp(e.Baseline, e.Weight, overlay));
                 m_Expressions[i] = e;
             }
         }

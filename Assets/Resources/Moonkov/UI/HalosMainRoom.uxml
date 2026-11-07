@@ -5,7 +5,7 @@
                 <ui:VisualElement name="halosRoomWorld" class="halos-room-world">
                     <ui:VisualElement name="halosRoomCharacter" class="halos-room-character" picking-mode="Ignore">
                         <ui:Image name="halosRoomPortrait" class="halos-room-portrait" picking-mode="Ignore" />
-                        <ui:Button name="halosRoomInspectCharacter" class="halos-room-hit halos-character-hit" tooltip="角色预览" />
+                        <ui:Button name="halosRoomInspectCharacter" class="halos-room-hit halos-character-hit" tooltip="单击预览 / 双击互动" />
                     </ui:VisualElement>
                     <ui:Button name="halosRoomInspectMoon" class="halos-room-hit halos-moon-hit" tooltip="月球预览" />
                 </ui:VisualElement>

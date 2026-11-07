@@ -194,10 +194,11 @@ public sealed class HalosMainRoomReview : EditorWindow
                 "home render target uses high resolution within 1536 pixels");
             Require(root.panel.Pick(root.Q<Button>("halosRoomPage4").worldBound.center) == root.Q<Button>("halosRoomPage4"),
                 "actor and moon hit areas preserve the original monitor controls");
-            Press(root.Q<Button>("halosRoomInspectCharacter"));
+            CheckHomeReactions(root, model);
+            Click(root.Q<Button>("halosRoomInspectCharacter"));
             await Until(() => root.Q<Image>("halosSubjectArt")?.image != null);
             Require(m_Isolated.IsPreviewOpen && home.image == null && !homeScene.isLoaded,
-                "character click opens its own view and releases the home stage");
+                "single character click opens its own view and releases the home stage");
             var art = root.Q<Image>("halosSubjectArt");
             var camera = CameraFor("Menu portrait camera"); var scene = camera.scene;
             model = scene.GetRootGameObjects().Single().GetComponentInChildren<Animator>().transform;
@@ -247,6 +248,55 @@ public sealed class HalosMainRoomReview : EditorWindow
             m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0);
             rootVisualElement.AddToClassList(TerminalMotion.LiveEditorPreviewClass);
         }
+    }
+
+    private void CheckHomeReactions(VisualElement root, Transform model)
+    {
+        var hit = root.Q<Button>("halosRoomInspectCharacter");
+        var view = (MenuCharacterView)typeof(HalosMainRoom).GetField("m_HomeCharacter",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(m_Isolated);
+        var inventory = Unity.MP_FPS.Inventory.InventoryGraph.Create(false, false);
+        inventory.Items.Add(new Unity.MP_FPS.Inventory.InventoryItem {
+            Id = "home-reaction-fixture", Code = "rifle", Parent = Unity.MP_FPS.Inventory.InventoryCatalog.Equipment,
+            Region = "Primary", LoadedAmmo = 7
+        });
+        m_Isolated.PresentEquipment(inventory);
+        uint weapon = view.PreviewWeaponId;
+        int ammo = view.PreviewLoadedAmmo;
+        var stage = model.root;
+        var sniper = stage.GetComponentInChildren<Unity.MP_FPS.DollSinger.SniperHaloVisual>(true);
+        var discharge = stage.GetComponentInChildren<Unity.MP_FPS.DollSinger.HaloDischargeVisual>(true);
+        var hand = model.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.RightHand);
+        Vector3 heartHand = default;
+        bool reduced = HalosTerminalBackdrop.PrefersReducedMotion;
+        for (int reaction = 0; reaction < 3; reaction++)
+        {
+            Click(hit);
+            Require(!m_Isolated.IsPreviewOpen, "first click leaves time for a second click");
+            Click(hit);
+            int sampleFrames = reduced ? 8 : 13;
+            for (int frame = 0; frame < sampleFrames; frame++) view.Advance(.1f);
+            Require(!m_Isolated.IsPreviewOpen && model.forward.z > .8f,
+                "double-click turns the foreground character toward the player");
+            if (reaction == 0) heartHand = model.InverseTransformPoint(hand.position);
+            if (reaction == 1) Require(Vector3.Distance(heartHand, model.InverseTransformPoint(hand.position)) > .04f,
+                "heart and cat reactions use distinct poses");
+            if (reaction == 2)
+                Require(sniper && sniper.gameObject.activeInHierarchy && discharge && (reduced ? discharge.Flash == 0 : discharge.Flash > 0),
+                    "sniper reaction uses one staged discharge");
+            for (int frame = sampleFrames; frame < 27; frame++) view.Advance(.1f);
+            Require(model.forward.z < -.7f && view.PreviewWeaponId == weapon && view.PreviewLoadedAmmo == ammo,
+                "reaction returns to the Moon-facing idle with the same loadout");
+        }
+    }
+
+    private static void Click(Button button)
+    {
+        var center = button.worldBound.center;
+        using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = center }))
+            button.SendEvent(down);
+        using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = center }))
+            button.SendEvent(up);
     }
     private async void RunSlideChecks()
     {
