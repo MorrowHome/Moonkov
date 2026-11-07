@@ -81,6 +81,10 @@ namespace Unity.MP_FPS.Client
             Root.RegisterCallback<GeometryChangedEvent>(Resize);
             Root.RegisterCallback<KeyDownEvent>(KeyDown);
             Root.RegisterCallback<DetachFromPanelEvent>(Detached);
+            m_Owner.RegisterCallback<PointerDownEvent>(PointerFocus, TrickleDown.TrickleDown);
+            m_Owner.RegisterCallback<KeyDownEvent>(NavigationFocus, TrickleDown.TrickleDown);
+            m_Owner.RegisterCallback<NavigationMoveEvent>(NavigationFocus, TrickleDown.TrickleDown);
+            m_Owner.RegisterCallback<NavigationSubmitEvent>(NavigationFocus, TrickleDown.TrickleDown);
             Root.RegisterCallback<PointerMoveEvent>(TrackParallax);
             Root.RegisterCallback<PointerLeaveEvent>(LeaveParallax);
             m_LastTime = TerminalMotion.Now;
@@ -143,6 +147,8 @@ namespace Unity.MP_FPS.Client
             m_Edge = direction;
             MoveRoom(direction);
         }
+        private void PointerFocus(PointerDownEvent evt) => Root.RemoveFromClassList("halos-keyboard-focus");
+        private void NavigationFocus(EventBase evt) => Root.AddToClassList("halos-keyboard-focus");
         private void KeyDown(KeyDownEvent evt)
         {
             if (IsPreviewOpen)
@@ -246,6 +252,10 @@ namespace Unity.MP_FPS.Client
             m_Disposed = true; m_Opened = null; m_Timer.Pause();
             ClosePreview(false); ReleaseHomeCharacter();
             m_CharacterHit.clickable.clickedWithEventInfo -= CharacterClicked;
+            m_Owner.UnregisterCallback<PointerDownEvent>(PointerFocus, TrickleDown.TrickleDown);
+            m_Owner.UnregisterCallback<KeyDownEvent>(NavigationFocus, TrickleDown.TrickleDown);
+            m_Owner.UnregisterCallback<NavigationMoveEvent>(NavigationFocus, TrickleDown.TrickleDown);
+            m_Owner.UnregisterCallback<NavigationSubmitEvent>(NavigationFocus, TrickleDown.TrickleDown);
             Root.UnregisterCallback<GeometryChangedEvent>(Resize); Root.UnregisterCallback<KeyDownEvent>(KeyDown);
             Root.UnregisterCallback<DetachFromPanelEvent>(Detached); Root.RemoveFromHierarchy();
             Root.UnregisterCallback<PointerMoveEvent>(TrackParallax); Root.UnregisterCallback<PointerLeaveEvent>(LeaveParallax);

@@ -40,7 +40,7 @@
 }
 #halosOriginalHome .halos-room-hit:hover,
 #halosOriginalHome .halos-room-hit:active { background-color: transparent; }
-#halosOriginalHome .halos-room-hit:focus { border-width: 2px; border-color: #dce7f2; }
+#halosOriginalHome.halos-keyboard-focus .halos-room-hit:focus { border-width: 2px; border-color: #dce7f2; }
 .halos-room-edge { position: absolute; top: 0; bottom: 0; width: 200px; }
 .halos-room-left { left: 0; }
 .halos-room-right { right: 0; }
