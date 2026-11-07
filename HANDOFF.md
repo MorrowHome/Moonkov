@@ -1,5 +1,11 @@
 # 项目交接
 
+## 高延迟时持续回退（2026-11-08）
+
+- 用户在 `v26.11.07.4` 的三台 Windows 打包版、P2P 直连局中遇到高 Ping 和持续位置回退。不是单纯的画面卡顿。公网 RTT 为何升高仍待故障时的客户端和服务器记录确认。
+- `ClientInputSenderSystem` 必须按 `NetworkTime.InputTargetTick` 收集操作。NetCode 6.5 默认将预测窗口限在 500 毫秒；高延迟时，输入时刻会领先于 `ServerTick`。旧代码仍使用后者，发出的指令因而落后。不能靠扩大预测窗口或缓存掩盖这个时刻错误。
+- `Tools/Validation/InputTickReview.cs` 在单 Editor 的隔离客户端 World 中调用真实输入系统。修改前 88 项中有 20 项失败；修改后全部通过。覆盖高延迟、同一 tick 连续输入、单次开火保留、延迟变化、Host 空帧和无效时钟。Unity 编译为 0 错误、0 警告。未启动网络、进入 Play 或重打包；这项修复不代表公网 Ping 已降低，Windows 三机回归仍待验收。
+
 ## Fork 恢复 Git stash
 
 - Fork 恢复 stash 时可能执行 `git stash pop --index`。如果新增文件已随 `develop` 合入，恢复暂存区会报 `already exists in index`。文件多时，Fork 可能卡住。先在 Activity Manager 取消对应任务，再确认 Git 进程退出和索引锁释放。

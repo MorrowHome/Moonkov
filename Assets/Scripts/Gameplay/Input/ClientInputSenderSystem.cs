@@ -16,7 +16,9 @@ public partial class ClientInputSenderSystem : SystemBase
     protected override void OnUpdate()
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        var tick = networkTime.ServerTick;
+        // Above the prediction window, NetCode delays local playback but still
+        // needs commands for the future input tick so they reach the server on time.
+        var tick = networkTime.InputTargetTick;
 
         if (tick.IsValid)
         {
