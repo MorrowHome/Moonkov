@@ -21,7 +21,9 @@ namespace Unity.MP_FPS
                 var inventory=GetRaidInventory(ref state,entity);
                 bool recover=session.ValueRO.Phase==RaidPhase.Active && (!health.ValueRO.ClashEnabled || health.ValueRO.ClashCanAct);
                 EnergyShieldEquipment.Tick(ref health.ValueRW,inventory.Graph,SystemAPI.Time.DeltaTime,recover);
-                if(send && (health.ValueRO.ShieldEquipped || health.ValueRO.HeadDomeEquipped))inventory.LastSentVersion=-1;
+                // Halo energy already travels in the Ghost. Inventory only needs
+                // another snapshot when the collar's displayed oxygen changes.
+                if(send && inventory.ProtectionDisplayChanged)inventory.LastSentVersion=-1;
             }
             // NPCs have no connection/RaidSession. Their halos share the player
             // recovery rule; ordinary PMC life support is updated separately below.

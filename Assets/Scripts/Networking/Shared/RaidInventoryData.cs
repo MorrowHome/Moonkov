@@ -155,6 +155,25 @@ namespace Unity.MP_FPS
         public int RaidId;
         public int MissionFirstsBefore, MissionFirstsSaved;
         public int LastSentVersion = -1;
+        private string m_SentHeadDomeItem;
+        private int m_SentOxygenPercent = -2;
+        // Item details show whole percentages. The live HUD already reads the
+        // precise Ghost oxygen, so sub-percent changes need no full inventory RPC.
+        public bool ProtectionDisplayChanged
+        {
+            get
+            {
+                var dome = Graph?.Equipped("Helmet");
+                return EnergyShieldEquipment.IsHeadDome(dome?.Code) &&
+                    (dome.Id != m_SentHeadDomeItem || UnityEngine.Mathf.RoundToInt(dome.SuitOxygen) != m_SentOxygenPercent);
+            }
+        }
+        public void RecordProtectionSnapshot()
+        {
+            var dome = Graph?.Equipped("Helmet");
+            m_SentHeadDomeItem = dome?.Id;
+            m_SentOxygenPercent = dome == null ? -2 : UnityEngine.Mathf.RoundToInt(dome.SuitOxygen);
+        }
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int OpenedLootId=-1, LastSentLootVersion=-1;

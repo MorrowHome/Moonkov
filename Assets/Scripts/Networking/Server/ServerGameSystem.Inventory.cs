@@ -254,6 +254,7 @@ namespace Unity.MP_FPS
                     return new RaidSearchFootprint {Id=item.Id,Region=item.Region,X=item.X,Y=item.Y,
                         Width=item.Rotated ? definition.Height : definition.Width,Height=item.Rotated ? definition.Width : definition.Height};
                 }).ToList(),searchTotal<0 ? 0 : inventory.SearchSecondsPerItem);
+            inventory.RecordProtectionSnapshot();
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)
