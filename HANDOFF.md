@@ -1,5 +1,10 @@
 # 项目交接
 
+## Fork 恢复 Git stash
+
+- Fork 恢复 stash 时可能执行 `git stash pop --index`。如果新增文件已随 `develop` 合入，恢复暂存区会报 `already exists in index`。文件多时，Fork 可能卡住。先在 Activity Manager 取消对应任务，再确认 Git 进程退出和索引锁释放。
+- 先检查 `git status`。逐个对比 stash 的暂存区、工作区和未跟踪文件。内容已在当前分支且工作区相符时，无需重复应用。仍有改动要取回时，先检查路径是否和本地改动重叠，再用 `git stash apply <哈希>` 保留备份。
+
 ## 研究站任务道具（2026-11-07）
 
 - 信息平板、U 盘和移动硬盘存放在 [美术源目录](SourceData/Models/ResearchStationProps/README.md)，暂未接入游戏。Blender 源文件包含可编辑零件和预览场景。独立 GLB 内嵌贴图，单位为米。三件均通过网格与导入检查。
