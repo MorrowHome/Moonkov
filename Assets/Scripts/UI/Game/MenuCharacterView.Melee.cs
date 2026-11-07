@@ -38,8 +38,11 @@ namespace Unity.MP_FPS.Client
             if (m_EquipmentMelee == null) return;
             // Without an attack direction, the idle pose uses the model's current facing.
             // A world-space direction captured here would stay fixed while the portrait turns.
-            m_EquipmentMelee.SetPresentation(new MeleeViewState { Weapon = m_SharedStage == null ? PreviewMeleeWeapon : MeleeWeaponKind.None,
-                Alive = true });
+            m_EquipmentMelee.SetPresentation(new MeleeViewState
+            {
+                Weapon = m_SharedStage == null && !m_HomePose ? PreviewMeleeWeapon : MeleeWeaponKind.None,
+                Alive = true
+            });
         }
     }
 }
