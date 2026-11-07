@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     // Port of Halos mainRoomControl. Coordinates, phases and rates use its 1920x1080 / 60 Hz space.
-    public sealed class HalosMainRoom : IDisposable
+    public sealed partial class HalosMainRoom : IDisposable
     {
         [Serializable] private sealed class Layout { public Icon[] icons; }
         [Serializable] private sealed class Icon
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS.Client
         }
         private const string ArtPath = "Moonkov/UI/Halos/MainRoom/";
         private static readonly string[] PageNames = { "SHIP", "STASH", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
-        private readonly VisualElement m_Viewport, m_World, m_Left, m_Right;
+        private readonly VisualElement m_Owner, m_Viewport, m_World, m_Left, m_Right;
         private readonly Image m_Tablet;
         private readonly List<Monitor> m_Monitors = new List<Monitor>();
         private readonly Image[] m_Lights = new Image[3];
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS.Client
 
         public HalosMainRoom(VisualElement parent, Action<int> navigate)
         {
-            m_Navigate = navigate;
+            m_Navigate = navigate; m_Owner = parent;
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/HalosMainRoom").CloneTree();
             Root = tree.Q("halosOriginalHome"); Root.RemoveFromHierarchy(); parent.Insert(1, Root);
             m_Viewport = Root.Q("halosRoomViewport"); m_World = Root.Q("halosRoomWorld");
@@ -59,6 +59,7 @@ namespace Unity.MP_FPS.Client
             for (int i = 0; i < 3; i++) Sprite(m_World, "Room" + i, new Rect(i * 1920, 0, 1920, 1080));
             for (int i = 0; i < 3; i++)
                 m_Lights[i] = Sprite(m_World, "Lights" + i, new Rect(i * 1920, 0, i == 2 ? 1880 : 1920, 1080));
+            InitializeSubjects();
             var layout = JsonUtility.FromJson<Layout>(Resources.Load<TextAsset>(ArtPath + "Layout").text);
             foreach (var art in layout.icons)
             {
@@ -96,6 +97,7 @@ namespace Unity.MP_FPS.Client
         public void Present(bool busy) { m_Busy = busy; UpdateInput(); }
         public void Show(bool returning)
         {
+            ClosePreview(false);
             m_Visible = true; m_Opened = null; m_Edge = 0;
             Root.style.display = DisplayStyle.Flex;
             if (returning) m_TabletState = 100;
@@ -104,18 +106,19 @@ namespace Unity.MP_FPS.Client
         }
         public void Hide()
         {
+            ClosePreview(false); ReleaseHomeCharacter();
             m_Visible = false; m_Opened = null; m_Edge = 0;
             m_Timer.Pause(); Root.style.display = DisplayStyle.None;
         }
         public void Open(int page)
         {
-            if (!m_Visible || m_Disposed || m_Busy || IsOpening || m_TabletState > 0) return;
+            if (!m_Visible || m_Disposed || m_Busy || IsPreviewOpen || IsOpening || m_TabletState > 0) return;
             if (!Animate) { m_Navigate(page); return; }
             m_Opened = () => m_Navigate(page); m_Edge = 0; UpdateInput();
         }
         public void MoveRoom(int direction)
         {
-            if (!m_Visible || IsOpening || m_TabletState > 0 || m_Cooldown > 0) return;
+            if (!m_Visible || m_Disposed || IsPreviewOpen || IsOpening || m_TabletState > 0 || m_Cooldown > 0) return;
             int next = Mathf.Clamp(Room + direction, 0, 2);
             if (next == Room) return;
             Room = next; m_Cooldown = Animate ? 60 : 0; m_Extrude = 0;
@@ -132,10 +135,19 @@ namespace Unity.MP_FPS.Client
         }
         private void KeyDown(KeyDownEvent evt)
         {
+            if (IsPreviewOpen)
+            {
+                if (evt.keyCode == KeyCode.Escape) { ClosePreview(); evt.StopImmediatePropagation(); }
+                return;
+            }
             if (evt.keyCode == KeyCode.LeftArrow) { Left(); evt.StopPropagation(); }
             else if (evt.keyCode == KeyCode.RightArrow) { Right(); evt.StopPropagation(); }
         }
-        private void Detached(DetachFromPanelEvent evt) { m_Opened = null; m_Edge = 0; }
+        private void Detached(DetachFromPanelEvent evt)
+        {
+            if (evt.target != Root) return;
+            m_Opened = null; m_Edge = 0; ClosePreview(false); ReleaseHomeCharacter();
+        }
         private void Resize(GeometryChangedEvent evt)
         {
             float scale = Mathf.Min(Root.contentRect.width / 1920, Root.contentRect.height / 1080);
@@ -152,8 +164,9 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None)
                 {
                     if (IsOpening) { m_Opened = null; m_TabletState = 0; }
-                    m_Edge = 0; return;
+                    m_Edge = 0; ClosePreview(false); ReleaseHomeCharacter(); return;
                 }
+            if (IsPreviewOpen) return;
             bool animate = Animate;
             if (!animate) { m_Camera = Room * 1920; m_TabletState = IsOpening ? 100 : 0; }
             else
@@ -195,10 +208,11 @@ namespace Unity.MP_FPS.Client
                 m_TabletState >= 15 ? 270 : 270 + (15 - m_TabletState) * 85;
             m_Tablet.style.scale = new Scale(new Vector3(scale, scale, 1)); m_Tablet.style.translate = new Translate(0, y);
             UpdateInput();
+            UpdateHomeCharacter();
         }
         private void UpdateInput()
         {
-            bool ready = m_TabletState == 0 && !IsOpening;
+            bool ready = m_TabletState == 0 && !IsOpening && !IsPreviewOpen;
             m_Left.style.display = Room > 0 && ready ? DisplayStyle.Flex : DisplayStyle.None;
             m_Right.style.display = Room < 2 && ready ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var monitor in m_Monitors)
@@ -206,11 +220,13 @@ namespace Unity.MP_FPS.Client
                 monitor.Button.style.display = monitor.Art.room == Room && ready ? DisplayStyle.Flex : DisplayStyle.None;
                 monitor.Button.SetEnabled(!m_Busy);
             }
+            UpdateSubjectInput(ready && Room == 1 && !m_Busy);
         }
         public void Dispose()
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Opened = null; m_Timer.Pause();
+            ClosePreview(false); ReleaseHomeCharacter();
             Root.UnregisterCallback<GeometryChangedEvent>(Resize); Root.UnregisterCallback<KeyDownEvent>(KeyDown);
             Root.UnregisterCallback<DetachFromPanelEvent>(Detached); Root.RemoveFromHierarchy();
         }

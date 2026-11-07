@@ -36,6 +36,7 @@ namespace Unity.MP_FPS.Client
         private MenuCharacterSettings m_Settings;
         private readonly GameSettings m_GameSettings;
         private readonly bool m_IdleOnly;
+        private readonly bool m_HomePose;
         private readonly Transform m_SharedStage;
         private Animator m_Animator;
         public event Action FrameRendered;
@@ -77,14 +78,15 @@ namespace Unity.MP_FPS.Client
         public float InspectionYaw => m_InspectionYaw;
         public float Zoom { get; private set; } = 1;
 
-        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null, Transform sharedStage = null)
+        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null, Transform sharedStage = null, bool homePose = false)
         {
-            m_IdleOnly = idleOnly;
+            m_IdleOnly = idleOnly || homePose;
+            m_HomePose = homePose;
             m_SharedStage = sharedStage;
             Element = element ?? new Image();
-            Element.pickingMode = PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
+            Element.pickingMode = homePose ? PickingMode.Ignore : PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
-            Element.tooltip = MoonkovLocalization.Text("左键拖动旋转 · 滚轮缩放");
+            Element.tooltip = homePose ? string.Empty : MoonkovLocalization.Text("拖动旋转 / 滚轮缩放");
             Element.RegisterCallback<PointerDownEvent>(BeginInspect);
             Element.RegisterCallback<PointerMoveEvent>(Inspect);
             Element.RegisterCallback<PointerUpEvent>(EndInspect);
@@ -125,7 +127,7 @@ namespace Unity.MP_FPS.Client
         {
             // Only a press on the portrait starts inspection. Buttons/items layered
             // above it retain their own event target and pointer capture.
-            if (m_Disposed || m_DragPointer >= 0 || evt.target != Element ||
+            if (m_Disposed || m_HomePose || m_DragPointer >= 0 || evt.target != Element ||
                 evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0) return;
             m_DragPointer = evt.pointerId;
             m_DragPosition = Element.WorldToLocal(evt.position);
@@ -147,7 +149,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ZoomInspect(WheelEvent evt)
         {
-            if (m_Disposed || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0) return;
+            if (m_Disposed || m_HomePose || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0) return;
             Zoom = Mathf.Clamp(Zoom * Mathf.Exp(-Mathf.Clamp(evt.delta.y, -40, 40) * .08f), .65f, 3f);
             m_ViewDirty = true;
             evt.StopPropagation();
@@ -170,8 +172,13 @@ namespace Unity.MP_FPS.Client
         private void ApplyOrientation()
         {
             if (m_Model != null)
-                m_Model.transform.localRotation = Quaternion.Euler(0, m_Settings.Yaw +
+                m_Model.transform.localRotation = Quaternion.Euler(0, m_HomePose ? 150 : m_Settings.Yaw +
                     (m_Inspected ? m_InspectionYaw : m_PoseTurn), 0);
+        }
+
+        public void ResetInspection()
+        {
+            StopInspect(); m_InspectionYaw = 0; m_Inspected = false; Zoom = 1; m_ViewDirty = true;
         }
 
         private void CreateStage()
@@ -269,8 +276,10 @@ namespace Unity.MP_FPS.Client
             data.renderShadows = true;
             // Apply in both editor and player: a camera must never draw a second UI stage.
             m_Camera.scene = m_Scene;
-            Light("Soft key", new Vector3(24, 145, 0), new Color(1f, .97f, .94f), 1.25f, true);
-            Light("Cool fill", new Vector3(8, -135, 0), new Color(.82f, .89f, 1f), .5f, false);
+            Light("Soft key", new Vector3(24, 145, 0), new Color(1f, .97f, .94f), m_HomePose ? .7f : 1.25f, true);
+            Light("Cool fill", new Vector3(8, -135, 0), new Color(.82f, .89f, 1f), m_HomePose ? .3f : .5f, false);
+            if (m_HomePose) Light("Window rim", new Vector3(18, -40, 0), new Color(.75f, .82f, 1), .9f, false);
+            m_ViewDirty = true;
         }
 
         private GameObject Child(string name)
@@ -359,7 +368,7 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
             if (!visible) { ReleaseStage(); return; }
             if (m_Camera == null) CreateStage();
-            if(!TerminalMotion.Animate(Element))
+            if(!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion)
             {
                 var size=Element.contentRect.size;
                 if(m_Target==null || size!=m_EditorViewport || m_ViewDirty)
@@ -425,6 +434,9 @@ namespace Unity.MP_FPS.Client
             ApplyWeaponGesture(dt);
             m_EquipmentMelee?.SamplePreviewIdle();
             ApplySquadPose(dt);
+            if (m_HomePose && m_Head != null)
+                m_Head.rotation = Quaternion.AngleAxis(-20, Vector3.up) *
+                    Quaternion.AngleAxis(-10, m_Model.transform.right) * m_Head.rotation;
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
             SampleEquipmentVisuals(dt);
@@ -505,9 +517,10 @@ namespace Unity.MP_FPS.Client
             if (m_Disposed || m_Camera == null) return;
             float width = viewport.x, height = viewport.y;
             if (!float.IsFinite(width) || !float.IsFinite(height) || width < 2 || height < 2) return;
-            float scale = Mathf.Min(m_Settings.ResolutionScale, m_Settings.MaximumResolution / Mathf.Max(width, height));
-            int w = Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16);
-            int h = Mathf.Max(16, Mathf.CeilToInt(height * scale / 16f) * 16);
+            int maximum = m_HomePose ? Mathf.Min(1536, m_Settings.MaximumResolution) : m_Settings.MaximumResolution;
+            float scale = Mathf.Min(m_Settings.ResolutionScale, maximum / Mathf.Max(width, height));
+            int w = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16));
+            int h = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(height * scale / 16f) * 16));
             if (m_Target == null || m_Target.width != w || m_Target.height != h)
             {
                 ReleaseTarget();
@@ -522,7 +535,18 @@ namespace Unity.MP_FPS.Client
                 m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
             m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
             var focus = m_Bounds.center;
-            if (m_Head != null && Zoom > 1)
+            if (m_HomePose && m_Head != null)
+            {
+                // A foreground observer is framed from the waist up. Full-body bounds
+                // would put the feet on the illustrated desk and flatten the room's depth.
+                var hips = m_Animator.GetBoneTransform(HumanBodyBones.Hips);
+                float torso = m_Head.position.y - hips.position.y;
+                float top = m_Head.position.y + torso * 1.15f;
+                float bottom = hips.position.y - torso * .1f;
+                focus.y = (top + bottom) * .5f;
+                distance = (top - bottom) * .5f / verticalTangent + torso * .25f;
+            }
+            else if (m_Head != null && Zoom > 1)
             {
                 var face = m_Head.position + Vector3.up * m_FaceHeightOffset;
                 face.z = focus.z;
