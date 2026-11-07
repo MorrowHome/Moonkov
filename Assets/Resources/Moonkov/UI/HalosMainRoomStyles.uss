@@ -1,0 +1,45 @@
+/* Source artwork owns the composition. No replacement room, cards or recolouring. */
+#stashScreen.halos-original-home.terminal-is-ship {
+    padding: 0;
+    background-color: #000000;
+    background-image: none;
+}
+#stashScreen.halos-original-home.terminal-is-ship > .terminal-scene-shade,
+#stashScreen.halos-original-home.terminal-is-ship > .terminal-chrome,
+#stashScreen.halos-original-home.terminal-is-ship > #terminalNav,
+#stashScreen.halos-original-home.terminal-is-ship > #terminalContent,
+#stashScreen.halos-original-home.terminal-is-ship > .stash-footer { display: none; }
+#stashScreen.halos-original-home.terminal-is-ship > .stash-header {
+    position: absolute; top: 16px; right: 18px; left: auto;
+    height: auto; min-height: 0; padding: 0; margin: 0;
+    background-color: transparent; border-width: 0;
+}
+#stashScreen.halos-original-home.terminal-is-ship .stash-brand,
+#stashScreen.halos-original-home.terminal-is-ship .stash-page-heading,
+#stashScreen.halos-original-home.terminal-is-ship .stash-account { display: none; }
+#stashScreen.halos-original-home.terminal-is-ship .stash-menu-actions { margin: 0; }
+#stashScreen.halos-original-home.terminal-is-ship .stash-menu-actions Button { font-size: 12px; }
+.halos-original-room {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    overflow: hidden; background-color: #000000;
+}
+.halos-room-viewport {
+    position: absolute; width: 1920px; height: 1080px;
+    transform-origin: 0 0; overflow: hidden;
+}
+.halos-room-world { position: absolute; left: 0; top: 0; width: 5760px; height: 1080px; }
+.halos-room-sprite { position: absolute; }
+.halos-room-tablet, .halos-room-arrow {
+    position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+    transform-origin: 50% 50%;
+}
+.halos-room-arrow-left { scale: -1 1; }
+#halosOriginalHome .halos-room-hit {
+    position: absolute; padding: 0; margin: 0; border-width: 0; border-radius: 0;
+    background-color: transparent; background-image: none; opacity: 1;
+}
+#halosOriginalHome .halos-room-hit:hover,
+#halosOriginalHome .halos-room-hit:active { background-color: transparent; }
+#halosOriginalHome .halos-room-hit:focus { border-width: 2px; border-color: #dce7f2; }
+.halos-room-left { left: 0; top: 350px; width: 200px; height: 350px; }
+.halos-room-right { left: 1720px; top: 350px; width: 200px; height: 350px; }

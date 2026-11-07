@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.Client
         private readonly List<Button> m_Tabs = new List<Button>();
         private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly TerminalWindows m_Windows;
+        private readonly HalosMainRoom m_Home;
         private MenuCharacterView m_Character;
         private Inventory.InventoryGraph m_EquipmentInventory;
         private int m_Page;
@@ -53,6 +54,8 @@ namespace Unity.MP_FPS.Client
             if (loadoutStyle != null && !root.styleSheets.Contains(loadoutStyle)) root.styleSheets.Add(loadoutStyle);
             root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/ProposalSystem"));
             root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/OperationProposal"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HalosMainRoomStyles"));
+            root.AddToClassList("halos-original-home");
             ApplyHomeTheme();
             root.focusable = true;
             m_Title = root.Q<Label>(className: "stash-page-title");
@@ -84,6 +87,7 @@ namespace Unity.MP_FPS.Client
             m_Chrome = new TerminalChrome(); root.Add(m_Chrome);
             m_Shade = new LunarBackdrop(BackdropMode.Ship, root); m_Shade.AddToClassList("terminal-scene-shade"); root.Insert(0, m_Shade);
             m_Windows = new TerminalWindows(root, () => Navigate(0));
+            m_Home = new HalosMainRoom(root, Navigate);
             Navigate(0); m_Ready = true;
             m_Tutorial = new TutorialMenuView(root, Navigate);
         }
@@ -97,6 +101,9 @@ namespace Unity.MP_FPS.Client
         {
             Navigating?.Invoke(); DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
+            bool roomTransition = page == 0 || m_Page == 0;
+            if (page == 0) m_Home.Show(m_Page != 0);
+            else m_Home.Hide();
             if (page == 4 && m_Page != 4) m_OperationStep = 0;
             m_Page = page; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
@@ -108,7 +115,7 @@ namespace Unity.MP_FPS.Client
                 m_Tabs[i].Q<ArchiveCardFrame>()?.MarkDirtyRepaint();
             }
             m_Gear.style.display = page == 1 ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Content.style.display = page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
+            m_Content.style.display = page == 0 || page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Shade.Mode = page == 0 ? BackdropMode.Ship : BackdropMode.Page;
             MoonkovLocalization.Set(m_Title, m_Pages[page]);
             if (page == 1) MoonkovLocalization.Set(m_Subtitle, "EQUIPMENT / PERSONAL STORAGE");
@@ -116,7 +123,7 @@ namespace Unity.MP_FPS.Client
             if (moved)
             {
                 TerminalMotion.Scramble(m_Title, .12f, .5f); TerminalMotion.Reveal(m_Subtitle, .18f, 24, 0, .5f);
-                if (m_Ready) TerminalMotion.Wipe(m_Root, (page + 1).ToString("00") + "  //  " + m_Pages[page]);
+                if (m_Ready && !roomTransition) TerminalMotion.Wipe(m_Root, (page + 1).ToString("00") + "  //  " + m_Pages[page]);
             }
             m_IndicatorTimer?.Pause();
             m_IndicatorTimer = m_Nav.schedule.Execute(() => MoveIndicator(true));
@@ -178,49 +185,7 @@ namespace Unity.MP_FPS.Client
 
         private void Ship()
         {
-            TerminalLayout.Populate(m_Content, "Ship");
-            // The wordmark is a fixed Latin brand, while functional text keeps the locale font.
-            var wordmark = m_Content.Q<Label>(className: "terminal-home-title");
-            wordmark.style.unityFontDefinition = StyleKeyword.Null;
-            wordmark.style.letterSpacing = StyleKeyword.Null;
-            var theme = m_Content.Q<Button>("homeTheme");
-            // The user selected a game-wide dark direction; retire the light variant switch.
-            theme.style.display = DisplayStyle.None;
-            m_Content.Q<Button>("homeObserve").clicked += m_Shade.OpenObserver;
-            m_Character = new MenuCharacterView(element: m_Content.Q<Image>("characterView"));
-            m_Character.SetEquipmentInventory(m_EquipmentInventory);
-            TerminalMotion.Reveal(m_Character.Element, .05f, -60, 0, 1.1f);
-            var hero = m_Content.Q<VisualElement>(className: "terminal-home-hero");
-            TerminalMotion.Cascade(hero, .25f, .09f, -40, 0);
-            TerminalMotion.Scramble(hero.Q<Label>(className: "terminal-home-title"), .35f, .9f);
-            var deploy = m_Content.Q<Button>("homeAction0"); deploy.clicked += Prepare; deploy.SetEnabled(!m_Busy);
-            m_Content.Q<Button>("homeAction1").clicked += () => Navigate(1);
-            m_Content.Q<Button>("homeAction2").clicked += () => Navigate(2);
-            m_Content.Q<Button>("homeAction3").clicked += () => Navigate(8);
-            int[] pages = { 3, 5, 6, 7 };
-            for (int i = 0; i < pages.Length; i++)
-            {
-                int page = pages[i]; m_Content.Q<Button>("homeChip" + i).clicked += () => Navigate(page);
-            }
-            int[] resources = { m_Dust, m_Alloy, m_Cells };
-            for (int i = 0; i < resources.Length; i++)
-                TerminalMotion.CountUp(m_Content.Q<Label>("resourceValue" + i), resources[i], "{0:N0}", .7f + i * .1f, 1.4f);
-            UpdateHomeMenuSize();
-            var menu = m_Content.Q<VisualElement>(className: "terminal-home-menu");
-            float delay = .35f;
-            foreach (var child in menu.Children())
-            {
-                if (child.ClassListContains("terminal-row")) delay = TerminalMotion.Cascade(child, delay, .06f, 40, 0);
-                else { TerminalMotion.Reveal(child, delay, 60, 0, .7f); delay += .08f; }
-            }
-            var card = m_Content.Q<VisualElement>(className: "terminal-home-operator-card");
-            card.Q<Label>(className: "terminal-home-player").text = string.IsNullOrEmpty(m_Player) ? "UNREGISTERED CREW" : m_Player.ToUpperInvariant();
-            var state = card.Q<Label>(className: "terminal-positive");
-            MoonkovLocalization.Set(state, m_Busy ? "LINK BUSY  /  STAND BY" : "READY FOR DEPLOYMENT");
-            state.EnableInClassList("terminal-warning", m_Busy); state.EnableInClassList("terminal-positive", !m_Busy);
-            TerminalMotion.Reveal(card, .55f, -30, 0, .7f);
-            var ticker = m_Content.Q<VisualElement>(className: "terminal-home-ticker");
-            AnimateTicker(ticker); TerminalMotion.Fade(ticker, .8f, .6f);
+            m_Home.Present(m_Busy);
         }
 
         private void UpdateHomeMenuSize()
@@ -376,6 +341,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Dispose()
         {
+            m_Home.Dispose();
             m_Tutorial?.Dispose();
             m_CampaignTasks?.Dispose();
             DisposeCharacter();
