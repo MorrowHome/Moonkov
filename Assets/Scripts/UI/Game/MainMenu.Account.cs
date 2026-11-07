@@ -26,6 +26,7 @@ namespace Unity.MP_FPS.Client
         private GlobalGameState m_LastStashGameState;
         private Button m_ProfileModeButton;
         private HalosTerminalBackdrop m_LoginAnimation;
+        private HalosAccessTransition m_AccessTransition;
         private Toggle m_AccessReduceMotion;
         private VisualElement m_AccountCanvas;
 
@@ -51,6 +52,7 @@ namespace Unity.MP_FPS.Client
             m_AccountMessage = m_AccountPanel.Q<Label>("accountMessage");
             m_ConnectionPanel.parent.Insert(0, m_AccountPanel);
             m_LoginAnimation = new HalosTerminalBackdrop(canvas, false, AccessIntroFinished);
+            m_AccessTransition = new HalosAccessTransition(canvas, AccessTransitionChanged);
             m_LoggedInLabel = new Label();
             m_Logout = new Button(Logout) { text = "LOG OUT" };
             m_ConnectionPanel.Insert(0, m_LoggedInLabel); m_ConnectionPanel.Insert(1, m_Logout);
@@ -84,10 +86,15 @@ namespace Unity.MP_FPS.Client
         private void UpdateAccountPanel()
         {
             bool authenticated = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
-            bool loggedIn = authenticated && (m_AccessReduceMotion.value || !m_LoginAnimation.IntroPending);
+            bool accessVisible = GameSettings.Instance.MainMenuSceneLoaded &&
+                GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
+                GameSettings.Instance.MainMenuState == MainMenuState.MainMenuScreen;
+            bool loggedIn = m_AccessTransition.Present(authenticated, !m_LoginAnimation.IntroPending,
+                accessVisible, m_AccessReduceMotion.value);
+            bool transitioning = m_AccessTransition.IsRunning;
             if (!loggedIn || PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan) m_LobbyOpen = false;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
-            m_ProfileModeButton.SetEnabled(!PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
+            m_ProfileModeButton.SetEnabled(!transitioning && !PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
             MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsLan ? "离开局域网房间" : PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
             m_ProfileModeButton.tooltip = MoonkovLocalization.Text(PlayerProfileClient.SupportsSinglePlayer
                 ? "Open the independent local stash and single-player raids." : "Single player requires a Client+Server build.");
@@ -96,10 +103,7 @@ namespace Unity.MP_FPS.Client
             var canvas = m_MainMenu.Q("Canvas");
             canvas.EnableInClassList("archive-access-account", !loggedIn);
             canvas.AddToClassList("archive-login-plates");
-            m_LoginAnimation.Present(!loggedIn && GameSettings.Instance.MainMenuSceneLoaded &&
-                GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
-                GameSettings.Instance.MainMenuState == MainMenuState.MainMenuScreen,
-                m_AccessReduceMotion.value);
+            m_LoginAnimation.Present(!loggedIn && accessVisible, m_AccessReduceMotion.value);
             var modeHost = loggedIn ? (showStash ? m_MainMenu.Q("stashMenuActions") : m_ConnectionPanel) : m_AccountPanel.Q("accountSecondaryActions");
             m_ProfileModeButton.EnableInClassList("menu-entry-docked", loggedIn);
             if (m_ProfileModeButton.parent != modeHost)
@@ -109,10 +113,13 @@ namespace Unity.MP_FPS.Client
             }
             m_LanRoom?.SetEntryHost(loggedIn ? modeHost : null);
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
+            m_AccountPanel.SetEnabled(!transitioning);
+            m_MainMenu.Q("stashScreenHost").SetEnabled(!transitioning);
+            m_ConnectionPanel.SetEnabled(!transitioning);
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_StashScreen.Present(PlayerProfileClient.DisplayName, GameSettings.Instance.PlayerCharacter,
-                PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells, showStash, m_AccountBusy,
+                PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells, showStash, m_AccountBusy || transitioning,
                 m_AccountError ?? ConnectionSettings.Instance.ConnectionError);
             m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
             MoonkovLocalization.Set(m_LoggedInLabel, "Signed in as {0}\nSTASH: Dust {1}   Alloy {2}   Cells {3}" , PlayerProfileClient.DisplayName, PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells);
@@ -171,7 +178,7 @@ namespace Unity.MP_FPS.Client
 
         private async void SwitchProfileMode()
         {
-            if (GameSettings.Instance.GameState != GlobalGameState.MainMenu || PlayerProfileClient.IsLan) return;
+            if (GameSettings.Instance.GameState != GlobalGameState.MainMenu || PlayerProfileClient.IsLan || m_AccessTransition.IsRunning) return;
             if (m_AccountBusy && !PlayerProfileClient.IsOffline)
             {
                 var previous = m_AccountStop; previous.Cancel(); previous.Dispose();
@@ -201,7 +208,12 @@ namespace Unity.MP_FPS.Client
         private void StashSettingsChanged(object sender, BindablePropertyChangedEventArgs evt)
         {
             var gameState = GameSettings.Instance.GameState;
-            if (gameState != GlobalGameState.MainMenu) m_LoginAnimation?.Present(false, m_AccessReduceMotion.value);
+            if (gameState != GlobalGameState.MainMenu)
+            {
+                m_LoginAnimation?.Present(false, m_AccessReduceMotion.value);
+                m_AccessTransition?.Present(PlayerProfileClient.IsLoggedIn && m_AccountVerified,
+                    !m_LoginAnimation.IntroPending, false, m_AccessReduceMotion.value);
+            }
             bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
             m_LastStashGameState = gameState;
             if (!returnedToMenu)
@@ -226,7 +238,7 @@ namespace Unity.MP_FPS.Client
 
         private async Task AccountAction(Func<CancellationToken, Task> action, bool allowOffline = false)
         {
-            if (m_AccountBusy || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && !allowOffline)) return;
+            if (m_AccountBusy || m_AccessTransition.IsRunning || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && !allowOffline)) return;
             var lifetime = m_AccountStop;
             m_AccountError = null;
             m_AccountBusy = true;
@@ -250,6 +262,7 @@ namespace Unity.MP_FPS.Client
         private void DisposeAccountPanel()
         {
             m_LoginAnimation?.Dispose(); m_LoginAnimation = null;
+            m_AccessTransition?.Dispose(); m_AccessTransition = null;
             m_AccountPanel?.UnregisterCallback<KeyDownEvent>(AccountKeyboardSubmit);
             m_AccountCanvas?.UnregisterCallback<GeometryChangedEvent>(AccountGeometryChanged);
             m_AccessReduceMotion?.UnregisterValueChangedCallback(AccessMotionChanged);
@@ -288,9 +301,19 @@ namespace Unity.MP_FPS.Client
             FocusAccountInput();
         }
 
+        private void AccessTransitionChanged()
+        {
+            UpdateAccountPanel();
+            if (!m_AccessTransition.IsRunning && m_AccessTransition.ContentVisible)
+            {
+                var home = m_MainMenu.Q("halosOriginalHome");
+                if (home != null) { home.focusable = true; home.Focus(); }
+            }
+        }
+
         private void FocusAccountInput()
         {
-            if (m_AccountBusy || m_AccountPanel.style.display == DisplayStyle.None) return;
+            if (m_AccountBusy || m_AccessTransition.IsRunning || m_AccountPanel.style.display == DisplayStyle.None) return;
             if (string.IsNullOrEmpty(m_Username.value)) m_Username.Focus(); else m_Password.Focus();
         }
     }

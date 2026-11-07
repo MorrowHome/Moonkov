@@ -11,7 +11,7 @@
     overflow: hidden;
     -unity-font-definition: url("../../../UI Toolkit/Fonts/Inter-Regular.ttf");
 }
-.halos-backdrop, .halos-noise, .halos-signal, .halos-impact {
+.halos-backdrop, .halos-noise, .halos-signal, .halos-impact, .halos-access-transition, .halos-transition-shade {
     position: absolute;
     left: 0;
     right: 0;
@@ -22,6 +22,7 @@
 .halos-noise { background-image: url("Halos/Noise.png"); background-size: cover; -unity-background-image-tint-color: #8da4ef; opacity: 0.045; }
 .halos-signal { background-image: url("Halos/SignalResidual.png"); background-size: cover; background-position: center; opacity: 0.12; }
 .halos-impact { background-color: var(--halos-blue); opacity: 0; }
+.halos-transition-shade { background-color: #000000; }
 .halos-noise, .halos-signal { left: -4%; right: -4%; }
 .halos-shutter { position: absolute; left: 0; right: 0; height: 50%; background-color: #000000; overflow: hidden; }
 .halos-shutter-top { top: 0; }
