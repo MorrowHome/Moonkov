@@ -1,0 +1,8 @@
+Boxing effort voices
+Cici Fyre / cicifyre
+Female RPG Voice Starter Pack, Type 1 attack1.wav, attack2.wav, attack3.wav.
+https://opengameart.org/content/female-rpg-voice-starter-pack
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+License verified 2026-11-08. Commercial use and edits are permitted; attribution is appreciated but not required.
+Moonkov edits: mono conversion, gentle filtering, DC removal, peak normalization and edge fades. Original pitch and timing retained.
+Source filenames and input/output SHA-256: Assets/Audio/Moonkov/MeleeVoiceSources.json.

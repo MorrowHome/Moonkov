@@ -29,6 +29,7 @@ MonoBehaviour:
   MeleeEnergySwing: {fileID: 11400000, guid: 5b17d7ef7c1e7454799cfad1de9dc162, type: 2}
   MeleeImpact: {fileID: 11400000, guid: 9ffa710eed8d1472ca20079eafef4d88, type: 2}
   MeleeBlocked: {fileID: 11400000, guid: 26b61b63dc7454aef85fc8d372a076de, type: 2}
+  MeleeEffort: {fileID: 11400000, guid: 23814b8d9438848e4b4bbe55e6b363c4, type: 2}
   Consume: {fileID: 11400000, guid: 90d6d70b5efa4907970c2856d18083a9, type: 2}
   PlayerPain: {fileID: 11400000, guid: 0a75118876143417eac2caab872f7a30, type: 2}
   PlayerGroan: {fileID: 11400000, guid: 70d513a3113764267af7f42935730751, type: 2}

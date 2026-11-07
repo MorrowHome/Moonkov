@@ -898,6 +898,7 @@
 - 流血读取服务器新增的 `TacticalBleeding` Ghost 布尔标记，本地和远端角色共用。止血、到期、死亡及战局清理会清除。`Tools/Validation/BleedingVoiceReview.cs` 的 11 项实际服务端和生成序列化检查通过；没有进入 Play 或联机。客户端与服务器须同版构建。
 - `MoonkovDistressAudioSetup.Install()` 绑定呻吟资源；`MoonkovDistressAudioChecks.Run()` 检查持续状态、冷却、恢复和死亡。
 - 回归入口为 `MoonkovPainAudioChecks.Run()` 和 `MoonkovDamageAudioChecks.Run()`；隔离播放检查为 `MoonkovPainAudioChecks.CheckPlayback()`。
+- 2026-11-08 拳头增加独立 `MeleeEffort` 人声。采用 Cici Fyre 同声线的三条 CC0 attack 录音，保留原音高，相邻不重复。有效出拳时播放一次，重拳更响，原破风声降低约 9 dB。取消、过期、首次快照和死亡不补播。受击短叫优先于发力声，发力声优先于呻吟和呼吸。`MoonkovMeleeVoiceSetup.Install()` 绑定；重建、授权和检查见 [音效系统](Docs/AudioSystem.md#2026-11-08-挥拳发力人声)。原生声音池播放、轮换及回收通过。
 
 ## 腰射与举枪前摇
 

@@ -45,8 +45,8 @@ namespace Unity.MP_FPS
             var library = MoonkovAudio.Library;
             if (library == null) return;
             Vector3 position = player.position;
-            m_Melee.Update(ghost, position, owned);
             bool cry = m_Pain.Observe(ghost.LastImpactTick, ghost.CurrentHealth > 0, Time.unscaledTime);
+            bool effort = m_Melee.Update(ghost, position, owned, !cry && m_PainSound?.Handle?.IsValid() != true);
             var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
                 ghost.ControllerState.IsReloadingState, ghost.CurrentHealth > 0);
             var reloadWeapon = WeaponManager.Instance ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules) : null;
@@ -113,8 +113,8 @@ namespace Unity.MP_FPS
                 m_HitAt = Time.unscaledTime + .35f;
             }
             bool groan = m_Distress.Observe(ghost.CurrentHealth / Mathf.Max(1, ghost.MaxHealth),
-                ghost.CurrentHealth > 0, MoonkovDistressAudio.PainfulStatus(ghost), cry, Time.unscaledTime);
-            if (!m_Distress.Active || cry)
+                ghost.CurrentHealth > 0, MoonkovDistressAudio.PainfulStatus(ghost), cry || m_Melee.VoicePlaying, Time.unscaledTime);
+            if (!m_Distress.Active || cry || effort)
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             }
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS
                 m_GroanSound = MoonkovAudio.PlayWeaponLayer(library.PlayerGroan, position + Vector3.up * 1.4f,
                     owned ? 1 : .7f, owned ? .08f : 1, follow: player);
             }
-            if (owned && (cry || groan))
+            if (owned && (cry || groan || effort))
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
             }
@@ -141,7 +141,7 @@ namespace Unity.MP_FPS
                     m_BreathSound = null;
                 }
                 bool voiceBusy = m_PainSound?.Handle?.IsValid() == true || m_GroanSound?.Handle?.IsValid() == true ||
-                    m_BreathSound?.Handle?.IsValid() == true || cry || groan;
+                    m_BreathSound?.Handle?.IsValid() == true || m_Melee.VoicePlaying || cry || groan;
                 if (m_Breath.Observe(breath, Time.unscaledTime, voiceBusy))
                 {
                     var bank = breath.Exerted && library.SuitBreathEffort ? library.SuitBreathEffort : library.SuitBreath;
@@ -234,6 +234,7 @@ namespace Unity.MP_FPS
             m_CanStep = false;
             m_LastMovementTime = float.NegativeInfinity;
             var system = GameManager.Instance?.SoundSystem;
+            m_Melee.Stop();
             system?.Stop(m_LootSound,.08f);m_LootSound=null;m_WasLootSearching=false;
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             m_Distress.Reset();

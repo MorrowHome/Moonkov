@@ -1,5 +1,12 @@
 # Moonkov 音效系统
 
+## 2026-11-08 挥拳发力人声
+
+- 拳头增加三条 0.36–0.41 秒的真人发力声。使用 Cici Fyre 的 Type 1 attack 录音，与现有受击短叫为同一演员和声线。保留原音高和节奏，相邻不重复。来源为 CC0，记录见 `MeleeVoiceSources.json`，许可随 `MoonkovMeleeVoiceCredits.txt` 打包。
+- 只在实际出拳的有效窗口播放一次。轻拳增益为 0.82，重拳为 1。原破风声降低约 9 dB，保留身体动作感。匕首、能量剑、命中与格挡仍用原音效。取消、首次加入、重复快照、死亡和失活不补播人声。
+- 同一角色按受击短叫、挥拳发力、持续呻吟、呼吸的顺序让位。切换近战装备、取消动作和销毁会收束发力声。沿用 SFX 与原声音池，全库最多 6 路，远端听距 18 米。
+- 重建素材用 `Tools/Audio/build_melee_effort.py`，绑定用 `MoonkovMeleeVoiceSetup.Install()`。整套战斗音库重建也会安装它。近战、受击、持续状态、呼吸和氧气回归通过，三条发力声的原生声音池完整播放与回收通过。未进入正式战局或重打包。
+
 ## 2026-11-08 流血长呻吟
 
 - `PlayerGroan` 改为三条 2.65–2.87 秒的真人长表演。与 `PlayerPain` 的短受击声分开。来源为 Sky Rae 配音、Galacti-Chron 发布的 CC0 素材，保留自然音高。来源、输入和输出哈希见 `PlayerGroanSources.json`，许可随 `MoonkovPlayerGroanCredits.txt` 打包。
