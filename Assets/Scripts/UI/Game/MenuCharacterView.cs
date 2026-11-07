@@ -141,7 +141,7 @@ namespace Unity.MP_FPS.Client
             if (evt.pointerId != m_DragPointer || !Element.HasPointerCapture(evt.pointerId)) return;
             if ((evt.pressedButtons & 1) == 0) { StopInspect(); return; }
             Vector2 position = Element.WorldToLocal(evt.position);
-            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw +
+            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw -
                 (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
             m_DragPosition = position;
             m_ViewDirty = true;

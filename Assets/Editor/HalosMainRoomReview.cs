@@ -200,9 +200,10 @@ public sealed class HalosMainRoomReview : EditorWindow
             var camera = CameraFor("Menu portrait camera"); var scene = camera.scene;
             model = scene.GetRootGameObjects().Single().GetComponentInChildren<Animator>().transform;
             var rotation = model.rotation; float fov = camera.fieldOfView;
+            var grabbed = Quaternion.Inverse(rotation) * -camera.transform.forward;
             Drag(art); await Wait(100);
-            Require(Quaternion.Angle(rotation, model.rotation) > 5 && !art.HasPointerCapture(PointerId.mousePointerId),
-                "character drag rotates and releases pointer capture");
+            Require(Vector3.Dot(model.rotation * grabbed, camera.transform.right) > .05f &&
+                !art.HasPointerCapture(PointerId.mousePointerId), "rightward character drag follows the mouse and releases capture");
             Wheel(art); await Wait(100);
             Require(camera.fieldOfView < fov, "character scroll zooms the rendered camera");
             Press(root.Q<Button>("halosSubjectReset")); await Wait(100);
@@ -219,9 +220,10 @@ public sealed class HalosMainRoomReview : EditorWindow
             art = root.Q<Image>("halosSubjectArt"); camera = CameraFor("Lunar display camera"); scene = camera.scene;
             var moon = scene.GetRootGameObjects().Single().GetComponentInChildren<MeshFilter>().transform;
             rotation = moon.rotation; float size = camera.orthographicSize;
+            grabbed = Quaternion.Inverse(rotation) * -camera.transform.forward;
             Drag(art); Wheel(art); await Wait(100);
-            Require(Quaternion.Angle(rotation, moon.rotation) > 5 && camera.orthographicSize < size,
-                "Moon drag and scroll rotate and zoom the real lunar model");
+            Require(Vector3.Dot(moon.rotation * grabbed, camera.transform.right) > .05f && camera.orthographicSize < size,
+                "rightward Moon drag follows the mouse and scroll zooms the real model");
             Press(root.Q<Button>("halosSubjectReset")); await Wait(100);
             Require(Quaternion.Angle(rotation, moon.rotation) < .1f && Mathf.Abs(size - camera.orthographicSize) < .01f,
                 "Moon reset restores its initial view");
