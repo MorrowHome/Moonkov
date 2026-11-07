@@ -93,6 +93,7 @@ namespace Unity.MP_FPS
                 state.CurrentAmmo = HaloEnergyRules.AvailableShots(state, registry.GetWeaponData(WeaponId(active?.Code), modules)); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
                 state.ControllerState.IsReloadingState = false;
                 state.ReloadDuration = 0;
+                state.HaloRechargeEnergy = 0;
                 HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
             }
             HaloEnergyRules.RefreshAmmo(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
@@ -126,14 +127,24 @@ namespace Unity.MP_FPS
         }
         private static void CompleteReload(ref PredictedPlayerGhost state,int magazineSize)
         {
+            if (state.HaloRechargeEnergy > 0 && state.HaloEquipped && EnergyShieldRules.Alive(state) &&
+                (!state.ClashEnabled || state.ClashCanAct))
+            {
+                state.HaloEnergy = Mathf.Min(HaloEnergyRules.Maximum(state), HaloEnergyRules.Energy(state) + state.HaloRechargeEnergy);
+                state.HaloRechargeSequence++;
+            }
+            state.HaloRechargeEnergy = 0;
             state.ControllerState.IsReloadingState = false;
             state.ReloadTimer = 0f;
             state.ReloadDuration = 0f;
             if (magazineSize>0) state.CurrentAmmo = Mathf.Max(state.CurrentAmmo, Mathf.Min(state.ReloadTargetAmmo, magazineSize));
             state.ReloadTargetAmmo = 0;
         }
-        public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon) =>
+        public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon)
+        {
             CompleteReload(ref state, state.HaloEnergyInitialized && IsHalo(state.EquippedWeaponID) ? 0 : weapon != null ? weapon.MagazineSize : 0);
+            HaloEnergyRules.RefreshAmmo(ref state, weapon);
+        }
 
         // Successful extraction ends the playable raid immediately. Settle rounds
         // already paid for before destroying the player and saving their loadout.

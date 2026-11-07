@@ -6496,8 +6496,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11007993465266180
-    m_Localized: Instantly restores up to 100 halo energy. Keep batteries in pockets
-      or an equipped badge. Unused charge is retained.
+    m_Localized: "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained."
     m_Metadata:
       m_Items: []
   - m_Id: 11303761623375872

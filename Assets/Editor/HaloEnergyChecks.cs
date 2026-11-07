@@ -91,13 +91,41 @@ public static class HaloEnergyChecks
             var cell = graph.Items.First(i => i.Code == "cells");
             int version = graph.Version;
             Check(HaloEnergyInventory.Recharge(ref state, graph, cell.Id, version - 1) == InventoryError.Stale && Near(state.HaloEnergy, 25) && graph.CellEnergy() == 200, "Stale battery requests do nothing");
-            Check(HaloEnergyInventory.Recharge(ref state, graph, cell.Id, version) == InventoryError.None, "Accessible battery can be used");
-            Check(Near(state.HaloEnergy, 100) && graph.CellEnergy() == 125 && state.HaloRechargeSequence == 1, "Transfer is immediate and preserves unused charge");
+            Check(HaloEnergyInventory.Recharge(ref state, graph, cell.Id, version, shotgun) == InventoryError.None, "Accessible battery can be used");
+            Check(Near(state.HaloEnergy, 25) && graph.CellEnergy() == 125 && Near(state.HaloRechargeEnergy,75) &&
+                state.ControllerState.IsReloadingState && state.ReloadTimer >= .5f, "Battery is reserved while energy waits for the charge timeline");
+            Check(!HaloEnergyInventory.RechargeFirst(ref state,graph) && graph.CellEnergy()==125, "Repeated requests cannot spend another cell while charging");
+            Check(!HaloModuleFire.TryFire(ref state,shotgun,fire,false,1), "Charging blocks shooting even with energy remaining");
+            float duration=state.ReloadTimer;
+            HaloReload.Tick(ref state,shotgun,duration/2);
+            HaloEnergyRules.Tick(ref state,30);
+            Check(Near(state.HaloEnergy,25) && Near(HaloReload.Progress(state,shotgun),.5f), "Halfway charge cannot fire reserved or passively regenerated energy");
+            var chargingFeedback=new HaloChargeFeedback();
+            Check(chargingFeedback.Update(state,shotgun,graph,true,0).Notice==HaloChargeNotice.Charging, "Shared-energy HUD exposes charge progress");
+            HaloReload.Tick(ref state,shotgun,duration/2);
+            Check(Near(state.HaloEnergy, 100) && graph.CellEnergy() == 125 && state.HaloRechargeSequence == 1 &&
+                !state.ControllerState.IsReloadingState && state.HaloRechargeEnergy==0, "Completion transfers exactly once and preserves unused charge");
+            HaloReload.Tick(ref state,shotgun,10);
+            Check(state.HaloRechargeSequence==1 && Near(state.HaloEnergy,100), "Repeated completion cannot duplicate energy");
             Check(HaloEnergyInventory.Recharge(ref state, graph, cell.Id, graph.Version) != InventoryError.None && graph.CellEnergy() == 125, "Full pool consumes nothing");
             state.HaloEnergy = 0;
-            Check(HaloEnergyInventory.RechargeFirst(ref state, graph) && Near(state.HaloEnergy, 25) && graph.CellEnergy() == 100, "One use consumes the remaining partial cell only");
+            Check(HaloEnergyInventory.RechargeFirst(ref state, graph, shotgun) && Near(state.HaloEnergy, 0) &&
+                Near(state.HaloRechargeEnergy,25) && graph.CellEnergy() == 100, "One use reserves the remaining partial cell only");
+            HaloReload.Tick(ref state,shotgun,state.ReloadTimer);
             HaloEnergyRules.SetDefense(ref state, true);
-            Check(!HaloEnergyInventory.RechargeFirst(ref state, graph) && graph.CellEnergy() == 100, "Battery cannot bypass held defense");
+            Check(HaloEnergyInventory.RechargeFirst(ref state, graph,shotgun) && graph.CellEnergy() == 25, "Held defense allows a timed battery charge");
+            HaloEnergyRules.SetDefense(ref state,true);
+            Check(state.HaloDefending && state.ControllerState.IsReloadingState, "Timed charge retains the held barrier");
+            var simultaneous=new PlayerInput(); simultaneous.SetFlag(PlayerInput.InputFlag.HaloDefense,true); simultaneous.SetFlag(PlayerInput.InputFlag.Reload,true);
+            Check(simultaneous.Sanitized().HaloDefense && simultaneous.Sanitized().Reload, "Defense and recharge survive command sanitization together");
+            var deadCharge=state; deadCharge.CurrentHealth=0;
+            HaloReload.Tick(ref deadCharge,shotgun,deadCharge.ReloadTimer);
+            Check(Near(deadCharge.HaloEnergy,25) && deadCharge.HaloRechargeEnergy==0, "Death cannot complete a reserved energy transfer");
+            var canceled=state;
+            HaloEnergyRules.Synchronize(ref canceled,InventoryGraph.Create(false,false));
+            Check(canceled.HaloRechargeEnergy==0 && !canceled.ControllerState.IsReloadingState, "Losing the halo cancels its pending charge");
+            HaloReload.Tick(ref state,shotgun,state.ReloadTimer);
+            state.HaloEnergy=25;
             HaloEnergyRules.SetDefense(ref state, false); state.ConsumingSupply = true;
             Check(!HaloEnergyInventory.RechargeFirst(ref state, graph), "Battery cannot overlap a supply action");
             state.ConsumingSupply = false;

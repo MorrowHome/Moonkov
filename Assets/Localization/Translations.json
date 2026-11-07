@@ -1426,7 +1426,7 @@
   "Recovery speed -26%": "回能速度降低约 26%",
   "Recovery speed -17%": "回能速度降低约 17%",
   "Energy per round +33% (rounded up)": "每发耗能提高三分之一并向上取整",
-  "Instantly restores up to 100 halo energy. Keep batteries in pockets or an equipped badge. Unused charge is retained.": "立即补充最多 100 点光环能量。需放入口袋或胸章，未使用的电量保留。",
+  "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained.": "充电完成后补充最多 100 点光环能量。需放入口袋或胸章，未使用的电量保留。",
   "Fabricated after Mooncore stabilization research. Energy per round is reduced by one third (rounded up); recovery speed -17%. Knowledge is permanent; the physical module can be lost on death.": "完成月核稳定研究后可制造。每发耗能降低三分之一并向上取整，回能速度降低约 17%。知识永久保留，实体模块死亡后仍可能丢失。",
   "Hold to transfer energy": "按住传能",
   "Transferring energy": "正在传能",

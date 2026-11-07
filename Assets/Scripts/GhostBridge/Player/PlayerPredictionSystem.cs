@@ -92,12 +92,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
             if (predictedPlayer.ValueRO.ControllerState.IsReloadingState)
             {
-                predictedPlayer.ValueRW.ReloadTimer -= dt;
-                if (predictedPlayer.ValueRO.ReloadTimer <= 0f)
-                {
-                    var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
-                    DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
-                }
+                var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
+                HaloReload.Tick(ref predictedPlayer.ValueRW, weaponData, dt);
             }
         }
 

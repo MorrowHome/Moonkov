@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -170,7 +171,8 @@ namespace Unity.MP_FPS
             if (!PmcShieldSupply.MayRecharge(brain, health, TutorialRuntime.Enabled(EntityManager),
                 SafeToTreat(brain, position, now), now)) return;
             var held = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
-            if (held != null) PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound, held.MagazineSize);
+            if (held != null && PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound, held.MagazineSize, held))
+                health.LastReloadTick = SystemAPI.GetSingleton<Unity.NetCode.NetworkTime>().ServerTick.TickIndexForValidTick;
         }
 
         private void UpdateOxygenSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)

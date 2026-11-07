@@ -289,7 +289,8 @@ namespace Unity.MP_FPS.DollSinger
             if (HaloAnchorHeld || HaloModeHeld) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false; WeaponSlotPressed = 0; }
             if (grenade) HaloAnchorHeld = HaloModeHeld = HaloScanHeld = false;
             if (TransferHeld) { DefenseHeld = false; WeaponSlotPressed = 0; }
-            if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
+            if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = false;
+            if (TransferHeld) ReloadPressed = false;
             if (grenade) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = DefenseHeld = TransferHeld = false; WeaponSlotPressed = 0; }
             if (!grenade && MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }

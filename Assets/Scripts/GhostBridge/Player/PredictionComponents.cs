@@ -73,6 +73,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool HeadDomeEquipped;
     [GhostField] public bool HaloEquipped, HaloEnergyInitialized, HaloDefending, HaloDefenseHeld, HaloDefenseBroken, HaloRegenerating;
     [GhostField(Quantization = 100)] public float HaloEnergy, HaloCapacity, HaloRecoveryDelay;
+    [GhostField(Quantization = 100)] public float HaloRechargeEnergy;
     [GhostField] public uint HaloRechargeSequence;
     [GhostField] public HaloTransferPhase HaloTransferPhase;
     [GhostField] public HaloDeploymentMode HaloDeploymentMode;

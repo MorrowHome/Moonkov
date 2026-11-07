@@ -257,10 +257,10 @@ namespace Unity.MP_FPS
             PmcResourceActions.SafeWindow(brain, health, tutorial, safe, now) && health.ShieldEquipped &&
             float.IsFinite(health.ShieldEnergy) && health.ShieldEnergy >= 0 && health.ShieldEnergy <= RechargeThreshold;
 
-        public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize)
+        public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize, WeaponData weapon = null)
         {
             if (inventory == null || !health.HaloEquipped || HaloEnergyRules.Energy(health) > RechargeThreshold) return false;
-            return HaloEnergyInventory.RechargeFirst(ref health, inventory);
+            return HaloEnergyInventory.RechargeFirst(ref health, inventory, weapon);
         }
     }
 
