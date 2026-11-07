@@ -74,7 +74,7 @@ public static class GestureReadabilityChecks
                     body.BakeMesh(mesh, true); var points = mesh.vertices; var projected = new Vector3[points.Length];
                     foreach (float aspect in new[] { 4f / 3, 16f / 9 })
                     {
-                        world.aspect = aspect; view.PresentGesture(1);
+                        world.aspect = aspect; view.PresentGesture(1, weapon == 4);
                         var camera = view.GestureProjectionCamera;
                         if (!view.GestureProjectionActive || camera.transform.position != eye || camera.transform.rotation != look ||
                             camera.GetUniversalAdditionalCameraData().clearDepth || camera.nearClipPlane != world.nearClipPlane || camera.farClipPlane != world.farClipPlane)
@@ -93,12 +93,20 @@ public static class GestureReadabilityChecks
                         {
                             if (weapon == 1 && pitch == 0 && Mathf.Abs((min.x + max.x) * .5f - .5f) > .04f)
                                 throw new Exception("Rifle gesture moved away from horizontal centre");
+                            if (weapon == 4 && pitch == 0)
+                            {
+                                Vector3 frame = (bones["人指先.L"].position + bones["親指先.R"].position +
+                                    bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
+                                float depth = Vector3.Dot(frame - eye, world.transform.forward);
+                                if (Mathf.Abs(depth - .20f) > .002f || aspect > 1.7f && max.y - min.y < .5f)
+                                    throw new Exception("Sniper frame is distant or too small at the eye");
+                            }
                             // Optical zoom can change the world, never the settled hand projection.
                             Matrix4x4 gesture = camera.projectionMatrix;
                             foreach (float zoom in new[] { 1f, 6f, 12f })
                             {
                                 world.fieldOfView = 2 * Mathf.Atan(Mathf.Tan(75 * .5f * Mathf.Deg2Rad) / zoom) * Mathf.Rad2Deg;
-                                view.PresentGesture(1);
+                                view.PresentGesture(1, weapon == 4);
                                 if (camera.projectionMatrix != gesture) throw new Exception("Zoom resized the gesture");
                             }
                         }

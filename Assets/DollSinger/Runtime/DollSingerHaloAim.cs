@@ -518,7 +518,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         // A single complete-chain sampler owns the arms. Skirt IK also observes OwnsHandPose.
         if (view && view.player == gameObject)
             view.PresentGesture(!ExternalHandPoseActive && haloVisual && visualWeapon != HaloWeapon.None
-                ? DollSingerView.AimPoseBlend(aimBlend) : 0);
+                ? DollSingerView.AimPoseBlend(aimBlend) : 0, visualWeapon == HaloWeapon.Sniper);
         if (ExternalHandPoseActive)
         { if (haloVisual) haloVisual.gameObject.SetActive(false); return; }
         if (haloVisual && visualWeapon != HaloWeapon.None) haloVisual.gameObject.SetActive(true);

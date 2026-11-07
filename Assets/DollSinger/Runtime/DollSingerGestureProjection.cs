@@ -10,12 +10,14 @@ namespace Unity.MP_FPS.DollSinger
     public sealed class DollSingerGestureProjection : IDisposable
     {
         public const float FieldOfView = 110f;
+        public const float ViewfinderFieldOfView = 70f;
         public Camera Camera { get; }
         public bool Active { get; private set; }
         private readonly Camera owner;
         private readonly SkinnedMeshRenderer source, renderer;
         private readonly List<Camera> stack;
         private readonly float[] weights;
+        private float presentationFieldOfView = FieldOfView;
 
         public DollSingerGestureProjection(Camera owner, SkinnedMeshRenderer source, Mesh body)
         {
@@ -59,12 +61,18 @@ namespace Unity.MP_FPS.DollSinger
             overlay.volumeLayerMask = 0;
         }
 
-        public void Present(bool active, float blend, float baseFieldOfView)
+        public void Present(bool active, float blend, float baseFieldOfView, bool viewfinder = false)
         {
             if (!Camera) return;
+            bool wasActive = Active;
             Active = active && source && source.enabled && owner.isActiveAndEnabled;
             Camera.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            float tangent = Mathf.Tan(Mathf.Max(FieldOfView, baseFieldOfView) * .5f * Mathf.Deg2Rad);
+            // A viewfinder is held close to the eye. The ordinary wide lens makes
+            // its opening tiny and gives the impression of outstretched arms.
+            float targetFieldOfView = viewfinder ? ViewfinderFieldOfView : Mathf.Max(FieldOfView, baseFieldOfView);
+            presentationFieldOfView = !Application.isPlaying || !wasActive || !Active ? targetFieldOfView :
+                Mathf.MoveTowards(presentationFieldOfView, targetFieldOfView, 240f * Time.deltaTime);
+            float tangent = Mathf.Tan(presentationFieldOfView * .5f * Mathf.Deg2Rad);
             // Preserve horizontal room on narrower displays; never crop a palm
             // merely because the user switches from widescreen to 4:3.
             tangent *= Mathf.Max(1, (16f / 9) / owner.aspect);
