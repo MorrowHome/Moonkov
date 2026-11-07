@@ -99,7 +99,9 @@ namespace Unity.MP_FPS
         private bool CanBeginSpeciesAttack(AlienCombatPattern next)
         {
             Vector3 target = ContactPoint(m_Target);
-            if (Vector3.Distance(AimPoint, target) > next.Range) return false;
+            float glare = ReadGhostComponentData<PredictedPlayerGhost>().HaloLightGlare;
+            float range = Mathf.Lerp(next.Range, Mathf.Min(next.Range, 2), Mathf.Clamp01(glare));
+            if (Vector3.Distance(AimPoint, target) > range) return false;
             var root = GhostGameObject.EntityManager.GetComponentObject<GhostGameObjectLink>(m_Target).LinkedInstance;
             if (!ClearSight(AimPoint, target, root.transform)) return false;
             if (next.Kind == AlienAttackKind.SlimePulse && (GroundDistance(target, transform.position) > next.Radius ||

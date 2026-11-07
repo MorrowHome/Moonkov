@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
             Vector3 position = pose.Position;
             Vector3 eye = ghost.ShotOrigin.position;
             brain.SelfStatus = null;
+            brain.LightGlare = health.HaloLightGlare;
             // The ECS actor exists before the spawned GameObject finishes linking.
             // Use the query's identity rather than reading the not-yet-bound behaviour.
             if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(self, out var status))
@@ -92,6 +93,7 @@ namespace Unity.MP_FPS
                 float settled = Mathf.Clamp01((float)(now - brain.VisibleSince) / 2);
                 float error = Mathf.Lerp(m_Tuning.FirstShotError, m_Tuning.SettledAimError, settled);
                 error += brain.Suppression * 4 + move.magnitude * 1.5f;
+                error += HaloLightGlareRules.AimErrorDegrees(brain.LightGlare);
                 brain.AimErrorX = brain.Random.NextFloat(-error, error);
                 brain.AimErrorY = brain.Random.NextFloat(-error * .6f, error * .6f);
                 brain.NextAimError = now + .25;

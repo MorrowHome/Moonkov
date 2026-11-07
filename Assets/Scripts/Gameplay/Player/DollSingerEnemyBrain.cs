@@ -623,7 +623,7 @@ namespace Unity.MP_FPS
         public bool LocalRaidExit, LocalExitObserved;
         public double NextLocalExitCheck;
         public Vector3 AimOffset = Vector3.up * 1.15f;
-        public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY;
+        public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY, LightGlare;
         public float ExtractionProgress, ActionScore;
         // A server-assigned identity, never a fabricated transport connection.
         public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;

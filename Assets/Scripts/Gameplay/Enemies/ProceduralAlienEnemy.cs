@@ -195,6 +195,7 @@ namespace Unity.MP_FPS
             using var entities = query.ToEntityArray(Allocator.Temp);
             using var smokeQuery = manager.CreateEntityQuery(typeof(TacticalServerWorld));
             var smokeWorld = smokeQuery.IsEmptyIgnoreFilter ? null : manager.GetComponentObject<TacticalServerWorld>(smokeQuery.GetSingletonEntity());
+            float sightScale = HaloLightGlareRules.SightScale(ReadGhostComponentData<PredictedPlayerGhost>().HaloLightGlare);
             float best = float.MaxValue;
             foreach (var entity in entities)
             {
@@ -207,7 +208,7 @@ namespace Unity.MP_FPS
                 bool fired = m_ObservedShots.TryGetValue(entity, out uint previousShot) && previousShot != shot;
                 m_ObservedShots[entity] = shot;
                 bool stepped = Footstep(entity, point, health, out bool landed, out bool looting, out bool consuming, out bool cough);
-                bool visible = distance <= profile.SightRange &&
+                bool visible = distance <= profile.SightRange * sightScale &&
                     !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
                 float movementHearing = profile.HearingRange * RaidFootsteps.AlienMovementRangeScale;
                 float stepRange = landed ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled) :
