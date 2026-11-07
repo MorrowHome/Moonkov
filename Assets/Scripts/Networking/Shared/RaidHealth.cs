@@ -245,7 +245,7 @@ namespace Unity.MP_FPS
             FirstPersonController.ControllerConsts constants)
             {
             constants=TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
-            if(state.ConsumingSupply)
+            if(state.ConsumingSupply || state.TimedActionActive || state.ControllerState.IsReloadingState)
             {
                 constants.Walk.Speed=Mathf.Min(constants.Walk.Speed,RaidNutrition.SupplyUseMaxSpeed);
                 constants.Sprint.Speed=Mathf.Min(constants.Sprint.Speed,RaidNutrition.SupplyUseMaxSpeed);
@@ -289,7 +289,7 @@ namespace Unity.MP_FPS
             if(state.ClashEnabled && state.ClashDarkSight)
             {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);
                 input.SetFlag(PlayerInput.InputFlag.FireHeld,false);input.SetFlag(PlayerInput.InputFlag.FireSuppressed,true);}
-            if (state.ConsumingSupply || !RaidNutrition.CanSprint(state))
+            if (state.ConsumingSupply || state.TimedActionActive || state.ControllerState.IsReloadingState || !RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;
         }

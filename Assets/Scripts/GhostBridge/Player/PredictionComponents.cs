@@ -64,6 +64,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool TacticalSprintExhausted;
     [GhostField(Quantization = 100)] public float CarriedWeight;
     [GhostField] public bool ConsumingSupply;
+    [GhostField] public bool TimedActionActive;
     // Presentation only. Inventory and tactical systems retain all use/consumption authority.
     [GhostField] public byte HandAction;
     [GhostField] public uint HandActionSequence;

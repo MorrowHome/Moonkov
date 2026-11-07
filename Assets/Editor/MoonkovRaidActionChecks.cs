@@ -43,7 +43,7 @@ public static class MoonkovRaidActionChecks
         actor.RefreshMedical(ref health,true,float3.zero,13);actor.RefreshMedical(ref health,true,float3.zero,20);
         Check(health.CurrentHealth==before+40 && actor.Graph.Count("medkit")==1 && actor.Graph.Version==version+1 && !actor.ActionPending,"Medical completion/replay not exactly once");
         Check(actor.BeginMedical(health,id,version,BodyPart.RightArm,float3.zero,21)==InventoryError.Stale,"Old version medical accepted");
-        foreach(string interruption in new[] {"cancel","movement","damage","shot","grenade","reload","weapon","version","death","access"})
+        foreach(string interruption in new[] {"cancel","damage","shot","grenade","reload","weapon","version","death","access"})
         {
             actor=Inventory();health=Injured();before=health.CurrentHealth;version=actor.Graph.Version;
             id=actor.Graph.Items.Single(i=>i.Code=="medkit").Id;
@@ -52,8 +52,7 @@ public static class MoonkovRaidActionChecks
             switch(interruption)
             {
                 case "cancel":actor.CancelActions("cancelled");break;
-                case "movement":position=new float3(1,0,0);break;
-                case "damage":health.LastHitTick++;break;
+                case "damage":health.NonPhysiologicalDamageSequence++;break;
                 case "shot":health.LastShotTick++;break;
                 case "grenade":health.LastGrenadeShotTick++;break;
                 case "reload":health.LastReloadTick++;break;
@@ -77,7 +76,9 @@ public static class MoonkovRaidActionChecks
         actor.OpenedLootId=-1;
         Check(!actor.NeedsSearch(caches,0) && actor.NeedsSearch(caches,1),"Closing cache lost completed search or searched different box");
         actor.BeginDissection(1,30,float3.zero,health,2);actor.RefreshDissection(caches,true,new float3(1,0,0),health,31);
-        Check(actor.OpenedLootId<0 && !actor.SearchedLoot.Contains(1),"Moving search gained access");
+        Check(actor.DissectingLootId==1 && !actor.SearchedLoot.Contains(1),"Moving search was cancelled or completed early");
+        actor.RefreshDissection(caches,true,new float3(2,0,0),health,32);
+        Check(actor.OpenedLootId==1 && actor.SearchedLoot.Contains(1),"Moving search did not complete");
         var dropOwner=InventoryGraph.Create(false);var pack=dropOwner.Equipped("Backpack");
         dropOwner.AddSupply("cells",2,pack.Id,true,emergencySupply:true,cellCharge:19);
         int old=dropOwner.Version;

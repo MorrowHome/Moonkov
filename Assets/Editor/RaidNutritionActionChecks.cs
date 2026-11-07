@@ -71,6 +71,7 @@ public static class RaidNutritionActionChecks
             "Metabolic damage in the same tick cannot hide a bullet");
         actor=Actor("ration",out health,out id);health.Energy=0;health.ShieldEquipped=true;health.ShieldCharge=100;
         Check(actor.BeginConsumable(health,id,actor.Graph.Version,origin,0)==InventoryError.None,"Same-tick shield setup");
+        HaloEnergyRules.SetDefense(ref health,true);
         EnergyShieldRules.Absorb(ref health,5,43,RaidDamageKind.Bullet,new float3(1,1,1));
         RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,43);
         actor.RefreshMedical(ref health,true,origin,.5);
@@ -236,6 +237,7 @@ public static class RaidNutritionActionChecks
             health.ShieldCharge = shielded ? 100 : 0;
             Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftLeg, origin, 0) == InventoryError.None,
                 "same-tick survival treatment starts");
+            if(shielded)HaloEnergyRules.SetDefense(ref health,true);
             RaidHealth.CombatDamage(ref health, BodyPart.RightArm, 5, 42, RaidDamageKind.Bullet);
             RaidNutrition.Tick(ref health, .5f, 1000, 1000, 300, 0, 2, 0, 42);
             actor.RefreshMedical(ref health, true, origin, .5);

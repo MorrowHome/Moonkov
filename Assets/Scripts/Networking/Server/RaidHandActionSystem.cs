@@ -7,27 +7,39 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS
 {
-    /// <summary>Publishes existing server action state. Animation never completes or consumes an action.</summary>
+    /// <summary>Publishes server action state for movement and animation. Presentation never completes or consumes an action.</summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(ServerGameSystem))]
     public partial class RaidHandActionSystem : SystemBase
     {
-        private EntityQuery connections, players, tactical, loot;
+        private EntityQuery connections, players, tactical, loot, missions;
         private readonly Dictionary<Entity, RaidInventoryState> inventories = new Dictionary<Entity, RaidInventoryState>();
+        private readonly HashSet<Entity> timedActors = new HashSet<Entity>();
         protected override void OnCreate()
         {
             connections = GetEntityQuery(typeof(RaidInventoryState), typeof(JoinedClient));
             players = GetEntityQuery(typeof(PredictedPlayerGhost));
             tactical = GetEntityQuery(typeof(TacticalServerWorld));
             loot = GetEntityQuery(typeof(RaidLootContainers));
+            missions = GetEntityQuery(typeof(RaidMissionWorld));
         }
         protected override void OnUpdate()
         {
             inventories.Clear();
+            timedActors.Clear();
+            var missionWorld = missions.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<RaidMissionWorld>(missions.GetSingletonEntity());
             using (var entities = connections.ToEntityArray(Allocator.Temp))
                 foreach (var entity in entities)
-                    inventories[EntityManager.GetComponentData<JoinedClient>(entity).PlayerEntity] =
-                        EntityManager.GetComponentObject<RaidInventoryState>(entity);
+                {
+                    if (EntityManager.HasComponent<NetworkStreamRequestDisconnect>(entity) ||
+                        EntityManager.HasComponent<RaidSession>(entity) && EntityManager.GetComponentData<RaidSession>(entity).Phase != RaidPhase.Active) continue;
+                    var player = EntityManager.GetComponentData<JoinedClient>(entity).PlayerEntity;
+                    var inventory = EntityManager.GetComponentObject<RaidInventoryState>(entity);
+                    inventories[player] = inventory;
+                    if (inventory.MedicalItemId != null || inventory.DissectingLootId >= 0 || inventory.TacticalPending ||
+                        missionWorld?.Operation != null && missionWorld.Actors.TryGetValue(entity, out var operation) && operation.Node >= 0)
+                        timedActors.Add(player);
+                }
             var world = tactical.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<TacticalServerWorld>(tactical.GetSingletonEntity());
             var caches = loot.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<RaidLootContainers>(loot.GetSingletonEntity());
             double now = SystemAPI.Time.ElapsedTime;
@@ -39,6 +51,7 @@ namespace Unity.MP_FPS
                 Unity.Mathematics.float3 target = default;
                 float remaining = 0, duration = 0;
                 bool alive = health.CurrentHealth > 0 && (!health.ClashEnabled || health.ClashLife == ClashLife.Alive);
+                health.TimedActionActive = alive && timedActors.Contains(actor);
                 if (alive && inventories.TryGetValue(actor, out var inventory))
                 {
                     if (inventory.MedicalItemId != null)

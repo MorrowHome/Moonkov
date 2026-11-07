@@ -331,7 +331,7 @@ namespace Unity.MP_FPS
         }
         private static string QuickFeedback(TacticalItemFeedback feedback) => feedback switch
         {
-            TacticalItemFeedback.Started => "Item action started. Keep still; X cancels.",
+            TacticalItemFeedback.Started => "Item action started. Movement slowed; X cancels.",
             TacticalItemFeedback.Completed => "Item action completed.",
             TacticalItemFeedback.Cancelled => "Cancellation processed. Check inventory.",
             TacticalItemFeedback.Interrupted => "Item action interrupted. Nothing consumed.",

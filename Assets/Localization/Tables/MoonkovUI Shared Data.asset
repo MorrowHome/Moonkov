@@ -4286,7 +4286,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938042
-    m_Key: Item action started. Keep still; X cancels.
+    m_Key: Item action started. Movement slowed; X cancels.
     m_Metadata:
       m_Items: []
   - m_Id: 5104936000938043

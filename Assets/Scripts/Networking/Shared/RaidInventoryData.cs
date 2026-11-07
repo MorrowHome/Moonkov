@@ -238,7 +238,6 @@ namespace Unity.MP_FPS
         {
             if(MedicalItemId==null)return;
             string reason=!accessible ? "治疗中断：玩家死亡、断线或战局已结束。" :
-                !MedicalIsConsumable && Unity.Mathematics.math.distancesq(position,MedicalOrigin)>ItemActionMovementLimit*ItemActionMovementLimit ? "治疗中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=MedicalDamageSequence ||
                     health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
@@ -320,7 +319,6 @@ namespace Unity.MP_FPS
             bool contentsChanged=caches.RefillStates.TryGetValue(DissectingLootId,out var refill) && refill.RefillCount!=DissectionGeneration;
             string reason=!accessible ? "搜索中断：离开范围、死亡或战局结束。" :
                 contentsChanged ? "搜索中断：容器内容已刷新。" :
-                Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=DissectionDamageSequence || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
                 health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
                 health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;

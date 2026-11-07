@@ -33,6 +33,7 @@ public static class TacticalSelfTreatmentChecks
         Check(!RaidHealth.SelfTreatmentDamageUnchanged(health,damage,shield),"later bleed cannot hide an unaccepted bullet");
         var protectedHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref protectedHealth);
         protectedHealth.ShieldEquipped=true;protectedHealth.ShieldCharge=100;
+        HaloEnergyRules.SetDefense(ref protectedHealth,true);
         damage=protectedHealth.NonPhysiologicalDamageSequence;shield=protectedHealth.ShieldHitSequence;
         RaidHealth.CombatDamage(ref protectedHealth,BodyPart.RightArm,5,20,RaidDamageKind.Bullet);
         Check(protectedHealth.NonPhysiologicalDamageSequence==damage && !RaidHealth.SelfTreatmentDamageUnchanged(protectedHealth,damage,shield),

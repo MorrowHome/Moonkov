@@ -1172,7 +1172,7 @@
   "Use requested. Waiting for server.": "已请求使用，等待服务器确认。",
   "Item use unavailable while inactive or downed.": "未出战或倒地时无法使用物品。",
   "Action in progress. X cancels timed actions.": "动作进行中，按 X 取消耗时动作。",
-  "Item action started. Keep still; X cancels.": "动作已开始，请保持静止；按 X 取消。",
+  "Item action started. Movement slowed; X cancels.": "动作已开始，移动减速；按 X 取消。",
   "Item action completed.": "物品使用完成。",
   "Item action cancelled. Nothing consumed.": "动作已取消，物品未消耗。",
   "Item action interrupted. Nothing consumed.": "动作已中断，物品未消耗。",

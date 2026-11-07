@@ -190,7 +190,7 @@ namespace Unity.MP_FPS
                 var inventory=GetRaidInventory(ref state,connection);
                 bool actorValid=TacticalActor(ref state,connection,out var player,out var health,out var root);
                 bool valid=actorValid && inventory.TacticalPending && inventory.RaidId==use.RaidId && inventory.Graph.Version==use.Version;
-                valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
+                valid=valid && player==use.Player &&
                     !RaidHealth.HandsBusy(health) &&
                     (use.Action==TacticalItemAction.Extinguish ? RaidHealth.SelfTreatmentDamageUnchanged(health,use.DamageSequence,use.ShieldHit) :
                         health.LastHitTick==use.Hit && health.NonPhysiologicalDamageSequence==use.DamageSequence &&
@@ -371,7 +371,7 @@ namespace Unity.MP_FPS
             var validation=TacticalItemRules.Validate(inventory.Graph,use.ItemId,use.Version,out _);
             if(validation!=InventoryError.None)return validation;
             Vector3 position=root.transform.position,velocity=default;
-            if(definition.Deployable && (!TacticalPlacement(root,health,world,out position)||Vector3.Distance(position,use.Placement)>.6f))return InventoryError.Inaccessible;
+            if(definition.Deployable && !TacticalPlacement(root,health,world,out position))return InventoryError.Inaccessible;
             if(definition.Throwable && !TacticalThrow(root,health,world,out position,out velocity))return InventoryError.Inaccessible;
             if((definition.Deployable||definition.Throwable) && !TacticalCapacity(world,definition,use.Player,position))return InventoryError.Full;
             if(definition.Kind==TacticalItemKind.Vitality && !TacticalCanHeal(health))return InventoryError.Invalid;

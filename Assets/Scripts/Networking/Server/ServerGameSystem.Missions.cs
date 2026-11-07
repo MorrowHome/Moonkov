@@ -33,7 +33,7 @@ namespace Unity.MP_FPS
                 LastShotTick=health.LastShotTick;LastGrenadeTick=health.LastGrenadeShotTick;
                 LastReloadTick=health.LastReloadTick;Weapon=health.EquippedWeaponID;
             }
-            public bool Interrupted(in PredictedPlayerGhost health, float3 position) => math.distancesq(position,Origin)>.75f*.75f || health.CurrentHealth<Health ||
+            public bool Interrupted(in PredictedPlayerGhost health, float3 position) => health.CurrentHealth<Health ||
                 health.LastHitTick!=LastHitTick || health.NonPhysiologicalDamageSequence!=DamageSequence || health.ShieldHitSequence!=ShieldHitSequence ||
                 health.LastShotTick!=LastShotTick || health.LastGrenadeShotTick!=LastGrenadeTick ||
                 health.LastReloadTick!=LastReloadTick || health.EquippedWeaponID!=Weapon || RaidHealth.HandsBusy(health);

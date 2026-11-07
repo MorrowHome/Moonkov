@@ -179,6 +179,12 @@ public static class RaidSearchActionChecks
                 case 9: changed.WeaponEquipRemaining = .2f; break;
             }
             actor.RefreshDissection(caches, accessible, position, changed, 22);
+            if(interruption==6)
+            {
+                Check(actor.OpenedLootId==0 && actor.SearchedLoot.Contains(0) && actor.Error==InventoryError.None,
+                    "Movement within interaction reach completes search");
+                continue;
+            }
             Check(actor.DissectingLootId == -1 && actor.OpenedLootId == -1 && !actor.SearchedLoot.Contains(0) &&
                 actor.Error == InventoryError.Inaccessible, "Interruption must not reveal or remember loot: " + interruption);
             Check(!string.IsNullOrEmpty(actor.ActionFeedback), "Interruption needs feedback: " + interruption);
@@ -191,6 +197,7 @@ public static class RaidSearchActionChecks
         var shielded = new PredictedPlayerGhost(); RaidHealth.Initialize(ref shielded);
         shielded.ShieldEquipped = true; shielded.ShieldCharge = 100; shielded.LastHitTick = 42;
         actor = new RaidInventoryState(); actor.BeginDissection(0, 0, origin, shielded, 2);
+        HaloEnergyRules.SetDefense(ref shielded,true);
         Check(EnergyShieldRules.Absorb(ref shielded, 25, 42, RaidDamageKind.Bullet, new float3(1, 1, 1)) == 0 && shielded.LastHitTick == 42,
             "Shield absorbs a second impact in the same tick");
         actor.RefreshDissection(caches, true, origin, shielded, 2);
