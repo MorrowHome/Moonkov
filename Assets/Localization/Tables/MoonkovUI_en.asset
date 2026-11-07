@@ -6557,6 +6557,10 @@ MonoBehaviour:
     m_Localized: "Hold {0} to stop bleeding"
     m_Metadata:
       m_Items: []
+  - m_Id: 7811359011746168583
+    m_Localized: "Hold T to defend. Press U to deploy halo."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

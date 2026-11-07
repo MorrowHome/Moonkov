@@ -1516,5 +1516,6 @@
   "Reduce motion": "减少动画",
   "Signing in...": "正在登录…",
   "Creating account...": "正在注册…",
-  "Hold {0} to stop bleeding": "按住 {0} 止血"
+  "Hold {0} to stop bleeding": "按住 {0} 止血",
+  "Hold T to defend. Press U to deploy halo.": "按住 T 防御，按 U 抛出光环。"
 }

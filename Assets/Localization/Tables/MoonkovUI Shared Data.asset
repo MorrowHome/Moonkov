@@ -6529,6 +6529,10 @@ MonoBehaviour:
     m_Key: "Hold {0} to stop bleeding"
     m_Metadata:
       m_Items: []
+  - m_Id: 7811359011746168583
+    m_Key: "Hold T to defend. Press U to deploy halo."
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
