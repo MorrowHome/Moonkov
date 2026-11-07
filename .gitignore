@@ -75,3 +75,7 @@ LocalData/
 
 # Reproducible exporter console output; manifests and integration reports remain versioned.
 /SourceData/**/*.log
+Assets/MoonEnvironment/Variants/MC00BakedRoomTrial/G01BakedRoom/LightingData.asset
+Assets/Starter Assets/Sample/FirstPersonController/Playground/LightingData.asset
+Assets/Starter Assets/Sample/ThirdPersonController/Playground/LightingData.asset
+Assets/UnityTechnologies/ParticlePack/Scenes/Main Scene with Legacy Particles/LightingData.asset
