@@ -226,7 +226,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, OnlineLobbies lobbies
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2", "lobby-chest-badge-v1" },
         onlineInstances = true, instancePhase = lobbies.Current()?.Phase ?? "Idle", build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
