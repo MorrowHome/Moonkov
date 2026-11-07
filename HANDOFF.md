@@ -79,11 +79,12 @@
 
 - 修改代码前确认 `BuildPipeline.isBuildingPlayer` 为 false。构建期间不要修改脚本，尤其是 Ghost 组件字段。Player 编译可能读到新文件，而 Editor 仍使用旧程序集，造成布局不一致并让整次构建失败。等待原构建结束后再修改和重编译，不另开 Editor。
 
-## Mac 构建 Windows 客户端（2026-11-06）
+## Mac 构建 Windows 包（2026-11-07）
 
-- 本机已安装 Windows 构建支持。当前目标 Windows x64 / Player，后端 Mono。Auto Graphics API 仍开启，包含 Direct3D12 和 Direct3D11。Unity `6000.5.10f1` 在 Mac 上无法编译 STP 原生 16 位分支所需的 D3D DXC 内容；取消的恢复构建记录了 64 条此类错误。
-- 建议 Mac 构建只选 Direct3D11，保留 STP 和现有画质；尚未修改配置。三份 STP 的 32 个 Direct3D11 普通精度变体全部通过定点编译，Direct3D12 原生 16 位对照复现错误。完整构建和 Windows 运行仍待验证。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
-- 当前使用默认配置。`Windows.asset` 继承全局设置，`Windows Client.asset` 有独立 Player Settings 覆盖。修改时核对实际构建配置。保留五份运行时管线登记、光照贴图模式和已有变体裁剪；不要清理 Library。
+- 本机 Unity `6000.5.10f1` 已安装 Windows Build Support (Mono)，可构建 Windows x64 客户端。若在本机打 `MoonServer.exe`，还要在同版本 Unity Hub 安装 Windows Dedicated Server Build Support。本机缺此模块。Windows IL2CPP 构建使用 Windows 主机。
+- 11 月 7 日的 `Build/TT/FPS_Template.exe` 已由这台 Mac 生成。Unity 报告为 Succeeded，但仍记录了 32 条 STP 的 D3D12 DXC 编译错误。该包没有 `moon_ice.dll` 或新版协议标记。不能用它验证新版 P2P。
+- Mac 构建客户端前，核对当前 Build Profile。关闭 Auto Graphics API，只留 Direct3D11。刷新项目后，本次编辑器恢复为 Auto，不能沿用刷新前的 D3D11 读数。`Windows.asset` 继承全局设置；`Windows Client.asset` 有独立覆盖。
+- 三份 STP 的 32 个 Direct3D11 普通精度变体通过定点编译。保留 STP、五份运行时管线登记和现有变体裁剪，不清理 Library。新版 Windows 客户端脚本已在 Mac 编译通过。只用 D3D11 的整包和 Windows 运行仍待验证。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
 
 ## 本地 Windows 独立服构建（2026-11-06）
 
@@ -109,12 +110,13 @@
 
 ## 内置 P2P 与每局选线（2026-11-07）
 
-- 用户明确要求玩家只安装游戏，不额外下载 VPN。Tailscale 仅作线路排查，不是发布依赖。Mac 暂时不可用，可继续内置方案研究；跨网络结果不能用同机自连或同一局域网的成功代替。用户自己的游戏客户端仍须走公网入口。
+- 用户明确要求玩家只安装游戏，不额外下载 VPN。Tailscale 仅作线路排查，不是发布依赖。跨网络结果不能用同机自连或同一局域网的成功代替。用户自己的游戏客户端仍须走公网入口。
 - 已接入 Windows x64 libjuice v1.7.4、UTP 6.5.0 和现有 DTLS。队长在小队准备阶段选择「P2P 直连」或「VPS 中转」，新队伍默认 P2P。修改后全队取消准备；排队与开局后锁定，公开匹配只合并同线路队伍。P2P 失败直接断开，不自动切 VPS。见[当前实现与打包说明](Tools/Networking/EmbeddedIce/README.md)和[选型研究](Docs/EmbeddedNetworkingResearch-20261107.md)。
 - 账号后端已编译并更新，功能标记为 `embedded-ice-v2`。下一次必须同步打包 Windows x64 客户端与独立服务器；构建回调写入 `moon-network-protocol.txt=2`。旧服务器包会被拒绝启动，旧客户端会提示更新。原生 DLL 由 Git LFS 保存，许可随包发布。数据库和现有公网入口未更改。
 - SDP 只通过已登录账号与已有服务器密钥交换，只保存在内存中 45 秒。客户端协商总时限为 20 秒，服务端每 500 毫秒取一次请求。打洞绑定物理网卡；同机客户端两端过滤内网候选，只尝试公网 NAT 回流，失败不转本机。绑定地址不等于已证明流量绕过系统 VPN。
 - `INetworkInterface` 的 Windows 托管包装必须用 struct。打洞和数据收发共用 ICE agent。每个上下文最多 64 个对端，接收队列默认 256 包；原生回调只入队。driver 独占上下文并负责释放，不能重复包装。STUN 主机名先在可取消的协商层解析，避免销毁时等待原生 DNS。适配器每批会完成前置 jobs，真实战局的 CPU 和帧时间尚未验收。
 - 服务端 ICE 实现位于 `Assets/Scripts/Networking/Server/OnlineInstanceServer.Ice.cs`。Unity 曾识别原文件为 MonoScript，却未将其纳入编译清单；保留 GUID 重新登记文件后恢复。遇到类似缺类型错误，应核对实际编译清单，不能只看磁盘文件或导入成功。此次现有单 Editor 编译通过，0 错误、0 警告；未进入 Play、打包或联机。
+- Mac 切到 Windows 目标后，Editor 也会定义 `UNITY_STANDALONE_WIN`。这不会让 Mac 加载 `moon_ice.dll`。合入 P2P 后，打开的 Editor 需完成资源刷新。打包前确认已加载协议 2 的脚本和构建回调，且插件导入目标是 Windows x64。大厅 39 项、协商 16 项离线检查通过，未做公网打洞或 DTLS 入场验收。
 - 全量接入前，固定源码构建及 65 项原生断言、32 项单 Editor 隔离断言通过。覆盖 NetCode 管线、DTLS 双向 64/1200 字节、释放及错误服务器名称。错误名称在普通 UDP 和 ICE 都未建立应用连接，均返回 `MaxConnectionAttempts=2`，不是明确的认证失败回码。报告在忽略目录 `LocalData/EmbeddedIce/`。用户随后要求直接接入、不追加测试；这些底层结果不能代表完整新流程或跨网络联机已通过。未构建 Player、进入 Play 或测量公网延迟。
 - 战局 UDP 打洞不会自动加速仓库 HTTPS；完整仓库直连还需常驻的可靠账号请求通道，不能依赖按局退出的 Unity 服务器。
 - 本机已安装并登录官方 Tailscale 1.104.5。现有 VPN 使用两条 `/1` 路由，Tailscale 默认绑定校园网网卡时，控制端登录连接无法建立。仅在 Tailscale 服务的 `Environment` 中增加 `TS_BIND_TO_INTERFACE_BY_ROUTE=1` 后，控制连接按系统路由经过 VPN，登录恢复。该选项已核对当前版本源码；升级后需重新确认。原服务环境备份在忽略目录 `LocalData/P2PTrial/`。
