@@ -6525,6 +6525,10 @@ MonoBehaviour:
     m_Key: Unknown connection
     m_Metadata:
       m_Items: []
+  - m_Id: 2924982897995778044
+    m_Key: "Hold {0} to stop bleeding"
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -6553,6 +6553,10 @@ MonoBehaviour:
     m_Localized: Unknown connection
     m_Metadata:
       m_Items: []
+  - m_Id: 2924982897995778044
+    m_Localized: "Hold {0} to stop bleeding"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
