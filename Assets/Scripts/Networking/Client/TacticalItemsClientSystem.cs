@@ -41,10 +41,6 @@ namespace Unity.MP_FPS
                 {if(!m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();m_Feedback.Present(rpc.ValueRO);}
                 ecb.DestroyEntity(entity);
             }
-            if(m_Feedback)
-                foreach(var (health,link,entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>,GhostGameObjectLink>().WithEntityAccess())
-                    if(health.ValueRO.TacticalCoughSeconds>0 && link.LinkedInstance)
-                        m_Feedback.PresentCough(entity.Index,link.LinkedInstance.transform.position+Vector3.up);
             ecb.Playback(EntityManager);
         }
         protected override void OnDestroy()

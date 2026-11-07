@@ -6,13 +6,14 @@ using Unity.MP_FPS;
 using UnityEditor;
 using UnityEngine;
 
-// Uses the real sound pool and clip selection, without Play, profiles or networking.
+// Uses the real sound pool and clip selection, without profiles or networking.
 public static class PlayerVoicePlaybackReview
 {
     public static async Task<string> Check(string[] banks)
     {
-        if (EditorApplication.isPlayingOrWillChangePlaymode || BuildPipeline.isBuildingPlayer)
-            throw new InvalidOperationException("Use an idle Editor");
+        if (EditorApplication.isPlayingOrWillChangePlaymode && !Application.isPlaying ||
+            GameManager.Instance || BuildPipeline.isBuildingPlayer)
+            throw new InvalidOperationException("Use idle Edit mode or an isolated Play scene");
         var lines = new List<string>();
         var view = SceneView.lastActiveSceneView;
         bool previousAudio = view && view.audioPlay, previousMute = EditorUtility.audioMasterMute;
@@ -68,6 +69,7 @@ public static class PlayerVoicePlaybackReview
                     }
                     system.Kill(info);
                     if (heard.Count == bank.Clips.Count) break;
+                    if (bank.MinimumInterval > 0) await Task.Delay(Mathf.CeilToInt(bank.MinimumInterval * 1000) + 20);
                 }
                 if (heard.Count != bank.Clips.Count) throw new InvalidOperationException("Not all variants played: " + name);
                 if (pool.AvailableSoundObjectCount != 2) throw new InvalidOperationException("Leaked pooled sources: " + name);

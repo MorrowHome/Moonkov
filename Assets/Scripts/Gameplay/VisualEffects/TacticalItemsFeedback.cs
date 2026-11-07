@@ -34,9 +34,6 @@ namespace Unity.MP_FPS
         private Material m_SmokeVolume;
         private static readonly int SmokeDensityId=Shader.PropertyToID("_Density");
         private uint m_Epoch,m_HighestSequence;
-        private sealed class CoughEmitter {public GameObject Root;public float Next,Expires;}
-        private readonly Dictionary<int,CoughEmitter> m_CoughEmitters=new();
-        private readonly List<int> m_ExpiredCoughs=new();
 
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -194,16 +191,6 @@ namespace Unity.MP_FPS
                     v.Core.localScale=Vector3.one*(1+.1f*Mathf.Sin(Time.time*17));
             }
             foreach(uint id in m_Expired)Remove(id);
-            m_ExpiredCoughs.Clear();foreach(var pair in m_CoughEmitters)if(Time.time>pair.Value.Expires)m_ExpiredCoughs.Add(pair.Key);
-            foreach(int id in m_ExpiredCoughs){Release(m_CoughEmitters[id].Root);m_CoughEmitters.Remove(id);}
-        }
-        public void PresentCough(int id,Vector3 position)
-        {
-            if(!Camera.main || Vector3.Distance(position,Camera.main.transform.position)>RaidCoughSound.Range)return;
-            if(!m_CoughEmitters.TryGetValue(id,out var emitter))
-            {if(m_CoughEmitters.Count>=32)return;emitter=new CoughEmitter {Root=new GameObject("Replicated choke breathing")};emitter.Root.transform.SetParent(transform,false);m_CoughEmitters[id]=emitter;}
-            emitter.Expires=Time.time+3;
-            if(Time.time<emitter.Next)return;emitter.Next=Time.time+(float)RaidCoughSound.Interval;emitter.Root.transform.position=position;MoonkovAudio.Play(MoonkovAudio.Library?.TacticalCough,position,.65f);
         }
         private void DrawAimPreview()
         {
@@ -438,7 +425,7 @@ namespace Unity.MP_FPS
         {var points=new Vector3[48];for(int i=0;i<48;i++){float a=i*Mathf.PI*2/48;points[i]=new Vector3(Mathf.Cos(a)*radius,height,Mathf.Sin(a)*radius);}Line(root,points,width,material,true);}
         private void Remove(uint id)
         {if(m_Visuals.TryGetValue(id,out var v)){if(v.Root)Release(v.Root);m_Visuals.Remove(id);}}
-        private void Clear(){foreach(var v in m_Visuals.Values)if(v.Root)Release(v.Root);m_Visuals.Clear();m_Sequences.Clear();m_HighestSequence=0;foreach(var emitter in m_CoughEmitters.Values)if(emitter.Root)Release(emitter.Root);m_CoughEmitters.Clear();}
+        private void Clear(){foreach(var v in m_Visuals.Values)if(v.Root)Release(v.Root);m_Visuals.Clear();m_Sequences.Clear();m_HighestSequence=0;}
         private static void Release(UnityEngine.Object value)
         {if(!value)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
         private void OnDestroy()

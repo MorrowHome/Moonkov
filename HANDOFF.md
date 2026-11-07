@@ -892,6 +892,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 烟雾呛咳改用 CC0 真人录音，由 `MoonkovPlayerAudio` 统一调度，原 `TacticalItemsFeedback` 不再另播。人声顺序为受击、咳嗽、挥拳、呻吟、呼吸。离开暴露和死亡会收束。`CoughVoiceReview` 的 16 项隔离 Play 检查、原 18 项实际脚步检查及新增音效完整播放通过。`GameAudioAudit` 覆盖 83 个入口、168 个音库和 14 组回归；详细边界见[音效系统](Docs/AudioSystem.md#2026-11-08-呛咳与全库复查)。
+
 - 2026-11-08 普通受击、近战及四个枪械身体命中库改用三条 CC0 闷击实录。原金属盾牌录音移作近战格挡。重建用 `MoonkovBodyImpactAudioSetup.Install()`。不要再把 `Character/Hit.wav` 当作身体撞击源，该文件实际是金属盾牌。详见[音效系统](Docs/AudioSystem.md#2026-11-08-身体命中与格挡)。
 
 - `Hit` 是护甲撞击录音，不是人的叫声。受伤人声使用独立的 `AudioLibrary.PlayerPain`，保留原撞击声。
