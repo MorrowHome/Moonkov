@@ -17,6 +17,7 @@
 - 本地化不能在首场景前同步等待。原设置启用了同步初始化，界面还通过 `GetTable` 和 `SelectedLocale` 隐式等待。现改为异步表加载。未完成或失败时显示原文，表就绪后刷新已有文字和格式参数。读取语言不再阻塞，切换语言先异步等待初始化。
 - Addressables 固定随 Player 构建，不再依赖 Mac 或 Windows 的个人 Editor 偏好。三个中文名分组使用纯哈希包文件名，避开跨平台压缩、解压时的文件名编码差异。语言名称和资源 GUID 不变。不要给旧包只替换 DLL；在 Mac 同步代码后重新正常构建，保留增量缓存。
 - `MoonkovPlayerBuildChecks.ValidateStartupAssets` 检查异步初始化、随包构建和非 ASCII 分组的包命名。`Build Chinese Localization` 会保持这些设置。
+- `.gitignore` 列出的 4 个 `LightingData.asset` 是本地烘焙文件。试验房和示例场景仍引用对应的 `.meta`。烘焙文件缺失时，Unity 刷新会删除 `.meta`。从 `363b65e8^` 恢复对应的本地二进制文件和原 `.meta`。
 - 菜单使用独立的 UI 角色展示，不再加载旧 `GameScene` 样例地图和菜单客户端世界。仅异步加载 `Persistents`，完成后才标记菜单就绪。战局创建世界的流程不变。登录页也不再构造被样式隐藏的旧月球相机；旧代码只检查 `display`，会继续渲染 `visibility: hidden` 的月球。性能收益尚未在冷启动 Player 中计时。
 - 单 Windows Editor 编译通过。`Tools/Validation/LocalizationStartupReview.cs` 用公开 API 检查，10 项构建设置、译文、格式参数、缺失词条回退和进度隔离检查通过。该次检查的本地化已初始化，不能代表冷启动或资源缺失包已验收。没有进入 Play、启动客户端或重建 Player。下一步验收为 Mac 重打 Windows 包后，冷启动显示登录动画，进图显示持续更新的加载界面。
 
@@ -484,7 +485,7 @@
 - 六墙样本已通过 Blender 回读及 Unity 隔离预览，未安装到正式场景。原场景已有抬高平台，九点射线命中其碰撞表面；源墙底与平台间约 0.35 米由源基座填补。墙体仍需新碰撞。三张 2048 图集在编辑器共约 32 MiB；正式批量导入前须控制内存和 Renderer 数量。
 - 北侧通道 749 个源网格中，722 个的原始闭合面朝内。只在导出副本逐件修正，不改源文件、旧碰撞或交互。旧全量分片还有 633 组重复文字或曲线，已标为不可导入。
 - 正式场景保存数据的 118 灯 ID、135 按钮 ID 和目标与源映射一致。现有 MC00 灯光系统会替换全局光照贴图和探针；其他区域的独立烘焙必须先解决兼容性和动态角色受光。
-- Unity 导入样本期间，`Assets/Localization/Fonts/NotoSansCJKsc.asset` 被标记为修改。本任务没有提交或还原它。后续操作须保留并单独核对该文件。
+- 2026-11-07 已核对 `Assets/Localization/Fonts/NotoSansCJKsc.asset` 的本地差异。Unity 只生成了 2048×2048 空图集缓存，已恢复版本库内容。
 
 ## 单人战役第二章
 
