@@ -178,7 +178,8 @@
 - 小队动作源为 `ArtSource/DollSinger/SquadMotions.blend`。包含四个独立 `Squad_` Action 和静音 NLA 轨，每段 4 秒、61 个采样帧。手工改动后先保存，再用本机 Blender 运行 `Tools/Blender/export_squad_motions.py`。导出器只读动作源，并离线适配三套骨架。`squad_motions.py` 会重建此文件，不能用来导出手工修改。运行时只插值缓存的骨旋转，腿部保留原待机，切换过渡为 0.25 秒。可爱姿态复用现有面部形变。小队动作时收起手持近战道具，装备信息不变。
 - 用户最终选择保留首版抱臂。比心保留修正后的手型，食指向内弯出凹口。恢复首版只针对抱臂。三角色共 8097 项动作、循环、准备反馈、静态显示和清理检查通过。Blender 检查了 20 个蒙皮样本，并确认参考网格未改。参考模型仍有既有重叠面和退化面；本轮只交付动作，不修模型拓扑。没有进入 Play、联机或重建 Player。
 - 小队使用手动渲染请求。预览蒙皮必须开启 `forceMatrixRecalculationPerRender`，否则同一次 Editor 更新内重新摆骨后，截图仍可能使用旧蒙皮。不要只用骨坐标判定画面正确。三角色检查入口为 `Tools/Moonkov/Check Squad Motions`，动态预览入口为 `Capture Squad Motion Preview`。检查与截图使用样例外观，不登录、不进入 Play、不启动客户端。结果位于 `LocalData/SquadMotionReview`。
-- `OnlineSquadStage` 共用一台相机、一个最长边 1600 像素的目标，约 30 Hz 更新。复用人物动作与装备逻辑，不加载正式整图或战斗模拟。隐藏时释放。读取 Windows 减少动画设置，页面内也可调整。31 项原生布局、权限、角色／姿势、四人渲染和清理检查通过。样例人物预览位于 `LocalData/OnlineSquadReview`；不是实际联机截图。
+- 在线和 LAN 共用全屏 `OnlineSquadStage` 与 `SquadGlass`。每屏一台相机，最长边 3072 像素、总像素 300 万封顶。磨砂区域裁切同一张最长边 512 像素的底图。隐藏时释放纹理和场景。
+- 在线队伍码在右上，匹配和出发在右下。队长可展开“管理成员”移除队员。沿用高级连接和原战局重连控件。编辑器样例入口为 `Moonkov/Networking/Online Lobby UI Preview`，使用隔离数据。
 - Resources 下 UXML 会生成同名内嵌 StyleSheet。用 `Resources.Load<StyleSheet>` 加载与 UXML 同名的 USS，可能拿到空的内嵌样式。小队样式改为独立名称 `OnlineSquadStyles`，并直接挂到实际页面根。动态名字按玩家数据直接显示，不把昵称当作译文。
 - 后端编译 0 错误、0 警告。39 项大厅、15 项外观和 7 项票据检查通过。单 Editor 编译和原生检查通过。没有进入 Play、启动游戏客户端、开启对局或进行公网 UDP 验收。
 - 本次发布预检查 9 项通过，包含证书、后端身份、公网 401 和空闲实例槽。客户端构建保留 4303 条工程警告，其中 4278 条为现有着色器警告，本次小队相关警告为 0。不能称为全工程零警告。构建后恢复 Player 子目标，关闭本轮批处理 Editor，还原自动生成的 URP 预筛选字段和 lilToon 设置。四人页面的 Player 帧时间和跨设备完整对局仍待用户实测。

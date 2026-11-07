@@ -1,50 +1,58 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="SquadGlassStyles.uss" />
     <ui:Style src="OnlineSquadStyles.uss" />
     <ui:VisualElement name="onlineLobby" class="online-squad-screen">
-        <ui:VisualElement class="online-header">
-            <ui:Button name="onlineBack" text="仓库" class="online-back" />
-            <ui:Label text="远征小队" class="online-title" />
-            <ui:Label name="onlineCount" class="online-secondary" />
-            <ui:Button name="onlineCopy" text="复制队伍码" class="online-code" />
-        </ui:VisualElement>
-        <ui:VisualElement name="onlineStageHost" class="online-stage-host">
+        <ui:VisualElement name="onlineStageHost" class="online-stage-host" picking-mode="Ignore">
             <ui:Image name="onlineStage" class="online-stage" picking-mode="Ignore" />
-            <ui:VisualElement name="onlineMembers" class="online-members" />
+            <ui:VisualElement name="onlineMembers" class="online-members" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="online-controls">
-            <ui:VisualElement class="online-personal">
+        <ui:VisualElement class="online-left" picking-mode="Ignore">
+            <ui:VisualElement class="online-header squad-glass">
+                <ui:Button name="onlineBack" text="仓库" class="online-back online-secondary" />
+                <ui:Label text="在线小队" class="online-title" />
+            </ui:VisualElement>
+            <ui:Foldout text="外观" class="online-personal online-foldout squad-glass" value="false">
                 <ui:DropdownField name="onlineCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
                 <ui:DropdownField name="onlinePose" label="姿态" choices="自动,抱臂,敬礼,比心,撒娇" index="0" />
-            </ui:VisualElement>
-            <ui:VisualElement name="onlineEntry" class="online-entry">
-                <ui:Button name="onlineCreate" text="创建小队" class="online-primary" />
-                <ui:TextField name="onlineInvite" label="队伍码" max-length="8" />
-                <ui:Button name="onlineJoin" text="加入小队" />
-            </ui:VisualElement>
-            <ui:VisualElement name="onlineParty" class="online-party">
-                <ui:VisualElement name="onlineSettings" class="online-settings">
-                    <ui:RadioButtonGroup name="onlineMode" label="玩法" choices="合作,好友对抗" value="0" />
-                    <ui:RadioButtonGroup name="onlineConnection" label="连接方式" choices="P2P 直连,VPS 中转" value="0" />
-                    <ui:Toggle name="onlinePublic" label="寻找其他队伍" />
-                </ui:VisualElement>
-                <ui:RadioButtonGroup name="onlineTeam" label="队伍" choices="A 队,B 队" value="0" />
-                <ui:VisualElement class="online-actions">
-                    <ui:Button name="onlineLeave" text="离队" class="online-quiet" />
-                    <ui:Button name="onlineCancel" text="取消等待" />
-                    <ui:Button name="onlineRetry" text="重试加入" />
-                    <ui:Button name="onlineReturn" text="返回小队" />
-                    <ui:Button name="onlineReady" text="准备" />
-                    <ui:Button name="onlineStart" text="出发" class="online-primary" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement class="online-bottom">
-            <ui:Label name="onlineStatus" class="online-status" />
-            <ui:Foldout name="onlineOptions" text="连接设置" value="false" class="online-options">
                 <ui:Toggle name="onlineReduceMotion" label="减少动态效果" />
-                <ui:VisualElement name="onlineAdvancedHost" />
             </ui:Foldout>
+            <ui:VisualElement name="onlineReconnectHost" class="online-reconnect squad-glass" style="display: none;" />
+            <ui:ScrollView name="onlineAdvancedHost" class="online-advanced squad-glass" horizontal-scroller-visibility="Hidden" style="display: none;" />
         </ui:VisualElement>
-        <ui:VisualElement name="onlineReconnectHost" class="online-reconnect" />
+        <ui:VisualElement class="online-controls" picking-mode="Ignore">
+            <ui:VisualElement name="onlineParty" class="online-party squad-glass">
+                <ui:Button name="onlineCopy" text="复制队伍码" class="online-code online-secondary" />
+                <ui:Label name="onlineCount" class="online-count" />
+                <ui:RadioButtonGroup name="onlineTeam" label="队伍" choices="A 队,B 队" value="0" />
+                <ui:ScrollView class="online-room-details" horizontal-scroller-visibility="Hidden">
+                    <ui:Foldout text="房间设置" class="online-foldout" value="false">
+                        <ui:VisualElement name="onlineSettings" class="online-settings">
+                            <ui:RadioButtonGroup name="onlineMode" label="玩法" choices="合作,好友对抗" value="0" />
+                            <ui:RadioButtonGroup name="onlineConnection" label="连接方式" choices="P2P 直连,VPS 中转" value="0" />
+                            <ui:Toggle name="onlinePublic" label="寻找其他队伍" />
+                        </ui:VisualElement>
+                    </ui:Foldout>
+                    <ui:Foldout name="onlineManage" text="管理成员" class="online-foldout" value="false" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement name="onlineEntry" class="online-entry squad-glass">
+                <ui:TextField name="onlineInvite" label="队伍码" max-length="8" />
+                <ui:Button name="onlineJoin" text="加入小队" class="online-secondary" />
+                <ui:Button name="onlineCreate" text="创建小队" class="online-primary" />
+            </ui:VisualElement>
+            <ui:VisualElement name="onlineActions" class="online-actions squad-glass">
+                <ui:Button name="onlineLeave" text="离队" class="online-quiet" />
+                <ui:Button name="onlineCancel" text="取消等待" class="online-secondary" />
+                <ui:Button name="onlineRetry" text="重试加入" class="online-primary" />
+                <ui:Button name="onlineReturn" text="返回小队" class="online-secondary" />
+                <ui:Button name="onlineReady" text="准备" class="online-secondary" />
+                <ui:Button name="onlineStart" text="出发" class="online-primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="online-bottom" picking-mode="Ignore">
+            <ui:VisualElement name="onlineNotice" class="online-notice squad-glass">
+                <ui:Label name="onlineStatus" class="online-status" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

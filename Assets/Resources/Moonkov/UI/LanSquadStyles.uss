@@ -8,16 +8,6 @@
 .lan-in-room .lan-stage-members { display: flex; }
 
 .lan-squad-ui .lan-shell { padding: 22px 26px; }
-.lan-squad-ui .lan-glass {
-    background-color: rgba(19,22,29,0.79);
-    border-width: 1px;
-    border-color: rgba(222,235,255,0.19);
-    border-top-color: rgba(234,242,255,0.28);
-    border-bottom-color: rgba(222,235,255,0.12);
-    border-radius: 15px;
-    overflow: hidden;
-}
-.lan-glass-image { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
 .lan-squad-ui .lan-header { align-self: flex-start; min-height: 44px; margin: 0 0 8px; padding: 4px 14px 4px 4px; }
 .lan-squad-ui .lan-title { margin: 0 0 0 11px; }
 .lan-layer.lan-squad-ui Label, .lan-layer.lan-squad-ui Button,

@@ -19,7 +19,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Pager;
         private readonly Label m_PageLabel;
         private readonly Button m_Previous, m_Next;
-        private readonly LanSquadGlass m_Glass;
+        private readonly SquadGlass m_Glass;
         private LanMember[] m_Members = Array.Empty<LanMember>();
         private LanRoomSnapshot m_Room;
         private string m_LocalId, m_RoomId;
@@ -30,7 +30,7 @@ namespace Unity.MP_FPS.Client
             Element.AddToClassList("lan-squad-stage");
             var image = new Image { name = "lanStageImage", pickingMode = PickingMode.Ignore };
             image.AddToClassList("lan-stage-image"); Element.Add(image);
-            Stage = new OnlineSquadStage(image, fillViewport: true);
+            Stage = new OnlineSquadStage(image);
             Stage.FramingChanged += AlignCards;
             m_Badges = new VisualElement { name = "lanStageMembers", pickingMode = PickingMode.Ignore };
             m_Badges.style.visibility = Visibility.Hidden;
@@ -39,7 +39,7 @@ namespace Unity.MP_FPS.Client
             {
                 var card = m_Cards[i] = new VisualElement { name = "lanStageMember" + i, pickingMode = PickingMode.Ignore };
                 card.AddToClassList("lan-stage-member");
-                card.AddToClassList("lan-glass");
+                card.AddToClassList("squad-glass");
                 card.AddToClassList("lan-member-badge");
                 var name = m_Names[i] = new Label { enableRichText = false }; name.AddToClassList("lan-stage-name"); card.Add(name);
                 var state = m_States[i] = new Label { enableRichText = false }; state.AddToClassList("lan-stage-state"); card.Add(state);
@@ -54,7 +54,7 @@ namespace Unity.MP_FPS.Client
             if (screen != null)
             {
                 screen.Q("lanStageHost").Add(Element);
-                m_Glass = new LanSquadGlass(screen, image, Stage);
+                m_Glass = new SquadGlass(screen, image, Stage);
             }
         }
 

@@ -1,0 +1,10 @@
+.squad-glass {
+    background-color: rgba(19,22,29,0.79);
+    border-width: 1px;
+    border-color: rgba(222,235,255,0.19);
+    border-top-color: rgba(234,242,255,0.28);
+    border-bottom-color: rgba(222,235,255,0.12);
+    border-radius: 15px;
+    overflow: hidden;
+}
+.squad-glass-image { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }

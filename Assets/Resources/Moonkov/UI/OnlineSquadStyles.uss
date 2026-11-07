@@ -1,63 +1,99 @@
-/* Radix Slate dark: surfaces 1–5, borders 6–8, text 11–12; Blue 9–12 for actions.
-   https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale */
+/* Online controls share the glass surface and camera framing used by LAN squads. */
+.online-squad-screen, .online-stage-host, .online-stage, .online-members {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+}
 .online-squad-screen {
-    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-    background-color: #111113; color: #edeef0; padding: 26px 42px 18px;
+    background-color: #080a0f; color: #edeef0;
     -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); font-size: 14px;
 }
-.online-header { flex-direction: row; align-items: center; min-height: 48px; margin-bottom: 12px; flex-shrink: 0; }
-.online-squad-screen .online-title { font-size: 22px; -unity-font-style: bold; margin: 0 18px 0 24px; }
-.online-secondary { color: #b0b4ba; font-size: 12px; }
-.online-squad-screen .online-code { margin-left: auto; color: #c2e6ff; }
-.online-stage-host { flex-grow: 1; min-height: 160px; }
-.online-stage { flex-grow: 1; min-height: 100px; }
-.online-members { position: relative; height: 86px; flex-shrink: 0; margin-top: 10px; }
-.online-member { position: absolute; width: 21%; top: 0; padding: 0 8px; align-items: center; }
-.online-member-name { font-size: 14px; -unity-font-style: bold; white-space: normal; -unity-text-align: middle-center; }
-.online-member-status { font-size: 12px; color: #b0b4ba; margin-top: 5px; white-space: normal; -unity-text-align: middle-center; }
-.online-member.is-ready .online-member-status { color: #70b8ff; }
-.online-member.is-offline { opacity: 0.55; }
-.online-member.is-self .online-member-name { color: #c2e6ff; }
-.online-squad-screen .online-member-action { font-size: 12px; min-height: 26px; margin-top: 4px; padding: 2px 12px; color: #b0b4ba; background-color: transparent; border-color: transparent; }
-.online-controls { flex-direction: row; align-items: flex-end; flex-wrap: wrap; padding-top: 18px; border-top-width: 1px; border-top-color: #363a3f; flex-shrink: 0; }
-.online-personal { flex-direction: row; align-items: center; margin-right: 24px; margin-bottom: 12px; }
-.online-squad-screen .unity-base-field { margin: 0 14px 0 0; min-width: 120px; }
-.online-squad-screen .unity-base-field__label { color: #b0b4ba; min-width: 36px; margin-right: 10px; font-size: 12px; }
-.online-squad-screen .unity-base-field__input { background-color: #212225; color: #edeef0; border-width: 1px; border-color: #43484e; border-radius: 4px; min-height: 38px; padding: 5px 10px; font-size: 14px; }
-.online-squad-screen .unity-base-field__input:hover { background-color: #272a2d; }
-.online-squad-screen .unity-base-field__input:focus { border-color: #70b8ff; }
-.online-squad-screen .unity-base-field__label--with-dragger { min-width: 0; }
-.online-squad-screen .unity-popup-field__text { color: #edeef0; font-size: 14px; }
-.online-squad-screen .unity-popup-field__arrow { -unity-background-image-tint-color: #b0b4ba; }
-.online-entry { flex-direction: row; align-items: center; flex-wrap: wrap; flex-grow: 1; justify-content: flex-end; margin-bottom: 12px; }
-.online-entry .unity-text-field { margin-left: 20px; width: 180px; }
-.online-party { flex-direction: row; flex-wrap: wrap; align-items: center; flex-grow: 1; margin-bottom: 12px; }
-.online-settings { flex-direction: row; flex-wrap: wrap; align-items: center; margin-right: 16px; }
-.online-squad-screen .unity-radio-button-group__container { flex-direction: row; align-items: center; }
-.online-squad-screen .unity-radio-button { min-width: 0; margin: 0 12px 0 0; }
-.online-squad-screen .unity-radio-button__label, .online-squad-screen .unity-toggle__label { color: #edeef0; font-size: 14px; }
-.online-squad-screen .unity-toggle__input { min-width: 20px; min-height: 20px; padding: 0; background-color: transparent; }
-.online-squad-screen .unity-radio-button__input { background-color: transparent; border-width: 0; padding: 0; min-width: 18px; min-height: 18px; }
-.online-actions { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; flex-grow: 1; }
-.online-squad-screen Button {
-    min-height: 40px; padding: 8px 18px; margin: 0 0 0 8px; border-width: 1px; border-color: #43484e;
-    border-radius: 4px; background-color: #212225; color: #edeef0; font-size: 14px;
-    transition-duration: 0.15s;
+.online-left {
+    position: absolute; top: 22px; bottom: 78px; left: 26px; max-width: 43%; align-items: flex-start;
 }
-.online-squad-screen Button:hover { background-color: #272a2d; border-color: #5a6169; }
+.online-header {
+    flex-direction: row; align-items: center; min-height: 44px; flex-shrink: 0;
+    margin-bottom: 8px; padding: 4px 14px 4px 4px;
+}
+.online-title { color: #f0f3fa; font-size: 20px; -unity-font-style: bold; margin: 0 0 0 11px; }
+.online-personal { flex-shrink: 0; margin-bottom: 8px; padding: 1px 11px; }
+.online-squad-screen .online-foldout > .unity-foldout__toggle,
+.online-squad-screen #AdvancedConnection > .unity-foldout__toggle {
+    min-height: 30px; margin: 0; padding: 4px 0; background-color: transparent;
+}
+.online-squad-screen .online-personal > .unity-foldout__toggle { min-height: 33px; padding: 4px 3px; }
+.online-foldout > .unity-foldout__content { margin: 0 0 6px; }
+.online-personal .unity-popup-field__input { min-width: 134px; }
+.online-advanced { width: 248px; max-width: 100%; min-height: 0; flex-shrink: 1; padding: 2px 11px; }
+.online-advanced #AdvancedConnection { margin: 0; }
+
+.online-controls { position: absolute; top: 22px; right: 26px; bottom: 22px; left: 26px; }
+.online-party {
+    position: absolute; top: 0; right: 0; width: 248px; max-width: 46%; max-height: 75%; padding: 12px 13px 8px;
+}
+.online-count { color: #b9e0ff; font-size: 12px; margin: 7px 0 4px; }
+.online-squad-screen .online-code { margin: 0; -unity-font-style: bold; }
+.online-room-details { flex-shrink: 1; min-height: 0; }
+.online-settings .unity-base-field, .online-personal .unity-base-field, #onlineTeam { margin: 0 0 5px; }
+.online-settings .unity-radio-button-group { flex-direction: column; align-items: flex-start; }
+.online-squad-screen .unity-radio-button-group__container { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.online-squad-screen .unity-radio-button { margin: 0 8px 0 0; }
+.online-squad-screen .unity-radio-button__label, .online-squad-screen .unity-toggle__text { color: #edeef0; }
+.online-squad-screen .unity-base-field__label { min-width: 38px; color: #d4d9e0; }
+.online-squad-screen .unity-base-field__input {
+    min-height: 34px; padding: 5px 9px; border-width: 1px; border-radius: 8px;
+    background-color: rgba(229,237,254,0.08); border-color: rgba(229,237,254,0.16); color: #edeef0;
+}
+.online-squad-screen .unity-base-field__input:focus { border-color: #70b8ff; }
+.online-squad-screen .unity-toggle__input, .online-squad-screen .unity-radio-button__input {
+    min-height: 24px; padding: 0; background-color: transparent; border-width: 0;
+}
+.online-member-row { flex-direction: row; align-items: center; padding: 3px 0; }
+.online-member-row Label { flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.online-squad-screen .online-member { position: absolute; top: 0; width: 23%; padding: 4px 10px; align-items: center; border-radius: 12px; }
+.online-member-name, .online-member-status {
+    margin: 0; padding: 0; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.online-member-name { -unity-font-style: bold; font-size: 14px; }
+.online-member-status { font-size: 12px; color: #d1d6df; }
+.online-member.is-ready .online-member-status { color: #b9e0ff; }
+.online-member.is-offline .online-member-status { color: #ffb7c1; }
+.online-squad-screen .online-member.is-self { border-color: rgba(173,219,255,0.52); }
+
+.online-entry, .online-actions {
+    position: absolute; right: 0; bottom: 0; max-width: 100%; flex-direction: row;
+    flex-wrap: wrap; align-items: center; justify-content: flex-end; padding: 6px;
+}
+.online-entry .unity-text-field { margin: 0; width: 142px; }
+.online-squad-screen Button {
+    min-height: 36px; padding: 6px 12px; margin: 0 0 0 5px; border-width: 1px; border-color: transparent;
+    border-radius: 9px; background-color: transparent; color: #edeef0; font-size: 14px;
+    transition-property: background-color, border-color; transition-duration: 0.15s;
+}
+.online-squad-screen Button:hover { background-color: rgba(228,239,255,0.13); }
+.online-squad-screen Button:active { background-color: rgba(228,239,255,0.23); }
 .online-squad-screen Button:focus { border-color: #70b8ff; }
-.online-squad-screen Button:active { background-color: #2e3135; }
-.online-squad-screen Button:disabled { opacity: 0.5; }
-.online-squad-screen .online-back { margin-left: 0; background-color: transparent; }
-.online-squad-screen .online-primary { background-color: #0090ff; border-color: #0090ff; min-width: 108px; color: #ffffff; -unity-font-style: bold; }
-.online-squad-screen .online-primary:hover { background-color: #3b9eff; border-color: #3b9eff; }
-.online-squad-screen .online-quiet { background-color: transparent; border-color: transparent; color: #b0b4ba; }
-.online-bottom { flex-direction: row; align-items: flex-start; flex-shrink: 0; min-height: 30px; }
-.online-status { flex-grow: 1; flex-shrink: 1; font-size: 12px; color: #b0b4ba; white-space: normal; margin: 8px 24px 0 0; }
-.online-status.is-error { color: #ff9592; }
-.online-options { width: 270px; flex-shrink: 0; font-size: 12px; margin-top: 4px; }
-.online-options .unity-foldout__content { padding: 10px 0; }
-.online-squad-screen.online-compact { padding: 14px 18px 10px; }
-.online-compact .online-personal { margin-right: 12px; }
-.online-compact .online-controls { padding-top: 10px; }
+.online-squad-screen Button:disabled { color: #a4abb6; }
+.online-squad-screen .online-primary { min-width: 96px; background-color: #0090ff; color: #fff; -unity-font-style: bold; }
+.online-squad-screen .online-primary:hover { background-color: #3b9eff; }
+.online-squad-screen .online-primary:disabled { background-color: #1b2a39; border-color: #2c3d51; color: #a4abb6; }
+.online-squad-screen .online-secondary, .online-squad-screen .online-member-action {
+    background-color: rgba(228,239,255,0.08); border-color: rgba(228,239,255,0.15);
+}
+.online-squad-screen .online-secondary:hover, .online-squad-screen .online-member-action:hover { background-color: rgba(228,239,255,0.17); }
+.online-squad-screen .online-quiet:hover { color: #ffdbdc; background-color: rgba(217,64,79,0.18); }
+.online-squad-screen .online-back { margin: 0; min-width: 62px; }
+.online-squad-screen .online-member-action { min-height: 28px; padding: 3px 7px; font-size: 12px; }
+
+.online-bottom { position: absolute; bottom: 22px; left: 26px; max-width: 35%; }
+.online-notice { padding: 5px 11px; }
+.online-status { margin: 0; color: #e3e7ee; font-size: 12px; white-space: normal; }
+.online-status.is-error { color: #ffb7c1; }
+.online-reconnect { width: 248px; max-width: 100%; margin-bottom: 8px; flex-shrink: 0; }
+.online-reconnect #ReconnectPanel { flex-direction: column; align-items: stretch; padding: 7px 10px; background-color: transparent; }
+.online-reconnect #ResumeStatus { margin: 0 0 6px; color: #d4d9e0; font-size: 12px; white-space: normal; }
+.online-reconnect #ResumeRaid { margin: 0; background-color: #1b2a39; border-color: #536b8c; }
+
+.online-compact .online-left { top: 16px; left: 16px; }
+.online-compact .online-controls { top: 16px; right: 16px; bottom: 16px; left: 16px; }
+.online-compact .online-bottom { bottom: 16px; left: 16px; }
 .online-squad-screen.online-reduced-motion Button { transition-duration: 0s; }

@@ -13,9 +13,11 @@ namespace Unity.MP_FPS.Client
         public VisualElement Element { get; }
         public OnlineSquadStage Stage { get; }
         private readonly Action<LobbyAction> m_Action;
+        private readonly SquadGlass m_Glass;
+        private readonly VisualElement m_Badges;
         private readonly VisualElement[] m_Cards = new VisualElement[4];
+        private readonly VisualElement[] m_MemberRows = new VisualElement[4];
         private readonly Label[] m_Names = new Label[4], m_Statuses = new Label[4];
-        private readonly Button[] m_MemberActions = new Button[4];
         private readonly LobbyMember[] m_Slots = new LobbyMember[4];
         private LobbySnapshot m_Snapshot;
         private bool m_Disposed;
@@ -25,29 +27,42 @@ namespace Unity.MP_FPS.Client
             m_Action = action;
             Element = TerminalLayout.Clone("OnlineLobby", "onlineLobby");
             // Clone detaches this root from its UXML TemplateContainer.
-            // Keep the screen's stylesheet on the root that actually gets mounted.
-            var styles = Resources.Load<StyleSheet>("Moonkov/UI/OnlineSquadStyles");
-            if (styles != null && !Element.styleSheets.Contains(styles)) Element.styleSheets.Add(styles);
-            Stage = new OnlineSquadStage(Element.Q<Image>("onlineStage"));
+            // Keep the screen's stylesheets on the root that actually gets mounted.
+            foreach (string path in new[] { "Moonkov/UI/SquadGlassStyles", "Moonkov/UI/OnlineSquadStyles" })
+            {
+                var styles = Resources.Load<StyleSheet>(path);
+                if (styles != null && !Element.styleSheets.Contains(styles)) Element.styleSheets.Add(styles);
+            }
+            var image = Element.Q<Image>("onlineStage");
+            Stage = new OnlineSquadStage(image);
             Stage.FramingChanged += AlignMembers;
             Element.RegisterCallback<GeometryChangedEvent>(e =>
-                Element.EnableInClassList("online-compact", e.newRect.width < 1250 || e.newRect.height < 760));
-            var members = Element.Q("onlineMembers");
+                Element.EnableInClassList("online-compact", e.newRect.width < 1120 || e.newRect.height < 600));
+            m_Badges = Element.Q("onlineMembers");
+            m_Badges.style.visibility = Visibility.Hidden;
+            var manage = Element.Q<Foldout>("onlineManage");
             for (int i = 0; i < 4; i++)
             {
                 int slot = i;
-                var card = m_Cards[i] = new VisualElement { name = "onlineMember" + i };
+                var card = m_Cards[i] = new VisualElement { name = "onlineMember" + i, pickingMode = PickingMode.Ignore };
                 card.AddToClassList("online-member");
-                var name = m_Names[i] = new Label(); name.AddToClassList("online-member-name"); card.Add(name);
+                card.AddToClassList("squad-glass");
+                var name = m_Names[i] = new Label { enableRichText = false }; name.AddToClassList("online-member-name"); card.Add(name);
                 var status = m_Statuses[i] = new Label(); status.AddToClassList("online-member-status"); card.Add(status);
-                var button = m_MemberActions[i] = new Button(() =>
+                m_Badges.Add(card);
+
+                var row = m_MemberRows[i] = new VisualElement { name = "onlineMemberRow" + i };
+                row.AddToClassList("online-member-row");
+                row.Add(new Label { enableRichText = false });
+                var button = new Button(() =>
                 {
                     var member = m_Slots[slot];
-                    if (member == null) CopyCode();
-                    else m_Action?.Invoke(new LobbyAction { Action = "kick", TargetPlayerId = member.PlayerId });
-                });
-                button.AddToClassList("online-member-action"); card.Add(button); members.Add(card);
+                    if (member != null) m_Action?.Invoke(new LobbyAction { Action = "kick", TargetPlayerId = member.PlayerId });
+                }) { text = "移除" };
+                button.AddToClassList("online-member-action");
+                row.Add(button); manage.Add(row);
             }
+            m_Glass = new SquadGlass(Element, image, Stage);
             Element.Q<Button>("onlineBack").clicked += back;
             Element.RegisterCallback<KeyDownEvent>(e =>
             { if (e.keyCode == KeyCode.Escape) { back?.Invoke(); e.StopPropagation(); } });
@@ -84,7 +99,14 @@ namespace Unity.MP_FPS.Client
         private void Emit(string action) => m_Action?.Invoke(new LobbyAction { Action = action });
         private void CopyCode() { if (!string.IsNullOrEmpty(m_Snapshot?.Code)) GUIUtility.systemCopyBuffer = m_Snapshot.Code; }
         public void SetVisible(bool visible)
-        { Element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None; if (!visible) Stage.Suspend(); }
+        {
+            Element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible)
+            {
+                Stage.Suspend();
+                m_Badges.style.visibility = Visibility.Hidden;
+            }
+        }
         public void SetReducedMotion(bool reduced)
         { Stage.ReducedMotion = reduced; Element.EnableInClassList("online-reduced-motion", reduced); }
         public void FocusPrimary()
@@ -110,9 +132,16 @@ namespace Unity.MP_FPS.Client
             Element.Q("onlineEntry").style.display = party ? DisplayStyle.None : DisplayStyle.Flex;
             Element.Q("onlineParty").style.display = party ? DisplayStyle.Flex : DisplayStyle.None;
             Element.Q("onlineEntry").SetEnabled(!busy);
-            var copy = Element.Q<Button>("onlineCopy"); copy.style.display = party ? DisplayStyle.Flex : DisplayStyle.None;
-            MoonkovLocalization.Set(copy, party ? "队伍码 {0}" : "", snapshot?.Code ?? ""); copy.tooltip = "复制队伍码";
-            MoonkovLocalization.Set(Element.Q<Label>("onlineCount"), "{0} / 4", party ? snapshot.Members.Length : 1);
+            Element.Q("onlineManage").style.display = lobby && leader && snapshot.Members.Length > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+            Element.Q("onlineReconnectHost").style.display = reconnect ? DisplayStyle.Flex : DisplayStyle.None;
+            if (party)
+            {
+                var copy = Element.Q<Button>("onlineCopy");
+                MoonkovLocalization.Set(copy, "队伍码 {0}", snapshot.Code);
+                copy.tooltip = "复制队伍码";
+                MoonkovLocalization.Set(Element.Q<Label>("onlineCount"), "{0}  {1}/4 人",
+                    MoonkovLocalization.Text(snapshot.Mode == "Versus" ? "好友对抗" : "合作"), snapshot.Members.Length);
+            }
             Array.Clear(m_Slots, 0, m_Slots.Length);
             if (party)
             {
@@ -127,23 +156,28 @@ namespace Unity.MP_FPS.Client
             {
                 var member = m_Slots[i];
                 bool own = member != null && (!party || member.PlayerId == snapshot.SelfId);
+                m_Cards[i].style.display = member != null ? DisplayStyle.Flex : DisplayStyle.None;
                 m_Cards[i].EnableInClassList("is-self", own);
                 m_Cards[i].EnableInClassList("is-ready", member?.Ready == true && member.Connected);
                 m_Cards[i].EnableInClassList("is-offline", member != null && !member.Connected);
-                m_Names[i].text = member == null ? "空位" : member.Name;
+                m_Names[i].text = member?.Name ?? "";
                 m_Statuses[i].text = member == null ? "" : !party ? GameSettings.CharacterName(self.CharacterIndex)
                     : member.Returned ? "已返回" : snapshot.Phase == "Starting" ? "加载中" : snapshot.Phase == "Ready" ? "已出发"
                     : !member.Connected ? "连接中断 / " + member.ReconnectSeconds + " 秒"
                     : (member.PlayerId == snapshot.LeaderId ? "队长 / " : "") + (member.Ready ? "已准备" : "未准备") +
                         (snapshot.Mode == "Versus" && !snapshot.PublicQueue ? member.Team == 0 ? " / A 队" : " / B 队" : "");
-                var button = m_MemberActions[i];
-                button.text = member == null ? "邀请" : "移除";
-                button.style.display = lobby && (member == null || leader && !own) ? DisplayStyle.Flex : DisplayStyle.None;
-                button.SetEnabled(!busy);
+                var row = m_MemberRows[i];
+                bool canRemove = lobby && leader && member != null && !own;
+                row.style.display = canRemove ? DisplayStyle.Flex : DisplayStyle.None;
+                if (canRemove) row.Q<Label>().text = member.Name;
+                row.SetEnabled(!busy);
             }
             Stage.Present(m_Slots);
             AlignMembers();
             string message = error ?? "";
+            bool cancelQueue = leader && snapshot.Phase == "Queued";
+            bool canReturn = party && snapshot.Phase == "Ready" && me?.Returned != true;
+            Element.Q("onlineActions").style.display = lobby || cancelQueue || canReturn ? DisplayStyle.Flex : DisplayStyle.None;
             if (party)
             {
                 Element.Q("onlineSettings").SetEnabled(lobby && leader && !busy);
@@ -154,18 +188,21 @@ namespace Unity.MP_FPS.Client
                 team.style.display = snapshot.Mode == "Versus" && !snapshot.PublicQueue ? DisplayStyle.Flex : DisplayStyle.None;
                 team.SetEnabled(lobby && !busy); team.SetValueWithoutNotify(me?.Team ?? 0);
                 var ready = Element.Q<Button>("onlineReady"); MoonkovLocalization.Set(ready, me?.Ready == true ? "取消准备" : "准备");
+                ready.style.display = lobby ? DisplayStyle.Flex : DisplayStyle.None;
                 ready.SetEnabled(lobby && !busy && !pending);
                 bool validTeams = snapshot.Mode != "Versus" || snapshot.PublicQueue || snapshot.Members.Select(m => m.Team).Distinct().Count() >= 2;
-                var start = Element.Q<Button>("onlineStart"); start.style.display = leader ? DisplayStyle.Flex : DisplayStyle.None;
+                var start = Element.Q<Button>("onlineStart"); start.style.display = lobby && leader ? DisplayStyle.Flex : DisplayStyle.None;
                 MoonkovLocalization.Set(start, snapshot.PublicQueue && snapshot.Mode == "Versus" ? "寻找对手" : "出发");
                 start.SetEnabled(lobby && !busy && !pending && validTeams && snapshot.Members.All(m => m.Ready && m.Connected));
-                Element.Q<Button>("onlineLeave").SetEnabled(lobby && !busy);
-                Element.Q<Button>("onlineCancel").style.display = leader && snapshot.Phase == "Queued" ? DisplayStyle.Flex : DisplayStyle.None;
+                var leave = Element.Q<Button>("onlineLeave");
+                leave.style.display = lobby ? DisplayStyle.Flex : DisplayStyle.None;
+                leave.SetEnabled(lobby && !busy);
+                Element.Q<Button>("onlineCancel").style.display = cancelQueue ? DisplayStyle.Flex : DisplayStyle.None;
                 var retry = Element.Q<Button>("onlineRetry");
-                retry.style.display = snapshot.Phase == "Ready" && me?.Returned != true && !reconnect ? DisplayStyle.Flex : DisplayStyle.None;
+                retry.style.display = canReturn && !reconnect ? DisplayStyle.Flex : DisplayStyle.None;
                 retry.SetEnabled(!busy);
                 var returned = Element.Q<Button>("onlineReturn");
-                returned.style.display = snapshot.Phase == "Ready" && me?.Returned != true ? DisplayStyle.Flex : DisplayStyle.None;
+                returned.style.display = canReturn ? DisplayStyle.Flex : DisplayStyle.None;
                 returned.SetEnabled(!busy);
                 Element.Q<Button>("onlineCancel").SetEnabled(!busy);
                 if (string.IsNullOrEmpty(message)) message = pending ? "正在同步出战配置。" : !validTeams ? "请分别加入 A、B 两队。"
@@ -176,10 +213,22 @@ namespace Unity.MP_FPS.Client
             }
             var statusLabel = Element.Q<Label>("onlineStatus"); MoonkovLocalization.Set(statusLabel, message);
             statusLabel.EnableInClassList("is-error", !string.IsNullOrEmpty(error));
+            Element.Q("onlineNotice").style.display = string.IsNullOrWhiteSpace(message) ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
-        private void AlignMembers() => Stage.AlignMemberCards(m_Cards);
+        private void AlignMembers()
+        {
+            Stage.AlignMemberCards(m_Cards);
+            m_Badges.style.visibility = Stage.Target != null ? Visibility.Visible : Visibility.Hidden;
+        }
         public void Dispose()
-        { if (m_Disposed) return; m_Disposed = true; Stage.FramingChanged -= AlignMembers; Stage.Dispose(); Element.RemoveFromHierarchy(); }
+        {
+            if (m_Disposed) return;
+            m_Disposed = true;
+            Stage.FramingChanged -= AlignMembers;
+            m_Glass.Dispose();
+            Stage.Dispose();
+            Element.RemoveFromHierarchy();
+        }
     }
 }

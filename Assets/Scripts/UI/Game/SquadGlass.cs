@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     // Reuse the squad camera image. Every glass surface samples the same small blur.
-    internal sealed class LanSquadGlass : IDisposable
+    internal sealed class SquadGlass : IDisposable
     {
         private const int MaxEdge = 512;
         private static readonly int BlurStep = Shader.PropertyToID("_BlurStep");
@@ -17,17 +17,17 @@ namespace Unity.MP_FPS.Client
         private readonly Material m_Material;
         private RenderTexture m_Horizontal, m_Frosted;
 
-        public LanSquadGlass(VisualElement screen, Image stageImage, OnlineSquadStage stage)
+        public SquadGlass(VisualElement screen, Image stageImage, OnlineSquadStage stage)
         {
             m_StageImage = stageImage;
             m_Stage = stage;
-            var shader = Resources.Load<Shader>("Moonkov/UI/LanSquadGlass");
+            var shader = Resources.Load<Shader>("Moonkov/UI/SquadGlass");
             if (shader == null || !shader.isSupported) return;
             m_Material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-            foreach (var panel in screen.Query<VisualElement>(className: "lan-glass").ToList())
+            foreach (var panel in screen.Query<VisualElement>(className: "squad-glass").ToList())
             {
                 var layer = new Image { pickingMode = PickingMode.Ignore, scaleMode = ScaleMode.StretchToFill };
-                layer.AddToClassList("lan-glass-image");
+                layer.AddToClassList("squad-glass-image");
                 panel.hierarchy.Insert(0, layer);
                 panel.RegisterCallback<GeometryChangedEvent, Image>(PanelGeometryChanged, layer);
                 layer.RegisterCallback<GeometryChangedEvent>(LayerGeometryChanged);
@@ -60,8 +60,8 @@ namespace Unity.MP_FPS.Client
             if (m_Frosted == null || m_Frosted.width != width || m_Frosted.height != height)
             {
                 ReleaseTextures();
-                m_Horizontal = CreateTexture("LAN glass horizontal", width, height);
-                m_Frosted = CreateTexture("LAN glass backdrop", width, height);
+                m_Horizontal = CreateTexture("Squad glass horizontal", width, height);
+                m_Frosted = CreateTexture("Squad glass backdrop", width, height);
             }
 
             var previous = RenderTexture.active;

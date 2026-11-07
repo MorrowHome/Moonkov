@@ -1,21 +1,22 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="LanRoomPanel.uss" />
+    <ui:Style src="SquadGlassStyles.uss" />
     <ui:Style src="LanSquadStyles.uss" />
     <ui:VisualElement class="lan-layer moonkov-style-font lan-squad-ui" picking-mode="Ignore">
         <ui:Button name="lanEntry" text="局域网联机" class="lan-entry" />
         <ui:VisualElement name="lanModal" class="lan-screen lan-hidden">
             <ui:VisualElement name="lanStageHost" class="lan-stage-host" picking-mode="Ignore" />
             <ui:VisualElement class="lan-shell" picking-mode="Ignore">
-                <ui:VisualElement class="lan-header lan-glass">
+                <ui:VisualElement class="lan-header squad-glass">
                     <ui:Button name="lanClose" text="返回" class="lan-back" />
                     <ui:Label text="局域网小队" class="lan-title" />
                 </ui:VisualElement>
-                <ui:Foldout text="外观" class="lan-personal lan-glass" value="false">
+                <ui:Foldout text="外观" class="lan-personal squad-glass" value="false">
                     <ui:DropdownField name="lanCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
                     <ui:DropdownField name="lanPose" label="姿势" choices="自动,戒备,侧身,低姿,待命" index="0" />
                     <ui:Toggle name="lanReduceMotion" label="减少动态效果" />
                 </ui:Foldout>
-                <ui:VisualElement name="lanBrowser" class="lan-browser lan-glass">
+                <ui:VisualElement name="lanBrowser" class="lan-browser squad-glass">
                     <ui:VisualElement class="lan-navigation">
                         <ui:Button name="lanBrowseTab" text="寻找房间" class="lan-tab lan-selected" />
                         <ui:Button name="lanCreateTab" text="创建房间" class="lan-tab" />
@@ -52,7 +53,7 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="lanLobby" class="lan-lobby lan-hidden" picking-mode="Ignore">
-                    <ui:VisualElement class="lan-briefing lan-glass">
+                    <ui:VisualElement class="lan-briefing squad-glass">
                         <ui:Label name="lanRoomHeading" class="lan-room-title" />
                         <ui:VisualElement class="lan-roster-heading">
                             <ui:Label name="lanRoomMeta" class="lan-copy" />
@@ -69,7 +70,7 @@
                             </ui:Foldout>
                         </ui:ScrollView>
                     </ui:VisualElement>
-                    <ui:VisualElement class="lan-launch-bar lan-glass">
+                    <ui:VisualElement class="lan-launch-bar squad-glass">
                         <ui:VisualElement class="lan-launch-summary">
                             <ui:Label name="lanLaunchTitle" class="lan-launch-title" />
                             <ui:Label name="lanLaunchHint" class="lan-muted" />
@@ -80,7 +81,7 @@
                         <ui:Button name="lanStart" text="开始远征" class="lan-primary" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="lanNotice" class="lan-footer lan-glass lan-hidden">
+                <ui:VisualElement name="lanNotice" class="lan-footer squad-glass lan-hidden">
                     <ui:VisualElement name="lanStatusDot" class="lan-status-dot" />
                     <ui:Label name="lanStatus" class="lan-status" />
                 </ui:VisualElement>

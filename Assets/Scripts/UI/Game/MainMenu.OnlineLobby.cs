@@ -36,7 +36,9 @@ namespace Unity.MP_FPS.Client
             m_MainMenu.Add(m_OnlineLobby);
             var advanced = m_MainMenu.Q("AdvancedConnection");
             m_AdvancedHome = advanced.parent; m_AdvancedIndex = m_AdvancedHome.IndexOf(advanced);
-            m_OnlineLobby.Q("onlineAdvancedHost").Add(advanced);
+            var advancedHost = m_OnlineLobby.Q("onlineAdvancedHost");
+            advancedHost.Add(advanced);
+            advancedHost.style.display = DisplayStyle.Flex;
             var reconnect = m_MainMenu.Q("ReconnectPanel");
             m_ReconnectHome = reconnect.parent; m_ReconnectIndex = m_ReconnectHome.IndexOf(reconnect);
             m_OnlineLobby.Q("onlineReconnectHost").Add(reconnect);

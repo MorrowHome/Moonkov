@@ -1,4 +1,4 @@
-Shader "Hidden/Moonkov/LanSquadGlass"
+Shader "Hidden/Moonkov/SquadGlass"
 {
     Properties { _MainTex ("Squad frame", 2D) = "black" {} }
     SubShader
