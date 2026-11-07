@@ -68,8 +68,7 @@ namespace Unity.MP_FPS
             state.HaloDefending = state.HaloDefenseHeld && !state.HaloDefenseBroken && Energy(state) > 0;
             if (state.HaloDefending && !wasDefending) state.ShieldRestoreSequence++;
             if (!state.HaloDefenseHeld) return;
-            state.HaloRecoveryDelay = RecoveryDelay;
-            state.HaloRegenerating = false;
+            // Holding the barrier is free. Only an actual energy spend restarts recovery.
             HaloModuleFire.Reset(ref state);
             state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
         }
@@ -108,7 +107,7 @@ namespace Unity.MP_FPS
             { Release(ref state); return; }
             if (!float.IsFinite(dt) || dt <= 0) return;
             state.HaloEnergy = Energy(state);
-            if (state.HaloDefenseHeld || HaloTransferRules.Occupied(state)) { state.HaloRecoveryDelay = RecoveryDelay; return; }
+            if (HaloTransferRules.Occupied(state)) { state.HaloRecoveryDelay = RecoveryDelay; return; }
             float delay = float.IsFinite(state.HaloRecoveryDelay) ? Mathf.Max(0, state.HaloRecoveryDelay) : RecoveryDelay;
             state.HaloRecoveryDelay = Mathf.Max(0, delay - dt);
             float active = Mathf.Max(0, dt - delay);
