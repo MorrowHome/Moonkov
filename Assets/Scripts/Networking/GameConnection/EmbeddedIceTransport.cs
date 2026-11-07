@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Win32.SafeHandles;
 using Unity.Collections;
 using Unity.Networking.Transport;
+using UnityEngine;
 
 namespace Unity.MP_FPS.EmbeddedNetworking
 {
@@ -19,7 +20,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking
     }
 
     /// <summary>
-    /// Windows x64 ICE datagrams selected per raid. No service, adapter or account is installed.
+    /// Windows x64 and macOS ICE datagrams selected per raid. No service or adapter is installed.
     /// A driver owns exactly one context. Dispose its completed driver before abandoning a session.
     /// Signaling must authenticate peers before calling AddPeer / SetRemoteDescription.
     /// ICE is not encryption: always put the existing DTLS layer above this interface.
@@ -41,15 +42,22 @@ namespace Unity.MP_FPS.EmbeddedNetworking
 
         public EmbeddedIceTransport(int receiveCapacity = 256)
         {
-#if !(UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-            throw new PlatformNotSupportedException("内置 P2P 当前支持 Windows x64 客户端和独立服务器。");
-#else
-            if (IntPtr.Size != 8) throw new PlatformNotSupportedException("Embedded ICE requires x64.");
+            // An Editor's build target does not identify its host OS.
+            var platform = Application.platform;
+            if (platform != RuntimePlatform.WindowsEditor && platform != RuntimePlatform.WindowsPlayer &&
+                platform != RuntimePlatform.OSXEditor && platform != RuntimePlatform.OSXPlayer)
+                throw new PlatformNotSupportedException("内置 P2P 当前支持 Windows x64 和 macOS。");
+            if (IntPtr.Size != 8) throw new PlatformNotSupportedException("Embedded ICE requires a 64-bit process.");
             if (receiveCapacity < 8 || receiveCapacity > 4096) throw new ArgumentOutOfRangeException(nameof(receiveCapacity));
-            if (Native.mice_abi_version() != 1) throw new InvalidOperationException("Embedded ICE native ABI mismatch.");
+            int abi;
+            try { abi = Native.mice_abi_version(); }
+            catch (DllNotFoundException ex)
+            {
+                throw new InvalidOperationException("本地 P2P 组件缺失或无法加载，请完整更新游戏后重试。", ex);
+            }
+            if (abi != 1) throw new InvalidOperationException("Embedded ICE native ABI mismatch.");
             m_Handle = new NativeHandle(Native.mice_create(receiveCapacity));
             if (m_Handle.IsInvalid) { m_Handle.Dispose(); throw new InvalidOperationException("Could not allocate ICE context."); }
-#endif
         }
 
         public int AddPeer(string bindAddress = null, string stunHost = null, ushort stunPort = 3478)
