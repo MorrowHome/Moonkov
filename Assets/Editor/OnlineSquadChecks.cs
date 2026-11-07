@@ -18,6 +18,8 @@ public sealed class OnlineSquadChecks : EditorWindow
     private OnlineSquadPanel m_View;
     private LobbySnapshot m_Snapshot;
     private int m_Checks, m_SceneCount, m_ChangedCharacter, m_ChangedPose;
+    private string m_LastAction;
+    private bool m_Retried;
     [Serializable] private sealed class Result { public string Status, Message; public int Checks; }
 
     [MenuItem("Tools/Moonkov/Check Online Squad Presentation")]
@@ -31,6 +33,55 @@ public sealed class OnlineSquadChecks : EditorWindow
 
     [MenuItem("Moonkov/Networking/Online Lobby UI Preview")]
     public static void OpenPreview() => OpenWindow("Online squad preview - sample data", 1280, 720);
+
+    [MenuItem("Tools/Moonkov/Check Squad Entry Recovery")]
+    public static void BeginEntryRecovery()
+    {
+        Directory.CreateDirectory(Folder);
+        var window = OpenWindow("Squad entry recovery - sample data", 960, 540);
+        window.m_Snapshot.Phase = "Ready";
+        window.m_Snapshot.SelfId = "b";
+        window.m_Snapshot.CanRetry = window.m_Snapshot.CanLeave = true;
+        window.m_Snapshot.Members.Single(m => m.PlayerId == "b").Returned = true;
+        window.Present(error: "P2P 直连失败。");
+        window.rootVisualElement.schedule.Execute(window.CheckEntryRecovery).StartingIn(600);
+    }
+
+    private void CheckEntryRecovery()
+    {
+        try
+        {
+            var root = m_View.Element;
+            var leave = root.Q<Button>("onlineLeave");
+            var retry = root.Q<Button>("onlineRetry");
+            foreach (var button in new[] { leave, retry })
+                Require(button.enabledInHierarchy && button.resolvedStyle.display == DisplayStyle.Flex &&
+                    root.panel.Pick(button.worldBound.center) == button, "failed entry action is not visible or reachable: " + button.name);
+            foreach (var button in new[] { leave, retry })
+            {
+                using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = button.worldBound.center }))
+                    button.SendEvent(down);
+                using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = button.worldBound.center }))
+                    button.SendEvent(up);
+            }
+            Require(m_LastAction == "leave" && m_Retried, "recovery controls did not emit the real action callbacks");
+            Present(busy: true);
+            Require(!leave.enabledInHierarchy && !retry.enabledInHierarchy, "pending recovery actions accept duplicate input");
+            m_Snapshot.CanRetry = false; Present();
+            Require(retry.style.display.value == DisplayStyle.None && leave.enabledInHierarchy &&
+                root.Q("onlineActions").style.display.value == DisplayStyle.Flex, "settled member cannot leave while teammates remain in the raid");
+            m_Snapshot.CanLeave = false; Present();
+            Require(!leave.enabledInHierarchy, "unsettled equipment allows departure");
+            File.WriteAllText(Folder + "/entry-recovery.json", JsonUtility.ToJson(new Result { Status = "Passed", Checks = m_Checks }, true));
+            Debug.Log("Squad entry recovery: " + m_Checks + " checks passed; sample snapshots and callbacks only.");
+        }
+        catch (Exception ex)
+        {
+            File.WriteAllText(Folder + "/entry-recovery.json", JsonUtility.ToJson(new Result { Status = "Failed", Checks = m_Checks, Message = ex.ToString() }, true));
+            Debug.LogException(ex);
+        }
+        finally { Close(); }
+    }
 
     private static OnlineSquadChecks OpenWindow(string title, int width, int height)
     {
@@ -55,7 +106,7 @@ public sealed class OnlineSquadChecks : EditorWindow
     private void Build()
     {
         m_SceneCount = EditorSceneManager.previewSceneCount;
-        m_View = new OnlineSquadPanel(_ => { }, () => { }, () => { }, (character, pose) =>
+        m_View = new OnlineSquadPanel(action => m_LastAction = action.Action, () => { }, () => m_Retried = true, (character, pose) =>
         { m_ChangedCharacter = character; m_ChangedPose = pose; });
         rootVisualElement.Add(m_View.Element);
         m_View.SetReducedMotion(true);

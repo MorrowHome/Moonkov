@@ -114,6 +114,7 @@ public sealed class OnlineLobbies
             // Keep restart recovery bounded without writing a file for every poll.
             if (changed || now >= nextHeartbeatSave) { Save(); nextHeartbeatSave = now.AddSeconds(15); }
             var a = p.Instance == state.Active?.Id ? state.Active : null;
+            var seat = a?.Seats.FirstOrDefault(s => s.Player == id);
             return new LobbySnapshot
             {
                 SelfId = id.ToString(), Code = p.Code, LeaderId = p.Leader.ToString(), Mode = p.Mode,
@@ -121,6 +122,7 @@ public sealed class OnlineLobbies
                 Address = a?.Phase == "Ready" ? address : null, ServerName = serverName, Port = port, Message = p.Message,
                 NetworkProtocol = OnlineNetworkProtocol.Version, ConnectionPath = a?.ConnectionPath ?? p.ConnectionPath,
                 IceAvailable = a?.IceAvailable ?? false, IceHostId = a?.IceHostId, IceHostAddress = a?.IceHostAddress,
+                CanRetry = CanRetry(a, seat, now), CanLeave = a == null || seat != null && (!seat.Admitted || seat.Settled),
                 Members = p.Members.Select(m => new LobbyMember { PlayerId = m.Id.ToString(), Name = m.Name,
                     Ready = m.Ready, Team = m.Team, Appearance = m.Appearance.Copy(), Connected = now - m.Seen < HeartbeatTimeout,
                     ReconnectSeconds = Math.Max(0, (int)Math.Ceiling((ReconnectGrace - (now - m.Seen)).TotalSeconds)),
@@ -184,12 +186,30 @@ public sealed class OnlineLobbies
                         if (!seat.Admitted) seat.Settled = true;
                     }
                 }
+                else if (request.Action == "retry")
+                {
+                    var active = p.Instance == state.Active?.Id ? state.Active : null;
+                    var seat = active?.Seats.FirstOrDefault(s => s.Player == id);
+                    Require(CanRetry(active, seat, now), "本局已结束或已完成结算，不能重新加入。");
+                    if (!seat!.Admitted)
+                    {
+                        Require(!raidActive, "仍有未结算的装备。");
+                        // Recover an entry that an older client incorrectly marked as returned.
+                        seat.Returned = seat.Settled = false;
+                    }
+                }
                 else if (request.Action == "leave")
                 {
-                    Require(p.Instance == null, "请先返回队伍，等待本局所有成员结算。");
+                    if (p.Instance != null)
+                    {
+                        var seat = state.Active?.Id == p.Instance ? state.Active.Seats.FirstOrDefault(s => s.Player == id) : null;
+                        Require(!raidActive && seat != null && (!seat.Admitted || seat.Settled), "请等待本人的战局结算后再离队。");
+                        seat!.Returned = true;
+                        if (!seat.Admitted) seat.Settled = true;
+                    }
                     p.Members.Remove(me);
                     if (p.Members.Count == 0) state.Parties.Remove(p);
-                    else { if (p.Leader == id) p.Leader = p.Members[0].Id; Reset(p); }
+                    else { if (p.Leader == id) p.Leader = p.Members[0].Id; if (p.Instance == null) Reset(p); }
                 }
                 else if (request.Action == "cancel")
                 {
@@ -228,6 +248,9 @@ public sealed class OnlineLobbies
     }
     private static void Reset(Party p)
     { p.Phase = "Lobby"; p.Message = ""; foreach (var m in p.Members) m.Ready = false; }
+    private static bool CanRetry(Allocation? allocation, Seat? seat, DateTime now) =>
+        allocation?.Phase == "Ready" && seat != null && (seat.Admitted
+            ? !seat.Returned && !seat.Settled : now - allocation.ReadyAt < TimeSpan.FromMinutes(5));
     public Allocation? Current()
     { lock (gate) return state.Active == null ? null : System.Text.Json.JsonSerializer.Deserialize<Allocation>(System.Text.Json.JsonSerializer.Serialize(state.Active)); }
     public Allocation? Allocate(DateTime now)

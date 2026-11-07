@@ -91,6 +91,39 @@ var protectedRaid = reconnect.Allocate(now.AddSeconds(151))!;
 reconnect.Allocate(now.AddMinutes(10));
 Check(reconnect.Current()?.Seats.Count == 1 && reconnect.Current()?.Id == protectedRaid.Id, "Lobby pruning removed active raid ownership");
 Reject(() => reconnect.Act(b, "B", false, new LobbyAction { Action = "kick", TargetPlayerId = c.ToString() }, now.AddMinutes(10)), "Active raid allowed roster changes");
+var entry = new OnlineLobbies();
+void EntryAct(Guid id, string action, bool active = false) => entry.Act(id, "Operator", active,
+    new LobbyAction { Action = action, Ready = true }, now);
+LobbySnapshot EntryGet(Guid id, DateTime? at = null) => entry.Snapshot(id, at ?? now, "host", "host", 7979);
+EntryAct(a, "create");
+foreach (var id in new[] { b, c, d }) entry.Act(id, "Operator", false,
+    new LobbyAction { Action = "join", Code = EntryGet(a).Code }, now);
+foreach (var id in new[] { a, b, c, d }) EntryAct(id, "ready");
+EntryAct(a, "start"); var entryRaid = entry.Allocate(now)!;
+entry.Ready(entryRaid.Id, now, OnlineNetworkProtocol.Version, true);
+entry.Admission(a, entryRaid.Id, now, true);
+Check(EntryGet(b).CanRetry && EntryGet(b).CanLeave, "Failed first entry has no recovery actions");
+Check(!EntryGet(a).CanLeave, "An unsettled participant can leave the squad");
+Reject(() => EntryAct(a, "leave"), "Unsettled admitted seat left without settlement");
+Reject(() => EntryAct(c, "leave", true), "Unsettled inventory escaped through the leave action");
+EntryAct(b, "return");
+Check(EntryGet(b).Members.Single(m => m.PlayerId == b.ToString()).Returned && EntryGet(b).CanRetry,
+    "An unadmitted entry marked returned by an old client cannot recover");
+EntryAct(b, "retry");
+Check(!entry.Current()!.Seats.Single(s => s.Player == b).Returned && !entry.Current()!.Seats.Single(s => s.Player == b).Settled,
+    "Retry did not restore the unadmitted seat");
+entry.Admission(b, entryRaid.Id, now, true); entry.Settled(b);
+Check(EntryGet(b).CanLeave && !EntryGet(b).CanRetry, "Completed participant cannot leave or can repeat the raid");
+Reject(() => EntryAct(b, "retry"), "Retry reopened a settled deployment");
+EntryAct(b, "leave"); EntryAct(c, "leave");
+Check(EntryGet(b).Phase == "None" && EntryGet(c).Phase == "None", "Settled or unadmitted members stayed trapped in the squad");
+Check(entry.Current()!.Id == entryRaid.Id && !entry.Current()!.Seats.Single(s => s.Player == a).Returned && !entry.ShouldStop(now),
+    "Individual departure interrupted a teammate's active raid");
+Reject(() => entry.Admission(c, entryRaid.Id, now), "A departed member retained admission");
+Check(!EntryGet(d, now.AddMinutes(5)).CanRetry && EntryGet(d, now.AddMinutes(5)).CanLeave,
+    "Expired first-entry window lost its exit or retained retry");
+Reject(() => entry.Act(d, "Operator", false, new LobbyAction { Action = "retry" }, now.AddMinutes(5)), "Expired first entry was reopened");
+
 string folder = Path.Combine(Path.GetTempPath(), "moon-lobby-check-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(folder);
 try

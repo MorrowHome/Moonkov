@@ -263,12 +263,14 @@ namespace Unity.MP_FPS
             catch (OperationCanceledException)
             {
                 Debug.Log($"[{nameof(StartGameAsync)}] Loading has been cancelled.");
+                OnlineLobbyClient.PreserveFailedJoin();
                 return;
             }
             catch (Exception e)
             {
                 Debug.LogError($"[{nameof(StartGameAsync)}] Loading has failed, returning to main menu");
                 Debug.LogException(e);
+                OnlineLobbyClient.PreserveFailedJoin();
                 ConnectionSettings.Instance.ConnectionError ??= e is TimeoutException || e is InvalidOperationException
                     ? e.Message : "Unable to start this session. Please try again.";
                 // Disposing the token here because the error has been handled and ReturnToMainMenu should not check it.

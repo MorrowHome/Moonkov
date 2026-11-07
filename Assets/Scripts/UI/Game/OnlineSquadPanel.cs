@@ -111,7 +111,8 @@ namespace Unity.MP_FPS.Client
         { Stage.ReducedMotion = reduced; Element.EnableInClassList("online-reduced-motion", reduced); }
         public void FocusPrimary()
         {
-            string name = string.IsNullOrEmpty(m_Snapshot?.Code) ? "onlineCreate" : m_Snapshot.Phase == "Lobby" ? "onlineReady" : "onlineBack";
+            string name = string.IsNullOrEmpty(m_Snapshot?.Code) ? "onlineCreate" : m_Snapshot.Phase == "Lobby" ? "onlineReady"
+                : m_Snapshot.CanRetry ? "onlineRetry" : "onlineBack";
             var button = Element.Q<Button>(name);
             if (button.enabledInHierarchy) button.Focus();
         }
@@ -176,8 +177,8 @@ namespace Unity.MP_FPS.Client
             AlignMembers();
             string message = error ?? "";
             bool cancelQueue = leader && snapshot.Phase == "Queued";
-            bool canReturn = party && snapshot.Phase == "Ready" && me?.Returned != true;
-            Element.Q("onlineActions").style.display = lobby || cancelQueue || canReturn ? DisplayStyle.Flex : DisplayStyle.None;
+            bool canReturn = party && snapshot.Phase == "Ready" && me?.Returned != true && !snapshot.CanLeave;
+            Element.Q("onlineActions").style.display = party ? DisplayStyle.Flex : DisplayStyle.None;
             if (party)
             {
                 Element.Q("onlineSettings").SetEnabled(lobby && leader && !busy);
@@ -195,11 +196,11 @@ namespace Unity.MP_FPS.Client
                 MoonkovLocalization.Set(start, snapshot.PublicQueue && snapshot.Mode == "Versus" ? "寻找对手" : "出发");
                 start.SetEnabled(lobby && !busy && !pending && validTeams && snapshot.Members.All(m => m.Ready && m.Connected));
                 var leave = Element.Q<Button>("onlineLeave");
-                leave.style.display = lobby ? DisplayStyle.Flex : DisplayStyle.None;
-                leave.SetEnabled(lobby && !busy);
+                leave.style.display = DisplayStyle.Flex;
+                leave.SetEnabled((lobby || snapshot.CanLeave) && !busy);
                 Element.Q<Button>("onlineCancel").style.display = cancelQueue ? DisplayStyle.Flex : DisplayStyle.None;
                 var retry = Element.Q<Button>("onlineRetry");
-                retry.style.display = canReturn && !reconnect ? DisplayStyle.Flex : DisplayStyle.None;
+                retry.style.display = snapshot.CanRetry && !reconnect ? DisplayStyle.Flex : DisplayStyle.None;
                 retry.SetEnabled(!busy);
                 var returned = Element.Q<Button>("onlineReturn");
                 returned.style.display = canReturn ? DisplayStyle.Flex : DisplayStyle.None;
