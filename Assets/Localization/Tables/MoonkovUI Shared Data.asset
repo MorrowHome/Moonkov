@@ -6472,6 +6472,60 @@ MonoBehaviour:
       an equipped badge. Unused charge is retained.
     m_Metadata:
       m_Items: []
+  - m_Id: 11303761623375872
+    m_Key: '{0} FPS  |  Ping {1}
+
+      Loss {2}  |  Connection {3}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570176
+    m_Key: Measuring
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570177
+    m_Key: Waiting for data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570178
+    m_Key: No connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570179
+    m_Key: Local
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570180
+    m_Key: Not applicable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570181
+    m_Key: Single player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570182
+    m_Key: LAN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570183
+    m_Key: P2P direct
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570184
+    m_Key: VPS relay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570185
+    m_Key: Relay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570186
+    m_Key: Direct
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570187
+    m_Key: Unknown connection
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

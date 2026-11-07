@@ -6307,6 +6307,59 @@ MonoBehaviour:
     m_Localized: "\u7ACB\u5373\u8865\u5145\u6700\u591A 100 \u70B9\u5149\u73AF\u80FD\u91CF\u3002\u9700\u653E\u5165\u53E3\u888B\u6216\u80F8\u7AE0\uFF0C\u672A\u4F7F\u7528\u7684\u7535\u91CF\u4FDD\u7559\u3002"
     m_Metadata:
       m_Items: []
+  - m_Id: 11303761623375872
+    m_Localized: "{0} FPS  |  \u5EF6\u8FDF {1}\n\u4E22\u5305\u7387 {2}  |  \u8FDE\u63A5
+      {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570176
+    m_Localized: "\u91C7\u96C6\u4E2D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570177
+    m_Localized: "\u7B49\u5F85\u6570\u636E"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570178
+    m_Localized: "\u672A\u8FDE\u63A5"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570179
+    m_Localized: "\u672C\u5730"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570180
+    m_Localized: "\u4E0D\u9002\u7528"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570181
+    m_Localized: "\u5355\u673A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570182
+    m_Localized: "\u5C40\u57DF\u7F51"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570183
+    m_Localized: "P2P \u76F4\u8FDE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570184
+    m_Localized: "VPS \u4E2D\u8F6C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570185
+    m_Localized: "\u4E2D\u7EE7"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570186
+    m_Localized: "\u76F4\u8FDE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11303761627570187
+    m_Localized: "\u672A\u77E5"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
