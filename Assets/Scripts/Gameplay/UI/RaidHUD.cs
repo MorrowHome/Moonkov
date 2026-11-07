@@ -78,6 +78,11 @@ namespace Unity.MP_FPS
         private static RaidHUD s_Active;
         private int m_MenuEscapeFrame = -1;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
+        public static bool InventoryDefenseAllowed => s_Active != null && s_Active.m_InventoryVisible && s_Active.QuickAlive &&
+            !s_Active.m_MissionDetailsVisible && !s_Active.m_CampaignJournalVisible && !s_Active.m_ClashLobbyPointer &&
+            !ChatInputBlocked && !s_Active.CinematicInputBlocked && !MapInputBlocked &&
+            !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
+            !QuickTyping(s_Active.m_Root.panel?.focusController.focusedElement as VisualElement);
         public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -529,6 +534,7 @@ namespace Unity.MP_FPS
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked && !CinematicInputBlocked;
             bool haloBusy = alive && HaloTransferRules.Occupied(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
+            bool haloBlocksLoot = haloBusy && !HaloSupportRules.Anchored(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
             CloseLootWhenIdle();
@@ -539,7 +545,7 @@ namespace Unity.MP_FPS
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
-            SelectWorldInteraction(liveInteraction && !haloBusy, !clash, position, deathBags, out nearest, out distance);
+            SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest, out distance, !haloBusy);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash && !haloBusy);
             m_AirlockPrompt.BindingLabel = m_InteractionBindings.Label(m_InteractionBindings.Operate);
             m_AirlockPrompt.SetPresentation(liveInteraction && !missionControl && m_WorldControlFocused);
@@ -548,9 +554,9 @@ namespace Unity.MP_FPS
             UpdateTaskPanel(alive && ready && !settled);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy, missionControl, m_WorldControlFocused);
-            if (liveInteraction && !missionControl && !haloBusy)
+            if (liveInteraction && !missionControl && !haloBlocksLoot)
             {
-                bool controlPressed = !tacticalInteraction && !clash && m_WorldControlFocused &&
+                bool controlPressed = !haloBusy && !tacticalInteraction && !clash && m_WorldControlFocused &&
                     m_InteractionBindings.Operate.WasPressedThisFrame() && m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
                 if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame() && !tacticalInteraction && !controlPressed && !m_WorldControlFocused)
                     OpenLootContainer(nearest);
@@ -570,7 +576,7 @@ namespace Unity.MP_FPS
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !missionControl && !m_WorldControlFocused,alien,IsDroppedLoot(nearest));
-            RefreshHaloTransferInteraction(interactionVisible && (haloBusy || !missionControl && !m_WorldControlFocused && nearest < 0 && Time.unscaledTime >= m_LootErrorUntil));
+            RefreshHaloTransferInteraction(interactionVisible && !missionControl && !m_WorldControlFocused && nearest < 0 && Time.unscaledTime >= m_LootErrorUntil);
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             bool showReturn = !m_InventoryVisible && !MapInputBlocked && !m_MissionDetailsVisible &&
                 !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;

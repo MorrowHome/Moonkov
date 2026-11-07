@@ -88,6 +88,8 @@ namespace Unity.MP_FPS.DollSinger
         }
         public bool ReloadPressed { get; private set; }
         public bool DefenseHeld { get; private set; }
+        public static bool DefenseButtonHeld => Keyboard.current?.tKey.isPressed == true ||
+            Gamepad.current != null && Gamepad.current.dpad.right.isPressed && !Gamepad.current.rightShoulder.isPressed;
         public bool TransferHeld { get; private set; }
         public bool GuardHeld { get; private set; }
         public bool HaloAnchorHeld { get; private set; }

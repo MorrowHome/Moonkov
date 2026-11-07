@@ -63,7 +63,8 @@ namespace Unity.MP_FPS
 
         public static bool CanDefend(in PredictedPlayerGhost state) => state.HaloEquipped &&
             EnergyShieldRules.Alive(state) && (!state.ClashEnabled || state.ClashCanAct) &&
-            !GrenadeHandling.Occupied(state) && !state.ConsumingSupply && state.HandAction == 0 && state.MeleePhase == 0 &&
+            !GrenadeHandling.Occupied(state) && !state.ConsumingSupply &&
+            (state.HandAction == 0 || state.HandAction == (byte)Unity.MP_FPS.DollSinger.HandAction.Search) && state.MeleePhase == 0 &&
             (!state.ControllerState.IsReloadingState || state.HaloRechargeEnergy > 0) && state.WeaponEquipRemaining <= 0 && !state.ClashDarkSight && !HaloTransferRules.Occupied(state);
 
         public static void Release(ref PredictedPlayerGhost state)

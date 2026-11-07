@@ -9,13 +9,13 @@ namespace Unity.MP_FPS
         private bool m_WorldControlFocused;
 
         private void SelectWorldInteraction(bool allowed, bool controls, Vector3 actor,
-            RaidDeathBagClientState bags, out int loot, out float distance)
+            RaidDeathBagClientState bags, out int loot, out float distance, bool worldControls = true)
         {
             m_InteractionBindings ??= new RaidInteractionBindings();
             m_InteractionBindings.ObserveDevice();
             loot = -1; distance = RaidRules.PickupRange; m_WorldFocusScore = -1; m_WorldControlFocused = false;
             var camera = Camera.main;
-            m_AirlockPrompt.RefreshSelection(camera, actor, allowed && controls, m_World);
+            m_AirlockPrompt.RefreshSelection(camera, actor, allowed && controls && worldControls, m_World);
             if (!allowed || !camera) return;
             int bestLoot = -1;
             float bestDistance = distance;
@@ -46,7 +46,7 @@ namespace Unity.MP_FPS
                     if (drawers[i] != null && drawers[i].Target && drawers[i].Target.gameObject.activeInHierarchy)
                         Consider(RaidFurnitureLoot.FirstId + i, drawers[i].Position, drawers[i].Target);
             }
-            float controlScore = m_AirlockPrompt.FocusScore(camera, actor);
+            float controlScore = worldControls ? m_AirlockPrompt.FocusScore(camera, actor) : -1;
             if (controlScore > m_WorldFocusScore)
             { m_WorldFocusScore = controlScore; m_WorldControlFocused = true; bestLoot = -1; }
             loot = bestLoot; distance = bestDistance;

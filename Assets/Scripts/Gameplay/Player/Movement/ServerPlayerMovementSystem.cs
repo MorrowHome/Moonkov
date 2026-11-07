@@ -409,6 +409,7 @@ namespace Unity.MP_FPS
                             if (sentryShot) predictedPlayer.ValueRW.WeaponCooldown = 0;
                             HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
+                            if (sentryShot) predictedPlayer.ValueRW.LastSentryShotTick = serverTick;
 
                             bool aimed = sentryShot || !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim;
                             if (weaponData.Type == WeaponType.Hitscan)

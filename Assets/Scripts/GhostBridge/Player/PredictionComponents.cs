@@ -179,6 +179,8 @@ public struct PredictedPlayerGhost : IComponentData
     // Tissue impact presentation; physiological/status ticks must not retrigger impact audio.
     [GhostField] public uint LastImpactTick;
     [GhostField] public uint LastShotTick;
+    // Server action guard. Autonomous sentry fire does not occupy the searching player's hands.
+    public uint LastSentryShotTick;
     [GhostField] public uint LastJumpTick;
     [GhostField] public uint LastLandTick;
     [GhostField] public uint LastReloadTick;

@@ -17,7 +17,8 @@ namespace Unity.MP_FPS
         public static bool CanSend(in PredictedPlayerGhost state) => state.HaloEquipped && state.HaloEnergyInitialized &&
             DollSingerWeapons.IsHalo(state.EquippedWeaponID) && EnergyShieldRules.Alive(state) &&
             (!state.ClashEnabled || state.ClashCanAct) && !state.ClashDarkSight && !state.ConsumingSupply && !GrenadeHandling.Occupied(state) &&
-            state.HandAction == 0 && state.MeleePhase == 0 && !state.ControllerState.IsReloadingState &&
+            (state.HandAction == 0 || HaloSupportRules.Anchored(state) && state.HandAction == (byte)Unity.MP_FPS.DollSinger.HandAction.Search) &&
+            state.MeleePhase == 0 && !state.ControllerState.IsReloadingState &&
             state.WeaponEquipRemaining <= 0 && !state.HaloDefenseHeld && HaloEnergyRules.Energy(state) > Epsilon;
         public static bool CanReceive(in PredictedPlayerGhost state) => state.HaloEquipped && state.HaloEnergyInitialized &&
             EnergyShieldRules.Alive(state) && (!state.ClashEnabled || state.ClashCanAct) &&
