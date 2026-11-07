@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.MP_FPS.Client;
 using UnityEditor;
@@ -27,6 +28,11 @@ public sealed class HalosMainRoomReview : EditorWindow
     public static void Check()
     {
         Open(); GetWindow<HalosMainRoomReview>().RunChecks();
+    }
+    [MenuItem("Tools/Moonkov/Check Halos Subject Previews")]
+    public static void CheckSubjects()
+    {
+        Open(); GetWindow<HalosMainRoomReview>().RunSubjectChecks();
     }
     public void CreateGUI()
     {
@@ -86,7 +92,7 @@ public sealed class HalosMainRoomReview : EditorWindow
                 Mathf.Abs(room.Q<Image>("halosArtRoom1").worldBound.width - viewport.width) < 1,
                 "room artwork fills the viewport at its original aspect ratio");
             Require(stash.Q("terminalNav").resolvedStyle.display == DisplayStyle.None, "old navigation cards are absent on the original room");
-            Require(room.Q<Image>("halosArtRoom1").image != null && room.Query<Image>().ToList().Count == 16, "all original room layers and eight monitor icons are present");
+            Require(room.Q<Image>("halosArtRoom1").image != null && room.Query<Image>().ToList().Count == 17, "all original room layers, eight monitor icons and home portrait are present");
             Require(stash.Q("stashMenuActions").worldBound.width > 0, "account actions remain available");
             Press(room.Q<Button>("halosRoomPage4")); await Wait(200);
             Require(stash.ClassListContains("archive-page-4") && room.resolvedStyle.display == DisplayStyle.None, "center monitor opens the actual operation page");
@@ -136,6 +142,100 @@ public sealed class HalosMainRoomReview : EditorWindow
         {
             m_Checks.Add("FAIL " + error); File.WriteAllLines(Output, m_Checks); Debug.LogException(error);
         }
+    }
+    private async void RunSubjectChecks()
+    {
+        const string output = "LocalData/HalosHomeReview/subject-checks.txt";
+        VisualElement host = null; m_Checks.Clear();
+        try
+        {
+            m_Screen.NavigatePage(7); await Wait(150);
+            var previous = new HashSet<Camera>(Resources.FindObjectsOfTypeAll<Camera>());
+            Camera CameraFor(string name) => Resources.FindObjectsOfTypeAll<Camera>().Single(c => c.name == name && !previous.Contains(c));
+            host = new VisualElement(); host.style.position = Position.Absolute;
+            host.style.left = host.style.right = host.style.top = host.style.bottom = 0;
+            host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HalosMainRoomStyles"));
+            host.Add(new VisualElement()); rootVisualElement.Add(host);
+            m_Isolated = new HalosMainRoom(host, _ => { }); m_Isolated.Show(false);
+            var root = m_Isolated.Root;
+            var home = root.Q<Image>("halosRoomPortrait");
+            await Until(() => home.image != null);
+            var homeCamera = CameraFor("Menu portrait camera");
+            var homeScene = homeCamera.scene;
+            var model = homeScene.GetRootGameObjects().Single().GetComponentInChildren<Animator>().transform;
+            Require(model.forward.z < -.7f && model.forward.x > .3f, "home actor faces away and left toward the Moon");
+            Require(home.worldBound.center.x > root.worldBound.center.x && home.worldBound.height > root.worldBound.height,
+                "home actor uses the enlarged right foreground framing");
+            var hips = model.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+            var hipPoint = homeCamera.WorldToViewportPoint(hips.position);
+            float hipY = home.LocalToWorld(new Vector2(hipPoint.x * home.contentRect.width, (1 - hipPoint.y) * home.contentRect.height)).y;
+            Require(hipY >= root.worldBound.yMax, "lower body is cropped below the screen, not standing on the desk");
+            float modelTop = model.GetComponentsInChildren<SkinnedMeshRenderer>().Max(r => r.bounds.max.y);
+            Require(homeCamera.WorldToViewportPoint(new Vector3(0, modelTop, 0)).y < 1,
+                "upper-body framing keeps the head inside the render target");
+            Require(((RenderTexture)home.image).height > 1024 && ((RenderTexture)home.image).height <= 1536,
+                "home render target uses high resolution within 1536 pixels");
+            Require(root.panel.Pick(root.Q<Button>("halosRoomPage4").worldBound.center) == root.Q<Button>("halosRoomPage4"),
+                "actor and moon hit areas preserve the original monitor controls");
+            Press(root.Q<Button>("halosRoomInspectCharacter"));
+            await Until(() => root.Q<Image>("halosSubjectArt")?.image != null);
+            Require(m_Isolated.IsPreviewOpen && home.image == null && !homeScene.isLoaded,
+                "character click opens its own view and releases the home stage");
+            var art = root.Q<Image>("halosSubjectArt");
+            var camera = CameraFor("Menu portrait camera"); var scene = camera.scene;
+            model = scene.GetRootGameObjects().Single().GetComponentInChildren<Animator>().transform;
+            var rotation = model.rotation; float fov = camera.fieldOfView;
+            Drag(art); await Wait(100);
+            Require(Quaternion.Angle(rotation, model.rotation) > 5 && !art.HasPointerCapture(PointerId.mousePointerId),
+                "character drag rotates and releases pointer capture");
+            Wheel(art); await Wait(100);
+            Require(camera.fieldOfView < fov, "character scroll zooms the rendered camera");
+            Press(root.Q<Button>("halosSubjectReset")); await Wait(100);
+            Require(Mathf.Abs(camera.fieldOfView - fov) < .01f && Quaternion.Angle(rotation, model.rotation) < .1f,
+                "character reset restores orientation and zoom");
+            m_Isolated.MoveRoom(1);
+            Require(m_Isolated.Room == 1, "preview blocks room navigation");
+            using (var key = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
+                root.Q<Button>("halosSubjectBack").SendEvent(key);
+            await Until(() => home.image != null);
+            Require(!m_Isolated.IsPreviewOpen && !scene.isLoaded && m_Isolated.Room == 1, "Escape returns to the same room and releases the preview");
+            Press(root.Q<Button>("halosRoomInspectMoon"));
+            await Until(() => root.Q<Image>("halosSubjectArt")?.image != null);
+            art = root.Q<Image>("halosSubjectArt"); camera = CameraFor("Lunar display camera"); scene = camera.scene;
+            var moon = scene.GetRootGameObjects().Single().GetComponentInChildren<MeshFilter>().transform;
+            rotation = moon.rotation; float size = camera.orthographicSize;
+            Drag(art); Wheel(art); await Wait(100);
+            Require(Quaternion.Angle(rotation, moon.rotation) > 5 && camera.orthographicSize < size,
+                "Moon drag and scroll rotate and zoom the real lunar model");
+            Press(root.Q<Button>("halosSubjectReset")); await Wait(100);
+            Require(Quaternion.Angle(rotation, moon.rotation) < .1f && Mathf.Abs(size - camera.orthographicSize) < .01f,
+                "Moon reset restores its initial view");
+            Press(root.Q<Button>("halosSubjectBack")); await Until(() => home.image != null);
+            Require(!scene.isLoaded && !m_Isolated.IsPreviewOpen, "back button releases the lunar stage");
+            m_Isolated.Present(true); m_Isolated.OpenMoonPreview();
+            Require(!m_Isolated.IsPreviewOpen, "busy state blocks a new preview"); m_Isolated.Present(false);
+            m_Isolated.OpenCharacterPreview(); await Until(() => root.Q<Image>("halosSubjectArt")?.image != null);
+            scene = CameraFor("Menu portrait camera").scene; m_Isolated.Hide();
+            Require(!scene.isLoaded && home.image == null && !m_Isolated.IsPreviewOpen, "hiding while inspecting releases both stages");
+            m_Isolated.Show(false); await Until(() => home.image != null);
+            scene = CameraFor("Menu portrait camera").scene; m_Isolated.Dispose(); m_Isolated = null;
+            Require(!scene.isLoaded, "disposal releases the reopened home stage");
+            File.WriteAllLines(output, m_Checks); Debug.Log("HALOS_SUBJECT_REVIEW_PASS " + m_Checks.Count);
+        }
+        catch (Exception error) { m_Checks.Add("FAIL " + error); File.WriteAllLines(output, m_Checks); Debug.LogException(error); }
+        finally { m_Isolated?.Dispose(); m_Isolated = null; host?.RemoveFromHierarchy(); m_Screen.NavigatePage(0); }
+    }
+    private static void Drag(VisualElement target)
+    {
+        var from = target.worldBound.center; var to = from + Vector2.right * 120;
+        using (var e = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = from })) target.SendEvent(e);
+        using (var e = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = to })) target.SendEvent(e);
+        using (var e = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = to })) target.SendEvent(e);
+    }
+    private static void Wheel(VisualElement target)
+    {
+        using var e = WheelEvent.GetPooled(new Event { type = EventType.ScrollWheel, mousePosition = target.worldBound.center, delta = new Vector2(0, -2) });
+        target.SendEvent(e);
     }
     private void OnDisable() { m_Isolated?.Dispose(); m_Screen?.Dispose(); m_Isolated = null; m_Screen = null; }
 }

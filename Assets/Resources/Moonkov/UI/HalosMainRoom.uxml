@@ -1,10 +1,27 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="halosOriginalHome" class="halos-original-room">
         <ui:VisualElement name="halosRoomViewport" class="halos-room-viewport">
-            <ui:VisualElement name="halosRoomWorld" class="halos-room-world" />
+            <ui:VisualElement name="halosRoomWorld" class="halos-room-world">
+                <ui:VisualElement name="halosRoomCharacter" class="halos-room-character" picking-mode="Ignore">
+                    <ui:Image name="halosRoomPortrait" class="halos-room-portrait" picking-mode="Ignore" />
+                    <ui:Button name="halosRoomInspectCharacter" class="halos-room-hit halos-character-hit" tooltip="角色预览" />
+                </ui:VisualElement>
+                <ui:Button name="halosRoomInspectMoon" class="halos-room-hit halos-moon-hit" tooltip="月球预览" />
+            </ui:VisualElement>
             <ui:Image name="halosRoomTablet" class="halos-room-tablet" picking-mode="Ignore" />
             <ui:VisualElement name="halosRoomLeft" class="halos-room-edge halos-room-left" />
             <ui:VisualElement name="halosRoomRight" class="halos-room-edge halos-room-right" />
+        </ui:VisualElement>
+        <ui:VisualElement name="halosSubjectPreview" class="halos-subject-preview" focusable="true">
+            <ui:VisualElement name="halosSubjectStage" class="halos-subject-stage" />
+            <ui:VisualElement class="halos-subject-header">
+                <ui:Label name="halosSubjectTitle" class="halos-subject-title" />
+                <ui:Button name="halosSubjectBack" class="halos-subject-button" text="BACK  /  ESC" />
+            </ui:VisualElement>
+            <ui:VisualElement class="halos-subject-controls">
+                <ui:Label text="DRAG TO ORBIT  /  SCROLL TO ZOOM" />
+                <ui:Button name="halosSubjectReset" class="halos-subject-button" text="RESET VIEW" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
