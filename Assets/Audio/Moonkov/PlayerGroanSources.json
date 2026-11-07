@@ -1,0 +1,49 @@
+{
+  "author": "Sky Rae; commissioned and published by Galacti-Chron for Star Shift",
+  "title": "Dying Voices - Female - RPG",
+  "license": "CC0-1.0",
+  "source_page": "https://opengameart.org/content/dying-voices-female-rpg",
+  "download_url": "https://opengameart.org/sites/default/files/Dying-Voices-FEMALE-RPG.zip",
+  "download_date": "2026-11-08",
+  "processing": "Complete recorded vocal phrases; HP85/LP9500; atempo 0.9 preserves pitch; DC removal; 12 ms fades; peak 0.72; 48 kHz mono PCM16. No synthesized or repeated short cries.",
+  "sources": [
+    {
+      "asset": "SourceData/Audio/PlayerGroan/SkyRae/Groan1.mp3",
+      "archive_entry": "DEATH -- HIgh dying noise.mp3",
+      "sha256": "f2eede55c77bf2832d1bee346db5fa354c6d4a5c3cd285a51d38255d77253a14"
+    },
+    {
+      "asset": "SourceData/Audio/PlayerGroan/SkyRae/Groan2.mp3",
+      "archive_entry": "DEATH -- misc female british noise.mp3",
+      "sha256": "581666c70f1e71342fce448ea9dbc00be5a6289f02549538a95c2bd03b28ca6c"
+    },
+    {
+      "asset": "SourceData/Audio/PlayerGroan/SkyRae/Groan3.mp3",
+      "archive_entry": "DEATH -- nerf this death noises.mp3",
+      "sha256": "2f82a974dacd2eab14627641f141659dbfefd0445088d7c094a51b9489028bd5"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerGroan/PlayerGroan1.wav",
+      "source": "SourceData/Audio/PlayerGroan/SkyRae/Groan1.mp3",
+      "seconds": 2.7325833333333334,
+      "peak": 0.72,
+      "sha256": "5a964e50bb37907d4b082777a530d2cf633ded3ec89d299386c7146d66a61ebf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerGroan/PlayerGroan2.wav",
+      "source": "SourceData/Audio/PlayerGroan/SkyRae/Groan2.mp3",
+      "seconds": 2.654354166666667,
+      "peak": 0.72,
+      "sha256": "04541c11cf8716a55816fd549a9e07b31f461c114ad152fd43d6daa3a3b3426a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerGroan/PlayerGroan3.wav",
+      "source": "SourceData/Audio/PlayerGroan/SkyRae/Groan3.mp3",
+      "seconds": 2.8737083333333335,
+      "peak": 0.72,
+      "sha256": "9a6e6b43f54b9c19f7f837caec0ec963f3dc132b997464f69ea12b34f0b667ee"
+    }
+  ]
+}

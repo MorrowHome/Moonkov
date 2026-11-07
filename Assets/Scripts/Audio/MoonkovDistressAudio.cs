@@ -12,17 +12,19 @@ namespace Unity.MP_FPS
                 SurvivalEffects.Dehydrated | SurvivalEffects.ArmDisabled | SurvivalEffects.LegDisabled |
                 SurvivalEffects.AbdomenDisabled;
             return (RaidNutrition.Effects(state) & painful) != 0 ||
-                state.TacticalPoisonSeconds > 0 || state.TacticalWireSeconds > 0;
+                state.TacticalBleeding || state.TacticalPoisonSeconds > 0 || state.TacticalWireSeconds > 0;
         }
         public bool Observe(float healthFraction, bool alive, bool painfulStatus, bool hurtCry, float now)
         {
             bool active = alive && (painfulStatus || healthFraction <= (Active ? .35f : .28f));
-            if (!active) { Active = false; m_Next = 0; return false; }
+            if (!active) { Reset(); return false; }
             if (!Active) { Active = true; m_Next = now + FirstDelay; }
-            if (hurtCry) m_Next = now + RepeatDelay;
+            // Let the short impact cry finish without silencing an entire short bleeding episode.
+            if (hurtCry) m_Next = now + FirstDelay;
             if (now < m_Next) return false;
             m_Next = now + RepeatDelay;
             return true;
         }
+        public void Reset() { Active = false; m_Next = 0; }
     }
 }

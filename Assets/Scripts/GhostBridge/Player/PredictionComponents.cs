@@ -60,6 +60,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public int ClashTeam;
     [GhostField] public float ClashMaxHealthFraction;
     [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
+    [GhostField] public bool TacticalBleeding;
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
     [GhostField(Quantization = 100)] public float CarriedWeight;

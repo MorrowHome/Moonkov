@@ -43,14 +43,15 @@ namespace Unity.MP_FPS
         // Uses the same emitter/source pool and mixer, with per-playback ownership and pitch.
         public static SoundSystem.SoundInfo PlayWeaponLayer(SoundDef sound, Vector3 position,
             float volume, float spatialBlend, float pitchCents = 0,
-            float? startOffsetFraction = null, float? stopAfterSeconds = null)
+            float? startOffsetFraction = null, float? stopAfterSeconds = null, Transform follow = null)
         {
             var game = GameManager.Instance;
             if (!Application.isPlaying || game == null || game.IsHeadless || sound == null ||
                 sound.Clips == null || sound.Clips.Count == 0) return null;
             var info = new SoundSystem.SoundInfo
             {
-                SoundDefinition = sound, Position = position,
+                SoundDefinition = sound, SoundTransform = follow,
+                Position = follow ? follow.InverseTransformPoint(position) : position,
                 SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(sound)
                 { SpatialBlend = Mathf.Clamp01(spatialBlend), BasePitchInCents = sound.BasePitchInCents + pitchCents,
                     StartOffsetFraction = startOffsetFraction, StopAfterSeconds = stopAfterSeconds }

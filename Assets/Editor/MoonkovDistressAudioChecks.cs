@@ -19,11 +19,19 @@ public static class MoonkovDistressAudioChecks
         Require(cue.Observe(1, true, true, false, 34.5f), "Painful status missing");
         Require(!cue.Observe(1, true, true, true, 43.5f), "Direct cry overlapped groan");
         Require(!cue.Observe(1, true, true, false, 44), "Direct cry did not postpone groan");
-        Require(cue.Observe(1, true, true, false, 52.5f), "Sustained distress never resumes");
+        Require(cue.Observe(1, true, true, false, 47), "A short wound must groan before bleeding expires");
         Require(!cue.Observe(0, false, true, false, 70) && !cue.Active, "Dead character groaned");
         var state = new PredictedPlayerGhost(); RaidHealth.Initialize(ref state); RaidNutrition.Initialize(ref state);
         state.BreathableAir = true; state.Oxygen = 100;
         Require(!MoonkovDistressAudio.PainfulStatus(state), "Healthy status hurts");
+        state.TacticalBleeding = true;
+        Require(MoonkovDistressAudio.PainfulStatus(state), "Bleeding at high health is silent");
+        var bleeding = new MoonkovDistressAudio();
+        Require(!bleeding.Observe(1, true, true, true, 0), "Initial injury stacked a groan");
+        Require(bleeding.Observe(1, true, true, false, 3.5f), "Bleeding groan missed at full health");
+        state.TacticalBleeding = false;
+        Require(!bleeding.Observe(1, true, MoonkovDistressAudio.PainfulStatus(state), false, 4) && !bleeding.Active,
+            "Stopping bleeding must end distress at high health");
         state.Energy = state.Hydration = 20;
         Require(!MoonkovDistressAudio.PainfulStatus(state), "Mild hunger/thirst hurts");
         state.TacticalPoisonSeconds = 3;
@@ -41,6 +49,16 @@ public static class MoonkovDistressAudioChecks
         var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
         Require(lib.PlayerGroan && lib.PlayerGroan != lib.PlayerPain && lib.PlayerGroan.Clips.Count == 3, "Groan bank missing");
         Require(lib.PlayerGroan.PitchAndVolumeInfo.VolumeMax < lib.PlayerPain.PitchAndVolumeInfo.VolumeMax, "Groan too loud");
+        foreach (var clip in lib.PlayerGroan.Clips)
+        {
+            Require(!lib.PlayerPain.Clips.Contains(clip) && clip.length >= 2.4f && clip.length <= 3.4f,
+                "Groan must be a complete long performance, not the short impact cry");
+            Require(clip.channels == 1 && clip.frequency == 48000 && clip.loadType == AudioClipLoadType.DecompressOnLoad,
+                "Groans must be preloaded mono PCM");
+            var samples = new float[clip.samples]; clip.LoadAudioData(); Require(clip.GetData(samples, 0), "Unreadable groan");
+            float peak = 0; foreach (float sample in samples) peak = Mathf.Max(peak, Mathf.Abs(sample));
+            Require(peak > .65f && peak < .8f, "Groan PCM is silent, clipped or normalized unexpectedly");
+        }
         Debug.Log("Distress: 30 seconds/1800 updates produce 3 groans; delay, hysteresis, recovery, direct-hit priority, death and status classification passed.");
     }
 }

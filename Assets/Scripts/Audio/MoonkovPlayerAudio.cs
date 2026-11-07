@@ -65,6 +65,7 @@ namespace Unity.MP_FPS
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 return; // A late join must not replay historical events.
             }
+            if (ghost.CurrentHealth <= 0) { Stop(); return; }
             if ((reload & ReloadAudioEvent.Stop) != 0)
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_ReloadSound, .08f);
@@ -118,7 +119,12 @@ namespace Unity.MP_FPS
                 GameManager.Instance?.SoundSystem?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             }
             if (cry) m_PainSound = LocalOrWorld(library.PlayerPain, position, owned, owned ? 1 : .85f);
-            else if (groan) m_GroanSound = LocalOrWorld(library.PlayerGroan, position, owned, owned ? 1 : .7f);
+            else if (groan)
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_GroanSound, .08f);
+                m_GroanSound = MoonkovAudio.PlayWeaponLayer(library.PlayerGroan, position + Vector3.up * 1.4f,
+                    owned ? 1 : .7f, owned ? .08f : 1, follow: player);
+            }
             if (owned && (cry || groan))
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
@@ -230,6 +236,7 @@ namespace Unity.MP_FPS
             var system = GameManager.Instance?.SoundSystem;
             system?.Stop(m_LootSound,.08f);m_LootSound=null;m_WasLootSearching=false;
             system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
+            m_Distress.Reset();
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             StopBreathing();

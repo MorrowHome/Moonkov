@@ -6,7 +6,7 @@ using Unity.MP_FPS;
 using UnityEditor;
 using UnityEngine;
 
-// Uses the SoundDef Inspector's real playback path, without Play, profiles or networking.
+// Uses the real sound pool and clip selection, without Play, profiles or networking.
 public static class PlayerVoicePlaybackReview
 {
     public static async Task<string> Check(string[] banks)
@@ -20,16 +20,20 @@ public static class PlayerVoicePlaybackReview
         EditorUtility.audioMasterMute = false;
         EditorApplication.update += EditorApplication.QueuePlayerLoopUpdate;
         var go = new GameObject("Player voice playback review") { hideFlags = HideFlags.HideAndDontSave };
-        var data = new SoundGameObject.AudioComponentData {
-            ASource = go.AddComponent<AudioSource>(), LowPassFilter = go.AddComponent<AudioLowPassFilter>(),
-            HighPassFilter = go.AddComponent<AudioHighPassFilter>(), DistortionFilter = go.AddComponent<AudioDistortionFilter>()
-        };
-        var source = new SoundGameObject(go, data);
-        var emitter = new SoundEmitter(null) { Reserved = SoundEmitter.ReservedInfo.ReservedEmitterAndAudioSources };
-        emitter.ActiveSoundGameObjects.Add(source);
+        var holder = new GameObject("Player voice review pool") { hideFlags = HideFlags.HideAndDontSave };
+        // The runtime constructor calls DontDestroyOnLoad, which is forbidden in Edit mode.
+        // Supply only that lifetime shell here; source creation, selection, playback and recycling remain real.
+        var pool = (SoundGameObjectPool)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(SoundGameObjectPool));
+        var system = new SoundSystem();
         try
         {
+            typeof(SoundGameObjectPool).GetField("m_SourceHolder", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(pool, holder);
+            pool.SoundGameObjectList = new List<SoundGameObject> { pool.Create(), pool.Create() };
+            pool.SoundGameObjectList[0].NextAvailable = pool.SoundGameObjectList[1];
+            pool.SoundGameObjectList[1].NextAvailable = pool.SoundGameObjectList[0];
+            pool.NextSoundGameObject = pool.SoundGameObjectList[0]; pool.AvailableSoundObjectCount = 2;
             var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
+            system.Init(go.transform, 2, pool, lib.SuitBreath.UnityAudioMixer);
             foreach (string name in banks)
             {
                 var bank = (SoundDef)typeof(MoonkovAudioLibrary).GetField(name).GetValue(lib);
@@ -40,12 +44,12 @@ public static class PlayerVoicePlaybackReview
                 // Check every variant through native clip selection, with bounded retries.
                 for (int i = 0; i < Math.Max(1, bank.Clips.Count * 8); i++)
                 {
-                    emitter.SetSoundDef(bank); emitter.CopyOverrideDataFromSoundDef(bank);
-                    emitter.SoundDefOverrideInfo.SpatialBlend = 0;
-                    emitter.Activate(); source.EnableAudioFilterComponents(bank); source.Enable(emitter);
-                    emitter.Volume = name == "SuitBreath" ? .7f : name == "SuitBreathEffort" ? 1.25f : 1;
-                    emitter.Play(null, mixer.MixerGroups);
-                    var audio = data.ASource;
+                    var info = new SoundSystem.SoundInfo { SoundDefinition = bank, Position = Vector3.zero,
+                        SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(bank) { SpatialBlend = 0 } };
+                    float gain = name == "SuitBreath" ? .7f : name == "SuitBreathEffort" ? 1.25f : 1;
+                    if (!system.PlayEmitter(info, gain) || !info.Handle.IsValid())
+                        throw new InvalidOperationException("Pool allocation failed: " + name);
+                    var audio = info.Handle.Emitter.ActiveSoundGameObjects[0].m_AudioSource;
                     if (!audio.isPlaying || !bank.Clips.Contains(audio.clip) || audio.volume <= 0 ||
                         audio.outputAudioMixerGroup != mixer.MixerGroups[(int)SoundMixer.SoundMixerGroup.SFX] ||
                         audio.spatialBlend != 0 || bank.Clips.Count > 1 && previous == audio.clip)
@@ -62,17 +66,18 @@ public static class PlayerVoicePlaybackReview
                         await Task.Delay(Mathf.CeilToInt(audio.clip.length / audio.pitch * 1000));
                         if (audio.isPlaying) throw new InvalidOperationException("One-shot did not finish: " + name);
                     }
-                    audio.Stop();
+                    system.Kill(info);
                     if (heard.Count == bank.Clips.Count) break;
                 }
                 if (heard.Count != bank.Clips.Count) throw new InvalidOperationException("Not all variants played: " + name);
+                if (pool.AvailableSoundObjectCount != 2) throw new InvalidOperationException("Leaked pooled sources: " + name);
             }
             return "PASS: " + lines.Count + " complete native AudioSource plays; audio clock, SFX, gain, non-repeat and completion.";
         }
         catch (Exception error) { lines.Add("FAIL " + error); throw; }
         finally
         {
-            data.ASource.Stop(); UnityEngine.Object.DestroyImmediate(go);
+            system.KillAll(); UnityEngine.Object.DestroyImmediate(holder); UnityEngine.Object.DestroyImmediate(go);
             EditorApplication.update -= EditorApplication.QueuePlayerLoopUpdate;
             if (view) view.audioPlay = previousAudio;
             EditorUtility.audioMasterMute = previousMute;
