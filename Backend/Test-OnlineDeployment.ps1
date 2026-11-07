@@ -46,8 +46,8 @@ if (!$ConfigurationOnly) {
     $port = if ($client.ServerPort) { [int]$client.ServerPort } else { 7979 }
     $listeners = @(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue)
     if ($health.features -contains 'online-lobbies-v1') {
-        $marker = Join-Path $projectRoot 'Build/MoonServer/online-instance-protocol.txt'
-        $validBuild = (Test-Path -LiteralPath $marker) -and (Get-Content -LiteralPath $marker -Raw).Trim() -eq '1'
+        $marker = Join-Path $projectRoot 'Build/MoonServer/moon-network-protocol.txt'
+        $validBuild = (Test-Path -LiteralPath $marker) -and (Get-Content -LiteralPath $marker -Raw).Trim() -eq '2'
         $leaseFile = Join-Path $projectRoot 'LocalData/online-instance-process.json'
         $owned = $false
         if (Test-Path -LiteralPath $leaseFile) {

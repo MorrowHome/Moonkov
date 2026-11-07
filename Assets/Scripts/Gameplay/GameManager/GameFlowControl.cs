@@ -169,10 +169,12 @@ namespace Unity.MP_FPS
                 await Awaitable.NextFrameAsync();
             }
 
+            var previousConnection = GameConnection;
             try { await LeaveSessionAsync(); }
             catch (Exception e) { Debug.LogWarning($"[Session] Could not leave the service session: {e.Message}"); }
             finally { GameConnection = null; }
-            await DestroyGameSessionWorlds();
+            try { await DestroyGameSessionWorlds(); }
+            finally { previousConnection?.ReleaseIce(); }
             
             if (GhostBridgeBootstrap.Instance != null)
             {

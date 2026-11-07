@@ -26,6 +26,7 @@ builder.Configuration.GetSection("OnlineInstances").Bind(instanceOptions);
 if (string.IsNullOrWhiteSpace(instanceOptions.ProjectRoot)) instanceOptions.ProjectRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../.."));
 builder.Services.AddSingleton(instanceOptions);
 builder.Services.AddSingleton(new OnlineLobbies(Path.Combine(instanceOptions.ProjectRoot, "LocalData/online-lobbies.json")));
+builder.Services.AddSingleton<OnlineIceSignaling>();
 builder.Services.AddHostedService<OnlineInstanceWorker>();
 var clashEconomy = new BountyEconomy(builder.Configuration.GetValue("BountyClash:BaseDust",20),
     builder.Configuration.GetValue("BountyClash:SoloBonusDust",60),builder.Configuration.GetValue("BountyClash:DuoBonusDust",15));
@@ -54,6 +55,11 @@ await app.Services.GetRequiredService<StashRepository>().InitializeAsync();
 var expectedKey = SHA256.HashData(Encoding.UTF8.GetBytes(serverKey));
 app.Use(async (context, next) =>
 {
+    if (context.Request.Path == "/auth/lobby/ice" || context.Request.Path == "/internal/instances/ice")
+    {
+        var limit = context.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
+        if (limit is { IsReadOnly: false }) limit.MaxRequestBodySize = context.Request.Path.StartsWithSegments("/auth") ? 8192 : 300000;
+    }
     if (context.Request.Path.StartsWithSegments("/auth")) { await next(context); return; }
     var supplied = context.Request.Headers["X-Moon-Server-Key"].ToString();
     if (supplied.Length > 256 || !CryptographicOperations.FixedTimeEquals(expectedKey,
@@ -122,15 +128,17 @@ auth.MapPost("/game-ticket", async (HttpRequest request, AccountRepository accou
     var profile = await accounts.ResolveSessionAsync(request.Headers.Authorization.ToString().Replace("Bearer ", ""), ct);
     return profile is null ? Results.Unauthorized() : Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow) });
 }).RequireRateLimiting("auth");
-auth.MapGet("/lobby", async (HttpRequest request, int? character, int? pose, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapGet("/lobby", async (HttpRequest request, int? character, int? pose, int? networkProtocol, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
+    if (networkProtocol != OnlineNetworkProtocol.Version) return Results.Conflict(new { error = "请更新客户端，当前大厅已启用 P2P/VPS 连接选择。" });
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
     RefreshLobbyAppearance(lobbies, profile, character, pose);
-    return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
+    return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port)));
 });
-auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, int? character, int? pose, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, int? character, int? pose, int? networkProtocol, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
+    if (networkProtocol != OnlineNetworkProtocol.Version) return Results.Conflict(new { error = "请更新客户端，当前大厅已启用 P2P/VPS 连接选择。" });
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
     try
@@ -138,10 +146,16 @@ auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, in
         RefreshLobbyAppearance(lobbies, profile, character, pose);
         lobbies.Act(profile.PlayerId, profile.DisplayName, profile.ActiveDeploymentId != null, action, DateTime.UtcNow);
         RefreshLobbyAppearance(lobbies, profile, character, pose);
-        return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
+        return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port)));
     }
     catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
+LobbySnapshot ConnectionOptions(LobbySnapshot snapshot)
+{
+    snapshot.IceStunHost = instanceOptions.IceStunHost;
+    snapshot.IceStunPort = instanceOptions.IceStunPort;
+    return snapshot;
+}
 void RefreshLobbyAppearance(OnlineLobbies lobbies, Profile profile, int? character, int? pose)
 {
     if (profile.ActiveDeploymentId != null) return;
@@ -152,6 +166,7 @@ void RefreshLobbyAppearance(OnlineLobbies lobbies, Profile profile, int? charact
 }
 auth.MapPost("/lobby/game-ticket", async (HttpRequest request, InstanceCredential credential, AccountRepository accounts, OnlineLobbies lobbies, GameJoinTickets tickets, CancellationToken ct) =>
 {
+    if (credential.Protocol != OnlineNetworkProtocol.Version) return Results.Conflict(new { error = "请同步更新客户端和独立服务器。" });
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
     try
@@ -166,8 +181,20 @@ app.MapPost("/internal/instances/event", (InstanceEvent update, OnlineLobbies lo
     try
     {
         if (update.Kind != "ready") return Results.BadRequest();
-        lobbies.Ready(update.InstanceId, DateTime.UtcNow, update.Protocol); return Results.NoContent();
+        lobbies.Ready(update.InstanceId, DateTime.UtcNow, update.Protocol, update.IceAvailable, update.IceHostId, update.IceHostAddress); return Results.NoContent();
     }
+    catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
+auth.MapPost("/lobby/ice", async (HttpRequest request, IceClientMessage message, AccountRepository accounts, OnlineIceSignaling signaling, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile == null) return Results.Unauthorized();
+    try { return Results.Ok(await signaling.ExchangeAsync(profile.PlayerId, message, ct)); }
+    catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
+app.MapPost("/internal/instances/ice", (IceServerPoll message, OnlineIceSignaling signaling) =>
+{
+    try { return Results.Ok(signaling.Poll(message)); }
     catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
 app.MapPost("/internal/game-tickets/consume", async (SessionCredential request, AccountRepository accounts, GameJoinTickets tickets, OnlineLobbies lobbies, CancellationToken ct) =>
@@ -199,7 +226,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, OnlineLobbies lobbies
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2" },
         onlineInstances = true, instancePhase = lobbies.Current()?.Phase ?? "Idle", build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });

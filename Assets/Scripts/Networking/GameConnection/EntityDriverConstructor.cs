@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Networking.Transport.Relay;
 using Unity.Services.Multiplayer;
+using Unity.MP_FPS.EmbeddedNetworking;
 
 namespace Unity.MP_FPS
 {
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS
     {
         EntityNetworkConfiguration m_Configuration;
         readonly bool m_SecureDirect;
+        readonly EmbeddedIceTransport m_EmbeddedIce;
 
         public EntityDriverConstructor(NetworkConfiguration configuration)
         {
@@ -51,6 +53,13 @@ namespace Unity.MP_FPS
                 Role = role,
                 Type = NetworkType.Direct,
             };
+        }
+
+        // The lobby-selected P2P client completes signaling before creating its World.
+        public EntityDriverConstructor(NetworkRole role, EmbeddedIceTransport embeddedIce) : this(role)
+        {
+            if (role == NetworkRole.Host) throw new System.ArgumentException("Online ICE does not use local host/IPC.", nameof(role));
+            m_EmbeddedIce = embeddedIce ?? throw new System.ArgumentNullException(nameof(embeddedIce));
         }
 
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)
@@ -75,7 +84,10 @@ namespace Unity.MP_FPS
                 if (m_SecureDirect) OnlineTransportSecurity.ConfigureClient(ref networkSettings);
                 // A secure direct connection always targets a separate server process.
                 // Do not accidentally select IPC because an Editor World is present.
-                if (m_SecureDirect) DefaultDriverBuilder.RegisterClientUdpDriver(world, ref driverStore, netDebug, networkSettings);
+                if (m_EmbeddedIce != null)
+                    driverStore.RegisterDriver(TransportType.Socket,
+                        DefaultDriverBuilder.CreateClientNetworkDriver(m_EmbeddedIce.CreateNetworkInterface(), networkSettings));
+                else if (m_SecureDirect) DefaultDriverBuilder.RegisterClientUdpDriver(world, ref driverStore, netDebug, networkSettings);
                 else DefaultDriverBuilder.RegisterClientDriver(world, ref driverStore, netDebug, networkSettings);
             }
         }
@@ -99,7 +111,13 @@ namespace Unity.MP_FPS
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayServerData);
             }
             else if (m_SecureDirect) OnlineTransportSecurity.ConfigureServer(ref networkSettings);
-            DefaultDriverBuilder.RegisterServerUdpDriver(world, ref driverStore, netDebug, networkSettings);
+            var embeddedIce = m_EmbeddedIce;
+            if (embeddedIce == null && m_SecureDirect && m_Configuration.Role == NetworkRole.Server && OnlineIceServer.Selected)
+                embeddedIce = OnlineIceServer.CreateTransport();
+            if (embeddedIce != null)
+                driverStore.RegisterDriver(TransportType.Socket,
+                    DefaultDriverBuilder.CreateServerNetworkDriver(embeddedIce.CreateNetworkInterface(), networkSettings));
+            else DefaultDriverBuilder.RegisterServerUdpDriver(world, ref driverStore, netDebug, networkSettings);
 #else
             throw new NotSupportedException(
                 "Creating a server driver for a WebGL build is not supported. You can't listen on a WebSocket in the browser." +

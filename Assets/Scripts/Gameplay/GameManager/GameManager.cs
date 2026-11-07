@@ -346,7 +346,7 @@ namespace Unity.MP_FPS
                 case CreationType.LanJoin:
                 case (CreationType.ConnectAndJoin): //Direct connection - client
                     {
-                        GameConnection = await GameConnection.ConnectGameAsync();
+                        GameConnection = await GameConnection.ConnectGameAsync(cancellationToken);
                         break;
                     }
             }
@@ -362,7 +362,8 @@ namespace Unity.MP_FPS
             }
             else
             {
-                CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.LanHost || creationType == CreationType.Offline, out server, out client);
+                CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.LanHost || creationType == CreationType.Offline,
+                    out server, out client, GameConnection.IceSession?.Transport);
                 if (creationType == CreationType.LanHost) server.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.LanHost || creationType == CreationType.LanJoin) client.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.Offline)
@@ -552,10 +553,12 @@ namespace Unity.MP_FPS
             }
         }
 
-        static void CreateEntityWorlds(bool isHost, out World serverWorld, out World clientWorld)
+        static void CreateEntityWorlds(bool isHost, out World serverWorld, out World clientWorld,
+            EmbeddedNetworking.EmbeddedIceTransport embeddedIce = null)
         {
-            NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(
-                isHost ? NetworkRole.Host : NetworkRole.Client, !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
+            NetworkStreamReceiveSystem.DriverConstructor = embeddedIce != null
+                ? new EntityDriverConstructor(NetworkRole.Client, embeddedIce)
+                : new EntityDriverConstructor(isHost ? NetworkRole.Host : NetworkRole.Client, !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
             DestroyLocalSimulationWorld();
 
@@ -587,7 +590,9 @@ namespace Unity.MP_FPS
                 if (Time.realtimeSinceStartupAsDouble - started >= SessionConnectionPolicy.TimeoutSeconds)
                 {
                     ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
-                    throw new TimeoutException($"连接 {ConnectionSettings.Instance.IPAddress}:{ConnectionSettings.Instance.Port} 超时。请在队伍中重试；外网连接还需确认 UDP 转发及防火墙，账号登录成功不代表游戏端口可达。");
+                    throw new TimeoutException(GameConnection?.IceSession != null
+                        ? "P2P 游戏连接超时，本局已断开，不会改走 VPS。请重试或在下一局更换连接方式。"
+                        : $"连接 {ConnectionSettings.Instance.IPAddress}:{ConnectionSettings.Instance.Port} 超时。请在队伍中重试，并确认公网 UDP 转发可用。");
                 }
                 await Awaitable.NextFrameAsync(cancellationToken);
             }

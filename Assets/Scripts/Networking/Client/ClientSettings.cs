@@ -24,6 +24,7 @@ namespace Unity.MP_FPS
         sealed class Values
         {
             public string GameServerName;
+            public string IceBindAddress;
             public string AccountServiceUrl;
             public bool? AllowLanHttp;
             public string ServerAddress;
@@ -91,6 +92,7 @@ namespace Unity.MP_FPS
 
         public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
         public static string GameServerName => string.IsNullOrWhiteSpace(Configuration.GameServerName) ? null : Configuration.GameServerName.Trim();
+        public static string IceBindAddress => Configuration.IceBindAddress?.Trim();
         public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;
 
         /// <summary>The game server a fresh install should point at, or null for the built-in default.</summary>

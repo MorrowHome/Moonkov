@@ -1,0 +1,14 @@
+Moon embedded ICE transport
+
+moon_ice.dll statically links unmodified libjuice v1.7.4.
+Copyright (c) Paul-Louis Ageneau and libjuice contributors.
+License: Mozilla Public License 2.0. See libjuice-MPL-2.0.txt beside this notice.
+
+The corresponding libjuice Source Code Form is publicly available at:
+https://github.com/paullouisageneau/libjuice/tree/b89c792e3612faf2f12cf35bcc56857313a06be3
+Source archive:
+https://github.com/paullouisageneau/libjuice/archive/b89c792e3612faf2f12cf35bcc56857313a06be3.tar.gz
+
+The Moon bridge and reproducible build instructions are under
+Tools/Networking/EmbeddedIce in the Moon project source repository.
+No libjuice source file is modified by this integration.
