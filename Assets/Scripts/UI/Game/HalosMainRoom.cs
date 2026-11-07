@@ -24,6 +24,7 @@ namespace Unity.MP_FPS.Client
             public bool Pointed, Focused;
         }
         private const string ArtPath = "Moonkov/UI/Halos/MainRoom/";
+        private const float RoomSlideSeconds = .65f;
         private static readonly string[] PageNames = { "SHIP", "STASH", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly VisualElement m_Owner, m_Viewport, m_World, m_Left, m_Right;
         private readonly Image m_Tablet;
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS.Client
         private readonly Action<int> m_Navigate;
         private readonly IVisualElementScheduledItem m_Timer;
         private float m_Camera = 1920, m_Cooldown, m_Extrude, m_Flicker;
+        private float m_SlideFrom = 1920, m_SlideAge = RoomSlideSeconds;
         private float m_TabletState = 100;
         private double m_LastTime;
         private bool m_Visible, m_Busy, m_Disposed;
@@ -42,6 +44,7 @@ namespace Unity.MP_FPS.Client
         public int Room { get; private set; } = 1;
         public float TabletState => m_TabletState;
         public bool IsOpening => m_Opened != null;
+        public bool IsMoving => m_SlideAge < RoomSlideSeconds;
 
         public HalosMainRoom(VisualElement parent, Action<int> navigate)
         {
@@ -99,6 +102,7 @@ namespace Unity.MP_FPS.Client
         {
             ClosePreview(false);
             m_Visible = true; m_Opened = null; m_Edge = 0;
+            m_Camera = Room * 1920; m_SlideAge = RoomSlideSeconds; m_Cooldown = 0;
             Root.style.display = DisplayStyle.Flex;
             if (returning) m_TabletState = 100;
             if (!Animate) m_TabletState = 0;
@@ -112,15 +116,16 @@ namespace Unity.MP_FPS.Client
         }
         public void Open(int page)
         {
-            if (!m_Visible || m_Disposed || m_Busy || IsPreviewOpen || IsOpening || m_TabletState > 0) return;
+            if (!m_Visible || m_Disposed || m_Busy || IsMoving || IsPreviewOpen || IsOpening || m_TabletState > 0) return;
             if (!Animate) { m_Navigate(page); return; }
             m_Opened = () => m_Navigate(page); m_Edge = 0; UpdateInput();
         }
         public void MoveRoom(int direction)
         {
-            if (!m_Visible || m_Disposed || IsPreviewOpen || IsOpening || m_TabletState > 0 || m_Cooldown > 0) return;
+            if (!m_Visible || m_Disposed || IsMoving || IsPreviewOpen || IsOpening || m_TabletState > 0 || m_Cooldown > 0) return;
             int next = Mathf.Clamp(Room + direction, 0, 2);
             if (next == Room) return;
+            m_SlideFrom = m_Camera; m_SlideAge = Animate ? 0 : RoomSlideSeconds;
             Room = next; m_Cooldown = Animate ? 60 : 0; m_Extrude = 0;
             foreach (var monitor in m_Monitors) { monitor.Pointed = false; monitor.Focused = false; }
             if (!Animate) m_Camera = Room * 1920;
@@ -168,12 +173,17 @@ namespace Unity.MP_FPS.Client
                 }
             if (IsPreviewOpen) return;
             bool animate = Animate;
-            if (!animate) { m_Camera = Room * 1920; m_TabletState = IsOpening ? 100 : 0; }
+            if (!animate)
+            {
+                m_Camera = Room * 1920; m_SlideAge = RoomSlideSeconds; m_Cooldown = 0;
+                m_TabletState = IsOpening ? 100 : 0;
+            }
             else
             {
                 m_Cooldown = Mathf.Max(0, m_Cooldown - frames);
                 if (m_Edge != 0) MoveRoom(m_Edge);
-                m_Camera = Mathf.Lerp(m_Camera, Room * 1920, 1 - Mathf.Pow(.5f, frames));
+                m_SlideAge = Mathf.Min(RoomSlideSeconds, m_SlideAge + frames / 60);
+                m_Camera = Mathf.Lerp(m_SlideFrom, Room * 1920, TerminalMotion.InOutCubic(m_SlideAge / RoomSlideSeconds));
                 m_TabletState = Mathf.MoveTowards(m_TabletState, IsOpening ? 100 : 0, frames);
                 m_Flicker += frames;
                 if (m_Flicker >= 6)
@@ -218,9 +228,9 @@ namespace Unity.MP_FPS.Client
             foreach (var monitor in m_Monitors)
             {
                 monitor.Button.style.display = monitor.Art.room == Room && ready ? DisplayStyle.Flex : DisplayStyle.None;
-                monitor.Button.SetEnabled(!m_Busy);
+                monitor.Button.SetEnabled(!m_Busy && !IsMoving);
             }
-            UpdateSubjectInput(ready && Room == 1 && !m_Busy);
+            UpdateSubjectInput(ready && Room == 1 && !m_Busy && !IsMoving);
         }
         public void Dispose()
         {
