@@ -36,8 +36,10 @@ namespace Unity.MP_FPS.Client
                 foreach (var child in m_Model.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = ViewLayer;
             }
             if (m_EquipmentMelee == null) return;
+            // Without an attack direction, the idle pose uses the model's current facing.
+            // A world-space direction captured here would stay fixed while the portrait turns.
             m_EquipmentMelee.SetPresentation(new MeleeViewState { Weapon = m_SharedStage == null ? PreviewMeleeWeapon : MeleeWeaponKind.None,
-                Alive = true, AttackDirection = m_Model.transform.forward });
+                Alive = true });
         }
     }
 }

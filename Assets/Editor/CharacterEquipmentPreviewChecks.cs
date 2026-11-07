@@ -85,7 +85,7 @@ public static class CharacterEquipmentPreviewChecks
         }
         Require(EditorSceneManager.previewSceneCount == scenes, "private preview scenes leaked");
         Debug.Log("Character equipment preview checks passed: " + s_Checks +
-            " assertions; three characters, every halo, item modules/ammo, live snapshots, protection gear, corpse transfers and cleanup.");
+            " assertions; three characters, fist inspection, every halo, item modules/ammo, live snapshots, protection gear, corpse transfers and cleanup.");
     }
 
     private static void CheckCharacter(int character)
@@ -133,6 +133,7 @@ public static class CharacterEquipmentPreviewChecks
         loadout.Equipped("Melee").Code = MeleeInventory.SwordCode;
         view.SetEquipmentInventory(loadout, ""); view.Advance(0);
         Require(!view.HaloVisible && view.PreviewMeleeWeapon == MeleeWeaponKind.Fists, "explicit empty hands selected primary");
+        CheckFistInspection(view);
 
         var fallback = loadout.Clone(); fallback.Items.RemoveAll(item => item.Id == primary.Id || item.Parent == primary.Id);
         view.SetEquipmentInventory(fallback); view.Advance(0);
@@ -173,6 +174,29 @@ public static class CharacterEquipmentPreviewChecks
             "removed equipment stayed visible");
         view.Dispose();
         Require(!stage.IsValid(), "character stage survived disposal");
+    }
+
+    private static void CheckFistInspection(MenuCharacterView view)
+    {
+        var model = Field<GameObject>(view, "m_Model").transform;
+        var animator = Field<Animator>(view, "m_Animator");
+        var wrists = new[] { animator.GetBoneTransform(HumanBodyBones.LeftHand), animator.GetBoneTransform(HumanBodyBones.RightHand) };
+        var bodyRotation = model.rotation;
+        var wristPositions = wrists.Select(wrist => model.InverseTransformPoint(wrist.position)).ToArray();
+        var wristRotations = wrists.Select(wrist => Quaternion.Inverse(bodyRotation) * wrist.rotation).ToArray();
+        var inspected = typeof(MenuCharacterView).GetField("m_Inspected", Private);
+        var yaw = typeof(MenuCharacterView).GetField("m_InspectionYaw", Private);
+        // Apply the inspection yaw without advancing the animation.
+        inspected.SetValue(view, true);
+        yaw.SetValue(view, 90f);
+        view.Advance(0);
+        Require(Mathf.Abs(Quaternion.Angle(bodyRotation, model.rotation) - 90f) < .1f, "inspection did not turn the body");
+        for (int i = 0; i < wrists.Length; i++)
+            Require(Vector3.Distance(wristPositions[i], model.InverseTransformPoint(wrists[i].position)) < .002f &&
+                Quaternion.Angle(wristRotations[i], Quaternion.Inverse(model.rotation) * wrists[i].rotation) < .2f,
+                "fists did not turn with the body during inspection");
+        inspected.SetValue(view, false);
+        yaw.SetValue(view, 0f);
     }
 
     private static void CheckModules(MenuCharacterView view, InventoryGraph graph, InventoryItem item, WeaponRegistry registry)
