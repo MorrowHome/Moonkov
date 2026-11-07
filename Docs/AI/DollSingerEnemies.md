@@ -191,13 +191,19 @@ it does not use deep learning or a runtime language model.
   motion. Search has travel, stop-and-look and abandonment phases. Near path turns
   the actor slows and looks into the next segment. These are navigation-based
   checks, not semantic understanding of rooms or doors.
-- Cover requires both head and torso occlusion. The actor reaches cover, settles,
-  advances to a reachable peek, briefly holds, and returns. Visible opponents can
-  be engaged while advancing to a peek or returning to safety. Damage interrupts
-  exposure immediately. Repeated or punished
-  peeks retire that cover temporarily. The approach route is scored before the
-  peek path overwrites the reusable navigation probe. Flanking compares both sides
-  using path distance and exposure to the remembered threat.
+- 掩体必须遮住头部和躯干。敌人到位后短暂停留，再探头射击并返回。
+  受击会结束探头。重复使用或被命中的探头位置会暂时停用。
+  寻路先评估接近掩体的路线，再评估探头路线，避免覆盖共用的导航结果。
+  绕侧面仍比较两侧的路径距离和暴露程度。
+- 2026-11-08 提高了反击优先级。有弹且未被重度压制时，优先攻击已确认、可见的目标。
+  轻微受击不再立即让位给掩体或绕行。持续对射超过 8 秒后，可在点射间隙绕侧面；
+  赏金队友提供掩护时也可换位。近期受击会重新提高反击优先级。
+  在接近掩体、停留或撤退时，只要实际射线允许，也能反击。
+  有效点射先放下光环防御；射击间隙或无法开火时仍可防御。
+  点射时间包含放下防御后的抬枪时间，换枪和充电不会提前消耗点射窗口。
+  反应时间、瞄准误差、墙体遮挡、队友射线、重伤撤退和躲雷规则仍生效。
+  `Tools/Validation/PmcReturnFireReview.cs` 的 `Run` 通过 48 项实际决策、输入和武器检查。
+  `Regression` 通过 17 组相关回归。检查使用隔离服务端 World，没有进入 Play 或联机。
 - A confirmed threat interrupts looting and searching. Wounded or loaded raiders
   stop hunting stale contacts and can continue toward extraction after disengaging.
   Low magazines may reload during a safe opening; no new ammunition is created.
@@ -216,7 +222,7 @@ stateDiagram-v2
     Engage --> HoldAngle: lost sight
     HoldAngle --> Search: short watch expires
     Search --> RaidGoal: hypotheses exhausted
-    Engage --> Cover: pressure or damage
+    Engage --> Cover: 重度压制
     Cover --> Peek: arrived and settled
     Peek --> Cover: brief exposure or hit
     Cover --> Heal: safe and injured, medicine available

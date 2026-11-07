@@ -140,7 +140,8 @@ namespace Unity.MP_FPS
                     }
                 }
             }
-            bool firingSolution = !switching && fighting && brain.Visible && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
+            bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && health.CurrentAmmo > 0 &&
+                !health.ControllerState.IsReloadingState && health.WeaponEquipRemaining <= 0 &&
                 now - brain.VisibleSince >= m_Tuning.ReactionSeconds && distance < map.EnemySightRange &&
                 Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
                 (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));
@@ -148,22 +149,29 @@ namespace Unity.MP_FPS
             // turning toward the contact. The burst starts when the shot is possible.
             if (now >= brain.NextBurst && firingSolution)
             {
-                brain.BurstUntil = now + brain.Random.NextFloat(.25f, .6f);
+                // Releasing defense starts with a lowered halo. Leave time to raise
+                // it before counting the short burst, including injured-hand handling.
+                float raiseTime = DollSingerWeapons.IsHalo(health.EquippedWeaponID) ?
+                    (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds * RaidHealth.HandlingMultiplier(health) : 0;
+                brain.BurstUntil = now + raiseTime + brain.Random.NextFloat(.25f, .6f);
                 brain.NextBurst = brain.BurstUntil + brain.Random.NextFloat(.5f, 1.1f);
             }
-            bool defend = !TutorialRuntime.Enabled(EntityManager) && brain.Visible &&
+            bool shoot = firingSolution && now < brain.BurstUntil;
+            // A valid return-fire window releases defense; otherwise the barrier
+            // silently consumes every burst while the actor stands exposed.
+            bool defend = !shoot && !TutorialRuntime.Enabled(EntityManager) && brain.Visible &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Cover && !brain.IsPeeking) &&
                 health.HaloEnergy > 15 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
                 !input.Reload && HaloEnergyRules.CanDefend(health);
             input.SetFlag(PlayerInput.InputFlag.HaloDefense, defend);
-            input.SetFlag(PlayerInput.InputFlag.Shoot, !defend && firingSolution && now < brain.BurstUntil);
+            input.SetFlag(PlayerInput.InputFlag.Shoot, shoot);
             return input;
         }
 
         private static bool CanReturnFire(DollSingerEnemyBrain brain) =>
             brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
             (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
-             brain.Action == PmcAction.Cover && (!brain.HasCover || brain.IsPeeking || brain.CoverPhase == PmcCoverPhase.Returning) ||
+             brain.Action == PmcAction.Cover ||
              brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
 
         private void UpdateShieldSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
