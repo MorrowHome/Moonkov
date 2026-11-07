@@ -893,10 +893,9 @@
 ## 受伤人声
 
 - 2026-11-08 烟雾呛咳改用 CC0 真人录音，由 `MoonkovPlayerAudio` 统一调度，原 `TacticalItemsFeedback` 不再另播。人声顺序为受击、咳嗽、挥拳、呻吟、呼吸。离开暴露和死亡会收束。`CoughVoiceReview` 的 16 项隔离 Play 检查、原 18 项实际脚步检查及新增音效完整播放通过。`GameAudioAudit` 覆盖 83 个入口、168 个音库和 14 组回归；详细边界见[音效系统](Docs/AudioSystem.md#2026-11-08-呛咳与全库复查)。
-
 - 2026-11-08 普通受击、近战及四个枪械身体命中库改用三条 CC0 闷击实录。原金属盾牌录音移作近战格挡。重建用 `MoonkovBodyImpactAudioSetup.Install()`。不要再把 `Character/Hit.wav` 当作身体撞击源，该文件实际是金属盾牌。详见[音效系统](Docs/AudioSystem.md#2026-11-08-身体命中与格挡)。
 
-- `Hit` 是护甲撞击录音，不是人的叫声。受伤人声使用独立的 `AudioLibrary.PlayerPain`，保留原撞击声。
+- `AudioLibrary.Hit` 是身体撞击拟音，不是人声。`Character/Hit.wav` 原文件仍是金属盾牌，只用作格挡源。受伤短叫使用独立的 `AudioLibrary.PlayerPain`。
 - 挨打短叫只观察 `LastImpactTick`。不要改回观察血量下降或 `LastHitTick`，否则缺氧、流血和中毒会连续惨叫。护盾完全吸收不叫，穿盾伤害仍会叫。
 - `MoonkovPainAudio` 按角色限制为至少 1.1 秒一次。冷却中收到的事件直接消耗，不排队补叫。首次快照和死亡角色静音。声音池上限不是每人冷却的替代。
 - 三条短叫来自 Cici Fyre 的 CC0 Female RPG Voice Starter Pack（Type 1）。保留原声线，不整体升调。旧第四条保留文件，但不再引用。来源、裁剪和哈希在 `Assets/Audio/Moonkov/PlayerPainSources.json`；原文件在 `SourceData/Audio/PlayerPain`。重建脚本是 `Tools/Audio/build_player_pain_audio.py`，绑定入口是 `MoonkovPainAudioSetup.Install()`。
