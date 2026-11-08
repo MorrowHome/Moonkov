@@ -59,7 +59,7 @@ namespace Unity.MP_FPS.Client
             m_CampaignTasks?.Dispose();
             m_CampaignTasks = new CampaignChapterView(wide, () => CampaignScene.ReadProgress(), Prepare, "准备出战");
             if (m_FacilityRecords)
-                ActionButton(side, ResearchQuestCopy.Text("返回任务墙", "Back to all quests"), () => { m_FacilityRecords = false; Render(); });
+                ActionButton(side, ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => { m_FacilityRecords = false; Render(); });
             var replay = new Button(async () =>
             {
                 if (m_Busy || PlayerProfileClient.IsTutorialPractice || PlayerProfileClient.RaidActive) return;

@@ -179,6 +179,8 @@ public sealed class ResearchQuestChecks : EditorWindow
             Require(prefab && PhysicalItemVisuals.Icon(code), "Real model and icon for " + code);
             var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
             Require(Enumerable.Range(0, mesh.subMeshCount).Sum(s => (int)mesh.GetIndexCount(s) / 3) == triangles, "Preserved source triangles for " + code);
+            var photo = Resources.Load<Texture2D>("Moonkov/UI/QuestExhibits/" + code);
+            Require(photo && photo.width == 1600 && photo.height == 1160, "Camera framing preserved for " + code);
         }
         foreach (bool zh in new[] { false, true })
             foreach (bool closing in new[] { false, true })
@@ -278,36 +280,38 @@ public sealed class ResearchQuestChecks : EditorWindow
         try
         {
             var state = new ResearchQuestProgress();
+            bool closed = false;
             m_View = new ResearchQuestView(rootVisualElement, () => state, (quest, claim) =>
                 Task.FromResult(claim ? ResearchQuestRules.Claim(state, quest) : ResearchQuestRules.Accept(state, quest)),
-                () => { }, () => { }, () => Close());
+                () => { }, () => { }, () => closed = true);
             await Wait(450);
-            Require(m_View.Element.Q("questWall").resolvedStyle.display == DisplayStyle.Flex, "Wall is the initial screen");
-            Require(m_View.Element.Query<Button>(className: "research-quest-card").ToList().Count == 8, "Eight native cards");
-            SaveImage("QuestWall.png");
+            var matrix = m_View.Element.Q("questMatrix");
+            Require(matrix.layout.width > 0 && m_View.Element.Q("questExhibit").layout.width > 0,
+                "Selection and exhibit are visible on the same screen");
+            Require(matrix.Query<Button>().ToList().Count == ResearchQuestRules.Count, "One native node per quest");
+            var photo = m_View.Element.Q<Image>("questModelPhoto");
+            foreach (var (index, code) in new[] { (3, ResearchQuestRules.Tablet), (4, ResearchQuestRules.Flash), (5, ResearchQuestRules.Drive) })
+            {
+                Click("questCard" + index);
+                Require(photo.image && photo.image == Resources.Load<Texture2D>("Moonkov/UI/QuestExhibits/" + code) &&
+                    photo.scaleMode == ScaleMode.ScaleToFit, "Selection shows the full model photograph for " + code);
+                Require(!m_View.Element.Q<Button>("questAction").enabledSelf, "Locked quest cannot be accepted");
+            }
             Click("questCard0");
-            await Wait(180);
-            Require(m_View.Element.Q("questWall").resolvedStyle.display == DisplayStyle.None, "Card opens the independent detail");
+            Require(m_View.Element.Q<Button>("questListen").enabledSelf, "Available briefing has a playback control");
             Click("questAction");
             Require(ResearchQuestRules.Status(state, ResearchQuest.Exposure) == ResearchQuestStatus.Active, "Accept button sends a real intent");
             state.Ready = ResearchQuestRules.Bit(ResearchQuest.Exposure);
             m_View.Refresh();
             Click("questAction");
             Require(ResearchQuestRules.Status(state, ResearchQuest.Exposure) == ResearchQuestStatus.Completed, "Turn in button sends a real intent");
-            Click("questBack");
-            Require(rootVisualElement.panel.focusController.focusedElement == m_View.Element.Q<Button>("questCard0"), "Return restores card focus");
-            for (int i = 1; i < 5; i++) state.Accepted |= 1 << i;
-            state.Completed = state.Accepted;
-            state.HaloKills = ResearchQuestRules.HaloKillGoal;
             Click("questCard5");
-            await Wait(250);
-            SaveImage("QuestDetail.png");
             position = new Rect(56, 64, 800, 570);
             await Wait(320);
-            SaveImage("QuestDetailCompact.png");
+            Require(m_View.Element.ClassListContains("research-quest-compact") && photo.layout.height > 0 && matrix.layout.height > 0,
+                "Compact layout preserves selection and the photograph");
             Click("questBack");
-            await Wait(180);
-            SaveImage("QuestWallCompact.png");
+            Require(closed, "Back returns to the ship");
             File.WriteAllText(Path.Combine(Output, "UI-checks.txt"), $"{m_Passed} native UI checks passed.");
         }
         catch (Exception exception)
@@ -331,20 +335,6 @@ public sealed class ResearchQuestChecks : EditorWindow
         var task = new TaskCompletionSource<bool>();
         rootVisualElement.schedule.Execute(() => task.TrySetResult(true)).StartingIn(milliseconds);
         return task.Task;
-    }
-
-    private void SaveImage(string filename)
-    {
-        var rect = position;
-        float scale = EditorGUIUtility.pixelsPerPoint;
-        var image = new Texture2D(Mathf.RoundToInt(rect.width * scale), Mathf.RoundToInt(rect.height * scale), TextureFormat.RGB24, false);
-        try
-        {
-            image.SetPixels(UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(rect.position * scale, image.width, image.height));
-            image.Apply();
-            File.WriteAllBytes(Path.Combine(Output, filename), image.EncodeToPNG());
-        }
-        finally { DestroyImmediate(image); }
     }
 
     private void Require(bool result, string description)
