@@ -20,7 +20,7 @@ namespace Unity.MP_FPS
         private readonly List<Renderer> m_Scratch = new();
         private readonly HashSet<Renderer> m_Seen = new();
         private readonly Draw[] m_Draws = new Draw[MaxDraws];
-        private readonly MaterialPropertyBlock m_Properties = new();
+        private MaterialPropertyBlock m_Properties;
         private Camera m_Camera;
         private Material m_Material;
         private Vector3 m_Actor;
@@ -88,6 +88,8 @@ namespace Unity.MP_FPS
             if (m_Count == 0 || m_Subscribed) return;
             var shader = Resources.Load<Shader>("Moonkov/RaidInteractionOutline");
             if (!shader || !shader.isSupported) return;
+            // RaidHUD constructs this pass in a field initializer; native objects must wait until runtime.
+            m_Properties ??= new MaterialPropertyBlock();
             m_Material = new Material(shader) { name = "Raid interaction outline", hideFlags = HideFlags.HideAndDontSave };
             RenderPipelineManager.beginCameraRendering += BeginCamera;
             m_Subscribed = true;

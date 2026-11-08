@@ -39,6 +39,7 @@
 - 近处可见的抽屉、箱子、掉落物、尸体、平板及设备显示缓慢脉动的轮廓。普通提示范围 8 米。补弹与拆陷阱沿用实际交互距离。减少动画时常亮。菜单、倒地和离局会清理。
 - GL125 抽屉已并入烘焙网格。30 个 `Drawer.OutlineMesh` 对应原抽屉形状，保存在 `DrawerOutlines.asset`，使用交互锚点的本地坐标。地图重绑锚点时要保留这些引用和姿态。
 - URP 共用一张轮廓遮罩，以相机深度遮挡。使用正式 GL125 G02 网格，在 40% 渲染比例和 4× MSAA 夹具确认了可见描边和整面遮挡。正式地图整局和 Player 构建待验。
+- `RaidHUD` 的字段初始化会创建轮廓对象。此时不能创建 `MaterialPropertyBlock`，否则 Unity 抛出 `CreateImpl is not allowed`，中断构造，后续 HUD 初始化和更新持续报空引用。现延后到首次有效收集时创建并复用。`RaidHudStartupReview` 检查真实 `AddComponent<RaidHUD>` 构造边界；临时存档的正式单机进局已确认 HUD 完整加载。Windows Player 尚未复测。
 
 ## 野外混合物品扩充（2026-11-08）
 
