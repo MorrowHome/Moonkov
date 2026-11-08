@@ -63,9 +63,7 @@ namespace Unity.MP_FPS
                 if (!ResearchQuestRuntime.NeedsDevice(raid, quest)) continue;
                 var anchor = ResearchQuestRuntime.Anchor(quest);
                 if (anchor == null) continue;
-                if (quest == ResearchQuest.Tablet)
-                    m_InteractionOutline.Add(ResearchQuestRuntime.TabletVisual(raid), ResearchQuestRuntime.InteractionPoint(quest, anchor));
-                else AddMissionSurface(anchor);
+                m_InteractionOutline.Add(ResearchQuestRuntime.DeviceVisual(raid, quest, anchor), ResearchQuestRuntime.InteractionPoint(quest, anchor));
             }
         }
 

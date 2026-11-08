@@ -85,7 +85,11 @@ namespace Unity.MP_FPS
                             {
                                 inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
                                     grounded,SystemAPI.Time.ElapsedTime,out _);
-                                if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
+                                if(inventory.Error==InventoryError.None)
+                                {
+                                    ResearchQuestRuntime.InventoryChanged(state.World, connection, session.ValueRO.RaidId);
+                                    UpdateInventoryProtection(ref state,connection,true);
+                                }
                             }
                             else inventory.ActionFeedback="无法丢弃：脚下没有安全、可达的地面；物品仍在原容器。";
                         }
@@ -191,7 +195,11 @@ namespace Unity.MP_FPS
                             : inventory.Graph.TryApply(new InventoryCommand { ExpectedVersion=r.ExpectedVersion, Operation=r.Operation, ItemId=r.ItemId.ToString(),
                                 Parent=r.Parent.ToString(), Region=r.Region.ToString(), TargetId=r.TargetId.ToString(), X=r.X, Y=r.Y, Rotated=r.Rotated, Quantity=r.Quantity });
                         if(chargeBlocked)inventory.ActionFeedback="充能中不能移动当前武器。";
-                        if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
+                        if(inventory.Error==InventoryError.None)
+                        {
+                            ResearchQuestRuntime.InventoryChanged(state.World, connection, session.ValueRO.RaidId);
+                            UpdateInventoryProtection(ref state,connection,true);
+                        }
                         inventory.LastSentVersion = -1;
                         if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);
                     }

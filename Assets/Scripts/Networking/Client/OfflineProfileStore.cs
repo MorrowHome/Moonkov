@@ -147,6 +147,7 @@ namespace Unity.MP_FPS
             ValidateClash(save);
             ValidateCampaign(save);
             ValidateTutorial(save);
+            ResearchQuestRules.Migrate(save.ResearchQuests);
             if (!ResearchQuestRules.Valid(save.ResearchQuests))
                 throw new InvalidDataException("Invalid research quest progress.");
         }
@@ -257,7 +258,7 @@ namespace Unity.MP_FPS
                     if(m_Save.Recovery.ItemCount()>0)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"recovery_pending");
                     var next = Copy(); SupersedeClashRegistration(next); PrepareCells(next.Inventory, payload.Cells);
                     var raid = next.Inventory.ExtractLoadout();
-                    if (ResearchQuestRules.Issue(raid, next.ResearchQuests.Active) != InventoryError.None)
+                    if (ResearchQuestRules.Issue(raid, next.ResearchQuests) != InventoryError.None)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected, "No space for mission-issued equipment.");
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);

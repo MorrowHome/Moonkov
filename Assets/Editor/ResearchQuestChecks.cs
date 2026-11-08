@@ -46,9 +46,13 @@ public sealed class ResearchQuestChecks : EditorWindow
             Settle(store, "Extracted", (_, result) => result.ExposureSeconds = 299);
             Status(store, ResearchQuest.Exposure, ResearchQuestStatus.Active);
             Settle(store, "Dead", (_, result) => result.ExposureSeconds = 300);
+            Status(store, ResearchQuest.Exposure, ResearchQuestStatus.Active);
+            Settle(store, "Extracted", (_, result) => result.ExposureSeconds = 300);
             Claim(store, ResearchQuest.Exposure);
             Accept(store, ResearchQuest.HaloTrial);
-            var receipt = Settle(store, "TimedOut", (_, result) => result.HaloKills = 2);
+            Settle(store, "TimedOut", (_, result) => result.HaloKills = 5);
+            Require(store.Read().ResearchQuests.HaloKills == 0, "Failed deployment cannot credit combat kills");
+            var receipt = Settle(store, "Extracted", (_, result) => result.HaloKills = 2);
             store.Settle(receipt);
             Require(store.Read().ResearchQuests.HaloKills == 2, "Settlement retry cannot count twice");
             Settle(store, "Extracted", (_, result) => result.HaloKills = 3);
@@ -56,6 +60,7 @@ public sealed class ResearchQuestChecks : EditorWindow
             Accept(store, ResearchQuest.Biology);
             Settle(store, "Extracted", (raid, result) =>
             {
+                Issued(raid, ResearchQuestRules.SampleKit);
                 string one = Add(raid, ResearchQuestRules.Sample);
                 result.SampleIds = new[] { one, one, one };
             });
@@ -79,15 +84,7 @@ public sealed class ResearchQuestChecks : EditorWindow
             Status(store, ResearchQuest.FlashDrive, ResearchQuestStatus.Active);
             Settle(store, "Extracted", (raid, result) => result.FlashId = Issued(raid, ResearchQuestRules.Flash));
             Claim(store, ResearchQuest.FlashDrive);
-            Accept(store, ResearchQuest.HardDrive);
-            Settle(store, "Extracted", (raid, result) =>
-            {
-                result.HardDriveId = Issued(raid, ResearchQuestRules.Drive);
-                raid.Items.Remove(raid.Find(result.HardDriveId));
-            });
-            Status(store, ResearchQuest.HardDrive, ResearchQuestStatus.Active);
-            Settle(store, "Extracted", (raid, result) => result.HardDriveId = Issued(raid, ResearchQuestRules.Drive));
-            Claim(store, ResearchQuest.HardDrive);
+            Status(store, ResearchQuest.HardDrive, ResearchQuestStatus.Locked);
             var graph = RaidInventoryTransport.Decode(store.Read().InventoryJson);
             var rifle = graph.Items.First(i => i.Code == "rifle");
             store.Move(new InventoryCommand { ExpectedVersion = graph.Version, ItemId = rifle.Id, Parent = "equipment", Region = "Primary" });
@@ -102,14 +99,61 @@ public sealed class ResearchQuestChecks : EditorWindow
                 Require(raid.TryApply(move) != InventoryError.None, "Cargo slot rejects regular items");
                 move.ItemId = result.PackageId = Issued(raid, ResearchQuestRules.Package);
                 Require(raid.TryApply(move) == InventoryError.None, "Package moves into the real halo inventory");
+                result.PackageSecured = true;
             });
             Claim(store, ResearchQuest.HaloStorage);
             Accept(store, ResearchQuest.Sentry);
-            Settle(store, "TimedOut", (_, result) => result.HaloKills = 5);
+            Settle(store, "TimedOut", (_, result) => result.SentryKills = 3);
             Status(store, ResearchQuest.Sentry, ResearchQuestStatus.Active);
             Settle(store, "Extracted", (_, result) => result.SentryKills = 3);
             Claim(store, ResearchQuest.Sentry);
             Require(!store.AdvanceResearchQuest(ResearchQuest.Sentry, true), "No duplicate delivery");
+            Accept(store, ResearchQuest.HardDrive);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                result.HardDriveId = Issued(raid, ResearchQuestRules.Drive);
+                raid.Items.Remove(raid.Find(result.HardDriveId));
+            });
+            Status(store, ResearchQuest.HardDrive, ResearchQuestStatus.Active);
+            Settle(store, "Extracted", (raid, result) => result.HardDriveId = Issued(raid, ResearchQuestRules.Drive));
+            Claim(store, ResearchQuest.HardDrive);
+            Require(!store.ChooseResearchEnding(ResearchEnding.Expose), "Ending remains locked before final extraction");
+            Accept(store, ResearchQuest.NoWayBack);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                Require(raid.AddLoot("small_pack") == InventoryError.None, "Equip a backpack for both Q9 records");
+                result.NadirRecordsId = Add(raid, ResearchQuestRules.NadirRecords);
+            });
+            Status(store, ResearchQuest.NoWayBack, ResearchQuestStatus.Active);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                result.NadirRecordsId = Add(raid, ResearchQuestRules.NadirRecords);
+                result.CredentialsId = Add(raid, ResearchQuestRules.Credentials);
+            });
+            Claim(store, ResearchQuest.NoWayBack);
+            Accept(store, ResearchQuest.EndOfTransmission);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                result.CredentialsId = Issued(raid, ResearchQuestRules.Credentials);
+                result.OriginalArchiveId = Add(raid, ResearchQuestRules.OriginalArchive);
+            });
+            Status(store, ResearchQuest.EndOfTransmission, ResearchQuestStatus.Active);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                result.CredentialsId = Guid.NewGuid().ToString("D");
+                result.OriginalArchiveId = Add(raid, ResearchQuestRules.OriginalArchive);
+                result.SystemsDisabled = true;
+            });
+            Status(store, ResearchQuest.EndOfTransmission, ResearchQuestStatus.Active);
+            Settle(store, "Extracted", (raid, result) =>
+            {
+                result.CredentialsId = Issued(raid, ResearchQuestRules.Credentials);
+                Require(result.CredentialsId == store.Read().ResearchQuests.CredentialsId, "Q9 credentials issued by identity on Q10");
+                result.OriginalArchiveId = Add(raid, ResearchQuestRules.OriginalArchive);
+                result.SystemsDisabled = true;
+            });
+            Require(!store.ChooseResearchEnding(ResearchEnding.Corporate), "Ending waits for debrief");
+            Claim(store, ResearchQuest.EndOfTransmission);
         }
         using (var reopened = new OfflineProfileStore(path))
         {
@@ -118,6 +162,35 @@ public sealed class ResearchQuestChecks : EditorWindow
             Require(!RaidInventoryTransport.Decode(restored.InventoryJson).Items.Any(i => InventoryCatalog.IsResearchSupply(i.Code)),
                 "Research supplies never enter the persistent inventory");
         }
+        foreach (var ending in new[] { ResearchEnding.Expose, ResearchEnding.Corporate, ResearchEnding.Erase })
+        {
+            string fork = path + "." + ending + ".json";
+            File.Copy(path, fork);
+            using (var store = new OfflineProfileStore(fork))
+            {
+                var previous = store.Read();
+                Require(store.ChooseResearchEnding(ending), "Commit " + ending);
+                var profile = store.Read();
+                Require(profile.ResearchQuests.Ending == ending && profile.ResearchQuests.EvidenceId == null,
+                    "Decision closes private evidence custody");
+                Require(!store.ChooseResearchEnding(ending) && !store.ChooseResearchEnding(ResearchEnding.Expose), "Decision cannot be repeated or replaced");
+                int reward = ending == ResearchEnding.Corporate ? ResearchQuestRules.CorporateDust : 0;
+                Require(profile.Dust == previous.Dust + reward, "Only corporate grants compensation");
+                var graph = RaidInventoryTransport.Decode(profile.InventoryJson);
+                var module = graph.Items.Find(i => i.Code == ResearchQuestRules.CorporateModule);
+                Require(ending == ResearchEnding.Corporate
+                    ? module != null && graph.Find(module.Parent)?.Code == ResearchQuestRules.CorporateHalo
+                    : module == null, "Corporate issues an actual upgraded Halo");
+            }
+            using var check = new OfflineProfileStore(fork);
+            Require(check.Read().ResearchQuests.Ending == ending, "Reopening preserves " + ending);
+        }
+        var legacyState = new ResearchQuestProgress { Accepted = 63, Completed = 63, HaloKills = ResearchQuestRules.HaloKillGoal };
+        ResearchQuestRules.Migrate(legacyState);
+        Require(ResearchQuestRules.Valid(legacyState) && ResearchQuestRules.Status(legacyState, ResearchQuest.HardDrive) == ResearchQuestStatus.Completed &&
+            ResearchQuestRules.Status(legacyState, ResearchQuest.NoWayBack) == ResearchQuestStatus.Locked &&
+            ResearchQuestRules.Status(legacyState, ResearchQuest.HaloStorage) == ResearchQuestStatus.Available,
+            "Legacy database is preserved; qualification still gates Q9");
         string oldPath = path + ".legacy.json";
         var old = JObject.Parse(File.ReadAllText(path));
         old.Remove("ResearchQuests");
@@ -183,11 +256,18 @@ public sealed class ResearchQuestChecks : EditorWindow
             Require(photo && photo.width == 1600 && photo.height == 1160, "Camera framing preserved for " + code);
         }
         foreach (bool zh in new[] { false, true })
+            foreach (var cue in new[] { "nadir", "kade", "kadeRefusal", "warning", "ending_1_voice", "ending_1_epilogue",
+                "ending_2_voice", "ending_2_epilogue", "ending_3_voice", "ending_3_epilogue" })
+            {
+                var clip = Resources.Load<AudioClip>($"Moonkov/QuestRadio/{cue}_{(zh ? "zh" : "en")}");
+                Require(clip && clip.channels == 1 && clip.length > 1 && clip.length < 165, $"Imported story track {cue}, zh={zh}");
+            }
+        foreach (bool zh in new[] { false, true })
             foreach (bool closing in new[] { false, true })
                 for (int i = 0; i < ResearchQuestRules.Count; i++)
                 {
                     var clip = Resources.Load<AudioClip>($"Moonkov/QuestRadio/{i + 1:00}_{(closing ? "close" : "brief")}_{(zh ? "zh" : "en")}");
-                    Require(clip && clip.channels == 1 && clip.length > 8 && clip.length < 90, $"Imported radio {i}, close={closing}, zh={zh}");
+                    Require(clip && clip.channels == 1 && clip.length > 8 && clip.length < 165, $"Imported radio {i}, close={closing}, zh={zh}");
                 }
     }
 
@@ -204,8 +284,8 @@ public sealed class ResearchQuestChecks : EditorWindow
             site = hardware.GetComponent<RaidMissionSite>();
             site.Anchor("power_b").Position = new Vector3(0, 1.4f, 1);
             typeof(RaidMissionSite).GetMethod("OnEnable", lifecycle).Invoke(site, null);
-            Require(ResearchQuestRuntime.Anchor(ResearchQuest.FlashDrive) != null &&
-                ResearchQuestRuntime.Anchor(ResearchQuest.HardDrive) != null && ResearchQuestRuntime.Anchor(ResearchQuest.Tablet) != null,
+            Require(ResearchQuestRuntime.Anchor(ResearchDevice.Administrator) != null &&
+                ResearchQuestRuntime.Anchor(ResearchDevice.Server) != null && ResearchQuestRuntime.Anchor(ResearchDevice.Tablet) != null,
                 "All three quest endpoints resolve on the authored hardware");
             var player = world.EntityManager.CreateEntity();
             var connection = world.EntityManager.CreateEntity();
@@ -218,7 +298,7 @@ public sealed class ResearchQuestChecks : EditorWindow
             };
             var raid = new RaidSession { RaidId = 1, Phase = RaidPhase.Active };
             var inventory = new RaidInventoryState { Graph = InventoryGraph.Create(stash: false) };
-            Require(ResearchQuestRules.Issue(inventory.Graph, progress.Active) == InventoryError.None, "Issue the field fixture drive");
+            Require(ResearchQuestRules.Issue(inventory.Graph, progress) == InventoryError.None, "Issue the field fixture drive");
             string issued = Issued(inventory.Graph, ResearchQuestRules.Flash);
             var health = new PredictedPlayerGhost { CurrentHealth = 100 };
             double now = 0;
@@ -228,19 +308,19 @@ public sealed class ResearchQuestChecks : EditorWindow
                 ResearchQuestRuntime.Tick(world, connection, player, raid, inventory, progress, health, position, now, .1f);
             }
             Tick(Vector3.zero);
-            ResearchQuestRuntime.Hold(1, ResearchQuest.FlashDrive, true);
+            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
             Tick(Vector3.zero);
             Require(ResearchQuestRuntime.TryRead(1, out var frame) && frame.CanOperate, "Authoritative terminal hold starts");
             Tick(Vector3.right);
             Require(ResearchQuestRuntime.TryRead(1, out frame) && !frame.CanOperate && frame.Notice == "interrupted",
                 "Moving interrupts the hold");
-            ResearchQuestRuntime.Hold(1, ResearchQuest.FlashDrive, true);
+            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
             Tick(Vector3.zero);
             Require(ResearchQuestRuntime.TryRead(1, out frame) && !frame.CanOperate, "Interrupted hold needs a fresh press");
-            ResearchQuestRuntime.Hold(1, ResearchQuest.FlashDrive, false);
+            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, false);
             for (int i = 0; i < 63; i++)
             {
-                ResearchQuestRuntime.Hold(1, ResearchQuest.FlashDrive, true);
+                ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
                 Tick(Vector3.zero);
             }
             Require(ResearchQuestRuntime.TryRead(1, out frame) && ResearchQuestRules.Has(frame.Recovered, ResearchQuest.FlashDrive),
@@ -254,6 +334,7 @@ public sealed class ResearchQuestChecks : EditorWindow
             var result = ResearchQuestRuntime.Finish(world, connection, 1, true);
             Require(result.FlashId == issued && result.SentryKills == 1 && !ResearchQuestRuntime.TryRead(1, out _),
                 "Settlement freezes the proof and clears the run");
+            CheckLateField(world, connection, player, now);
         }
         finally
         {
@@ -261,6 +342,82 @@ public sealed class ResearchQuestChecks : EditorWindow
             if (site) typeof(RaidMissionSite).GetMethod("OnDisable", lifecycle).Invoke(site, null);
             EditorSceneManager.ClosePreviewScene(preview);
         }
+    }
+
+    private void CheckLateField(World world, Entity connection, Entity player, double now)
+    {
+        var progress = new ResearchQuestProgress
+        {
+            SequenceVersion = 1, Accepted = 511, Completed = 255,
+            HaloKills = ResearchQuestRules.HaloKillGoal, SentryKills = ResearchQuestRules.SentryKillGoal
+        };
+        var raid = new RaidSession { RaidId = 2, Phase = RaidPhase.Active };
+        var inventory = new RaidInventoryState { Graph = InventoryGraph.Create(stash: false) };
+        Require(inventory.Graph.AddLoot("small_pack") == InventoryError.None, "Field fixture can carry research records");
+        var health = new PredictedPlayerGhost { CurrentHealth = 100 };
+
+        void Tick(Vector3 position)
+        {
+            now += .1;
+            world.SetTime(new TimeData(now, .1f));
+            ResearchQuestRuntime.Tick(world, connection, player, raid, inventory, progress, health, position, now, .1f);
+        }
+
+        void Use(ResearchDevice device, int ticks, bool sentry = false)
+        {
+            var anchor = ResearchQuestRuntime.Anchor(device);
+            var p = anchor.Approach;
+            var aim = Quaternion.LookRotation(anchor.Position - (p + Vector3.up * 1.4f)).eulerAngles;
+            health.ControllerState.YawDegrees = aim.y;
+            health.ControllerState.PitchDegrees = aim.x;
+            for (int i = 0; i < ticks; i++)
+            {
+                if (sentry && i % 7 == 0) health.LastShotTick = health.LastSentryShotTick = (uint)i + 100;
+                ResearchQuestRuntime.Hold(raid.RaidId, device, true);
+                Tick(p);
+            }
+            ResearchQuestRuntime.Hold(raid.RaidId, device, false);
+        }
+
+        Tick(Vector3.zero);
+        Require(!ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.NadirTerminal) &&
+            !ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.CredentialsLocker), "Q9 evidence is sealed until the sector is opened");
+        Use(ResearchDevice.LowerSeal, 23);
+        Require(ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.NadirTerminal) &&
+            ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.CredentialsLocker), "Sector release exposes two independent objectives");
+        Use(ResearchDevice.NadirTerminal, 44);
+        Require(ResearchQuestRuntime.TryRead(2, out var q9) && q9.RecordsHeld && q9.HeardNadir && !q9.CredentialsHeld,
+            "Recovering Nadir's records triggers her recording without awarding credentials");
+        Use(ResearchDevice.CredentialsLocker, 8);
+        var evidence = ResearchQuestRuntime.Finish(world, connection, 2, true);
+        Require(ResearchQuestRules.Holds(inventory.Graph, evidence.NadirRecordsId, ResearchQuestRules.NadirRecords, true) &&
+            ResearchQuestRules.Holds(inventory.Graph, evidence.CredentialsId, ResearchQuestRules.Credentials, true),
+            "Both Q9 interactions award distinct real carried evidence");
+
+        progress.Accepted = 1023; progress.Completed = 511; progress.CredentialsId = evidence.CredentialsId;
+        raid.RaidId = 3;
+        inventory.Graph = InventoryGraph.Create(stash: false);
+        Tick(Vector3.zero);
+        Require(!ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.ControlAccess) &&
+            !ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.OriginalArchive) &&
+            !ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.Shutdown), "Q10 remains sealed without recovered credentials");
+        Require(ResearchQuestRules.Issue(inventory.Graph, progress) == InventoryError.None &&
+            ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.ControlAccess), "Reissued credential enables the access reader");
+        Use(ResearchDevice.ControlAccess, 23);
+        Require(ResearchQuestRuntime.TryRead(3, out var q10) && q10.ControlOpened && !q10.ArchiveHeld && !q10.SystemsDisabled,
+            "Authenticating opens control but does not finish the objectives");
+        health.HaloDeploymentMode = HaloDeploymentMode.Sentry;
+        health.HaloTransferPhase = HaloTransferPhase.Sending;
+        Use(ResearchDevice.OriginalArchive, 165, sentry: true);
+        Require(ResearchQuestRuntime.TryRead(3, out q10) && q10.ArchiveHeld && !q10.SystemsDisabled,
+            "Stationary sentry fire does not interrupt the original archive transfer");
+        Use(ResearchDevice.Shutdown, 54);
+        Require(ResearchQuestRuntime.TryRead(3, out q10) && q10.SystemsDisabled &&
+            ResearchQuestRules.Has(q10.Recovered, ResearchQuest.EndOfTransmission), "Shutdown and archive together enable extraction");
+        var final = ResearchQuestRuntime.Finish(world, connection, 3, true);
+        Require(final.CredentialsId == progress.CredentialsId && final.SystemsDisabled &&
+            ResearchQuestRules.Holds(inventory.Graph, final.OriginalArchiveId, ResearchQuestRules.OriginalArchive, true),
+            "Final server settlement freezes exact credentials, archive and shutdown proof");
     }
 
     public static void Capture()
@@ -283,14 +440,14 @@ public sealed class ResearchQuestChecks : EditorWindow
             bool closed = false;
             m_View = new ResearchQuestView(rootVisualElement, () => state, (quest, claim) =>
                 Task.FromResult(claim ? ResearchQuestRules.Claim(state, quest) : ResearchQuestRules.Accept(state, quest)),
-                () => { }, () => { }, () => closed = true);
+                () => { }, () => { }, () => closed = true, ending => Task.FromResult(ResearchQuestRules.ChooseEnding(state, ending)));
             await Wait(450);
             var matrix = m_View.Element.Q("questMatrix");
             Require(matrix.layout.width > 0 && m_View.Element.Q("questExhibit").layout.width > 0,
                 "Selection and exhibit are visible on the same screen");
             Require(matrix.Query<Button>().ToList().Count == ResearchQuestRules.Count, "One native node per quest");
             var photo = m_View.Element.Q<Image>("questModelPhoto");
-            foreach (var (index, code) in new[] { (3, ResearchQuestRules.Tablet), (4, ResearchQuestRules.Flash), (5, ResearchQuestRules.Drive) })
+            foreach (var (index, code) in new[] { (3, ResearchQuestRules.Tablet), (4, ResearchQuestRules.Flash), (7, ResearchQuestRules.Drive) })
             {
                 Click("questCard" + index);
                 Require(photo.image && photo.image == Resources.Load<Texture2D>("Moonkov/UI/QuestExhibits/" + code) &&
@@ -305,11 +462,25 @@ public sealed class ResearchQuestChecks : EditorWindow
             m_View.Refresh();
             Click("questAction");
             Require(ResearchQuestRules.Status(state, ResearchQuest.Exposure) == ResearchQuestStatus.Completed, "Turn in button sends a real intent");
-            Click("questCard5");
+            Click("questCard7");
             position = new Rect(56, 64, 800, 570);
             await Wait(320);
             Require(m_View.Element.ClassListContains("research-quest-compact") && photo.layout.height > 0 && matrix.layout.height > 0,
                 "Compact layout preserves selection and the photograph");
+            state.Accepted = state.Completed = (1 << ResearchQuestRules.Count) - 1;
+            state.EvidenceId = Guid.NewGuid().ToString("D");
+            m_View.Refresh();
+            Click("questDecision");
+            Require(m_View.Element.Q("researchEndingScreen") != null &&
+                !m_View.Element.Q<Button>("questEndingConfirm").enabledSelf, "Separate event waits for an explicit choice");
+            Click("questEnding2");
+            Require(state.Ending == ResearchEnding.None, "Preview cannot commit an ending");
+            Click("questEndingConfirm");
+            Require(state.Ending == ResearchEnding.Corporate && m_View.Element.Q("researchEndingScreen") != null &&
+                m_View.Element.Q<Button>("questEndingConfirm") == null, "Confirmation reveals only the saved epilogue");
+            var backToQuests = m_View.Element.Q("researchEndingScreen").Q<Button>("questEndingBack");
+            using (var backEvent = NavigationSubmitEvent.GetPooled())
+            { backEvent.target = backToQuests; backToQuests.SendEvent(backEvent); }
             Click("questBack");
             Require(closed, "Back returns to the ship");
             File.WriteAllText(Path.Combine(Output, "UI-checks.txt"), $"{m_Passed} native UI checks passed.");

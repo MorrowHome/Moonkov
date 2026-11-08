@@ -1034,6 +1034,7 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ReleaseResearchHold();
+            m_ResearchRadio.Dispose();
             ClearFieldRecords();
             m_InteractionOutline.Dispose();
             ClearInventoryBackdrop();

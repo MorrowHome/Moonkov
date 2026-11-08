@@ -41,8 +41,11 @@ namespace Unity.MP_FPS
 
         private static string ArtCode(string code) => code switch
         {
-            ResearchQuestRules.Sample => "alien_tissue",
+            ResearchQuestRules.Sample or ResearchQuestRules.SampleKit => "helium3_sample",
             ResearchQuestRules.Package => "black_box",
+            ResearchQuestRules.NadirRecords => ResearchQuestRules.Tablet,
+            ResearchQuestRules.Credentials => ResearchQuestRules.Flash,
+            ResearchQuestRules.OriginalArchive => "mc00_archive_drive",
             _ => code
         };
     }

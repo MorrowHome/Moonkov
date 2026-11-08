@@ -10,18 +10,40 @@ namespace Unity.MP_FPS
         private ISoundSystem m_System;
         private SoundSystem.SoundInfo m_Playback;
         private double m_End;
+        private readonly Queue<string> m_Queue = new();
 
-        internal bool Playing => m_Playback != null && Time.unscaledTimeAsDouble < m_End;
+        internal bool Playing => m_Queue.Count > 0 || m_Playback != null && Time.unscaledTimeAsDouble < m_End;
 
         internal static string ClipPath(ResearchQuest quest, bool closing, bool chinese) =>
-            $"Moonkov/QuestRadio/{(int)quest + 1:00}_{(closing ? "close" : "brief")}_{(chinese ? "zh" : "en")}";
+            StoryPath($"{ResearchQuestRules.Number(quest):00}_{(closing ? "close" : "brief")}", chinese);
 
-        internal void Play(ResearchQuest quest, bool closing, bool chinese)
+        internal static string StoryPath(string cue, bool chinese) => $"Moonkov/QuestRadio/{cue}_{(chinese ? "zh" : "en")}";
+
+        internal void Play(ResearchQuest quest, bool closing, bool chinese) =>
+            PlayQueue(!closing && quest == ResearchQuest.EndOfTransmission
+                ? new[] { StoryPath("kade", chinese), StoryPath("kadeRefusal", chinese), StoryPath("warning", chinese), ClipPath(quest, false, chinese) }
+                : new[] { ClipPath(quest, closing, chinese) });
+
+        internal void PlayStory(string cue, bool chinese) => PlayQueue(new[] { StoryPath(cue, chinese) });
+        internal void PlayEnding(ResearchEnding ending, bool chinese) =>
+            PlayQueue(new[] { StoryPath($"ending_{(int)ending}_voice", chinese), StoryPath($"ending_{(int)ending}_epilogue", chinese) });
+
+        private void PlayQueue(string[] paths)
         {
             Stop();
+            foreach (string path in paths) m_Queue.Enqueue(path);
+            Update();
+        }
+
+        internal void Update()
+        {
+            if (m_Playback != null && Time.unscaledTimeAsDouble < m_End) return;
+            m_Playback = null;
+            if (m_Queue.Count == 0) return;
             var game = GameManager.Instance;
-            if (!Application.isPlaying || !game || game.IsHeadless || game.SoundSystem == null) return;
-            var clip = Resources.Load<AudioClip>(ClipPath(quest, closing, chinese));
+            if (!Application.isPlaying || !game || game.IsHeadless || game.SoundSystem == null) { m_Queue.Clear(); return; }
+            AudioClip clip = null;
+            while (m_Queue.Count > 0 && !clip) clip = Resources.Load<AudioClip>(m_Queue.Dequeue());
             if (!clip) return;
             if (!m_Definition)
             {
@@ -49,6 +71,7 @@ namespace Unity.MP_FPS
 
         internal void Stop()
         {
+            m_Queue.Clear();
             if (m_Playback != null) m_System?.Kill(m_Playback);
             m_Playback = null;
         }
@@ -57,6 +80,7 @@ namespace Unity.MP_FPS
         {
             Stop();
             if (m_Definition) UnityEngine.Object.Destroy(m_Definition);
+            m_Definition = null;
         }
     }
 }

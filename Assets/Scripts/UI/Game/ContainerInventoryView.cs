@@ -20,6 +20,7 @@ namespace Unity.MP_FPS.Client
             public bool AutoPlace;
         }
         private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
+        private bool m_HaloCargoOpen;
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
         private readonly Action<InventoryItem> m_UseMedical;
@@ -306,15 +307,28 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash)
             {
-                var package = m_Graph.Items.Find(item => item.Code == ResearchQuestRules.Package && m_Graph.Carried(item));
-                if (package != null)
+                var cargo = m_Graph.Items.Find(item => InventoryCatalog.IsHaloResearchCargo(item.Code) && m_Graph.Carried(item));
+                if (cargo != null)
                 {
                     var halo = m_Graph.Children(InventoryCatalog.Equipment)
                         .Where(item => InventoryCatalog.CanStoreHaloCargo(item.Code))
-                        .OrderByDescending(item => item.Id == package.Parent).FirstOrDefault();
-                    if (halo != null) AddContainer(m_ContainerPane, halo,
-                        ResearchQuestCopy.Text("光环收纳形态", "Halo storage form"), onlyRegion: InventoryCatalog.HaloCargoRegion);
+                        .OrderByDescending(item => item.Id == cargo.Parent).FirstOrDefault();
+                    if (halo != null)
+                    {
+                        bool loaded = cargo.Region == InventoryCatalog.HaloCargoRegion.Id;
+                        if (loaded || m_HaloCargoOpen)
+                            AddContainer(m_ContainerPane, halo, ResearchQuestCopy.Text("光环收纳形态", "Halo storage form"),
+                                onlyRegion: InventoryCatalog.HaloCargoRegion);
+                        else
+                        {
+                            var transform = new Button(() => { m_HaloCargoOpen = true; Render(); });
+                            transform.AddToClassList("terminal-button");
+                            MoonkovLocalization.Set(transform, ResearchQuestCopy.Text("切换光环收纳形态", "Open Halo storage form"));
+                            m_ContainerPane.Add(transform);
+                        }
+                    }
                 }
+                else m_HaloCargoOpen = false;
             }
             if (!m_Stash) RenderRaidLoot(loot);
             else if(loot!=null)AddContainer(m_LootPane,loot,RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"

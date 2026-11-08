@@ -1,0 +1,168 @@
+{
+  "en": {
+    "quests": [
+      {
+        "title": "Operational Readiness",
+        "goal": "Deploy to the lunar research station.\nRemain in the raid for at least 5 minutes.\nExtract successfully.",
+        "description": "Before assigning you to more demanding recovery operations, MoonRat requires confirmation that your equipment can withstand the environmental conditions present at the lunar research station.\nAsterion's public statement attributes the disaster to an experimental reactor malfunction. The facility has been abandoned for an extended period, and its damaged infrastructure may pose additional risks to personnel and equipment.\nRemain deployed for at least five minutes. Monitor your equipment and ensure that all systems remain operational throughout the deployment.",
+        "item": ""
+      },
+      {
+        "title": "First Contact",
+        "goal": "Deploy to the lunar research station.\nEliminate 5 corrupted personnel or specimens using Battle Halo weaponry.\nExtract successfully.",
+        "description": "The hostile entities occupying the research station exhibit unusual biological characteristics that render conventional firearms largely ineffective.\nMoonRat has issued you a Battle Halo, a specialized weapon system developed to neutralize these organisms through controlled energy discharges.\nAlthough laboratory testing has demonstrated promising results, its effectiveness under actual combat conditions remains insufficiently documented.\nDeploy to the station and eliminate five hostile entities using your assigned Battle Halo.\nAll engagements will be considered part of the ongoing weapons assessment program.",
+        "item": ""
+      },
+      {
+        "title": "Biological Evidence",
+        "goal": "Deploy to the research station.\nCollect 3 biological samples from corrupted enemies.\nExtract successfully with all 3 samples.",
+        "description": "The hostile entities occupying the station exhibit unusual biological characteristics that have yet to be properly documented.\nWe require physical samples to conduct further research into their aggressive behavior, physiological changes, and possible origins.\nCollect three biological samples from eliminated specimens and deliver them to our research department.\nEnsure that all samples are properly sealed before extraction.",
+        "item": "A specialized collection container designed for the recovery and transportation of biological materials from contaminated environments. Its sealed internal compartment prevents contact between recovered specimens and external surroundings."
+      },
+      {
+        "title": "Last Words",
+        "goal": "Deploy to the research station.\nLocate the personnel information tablet by the MC00 L22 isolation cabinet.\nRecover the tablet.\nExtract successfully with the device.",
+        "description": "The research station's communication network has been severely damaged, leaving us with little information regarding the events that led to its current state.\nAccording to our records, research personnel were equipped with portable information tablets used for recording daily reports, documenting research activities, and reporting unusual occurrences.\nMost of the station's personnel are presumed lost.\nTheir equipment, however, should still be somewhere inside the facility.\nLocate one of these devices and bring it back intact. We need to reconstruct the final days of the station's operation.",
+        "item": "A portable information terminal issued to research personnel. Contains personal logs, daily reports, and research observations. The last recorded entries appear to have been made shortly before the station-wide incident."
+      },
+      {
+        "title": "Before the Silence",
+        "goal": "Take an assigned flash drive into the raid.\nLocate the MC00 L22 administrator's workstation.\nConnect the flash drive to the administrator's personal computer.\nRetrieve the stored logs.\nExtract successfully.",
+        "description": "The personnel records have revealed several irregularities in the station's final days of operation.\nWe've managed to identify the location of the station administrator's office. Unlike standard personnel terminals, the administrator's personal computer should contain records of station-wide operations, internal communications, and security reports.\nYou will be provided with an encrypted data extraction device.\nConnect it to the administrator's computer and retrieve whatever information remains.\nAdministrative records may contain information that was never intended for external distribution. Exercise caution and ensure that the retrieved data remains intact.",
+        "item": "A specialized storage device designed to retrieve information from secured computer terminals. Its encryption bypasses several outdated station security protocols. Issued for the extraction of administrative records and internal communications.\nINTERMISSION – ADVANCED HALO APPLICATIONS"
+      },
+      {
+        "title": "Mobile Storage",
+        "goal": "Take a Battle Halo into a raid.\nTransform it into its container configuration.\nStore a designated mission item inside it.\nKeep the package inside the Halo until you extract.",
+        "description": "The Battle Halo's modular architecture allows it to temporarily alter its configuration, providing additional utility beyond combat applications.\nOne of its specialized functions is the ability to transform its energy structure into a temporary storage container.\nThis configuration was originally designed for transporting sensitive equipment and research materials without exposing them to the surrounding environment.\nMoonRat requires additional data regarding its transportation capabilities under actual field conditions.\nTake the assigned mission package, store it inside your Battle Halo, and bring it back intact.",
+        "item": "A sealed container holding sensitive research materials. Designed to be transported using the Battle Halo's temporary storage configuration. Its internal contents are protected from external environmental contamination."
+      },
+      {
+        "title": "Automated Protection",
+        "goal": "Deploy your Battle Halo in stationary mode.\nActivate its automated defense functionality.\nEliminate 3 hostile entities using the deployed Halo.\nExtract successfully.",
+        "description": "The stationary deployment configuration allows Battle Halos to operate independently of their users, providing illumination, defensive shielding, or automated offensive support.\nMoonRat requires additional combat data regarding the defensive capabilities of the automated turret configuration.\nDeploy your Halo in a suitable location and use its automated defense system to eliminate three hostile entities.\nEnsure that the deployment position provides a clear line of sight and sufficient coverage of the surrounding area.",
+        "item": ""
+      },
+      {
+        "title": "Beneath the Surface",
+        "goal": "Take a high-capacity storage drive into the raid.\nLocate the MC00 L22 server room.\nConnect the drive to the central server.\nRetrieve the research database.\nExtract successfully with the recovered data.",
+        "description": "The administrative records have revealed inconsistencies in the company's official account of the incident.\nSeveral documents indicate that the station was conducting research far beyond the scope of its publicly documented operations.\nTo establish what actually happened, we need access to the original research data.\nThe station's central servers should contain experimental records, specimen development logs, containment reports, and archived research documentation.\nYou will be provided with a high-capacity storage drive capable of retrieving large volumes of encrypted data.\nLocate the server room, connect the device, and retrieve the research database.\nThe transfer may take considerable time. Ensure that the surrounding area is secure before initiating the operation.\nAll recovered data must be preserved and returned intact.",
+        "item": "A specialized data storage device designed to interface with the research station's central server infrastructure. Capable of retrieving large volumes of encrypted scientific data, including experimental records, specimen analysis, and archived research files."
+      },
+      {
+        "title": "No Way Back",
+        "goal": "Return to the research station.\nReach the sealed lower research sector in MC00 L21.\nLocate Dr. Sera Nadir's remaining research records.\nRecover the access credentials to the central LUCENT control chamber.\nExtract with the recovered information.",
+        "description": "The recovered research database has revealed the existence of Project LUCENT and Asterion's involvement in the experiments conducted at the station.\nHowever, the database is incomplete.\nAdditional records were stored in an isolated lower research sector, separate from the central server infrastructure.\nThese files may contain original experimental footage, internal communications, and information regarding the final authorization of the project.\nAsterion has ordered all recovery operations to be suspended and initiated procedures to erase the remaining station data.\nAn opportunity to retrieve the original records may not present itself again.\nLocate Dr. Sera Nadir's remaining research files and recover the access credentials required to enter the central LUCENT control chamber.\nThe information must be preserved and brought back intact. Leave 1×2 inventory cells for the records and one cell for the credentials.",
+        "item": "A restricted access device belonging to the station's senior research personnel. Contains authentication data required to access the isolated lower research sector and the central Project LUCENT control chamber."
+      },
+      {
+        "title": "End of Transmission",
+        "goal": "Enter the central research facility.\nUse the access credentials at the MC00 L22 LUCENT control chamber.\nSecure the original research records and executive communications.\nDisable the remaining experimental systems.\nExtract from the station with the recovered information.",
+        "description": "The recovered research database and Dr. Nadir's final records have revealed the true purpose of Project LUCENT and Asterion Corporation's involvement in the lunar catastrophe.\nHowever, the complete original research archive remains inside the central control chamber.\nIt contains experimental footage, executive communications, and the final authorization documents for the project.\nAsterion has initiated an emergency recovery protocol to erase the remaining information and prevent unauthorized access.\nThis is your final opportunity to recover the original records and ensure that the research cannot simply be restarted.\nUse the access credentials recovered during the previous operation to enter the central control chamber.\nSecure the original research archive, disable the remaining experimental systems, and extract from the station before it becomes permanently inaccessible.\nAll recovered information must remain intact.",
+        "item": "A secured collection of original research records recovered from the central control chamber of the lunar research station. Contains experimental recordings, biological analysis, internal corporate communications, and executive authorization documents related to Project LUCENT.\nThe archive contains definitive evidence of Asterion Corporation's involvement in the lunar catastrophe. Its contents could expose the company's activities or become the foundation for further experimentation."
+      }
+    ],
+    "endings": [
+      {
+        "title": "Expose the Truth",
+        "description": "Transmit the recovered records to independent authorities and the public.",
+        "epilogue": "The recovered research records, internal communications, experimental footage, and security directives are transmitted through an independent communications network.\nAsterion's involvement in Project LUCENT becomes public knowledge, triggering international investigations and putting its executives under scrutiny.\nThe company begins losing control over its research facilities and public reputation.\nHowever, the final scene shows an encrypted communication being transmitted from an unidentified location.\nPROJECT LUCENT – PHASE II: STATUS ACTIVE.\nThe company may have lost its lunar facility, but its entire research program has not necessarily been destroyed."
+      },
+      {
+        "title": "Corporate Asset",
+        "description": "Return the recovered records to Asterion in exchange for financial compensation and permanent employment.",
+        "epilogue": "The protagonist returns the recovered research records to Asterion in exchange for substantial financial compensation and permanent employment.\nThe corporation declares the recovery operation a success and publishes a revised incident report, describing the catastrophe as an unforeseen scientific accident.\nThe protagonist is offered a permanent position within MoonRat's specialized recovery division, with access to improved equipment and resources.\nIn the final cinematic, the protagonist is shown receiving a new Battle Halo.\nThe accompanying documentation identifies it as a next-generation model developed using data recovered from the lunar station.\nThe final scene shows a new research facility preparing to begin Project LUCENT – Phase II."
+      },
+      {
+        "title": "Total Erasure",
+        "description": "Destroy the remaining research infrastructure and permanently erase the recovered data.",
+        "epilogue": "The protagonist decides that Project LUCENT must never be repeated.\nUsing the recovered access information, they ensure that the remaining research infrastructure is permanently destroyed.\nThe original experimental data, including the recovered archive, is erased along with the remaining research systems.\nAsterion loses access to the lunar energy research and the remaining experimental materials, but the company publicly denies responsibility for the destruction.\nWithout the original evidence, the company can continue manipulating the official explanation.\nThe protagonist has stopped the immediate threat, but the truth remains hidden."
+      }
+    ],
+    "halo": "Asterion issued this modular energy weapon to MoonRat recovery operatives. Controlled energy discharges disrupt specimens resistant to conventional firearms. Its configurations provide combat, shielding, temporary storage, and stationary deployment.",
+    "haloClassified": "The underlying technology predates the lunar incident. The first Battle Halo prototypes regulated the experimental energy used to modify specimens for Project LUCENT."
+  },
+  "zh": {
+    "quests": [
+      {
+        "title": "部署准备",
+        "goal": "前往月面研究站。\n在局内至少停留 5 分钟。\n成功撤离。",
+        "description": "在派你参加更艰难的回收作业前，MoonRat 要确认你的装备能承受月面研究站的环境。\n阿斯特里昂公司对外称，一座实验反应堆故障，引发了这起事故。研究站废弃已久，受损的设施可能进一步威胁人员和装备。\n出战后停留至少五分钟，观察装备，确认各系统在整个任务中保持正常。",
+        "item": ""
+      },
+      {
+        "title": "首次接触",
+        "goal": "前往月面研究站。\n用战斗光环消灭 5 个受污染的人员或样本。\n成功撤离。",
+        "description": "占据研究站的敌对生物具有异常的生理结构，常规枪械很难伤到它们。\nMoonRat 给你配发了战斗光环。这种专用武器通过可控的能量释放消灭这些生物。\n实验室的测试结果不错，但实际战斗数据还不够。用配发的战斗光环消灭五个目标。每次交战都将计入武器评估。",
+        "item": ""
+      },
+      {
+        "title": "生物证据",
+        "goal": "前往研究站。\n从 3 具不同的受污染生物遗骸上采样。\n带着 3 份封存样本成功撤离。",
+        "description": "站内的敌对生物具有尚未记录的生理特征。我们需要实物样本，研究它们为何变得好斗、身体发生了什么，以及它们从何而来。\n带上配发的采样套件，从三具遗骸上取得样本。撤离前密封样本，并交给研究部。",
+        "item": "专为受污染环境设计的生物采样容器。密封内舱让取得的样本与外界隔离，便于回收和运输。套件配有三只容器。"
+      },
+      {
+        "title": "最后的记录",
+        "goal": "前往研究站。\n在 MC00 L22 隔离柜旁寻找研究员信息平板。\n回收平板，带着它成功撤离。",
+        "description": "研究站的通信网严重受损，几乎没有留下事故经过。研究人员曾配发便携平板，用来记日报、研究活动和异常情况。\n多数人员已被认定失踪，但他们的设备应该还在站内。完整带回一台平板，重建研究站最后几天的情况。",
+        "item": "配发给研究人员的便携信息终端，保存个人日志、日报和研究观察。最后的记录写于全站事故发生前不久。"
+      },
+      {
+        "title": "静默之前",
+        "goal": "带上配发的加密 U 盘。\n前往 MC00 L22 管理工作站。\n接入管理员的个人电脑，读取存档日志。\n带着 U 盘成功撤离。",
+        "description": "个人记录显示，研究站在最后几天出现了几处异常。我们已找到管理员办公室的位置。管理员的个人电脑应该存有全站运营记录、内部通信和安保报告。\n出战时会配发一只加密数据提取 U 盘。接入电脑，提取剩余资料。部分记录原本不允许对外流通，小心操作，保全数据。",
+        "item": "用来从受保护的电脑提取资料的专用存储设备。加密模块可绕过研究站几种旧式安全协议，用于回收管理日志和内部通信。"
+      },
+      {
+        "title": "移动收纳",
+        "goal": "带战斗光环出战。\n切换到收纳形态。\n装入配发的封存包，直到撤离都不要取出。",
+        "description": "战斗光环可以临时改变结构。收纳形态会把能量结构变成容器，隔绝外界环境，用来运送敏感装备和研究材料。\nMoonRat 要在实地检验运输能力。打开局内背包，切换到光环收纳形态，放入配发的封存包，完整带回。",
+        "item": "装有敏感研究材料的封存容器，适合用战斗光环的临时收纳形态运送。内部与外部污染环境隔离。"
+      },
+      {
+        "title": "自动防御",
+        "goal": "部署战斗光环，切换到固定炮塔模式。\n用这座炮塔消灭 3 个敌对生物。\n成功撤离。",
+        "description": "固定部署让战斗光环离开操作员独立工作，可以提供照明、防护或自动火力。\nMoonRat 需要更多自动炮塔的战斗数据。找一个视野开阔、能覆盖周围区域的位置，部署光环并用自动火力消灭三个敌对生物。",
+        "item": ""
+      },
+      {
+        "title": "表象之下",
+        "goal": "带上配发的大容量硬盘。\n找到 MC00 L22 服务器并接入硬盘。\n守在终端旁，拷贝研究数据库。\n带着硬盘成功撤离。",
+        "description": "管理日志与公司的公开说法不符。几份文件表明，研究站的实际工作远超公开范围。要弄清真相，必须取得原始研究数据。\n中央服务器存有实验记录、样本开发日志、收容报告和研究档案。配发的硬盘可提取大量加密资料。先确保周围安全，再接入硬盘。传输需要时间，完整带回数据。",
+        "item": "可接入中央服务器的大容量研究硬盘。能提取大量加密科研资料，包括实验记录、样本分析和研究档案。"
+      },
+      {
+        "title": "无路可退",
+        "goal": "返回月面研究站。\n到达并解封 MC00 L21 下层研究区。\n找到塞拉·奈迪尔博士留下的研究记录。\n取得 LUCENT 中央控制室的门禁凭证。\n带着两件证物撤离。",
+        "description": "数据库揭示了 LUCENT 计划和阿斯特里昂参与实验的事实，但资料并不完整。隔离的下层研究区有一套独立于中央服务器的档案，可能包含原始影像、内部通信和最终批准文件。\n阿斯特里昂已下令暂停回收，并开始抹去站内数据。这可能是最后一次机会。找到奈迪尔博士留下的记录和中央控制室的门禁凭证，完整带回。 出战前给记录预留 1×2 格，给门禁凭证预留 1 格。",
+        "item": "属于研究站高级研究人员的限制级门禁设备，保存进入隔离研究区和 LUCENT 中央控制室所需的验证数据。"
+      },
+      {
+        "title": "通讯终止",
+        "goal": "进入研究站的中央研究设施。\n用门禁凭证进入 MC00 L22 LUCENT 能源控制室。\n回收原始实验档案和高管通信。\n关闭剩余实验系统。\n带着原始档案成功撤离。",
+        "description": "数据库和奈迪尔留下的记录已揭开 LUCENT 的目的，以及阿斯特里昂在月面事故中的责任。完整的实验影像、管理层通信和项目批准文件仍在中央控制室。\n公司启动了紧急回收协议，准备清除资料并阻止未授权访问。用上一项任务取得的凭证解锁控制室，取得原始档案，关闭实验系统，在设施无法进入前撤离。保持证据完整，撤离前不作传输。",
+        "item": "从月面研究站中央控制室取得的受保护原始档案，包含 LUCENT 的实验录像、生物分析、公司内部通信及高管批准文件。这些材料能证实阿斯特里昂与事故的关系，也可能成为继续实验的基础。"
+      }
+    ],
+    "endings": [
+      {
+        "title": "公开真相",
+        "description": "将回收的记录通过独立通信网发给独立调查机构和公众。",
+        "epilogue": "原始研究记录、内部通信、实验影像和安保指令通过独立通信网公开。阿斯特里昂参与 LUCENT 并蓄意隐瞒事故的证据引发国际调查，高管受到审查。公司开始失去对研究设施和公众声誉的控制。\n随后，一处未知地点发出一条加密通信。\nLUCENT 计划第二阶段：运行中。\n阿斯特里昂失去了月面设施，但它的整个研究项目并没有就此终止。"
+      },
+      {
+        "title": "公司资产",
+        "description": "将记录交还阿斯特里昂，接受补偿和 MoonRat 的长期职位。",
+        "epilogue": "原始档案交回阿斯特里昂。公司发放报酬，宣布回收成功，并发布修订后的事故报告，把灾难定为无法预见的科研事故。\n你获得 MoonRat 特种回收部门的长期职位，以及更好的装备和资源。交到你手中的下一代战斗光环使用了从月面站带回的数据。\n与此同时，一处新研究设施正在为 LUCENT 第二阶段做准备。"
+      },
+      {
+        "title": "彻底抹除",
+        "description": "摧毁月面剩余研究设施，永久删除原始档案和留存副本。",
+        "epilogue": "你使用回收的门禁资料，永久摧毁了月面站剩余的研究设施。原始数据、留存副本和实验系统一并抹除。\n阿斯特里昂失去了月面能源研究资料和剩余的实验材料，却公开否认对毁坏负责。失去原始证据后，公司仍能左右事故的官方说法。\n眼前的威胁已经停止，真相仍未公开。"
+      }
+    ],
+    "halo": "阿斯特里昂向 MoonRat 回收队配发的模块化能量武器。可控的能量释放能破坏可抵抗常规枪械的样本结构。支持战斗、防护、临时收纳与固定部署。",
+    "haloClassified": "核心技术早于月面事故。最早的战斗光环原型用来调节 LUCENT 改造样本所用的实验能量。"
+  }
+}

@@ -1199,6 +1199,63 @@ MonoBehaviour:
     Position: {x: 1594.8915, y: 224.61115, z: 2151.6846}
     Approach: {x: 1595.4105, y: 223.69614, z: 2152.0757}
     Yaw: 53
+  m_ResearchAnchors:
+  - Id: lower_seal
+    Label: L21 / Isolation controls
+    Region: MC00 L21
+    Inscription:
+    Position: {x: 1607.4709, y: 224.7760, z: 2124.0509}
+    Approach: {x: 1608.1578, y: 223.6961, z: 2124.5684}
+    Yaw: 53
+  - Id: nadir_records
+    Label: L21 / Nadir records
+    Region: MC00 L21
+    Inscription:
+    Position: {x: 1604.4394, y: 224.7360, z: 2122.9560}
+    Approach: {x: 1605.1262, y: 223.6961, z: 2123.4736}
+    Yaw: 53
+  - Id: lucent_access
+    Label: L21 / Access credential locker
+    Region: MC00 L21
+    Inscription:
+    Position: {x: 1605.6349, y: 224.7360, z: 2120.5387}
+    Approach: {x: 1606.3217, y: 223.6961, z: 2121.0563}
+    Yaw: 53
+  - Id: lower_security
+    Label: L21 / Automated security emitter
+    Region: MC00 L21
+    Inscription:
+    Position: {x: 1607.8428, y: 224.5560, z: 2122.3277}
+    Approach: {x: 1607.1560, y: 223.6961, z: 2121.8102}
+    Yaw: 233
+  - Id: control_access
+    Label: L22 / LUCENT access reader
+    Region: MC00 L22
+    Inscription:
+    Position: {x: 1594.4494, y: 224.7760, z: 2157.3062}
+    Approach: {x: 1593.7626, y: 223.6961, z: 2156.7886}
+    Yaw: 233
+  - Id: original_archive
+    Label: L22 / Original archive
+    Region: MC00 L22
+    Inscription:
+    Position: {x: 1597.1352, y: 224.7460, z: 2159.1423}
+    Approach: {x: 1597.8221, y: 223.6961, z: 2159.6598}
+    Yaw: 53
+  - Id: experiment_shutdown
+    Label: L22 / Emergency shutdown
+    Region: MC00 L22
+    Inscription:
+    Position: {x: 1599.0877, y: 224.7760, z: 2158.0467}
+    Approach: {x: 1598.4009, y: 223.6961, z: 2157.5291}
+    Yaw: 233
+  - Id: unstable_feed
+    Label: L22 / Unstable energy feed
+    Region: MC00 L22
+    Inscription:
+    Position: {x: 1596.3175, y: 224.4160, z: 2158.1504}
+    Approach: {x: 1595.6307, y: 223.6961, z: 2157.6328}
+    Yaw: 233
   m_Definitions:
   - Id: mc00_mooncore
     Name: "\u5C01\u5B58\u6837\u672C"

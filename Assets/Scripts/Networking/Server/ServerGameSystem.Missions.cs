@@ -33,10 +33,11 @@ namespace Unity.MP_FPS
                 LastShotTick=health.LastShotTick;LastGrenadeTick=health.LastGrenadeShotTick;
                 LastReloadTick=health.LastReloadTick;Weapon=health.EquippedWeaponID;
             }
-            public bool Interrupted(in PredictedPlayerGhost health, float3 position) => health.CurrentHealth<Health ||
+            public bool Interrupted(in PredictedPlayerGhost health, float3 position, bool allowAnchoredHalo = false) => health.CurrentHealth<Health ||
                 health.LastHitTick!=LastHitTick || health.NonPhysiologicalDamageSequence!=DamageSequence || health.ShieldHitSequence!=ShieldHitSequence ||
-                health.LastShotTick!=LastShotTick || health.LastGrenadeShotTick!=LastGrenadeTick ||
-                health.LastReloadTick!=LastReloadTick || health.EquippedWeaponID!=Weapon || RaidHealth.HandsBusy(health);
+                (health.LastShotTick!=LastShotTick && !(allowAnchoredHalo && HaloSupportRules.Anchored(health) &&
+                    health.LastShotTick == health.LastSentryShotTick)) || health.LastGrenadeShotTick!=LastGrenadeTick ||
+                health.LastReloadTick!=LastReloadTick || health.EquippedWeaponID!=Weapon || RaidHealth.HandsBusy(health, allowAnchoredHalo);
         }
         public readonly Dictionary<Entity, Actor> Actors = new Dictionary<Entity, Actor>();
         public readonly HashSet<Entity> Known = new HashSet<Entity>();
