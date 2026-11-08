@@ -40,7 +40,7 @@ namespace Unity.MP_FPS
             if (open == m_MapOpen) return;
             if (open)
             {
-                if (!MapPlayable || QuickManualBusy) return;
+                if (!MapPlayable || QuickManualBusy || m_FieldRecordOpen) return;
                 if (m_InventoryVisible) SetInventory(false);
                 if (m_InventoryVisible) return;
                 if (m_MissionDetailsVisible) SetMissionDetails(false);

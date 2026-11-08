@@ -286,5 +286,8 @@ namespace Unity.MP_FPS
             if (m_TabletModel) UnityEngine.Object.Destroy(m_TabletModel);
             m_TabletModel = null;
         }
+
+        internal static Transform TabletVisual(int raidId) => s_Run != null && s_Run.Matches(raidId) && s_Run.m_TabletModel
+            ? s_Run.m_TabletModel.transform : null;
     }
 }

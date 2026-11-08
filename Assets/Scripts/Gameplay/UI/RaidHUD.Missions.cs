@@ -89,7 +89,7 @@ namespace Unity.MP_FPS
 
         private void SetMissionDetails(bool visible)
         {
-            if (m_MissionDetails == null) return;
+            if (m_MissionDetails == null || visible && m_FieldRecordOpen) return;
             if (visible) SetRaidMapOpen(false);
             CancelMissionHold();
             m_MissionDetailsVisible = visible;
@@ -171,7 +171,7 @@ namespace Unity.MP_FPS
             UpdateMissionMarker(false);
             if (!ChatInputBlocked && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
-            if (!live || ChatInputBlocked || MapInputBlocked || m_InventoryVisible || m_InventoryRequestPending || m_MissionDetailsVisible || m_CampaignJournalVisible || GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !Application.isFocused || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
+            if (!live || ChatInputBlocked || MapInputBlocked || m_InventoryVisible || m_InventoryRequestPending || m_MissionDetailsVisible || m_CampaignJournalVisible || m_FieldRecordOpen || GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !Application.isFocused || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
             {
                 CancelMissionHold(); m_MissionInteraction.style.display = DisplayStyle.None;
                 if (!live && m_MissionDetailsVisible) SetMissionDetails(false);

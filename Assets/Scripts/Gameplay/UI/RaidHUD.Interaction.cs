@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
         {
             m_InteractionBindings ??= new RaidInteractionBindings();
             m_InteractionBindings.ObserveDevice();
+            m_FieldRecordFocus = null;
             loot = -1; distance = RaidRules.PickupRange; m_WorldFocusScore = -1; m_WorldControlFocused = false;
             var camera = Camera.main;
             m_AirlockPrompt.RefreshSelection(camera, actor, allowed && controls && worldControls, m_World);
@@ -46,9 +47,18 @@ namespace Unity.MP_FPS
                     if (drawers[i] != null && drawers[i].Target && drawers[i].Target.gameObject.activeInHierarchy)
                         Consider(RaidFurnitureLoot.FirstId + i, drawers[i].Position, drawers[i].Target);
             }
+            foreach (var record in m_FieldRecords.Tablets)
+            {
+                if (!record.Screen || !record.Screen.gameObject.activeInHierarchy) continue;
+                Vector3 point = record.Screen.bounds.center;
+                float score = RaidInteractionAim.Score(camera, actor, point, RaidRules.PickupRange, record.Screen.transform);
+                if (score <= m_WorldFocusScore) continue;
+                m_FieldRecordFocus = record;
+                m_WorldFocusScore = score; bestLoot = -1; bestDistance = Vector3.Distance(actor, point);
+            }
             float controlScore = worldControls ? m_AirlockPrompt.FocusScore(camera, actor) : -1;
             if (controlScore > m_WorldFocusScore)
-            { m_WorldFocusScore = controlScore; m_WorldControlFocused = true; bestLoot = -1; }
+            { m_WorldFocusScore = controlScore; m_WorldControlFocused = true; bestLoot = -1; m_FieldRecordFocus = null; }
             loot = bestLoot; distance = bestDistance;
             m_AirlockPrompt.SetPresentation(m_WorldControlFocused);
         }

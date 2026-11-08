@@ -50,3 +50,10 @@
 .mission-controls > .mission-circuit-row:hover { background-color: #303b38; }
 .mission-controls > .mission-circuit-row:focus { background-color: #354139; border-left-width: 2px; border-left-color: #c8cfaa; }
 .mission-controls > .mission-circuit-row:active { background-color: #354139; }
+
+.field-record { -unity-font-definition: url("../../../Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
+.field-record .mission-sheet { max-width: 680px; border-top-color: #5472e4; background-color: #111318; }
+.field-record .mission-scroll { flex-shrink: 1; min-height: 48px; margin-top: 4px; }
+.field-record-body { color: #c4c8cf; font-size: 17px; white-space: normal; margin: 0 6px 0 0; }
+.field-record .mission-actions > Button { margin-left: 0; color: #d6e1ff; background-color: #1d2e62; border-color: #435db1; }
+.field-record .mission-actions > Button:hover, .field-record .mission-actions > Button:focus { background-color: #253974; border-color: #5472e4; }

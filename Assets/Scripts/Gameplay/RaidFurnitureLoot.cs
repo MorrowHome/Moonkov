@@ -18,6 +18,8 @@ namespace Unity.MP_FPS
             public string Label;
             public RaidLootProfile Profile = RaidLootProfile.Industrial;
             public bool SupplyCache;
+            [Tooltip("Optional silhouette mesh in Target space for drawers merged into the baked map.")]
+            public Mesh OutlineMesh;
             public Vector3 Position => Target ? Target.TransformPoint(LocalPoint) : default;
         }
 

@@ -9,6 +9,7 @@ namespace Unity.MP_FPS
     // no colliders, loot rules, transforms or network state belong to this view.
     internal sealed class RaidSupplyCacheVisuals : IDisposable
     {
+        internal const float TopTrayHeight = .368f;
         private const int Paint = 0, Polymer = 1, Metal = 2, Hazard = 3;
         private readonly Mesh m_Body, m_Indicator;
         private readonly Material[] m_Finishes;
@@ -41,7 +42,7 @@ namespace Unity.MP_FPS
             mesh.Box(new Vector3(0, .229f, 0), new Vector3(1.08f, .024f, .77f), .024f, Polymer);
             mesh.Box(new Vector3(0, .293f, 0), new Vector3(1.12f, .102f, .80f), .035f, Paint);
             mesh.Box(new Vector3(0, .347f, 0), new Vector3(.79f, .027f, .50f), .012f, Metal);
-            mesh.Box(new Vector3(0, .362f, 0), new Vector3(.65f, .012f, .39f), .005f, Polymer);
+            mesh.Box(new Vector3(0, TopTrayHeight - .006f, 0), new Vector3(.65f, .012f, .39f), .005f, Polymer);
 
             // Protective skid rails and hard corner shoes make the silhouette readable at a distance.
             for (int x = -1; x <= 1; x += 2)
