@@ -10,7 +10,7 @@ namespace Unity.MP_FPS
         private Vector3 m_PackOffset,m_DeviceOffset;
         private Quaternion m_PackFrame,m_DeviceFrame;
         private MeshRenderer m_ApertureRenderer;
-        private MeshRenderer[] m_PackRings,m_PackLights,m_ChargeBars;
+        private MeshRenderer[] m_PackRings,m_PackLights;
         private MaterialPropertyBlock m_EquipmentProperties;
         private byte m_BackpackStyle;
         private float m_Charge,m_Energy;

@@ -209,7 +209,7 @@ namespace Unity.MP_FPS
             m_Visor=null;m_VisorRenderer=null;m_VisorRails=null;
             m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;
             m_CollarNekoDetails=m_CollarStandardDetails=null;
-            m_Subspace=null;m_ApertureRenderer=null;m_PackRings=null;m_PackLights=null;m_ChargeBars=null;
+            m_Subspace=null;m_ApertureRenderer=null;m_PackRings=null;m_PackLights=null;
             m_Badge=m_BadgeAnchor=null;m_BadgeModel=null;m_BadgeRenderers=null;m_BadgeBuiltStyle=0;
             if(m_GeometryRetained){EnergyShieldGeometry.Release();m_GeometryRetained=false;}m_Ready=false;ResetPresentation();
         }
