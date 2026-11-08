@@ -1,4 +1,6 @@
 {
+  "T-01 Squad tracker": "T-01 队友识别器",
+  "Equip in a special slot to see teammates outlined in teal, even through walls. Only the wearer sees the effect. No energy cost. Inactive in a backpack; retained on death or timeout while equipped.": "装入特殊装备槽后，仅装备者能看到队友的青色轮廓，可穿墙显示。不消耗能量。放在背包中不生效；装备时死亡或超时保留。",
   "{0} FPS  |  Ping {1}\nLoss {2}  |  Connection {3}": "{0} FPS  |  延迟 {1}\n丢包率 {2}  |  连接 {3}",
   "Measuring": "采集中",
   "Waiting for data": "等待数据",

@@ -151,7 +151,7 @@ namespace Unity.MP_FPS.Client
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
             if(organ>=0)return (StashArtKind)((int)StashArtKind.AlienSpider+organ);
-            switch (code) { case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
+            switch (code) { case "team_tracker":return StashArtKind.TeamTracker; case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "alien_raw_meat":return StashArtKind.AlienMeat;
                 case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
                 case "alien_tissue":return StashArtKind.AlienTissue;

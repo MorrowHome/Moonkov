@@ -121,6 +121,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("secure_case", "S-04 个人保险箱", ItemKind.SecureContainer, 2, 2, 1, .8f, new InventoryRegion("main", 2, 2)),
                 new ItemDefinition("survey_compass", "C-01 月面指南针", ItemKind.SpecialEquipment, 1, 1, 1, .15f),
                 new ItemDefinition("laser_rangefinder", "R-500 激光测距仪", ItemKind.SpecialEquipment, 1, 1, 1, .35f),
+                new ItemDefinition("team_tracker", "T-01 Squad tracker", ItemKind.SpecialEquipment, 1, 1, 1, .25f),
                 new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
                 new ItemDefinition("scout_rig", "R-02 Scout badge", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),

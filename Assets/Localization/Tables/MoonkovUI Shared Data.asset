@@ -6561,6 +6561,16 @@ MonoBehaviour:
     m_Key: ELEVATOR UNAVAILABLE
     m_Metadata:
       m_Items: []
+  - m_Id: 11490179486310400
+    m_Key: T-01 Squad tracker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11490182879502336
+    m_Key: Equip in a special slot to see teammates outlined in teal, even through
+      walls. Only the wearer sees the effect. No energy cost. Inactive in a backpack;
+      retained on death or timeout while equipped.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
