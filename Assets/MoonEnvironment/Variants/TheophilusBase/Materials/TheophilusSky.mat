@@ -53,6 +53,6 @@ Material:
     - _SkyNorth: {r: 0, g: 1, b: 0, a: 0}
     - _SkyUp: {r: 0, g: 0, b: 1, a: 0}
     - _SunColor: {r: 80, g: 78, b: 76, a: 1}
-    - _SunDirection: {r: -0.53673595, g: 0.81865484, b: -0.20425195, a: 0}
+    - _SunDirection: {r: -0.27640778, g: 0.44940346, b: -0.8494912, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
