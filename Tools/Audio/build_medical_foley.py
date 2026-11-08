@@ -34,10 +34,11 @@ def main():
             sha256=hashlib.sha256(path.read_bytes()).hexdigest(),peak=float(max(abs(a))),rms=float(np.sqrt(np.mean(a*a)))))
     cap=read('SyringePop',1.735,.16,'highpass=f=250,lowpass=f=7000')
     save('InjectorDryCap',cap,'1.735-1.895 s dry plunger pop used as cap foley; filtered, no liquid layer',['SyringePop'])
-    press=read('SyringePop',1.735,.24,'highpass=f=140,lowpass=f=2600')
-    grip=read('ClothWrap2',0,.30,'highpass=f=130,lowpass=f=2800')
-    injection=np.zeros(round(.34*RATE));injection[:len(press)]+=press*.85;injection[:len(grip)]+=grip*.12
-    save('InjectorDryPress',injection,'Short muffled plunger release with quiet cotton grip texture; no water or squirt',['SyringePop','ClothWrap2'])
+    injection=read('InsulinPen',1.45,.72,'highpass=f=180,lowpass=f=7000')
+    # Keep the recorded sequence of dispensing clicks audible between its peaks.
+    loud=np.abs(injection)>.06
+    injection[loud]=np.sign(injection[loud])*.06*(np.abs(injection[loud])/.06)**.25
+    save('InjectorDryPress',injection,'1.45-2.17 s actual injection-pen dispensing stroke; filtered, 4:1 peak compression and levelled; no speed/pitch change',['InsulinPen'])
     tear=read('BandageTear')
     save('BandageOpen',tear,'Complete recorded tape/bandage tear',['BandageTear'])
     first=read('ClothWrap1');second=read('ClothWrap2')
@@ -45,7 +46,7 @@ def main():
     save('BandageWrap',wrap,'Two complete cotton strokes at 0 and 0.62 s, with rest between turns; 1.2 s loop',['ClothWrap1','ClothWrap2'],True)
     save('BandageTighten',second,'One complete cotton stroke for tightening the dressing',['ClothWrap2'])
     save('MedicalGelRub',first*.7,'Soft cotton-contact foley for applying gel; separate from bandage loop',['ClothWrap1'])
-    manifest=dict(processing='Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. No peak compression.',
+    manifest=dict(processing='Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. InjectorDryPress uses 4:1 peak compression; other clips do not.',
         sources=json.loads((SOURCE/'Sources.json').read_text()),clips=records)
     (ROOT/'Assets/Audio/Moonkov/MedicalFoleySources.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps(dict(clips=len(records),seconds=sum(r['seconds'] for r in records))))

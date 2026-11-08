@@ -23,7 +23,7 @@ public static class MedicalFoleySetup
         }
         var lib=Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
         lib.InjectorCap=Bank("InjectorCap",lib.InjectorCap,"InjectorDryCap",-16,false);
-        lib.InjectorPress=Bank("InjectorPress",lib.InjectorPress,"InjectorDryPress",-14,false);
+        lib.InjectorPress=Bank("InjectorPress",lib.InjectorPress,"InjectorDryPress",-3,false);
         lib.MedicalOpen=Bank("MedicalOpen",lib.PacketOpen,"BandageOpen",-17,false);
         lib.MedicalHandling=Bank("MedicalHandling",lib.MedicalHandling,"BandageWrap",-15,true);
         lib.MedicalGel=Bank("MedicalGel",lib.Medical,"MedicalGelRub",-17,false);

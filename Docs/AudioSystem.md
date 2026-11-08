@@ -4,14 +4,15 @@
 
 - 吃喝和开包装声提高约 8–11 dB，统一走 SFX。录音原本尖峰高、主体轻，现离线压缩尖峰并补偿主体音量。保留原速度和音高，48 kHz 单声道 PCM，峰值不超过 0.7。
 - 吃喝在真实动作的接触段增加第二次咀嚼或吞咽。能量凝胶与异形软食使用吞咽声。瓶装水增加独立的拧回瓶盖录音，不再重播开瓶声。没有给裸露食材增加拆包装声。
-- 打针已停用抽排水录音，改用 Coniela 的 CC0 干燥针筒弹响。针帽清脆短促，推杆接触较闷，带轻微握持纹理。没有添加液体喷流或肌肉内部的夸张声音。
+- 针帽使用 Coniela 的 CC0 干燥针筒弹响。推注主体单独使用 MutilatorBCB 的 CC0 真实注射笔推注录音，取 1.45–2.17 秒，保留连续机械声。原 0.34 秒弹响混入音库后 RMS 约 −42 dBFS，容易被掩盖。现为 0.72 秒，并用 4:1 尖峰压缩和增益补偿提高主体；按音库平均增益计算约 −24 dBFS，提高约 18 dB。保留原速度和音高。仍在真实动作的 `contact=0.55` 播放，不改手势和服务端计时。
 - 医疗包已停用拆盒录音。开始时播放 SecureSubset 的 CC0 绷带撕拉声，再用 Frostnox 的两条棉布摩擦拟音组成 1.2 秒循环。动作进度 0.28–0.88 期间缠绕，成功回执后收紧。创伤包、止血绷带和救援包共用此流程；凝胶另用短涂抹拟音。每个角色最多保持一个缠绕循环，中途接收状态只接续循环，不补播撕开声。
-- 六条新医疗素材保持原速度和音高，48 kHz 单声道 PCM，合计约 0.33 MB，峰值不超过 0.6。棉布录音为 CC BY 4.0，署名和改编说明随 `MoonkovMedicalFoleyCredits.txt` 分发。原文件和来源见 `SourceData/Audio/MedicalFoley`，裁剪及哈希见 `MedicalFoleySources.json`。
+- 六条医疗素材保持原速度和音高，48 kHz 单声道 PCM，合计约 0.37 MB，峰值不超过 0.6。棉布录音为 CC BY 4.0，署名和改编说明随 `MoonkovMedicalFoleyCredits.txt` 分发。原文件和来源见 `SourceData/Audio/MedicalFoley`，裁剪及哈希见 `MedicalFoleySources.json`。
 - 便携氧气罐在接好后开始持续气流，拆下前停止。支持中途收到状态时接续气流。补氧成功的短声改为气流释压，不再使用衣料占位声。自动供氧站沿用独立的 `OxygenSupply`，不受便携罐增益影响。
 - 动作声音跟随角色。自己保持近身 2D，其他角色保留空间衰减与遮挡。重复快照不重播；取消、死亡和失活收束当前声音。HUD 不叠加吃喝完成时的通用衣料声，也不重复播放医疗和补氧开始声。打针与凝胶完成时不叠加包扎声。补氧与包扎成功反馈仍等待真实回执，不决定资源或库存。
-- 重建用 `build_survival_action_audio.py`、`build_consumable_foley.py` 和 `build_medical_foley.py`。`RaidActionAudioSetup.Install()` 统一导入和绑定，经过 `ConsumableAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`；通用战局音库重建会调用整条链。旧水声和拆盒成品保留作来源存档，不再绑定。所有播放复用原声音池。
+- 重建用 `build_survival_action_audio.py`、`build_consumable_foley.py` 和 `build_medical_foley.py`。`RaidActionAudioSetup.Install()` 统一导入和绑定，经过 `ConsumableAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`；通用战局音库重建会调用整条链。修改安装脚本后，先等待编译完成，再执行安装并读取音库增益确认。命令返回成功不代表使用了新程序集。旧水声和拆盒成品保留作来源存档，不再绑定。所有播放复用原声音池。
 - 原服务端使用、取消、死亡及三套骨架的 174 项检查已通过。此次更换医疗素材后，`ConsumableAudioReview.Run()` 的 155 项原生声音池检查通过，覆盖 13 类物品的自己与远端表现、重复快照、接续补氧和缠绕、停止及回收。六条新成品的哈希、格式、峰值、直流偏移和首尾边界通过。全库检查通过 95 个入口、180 个音库及 14 组原有回归。此前旧综合人物播放夹具在 Search 相机断言失败，不计为通过；本次没有重跑该夹具或修改相机。
-- 当前医疗试听为 `LocalData/MedicalAudioReview/InjectionAndBandage-Audition.wav`，8 秒，先打针，再包扎。按音库配置增益离线混合，不包含完整游戏环境和玩家音量设置。旧 `ConsumableActions-Audition.wav` 中的医疗段已过时。没有重新打包、进行联机或主观听感验收。
+- 推注响度回归使用 `InjectorPresentationReview.Run()`。单 Editor 隔离 Play 中，通过正式三套角色预制体和 `RaidActionPresentation`，按真实源接触时间换算服务端剩余时间。65 项检查通过，覆盖医疗针、强化针和再生针的开帽、推注、连续播放、重复快照及死亡清理。最低随机增益下的主体 RMS 为 −24.6 dBFS。此检查读取实际音库及 AudioSource，不以离线试听或 `isPlaying` 单独判定响度。只创建本地角色夹具，不启动联机客户端。
+- 当前推注主体试听为 `LocalData/MedicalAudioReview/InjectorBody-v2.wav`，0.72 秒，不含针帽和包扎。按音库平均增益离线混合，不包含完整游戏环境和玩家音量设置。此前两份组合试听中的注射段均已过时。没有重新打包、进行联机或主观听感验收。
 
 ## 2026-11-08 实际游玩声音层
 

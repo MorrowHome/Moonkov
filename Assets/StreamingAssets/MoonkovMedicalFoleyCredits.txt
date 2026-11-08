@@ -3,11 +3,14 @@ https://freesound.org/people/Frostnox/sounds/796014/
 https://freesound.org/people/Frostnox/sounds/796015/
 Licensed under Creative Commons Attribution 4.0 International:
 https://creativecommons.org/licenses/by/4.0/
-Changes: mono 48 kHz conversion, filtering, fades, gain adjustment and two-stroke looping; quiet layering for injector grip and gel-contact foley. Natural pitch and speed retained. This is not an endorsement by the author.
+Changes: mono 48 kHz conversion, filtering, fades, gain adjustment and two-stroke looping; gel-contact foley. Natural pitch and speed retained. This is not an endorsement by the author.
 
 "Syringe single pop.m4a" by Coniela, CC0 1.0.
 https://freesound.org/people/Coniela/sounds/458423/
-Changes: cropped dry plunger transient, filtered and layered for cap/contact foley.
+Changes: cropped dry plunger transient and filtered for cap foley.
+"Insulin Pen - 34 units" by MutilatorBCB, CC0 1.0.
+https://freesound.org/people/MutilatorBCB/sounds/692581/
+Changes: 1.45-2.17 s dispensing excerpt, mono 48 kHz conversion, filtering, 4:1 peak compression, fades and gain adjustment. Natural pitch and speed retained.
 "Tape Bandages Rip" by SecureSubset, CC0 1.0.
 https://freesound.org/people/SecureSubset/sounds/800275/
 Changes: mono conversion, filtering, fades and gain adjustment.

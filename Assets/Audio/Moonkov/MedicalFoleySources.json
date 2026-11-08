@@ -1,5 +1,5 @@
 {
-  "processing": "Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. No peak compression.",
+  "processing": "Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. InjectorDryPress uses 4:1 peak compression; other clips do not.",
   "sources": [
     {
       "name": "SyringePop",
@@ -32,6 +32,14 @@
       "download": "https://cdn.freesound.org/previews/800/800275_16752880-hq.mp3",
       "license": "CC0-1.0",
       "bytes": 15469
+    },
+    {
+      "name": "InsulinPen",
+      "author": "MutilatorBCB",
+      "page": "https://freesound.org/people/MutilatorBCB/sounds/692581/",
+      "download": "https://cdn.freesound.org/previews/692/692581_1025379-hq.mp3",
+      "license": "CC0-1.0",
+      "bytes": 95856
     }
   ],
   "clips": [
@@ -52,22 +60,18 @@
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/Medical/InjectorDryPress.wav",
-      "recipe": "Short muffled plunger release with quiet cotton grip texture; no water or squirt",
+      "recipe": "1.45-2.17 s actual injection-pen dispensing stroke; filtered, 4:1 peak compression and levelled; no speed/pitch change",
       "loop": false,
-      "seconds": 0.34,
+      "seconds": 0.72,
       "sources": [
         {
-          "file": "SourceData/Audio/MedicalFoley/SyringePop.mp3",
-          "sha256": "00bd239c2a57e09b3ccf98c2be5e204cad7d6222080f289ced3ea2a9ac779c87"
-        },
-        {
-          "file": "SourceData/Audio/MedicalFoley/ClothWrap2.mp3",
-          "sha256": "2dcbbbfc3346236f41e04737c0d9c778ed8ec4fb42dd3b64cc05e55d038cda4f"
+          "file": "SourceData/Audio/MedicalFoley/InsulinPen.mp3",
+          "sha256": "6a273d1b248741424e9134010f14cbef01703303b8d167a5bc1dfb9bf3f5eb9f"
         }
       ],
-      "sha256": "6d2b531f49f57385e98c286a811f755c07ca6868778ed0aa9bdf6bf494df11ec",
+      "sha256": "548eef95b6518d2b8f7ac8b06de424751671b2f458d5e9de13b732bfb0e97e59",
       "peak": 0.6,
-      "rms": 0.04190235654253994
+      "rms": 0.09308923037888162
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/Medical/BandageOpen.wav",

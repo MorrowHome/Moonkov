@@ -949,7 +949,7 @@
 
 ## 受伤人声
 
-- 2026-11-08 吃喝与医疗动作声统一走 SFX，并提高主体响度。便携氧气罐接触阶段持续放气，自动供氧站音库不变。打针使用干燥的针具弹响，不用抽排水录音。医疗包用撕开、循环棉布缠绕和收紧；凝胶单独使用涂抹拟音。打针和凝胶完成时不叠加包扎声。棉布素材为 Frostnox 的 CC BY 4.0，必须保留 `MoonkovMedicalFoleyCredits.txt` 的署名与改编说明。重建入口为 `RaidActionAudioSetup.Install()`，自动调用 `MedicalFoleySetup.Install()`，不要恢复旧水声和拆盒绑定。来源、时序与检查见[音效系统](Docs/AudioSystem.md#2026-11-08-吃喝补氧与医疗)。
+- 2026-11-08 吃喝与医疗动作声统一走 SFX，并提高主体响度。便携氧气罐接触阶段持续放气，自动供氧站音库不变。针帽用干燥弹响，推注主体用 MutilatorBCB 的 CC0 注射笔实录，0.72 秒，按音库平均增益约 −24 dBFS。不能只看音源已播放；此前短弹响主体约 −42 dBFS，玩家仍听不清。医疗包用撕开、循环棉布缠绕和收紧；凝胶单独使用涂抹拟音。打针和凝胶完成时不叠加包扎声。棉布素材为 Frostnox 的 CC BY 4.0，必须保留 `MoonkovMedicalFoleyCredits.txt` 的署名与改编说明。重建入口为 `RaidActionAudioSetup.Install()`，自动调用 `MedicalFoleySetup.Install()`，不要恢复旧水声、短推杆弹响和拆盒绑定。来源、时序与检查见[音效系统](Docs/AudioSystem.md#2026-11-08-吃喝补氧与医疗)。
 
 - 2026-11-08 补齐实际游玩声音层：步行和奔跑装备、落地装备、跳跃发力、按有氧状态切换通风、升降机门机与驱动。绑定用 `MoonkovPresenceAudioSetup.Install()`。脚步仍由动画事件驱动，升降机声音只观察实际运动。正式地图单人 32 秒操作已记录新增声音触发，最多 13 个发射器；详细素材和验收边界见[音效系统](Docs/AudioSystem.md#2026-11-08-实际游玩声音层)。
 
