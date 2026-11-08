@@ -121,7 +121,7 @@ Shader "Moonkov/HaloScan"
             }
             half4 SilhouetteFragment(ShapeVaryings input):SV_Target
             {
-                float rim = pow(1 - abs(dot(normalize(input.normalWS), normalize(GetWorldSpaceViewDir(input.positionWS)))), 2.5);
+                float rim = pow(saturate(1 - abs(dot(normalize(input.normalWS), normalize(GetWorldSpaceViewDir(input.positionWS))))), 2.5);
                 float lines = .8 + .2 * sin(input.positionWS.y * 85);
                 return half4(1, .24 + rim * .25, .055, (.08 + rim * .55) * lines);
             }
