@@ -110,7 +110,7 @@ public sealed class RaidVitalMonitorReview : EditorWindow
             w.Scenario(scenario);
             var tab = w.m_Host.Q("vitals-monitor");
             bool equipped = scenario != 6;
-            int expected = scenario == 0 || scenario == 5 ? 1 : 0;
+            int expected = scenario == 0 ? 6 : scenario == 5 ? 10 : 0;
             Check(Filled(w.m_Combat, 4) == expected && Filled(tab, 4) == expected, "HUD and health page must show the same normalized halo energy");
             Check((w.m_Combat.Q("vitals-reserve-4").style.display.value != DisplayStyle.None) == equipped,
                 "Unequipped halo row must disappear");
@@ -140,7 +140,9 @@ public sealed class RaidVitalMonitorReview : EditorWindow
             foreach (var monitor in new VisualElement[] { w.m_Combat, w.m_Host.Q("vitals-monitor") })
             {
                 var cells = monitor.Q("vitals-reserve-4").Query<RaidReserveIcon>(className: "vitals-cell").ToList();
-                Check(cells.Count == 1 && cells[0].Filled && cells[0].Tint == entry.Color && cells[0].Artwork == RaidReserveIcon.HaloArtwork(entry.Weapon), "Single halo image must match held weapon: " + entry.Weapon);
+                Check(cells.Count == 10 && cells.Take(6).All(cell => cell.Filled) && cells.Skip(6).All(cell => !cell.Filled) &&
+                    cells.All(cell => cell.Tint == entry.Color && cell.Artwork == RaidReserveIcon.HaloArtwork(entry.Weapon)),
+                    "Every energy cell must use the held halo artwork, with six of ten filled at 62%: " + entry.Weapon);
                 Check(monitor.Q("vitals-reserve-4").Q<Label>().text.Contains("62%"), "Halo percentage must show exact energy");
                 Check(monitor.Q("vitals-reserve-1").Q<RaidReserveIcon>(className: "vitals-cell").Tint == bodyColor,
                     "Weapon color leaked into body nutrition");

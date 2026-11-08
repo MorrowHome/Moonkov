@@ -57,7 +57,7 @@ namespace Unity.MP_FPS.Client
                 if (i == 0) m_OxygenLabel = label;
                 if (i == 4) m_HaloLabel = label;
                 var cells = new VisualElement { pickingMode = PickingMode.Ignore }; cells.AddToClassList("vitals-cells"); row.Add(cells);
-                m_Reserves[i] = new VisualElement[i == 4 ? 1 : 10];
+                m_Reserves[i] = new VisualElement[10];
                 for (int c = 0; c < m_Reserves[i].Length; c++)
                 { var icon = new RaidReserveIcon(i); cells.Add(icon); m_Reserves[i][c] = icon; }
             }
@@ -155,7 +155,7 @@ namespace Unity.MP_FPS.Client
 
         private void Reserve(int index, float value, bool ready, Color color)
         {
-            int filled = !ready ? 0 : index == 4 ? (value > 0 ? 1 : 0) : RaidVitalSignal.ReserveCells(value, m_Reserves[index].Length);
+            int filled = !ready ? 0 : RaidVitalSignal.ReserveCells(value, m_Reserves[index].Length);
             if (m_Counts[index] == filled && m_Colors[index] == color) return;
             m_Counts[index] = filled; m_Colors[index] = color;
             for (int i = 0; i < m_Reserves[index].Length; i++)
