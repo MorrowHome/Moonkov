@@ -182,7 +182,15 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     return lit;
 #else
     Light mainLight=MoonMainLight(input);
-    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo *
+    half3 sunNormal = normal;
+#if defined(_MOON_MESH_LIGHTMAP)
+    // Keep fine normal-map relief from breaking up the geometric terminator on crater walls.
+    half3 groundNormal = normalize(input.normalWS);
+    half incidence = dot(groundNormal, mainLight.direction);
+    half relief = lerp(.22h, 1.0h, smoothstep(.06h, .32h, incidence));
+    sunNormal = normalize(lerp(groundNormal, normal, relief));
+#endif
+    half3 color=MoonLight(surface,sunNormal,view,mainLight) + surface.Albedo *
         (inputData.bakedGI + MoonLocalBounce(input.positionWS,normal,mainLight));
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();

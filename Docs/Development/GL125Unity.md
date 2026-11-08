@@ -7,7 +7,7 @@
 - `Tools/Blender/build_gl125_collision.py` 从当前可见结构生成静态碰撞，按实际尺寸筛掉小件和薄装饰。单面结构片补反面，地形直接使用显示网格。旧 V73 代理不进入正式场景。输出 `PreparedQuality/StaticCollision/Collision.json`，绑定原渲染 `World.json` 哈希。传入 `Evaluated`、`PreparedQuality` 和 `GL124_PLACEMENT_CONTRACT.json`。只修现有地图碰撞时执行 `GL125SceneInstall.ReplaceStaticCollision(工作目录)`。
 - `Tools/Blender/bake_gl125.py` 用 Cycles OptiX 计算 486 盏固定灯的光照，分离线性 EXR 与材质。图集为 50 张 2K、24 张 4K，每张 128 次采样。主日照及阴影在 Unity 实时计算。按同一 `World.json` 哈希和各图集回执续烘。
 - `GL125WorldAssets` 导入 Unity 原生网格、材质和光照图。URP Lit 使用实际能直接映射的基色、法线及 PBR 参数。复杂程序材质使用近似参数。角色探针基于新版灯位和新碰撞估算。局部反射需要单独制作。
-- GL125 的 256 块 `DEM_` 使用从 `TheophilusOriginalRegolith` 恢复的月壤材质。Unity 用原月壤的多尺度纹理、法线和月面反射计算日照，并从网格 UV2 取现有的非方向性 Blender 光照图。材质须同时保存 `_MeshLightmap` 和 `_MOON_MESH_LIGHTMAP`，否则阴影区会失去间接光。
+- GL125 的 256 块 `DEM_` 使用从 `TheophilusOriginalRegolith` 恢复的月壤材质。Unity 用原月壤的多尺度纹理、法线和月面反射计算日照，并从网格 UV2 取现有的非方向性 Blender 光照图。材质须同时保存 `_MeshLightmap` 和 `_MOON_MESH_LIGHTMAP`，否则阴影区会失去间接光。日照掠过坑壁时，减少直接光受细法线影响的程度，保留地形明暗交界。
 - `Tools/Blender/plan_gl125_surface_detail.py PreparedQuality 正式场景 Geology` 生成月坑布局、喷出物遮罩和碎石避让数据。依赖 NumPy、SciPy、Pillow。首次安装执行 `GL125CraterInstall.Install(PreparedQuality, Geology)`。它核对源地图哈希，并按旧月坑的坑底和抬升坑沿改写现有 DEM。显示与碰撞共用网格，保留 UV2。重新生成不同布局时，先从 `MeshBundlesBeforeCraters` 恢复对应地形包。
 - `GL125SceneInstall.InstallScree()` 在正式场景挂接 `MoonMeshDebris`。它用实际地形碰撞放置碎石，用 2 米网格避开建筑和铺装。客户端按相机位置加载最多 25 个网格，每格最多 88 块，距相机 26 到 36 米淡出。碎石只参与显示和阴影。
 - `GL125SceneInstall` 保留气闸、任务设备、补氧区和搜刮规则。旧抽屉的交互引用改为独立位置锚点。气闸结构传声引用指向新版 MC00 碰撞。灯钮按废弃处理。
