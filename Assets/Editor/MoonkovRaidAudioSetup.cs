@@ -56,6 +56,7 @@ public static class MoonkovRaidAudioSetup
         MoonkovAudioDetailSetup.Install();
         MoonkovAlienAudioSetup.Install();
         InstallBreathing();
+        RaidActionAudioSetup.Install();
         Debug.Log("Raid audio installed: recorded contact/vocal banks, suit/detail cues and pooled mix policies.");
     }
     [MenuItem("Moonkov/Audio/Install stamina breathing")]

@@ -1,0 +1,12 @@
+Syringe handling: "syringe.wav" by taure, CC0 1.0.
+https://freesound.org/people/taure/sounds/465495/
+Medical dressing handling: "Band aids, opening box and unwrapping.wav" by SpliceSound, CC0 1.0.
+https://freesound.org/people/SpliceSound/sounds/188189/
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Public high-quality MP3 previews, edited to mono 48 kHz; cropped, filtered and faded at natural speed/pitch.
+Bottle closure: qubodup, Liquid Bottle & Drink Set, CC0 1.0.
+https://opengameart.org/content/liquid-bottle-drink-set
+Oxygen valve foley: Joseph SARDIN, Blow on hand, CC0 1.0.
+https://bigsoundbank.com/blow-on-hand-s0747.html
+Existing eating, packaging and injector-cap credits remain in MoonkovSurvivalActionCredits.txt.
+Edits and hashes: Assets/Audio/Moonkov/ConsumableFoleySources.json.

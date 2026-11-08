@@ -936,8 +936,7 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
             {
                 TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.Equipment :
-                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : MoonkovAudio.Library?.Consume,
-                    oxygenSupply ? MoonkovAudio.Library?.Equipment : null);
+                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : null);
                 m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
                 if(!shieldSupply)
                 {
@@ -969,7 +968,7 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             {
                 BeginTimedAction();
-                TrackInventoryAudio(MoonkovAudio.Library?.Medical, MoonkovAudio.Library?.Consume);
+                TrackInventoryAudio(MoonkovAudio.Library?.Medical);
                 m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
                 m_ActionDuration=MoonRaidMap.Active.MedicalSeconds;m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }

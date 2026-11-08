@@ -12,6 +12,7 @@ namespace Unity.MP_FPS
         public SoundDef MeleeEffort;
         public SoundDef Consume, PlayerPain, PlayerGroan;
         public SoundDef EatBite, DrinkSip, BottleOpen, PacketOpen, InjectorCap, InjectorPress;
+        public SoundDef BottleClose, MedicalHandling, OxygenCanisterFlow;
         public SoundDef Equipment, Container, LootSearchWorld, Jump, Land, Hit, Death;
         public SoundDef RegolithFootsteps, MetalFootsteps, Cloth;
         public SoundDef HardFootsteps;
