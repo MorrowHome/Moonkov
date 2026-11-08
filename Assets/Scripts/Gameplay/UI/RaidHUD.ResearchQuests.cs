@@ -46,6 +46,9 @@ namespace Unity.MP_FPS
             m_ResearchHold = null;
         }
 
+        private bool ResearchInteractionAllowed(bool liveInteraction, bool clash) => liveInteraction && !clash &&
+            !RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>(), allowAnchoredHalo: true);
+
         private bool UpdateResearchQuests(bool live, bool canInteract, Vector3 position)
         {
             m_ResearchInputPriority = false;

@@ -554,7 +554,8 @@ namespace Unity.MP_FPS
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
             SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest, out distance, !haloBusy);
-            bool researchControl = UpdateResearchQuests(alive && ready && !settled && !clash, liveInteraction && !clash && !haloBusy, position);
+            bool researchInteraction = ResearchInteractionAllowed(liveInteraction, clash);
+            bool researchControl = UpdateResearchQuests(alive && ready && !settled && !clash, researchInteraction, position);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash && !haloBusy);
             missionControl |= researchControl;
             m_AirlockPrompt.BindingLabel = m_InteractionBindings.Label(m_InteractionBindings.Operate);
@@ -574,7 +575,7 @@ namespace Unity.MP_FPS
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
             bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
-            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, position, deathBags);
+            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, researchInteraction, position, deathBags);
             if (!interactionVisible)
             {
                 m_Interaction.EnableInClassList("is-visible", false);

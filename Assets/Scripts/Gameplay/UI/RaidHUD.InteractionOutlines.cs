@@ -8,7 +8,7 @@ namespace Unity.MP_FPS
     {
         private readonly RaidInteractionOutline m_InteractionOutline = new();
 
-        private void UpdateInteractionOutlines(bool allowed, bool expedition, bool lootAllowed, bool operate,
+        private void UpdateInteractionOutlines(bool allowed, bool expedition, bool lootAllowed, bool operate, bool researchOperate,
             Vector3 actor, RaidDeathBagClientState bags)
         {
             if (!m_InteractionOutline.BeginCollection(Camera.main, actor, allowed && Time.timeScale > 0, Time.unscaledTime)) return;
@@ -37,19 +37,19 @@ namespace Unity.MP_FPS
                         if (button) m_InteractionOutline.Add(button.transform, button.InteractionCenter);
                     foreach (var button in RaidLiftButton.Active)
                         if (button && button.Owner) m_InteractionOutline.Add(button.transform, button.Center);
-                    AddMissionOutlines();
                 }
             }
+            if (expedition && (operate || researchOperate)) AddMissionOutlines(operate, researchOperate);
             m_InteractionOutline.FinishCollection(Client.HalosTerminalBackdrop.PrefersReducedMotion);
         }
 
-        private void AddMissionOutlines()
+        private void AddMissionOutlines(bool missionOperate, bool researchOperate)
         {
             var site = RaidMissionSite.Active;
             if (!site) return;
             int raid = m_Snapshot.RaidId;
             var snapshot = m_MissionSnapshot;
-            if (m_MissionOperation != null && snapshot.RaidId == raid && snapshot.DefinitionIndex >= 0 &&
+            if (missionOperate && m_MissionOperation != null && snapshot.RaidId == raid && snapshot.DefinitionIndex >= 0 &&
                 snapshot.DefinitionIndex < site.Definitions.Length && snapshot.Phase != MissionPhase.Expired && snapshot.Phase != MissionPhase.Resolved)
             {
                 var definition = site.Definitions[snapshot.DefinitionIndex];
@@ -57,7 +57,7 @@ namespace Unity.MP_FPS
                 if (snapshot.Phase == MissionPhase.OutputReady)
                     AddMissionSurface(site.Anchor(definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive"));
             }
-            if (!PlayerProfileClient.IsOffline) return;
+            if (!researchOperate || !PlayerProfileClient.IsOffline) return;
             foreach (var quest in s_ResearchDevices)
             {
                 if (!ResearchQuestRuntime.NeedsDevice(raid, quest)) continue;
