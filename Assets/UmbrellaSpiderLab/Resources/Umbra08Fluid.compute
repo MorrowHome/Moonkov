@@ -42,6 +42,15 @@ float4 _ReactionCentre, _ReactionDirection, _ReactionState;
 static const float Support = .13;
 static const float RestDensity = 11.2;
 
+int BoneSegment(int bone)
+{
+    // Body seeds can use bone 0. Preserve the signed remainder for that case,
+    // while letting the compiler use unsigned constant-modulus arithmetic.
+    int offset = bone - 1;
+    int segment = (int)((uint)abs(offset) % 11u);
+    return offset < 0 ? -segment : segment;
+}
+
 float3 Target(Seed seed, bool previous)
 {
     float3 p = 0, centre = 0;
@@ -53,7 +62,7 @@ float3 Target(Seed seed, bool previous)
         centre += mul(previous ? _PreviousBones[bone] : _Bones[bone], _RestCentres[bone]).xyz * seed.weights[j];
     }
     float leg = floor((seed.bones.y - 1) / 11);
-    float segment = ((int)seed.bones.y - 1) % 11 + seed.weights.z / max(.001, 1 - seed.weights.x);
+    float segment = BoneSegment((int)seed.bones.y) + seed.weights.z / max(.001, 1 - seed.weights.x);
     float asymmetry = 1 - _LegAsymmetry * (1 - frac(sin(leg * 19.31 + 3.7) * 173.13));
     float limb = lerp(_Thickness.y, _Thickness.z, smoothstep(0, 5, segment));
     limb = lerp(limb, _Thickness.w, smoothstep(6, 10, segment));
@@ -87,13 +96,13 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 
 [numthreads(64, 1, 1)] void Initialize(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
+    if (id >= (uint)_ParticleCount) return;
     Particle p; p.position = Target(_Seeds[id], false); p.velocity = _InitialVelocity; p.pad0 = p.pad1 = 0;
     _Output[id] = p;
 }
 [numthreads(64, 1, 1)] void Transport(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
+    if (id >= (uint)_ParticleCount) return;
     Particle p = _Input[id];
     p.position = mul(_PreviousToCurrent, float4(p.position, 1)).xyz;
     p.velocity = mul((float3x3)_PreviousToCurrent, p.velocity);
@@ -101,16 +110,16 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 }
 [numthreads(64, 1, 1)] void ClearGrid(uint id : SV_DispatchThreadID)
 {
-    if (id < _GridSide * _GridSide * _GridSide) _Heads[id] = -1;
+    if (id < (uint)(_GridSide * _GridSide * _GridSide)) _Heads[id] = -1;
 }
 [numthreads(64, 1, 1)] void BuildGrid(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
-    int old; InterlockedExchange(_Heads[CellIndex(Cell(_Input[id].position))], id, old); _Next[id] = old;
+    if (id >= (uint)_ParticleCount) return;
+    int old; InterlockedExchange(_Heads[CellIndex(Cell(_Input[id].position))], (int)id, old); _Next[id] = old;
 }
 [numthreads(64, 1, 1)] void Density(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
+    if (id >= (uint)_ParticleCount) return;
     float3 p = _Input[id].position; int3 cell = Cell(p); float density = 0;
     for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)
     {
@@ -125,7 +134,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 }
 [numthreads(64, 1, 1)] void Integrate(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
+    if (id >= (uint)_ParticleCount) return;
     Particle p = _Input[id]; int3 cell = Cell(p.position);
     float densityTarget = RestDensity / lerp(1, _LiquidMass, _Predatory);
     float pressure = max(0, _Densities[id] / densityTarget - 1);
@@ -136,7 +145,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
         int neighbour = _Heads[CellIndex(c)]; int visits = 0;
         while (neighbour >= 0 && visits++ < 192)
         {
-            if (neighbour != id)
+            if (neighbour != (int)id)
             {
                 Particle other = _Input[neighbour]; float3 d = p.position - other.position;
                 float r = length(d);
@@ -187,7 +196,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
     offset += _ReactionDirection.xyz * (charge * .07);
     // A small free band permits pooling and rearrangement around the skeleton.
     // Attraction grows outside it; switching it off leaves gravity/pressure/viscosity active.
-    float distal = _GuideKind > 0 ? seed.bones.z : saturate((((int)seed.bones.y - 1) % 11 - 4) / 5.0) * (1 - seed.weights.x);
+    float distal = _GuideKind > 0 ? seed.bones.z : saturate((BoneSegment((int)seed.bones.y) - 4) / 5.0) * (1 - seed.weights.x);
     // Keep the newly allocated shin/toe volume with fast moving distal bones.
     // The mantle has weaker attraction and can still pool, sag and stretch visibly.
     float pull = lerp(lerp(280, _BodyAttraction, _Predatory), lerp(650, _FootAttraction, _Predatory), distal);
@@ -259,7 +268,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 }
 [numthreads(4, 4, 4)] void ClearVolume(uint3 id : SV_DispatchThreadID)
 {
-    if (all(id < _VolumeSide)) _Accum[VolumeIndex(int3(id))] = 0;
+    if (all(id < (uint)_VolumeSide)) _Accum[VolumeIndex(int3(id))] = 0;
 }
 void Splat(float3 position, float mass)
 {
@@ -274,7 +283,7 @@ void Splat(float3 position, float mass)
 }
 [numthreads(64, 1, 1)] void Deposit(uint id : SV_DispatchThreadID)
 {
-    if (id >= _ParticleCount) return;
+    if (id >= (uint)_ParticleCount) return;
     Particle p = _Input[id]; float3 relative = p.velocity - _CarrierVelocity;
     if (_Predatory < .5) { Splat(p.position, 1); return; }
     float speed = length(relative);
@@ -288,19 +297,19 @@ void Splat(float3 position, float mass)
 }
 [numthreads(4, 4, 4)] void ResolveX(uint3 id : SV_DispatchThreadID)
 {
-    if (any(id >= _VolumeSide)) return;
+    if (any(id >= (uint)_VolumeSide)) return;
     int3 a = int3(id); a.x = max(0, a.x - 1); int3 b = int3(id); b.x = min(_VolumeSide - 1, b.x + 1);
     _WriteVolume[id] = (_Accum[VolumeIndex(a)] * .25 + _Accum[VolumeIndex(int3(id))] * .5 + _Accum[VolumeIndex(b)] * .25) / 65536.0;
 }
 [numthreads(4, 4, 4)] void BlurY(uint3 id : SV_DispatchThreadID)
 {
-    if (any(id >= _VolumeSide)) return;
+    if (any(id >= (uint)_VolumeSide)) return;
     int3 a = int3(id); a.y = max(0, a.y - 1); int3 b = int3(id); b.y = min(_VolumeSide - 1, b.y + 1);
     _WriteVolume[id] = _ReadVolume[a] * .25 + _ReadVolume[id] * .5 + _ReadVolume[b] * .25;
 }
 [numthreads(4, 4, 4)] void BlurZ(uint3 id : SV_DispatchThreadID)
 {
-    if (any(id >= _VolumeSide)) return;
+    if (any(id >= (uint)_VolumeSide)) return;
     int3 a = int3(id); a.z = max(0, a.z - 1); int3 b = int3(id); b.z = min(_VolumeSide - 1, b.z + 1);
     _WriteVolume[id] = _ReadVolume[a] * .25 + _ReadVolume[id] * .5 + _ReadVolume[b] * .25;
 }
