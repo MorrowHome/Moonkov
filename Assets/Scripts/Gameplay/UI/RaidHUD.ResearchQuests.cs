@@ -16,7 +16,10 @@ namespace Unity.MP_FPS
         private readonly ResearchQuestRadio m_ResearchRadio = new();
         private readonly ResearchQuestFieldView m_ResearchField = new();
         private ResearchQuestSnapshotRpc m_ResearchSnapshot;
-        private int m_LastNadirRaid = -1;
+        [Flags]
+        private enum FieldCue { Echo = 1, Tablet = 2, Nadir = 4, Purge = 8 }
+        private int m_StoryRaid = -1;
+        private FieldCue m_StoryPlayed;
         private float m_ResearchNextRefresh, m_ResearchNextHold;
         private bool m_ResearchInputPriority;
 
@@ -72,11 +75,17 @@ namespace Unity.MP_FPS
             }
             m_ResearchSnapshot = quest;
             m_ResearchField.Present(quest);
-            if (quest.HeardNadir && m_LastNadirRaid != raid)
+            if (m_StoryRaid != raid)
             {
-                m_LastNadirRaid = raid;
-                m_ResearchRadio.PlayStory("nadir", Chinese);
+                m_StoryRaid = raid;
+                m_StoryPlayed = 0;
+                m_ResearchRadio.Stop();
             }
+            string noticeCode = quest.Notice.IsEmpty ? null : quest.Notice.ToString();
+            PlayFieldCue(FieldCue.Echo, noticeCode == "halo-echo", "story_field_echo");
+            PlayFieldCue(FieldCue.Tablet, ResearchQuestRules.Has(quest.Recovered, ResearchQuest.Tablet), "story_nadir_chamber");
+            PlayFieldCue(FieldCue.Nadir, quest.HeardNadir, "nadir");
+            PlayFieldCue(FieldCue.Purge, quest.ControlOpened, "story_field_purge");
             m_ResearchRadio.Update();
             m_ResearchList.style.display = DisplayStyle.Flex;
             if (Time.unscaledTime >= m_ResearchNextRefresh)
@@ -120,8 +129,9 @@ namespace Unity.MP_FPS
                     m_ResearchNextHold = Time.unscaledTime + .1f;
                 }
             }
-            string notice = quest.Notice.IsEmpty ? null : quest.Notice.ToString() switch
+            string notice = noticeCode switch
             {
+                "halo-echo" => Text("战斗光环检测到异常共振", "Abnormal Battle Halo resonance detected"),
                 "interrupted" => Text("操作中断", "Transfer interrupted"),
                 "space" => Text("背包空间不足", "Not enough inventory space"),
                 "extract" => Text("带着道具撤离", "Extract with the item"),
@@ -141,6 +151,13 @@ namespace Unity.MP_FPS
             m_ResearchPrompt.style.display = canInteract && prompt != null ? DisplayStyle.Flex : DisplayStyle.None;
             if (prompt != null && m_ResearchPromptText.text != prompt) MoonkovLocalization.Set(m_ResearchPromptText, prompt);
             return m_ResearchInputPriority = target.HasValue || m_ResearchHold.HasValue;
+        }
+
+        private void PlayFieldCue(FieldCue flag, bool triggered, string cue)
+        {
+            if (!triggered || (m_StoryPlayed & flag) != 0) return;
+            m_StoryPlayed |= flag;
+            m_ResearchRadio.EnqueueStory(cue, Chinese);
         }
 
         private void ReleaseResearchHold()

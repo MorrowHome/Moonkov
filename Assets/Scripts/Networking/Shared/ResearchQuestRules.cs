@@ -16,7 +16,8 @@ namespace Unity.MP_FPS
 
     public enum ResearchQuestStatus { Locked, Available, Active, Ready, Completed }
     public enum ResearchEnding { None, Expose, Corporate, Erase }
-    public enum ResearchQuestAction { Accept = 1, Claim, Decide }
+    public enum ResearchQuestAction { Accept = 1, Claim, Decide, ReviewStory }
+    public enum ResearchStoryChapter { Recruitment, Spectrum, Nadir, Lockdown, Qualification, Lucent, Recall, Ultimatum, Originals }
 
     [Serializable]
     public sealed class ResearchQuestCommand
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS
         public ResearchQuestAction Action;
         public ResearchQuest Quest;
         public ResearchEnding Ending;
+        public ResearchStoryChapter Chapter;
     }
 
     [Serializable]
@@ -31,6 +33,7 @@ namespace Unity.MP_FPS
     {
         public int Accepted, Ready, Completed, HaloKills, SentryKills;
         public int SequenceVersion, LegacyAccepted;
+        public int StorySeen;
         public long Revision;
         public string CredentialsId, EvidenceId;
         public ResearchEnding Ending;
@@ -70,6 +73,7 @@ namespace Unity.MP_FPS
     public static class ResearchQuestRules
     {
         public const int Count = 10;
+        public const int StoryCount = 9;
         public const int DeploymentVersion = 1;
         public const int ExposureSeconds = 300, HaloKillGoal = 5, SampleGoal = 3, SentryKillGoal = 3;
         public const string Tablet = "rq_tablet", Flash = "rq_flash", Drive = "rq_drive", Sample = "rq_sample", Package = "rq_package";
@@ -141,12 +145,15 @@ namespace Unity.MP_FPS
         public static bool Valid(ResearchQuestProgress progress)
         {
             if (progress == null || progress.SequenceVersion != SequenceVersion || progress.Revision < 0 ||
+                (progress.StorySeen & ~((1 << StoryCount) - 1)) != 0 ||
                 (progress.Accepted & ~All) != 0 || (progress.Ready & progress.Completed) != 0 ||
                 ((progress.Ready | progress.Completed) & ~progress.Accepted) != 0 ||
                 (progress.LegacyAccepted & ~(Bit(ResearchQuest.HaloStorage) | Bit(ResearchQuest.HardDrive))) != 0 ||
                 (progress.LegacyAccepted & ~progress.Accepted) != 0 ||
                 (uint)progress.HaloKills > HaloKillGoal || (uint)progress.SentryKills > SentryKillGoal ||
                 (uint)progress.Ending > (uint)ResearchEnding.Erase) return false;
+            for (int i = 0; i < StoryCount; i++)
+                if (StoryReviewed(progress, (ResearchStoryChapter)i) && !StoryAvailable(progress, (ResearchStoryChapter)i)) return false;
             for (int i = 0; i < Count; i++)
             {
                 var quest = (ResearchQuest)i;
@@ -193,6 +200,38 @@ namespace Unity.MP_FPS
         public static bool DecisionAvailable(ResearchQuestProgress progress) =>
             progress != null && Has(progress.Completed, ResearchQuest.EndOfTransmission);
 
+        private static ResearchQuest? StoryPrerequisite(ResearchStoryChapter chapter) => chapter switch
+        {
+            ResearchStoryChapter.Spectrum => ResearchQuest.Biology,
+            ResearchStoryChapter.Nadir => ResearchQuest.Tablet,
+            ResearchStoryChapter.Lockdown => ResearchQuest.FlashDrive,
+            ResearchStoryChapter.Qualification => ResearchQuest.Sentry,
+            ResearchStoryChapter.Lucent or ResearchStoryChapter.Recall => ResearchQuest.HardDrive,
+            ResearchStoryChapter.Ultimatum => ResearchQuest.NoWayBack,
+            ResearchStoryChapter.Originals => ResearchQuest.EndOfTransmission,
+            _ => null
+        };
+
+        public static bool StoryAvailable(ResearchQuestProgress progress, ResearchStoryChapter chapter)
+        {
+            if (progress == null || (uint)chapter >= StoryCount) return false;
+            if (chapter is ResearchStoryChapter.Lucent or ResearchStoryChapter.Recall && !Has(progress.Completed, ResearchQuest.Sentry)) return false;
+            var prerequisite = StoryPrerequisite(chapter);
+            return !prerequisite.HasValue || Has(progress.Completed, prerequisite.Value);
+        }
+
+        public static bool StoryReviewed(ResearchQuestProgress progress, ResearchStoryChapter chapter) =>
+            progress != null && (uint)chapter < StoryCount && (progress.StorySeen & (1 << (int)chapter)) != 0;
+
+        private static bool ReviewStory(ResearchQuestProgress progress, ResearchStoryChapter chapter)
+        {
+            if (!StoryAvailable(progress, chapter)) return false;
+            if (StoryReviewed(progress, chapter)) return true;
+            progress.StorySeen |= 1 << (int)chapter;
+            progress.Revision++;
+            return true;
+        }
+
         public static bool ChooseEnding(ResearchQuestProgress progress, ResearchEnding ending)
         {
             if (!DecisionAvailable(progress) || progress.Ending != ResearchEnding.None || !Guid.TryParse(progress.EvidenceId, out _) ||
@@ -214,6 +253,7 @@ namespace Unity.MP_FPS
                     Has(progress.Completed, command.Quest) || Claim(progress, command.Quest),
                 ResearchQuestAction.Decide when command.Ending > ResearchEnding.None && command.Ending <= ResearchEnding.Erase =>
                     progress.Ending == command.Ending || ChooseEnding(progress, command.Ending),
+                ResearchQuestAction.ReviewStory => ReviewStory(progress, command.Chapter),
                 _ => false
             };
         }

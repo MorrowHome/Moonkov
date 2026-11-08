@@ -28,10 +28,12 @@ namespace Unity.MP_FPS.Client
         public VisualElement Element { get; }
 
         public ResearchQuestView(VisualElement host, Func<ResearchQuestProgress> read, Func<ResearchQuest, bool, Task<bool>> advance,
-            Action prepare, Action legacy, Action close, Func<ResearchEnding, Task<bool>> chooseEnding = null)
+            Action prepare, Action legacy, Action close, Func<ResearchEnding, Task<bool>> chooseEnding = null,
+            Func<ResearchStoryChapter, Task<bool>> reviewStory = null)
         {
             m_Read = read; m_Advance = advance; m_Prepare = prepare; m_Close = close;
             m_ChooseEnding = chooseEnding;
+            m_ReviewStory = reviewStory;
             Element = new VisualElement { name = "researchQuestScreen" };
             Element.AddToClassList("research-quest");
             Element.AddToClassList("moonkov-style-font");
@@ -50,6 +52,8 @@ namespace Unity.MP_FPS.Client
             header.Add(emblem);
             m_Heading = Label(header, "research-quest-heading");
             m_Count = Label(header, "research-quest-count");
+            m_ChapterNav = Button(header, "research-quest-nav", () => OpenStory(PendingStory(m_Read())));
+            m_ChapterNav.name = "questStory";
             m_EndingNav = Button(header, "research-quest-nav", OpenEnding);
             m_EndingNav.name = "questDecision";
             m_Legacy = Button(header, "research-quest-nav", legacy);
@@ -125,10 +129,12 @@ namespace Unity.MP_FPS.Client
             Element.RegisterCallback<DetachFromPanelEvent>(_ => Dispose());
             host.Add(Element);
             MoonkovAudio.BindUI(Element);
-            Select(InitialQuest(m_Read()), true);
+            var pending = PendingStory(m_Read());
+            bool decide = ResearchQuestRules.DecisionAvailable(m_Read()) && m_Read().Ending == ResearchEnding.None && m_ChooseEnding != null;
+            Select(InitialQuest(m_Read()), !pending.HasValue && !decide);
             m_Choices[ResearchQuestRules.Number(m_Selected.Value) - 1].Focus();
-            if (ResearchQuestRules.DecisionAvailable(m_Read()) && m_Read().Ending == ResearchEnding.None && m_ChooseEnding != null)
-                OpenEnding();
+            if (decide) OpenEnding();
+            else if (pending.HasValue) OpenStory(pending);
         }
 
         private static ResearchQuest InitialQuest(ResearchQuestProgress progress)
@@ -188,11 +194,12 @@ namespace Unity.MP_FPS.Client
         {
             if (m_BriefPlayed) return;
             m_BriefPlayed = true;
-            m_Radio.Play(m_Selected.Value, false, Chinese);
+            PlayQuestRadio(m_Selected.Value, false);
         }
 
         private void Close()
         {
+            if (m_ChapterOverlay != null) { CloseStory(); return; }
             if (m_StoryEvent != null) { CloseEnding(); return; }
             m_Close?.Invoke();
         }
@@ -207,9 +214,16 @@ namespace Unity.MP_FPS.Client
                 var status = ResearchQuestRules.Status(m_Read(), quest);
                 if (status == ResearchQuestStatus.Locked) return;
                 m_BriefPlayed = true;
-                m_Radio.Play(quest, status == ResearchQuestStatus.Completed, Chinese);
+                PlayQuestRadio(quest, status == ResearchQuestStatus.Completed);
             }
             RefreshRadio();
+        }
+
+        private void PlayQuestRadio(ResearchQuest quest, bool closing)
+        {
+            if (!closing && quest == ResearchQuest.EndOfTransmission && m_ReviewStory != null &&
+                ResearchQuestRules.StoryReviewed(m_Read(), ResearchStoryChapter.Ultimatum)) m_Radio.PlayStory("10_brief", Chinese);
+            else m_Radio.Play(quest, closing, Chinese);
         }
 
         public void Refresh()
@@ -217,9 +231,10 @@ namespace Unity.MP_FPS.Client
             var saved = m_Read();
             if (m_Disposed || saved == null || !m_Selected.HasValue) return;
             m_Radio.Update();
+            m_ChapterPlayer?.RefreshAudio();
             RefreshEndingAudio();
             RefreshRadio();
-            string signature = $"{saved.Accepted}/{saved.Ready}/{saved.Completed}/{saved.HaloKills}/{saved.SentryKills}/{saved.Ending}/{m_Selected}/{m_Busy}/{m_Error}/{Chinese}";
+            string signature = $"{saved.Accepted}/{saved.Ready}/{saved.Completed}/{saved.HaloKills}/{saved.SentryKills}/{saved.Ending}/{saved.StorySeen}/{m_Selected}/{m_Busy}/{m_Error}/{Chinese}";
             if (signature == m_Signature) return;
             m_Signature = signature;
             Element.EnableInClassList("research-quest-en", !Chinese);
@@ -241,6 +256,9 @@ namespace Unity.MP_FPS.Client
             var status = ResearchQuestRules.Status(saved, selected);
             Set(m_Back, Text("返回作业船", "Back to ship"));
             Set(m_Legacy, Text("设施调查", "Facility records"));
+            m_ChapterNav.style.display = m_ReviewStory != null ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ChapterNav.EnableInClassList("research-story-unread", PendingStory(saved).HasValue);
+            Set(m_ChapterNav, Text("剧情", "Story"));
             m_EndingNav.style.display = m_ChooseEnding != null && ResearchQuestRules.DecisionAvailable(saved) ? DisplayStyle.Flex : DisplayStyle.None;
             Set(m_EndingNav, saved.Ending == ResearchEnding.None ? Text("最终抉择", "Final decision") : Text("结局", "Epilogue"));
             Set(m_Heading, Text("任务管理", "Quest Management"));
@@ -329,7 +347,10 @@ namespace Unity.MP_FPS.Client
                 {
                     m_Error = !changed;
                     if (changed && claim && quest == ResearchQuest.EndOfTransmission && m_ChooseEnding != null) OpenEnding();
-                    else if (changed && claim) m_Radio.Play(quest, true, Chinese);
+                    else if (changed && claim)
+                    {
+                        if (!TryOpenStoryAfterClaim(quest)) m_Radio.Play(quest, true, Chinese);
+                    }
                     else if (changed) PlayBriefing();
                 }
             }

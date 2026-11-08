@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.Inventory;
+using Unity.Transforms;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -31,6 +32,7 @@ public sealed class ResearchQuestChecks : EditorWindow
             check.CheckLanProfile();
             check.CheckField();
             check.CheckAssets();
+            check.CheckStoryAssets();
             return $"{check.m_Passed} research quest persistence, field and asset checks passed.";
         }
         finally { DestroyImmediate(check); }
@@ -62,6 +64,11 @@ public sealed class ResearchQuestChecks : EditorWindow
             "Host credits the extracting member only");
         var claim = JObject.FromObject(new ResearchQuestCommand { Action = ResearchQuestAction.Claim, Quest = ResearchQuest.Exposure });
         Require(lan.Mutate(first, "research", claim).Profile.ResearchQuests.Completed == 1, "LAN member turns in the quest");
+        var intro = JObject.FromObject(new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = ResearchStoryChapter.Recruitment });
+        var read = lan.Mutate(first, "research", intro).Profile.ResearchQuests;
+        Require(ResearchQuestRules.StoryReviewed(read, ResearchStoryChapter.Recruitment) &&
+            lan.Mutate(first, "research", intro).Profile.ResearchQuests.Revision == read.Revision &&
+            lan.Read(peer).Profile.ResearchQuests.StorySeen == 0, "Host stores story review once for the requesting member only");
     }
 
     private void CheckProfile()
@@ -69,6 +76,11 @@ public sealed class ResearchQuestChecks : EditorWindow
         string path = Path.Combine(Output, Guid.NewGuid().ToString("N") + ".json");
         using (var store = new OfflineProfileStore(path))
         {
+            var story = new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = ResearchStoryChapter.Originals };
+            Require(!store.ApplyResearchCommand(story), "Unrecovered evidence cannot be marked as reviewed");
+            story.Chapter = ResearchStoryChapter.Recruitment;
+            Require(store.ApplyResearchCommand(story) && store.ApplyResearchCommand(story) && store.Read().ResearchQuests.Revision == 1,
+                "Opening story is recorded once without consuming a quest");
             Require(!store.AdvanceResearchQuest(ResearchQuest.HaloTrial, false), "Prerequisite blocks acceptance");
             Accept(store, ResearchQuest.Exposure);
             Require(!store.AdvanceResearchQuest(ResearchQuest.Exposure, false), "Accept is idempotent");
@@ -97,6 +109,9 @@ public sealed class ResearchQuestChecks : EditorWindow
             Settle(store, "Extracted", (raid, result) =>
                 result.SampleIds = Enumerable.Range(0, 3).Select(_ => Add(raid, ResearchQuestRules.Sample)).ToArray());
             Claim(store, ResearchQuest.Biology);
+            story.Chapter = ResearchStoryChapter.Spectrum;
+            Require(store.ApplyResearchCommand(story) && ResearchQuestRules.StoryReviewed(store.Read().ResearchQuests, story.Chapter),
+                "Turning in samples unlocks the spectrum scene");
             Accept(store, ResearchQuest.Tablet);
             Settle(store, "Extracted", (raid, result) =>
             {
@@ -300,6 +315,35 @@ public sealed class ResearchQuestChecks : EditorWindow
                 }
     }
 
+    private void CheckStoryAssets()
+    {
+        var library = JObject.Parse(Resources.Load<TextAsset>("Moonkov/ResearchScenes").text);
+        foreach (var (key, count, offset) in new[] { ("chapters", ResearchQuestRules.StoryCount, 0), ("endings", 3, 1) })
+        {
+            var scenes = (JArray)library[key];
+            Require(scenes.Count == count, $"All {key} have a scene");
+            for (int i = 0; i < count; i++)
+            {
+                var scene = scenes[i];
+                var frames = (JArray)scene["frames"];
+                Require((int)scene["id"] == i + offset && frames.Count >= 2, $"{key} {i} plays in multiple scenes");
+                foreach (var frame in frames)
+                    Require(Resources.Load<Texture2D>("Moonkov/" + (string)frame["art"]) &&
+                        frame["evidenceZh"].HasValues && frame["evidenceEn"].HasValues &&
+                        !string.IsNullOrEmpty((string)frame["actionZh"]) && !string.IsNullOrEmpty((string)frame["actionEn"]),
+                        $"{(string)frame["titleEn"]} has an exhibit and a readable action in both languages");
+            }
+        }
+        var cues = library.SelectTokens("$.*[*].frames[*].cues[*]").Values<string>()
+            .Concat(new[] { "story_field_echo", "story_field_purge" }).Distinct();
+        foreach (string cue in cues)
+            foreach (string language in new[] { "zh", "en" })
+            {
+                var clip = Resources.Load<AudioClip>($"Moonkov/QuestRadio/{cue}_{language}");
+                Require(clip && clip.channels == 1 && clip.length > 1, $"Playable scene voice: {cue}/{language}");
+            }
+    }
+
     private void CheckField()
     {
         using var world = new World("Research quest authority fixture", WorldFlags.GameServer);
@@ -365,6 +409,7 @@ public sealed class ResearchQuestChecks : EditorWindow
                 "Settlement freezes the proof and clears the run");
             CheckLateField(world, connection, player, now);
             CheckPeerField(world, connection, player, now + 90);
+            CheckHaloResonance(world, connection, player);
         }
         finally
         {
@@ -372,6 +417,37 @@ public sealed class ResearchQuestChecks : EditorWindow
             if (site) typeof(RaidMissionSite).GetMethod("OnDisable", lifecycle).Invoke(site, null);
             EditorSceneManager.ClosePreviewScene(preview);
         }
+    }
+
+    private void CheckHaloResonance(World world, Entity connection, Entity player)
+    {
+        var manager = world.EntityManager;
+        var specimen = manager.CreateEntity(typeof(ProceduralAlienEnemy.State), typeof(LocalTransform), typeof(PredictedPlayerGhost));
+        var peer = manager.CreateEntity();
+        var progress = new ResearchQuestProgress { Accepted = ResearchQuestRules.Bit(ResearchQuest.Exposure) };
+        var health = new PredictedPlayerGhost { CurrentHealth = 100, HaloEquipped = true };
+        var raid = new RaidSession { RaidId = 90, Phase = RaidPhase.Active };
+        var inventory = new RaidInventoryState { Graph = InventoryGraph.Create(stash: false) };
+        double now = world.Time.ElapsedTime;
+        void Tick(Entity target, Vector3 position, in PredictedPlayerGhost equipment)
+        {
+            now += 1.25;
+            world.SetTime(new TimeData(now, .1f));
+            ResearchQuestRuntime.Tick(world, connection, target, raid, inventory, progress, equipment, position, now, .1f);
+        }
+        string Notice(Entity target) => ResearchQuestRuntime.TryRead(world, target, raid.RaidId, out var snapshot) ? snapshot.Notice.ToString() : null;
+        manager.SetComponentData(specimen, LocalTransform.FromPosition(new Vector3(0, 0, 8)));
+        Tick(player, Vector3.zero, health);
+        Require(Notice(player) == "", "Dead specimens cannot trigger the Halo signal");
+        manager.SetComponentData(specimen, new PredictedPlayerGhost { CurrentHealth = 100 });
+        Tick(player, Vector3.zero, new PredictedPlayerGhost { CurrentHealth = 100 });
+        Require(Notice(player) == "", "A player without a Halo does not receive a resonance notice");
+        Tick(player, Vector3.zero, health);
+        Tick(peer, Vector3.right * 30, health);
+        Require(Notice(player) == "halo-echo" && Notice(peer) == "", "Resonance is heard only by the nearby player");
+        now += 3;
+        Tick(player, Vector3.zero, health);
+        Require(Notice(player) == "", "The resonance clue fires once per raid");
     }
 
     private void CheckLateField(World world, Entity connection, Entity player, double now)
@@ -540,8 +616,19 @@ public sealed class ResearchQuestChecks : EditorWindow
             bool closed = false;
             m_View = new ResearchQuestView(rootVisualElement, () => state, (quest, claim) =>
                 Task.FromResult(claim ? ResearchQuestRules.Claim(state, quest) : ResearchQuestRules.Accept(state, quest)),
-                () => { }, () => { }, () => closed = true, ending => Task.FromResult(ResearchQuestRules.ChooseEnding(state, ending)));
+                () => { }, () => { }, () => closed = true, ending => Task.FromResult(ResearchQuestRules.ChooseEnding(state, ending)),
+                chapter => Task.FromResult(ResearchQuestRules.ApplyCommand(state,
+                    new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = chapter })));
             await Wait(450);
+            Require(m_View.Element.Q("researchStoryScreen") != null && !m_View.Element.Q<Button>("questStoryChapter5").enabledSelf,
+                "Recruitment opens before the first deployment without exposing later plot points");
+            string opening = m_View.Element.Q<Label>("questStoryShot").text;
+            Click("questStoryNext");
+            Require(m_View.Element.Q<Label>("questStoryShot").text != opening &&
+                m_View.Element.Q<Button>("questStoryPrevious").enabledSelf, "Connecting to Rook advances the recruitment scene");
+            Click("questStoryNext");
+            Require(m_View.Element.Q("researchStoryScreen") == null && ResearchQuestRules.StoryReviewed(state, ResearchStoryChapter.Recruitment),
+                "Finishing the intro saves it and returns to the first mission");
             var matrix = m_View.Element.Q("questMatrix");
             Require(matrix.layout.width > 0 && m_View.Element.Q("questExhibit").layout.width > 0,
                 "Selection and exhibit are visible on the same screen");
@@ -562,6 +649,17 @@ public sealed class ResearchQuestChecks : EditorWindow
             m_View.Refresh();
             Click("questAction");
             Require(ResearchQuestRules.Status(state, ResearchQuest.Exposure) == ResearchQuestStatus.Completed, "Turn in button sends a real intent");
+            state.Accepted = 7;
+            state.Completed = 3;
+            state.Ready = 4;
+            Click("questCard2");
+            Click("questAction");
+            Require(m_View.Element.Q("researchStoryScreen") != null, "Turning in biological evidence opens its story scene");
+            Click("questStoryNext");
+            Require(m_View.Element.Q(className: "research-story-trace").style.display.value == DisplayStyle.Flex &&
+                m_View.Element.Q(className: "research-story-evidence").childCount >= 2, "Spectrum comparison reveals new evidence with a visible trace");
+            Click("questStoryNext");
+            Require(ResearchQuestRules.StoryReviewed(state, ResearchStoryChapter.Spectrum), "Viewing the spectrum saves the chapter");
             Click("questCard7");
             position = new Rect(56, 64, 800, 570);
             await Wait(320);
@@ -570,7 +668,17 @@ public sealed class ResearchQuestChecks : EditorWindow
             state.Accepted = state.Completed = (1 << ResearchQuestRules.Count) - 1;
             state.EvidenceId = Guid.NewGuid().ToString("D");
             m_View.Refresh();
+            Click("questStory");
+            Click("questStoryChapter5");
+            for (int i = 0; i < 5; i++) Click("questStoryNext");
+            Require(ResearchQuestRules.StoryReviewed(state, ResearchStoryChapter.Lucent) &&
+                m_View.Element.Q<Button>("questStoryChapter6").ClassListContains("research-story-current"), "LUCENT discoveries lead into the recall scene");
+            Click("questStoryBack");
             Click("questDecision");
+            Require(m_View.Element.Q("researchStoryScreen") != null && m_View.Element.Q("researchEndingScreen") == null,
+                "Review the original evidence before choosing its fate");
+            Click("questStoryNext");
+            Click("questStoryNext");
             Require(m_View.Element.Q("researchEndingScreen") != null &&
                 !m_View.Element.Q<Button>("questEndingConfirm").enabledSelf, "Separate event waits for an explicit choice");
             Click("questEnding2");
@@ -578,6 +686,15 @@ public sealed class ResearchQuestChecks : EditorWindow
             Click("questEndingConfirm");
             Require(state.Ending == ResearchEnding.Corporate && m_View.Element.Q("researchEndingScreen") != null &&
                 m_View.Element.Q<Button>("questEndingConfirm") == null, "Confirmation reveals only the saved epilogue");
+            string handover = m_View.Element.Q<Label>("questStoryShot").text;
+            Click("questStoryNext");
+            Require(m_View.Element.Q<Label>("questStoryShot").text != handover &&
+                m_View.Element.Q(className: "research-story-evidence").childCount == 2, "Corporate epilogue presents the reward as a separate scene");
+            position = new Rect(56, 64, 590, 570);
+            await Wait(330);
+            Require(m_View.Element.ClassListContains("research-quest-narrow") &&
+                m_View.Element.Q(className: "research-story-art").layout.height > 0 && m_View.Element.Q("questStoryNext").layout.height >= 30,
+                "Epilogue art and action remain available in the narrow layout");
             var backToQuests = m_View.Element.Q("researchEndingScreen").Q<Button>("questEndingBack");
             using (var backEvent = NavigationSubmitEvent.GetPooled())
             { backEvent.target = backToQuests; backToQuests.SendEvent(backEvent); }

@@ -25,8 +25,17 @@ namespace Unity.MP_FPS
                 : new[] { ClipPath(quest, closing, chinese) });
 
         internal void PlayStory(string cue, bool chinese) => PlayQueue(new[] { StoryPath(cue, chinese) });
-        internal void PlayEnding(ResearchEnding ending, bool chinese) =>
-            PlayQueue(new[] { StoryPath($"ending_{(int)ending}_voice", chinese), StoryPath($"ending_{(int)ending}_epilogue", chinese) });
+        internal void PlayStory(string[] cues, bool chinese)
+        {
+            Stop();
+            foreach (string cue in cues) m_Queue.Enqueue(StoryPath(cue, chinese));
+            Update();
+        }
+        internal void EnqueueStory(string cue, bool chinese)
+        {
+            m_Queue.Enqueue(StoryPath(cue, chinese));
+            Update();
+        }
 
         private void PlayQueue(string[] paths)
         {

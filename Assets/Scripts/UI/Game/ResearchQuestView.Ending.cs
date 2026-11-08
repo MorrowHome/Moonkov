@@ -14,10 +14,19 @@ namespace Unity.MP_FPS.Client
         private readonly Button[] m_EndingChoices = new Button[3];
         private ResearchEnding m_EndingPreview;
         private bool m_StorySaving, m_StoryError;
+        private ResearchStoryPlayer m_EndingPlayer;
 
         private void OpenEnding()
         {
-            if (m_ChooseEnding == null || m_StoryEvent != null || !ResearchQuestRules.DecisionAvailable(m_Read())) return;
+            var saved = m_Read();
+            if (m_ChooseEnding == null || m_StoryEvent != null || m_ChapterOverlay != null || !ResearchQuestRules.DecisionAvailable(saved)) return;
+            if (saved.Ending == ResearchEnding.None && m_ReviewStory != null &&
+                !ResearchQuestRules.StoryReviewed(saved, ResearchStoryChapter.Originals))
+            {
+                OpenStory(ResearchStoryChapter.Originals);
+                return;
+            }
+            m_Radio.Stop();
             m_EndingPreview = ResearchEnding.None;
             m_StoryError = false;
             m_StoryEvent = Box(Element, "research-ending");
@@ -25,14 +34,15 @@ namespace Unity.MP_FPS.Client
             m_QuestHeader.style.visibility = Visibility.Hidden;
             m_QuestScroll.style.visibility = Visibility.Hidden;
             RenderEnding();
-            if (m_Read().Ending == ResearchEnding.None) m_Radio.Play(ResearchQuest.EndOfTransmission, true, Chinese);
-            else m_Radio.Stop();
+            if (saved.Ending == ResearchEnding.None) m_Radio.Play(ResearchQuest.EndOfTransmission, true, Chinese);
             RefreshEndingAudio();
         }
 
-        private void CloseEnding()
+        private void CloseEnding() => CloseEnding(false);
+
+        private void CloseEnding(bool completed)
         {
-            if (m_StorySaving) return;
+            if (m_StorySaving || !completed && m_EndingPlayer?.Saving == true) return;
             m_Radio.Stop();
             m_StoryEvent?.RemoveFromHierarchy();
             m_StoryEvent = null;
@@ -40,6 +50,7 @@ namespace Unity.MP_FPS.Client
             m_QuestScroll.style.visibility = Visibility.Visible;
             m_StoryAudio = null;
             m_StoryConfirm = null;
+            m_EndingPlayer = null;
             Array.Clear(m_EndingChoices, 0, m_EndingChoices.Length);
             m_EndingNav.Focus();
         }
@@ -49,20 +60,23 @@ namespace Unity.MP_FPS.Client
             var selected = m_Read().Ending;
             m_StoryEvent.Clear();
             var header = Box(m_StoryEvent, "research-quest-header");
-            Label(header, "research-quest-heading", selected == ResearchEnding.None ? Text("最终抉择", "Final decision") : Text("结局", "Epilogue"));
-            m_StoryAudio = Button(header, "research-quest-nav", ToggleEndingAudio);
+            Label(header, "research-quest-heading", selected == ResearchEnding.None ? Text("最终抉择", "Final decision") : Ending(selected).title);
+            m_StoryAudio = selected == ResearchEnding.None ? Button(header, "research-quest-nav", ToggleEndingAudio) : null;
             var back = Button(header, "research-quest-nav", CloseEnding);
             back.name = "questEndingBack";
             Set(back, Text("返回任务", "Back to quests"));
             back.SetEnabled(!m_StorySaving);
             var scroll = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+            scroll.AddToClassList("research-story-scroll");
             m_StoryEvent.Add(scroll);
             var main = Box(scroll, "research-ending-content");
             if (selected != ResearchEnding.None)
             {
-                BuildEpilogue(main, selected);
-                m_StoryAudio.Focus();
-                RefreshEndingAudio();
+                m_EndingPlayer = new ResearchStoryPlayer(main, ResearchSceneLibrary.Epilogue(selected), m_Radio, () =>
+                {
+                    CloseEnding(true);
+                    return Task.FromResult(true);
+                });
                 return;
             }
 
@@ -103,20 +117,6 @@ namespace Unity.MP_FPS.Client
             host.Add(image);
         }
 
-        private static void BuildEpilogue(VisualElement host, ResearchEnding ending)
-        {
-            var copy = Ending(ending);
-            var card = Box(host, "research-ending-result");
-            AddStoryImage(card, ending);
-            var report = Box(card, "research-ending-report");
-            Label(report, "research-ending-title", copy.title);
-            Label(report, "research-ending-copy", copy.epilogue);
-            if (ending == ResearchEnding.Corporate)
-                Label(report, "research-ending-reward", Text(
-                    $"已入库：{ResearchQuestRules.CorporateDust} 月尘、搭载月核回收模块的战斗光环",
-                    $"Deposited: {ResearchQuestRules.CorporateDust} dust and a Battle Halo with a mooncore recycler"));
-        }
-
         private void SelectEnding(ResearchEnding ending)
         {
             if (m_StorySaving) return;
@@ -146,7 +146,6 @@ namespace Unity.MP_FPS.Client
                 if (!m_Disposed && m_StoryEvent != null)
                 {
                     RenderEnding();
-                    if (!m_StoryError && m_Read().Ending == ending) m_Radio.PlayEnding(ending, Chinese);
                     RefreshEndingAudio();
                 }
             }
@@ -155,16 +154,15 @@ namespace Unity.MP_FPS.Client
         private void ToggleEndingAudio()
         {
             if (m_Radio.Playing) m_Radio.Stop();
-            else if (m_Read().Ending == ResearchEnding.None) m_Radio.Play(ResearchQuest.EndOfTransmission, true, Chinese);
-            else m_Radio.PlayEnding(m_Read().Ending, Chinese);
+            else m_Radio.Play(ResearchQuest.EndOfTransmission, true, Chinese);
             RefreshEndingAudio();
         }
 
         private void RefreshEndingAudio()
         {
+            m_EndingPlayer?.RefreshAudio();
             if (m_StoryAudio == null || m_Read() == null) return;
-            string text = m_Radio.Playing ? Text("停止语音", "Stop audio") :
-                m_Read().Ending == ResearchEnding.None ? Text("播放通讯", "Play transmission") : Text("播放结局", "Play epilogue");
+            string text = m_Radio.Playing ? Text("停止语音", "Stop audio") : Text("播放通讯", "Play transmission");
             if (m_StoryAudio.text != text) Set(m_StoryAudio, text);
         }
     }

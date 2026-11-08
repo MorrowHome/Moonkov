@@ -65,6 +65,18 @@ namespace Unity.MP_FPS
             return true;
         }
 
+        public static async Task<bool> ReviewResearchStoryAsync(ResearchStoryChapter chapter)
+        {
+            if (!ResearchQuestRules.StoryAvailable(ResearchQuests, chapter)) return false;
+            var command = new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = chapter };
+            if (!IsOffline) return await SendResearchCommand(command);
+            var store = s_Offline;
+            bool saved = await Task.Run(() => store.ApplyResearchCommand(command));
+            if (store != s_Offline) return false;
+            if (saved) RefreshOffline();
+            return saved;
+        }
+
         public static async Task SetCampaignTrackingAsync(string taskId, bool secondary = false,
             bool remove = false, CancellationToken ct = default)
         {

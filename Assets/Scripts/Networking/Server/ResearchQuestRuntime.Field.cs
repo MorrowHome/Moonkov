@@ -12,6 +12,26 @@ namespace Unity.MP_FPS
         private bool m_LowerOpened, m_ControlOpened;
         private RaidMissionAnchor m_EmitterAnchor;
         private double m_NextPulse;
+        private bool m_ResonanceReported;
+        private double m_NextResonanceCheck;
+
+        private void CheckHaloResonance(Vector3 player, double now)
+        {
+            if (m_ResonanceReported || now < m_NextResonanceCheck) return;
+            m_NextResonanceCheck = now + 1;
+            const float range = 12;
+            var manager = m_World.EntityManager;
+            using var query = manager.CreateEntityQuery(typeof(ProceduralAlienEnemy.State), typeof(LocalTransform), typeof(PredictedPlayerGhost));
+            using var enemies = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+            foreach (var enemy in enemies)
+            {
+                var position = (Vector3)manager.GetComponentData<LocalTransform>(enemy).Position;
+                if ((position - player).sqrMagnitude > range * range || !EnergyShieldRules.Alive(manager.GetComponentData<PredictedPlayerGhost>(enemy))) continue;
+                m_ResonanceReported = true;
+                Notice("halo-echo", now);
+                break;
+            }
+        }
 
         private void UpdateHazards(Vector3 player, double now, uint tick)
         {

@@ -1,0 +1,808 @@
+{
+  "chapters": [
+    {
+      "id": 0,
+      "titleZh": "清理合约",
+      "titleEn": "The Cleanup Contract",
+      "frames": [
+        {
+          "titleZh": "公开通报",
+          "titleEn": "Public bulletin",
+          "actionZh": "接通鲁克",
+          "actionEn": "Connect to Rook",
+          "art": "UI/PageArt/Base",
+          "speakerZh": "阿斯特里昂",
+          "speakerEn": "ASTERION",
+          "cues": [
+            "story_bulletin"
+          ],
+          "evidenceZh": [
+            "官方事故原因　反应堆故障",
+            "研究站通讯　中断"
+          ],
+          "evidenceEn": [
+            "OFFICIAL CAUSE   REACTOR MALFUNCTION",
+            "STATION COMMS   LOST"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "加入回收队",
+          "titleEn": "Join the recovery crew",
+          "actionZh": "查看首次部署",
+          "actionEn": "Review first deployment",
+          "art": "UI/PageArt/Operations",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_recruit"
+          ],
+          "evidenceZh": [
+            "委托方　阿斯特里昂",
+            "行动组　MoonRat 回收队"
+          ],
+          "evidenceEn": [
+            "CONTRACT HOLDER   ASTERION",
+            "ASSIGNED UNIT   MOONRAT RECOVERY"
+          ],
+          "visual": "record",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "titleZh": "同一条频谱",
+      "titleEn": "A Matching Signature",
+      "frames": [
+        {
+          "titleZh": "三份样本",
+          "titleEn": "Three samples",
+          "actionZh": "叠合光环频谱",
+          "actionEn": "Overlay the Halo trace",
+          "art": "UI/OperationArt/OperatorD",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [],
+          "evidenceZh": [
+            "采样来源　三个不同个体",
+            "样本中均检出异常能量残留"
+          ],
+          "evidenceEn": [
+            "SOURCE   THREE DISTINCT SPECIMENS",
+            "ENERGY RESIDUE DETECTED IN ALL SAMPLES"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "能量特征吻合",
+          "titleEn": "Matching energy signature",
+          "actionZh": "保存比对",
+          "actionEn": "Save comparison",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_spectrum"
+          ],
+          "evidenceZh": [
+            "组织残留与战斗光环的能量特征吻合",
+            "光环公开投产时间　事故后"
+          ],
+          "evidenceEn": [
+            "TISSUE RESIDUE MATCHES THE HALO SIGNATURE",
+            "PUBLIC HALO PROGRAM DATE   AFTER INCIDENT"
+          ],
+          "visual": "wave",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "titleZh": "奈迪尔的值班录音",
+      "titleEn": "Nadir’s Duty Recordings",
+      "frames": [
+        {
+          "titleZh": "隔离舱实验",
+          "titleEn": "Containment chamber",
+          "actionZh": "播放最后一段",
+          "actionEn": "Play the last recording",
+          "art": "UI/QuestExhibits/rq_tablet",
+          "speakerZh": "塞拉·奈迪尔",
+          "speakerEn": "SERA NADIR",
+          "cues": [
+            "story_nadir_chamber"
+          ],
+          "evidenceZh": [
+            "人员平板　塞拉·奈迪尔",
+            "记录位置　隔离舱"
+          ],
+          "evidenceEn": [
+            "PERSONNEL TABLET   DR. SERA NADIR",
+            "LOCATION   CONTAINMENT CHAMBER"
+          ],
+          "visual": "record",
+          "fit": true
+        },
+        {
+          "titleZh": "走廊封闭",
+          "titleEn": "Corridors sealed",
+          "actionZh": "保存录音",
+          "actionEn": "Archive the recordings",
+          "art": "UI/QuestExhibits/rq_tablet",
+          "speakerZh": "塞拉·奈迪尔",
+          "speakerEn": "SERA NADIR",
+          "cues": [
+            "story_nadir_locked"
+          ],
+          "evidenceZh": [
+            "下层研究区　封闭",
+            "录音在警告后中断"
+          ],
+          "evidenceEn": [
+            "LOWER RESEARCH SECTOR   SEALED",
+            "RECORDING ENDS AFTER WARNING"
+          ],
+          "visual": "record",
+          "fit": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "titleZh": "封锁在前",
+      "titleEn": "Sealed Before the Breach",
+      "frames": [
+        {
+          "titleZh": "停试申请",
+          "titleEn": "Suspension request",
+          "actionZh": "对照门禁时序",
+          "actionEn": "Compare access logs",
+          "art": "UI/QuestExhibits/rq_flash",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_denied"
+          ],
+          "evidenceZh": [
+            "试验暂停申请　驳回",
+            "授权来源　公司管理层"
+          ],
+          "evidenceEn": [
+            "SUSPENSION REQUEST   DENIED",
+            "AUTHORITY   CORPORATE MANAGEMENT"
+          ],
+          "visual": "record",
+          "fit": true
+        },
+        {
+          "titleZh": "封门指令早于事故",
+          "titleEn": "Lockdown predates the breach",
+          "actionZh": "打开撤离记录",
+          "actionEn": "Open evacuation record",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_lock_order"
+          ],
+          "evidenceZh": [
+            "01　管理层下令封站",
+            "02　数小时后才记录首起收容失效"
+          ],
+          "evidenceEn": [
+            "01   MANAGEMENT ORDERS LOCKDOWN",
+            "02   FIRST RECORDED BREACH, HOURS LATER"
+          ],
+          "visual": "timeline",
+          "fit": false
+        },
+        {
+          "titleZh": "撤离取消",
+          "titleEn": "Evacuation cancelled",
+          "actionZh": "保存行政记录",
+          "actionEn": "Archive the administrative logs",
+          "art": "UI/PageArt/ArchiveDark",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_evac"
+          ],
+          "evidenceZh": [
+            "人员撤离　取消",
+            "机密研究材料　优先保全"
+          ],
+          "evidenceEn": [
+            "PERSONNEL EVACUATION   CANCELLED",
+            "CLASSIFIED MATERIAL   RETENTION PRIORITY"
+          ],
+          "visual": "record",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "titleZh": "资格测试的另一面",
+      "titleEn": "The Other Qualification",
+      "frames": [
+        {
+          "titleZh": "封存包的遥测",
+          "titleEn": "Package telemetry",
+          "actionZh": "比对炮塔识别库",
+          "actionEn": "Compare the targeting database",
+          "art": "Items/Icons/black_box",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_package"
+          ],
+          "evidenceZh": [
+            "封存物内部清单　原型能量调节部件"
+          ],
+          "evidenceEn": [
+            "REDACTED CONTENTS   PROTOTYPE ENERGY REGULATOR"
+          ],
+          "visual": "record",
+          "fit": true
+        },
+        {
+          "titleZh": "旧识别库",
+          "titleEn": "Old targeting database",
+          "actionZh": "归档资格测试",
+          "actionEn": "Archive qualification",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_sentry_db"
+          ],
+          "evidenceZh": [
+            "炮塔识别索引　来自原站安保库",
+            "光环原型授权　事故前"
+          ],
+          "evidenceEn": [
+            "TARGETING INDEX   LEGACY STATION SECURITY",
+            "PROTOTYPE AUTHORIZATION   BEFORE INCIDENT"
+          ],
+          "visual": "record",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "titleZh": "LUCENT 解密",
+      "titleEn": "Decrypting LUCENT",
+      "frames": [
+        {
+          "titleZh": "样本来源",
+          "titleEn": "Origin of the specimens",
+          "actionZh": "打开原型档案",
+          "actionEn": "Open prototype files",
+          "art": "UI/PageArt/ArchiveDark",
+          "speakerZh": "塞拉·奈迪尔",
+          "speakerEn": "SERA NADIR",
+          "cues": [
+            "story_subjects"
+          ],
+          "evidenceZh": [
+            "项目　LUCENT",
+            "实验目标　活体储能与控制"
+          ],
+          "evidenceEn": [
+            "PROJECT   LUCENT",
+            "OBJECTIVE   LIVING ENERGY STORAGE AND CONTROL"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "光环原型",
+          "titleEn": "The original Halo",
+          "actionZh": "查阅事故报告",
+          "actionEn": "Compare incident reports",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "塞拉·奈迪尔",
+          "speakerEn": "SERA NADIR",
+          "cues": [
+            "story_prototype"
+          ],
+          "evidenceZh": [
+            "原始用途　调节能量并控制样本",
+            "战斗型号基于实验原型"
+          ],
+          "evidenceEn": [
+            "ORIGINAL PURPOSE   REGULATE ENERGY AND CONTROL SUBJECTS",
+            "COMBAT MODEL DERIVED FROM EXPERIMENTAL PROTOTYPE"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "两份事故报告",
+          "titleEn": "Two incident reports",
+          "actionZh": "追踪回收队遥测",
+          "actionEn": "Trace recovery telemetry",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_cover"
+          ],
+          "evidenceZh": [
+            "内部原件　大规模试验失控",
+            "公开版　改写为反应堆故障"
+          ],
+          "evidenceEn": [
+            "ORIGINAL   LARGE-SCALE EXPERIMENT CASCADE",
+            "PUBLIC EDITION   REACTOR MALFUNCTION"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "你的光环一直在回传",
+          "titleEn": "Your Halo has been transmitting",
+          "actionZh": "解开二期授权",
+          "actionEn": "Open Phase II authorization",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_uplink"
+          ],
+          "evidenceZh": [
+            "战斗光环　发送战斗与能量数据",
+            "回收行动数据　送达阿斯特里昂"
+          ],
+          "evidenceEn": [
+            "BATTLE HALO   COMBAT AND ENERGY DATA",
+            "RECOVERY TELEMETRY   ROUTED TO ASTERION"
+          ],
+          "visual": "route",
+          "fit": false
+        },
+        {
+          "titleZh": "二期授权已签署",
+          "titleEn": "Phase II authorized",
+          "actionZh": "切换加密通讯",
+          "actionEn": "Switch to encrypted comms",
+          "art": "UI/PageArt/ArchiveDark",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_phase_authorized"
+          ],
+          "evidenceZh": [
+            "LUCENT PHASE II",
+            "状态　已批准转移"
+          ],
+          "evidenceEn": [
+            "LUCENT PHASE II",
+            "STATUS   TRANSFER AUTHORIZED"
+          ],
+          "visual": "signal",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "titleZh": "公司收网",
+      "titleEn": "The Recall Order",
+      "frames": [
+        {
+          "titleZh": "回收命令取消",
+          "titleEn": "Recovery suspended",
+          "actionZh": "切到鲁克的私线",
+          "actionEn": "Switch to Rook’s private channel",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "阿斯特里昂",
+          "speakerEn": "ASTERION",
+          "cues": [
+            "story_recall"
+          ],
+          "evidenceZh": [
+            "回收行动　中止",
+            "证据处理　移交公司"
+          ],
+          "evidenceEn": [
+            "RECOVERY OPERATION   SUSPENDED",
+            "EVIDENCE HANDLING   RETURN TO CORPORATE"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "奈迪尔的加密留言",
+          "titleEn": "Nadir’s encrypted message",
+          "actionZh": "准备进入下层",
+          "actionEn": "Prepare for the lower sector",
+          "art": "UI/QuestExhibits/rq_tablet",
+          "speakerZh": "塞拉·奈迪尔",
+          "speakerEn": "SERA NADIR",
+          "cues": [
+            "story_private"
+          ],
+          "evidenceZh": [
+            "加密缓存　下层研究区 L21",
+            "原件位置　中央控制室 L22"
+          ],
+          "evidenceEn": [
+            "ENCRYPTED CACHE   LOWER RESEARCH SECTOR L21",
+            "ORIGINALS   CENTRAL CONTROL L22"
+          ],
+          "visual": "record",
+          "fit": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "titleZh": "凯德的最后通牒",
+      "titleEn": "Kade’s Ultimatum",
+      "frames": [
+        {
+          "titleZh": "执行董事来电",
+          "titleEn": "Executive director on line",
+          "actionZh": "拒绝交出证据",
+          "actionEn": "Refuse to surrender evidence",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "阿德里安·凯德",
+          "speakerEn": "ADRIAN KADE",
+          "cues": [
+            "kade"
+          ],
+          "evidenceZh": [
+            "来电身份　阿德里安·凯德",
+            "报价条件　交回证据并结束调查"
+          ],
+          "evidenceEn": [
+            "CALLER   ADRIAN KADE",
+            "TERMS   RETURN EVIDENCE AND END INVESTIGATION"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "拒绝交出证据",
+          "titleEn": "Evidence withheld",
+          "actionZh": "接收公司命令",
+          "actionEn": "Receive company order",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "回收队员",
+          "speakerEn": "RECOVERY OPERATOR",
+          "cues": [
+            "kadeRefusal"
+          ],
+          "evidenceZh": [
+            "公司交割请求　已拒绝"
+          ],
+          "evidenceEn": [
+            "COMPANY HANDOVER REQUEST   REJECTED"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "公司接管站防",
+          "titleEn": "Corporate takes station security",
+          "actionZh": "接通鲁克",
+          "actionEn": "Connect to Rook",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "阿德里安·凯德",
+          "speakerEn": "ADRIAN KADE",
+          "cues": [
+            "story_kade_purge"
+          ],
+          "evidenceZh": [
+            "回收队权限　撤销",
+            "站防　重新启用"
+          ],
+          "evidenceEn": [
+            "RECOVERY CLEARANCE   REVOKED",
+            "STATION SECURITY   ACTIVE"
+          ],
+          "visual": "signal",
+          "fit": false
+        },
+        {
+          "titleZh": "鲁克的最后通话",
+          "titleEn": "Rook’s last call",
+          "actionZh": "查看终章任务",
+          "actionEn": "Review final deployment",
+          "art": "UI/PageArt/Operations",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "warning"
+          ],
+          "evidenceZh": [
+            "鲁克切断公司监听，改用私人频道",
+            "仅凭回收的门禁进入 LUCENT"
+          ],
+          "evidenceEn": [
+            "ROOK SWITCHES TO AN UNMONITORED CHANNEL",
+            "ENTRY REQUIRES THE RECOVERED LUCENT CREDENTIAL"
+          ],
+          "visual": "record",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "titleZh": "事故原件",
+      "titleEn": "The Original Records",
+      "frames": [
+        {
+          "titleZh": "重放收容失效",
+          "titleEn": "Containment failure playback",
+          "actionZh": "查看执行命令",
+          "actionEn": "Open executive directives",
+          "art": "UI/PageArt/ArchiveDark",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_original_footage"
+          ],
+          "evidenceZh": [
+            "实验失控　收容舱连续失压",
+            "研究人员撤离时出口仍锁闭"
+          ],
+          "evidenceEn": [
+            "EXPERIMENT CASCADE   CHAMBERS DEPRESSURIZE",
+            "EXITS REMAIN LOCKED DURING EVACUATION"
+          ],
+          "visual": "timeline",
+          "fit": false
+        },
+        {
+          "titleZh": "最终授权原件",
+          "titleEn": "Signed executive authorization",
+          "actionZh": "带档案进入最终抉择",
+          "actionEn": "Take the archive to the final decision",
+          "art": "UI/QuestExhibits/mc00_archive_drive",
+          "speakerZh": "埃利亚斯·鲁克",
+          "speakerEn": "ELIAS ROOK",
+          "cues": [
+            "story_original_orders"
+          ],
+          "evidenceZh": [
+            "原始影像、内线通讯、签署文件　完整",
+            "证据保管人　你"
+          ],
+          "evidenceEn": [
+            "ORIGINAL FOOTAGE, INTERNAL COMMS AND SIGNED ORDERS   INTACT",
+            "EVIDENCE CUSTODY   YOU"
+          ],
+          "visual": "record",
+          "fit": true
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": 1,
+      "titleZh": "公开真相",
+      "titleEn": "Expose the Truth",
+      "frames": [
+        {
+          "titleZh": "独立频道接收",
+          "titleEn": "Independent relay receives",
+          "actionZh": "查看公开记录",
+          "actionEn": "View public record",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "回收队员",
+          "speakerEn": "RECOVERY OPERATIVE",
+          "cues": [
+            "ending_1_voice"
+          ],
+          "evidenceZh": [
+            "原始档案　已向公众与独立机构发送"
+          ],
+          "evidenceEn": [
+            "ORIGINAL ARCHIVE   SENT TO AUTHORITIES AND THE PUBLIC"
+          ],
+          "visual": "route",
+          "fit": false
+        },
+        {
+          "titleZh": "调查启动",
+          "titleEn": "Investigations opened",
+          "actionZh": "接收未知来讯",
+          "actionEn": "Receive unknown signal",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "独立中继站",
+          "speakerEn": "INDEPENDENT RELAY",
+          "cues": [
+            "ending_1_epilogue"
+          ],
+          "evidenceZh": [
+            "国际调查　已启动",
+            "阿斯特里昂高管　接受审查"
+          ],
+          "evidenceEn": [
+            "INTERNATIONAL INVESTIGATIONS   OPEN",
+            "ASTERION EXECUTIVES   UNDER SCRUTINY"
+          ],
+          "visual": "record",
+          "fit": false
+        },
+        {
+          "titleZh": "未知节点报文",
+          "titleEn": "Unknown endpoint",
+          "actionZh": "返回任务",
+          "actionEn": "Back to quests",
+          "art": "UI/PageArt/ArchiveDark",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_phase_active"
+          ],
+          "evidenceZh": [
+            "PROJECT LUCENT / PHASE II",
+            "状态　运行中"
+          ],
+          "evidenceEn": [
+            "PROJECT LUCENT / PHASE II",
+            "STATUS   ACTIVE"
+          ],
+          "visual": "signal",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "titleZh": "公司资产",
+      "titleEn": "Corporate Asset",
+      "frames": [
+        {
+          "titleZh": "档案交割",
+          "titleEn": "Archive transferred",
+          "actionZh": "接收新装备",
+          "actionEn": "Receive new equipment",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "回收队员",
+          "speakerEn": "RECOVERY OPERATIVE",
+          "cues": [
+            "ending_2_voice"
+          ],
+          "evidenceZh": [
+            "档案归属　阿斯特里昂",
+            "公司修订报告　意外科研事故"
+          ],
+          "evidenceEn": [
+            "ARCHIVE CUSTODY   ASTERION",
+            "AMENDED INCIDENT REPORT   UNFORESEEN ACCIDENT"
+          ],
+          "visual": "route",
+          "fit": false
+        },
+        {
+          "titleZh": "下一代战斗光环",
+          "titleEn": "Next-generation Battle Halo",
+          "actionZh": "查看下一站",
+          "actionEn": "View next facility",
+          "art": "HaloModules/ModuleArtwork",
+          "speakerZh": "阿斯特里昂",
+          "speakerEn": "ASTERION",
+          "cues": [
+            "story_issued_halo"
+          ],
+          "evidenceZh": [
+            "报酬　800 月尘",
+            "装备　搭载月核回收模块的光环"
+          ],
+          "evidenceEn": [
+            "COMPENSATION   800 DUST",
+            "ISSUED   HALO WITH MOONCORE RECYCLER"
+          ],
+          "visual": "record",
+          "fit": true
+        },
+        {
+          "titleZh": "新设施",
+          "titleEn": "The new facility",
+          "actionZh": "返回任务",
+          "actionEn": "Back to quests",
+          "art": "UI/PageArt/Base",
+          "speakerZh": "阿斯特里昂",
+          "speakerEn": "ASTERION",
+          "cues": [
+            "ending_2_epilogue"
+          ],
+          "evidenceZh": [
+            "LUCENT PHASE II",
+            "新设施　准备启动试验"
+          ],
+          "evidenceEn": [
+            "LUCENT PHASE II",
+            "SECONDARY FACILITY   PREPARING TRIALS"
+          ],
+          "visual": "signal",
+          "fit": false
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "titleZh": "彻底抹除",
+      "titleEn": "Total Erasure",
+      "frames": [
+        {
+          "titleZh": "档案清除",
+          "titleEn": "Archive erased",
+          "actionZh": "检查剩余节点",
+          "actionEn": "Check remaining nodes",
+          "art": "UI/QuestExhibits/mc00_archive_drive",
+          "speakerZh": "回收队员",
+          "speakerEn": "RECOVERY OPERATIVE",
+          "cues": [
+            "ending_3_voice"
+          ],
+          "evidenceZh": [
+            "原始档案　永久删除",
+            "留存副本　永久删除"
+          ],
+          "evidenceEn": [
+            "ORIGINAL ARCHIVE   PERMANENTLY ERASED",
+            "RETAINED COPIES   PERMANENTLY ERASED"
+          ],
+          "visual": "record",
+          "fit": true
+        },
+        {
+          "titleZh": "月面系统离线",
+          "titleEn": "Lunar systems offline",
+          "actionZh": "接收公司公告",
+          "actionEn": "Receive company bulletin",
+          "art": "UI/PageArt/Technical",
+          "speakerZh": "站务系统",
+          "speakerEn": "STATION SYSTEM",
+          "cues": [
+            "story_last_node"
+          ],
+          "evidenceZh": [
+            "实验基础设施　已销毁",
+            "月面研究节点　离线"
+          ],
+          "evidenceEn": [
+            "EXPERIMENTAL INFRASTRUCTURE   DESTROYED",
+            "LUNAR RESEARCH NODE   OFFLINE"
+          ],
+          "visual": "offline",
+          "fit": false
+        },
+        {
+          "titleZh": "公开声明",
+          "titleEn": "Public statement",
+          "actionZh": "返回任务",
+          "actionEn": "Back to quests",
+          "art": "UI/PageArt/CommsPrint",
+          "speakerZh": "阿斯特里昂",
+          "speakerEn": "ASTERION",
+          "cues": [
+            "ending_3_epilogue"
+          ],
+          "evidenceZh": [
+            "阿斯特里昂否认对销毁负责",
+            "原始证据已无法公开"
+          ],
+          "evidenceEn": [
+            "ASTERION DENIES RESPONSIBILITY FOR THE DESTRUCTION",
+            "ORIGINAL EVIDENCE UNAVAILABLE FOR DISCLOSURE"
+          ],
+          "visual": "record",
+          "fit": false
+        }
+      ]
+    }
+  ]
+}

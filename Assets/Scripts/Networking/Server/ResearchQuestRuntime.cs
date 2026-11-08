@@ -278,6 +278,7 @@ namespace Unity.MP_FPS
             {
                 m_AliveSeconds = Mathf.Min(ResearchQuestRules.ExposureSeconds, m_AliveSeconds + dt);
                 m_Result.ExposureSeconds = Mathf.FloorToInt(m_AliveSeconds);
+                if (health.HaloEquipped && EnergyShieldRules.Alive(health)) CheckHaloResonance(position, now);
             }
             ObserveCargo();
             UpdateHazards(position, now, tick);

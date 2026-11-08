@@ -21,6 +21,8 @@ internal static class ResearchQuestDatabaseChecks
             store.ResolveAsync(new ResolveProfile(Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"), name), default);
         Task<Profile> Act(Profile player, ResearchQuestAction action, ResearchQuest quest = default, ResearchEnding ending = default) =>
             repository.ApplyResearchCommandAsync(player.PlayerId, new ResearchQuestCommand { Action = action, Quest = quest, Ending = ending }, default);
+        Task<Profile> Review(Profile player, ResearchStoryChapter chapter) =>
+            repository.ApplyResearchCommandAsync(player.PlayerId, new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = chapter }, default);
         Deployment Deploy(Profile player) => new(player.PlayerId, Guid.NewGuid(), 0, ResearchVersion: ResearchQuestRules.DeploymentVersion);
         Settlement Receipt(Profile profile, InventoryGraph raid, ResearchQuestResult? evidence, string outcome = "Extracted") =>
             new(profile.PlayerId, profile.DeploymentId!.Value, outcome, raid.Count("dust", true), raid.Count("alloy", true), raid.Count("cells", true),
@@ -29,9 +31,14 @@ internal static class ResearchQuestDatabaseChecks
         var a = await Player("research_fixture_a");
         var b = await Player("research_fixture_b");
         Check(ResearchQuestRules.Valid(a.ResearchQuests) && a.ResearchQuests!.Revision == 0, "Default migrated account progress");
+        await Reject(() => Review(b, ResearchStoryChapter.Originals), "unavailable story chapter");
+        var intro = await Task.WhenAll(Review(b, ResearchStoryChapter.Recruitment), Review(b, ResearchStoryChapter.Recruitment));
+        Check(intro.All(p => p.ResearchQuests!.Revision == 1 && p.ResearchQuests.Accepted == 0 &&
+            ResearchQuestRules.StoryReviewed(p.ResearchQuests, ResearchStoryChapter.Recruitment)), "Concurrent story review is persisted once");
         await Reject(() => Act(a, ResearchQuestAction.Accept, ResearchQuest.EndOfTransmission), "locked terminal quest");
         var same = await Task.WhenAll(Act(a, ResearchQuestAction.Accept), Act(a, ResearchQuestAction.Accept));
-        Check(same.All(p => p.ResearchQuests!.Revision == 1 && p.ResearchQuests.Active == 1), "Concurrent duplicate accept applied once");
+        Check(same.All(p => p.ResearchQuests!.Revision == 1 && p.ResearchQuests.Active == 1 && p.ResearchQuests.StorySeen == 0),
+            "Concurrent duplicate accept applied once; the other account's story is private");
         var d = Deploy(a);
         var live = await repository.DeployAsync(d, default);
         Check(live.ResearchQuests!.Active == 1, "Deployment owns a research snapshot");
