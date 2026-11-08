@@ -44581,6 +44581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 464997077}
   - component: {fileID: 464997076}
+  - component: {fileID: 464997078}
   m_Layer: 0
   m_Name: GL125 World
   m_TagString: Untagged
@@ -46823,6 +46824,22 @@ Transform:
   - {fileID: 701285034}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &464997078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464997075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcd6b21831d54924686a1a330b431f51, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.MoonMeshDebris
+  geometry: {fileID: 1706831768}
+  groundExclusion: {fileID: 4900000, guid: 386cf1b16130b254ca79984002d7c292, type: 3}
+  rock: {fileID: 2100000, guid: b294fb47f2d3a1c4a8259557b457bb11, type: 2}
+  regolith: {fileID: 2100000, guid: d510cf11bddb0774fa861ff28b9e6a4c, type: 2}
 --- !u!1 &465869347
 GameObject:
   m_ObjectHideFlags: 0

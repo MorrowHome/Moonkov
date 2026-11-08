@@ -589,7 +589,44 @@ public static class GL125SceneInstall
                 obj.AddComponent<MeshCollider>().sharedMesh = mesh;
             }
         }
+        ConfigureScree(root);
         return root;
+    }
+
+    public static string InstallScree()
+    {
+        var scene = SceneManager.GetSceneByPath(FormalScene);
+        if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling ||
+            BuildPipeline.isBuildingPlayer || scene.isDirty)
+            throw new InvalidOperationException("Use an idle Unity Editor with a clean formal scene.");
+
+        bool opened = !scene.isLoaded;
+        if (opened) scene = EditorSceneManager.OpenScene(FormalScene, OpenSceneMode.Additive);
+        try
+        {
+            var world = scene.GetRootGameObjects().Single(root => root.name == WorldName);
+            if (!ConfigureScree(world)) throw new FileNotFoundException("Build the GL125 ground exclusion first.");
+            EditorSceneManager.MarkSceneDirty(scene);
+            if (!EditorSceneManager.SaveScene(scene)) throw new IOException("Could not save the GL125 scree binding.");
+            return "GL125 scree is bound to the formal terrain.";
+        }
+        finally
+        {
+            if (opened) EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
+    private static bool ConfigureScree(GameObject root)
+    {
+        var exclusion = AssetDatabase.LoadAssetAtPath<TextAsset>(GL125WorldAssets.Root + "/Geology/GroundExclusion.bytes");
+        if (!exclusion) return false;
+        var rock = AssetDatabase.LoadAssetAtPath<Material>("Assets/MoonEnvironment/Materials/moon_rock_01.mat");
+        var ground = AssetDatabase.LoadAssetAtPath<Material>(GL125WorldAssets.Root + "/Materials/Material_0002.mat");
+        if (!rock || !ground) throw new FileNotFoundException("Lunar scree requires the rock and regolith materials.");
+        var debris = root.GetComponent<MoonMeshDebris>();
+        if (!debris) debris = root.AddComponent<MoonMeshDebris>();
+        debris.Configure(root.transform.Find("Static geometry"), exclusion, rock, ground);
+        return true;
     }
 
     private static Light MakeSun(Transform root, GL125WorldAssets assets)
