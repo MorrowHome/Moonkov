@@ -658,6 +658,10 @@ public sealed class ResearchQuestChecks : EditorWindow
             Click("questStoryNext");
             Require(m_View.Element.Q(className: "research-story-trace").style.display.value == DisplayStyle.Flex &&
                 m_View.Element.Q(className: "research-story-evidence").childCount >= 2, "Spectrum comparison reveals new evidence with a visible trace");
+            await Wait(160);
+            var storyScroll = m_View.Element.Q<ScrollView>(className: "research-story-scroll");
+            Require(storyScroll.scrollOffset.y <= 1 && m_View.Element.Q("questStoryNext").worldBound.yMax <= storyScroll.worldBound.yMax + 1,
+                "Wide scene artwork leaves its evidence and next action visible without scrolling");
             Click("questStoryNext");
             Require(ResearchQuestRules.StoryReviewed(state, ResearchStoryChapter.Spectrum), "Viewing the spectrum saves the chapter");
             Click("questCard7");

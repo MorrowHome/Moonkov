@@ -700,6 +700,7 @@
 
 .research-story-art {
     width: 57%;
+    height: 286px;
     min-height: 286px;
     flex-shrink: 0;
     background-color: var(--quest-bg);
