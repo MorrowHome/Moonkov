@@ -13,7 +13,6 @@ namespace Unity.MP_FPS
         private SoundSystem.SoundInfo m_PainSound, m_GroanSound, m_CoughSound;
         private double m_NextCough;
         private SoundSystem.SoundInfo m_JumpVoice;
-        private int m_FoleyStep;
         private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_ConsumableSequence, m_Weapon;
@@ -107,7 +106,7 @@ namespace Unity.MP_FPS
             if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
             if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, 1);
             if (jumpVoice) m_JumpVoice = MoonkovAudio.PlayWeaponLayer(library.JumpEffort, position + Vector3.up * 1.4f,
-                owned ? .85f : .7f, owned ? .05f : 1, follow: player);
+                owned ? 1f : .7f, owned ? .05f : 1, follow: player);
             bool searchEnded=m_WasLootSearching && !ghost.LootSearching;
             if(searchEnded)
             {
@@ -127,7 +126,7 @@ namespace Unity.MP_FPS
                 float landingLoad = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
                 LocalOrWorld(m_Surface, position, owned, Mathf.Lerp(.65f, 1.2f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
-                m_MovementSound = LocalOrWorld(library.GearMotion, position, owned, Mathf.Lerp(.35f, .85f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
+                m_MovementSound = LocalOrWorld(library.GearMotion, position, owned, Mathf.Lerp(.2f, .4f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
             }
             if (NewTick(ghost.LastImpactTick, ref m_ImpactTick) && Time.unscaledTime >= m_HitAt)
@@ -174,6 +173,9 @@ namespace Unity.MP_FPS
             if (owned && ghost.CurrentHealth > 0)
             {
                 var breath = MoonkovOxygenFeedback.Breath(ghost);
+                // Exhaustion replaces the calm cycle promptly, while pain still takes priority.
+                if (breath.Exerted && m_BreathSound != null && m_BreathSound.SoundDefinition == library.SuitBreath)
+                { GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .06f); m_BreathSound = null; }
                 if (!breath.Audible && m_BreathSound != null)
                 {
                     GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .3f);
@@ -229,7 +231,7 @@ namespace Unity.MP_FPS
                 if (turn < 90) m_TurnTravel += turn;
                 if (m_TurnTravel >= 50 && Time.time >= m_GearAt && m_Stance != DollSingerStance.Prone)
                 {
-                    m_MovementSound = LocalOrWorld(library.GearMotion, position, owned, .4f);
+                    m_MovementSound = LocalOrWorld(library.Cloth, position, owned, .6f);
                     m_TurnTravel = 0; m_GearAt = Time.time + .9f;
                 }
                 return;
@@ -265,13 +267,9 @@ namespace Unity.MP_FPS
                 return;
             }
             float volume = m_Stance == DollSingerStance.Tiptoe ? .2f :
-                m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .72f;
+                m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .85f;
             volume *= loadVolume;
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
-            LocalOrWorld(library.Cloth, position, owned, .55f * volume);
-            if (++m_FoleyStep % 2 == 0 && m_Stance == DollSingerStance.Standing)
-                m_MovementSound = LocalOrWorld(library.GearMotion, position, owned,
-                    (ghost.ControllerState.Sprinting ? .75f : .4f) * loadVolume);
         }
         public void Stop()
         {
@@ -284,7 +282,7 @@ namespace Unity.MP_FPS
             m_Distress.Reset();
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_CoughSound, .08f); m_CoughSound = null; m_NextCough = 0;
-            system?.Stop(m_JumpVoice, .08f); m_JumpVoice = null; m_FoleyStep = 0;
+            system?.Stop(m_JumpVoice, .08f); m_JumpVoice = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             system?.Stop(m_WeaponSound, .04f); m_WeaponSound = null;
             StopBreathing();

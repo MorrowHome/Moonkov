@@ -987,6 +987,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 用户否定跑步衣料摩擦。走跑不得再逐步叠衣料或每两步叠装备声；原地转身 50 度才播短衣料，冷却 0.9 秒。脚步改为 CS:S 金属、碎石、硬地各 4 条，绑定 `MovementFoleySetup.Install()`。急喘已换成 MelvinJaepel 的独立真人录音，禁止重建回普通呼吸加速版。耗尽体力及时切急喘，恢复后变缓；跳跃发力提高约 11.4 dB。真实音源检查与无额外放大的对比试听见 [音效系统](Docs/AudioSystem.md#2026-11-08-脚步转身与体力人声)。
+
 - 2026-11-08 战术区域的火、烟、消散、毒气和警报改为各自持续音。`TacticalItemsFeedback` 为每个已确认世界对象持有 `MoonkovTacticalAudio`，移除、过期、轮次变化、失活与离开听距必须停止循环。晚到只接续循环。`TacticalAlarm` 已是循环，不能再当无人管理的短声播放。爆炸画面正常移除后应让短音余响播完，不能按 0.35 秒显示时长截断。护盾展开与收回独立，破裂和命中优先。重建入口 `TacticalFoleySetup.Install()` 位于战斗安装链最后；来源仍用统一游戏原声清单。
 
 - 2026-11-08 武器切换同时比较型号、插槽和物品 ID，避免两把同型号互切无声。取枪、收枪、瞄准进出、近战取出、手雷各阶段、补氧接头、灯和终端各自配声。手雷拔销句柄与投掷分开，不能在快速投掷时截断尾音。`InteractionFoleySetup.Install()` 在重建链最后绑定；统一来源仍用 `MoonkovGameAudioSources.md`。验收和试听见 [音效系统](Docs/AudioSystem.md#2026-11-08-武器操作与设备细节)。
@@ -997,7 +999,7 @@
 
 - 2026-11-08 注射主体按用户要求直接使用《猎杀：对决》原声，用于个人非商用作品。来源为原设计师 Noise Nerd Audio 的针剂演示，游戏 v0.309，版权 Crytek GmbH；不得标为 CC0 或自行声明商业复用授权。成品 `InjectorHuntShot.wav` 为 1.38 秒，保留原音高和速度，从 `contactIn=0.42` 播放，覆盖扎入、推注及拔针。不要恢复机械注射笔、抽排水或重做拟音。吃喝、瓶盖、包装和包扎现用塔科夫原声。`GameFoleySetup.Install()` 在医疗安装链最后绑定，不能再被旧棉布覆盖。凝胶独立涂抹。所有游戏原声逐条登记在 `Assets/StreamingAssets/MoonkovGameAudioSources.md`，新增素材须同步该文件。保留 `MoonkovMedicalFoleyCredits.txt`，其中有原声出处与 Frostnox 的 CC BY 4.0 署名。原声音库的旧 GUID 曾与现存素材不匹配；安装后须检查空引用，不能只看 WAV 文件存在。`RaidActionAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`。来源、时序和验证边界见[音效系统](Docs/AudioSystem.md#2026-11-08-吃喝补氧与医疗)。
 
-- 2026-11-08 补齐实际游玩声音层：步行和奔跑装备、落地装备、跳跃发力、按有氧状态切换通风、升降机门机与驱动。绑定用 `MoonkovPresenceAudioSetup.Install()`。脚步仍由动画事件驱动，升降机声音只观察实际运动。正式地图单人 32 秒操作已记录新增声音触发，最多 13 个发射器；详细素材和验收边界见[音效系统](Docs/AudioSystem.md#2026-11-08-实际游玩声音层)。
+- 2026-11-08 补齐实际游玩声音层：落地装备、跳跃发力、按有氧状态切换通风、升降机门机与驱动。逐步衣料和走跑装备声已按用户反馈移除。绑定用 `MoonkovPresenceAudioSetup.Install()`。脚步仍由动画事件驱动，升降机声音只观察实际运动。正式地图单人 32 秒操作已记录新增声音触发，最多 13 个发射器；详细素材和验收边界见[音效系统](Docs/AudioSystem.md#2026-11-08-实际游玩声音层)。
 
 - 2026-11-08 烟雾呛咳改用 CC0 真人录音，由 `MoonkovPlayerAudio` 统一调度，原 `TacticalItemsFeedback` 不再另播。人声顺序为受击、咳嗽、挥拳、呻吟、呼吸。离开暴露和死亡会收束。`CoughVoiceReview` 的 16 项隔离 Play 检查、原 18 项实际脚步检查及新增音效完整播放通过。`GameAudioAudit` 覆盖 83 个入口、168 个音库和 14 组回归；详细边界见[音效系统](Docs/AudioSystem.md#2026-11-08-呛咳与全库复查)。
 - 2026-11-08 普通受击、近战及四个枪械身体命中库改用三条 CC0 闷击实录。原金属盾牌录音移作近战格挡。重建用 `MoonkovBodyImpactAudioSetup.Install()`。不要再把 `Character/Hit.wav` 当作身体撞击源，该文件实际是金属盾牌。详见[音效系统](Docs/AudioSystem.md#2026-11-08-身体命中与格挡)。

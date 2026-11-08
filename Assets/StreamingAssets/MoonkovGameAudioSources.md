@@ -24,8 +24,8 @@
 | `Clips/GameFoley/HL2AirlockButton.wav` | 气闸按钮按下成功反馈 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/84f5de61421d95ce1eb9dcf9625a90782b41b278/sound/buttons/button17.wav) | sound/buttons/button17.wav（完整 0.081 秒） |
 | `Clips/GameFoley/TarkovPouchOpen.wav` | 打开背包 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 89.750–90.350 秒 |
 | `Clips/GameFoley/TarkovPouchClose.wav` | 合上背包 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 91.350–91.850 秒 |
-| `Clips/GameFoley/TarkovPouchHandle1.wav` | 软质装备移动 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 94.050–94.500 秒 |
-| `Clips/GameFoley/TarkovPouchHandle2.wav` | 软质装备移动 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 98.600–99.100 秒 |
+| `Clips/GameFoley/TarkovPouchHandle1.wav` | 软质装备移动、原地转身衣料 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 94.050–94.500 秒 |
+| `Clips/GameFoley/TarkovPouchHandle2.wav` | 软质装备移动、原地转身衣料 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 98.600–99.100 秒 |
 | `Clips/GameFoley/TarkovPouchSearch1.wav` | 搜刮翻找 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 90.150–91.250 秒 |
 | `Clips/GameFoley/TarkovPouchSearch2.wav` | 搜刮翻找 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 94.050–95.150 秒 |
 | `Clips/GameFoley/HL2ItemMetal.wav` | 金属物品拾取与整理 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammo_pickup.wav) | sound/items/ammo_pickup.wav |
@@ -74,10 +74,34 @@
 | `Clips/GameFoley/HL2ShieldRestore.wav` | 护盾恢复蓄能 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_charge.wav) | sound/weapons/physcannon/physcannon_charge.wav |
 | `Clips/GameFoley/HL2ShieldRaise.wav` | 主动防御展开 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_pickup.wav) | sound/weapons/physcannon/physcannon_pickup.wav |
 | `Clips/GameFoley/HL2ShieldLower.wav` | 主动防御收回 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_drop.wav) | sound/weapons/physcannon/physcannon_drop.wav |
+| `Clips/GameFoley/CSSFootGravel1.wav` | 月壤与碎石脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/gravel1.wav |
+| `Clips/GameFoley/CSSFootGravel2.wav` | 月壤与碎石脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/gravel2.wav |
+| `Clips/GameFoley/CSSFootGravel3.wav` | 月壤与碎石脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/gravel3.wav |
+| `Clips/GameFoley/CSSFootGravel4.wav` | 月壤与碎石脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/gravel4.wav |
+| `Clips/GameFoley/CSSFootMetal1.wav` | 金属地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/metal1.wav |
+| `Clips/GameFoley/CSSFootMetal2.wav` | 金属地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/metal2.wav |
+| `Clips/GameFoley/CSSFootMetal3.wav` | 金属地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/metal3.wav |
+| `Clips/GameFoley/CSSFootMetal4.wav` | 金属地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/metal4.wav |
+| `Clips/GameFoley/CSSFootConcrete1.wav` | 硬质地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/concrete1.wav |
+| `Clips/GameFoley/CSSFootConcrete2.wav` | 硬质地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/concrete2.wav |
+| `Clips/GameFoley/CSSFootConcrete3.wav` | 硬质地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/concrete3.wav |
+| `Clips/GameFoley/CSSFootConcrete4.wav` | 硬质地面脚步 | Counter-Strike: Source / Valve Corporation | [sourcesounds / cstrike](https://github.com/sourcesounds/cstrike) | player/footsteps/concrete4.wav |
 
 路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。
 
 原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。
 猎杀针剂详表：`SourceData/Audio/MedicalFoley/Sources.json` 与 `Assets/Audio/Moonkov/MedicalFoleySources.json`。
-重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 与 `TacticalFoleySetup.Install()`。
+重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 、`TacticalFoleySetup.Install()` 与 `MovementFoleySetup.Install()`。
 本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。
+
+## 真人急喘录音
+
+以下为 CC0 真人录音。保存的是 Freesound 高质量 MP3 预览，不是游戏原声或无损原文件。
+
+| 成品文件 | 用途 | 作者 / 授权 | 录音出处 | 原片段 |
+| --- | --- | --- | --- | --- |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 0.32–1.55 秒 |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort2.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 1.78–2.99 秒 |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 6.25–7.81 秒 |
+
+急喘重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。

@@ -1,12 +1,45 @@
 {
-  "source": "Assets/Audio/Moonkov/Clips/Raid/SuitBreath.wav",
-  "source_sha256": "05d8bf7cac79b7b93c9a3ddba96e3a300a6638fe61ebb958db0f1ac1eb9af154",
-  "author": "mikeask",
+  "source": "SourceData/Audio/StaminaBreath/FemaleRunBreath.mp3",
+  "source_sha256": "1c83c68220736e8b739c21dd02c0d2e868a835ecf0570c800597683405c9918e",
+  "author": "MelvinJaepel",
   "license": "CC0-1.0",
-  "source_page": "https://opengameart.org/content/breathing-tired",
-  "upstream_manifest": "Assets/Audio/Moonkov/RaidAudioSources.json",
-  "processing": "Existing helmet breath; atempo 1.5 preserves pitch; DC removal; 8 ms fades; peak 0.4; 48 kHz mono PCM16.",
-  "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav",
-  "seconds": 2.231333333333333,
-  "sha256": "edfa30c02918e38de490d96a98c073fc2753490c3f543261b8fe5002901f88d5"
+  "source_page": "https://freesound.org/people/MelvinJaepel/sounds/435468/",
+  "download": "https://cdn.freesound.org/previews/435/435468_6125359-hq.mp3",
+  "source_format": "Freesound high-quality MP3 preview of woman run and breath.wav; not lossless original.",
+  "processing": "Recorded panting; unchanged pitch/speed; HP85/LP10000; gentle peak compression 2.5:1; DC removal; 12 ms fades; RMS target 0.18 / peak cap 0.7; 48 kHz mono PCM16.",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav",
+      "source_excerpt_seconds": [
+        0.32,
+        1.55
+      ],
+      "seconds": 1.23,
+      "peak": 0.7,
+      "rms": 0.11198527059482695,
+      "sha256": "2f8638da21cca96c56ce291a96887594d70963f27bd7adbabc153eebc0c39b61"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort2.wav",
+      "source_excerpt_seconds": [
+        1.78,
+        2.99
+      ],
+      "seconds": 1.21,
+      "peak": 0.7,
+      "rms": 0.1129924803695752,
+      "sha256": "2db8db112302f460d1f7c1fad8eff41fdd078fe2c0ff9acd58b0b1c0ce336e30"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav",
+      "source_excerpt_seconds": [
+        6.25,
+        7.81
+      ],
+      "seconds": 1.56,
+      "peak": 0.7,
+      "rms": 0.0850611557531537,
+      "sha256": "ceac661eb5104a4043809ba20b3f7ca66e0acd1097b3e84411cbc64a713db846"
+    }
+  ]
 }

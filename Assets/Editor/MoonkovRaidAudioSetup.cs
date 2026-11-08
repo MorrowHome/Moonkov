@@ -57,29 +57,36 @@ public static class MoonkovRaidAudioSetup
         MoonkovAlienAudioSetup.Install();
         InstallBreathing();
         RaidActionAudioSetup.Install();
+        MovementFoleySetup.Install();
         Debug.Log("Raid audio installed: recorded contact/vocal banks, suit/detail cues and pooled mix policies.");
     }
     [MenuItem("Moonkov/Audio/Install stamina breathing")]
     public static void InstallBreathing()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Use Edit mode");
-        const string clipPath = Root + "Clips/Raid/SuitBreathEffort.wav";
-        var importer = AssetImporter.GetAtPath(clipPath) as AudioImporter;
-        if (!importer) throw new InvalidOperationException("Build the effort breath first");
-        var settings = importer.defaultSampleSettings;
-        settings.loadType = AudioClipLoadType.DecompressOnLoad;
-        settings.compressionFormat = AudioCompressionFormat.PCM;
-        settings.preloadAudioData = true;
-        settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
-        settings.sampleRateOverride = 48000;
-        importer.defaultSampleSettings = settings; importer.forceToMono = true;
-        var serialized = new SerializedObject(importer);
-        // Match the existing calm breath's imported peak so effort cannot become quieter.
-        serialized.FindProperty("m_Normalize").boolValue = true;
-        serialized.ApplyModifiedPropertiesWithoutUndo(); importer.SaveAndReimport();
+        foreach (string name in new[] { "SuitBreathEffort", "SuitBreathEffort2", "SuitBreathEffort3" })
+        {
+            string clipPath = Root + "Clips/Raid/" + name + ".wav";
+            var importer = AssetImporter.GetAtPath(clipPath) as AudioImporter;
+            if (!importer) throw new InvalidOperationException("Build the effort breath first");
+            var settings = importer.defaultSampleSettings;
+            settings.loadType = AudioClipLoadType.DecompressOnLoad;
+            settings.compressionFormat = AudioCompressionFormat.PCM;
+            settings.preloadAudioData = true;
+            settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
+            settings.sampleRateOverride = 48000;
+            importer.defaultSampleSettings = settings; importer.forceToMono = true;
+            var serialized = new SerializedObject(importer);
+            serialized.FindProperty("m_Normalize").boolValue = false;
+            serialized.ApplyModifiedPropertiesWithoutUndo(); importer.SaveAndReimport();
+        }
         var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
-        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
-        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -12, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -10, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -2, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreathEffort.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Clips/Raid/SuitBreathEffort2.wav"));
+        lib.SuitBreathEffort.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Clips/Raid/SuitBreathEffort3.wav"));
+        lib.SuitBreathEffort.PlaybackType = SoundDef.PlaybackTypes.RandomNotLast;
+        EditorUtility.SetDirty(lib.SuitBreathEffort); AssetDatabase.SaveAssetIfDirty(lib.SuitBreathEffort);
         EditorUtility.SetDirty(lib); AssetDatabase.SaveAssetIfDirty(lib);
     }
     private static SoundDef Bank(string name, string prefix, int count, float db, SoundDef.MixRole role,

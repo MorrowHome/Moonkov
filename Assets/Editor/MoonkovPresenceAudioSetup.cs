@@ -22,7 +22,7 @@ public static class MoonkovPresenceAudioSetup
             serialized.ApplyModifiedPropertiesWithoutUndo();importer.SaveAndReimport();
         }
         var lib=Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
-        lib.JumpEffort=Bank("JumpEffort",lib.MeleeEffort,-14,18,3,75,SoundDef.MixRole.Suit,false,"JumpEffort1","JumpEffort2","JumpEffort3");
+        lib.JumpEffort=Bank("JumpEffort",lib.MeleeEffort,-4,18,3,75,SoundDef.MixRole.Suit,false,"JumpEffort1","JumpEffort2","JumpEffort3");
         lib.InteriorVent=Bank("InteriorVent",lib.SuitBreath,-22,0,2,205,SoundDef.MixRole.Ambience,true,"InteriorVent");
         lib.SuitVent=Bank("SuitVent",lib.SuitBreath,-29,0,2,205,SoundDef.MixRole.Ambience,true,"SuitVent");
         var motor=AssetDatabase.LoadAssetAtPath<SoundDef>(Root+"Airlock/SoundDefs/Pump_Loop.asset");
@@ -32,8 +32,9 @@ public static class MoonkovPresenceAudioSetup
         lib.LiftGate=Bank("LiftGate",gate,-12,24,4,100,SoundDef.MixRole.Interaction,true);
         lib.LiftStart=Bank("LiftStart",lib.Equipment,-14,22,4,100,SoundDef.MixRole.Interaction,false);
         lib.LiftStop=Bank("LiftStop",latch,-14,28,4,90,SoundDef.MixRole.Interaction,false);
-        Level(lib.Cloth,-21);Level(lib.GearMotion,-19);Level(lib.StanceChange,-19);Level(lib.Crawl,-17);Level(lib.Jump,-20);
+        Level(lib.GearMotion,-19);Level(lib.StanceChange,-19);Level(lib.Crawl,-17);Level(lib.Jump,-11);Level(lib.Land,-11);
         EditorUtility.SetDirty(lib);AssetDatabase.SaveAssetIfDirty(lib);
+        MovementFoleySetup.Install();
     }
     static void Level(SoundDef sound,float db)
     { sound.PitchAndVolumeInfo.VolumeMin=db-2;sound.PitchAndVolumeInfo.VolumeMax=db;EditorUtility.SetDirty(sound);AssetDatabase.SaveAssetIfDirty(sound); }

@@ -70,8 +70,15 @@ def main():
     lines += ['', '路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。', '',
               '原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。',
               '猎杀针剂详表：`SourceData/Audio/MedicalFoley/Sources.json` 与 `Assets/Audio/Moonkov/MedicalFoleySources.json`。',
-              '重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 与 `TacticalFoleySetup.Install()`。',
+              '重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 、`TacticalFoleySetup.Install()` 与 `MovementFoleySetup.Install()`。',
               '本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。', '']
+    breath = json.loads((ROOT / 'Assets/Audio/Moonkov/StaminaBreathSources.json').read_text())
+    lines += ['## 真人急喘录音', '', '以下为 CC0 真人录音。保存的是 Freesound 高质量 MP3 预览，不是游戏原声或无损原文件。', '',
+              '| 成品文件 | 用途 | 作者 / 授权 | 录音出处 | 原片段 |', '| --- | --- | --- | --- | --- |']
+    for clip in breath['clips']:
+        excerpt = '–'.join(f"{v:.2f}" for v in clip['source_excerpt_seconds'])
+        lines.append(f"| `{clip['asset']}` | 低体力与耗尽体力急喘 | {breath['author']} / {breath['license']} | [woman run and breath.wav]({breath['source_page']}) | {excerpt} 秒 |")
+    lines += ['', '急喘重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。', '']
     (ROOT / 'Assets/StreamingAssets/MoonkovGameAudioSources.md').write_text('\n'.join(lines))
     print(json.dumps(dict(clips=len(records), seconds=sum(r['seconds'] for r in records)), ensure_ascii=False))
 

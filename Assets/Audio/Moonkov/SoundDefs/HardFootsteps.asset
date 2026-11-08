@@ -26,14 +26,10 @@ MonoBehaviour:
   PlaybackType: 1
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: daf38418ffd654305becb6c4a49e24c9, type: 3}
-  - {fileID: 8300000, guid: 0e908a3d8d82b44e19047ce84e7962ec, type: 3}
-  - {fileID: 8300000, guid: 73cf9ecb2dbef469eb68d8bafc4967d6, type: 3}
-  - {fileID: 8300000, guid: 4173278d6a2234cd6913dbc0fead15d1, type: 3}
-  - {fileID: 8300000, guid: ff0378776ca6145ffaafb2a178178391, type: 3}
-  - {fileID: 8300000, guid: 9262b8c49b1fb48919ac6499e5dec0f0, type: 3}
-  - {fileID: 8300000, guid: 58aa4f2c991c64e2d909aabe038024c9, type: 3}
-  - {fileID: 8300000, guid: 126c52a057d6d49a6a24dc474dd3a995, type: 3}
+  - {fileID: 8300000, guid: f5b50bc77e51640278cc13a96bd648ca, type: 3}
+  - {fileID: 8300000, guid: cc4388929f2a341ccbd95d861068a376, type: 3}
+  - {fileID: 8300000, guid: 547bf4d3306e24c09ac9320c3060ef67, type: 3}
+  - {fileID: 8300000, guid: a3b38faa189a34d0f8e36103e948011e, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -45,10 +41,10 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -15
-    VolumeMax: -14
-    PitchMin: -45
-    PitchMax: 45
+    VolumeMin: -6
+    VolumeMax: -5
+    PitchMin: -25
+    PitchMax: 25
   DistanceInfo:
     VolumeDistMin: 1.5
     VolumeDistMax: 14
@@ -66,9 +62,9 @@ MonoBehaviour:
     PanMin: 0
     PanMax: 0
   LowPassFilter:
-    EnableComponent: 1
-    CutoffMin: 14000
-    CutoffMax: 14000
+    EnableComponent: 0
+    CutoffMin: 22000
+    CutoffMax: 22000
   HighPassFilter:
     EnableComponent: 0
     CutoffMin: 22000

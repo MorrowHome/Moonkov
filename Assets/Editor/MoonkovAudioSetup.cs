@@ -205,6 +205,7 @@ public static class MoonkovAudioSetup
         if (overwriteExisting || !library.AirlockButtonPress) AirlockButtonAudioSetup.Install();
         if (overwriteExisting || !library.InventoryOpen || !library.WeaponDraw) InteractionFoleySetup.Install();
         if (overwriteExisting || !library.TacticalFireLoop) TacticalFoleySetup.Install();
+        if (overwriteExisting) { MoonkovPresenceAudioSetup.Install(); MoonkovRaidAudioSetup.InstallBreathing(); }
         Debug.Log($"Moonkov audio: {written} SoundDefs written, {kept} left as they were, " +
                   $"{CountClips()} clips in the table.");
     }

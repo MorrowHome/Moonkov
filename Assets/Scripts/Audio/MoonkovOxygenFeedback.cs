@@ -52,15 +52,17 @@ namespace Unity.MP_FPS
             float effort = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.12f, 1, fatigue));
             if (state.ControllerState.Sprinting && state.ControllerState.MovementSpeed > .1f)
                 effort = Mathf.Max(effort, .35f);
-            if (state.TacticalSprintExhausted) effort = Mathf.Max(effort, .85f);
+            if (state.TacticalSprintExhausted) effort = 1;
             if (state.CurrentHealth < state.MaxHealth * .35f) effort = Mathf.Max(effort, .55f);
             var urgency = Urgency(state);
             if (urgency == OxygenUrgency.Depleted) effort = 1;
             else if (urgency == OxygenUrgency.Critical) effort = Mathf.Max(effort, .75f);
             else if (urgency == OxygenUrgency.Low) effort = Mathf.Max(effort, .45f);
             if (state.BreathableAir && effort <= .01f) return default;
-            return new OxygenBreath(true, Mathf.Lerp(4.1f, 2.4f, effort),
-                Mathf.Lerp(.7f, 1.25f, effort), Mathf.Lerp(0, 60, effort), effort >= .3f);
+            bool exerted = effort >= .45f;
+            float interval = exerted ? Mathf.Lerp(2.6f, 1.7f, Mathf.InverseLerp(.45f, 1, effort)) :
+                Mathf.Lerp(4.1f, 3.5f, effort / .45f);
+            return new OxygenBreath(true, interval, Mathf.Lerp(.8f, 1.2f, effort), 0, exerted);
         }
     }
 

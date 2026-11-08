@@ -24,6 +24,10 @@ public static class MoonkovBreathingAudioChecks
             "Lower stamina increases breathing volume");
         Check(fresh.Interval > tired.Interval && tired.Interval > empty.Interval,
             "Lower stamina increases breathing cadence");
+        Check(empty.Exerted && empty.Interval <= 1.8f && empty.Pitch == 0, "Exhaustion uses natural fast panting");
+        state.TacticalSprintStamina = 50; state.TacticalSprintExhausted = true;
+        Check(MoonkovOxygenFeedback.Breath(state).Interval == empty.Interval, "Exhausted latch retains heavy breathing during initial recovery");
+        state.TacticalSprintExhausted = false; state.TacticalSprintStamina = 0;
         state.ControllerState.Sprinting = false; state.ControllerState.MovementSpeed = 0;
         Check(MoonkovOxygenFeedback.Breath(state).Audible, "Stopping sprint cannot instantly remove exhaustion");
         state.TacticalSprintStamina = 60;
@@ -57,6 +61,11 @@ public static class MoonkovBreathingAudioChecks
         Check(cadence.Observe(empty, 10.8f, false), "Breathing resumes after the voice finishes");
         Check(!cadence.Observe(default, 11, false) && !cadence.Observe(empty, 11.1f, false), "Recovery resets cadence");
 
+        cadence.Reset();
+        cadence.Observe(calm, 0, false); Check(cadence.Observe(calm, .5f, false), "Calm cycle starts");
+        Check(!cadence.Observe(empty, .6f, false) && cadence.Observe(empty, .7f, false),
+            "Exhaustion must not wait for the old calm timer");
+
         var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
         Check(lib.SuitBreath && lib.SuitBreathEffort, "Both breathing banks are bound");
         for (int stamina = 0; stamina <= 100; stamina++)
@@ -64,17 +73,21 @@ public static class MoonkovBreathingAudioChecks
             state.CurrentHealth = state.MaxHealth; state.TacticalSprintStamina = stamina;
             var breath = MoonkovOxygenFeedback.Breath(state);
             var bank = breath.Exerted ? lib.SuitBreathEffort : lib.SuitBreath;
-            Check(bank.Clips[0].length / Mathf.Pow(2, breath.Pitch / 1200) < breath.Interval,
+            Check(bank.Clips.TrueForAll(c => c.length / Mathf.Pow(2, breath.Pitch / 1200) < breath.Interval),
                 "The whole inhale/exhale must fit before the next breath");
         }
         foreach (var bank in new[] { lib.SuitBreath, lib.SuitBreathEffort })
         {
             Check(bank.DistanceInfo.SpatialBlend == 0 && bank.MixerGroup == SoundMixer.SoundMixerGroup.SFX &&
-                bank.MaxVoices == 1 && bank.PitchAndVolumeInfo.VolumeMax == -12, "Close body sound and bounded SFX routing");
+                bank.MaxVoices == 1 && bank.PitchAndVolumeInfo.VolumeMax >= -10, "Close body sound and bounded SFX routing");
             var clip = bank.Clips[0];
             Check(clip.channels == 1 && clip.frequency == 48000 && clip.loadType == AudioClipLoadType.DecompressOnLoad,
                 "Breathing uses preloaded mono PCM");
         }
+        Check(lib.SuitBreathEffort.Clips.Count == 3 && lib.SuitBreathEffort.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast &&
+            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMin >= -3 &&
+            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMin - lib.SuitBreath.PitchAndVolumeInfo.VolumeMax >= 7,
+            "Distinct panting takes must be substantially louder than calm breathing");
         return $"PASS: {s_Checks} stamina breathing, continuous cadence, voice priority and asset checks.";
     }
 }
