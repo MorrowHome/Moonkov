@@ -42,6 +42,8 @@ MonoBehaviour:
   BottleClose: {fileID: 11400000, guid: 0bb021692ef0e450f924403613d71b8f, type: 2}
   MedicalHandling: {fileID: 11400000, guid: bd4ddf114e67f4777b7d7f9a87985b23, type: 2}
   OxygenCanisterFlow: {fileID: 11400000, guid: de53c14245a3d4adcbb71f368e7424c3, type: 2}
+  MedicalOpen: {fileID: 11400000, guid: e94328a2ae8424cdc81b912b7918afbc, type: 2}
+  MedicalGel: {fileID: 11400000, guid: 34dfce10b8a1d48179821292b6e194fc, type: 2}
   Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
   Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
   LootSearchWorld: {fileID: 11400000, guid: a05f97827eaa46feaefe1e2ed7f6f5ca, type: 2}

@@ -27,6 +27,8 @@ namespace Unity.MP_FPS
             var library = MoonkovAudio.Library;
             if (!library) return;
             code = code ?? string.Empty;
+            bool wrapping = kind == HandAction.Treat &&
+                (code == "trauma_kit" || code == "hemostatic_bandage" || code == "rescue_kit");
             SoundSystem.SoundInfo Play(SoundDef sound, float gain=1) =>
                 MoonkovAudio.PlayWeaponLayer(sound, position, gain, owner ? 0 : 1, follow: follow);
             bool Crossed(int marker, float at)
@@ -39,7 +41,7 @@ namespace Unity.MP_FPS
                 var sound = kind == HandAction.RefillOxygen ? library.Equipment : kind == HandAction.Inject ? library.InjectorCap :
                     kind == HandAction.Drink && code == "water" ? library.BottleOpen :
                     kind == HandAction.Eat && !code.StartsWith("alien_", System.StringComparison.Ordinal) ||
-                    kind == HandAction.Drink ? library.PacketOpen : kind == HandAction.Treat ? library.MedicalHandling : null;
+                    kind == HandAction.Drink ? library.PacketOpen : wrapping ? library.MedicalOpen : kind == HandAction.Treat ? library.PacketOpen : null;
                 openSound = Play(sound);
             }
             if(kind==HandAction.Drink&&code=="water"&&Crossed(4,.74f))closeSound=Play(library.BottleClose);
@@ -51,7 +53,7 @@ namespace Unity.MP_FPS
             if (firstContact)
             {
                 var sound = kind == HandAction.Eat || kind == HandAction.Drink ? mouth :
-                    kind == HandAction.Inject ? library.InjectorPress : kind == HandAction.Treat ? library.MedicalHandling : null;
+                    kind == HandAction.Inject ? library.InjectorPress : kind == HandAction.Treat && !wrapping ? library.MedicalGel : null;
                 contactSound = Play(sound);
             }
             // A second mouth movement belongs inside the authored contact hold, never the put-away segment.
@@ -61,11 +63,11 @@ namespace Unity.MP_FPS
                 GameManager.Instance?.SoundSystem?.Stop(contactSound, .04f);
                 contactSound = Play(mouth, .85f);
             }
-            bool flowing = kind == HandAction.RefillOxygen && phase >= contactAt && phase < .82f;
+            bool flowing = kind == HandAction.RefillOxygen && phase >= contactAt && phase < .82f || wrapping && phase >= .28f && phase < .88f;
             if (!flowing) { GameManager.Instance?.SoundSystem?.Stop(flowSound, .06f); flowSound = null; }
             else if (flowSound?.Handle?.IsValid() != true && Time.unscaledTime >= flowRetryAt)
             {
-                flowSound = Play(library.OxygenCanisterFlow);
+                flowSound = Play(wrapping ? library.MedicalHandling : library.OxygenCanisterFlow);
                 flowRetryAt = Time.unscaledTime + .25f;
             }
             previous = Mathf.Max(previous, phase);

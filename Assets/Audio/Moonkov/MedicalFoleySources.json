@@ -1,0 +1,137 @@
+{
+  "processing": "Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. No peak compression.",
+  "sources": [
+    {
+      "name": "SyringePop",
+      "author": "Coniela",
+      "page": "https://freesound.org/people/Coniela/sounds/458423/",
+      "download": "https://cdn.freesound.org/previews/458/458423_9092070-hq.mp3",
+      "license": "CC0-1.0",
+      "bytes": 61056
+    },
+    {
+      "name": "ClothWrap1",
+      "author": "Frostnox",
+      "page": "https://freesound.org/people/Frostnox/sounds/796014/",
+      "download": "https://cdn.freesound.org/previews/796/796014_14089324-hq.mp3",
+      "license": "CC-BY-4.0",
+      "bytes": 13920
+    },
+    {
+      "name": "ClothWrap2",
+      "author": "Frostnox",
+      "page": "https://freesound.org/people/Frostnox/sounds/796015/",
+      "download": "https://cdn.freesound.org/previews/796/796015_14089324-hq.mp3",
+      "license": "CC-BY-4.0",
+      "bytes": 11232
+    },
+    {
+      "name": "BandageTear",
+      "author": "SecureSubset",
+      "page": "https://freesound.org/people/SecureSubset/sounds/800275/",
+      "download": "https://cdn.freesound.org/previews/800/800275_16752880-hq.mp3",
+      "license": "CC0-1.0",
+      "bytes": 15469
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/InjectorDryCap.wav",
+      "recipe": "1.735-1.895 s dry plunger pop used as cap foley; filtered, no liquid layer",
+      "loop": false,
+      "seconds": 0.16,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/SyringePop.mp3",
+          "sha256": "00bd239c2a57e09b3ccf98c2be5e204cad7d6222080f289ced3ea2a9ac779c87"
+        }
+      ],
+      "sha256": "4b60fed1e6a0dc5f9572574a6476f6738e498be7043c3e31eb4b8e514b0d8ed4",
+      "peak": 0.6,
+      "rms": 0.057696585532562725
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/InjectorDryPress.wav",
+      "recipe": "Short muffled plunger release with quiet cotton grip texture; no water or squirt",
+      "loop": false,
+      "seconds": 0.34,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/SyringePop.mp3",
+          "sha256": "00bd239c2a57e09b3ccf98c2be5e204cad7d6222080f289ced3ea2a9ac779c87"
+        },
+        {
+          "file": "SourceData/Audio/MedicalFoley/ClothWrap2.mp3",
+          "sha256": "2dcbbbfc3346236f41e04737c0d9c778ed8ec4fb42dd3b64cc05e55d038cda4f"
+        }
+      ],
+      "sha256": "6d2b531f49f57385e98c286a811f755c07ca6868778ed0aa9bdf6bf494df11ec",
+      "peak": 0.6,
+      "rms": 0.04190235654253994
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/BandageOpen.wav",
+      "recipe": "Complete recorded tape/bandage tear",
+      "loop": false,
+      "seconds": 0.8125208333333334,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/BandageTear.mp3",
+          "sha256": "b45782f946533b4b379788ae7f3fc2e66f2425bceb087759b5621e1c18acbf68"
+        }
+      ],
+      "sha256": "dccd33fb77bbd293eea5646d2ab7ef371f39a81277119fb2d7979754daff6b4f",
+      "peak": 0.6,
+      "rms": 0.03250537669512795
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/BandageWrap.wav",
+      "recipe": "Two complete cotton strokes at 0 and 0.62 s, with rest between turns; 1.2 s loop",
+      "loop": true,
+      "seconds": 1.2,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/ClothWrap1.mp3",
+          "sha256": "55f027a65eaf25debcb25e1e9e6236fc4802c29b70dcdeb7e9886d6be8681636"
+        },
+        {
+          "file": "SourceData/Audio/MedicalFoley/ClothWrap2.mp3",
+          "sha256": "2dcbbbfc3346236f41e04737c0d9c778ed8ec4fb42dd3b64cc05e55d038cda4f"
+        }
+      ],
+      "sha256": "ef001fd0e2c9edd70cb856c25fce563bd3b9a7d75c33a980c83d2b4c3b84a34b",
+      "peak": 0.6,
+      "rms": 0.05975362221537896
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/BandageTighten.wav",
+      "recipe": "One complete cotton stroke for tightening the dressing",
+      "loop": false,
+      "seconds": 0.3914166666666667,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/ClothWrap2.mp3",
+          "sha256": "2dcbbbfc3346236f41e04737c0d9c778ed8ec4fb42dd3b64cc05e55d038cda4f"
+        }
+      ],
+      "sha256": "5692163037c30006778cfe97d85e8a961855cd44efc67fffbd96ec3bf38fe03f",
+      "peak": 0.6000000000000001,
+      "rms": 0.07999227056960245
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/MedicalGelRub.wav",
+      "recipe": "Soft cotton-contact foley for applying gel; separate from bandage loop",
+      "loop": false,
+      "seconds": 0.521875,
+      "sources": [
+        {
+          "file": "SourceData/Audio/MedicalFoley/ClothWrap1.mp3",
+          "sha256": "55f027a65eaf25debcb25e1e9e6236fc4802c29b70dcdeb7e9886d6be8681636"
+        }
+      ],
+      "sha256": "0dd42a670944435574ec82a43eb58e47db8a1b0223393305ba639e5fe3a665e0",
+      "peak": 0.6,
+      "rms": 0.06440340117740583
+    }
+  ]
+}

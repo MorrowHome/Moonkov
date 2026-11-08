@@ -23,12 +23,10 @@ public static class ConsumableAudioSetup
         }
         var lib=Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
         lib.BottleClose=Bank("BottleClose",lib.BottleOpen,-16,false,"BottleClose1","BottleClose2","BottleClose3");
-        lib.MedicalHandling=Bank("MedicalHandling",lib.PacketOpen,-14,false,"MedicalHandling1","MedicalHandling2");
-        lib.InjectorPress=Bank("InjectorPress",lib.InjectorPress,-13,false,"InjectorPush1","InjectorPush2");
-        lib.Medical=Bank("Medical",lib.Medical,-17,false,"MedicalFinish");
         lib.OxygenRefill=Bank("OxygenRefill",lib.OxygenRefill,-16,false,"OxygenRelease");
         lib.OxygenCanisterFlow=Bank("OxygenCanisterFlow",lib.OxygenSupply,-16,true);
         EditorUtility.SetDirty(lib);AssetDatabase.SaveAssetIfDirty(lib);
+        MedicalFoleySetup.Install();
     }
     static SoundDef Bank(string name,SoundDef template,float db,bool loop,params string[] clips)
     {

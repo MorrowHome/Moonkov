@@ -972,7 +972,7 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             {
                 BeginTimedAction();
-                TrackInventoryAudio(MoonkovAudio.Library?.Medical);
+                TrackInventoryAudio(item.Code == "medkit" || item.Code == "med_gel" ? null : MoonkovAudio.Library?.Medical);
                 m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
                 m_ActionDuration=Inventory.ConsumableCatalog.MedicalSeconds(item.Code,MoonRaidMap.Active.MedicalSeconds);m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }
