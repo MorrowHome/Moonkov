@@ -47,7 +47,7 @@ namespace Unity.MP_FPS.Moon.Editor
         [Serializable] public sealed class LightSpec
         {
             public string name, type;
-            public float energy;
+            public float energy, probeRange;
             public float[] color, position, forward, up;
             public bool shadow;
         }
@@ -226,6 +226,7 @@ namespace Unity.MP_FPS.Moon.Editor
             if (emission.maxColorComponent > 0)
             {
                 material.SetColor("_EmissionColor", emission);
+                material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
                 material.EnableKeyword("_EMISSION");
             }
             if (row.transparent)
