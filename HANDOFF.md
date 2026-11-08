@@ -434,6 +434,7 @@
 - 北侧 UL39 直达电梯、中央塔 N62 升降台和两台 FT55 接驳升降台已接入正式场景。每台有两处站台呼叫和一个舱内按钮。门洞有人时会等门口清空，关门中进入会反开。先用 `build_gl125_lifts.py` 拆出活动部件，再用 `GL125LiftInstall.Install()` 重装。静态碰撞更新须复用同版本的电梯剔除块，以免原地留下门叶和轿厢碰撞。
 - Blender OptiX 预烘 74 张线性光照图。MC00 的 28 张用 2 倍或 4 倍超采样。程序材质和角色探针使用近似。灯钮按废弃处理。导入、回执和同机位对照见 [GL125 地图接入](Docs/Development/GL125Unity.md)。
 - MC00 和中央塔亮面上的部分黑点来自板缝里的窄折边。关闭太阳或改用无压缩贴图时仍可复现。`soften_gl125_lightmap_seams.py` 用邻近受光面补一点缝口光照，保留深处阴影。原始烘焙重新导入后需再次运行这一步。
+- GL125 的合并渲染块曾包含同向重合面。几何原位相同，UV2 可能不同。用 `build_gl125_surface_cleanup.py` 生成保留面清单，在电梯拆分后执行 `GL125SurfaceCleanup.Install()`。按槽校验完整索引哈希，只改显示网格。
 - 旧整图专用资源已从工作副本清理。旧 `World/Lighting/SourceWorldForwardRenderer.asset` 仍供现有渲染管线使用。D 盘保留旧 LFS 对象和切换前场景，回退见接入文档。
 
 ## 上一版整图静态外观还原（Windows 历史记录）

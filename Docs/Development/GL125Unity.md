@@ -29,4 +29,6 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 
 2026-11-08 修复亮墙和地板接缝的黑点。定位到 MC00 墙板和塔区地板的窄折边。暗处沿边缘露出，画面上形成断点。使用 `Tools/Blender/soften_gl125_lightmap_seams.py PreparedQuality 原始EXR目录 输出目录` 补少量邻近面光照。脚本需要 NumPy、SciPy 和 OpenEXR。42 张图集共修改约 35 万个边缘像素，单张最多约 0.25%。图集大小、UV 和 BC6H 格式沿用。重开正式场景后，74 张光照图全部加载。两处同机位的高反差暗点计数分别从 124 降到 10、从 28 降到 10。对照和原 EXR 备份在 `20261108` 的 `SeamPilot_*`、`Final_*` 和 `LightRepairOriginal`。重新导入原始烘焙后，执行一次脚本，并用输出同名 EXR 覆盖 Unity 光照图。
 
+2026-11-08 清理表面重叠。用 `Tools/Blender/build_gl125_surface_cleanup.py PreparedQuality EXR目录 LiftStage/Lifts.json SurfaceCleanup.json` 生成面索引和哈希。执行 `GL125SurfaceCleanup.Install(SurfaceCleanup.json)`，在 234 个显示块中去除 340,290 个同向重合面。其中 1188 处异材质重合按外饰面或铺装层保留。保留三角面的顶点、材质和光照 UV 沿用原数据。网格包备份在 `20261108_FixtureNoise/MeshesBeforeOverlapCleanup`。
+
 旧 `SourceFidelity/World` 工作副本清理释放约 6.1 GiB。共享的 `SourceWorldForwardRenderer.asset` 和对应 `.meta` 保留。清理回执为 `OldWorldRemoval.json`。回退需要从替换前提交一起恢复正式场景、战术地图底图和旧 World 目录，再用 `git lfs checkout` 恢复旧目录的大文件。切换前场景的独立副本是 `TheophilusGameScene.before-GL125.unity`。
