@@ -3,7 +3,7 @@
 ## 音效资源合并检查（2026-11-08）
 
 - `SoundDef` 通过音频 `.meta` 中的 GUID 绑定素材。跨端合并必须保留原 GUID。音频文件存在、C# 编译通过，都不能证明声音引用完整。合并后在现有 Editor 的 Edit 模式运行 `Tools/Validation/GameAudioAudit.cs` 的 `GameAudioAudit.Run`。
-- 审查 `5949acda3` 时，`BottleClose`、`InjectorCap`、`InjectorPress`、`Medical`、`MedicalGel`、`MedicalHandling`、`MedicalOpen`、`OxygenRefill` 共 8 组音效有 10 个失效引用。音频导入配置换了 GUID，声音定义仍引用旧编号。已在现有 Editor 复现这 8 组声音均在 `SoundGameObject.TriggerAudioSource` 读取 `clip.samples` 时抛出空引用异常。该问题尚未修复，打包前须恢复引用并重新运行音频审计。
+- 已修复 `5949acda3` 中 8 组音效、10 个失效引用。`InjectorPress` 保留后续接入的 `InjectorHuntShot` 原声。瓶盖与补氧素材的导入参数也被合并重置，现已恢复为单声道、48 kHz、PCM、预加载，并关闭归一化。只恢复引用不够，还要保存正确的 `.meta`。刷新后完整音频审计通过：95 个音库入口、180 组声音、302 个素材、14 组既有回归。
 
 ## 再生针剂（2026-11-08）
 
