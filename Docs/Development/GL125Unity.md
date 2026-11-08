@@ -7,6 +7,7 @@
 - `Tools/Blender/build_gl125_collision.py` 从当前可见结构生成静态碰撞，按实际尺寸筛掉小件和薄装饰。单面结构片补反面，地形直接使用显示网格。旧 V73 代理不进入正式场景。输出 `PreparedQuality/StaticCollision/Collision.json`，绑定原渲染 `World.json` 哈希。传入 `Evaluated`、`PreparedQuality` 和 `GL124_PLACEMENT_CONTRACT.json`。只修现有地图碰撞时执行 `GL125SceneInstall.ReplaceStaticCollision(工作目录)`。
 - `Tools/Blender/bake_gl125.py` 用 Cycles OptiX 计算 486 盏固定灯的光照，分离线性 EXR 与材质。图集为 50 张 2K、24 张 4K，每张 128 次采样。主日照及阴影在 Unity 实时计算。按同一 `World.json` 哈希和各图集回执续烘。
 - `GL125WorldAssets` 导入 Unity 原生网格、材质和光照图。URP Lit 使用实际能直接映射的基色、法线及 PBR 参数。复杂程序材质使用近似参数。角色探针基于新版灯位和新碰撞估算。局部反射需要单独制作。
+- GL125 的 256 块 `DEM_` 使用从 `TheophilusOriginalRegolith` 恢复的月壤材质。Unity 用原月壤的多尺度纹理、法线和月面反射计算日照，并从网格 UV2 取现有的非方向性 Blender 光照图。材质须同时保存 `_MeshLightmap` 和 `_MOON_MESH_LIGHTMAP`，否则阴影区会失去间接光。
 - `GL125SceneInstall` 保留气闸、任务设备、补氧区和搜刮规则。旧抽屉的交互引用改为独立位置锚点。气闸结构传声引用指向新版 MC00 碰撞。灯钮按废弃处理。
 - `GL125AirlockInstall.Install(工作目录)` 接入 MC00 东 EVA、西货运和北人员三处。西、北的内外门叶按原门框尺寸制作。每处有室内和室外呼叫台，舱内有去室内和去室外两台。按 F 后，气闸先关另一扇门，再均压并开启目标门。门洞有人时禁止关闭，关门中有人进入时反开并取消本次请求。
 - `Tools/Blender/build_gl125_lifts.py Evaluated PreparedQuality LiftStage` 从原渲染和碰撞中拆出四台电梯的 47 组活动部件。`GL125LiftInstall.Install(LiftStage)` 写入正式场景。UL39 北侧直达上升 51 米，中央塔 N62 上升 48.3 米，FT55 上下两台各上升 1.3 米。每台有上下站呼叫和舱内换层，共 12 个控制点。N62 上站饰条随门叶移动。FT55 的开门行程在源动画基础上加高，使站立的玩家可以通过。

@@ -205,6 +205,17 @@ namespace Unity.MP_FPS.Moon.Editor
             var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (existing) return existing;
             var row = manifest.materials[id];
+            if (row.name == "R8_Reference_DEM_TwoLayer_Regolith")
+            {
+                const string templatePath = "Assets/MoonEnvironment/Variants/TheophilusBase/Materials/TheophilusOriginalRegolith.mat";
+                var template = AssetDatabase.LoadAssetAtPath<Material>(templatePath);
+                if (!template) throw new FileNotFoundException("Original lunar regolith is missing.", templatePath);
+                var regolith = new Material(template) { name = "GL125 Regolith" };
+                regolith.SetFloat("_MeshLightmap", 1);
+                regolith.EnableKeyword("_MOON_MESH_LIGHTMAP");
+                AssetDatabase.CreateAsset(regolith, path);
+                return regolith;
+            }
             var shader = Shader.Find("Universal Render Pipeline/Lit");
             if (!shader || !shader.isSupported) throw new InvalidOperationException("URP Lit is required for GL125.");
             var material = new Material(shader) { name = row.name };

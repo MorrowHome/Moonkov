@@ -496,6 +496,7 @@
 - 整面斑驳来自光照贴图内的亮度波动。接缝修复后再运行 `filter_gl125_planar_irradiance.py`。按平面和 UV 图块限制处理范围，保留明显的灯影边界。整面放大对照见接入文档。
 - GL125 的合并渲染块曾包含同向重合面。几何原位相同，UV2 可能不同。用 `build_gl125_surface_cleanup.py` 生成保留面清单，在电梯拆分后执行 `GL125SurfaceCleanup.Install()`。按槽校验完整索引哈希，只改显示网格。
 - GL125 固定灯使用 Blender 光照图、灯罩自发光和角色光探针。URP 导入灯罩时设为 BakedEmissive，否则重载可能关闭发光。正式场景的固定灯源组默认关闭，供后续烘焙使用。整图重装后按接入文档恢复灯源和探针。
+- GL125 自然地面恢复原 Regolith 月壤。网格材质保留 `_MeshLightmap` 和同名功能的着色器关键字，继续按 UV2 使用现有 Blender 光照图。旧 Unity Terrain 材质沿用原设置。
 - 旧整图专用资源已从工作副本清理。旧 `World/Lighting/SourceWorldForwardRenderer.asset` 仍供现有渲染管线使用。D 盘保留旧 LFS 对象和切换前场景，回退见接入文档。
 
 ## 上一版整图静态外观还原（Windows 历史记录）

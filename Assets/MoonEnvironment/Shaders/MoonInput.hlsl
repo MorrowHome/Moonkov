@@ -61,6 +61,9 @@ struct MoonAttributes
     float3 normalOS : NORMAL;
     float4 tangentOS : TANGENT;
     float2 uv : TEXCOORD0;
+#if defined(MOON_TERRAIN) && defined(_MOON_MESH_LIGHTMAP) && defined(LIGHTMAP_ON)
+    float2 staticLightmapUV : TEXCOORD1;
+#endif
     float4 color : COLOR;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
@@ -73,6 +76,9 @@ struct MoonVaryings
     float2 uv : TEXCOORD3;
     float4 shadowCoord : TEXCOORD4;
     half4 rockData : TEXCOORD5;
+#if defined(MOON_TERRAIN) && defined(_MOON_MESH_LIGHTMAP) && defined(LIGHTMAP_ON)
+    float2 staticLightmapUV : TEXCOORD6;
+#endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -93,6 +99,9 @@ MoonVaryings MoonVertex(MoonAttributes input)
     output.tangentWS = half4(TransformObjectToWorldDir(input.tangentOS.xyz), input.tangentOS.w * GetOddNegativeScale());
 #endif
     output.uv = input.uv;
+#if defined(MOON_TERRAIN) && defined(_MOON_MESH_LIGHTMAP) && defined(LIGHTMAP_ON)
+    OUTPUT_LIGHTMAP_UV(input.staticLightmapUV, unity_LightmapST, output.staticLightmapUV);
+#endif
     output.rockData = input.color;
     output.shadowCoord = GetShadowCoord(position);
     return output;
