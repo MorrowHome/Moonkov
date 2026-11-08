@@ -475,9 +475,9 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ClearFieldRecords(); UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearFieldRecords(); UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
@@ -574,6 +574,7 @@ namespace Unity.MP_FPS
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
             bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
+            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, position, deathBags);
             if (!interactionVisible)
             {
                 m_Interaction.EnableInClassList("is-visible", false);
@@ -1034,6 +1035,7 @@ namespace Unity.MP_FPS
         {
             ReleaseResearchHold();
             ClearFieldRecords();
+            m_InteractionOutline.Dispose();
             ClearInventoryBackdrop();
             m_Root?.UnregisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;

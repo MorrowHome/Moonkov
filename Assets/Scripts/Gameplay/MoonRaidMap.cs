@@ -204,6 +204,7 @@ namespace Unity.MP_FPS
         private readonly System.Collections.Generic.List<int> m_HiddenBags = new System.Collections.Generic.List<int>();
         internal Transform LootVisual(int index) => m_Markers != null && index >= 0 && index < m_Markers.Length && m_Markers[index]
             ? m_Markers[index].transform : null;
+        internal Transform DeathBagVisual(int id) => m_DeathBags.TryGetValue(id, out var visual) && visual ? visual.transform : null;
 
         public bool TryGetCorpseAimPoint(int lootId, Camera camera, out Vector3 point)
         {
