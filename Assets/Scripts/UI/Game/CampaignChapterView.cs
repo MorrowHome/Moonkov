@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.MP_FPS.Campaign;
@@ -11,7 +10,7 @@ namespace Unity.MP_FPS.Client
     internal sealed class CampaignChapterView : IDisposable
     {
         private readonly Func<CampaignProgress> m_Read;
-        private readonly Label m_ChapterTitle, m_Saved, m_Title, m_Status, m_Briefing, m_Communications, m_Feedback;
+        private readonly Label m_ChapterTitle, m_Saved, m_Title, m_Status, m_Briefing, m_Feedback;
         private readonly VisualElement m_Nodes;
         private readonly Button m_Track;
         private readonly Dictionary<string, Button> m_Rows = new Dictionary<string, Button>();
@@ -41,7 +40,7 @@ namespace Unity.MP_FPS.Client
             m_ChapterTitle = Element.Q<Label>("campaignChapterHeading"); m_Saved = Element.Q<Label>("campaignChapterSaved");
             m_Title = Element.Q<Label>("campaignSelectedTitle"); m_Status = Element.Q<Label>("campaignSelectedStatus");
             m_Briefing = Element.Q<Label>("campaignSelectedBriefing"); m_Nodes = Element.Q("campaignSelectedNodes");
-            m_Communications = Element.Q<Label>("campaignSelectedCommunications"); m_Feedback = Element.Q<Label>("campaignTrackingStatus");
+            m_Feedback = Element.Q<Label>("campaignTrackingStatus");
             m_Track = Element.Q<Button>("campaignTrack"); m_Track.clicked += ToggleTracking;
             var next = Element.Q<Button>("campaignContinue"); next.text = continueText;
             if (continueAction != null) next.clicked += continueAction; else next.AddToClassList("campaign-hidden");
@@ -109,7 +108,6 @@ namespace Unity.MP_FPS.Client
                 label.EnableInClassList("campaign-complete", done); label.EnableInClassList("campaign-current", node == current);
                 m_Nodes.Add(label);
             }
-            m_Communications.text = Communications(progress, selected);
             bool tracked = !progress.TrackingSuppressed && progress.PrimaryTracked == selected.Id;
             m_Track.text = m_Busy ? "正在保存" : tracked ? "取消追踪" : "追踪目标";
             m_Track.SetEnabled(!m_Busy && selectedStatus != CampaignTaskStatus.Locked && selectedStatus != CampaignTaskStatus.Completed);
@@ -127,22 +125,6 @@ namespace Unity.MP_FPS.Client
                 case CampaignTaskStatus.Locked: return "待前置完成";
                 default: return "可推进";
             }
-        }
-
-        private static string Communications(CampaignProgress progress, TaskDefinition task)
-        {
-            var text = new StringBuilder();
-            if (task.Id == "CM01") text.Append(string.Join("\n\n", TutorialRules.Introduction)).Append("\n\n");
-            var current = CampaignRules.CurrentNode(progress, task.Id);
-            for (int i = 0; i < task.Nodes.Length; i++)
-            {
-                var node = task.Nodes[i];
-                if (string.IsNullOrEmpty(node.Briefing) || !CampaignRules.NodeCompleted(progress, task.Id, i) && node != current) continue;
-                if (text.Length > 0) text.Append("\n\n"); text.Append(node.Briefing);
-            }
-            if (CampaignRules.Status(progress, task.Id) == CampaignTaskStatus.Completed)
-            { if (text.Length > 0) text.Append("\n\n"); text.Append(task.CompletionText); }
-            return text.Length == 0 ? "当前没有新的通讯记录。" : text.ToString();
         }
 
         private async void ToggleTracking()

@@ -186,6 +186,15 @@ namespace Unity.MP_FPS.Client
         private static string Description(string code)
         {
             var organ=AlienBiology.Organ(code);if(organ!=null)return MoonkovLocalization.Text(organ.Description);
+            if (InventoryCatalog.IsResearchSupply(code))
+                return code switch
+                {
+                    ResearchQuestRules.Tablet => ResearchQuestCopy.Text("研究员的便携平板，存有事故前的个人日志。", "The crew's portable terminal with logs from before the incident."),
+                    ResearchQuestRules.Flash => ResearchQuestCopy.Text("配发的数据 U 盘，用于读取管理员工作站。", "Mission-issued drive for the administrator workstation."),
+                    ResearchQuestRules.Drive => ResearchQuestCopy.Text("配发的移动硬盘，用于拷贝研究服务器的数据。", "Mission-issued drive for copying data from the research server."),
+                    ResearchQuestRules.Sample => ResearchQuestCopy.Text("从一具遗骸取得的封存样本。成功撤离后交给研究部。", "A sealed sample from one specimen. Extract to deliver it to research."),
+                    _ => ResearchQuestCopy.Text("封存的研究材料。用光环收纳形态运回。", "Sealed research materials for transport in the Halo storage form.")
+                };
             string description;
             switch (code)
             {

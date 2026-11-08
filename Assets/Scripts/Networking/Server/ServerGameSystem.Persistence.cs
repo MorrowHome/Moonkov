@@ -26,6 +26,7 @@ namespace Unity.MP_FPS
 
         public void OnDestroy(ref SystemState state)
         {
+            ResearchQuestRuntime.Clear(state.World);
             if (state.EntityManager.Exists(m_PersistenceEntity) && state.EntityManager.HasComponent<RaidPersistenceContext>(m_PersistenceEntity))
                 Persistence(ref state).Dispose();
         }

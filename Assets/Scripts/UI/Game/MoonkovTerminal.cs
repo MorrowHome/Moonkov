@@ -106,6 +106,7 @@ namespace Unity.MP_FPS.Client
             if (page == 0) m_Home.Show(m_Page != 0);
             else m_Home.Hide();
             if (page == 4 && m_Page != 4) m_OperationStep = 0;
+            if (page != 5) { CloseResearchTasks(); m_FacilityRecords = false; }
             m_Page = page; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
@@ -160,6 +161,9 @@ namespace Unity.MP_FPS.Client
         }
         private void Render()
         {
+            if (m_Page == 5 && m_ResearchTasks != null && PlayerProfileClient.ResearchQuests != null)
+            { m_ResearchTasks.Refresh(); return; }
+            CloseResearchTasks();
             ApplyPageTheme();
             DisposeCharacter();
             m_Content.Clear(); s_FrameDelay = .08f;
@@ -254,6 +258,7 @@ namespace Unity.MP_FPS.Client
 
         private void Tasks()
         {
+            if (TryPresentResearchTasks()) return;
             if (TryPresentCampaignTasks()) return;
             TerminalLayout.Populate(m_Content, "Tasks");
             var graph = PlayerProfileClient.Inventory;
@@ -345,6 +350,7 @@ namespace Unity.MP_FPS.Client
             m_Home.Dispose();
             m_Tutorial?.Dispose();
             m_CampaignTasks?.Dispose();
+            CloseResearchTasks();
             DisposeCharacter();
             m_Windows.Dispose(); m_Content.Clear(); m_ClockTimer.Pause();
             m_IndicatorTimer?.Pause();

@@ -43,7 +43,8 @@ foreach (RaidLootProfile profile in Enum.GetValues<RaidLootProfile>())
 var eligible = InventoryCatalog.Definitions.Values.Where(definition =>
     definition.Kind != ItemKind.Root && definition.Kind != ItemKind.SecureContainer &&
     !definition.Code.StartsWith("alien_", StringComparison.Ordinal) &&
-    !MissionInventory.IsArtifact(definition.Code) && definition.Code != "halo_mooncore_recycler")
+    !MissionInventory.IsArtifact(definition.Code) && !InventoryCatalog.IsResearchSupply(definition.Code) &&
+    definition.Code != "halo_mooncore_recycler")
     .Select(definition => definition.Code).ToHashSet();
 var profiles = Enum.GetValues<RaidLootProfile>();
 var themeScores = new int[profiles.Length, profiles.Length];
