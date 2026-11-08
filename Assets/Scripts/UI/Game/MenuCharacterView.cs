@@ -153,7 +153,7 @@ namespace Unity.MP_FPS.Client
             Zoom = Mathf.Clamp(Zoom * Mathf.Exp(-Mathf.Clamp(evt.delta.y, -40, 40) * .08f), .65f, 3f);
             m_ViewDirty = true;
             evt.StopPropagation();
-            evt.PreventDefault();
+            (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);
         }
         private void EndInspect(PointerUpEvent evt)
         {

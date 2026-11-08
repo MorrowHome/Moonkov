@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
                         var link = new NavMeshLinkData { startPosition = coarse.position, endPosition = detailed.position,
                             width = 1, bidirectional = true, costModifier = -1, agentTypeID = settings.agentTypeID };
                         var instance = NavMesh.AddLink(link);
-                        if (instance.valid) m_MissionNavLinks.Add(instance);
+                        if (NavMesh.IsLinkValid(instance)) m_MissionNavLinks.Add(instance);
                     }
                 }
                 Debug.Log("[DollSinger AI] MC00 detailed navigation ready; boundary links=" + m_MissionNavLinks.Count);
@@ -69,7 +69,7 @@ namespace Unity.MP_FPS
         private void ReleaseMissionNavigation()
         {
             if (m_MissionNavBuild != null && !m_MissionNavBuild.isDone && m_MissionNavData) NavMeshBuilder.Cancel(m_MissionNavData);
-            foreach (var link in m_MissionNavLinks) if (link.valid) link.Remove();
+            foreach (var link in m_MissionNavLinks) if (NavMesh.IsLinkValid(link)) NavMesh.RemoveLink(link);
             m_MissionNavLinks.Clear();
             if (m_MissionNavInstance.valid) m_MissionNavInstance.Remove();
             if (m_MissionNavData) Object.Destroy(m_MissionNavData);

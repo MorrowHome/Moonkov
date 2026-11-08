@@ -139,8 +139,8 @@ namespace Unity.MP_FPS.Client
             if (!preserveImpactTail) m_Audio.Suspend();
             m_Tick.Pause(); m_LastTick = double.NaN; m_Root.style.display = DisplayStyle.None;
         }
-        private static void BlockKey(KeyDownEvent evt) { evt.StopImmediatePropagation(); evt.PreventDefault(); }
-        private static void BlockNavigation(NavigationMoveEvent evt) { evt.StopImmediatePropagation(); evt.PreventDefault(); }
+        private static void BlockKey(KeyDownEvent evt) { evt.StopImmediatePropagation(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt); }
+        private static void BlockNavigation(NavigationMoveEvent evt) { evt.StopImmediatePropagation(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt); }
         private void Detached(DetachFromPanelEvent evt) { m_Audio.Suspend(); m_Tick.Pause(); m_LastTick = double.NaN; }
         private void Attached(AttachToPanelEvent evt)
         {

@@ -47,7 +47,7 @@ namespace Unity.MP_FPS
         }
         private static void EnsurePump()
         {
-            if (UnityEngine.Object.FindFirstObjectByType<LanRoomPump>() != null) return;
+            if (UnityEngine.Object.FindAnyObjectByType<LanRoomPump>() != null) return;
             var go = new GameObject("LAN room connection"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<LanRoomPump>();
         }
         public static async Task CreateAsync(string name, string playerName, RaidGameMode mode, int capacity, int port, int gamePort, CancellationToken ct)

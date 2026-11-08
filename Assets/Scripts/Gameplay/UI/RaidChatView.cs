@@ -115,9 +115,9 @@ namespace Unity.MP_FPS
             bool ime = m_Composing || m_ImeFrame == Time.frameCount;
             if (evt.keyCode == KeyCode.Escape && !ime) { m_Cancel(); evt.StopImmediatePropagation(); }
             else if ((evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter) && !ime)
-            { m_Send(); evt.PreventDefault(); evt.StopImmediatePropagation(); }
+            { m_Send(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt); evt.StopImmediatePropagation(); }
             // Tab keeps editing focus. It must never open the inventory.
-            else if (evt.keyCode == KeyCode.Tab) { Input.Focus(); evt.PreventDefault(); evt.StopImmediatePropagation(); }
+            else if (evt.keyCode == KeyCode.Tab) { Input.Focus(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt); evt.StopImmediatePropagation(); }
         }
         private void SwitchChannel()
         {

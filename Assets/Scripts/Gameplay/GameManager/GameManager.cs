@@ -438,7 +438,7 @@ namespace Unity.MP_FPS
                 await Resources.UnloadUnusedAssets();
                 cancellationToken.ThrowIfCancellationRequested();
                 await PrepareCharacterResourcesAsync(client, cancellationToken);
-                foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>(FindObjectsSortMode.None))
+                foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>())
                     await lighting.PrepareResourcesAsync(cancellationToken);
                 await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
                 // Large maps can take longer than the ticket's 60-second lifetime.

@@ -337,7 +337,7 @@ namespace Unity.MP_FPS
             if((!m_Owner || !m_RightHand) && Time.time>=m_NextOwnerSearch)
             {
                 m_NextOwnerSearch=Time.time+1;
-                foreach(var candidate in UnityEngine.Object.FindObjectsByType<DollSingerNetworkPresentation>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+                foreach(var candidate in UnityEngine.Object.FindObjectsByType<DollSingerNetworkPresentation>(FindObjectsInactive.Exclude))
                     if(candidate.OwnedInput){m_Owner=candidate;var animator=candidate.GetComponentInChildren<Animator>();if(animator && animator.isHuman)m_RightHand=animator.GetBoneTransform(HumanBodyBones.RightHand);break;}
             }
             bool third=m_Owner && m_Owner.IsThirdPerson && m_RightHand;

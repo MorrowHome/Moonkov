@@ -335,13 +335,13 @@ namespace Unity.MP_FPS.Client
                 m_ViewOffset = new Vector2(Mathf.Clamp(m_ViewOffset.x, -limit.x, limit.x), Mathf.Clamp(m_ViewOffset.y, -limit.y, limit.y));
                 m_Dirty = true;
             }
-            evt.StopPropagation(); evt.PreventDefault();
+            evt.StopPropagation(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);
         }
         private void ResetInspect(PointerDownEvent evt)
         {
             if (m_Disposed || evt.target != Element || evt.button != 0 || evt.clickCount != 2) return;
             Zoom = 1; m_ViewOffset = Vector2.zero; m_Dirty = true;
-            evt.StopPropagation(); evt.PreventDefault();
+            evt.StopPropagation(); (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);
         }
         private void Warn(string message)
         {
