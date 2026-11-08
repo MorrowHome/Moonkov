@@ -125,7 +125,7 @@ namespace Unity.MP_FPS
                     m_Save = new SaveData { Inventory = InventoryGraph.Create(), Campaign = CampaignRules.Create(),
                         Tutorial = new TutorialProgress { Status = TutorialStatus.Active } };
                     m_Save.Receipts.Add("tutorial/schema-v1", "1");
-                    m_Save.Inventory.AddSupply("dust", 100, "stash");
+                    m_Save.Inventory.AddSupply("dust", InventoryCatalog.StartingDust, "stash");
                     m_Save.Inventory.AddSupply("cells", 12, "stash");
                     m_Save.Inventory.AddSupply("medkit", 4, "stash");
                     Commit(m_Save);

@@ -11,15 +11,17 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
         await EnsureStacksAsync(connection, transaction, playerId, ct);
     }
 
-    public static async Task EnsureStacksAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, CancellationToken ct)
+    public static async Task EnsureStacksAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, CancellationToken ct, int startingDust = 0)
     {
         await using var command = new NpgsqlCommand("""
-            INSERT INTO inventory_stacks (player_id,item_code,grid_x)
-            SELECT $1,code,CASE code WHEN 'dust' THEN 0 WHEN 'alloy' THEN 2 ELSE 4 END
+            INSERT INTO inventory_stacks (player_id,item_code,grid_x,quantity)
+            SELECT $1,code,CASE code WHEN 'dust' THEN 0 WHEN 'alloy' THEN 2 ELSE 4 END,
+                CASE code WHEN 'dust' THEN $2 ELSE 0 END
             FROM item_definitions WHERE code IN ('dust','alloy','cells')
             ON CONFLICT (player_id,item_code) DO NOTHING
             """, connection, transaction);
         command.Parameters.AddWithValue(playerId);
+        command.Parameters.AddWithValue(startingDust);
         await command.ExecuteNonQueryAsync(ct);
     }
 

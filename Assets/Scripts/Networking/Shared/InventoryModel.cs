@@ -29,6 +29,7 @@ namespace Unity.MP_FPS.Inventory
     {
         public const string Stash = "stash", Equipment = "equipment", Pockets = "pockets";
         public const int MaxDepth = 8, MaxItems = 2048;
+        public const int StartingDust = 10_000;
         public const float CarryWeightLimit = 45;
         private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker", "oxygen_canister" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
