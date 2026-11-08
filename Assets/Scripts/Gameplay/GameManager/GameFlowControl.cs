@@ -79,6 +79,12 @@ namespace Unity.MP_FPS
         /// </summary>
         public async void QuitAsync()
         {
+            try
+            {
+                using var sync = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(30));
+                await PlayerProfileClient.FlushMenuInventoryAsync(sync.Token);
+            }
+            catch (Exception ex) { ConnectionSettings.Instance.ConnectionError = ex.Message; return; }
             await DisconnectAndUnloadWorlds();
             await RefundFailedOfflineLoadingAsync();
             await LanRoomClient.LeaveAsync(afterWorldShutdown:true);

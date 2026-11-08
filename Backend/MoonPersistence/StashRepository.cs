@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Npgsql;
+using Unity.MP_FPS.Inventory;
 
 public sealed class StashRepository(NpgsqlDataSource db)
 {
@@ -18,6 +19,7 @@ public sealed class StashRepository(NpgsqlDataSource db)
     public async Task<Profile> ResolveAsync(ResolveProfile request, CancellationToken ct)
     {
         var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(request.GuestToken.ToLowerInvariant())));
+        Guid newPlayerId = Guid.NewGuid();
         await using var connection = await db.OpenConnectionAsync(ct);
         await using var transaction = await connection.BeginTransactionAsync(ct);
         await using var command = new NpgsqlCommand("""
@@ -25,11 +27,12 @@ public sealed class StashRepository(NpgsqlDataSource db)
             ON CONFLICT (guest_token_hash) DO UPDATE SET display_name = EXCLUDED.display_name
             RETURNING id
             """, connection, transaction);
-        command.Parameters.AddWithValue(Guid.NewGuid());
+        command.Parameters.AddWithValue(newPlayerId);
         command.Parameters.AddWithValue(hash);
         command.Parameters.AddWithValue(request.DisplayName);
         var playerId = (Guid)(await command.ExecuteScalarAsync(ct))!;
-        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct);
+        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct,
+            playerId == newPlayerId ? InventoryCatalog.StartingDust : 0);
         var result = await InventoryRepository.ReadAsync(connection, transaction, playerId, ct);
         await transaction.CommitAsync(ct);
         return result;

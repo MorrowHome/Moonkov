@@ -72,7 +72,7 @@ public static class MoonkovAudioSetup
                   PitchCents = 0f, SpreadDb = 0f, Clips = new[] { "Interaction/DeployConfirm.wav" } },
 
         // ---- character ----
-        new Row { Name = "Jump", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -24f, Range = 12f,
+        new Row { Name = "Jump", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -20f, Range = 12f,
                   PitchCents = 55f, Clips = new[] { "Character/Jump.wav" } },
         new Row { Name = "Land", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -17f, Range = 20f,
                   SpreadDb = 2f, PitchCents = 50f,
@@ -89,7 +89,7 @@ public static class MoonkovAudioSetup
                   SpreadDb = 2.5f, PitchCents = 70f,
                   Clips = new[] { "Character/MetalStep1.wav", "Character/MetalStep2.wav",
                                   "Character/MetalStep3.wav", "Character/MetalStep4.wav" } },
-        new Row { Name = "Cloth", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -26f, Range = 8f,
+        new Row { Name = "Cloth", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -21f, Range = 8f,
                   SpreadDb = 2f, PitchCents = 80f,
                   Clips = new[] { "Character/Cloth1.wav", "Character/Cloth2.wav" } },
 

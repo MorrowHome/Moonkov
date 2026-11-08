@@ -98,13 +98,17 @@ namespace Unity.MP_FPS.Client
 
         public void Present(string playerName, int character, int dust, int alloy, int cells, bool visible, bool busy, string error = null)
         {
+            var displayed = m_Preview ? null : PlayerProfileClient.MenuInventory;
+            if (displayed != null) { dust = displayed.Count("dust"); alloy = displayed.Count("alloy"); cells = displayed.Count("cells"); }
             m_Host.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             Label("stashAccountName").text = playerName;
             PresentCharacterName(character);
             m_Stacks[0].Quantity = dust; m_Stacks[1].Quantity = alloy; m_Stacks[2].Quantity = cells;
             Label("stashDustCount").text = Number(dust); Label("stashAlloyCount").text = Number(alloy); Label("stashCellsCount").text = Number(cells);
-            Label("stashSyncStatus").text = busy ? "UPDATING..." : error != null ? "UPDATE FAILED" : "UP TO DATE";
-            Label("stashSyncStatus").tooltip = error ?? "Inventory loaded from your account.";
+            bool pending = !m_Preview && PlayerProfileClient.MenuInventoryPending > 0;
+            string failure = error ?? (m_Preview ? null : PlayerProfileClient.MenuInventoryError?.Message);
+            MoonkovLocalization.Set(Label("stashSyncStatus"), busy || pending ? "Syncing inventory…" : failure != null ? "UPDATE FAILED" : "UP TO DATE");
+            Label("stashSyncStatus").tooltip = failure ?? MoonkovLocalization.Text(pending ? "Syncing inventory…" : "Inventory loaded from your account.");
             m_Refresh.SetEnabled(!busy); m_Logout.SetEnabled(!busy); m_Deploy.SetEnabled(!busy); m_MainMenu.SetEnabled(!busy);
             Rebuild();
             m_Terminal.Present(playerName, dust, alloy, cells, busy);

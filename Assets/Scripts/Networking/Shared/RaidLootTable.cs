@@ -53,7 +53,7 @@ namespace Unity.MP_FPS
                 new Entry("ceramic_plate", 16, 1, 2), new Entry("optical_sensor", 10),
                 new Entry("data_drive", 6), new Entry("helium3_sample", 4),
                 new Entry("quantum_core", 2), new Entry("black_box", 2),
-                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
+                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2), new Entry("team_tracker", 2)
             }, 2, 3),
             new Table(new[] { new Entry("cells", 1, 2, 4) }, new[]
             {
@@ -73,7 +73,7 @@ namespace Unity.MP_FPS
                 new Entry("nocturne", 1), new Entry("tempest", 1), new Entry("rondo", 1), new Entry("sundown", 1),
                 new Entry("energy_head_dome", 4), new Entry("energy_shield_generator", 4),
                 new Entry("energy_sword", 3), new Entry("dagger", 5), new Entry("backpack", 3),
-                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
+                new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2), new Entry("team_tracker", 2)
             }, 2, 4)
         };
 
@@ -107,7 +107,7 @@ namespace Unity.MP_FPS
             new Entry("tempest", 1), new Entry("rondo", 1), new Entry("sundown", 1),
             new Entry("rig", 3), new Entry("scout_rig", 4), new Entry("field_rig", 2),
             new Entry("small_pack", 4), new Entry("sling_pack", 5), new Entry("backpack", 2), new Entry("cargo_pack", 1),
-            new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2)
+            new Entry("survey_compass", 3), new Entry("laser_rangefinder", 2), new Entry("team_tracker", 2)
         };
 
         private static readonly Entry[][] DrawerPools =

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Npgsql;
+using Unity.MP_FPS.Inventory;
 
 public sealed class AccountRepository(NpgsqlDataSource db)
 {
@@ -19,6 +20,7 @@ public sealed class AccountRepository(NpgsqlDataSource db)
         await using var connection = await db.OpenConnectionAsync(ct);
         await using var transaction = await connection.BeginTransactionAsync(ct);
         Guid playerId = Guid.NewGuid();
+        Guid newPlayerId = playerId;
         if (request.GuestToken is { Length: 64 } && request.GuestToken.All(Uri.IsHexDigit))
         {
             await using var guest = new NpgsqlCommand("SELECT id FROM players WHERE guest_token_hash = $1 FOR UPDATE", connection, transaction);
@@ -46,7 +48,8 @@ public sealed class AccountRepository(NpgsqlDataSource db)
         await using var retire = new NpgsqlCommand("UPDATE players SET guest_token_hash = NULL WHERE id = $1", connection, transaction);
         retire.Parameters.AddWithValue(playerId);
         await retire.ExecuteNonQueryAsync(ct);
-        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct);
+        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct,
+            playerId == newPlayerId ? InventoryCatalog.StartingDust : 0);
         var session = await CreateSessionAsync(connection, transaction, playerId, request.Username, ct);
         await transaction.CommitAsync(ct);
         return session;

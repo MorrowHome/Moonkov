@@ -58,6 +58,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("sling_pack", 24, 8), new ShopOffer("cargo_pack", 96, 32),
             new ShopOffer("secure_case", 48, 16),
             new ShopOffer("survey_compass", 12, 4), new ShopOffer("laser_rangefinder", 24, 8),
+            new ShopOffer("team_tracker", 36, 12),
             new ShopOffer("circuit_board", -1, 8), new ShopOffer("copper_coil", -1, 6),
             new ShopOffer("ceramic_plate", -1, 7), new ShopOffer("optical_sensor", -1, 16),
             new ShopOffer("data_drive", -1, 28), new ShopOffer("helium3_sample", -1, 45),
@@ -86,6 +87,15 @@ namespace Unity.MP_FPS.Inventory
     public static class ShopRules
     {
         public static string Apply(InventoryGraph graph, ShopCommand command, out InventoryGraph updated)
+            => Apply(graph, command, ShopCatalog.Offers, out updated);
+
+        // Preview uses the downloaded catalogue. Backend commits always use Apply above.
+        public static string Preview(InventoryGraph graph, ShopCommand command, ShopOffer[] offers, out InventoryGraph updated)
+        {
+            if (!ShopCatalog.ValidOffers(offers)) { updated = null; return "shop_invalid"; }
+            return Apply(graph, command, offers, out updated);
+        }
+        private static string Apply(InventoryGraph graph, ShopCommand command, ShopOffer[] offers, out InventoryGraph updated)
         {
             updated = null;
             if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null ||
@@ -129,7 +139,7 @@ namespace Unity.MP_FPS.Inventory
             }
             else
             {
-                var offer = ShopCatalog.Find(command.Code);
+                var offer = offers.FirstOrDefault(entry => entry.Code == command.Code);
                 var definition = InventoryCatalog.Get(command.Code);
                 if (offer == null || definition == null || command.Quantity < 1 || command.Quantity > definition.MaxStack) return "shop_invalid";
                 if (command.Operation == ShopOperation.Buy)
@@ -138,7 +148,7 @@ namespace Unity.MP_FPS.Inventory
                     // Free test supplies must not become an unlimited source of dust.
                     // Reuse the persisted emergency provenance so splitting, looting,
                     // deployment and settlement preserve the sale restriction.
-                    bool freeSupply = offer.BuyDust == 0;
+                    bool freeSupply = offer.BuyDust == 0 && offer.FreeSupplyRestricted;
                     int cost = offer.BuyDust * command.Quantity;
                     if (copy.Count("dust") < cost) return "shop_insufficient_dust";
                     foreach (var stack in copy.Items.Where(i => i.Code == "dust").ToArray())

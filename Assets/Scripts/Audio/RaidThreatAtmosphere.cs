@@ -15,6 +15,9 @@ namespace Unity.MP_FPS
         private MoonRaidMap m_Map;
         private ISoundSystem m_System;
         private SoundSystem.SoundInfo m_Bed, m_Creak;
+        private SoundSystem.SoundInfo m_ContextBed;
+        private SoundDef m_ContextSound;
+        private float m_ContextGain;
         private Volume m_Volume;
         private VolumeProfile m_Profile;
         private Vignette m_Vignette;
@@ -53,6 +56,11 @@ namespace Unity.MP_FPS
 
         private void Update()
         {
+            if (Valid(m_ContextBed))
+            {
+                m_ContextGain = Mathf.MoveTowards(m_ContextGain, 1, Time.unscaledDeltaTime * .7f);
+                m_ContextBed.Handle.Emitter.SetVolume(m_ContextGain);
+            }
             if (Time.time < m_NextSample) return;
             m_NextSample = Time.time + .5f;
             if (!m_Map || m_System == null ||
@@ -64,8 +72,15 @@ namespace Unity.MP_FPS
                 return;
             }
             var player = players[0];
+            var state = player.GhostGameObject.ReadGhostComponentData<PredictedPlayerGhost>();
             BindCamera(player.GetPlayerCamera());
             Vector3 listener = player.CameraTarget ? player.CameraTarget.position : player.transform.position;
+            var contextSound = state.BreathableAir ? MoonkovAudio.Library?.InteriorVent : MoonkovAudio.Library?.SuitVent;
+            if (contextSound != m_ContextSound || contextSound && !Valid(m_ContextBed))
+            {
+                Stop(ref m_ContextBed); m_ContextSound = contextSound; m_ContextGain = 0;
+                m_ContextBed = MoonkovAudio.PlayWeaponLayer(contextSound, listener, 0, 0);
+            }
             bool nearby = ProceduralAlienEnemy.TryGetNearbySoundSource(player.World, listener,
                 creatureSoundRange, out var source);
             float pressure = nearby ? 1 - Mathf.Clamp01(Vector3.Distance(listener, source) / creatureSoundRange) : 0;
@@ -76,12 +91,12 @@ namespace Unity.MP_FPS
             if (!Valid(m_Bed))
             {
                 m_Bed = MoonkovAudio.Play(environmentBed, listener, .1f);
-                m_NextCreak = Time.time + Range(9, 16);
+                m_NextCreak = Time.time + Range(5, 9);
             }
             if (Valid(m_Bed)) m_Bed.Handle.Emitter.SetVolume(Mathf.Lerp(.45f, .8f, m_Pressure));
             // Creature-local feedback owns idle vocals; the atmosphere layer only supplies the bed/structure.
             if (Time.time < m_NextCreak) return;
-            m_NextCreak = Time.time + Range(14, 25);
+            m_NextCreak = Time.time + Range(9, 16);
             var anchors = m_Map.LootPositions;
             if (anchors.Length == 0) return;
             int first = m_Random.Next(anchors.Length);
@@ -89,9 +104,9 @@ namespace Unity.MP_FPS
             {
                 Vector3 point = anchors[(first + i) % anchors.Length] + Vector3.up * 2;
                 float distance = Vector3.Distance(listener, point);
-                if (distance < 8 || distance > 55) continue;
+                if (distance < 5 || distance > 40) continue;
                 Stop(ref m_Creak);
-                m_Creak = MoonkovAudio.Play(structureCreak, point, .65f);
+                m_Creak = MoonkovAudio.Play(structureCreak, point, .85f);
                 break;
             }
         }
@@ -108,7 +123,8 @@ namespace Unity.MP_FPS
         }
         private void StopPresentation()
         {
-            Stop(ref m_Bed); Stop(ref m_Creak);
+            Stop(ref m_Bed); Stop(ref m_Creak); Stop(ref m_ContextBed);
+            m_ContextSound = null; m_ContextGain = 0;
             if (m_Volume) m_Volume.weight = 0;
             RestoreCamera();
             m_Pressure = 0;

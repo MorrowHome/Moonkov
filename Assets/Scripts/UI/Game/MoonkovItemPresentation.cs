@@ -191,6 +191,7 @@ namespace Unity.MP_FPS.Client
             {
                 case "secure_case": description = "装备在中栏保险箱槽后，箱体与内部 2×2 格物品在死亡或超时结算时保留。仅保护仍在箱内的物品；不计成功撤离或任务首次回收。禁止武器、穿戴装备、嵌套容器和任务产物。箱内补给须先移至衣兜或胸章才能使用。"; break;
                 case "survey_compass": description = "装入任意特殊装备槽后，HUD 自动显示当前视线的罗盘方位。0° 为世界北向（+Z）。死亡和超时保留；放在普通背包中不生效且会掉落。"; break;
+                case "team_tracker": description = "Equip in a special slot to see teammates outlined in teal, even through walls. Only the wearer sees the effect. No energy cost. Inactive in a backpack; retained on death or timeout while equipped."; break;
                 case "laser_rangefinder": description = "装入任意特殊装备槽后，HUD 自动显示视线首个实体表面的距离，上限 500m；无命中显示超出量程，不透墙。死亡和超时保留；普通背包中不生效且会掉落。"; break;
                 case "energy_shield_generator": description = "Legacy generator. Defense now uses the halo and its shared energy. Can be stored or sold."; break;
                 case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;

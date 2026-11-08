@@ -12,6 +12,8 @@ namespace Unity.MP_FPS
         private readonly MoonkovPainAudio m_Pain = new MoonkovPainAudio();
         private SoundSystem.SoundInfo m_PainSound, m_GroanSound, m_CoughSound;
         private double m_NextCough;
+        private SoundSystem.SoundInfo m_JumpVoice;
+        private int m_FoleyStep;
         private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_ConsumableSequence, m_Weapon;
@@ -47,6 +49,8 @@ namespace Unity.MP_FPS
             if (library == null) return;
             Vector3 position = player.position;
             bool cry = m_Pain.Observe(ghost.LastImpactTick, ghost.CurrentHealth > 0, Time.unscaledTime);
+            bool jumping = m_Initialized && ghost.LastJumpTick != 0 &&
+                unchecked((int)(ghost.LastJumpTick - m_JumpTick)) > 0;
             if (ghost.TacticalCoughSeconds <= 0 || ghost.CurrentHealth <= 0 || ghost.ClashEnabled)
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_CoughSound, .08f); m_CoughSound = null;
@@ -55,6 +59,10 @@ namespace Unity.MP_FPS
                 RaidCoughSound.TryEmit(ref m_NextCough, Time.unscaledTime, ghost.TacticalCoughSeconds, ghost.ClashEnabled);
             bool effort = m_Melee.Update(ghost, position, owned,
                 !cry && !cough && m_PainSound?.Handle?.IsValid() != true && m_CoughSound?.Handle?.IsValid() != true);
+            if (cry || cough || effort)
+            { GameManager.Instance?.SoundSystem?.Stop(m_JumpVoice, .06f); m_JumpVoice = null; }
+            bool jumpVoice = jumping && !cry && !cough && !effort && m_PainSound?.Handle?.IsValid() != true &&
+                m_CoughSound?.Handle?.IsValid() != true && !m_Melee.VoicePlaying && m_JumpVoice?.Handle?.IsValid() != true;
             var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
                 ghost.ControllerState.IsReloadingState, ghost.CurrentHealth > 0);
             var reloadWeapon = WeaponManager.Instance ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules) : null;
@@ -93,7 +101,9 @@ namespace Unity.MP_FPS
                     MoonkovReloadAudio.PitchForDuration(weapon?.WeaponReloadSfx, ghost.ReloadTimer));
             }
             if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
-            if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, .7f);
+            if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, 1);
+            if (jumpVoice) m_JumpVoice = MoonkovAudio.PlayWeaponLayer(library.JumpEffort, position + Vector3.up * 1.4f,
+                owned ? .85f : .7f, owned ? .05f : 1, follow: player);
             bool searchEnded=m_WasLootSearching && !ghost.LootSearching;
             if(searchEnded)
             {
@@ -113,6 +123,7 @@ namespace Unity.MP_FPS
                 float landingLoad = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
                 LocalOrWorld(m_Surface, position, owned, Mathf.Lerp(.65f, 1.2f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
+                m_MovementSound = LocalOrWorld(library.GearMotion, position, owned, Mathf.Lerp(.35f, .85f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
             }
             if (NewTick(ghost.LastImpactTick, ref m_ImpactTick) && Time.unscaledTime >= m_HitAt)
@@ -122,8 +133,9 @@ namespace Unity.MP_FPS
             }
             bool groan = m_Distress.Observe(ghost.CurrentHealth / Mathf.Max(1, ghost.MaxHealth),
                 ghost.CurrentHealth > 0, MoonkovDistressAudio.PainfulStatus(ghost),
-                cry || cough || m_CoughSound?.Handle?.IsValid() == true || m_Melee.VoicePlaying, Time.unscaledTime);
-            if (!m_Distress.Active || cry || cough || effort)
+                cry || cough || jumpVoice || m_JumpVoice?.Handle?.IsValid() == true ||
+                m_CoughSound?.Handle?.IsValid() == true || m_Melee.VoicePlaying, Time.unscaledTime);
+            if (!m_Distress.Active || cry || cough || effort || jumpVoice)
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             }
@@ -141,7 +153,7 @@ namespace Unity.MP_FPS
                 m_GroanSound = MoonkovAudio.PlayWeaponLayer(library.PlayerGroan, position + Vector3.up * 1.4f,
                     owned ? 1 : .7f, owned ? .08f : 1, follow: player);
             }
-            if (owned && (cry || cough || groan || effort))
+            if (owned && (cry || cough || groan || effort || jumpVoice))
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
             }
@@ -158,7 +170,7 @@ namespace Unity.MP_FPS
                 }
                 bool voiceBusy = m_PainSound?.Handle?.IsValid() == true || m_GroanSound?.Handle?.IsValid() == true ||
                     m_CoughSound?.Handle?.IsValid() == true || m_BreathSound?.Handle?.IsValid() == true ||
-                    m_Melee.VoicePlaying || cry || cough || groan;
+                    m_Melee.VoicePlaying || m_JumpVoice?.Handle?.IsValid() == true || cry || cough || groan;
                 if (m_Breath.Observe(breath, Time.unscaledTime, voiceBusy))
                 {
                     var bank = breath.Exerted && library.SuitBreathEffort ? library.SuitBreathEffort : library.SuitBreath;
@@ -244,7 +256,10 @@ namespace Unity.MP_FPS
                 m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .72f;
             volume *= loadVolume;
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
-            LocalOrWorld(library.Cloth, position, owned, .2f * volume);
+            LocalOrWorld(library.Cloth, position, owned, .55f * volume);
+            if (++m_FoleyStep % 2 == 0 && m_Stance == DollSingerStance.Standing)
+                m_MovementSound = LocalOrWorld(library.GearMotion, position, owned,
+                    (ghost.ControllerState.Sprinting ? .75f : .4f) * loadVolume);
         }
         public void Stop()
         {
@@ -257,6 +272,7 @@ namespace Unity.MP_FPS
             m_Distress.Reset();
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_CoughSound, .08f); m_CoughSound = null; m_NextCough = 0;
+            system?.Stop(m_JumpVoice, .08f); m_JumpVoice = null; m_FoleyStep = 0;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             StopBreathing();
             system?.Stop(m_OxygenSupplySound, .12f); m_OxygenSupplySound = null; m_OxygenSupplyRetryAt = 0;

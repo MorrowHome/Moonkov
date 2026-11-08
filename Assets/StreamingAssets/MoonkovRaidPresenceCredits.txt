@@ -1,0 +1,13 @@
+Ventilation: "Air vent (looped)" by lfyaudio, CC0 1.0.
+https://freesound.org/people/lfyaudio/sounds/848969/
+Public high-quality MP3 preview; crop 10-19 s; filtering and 1 s loop crossfade.
+Jump efforts: Cici Fyre, Female RPG Voice Starter Pack, Type 1 jump1 through jump3, CC0 1.0.
+https://opengameart.org/content/female-rpg-voice-starter-pack
+Original voice pitch and speed; filtering, DC removal and brief fades.
+Both sources: https://creativecommons.org/publicdomain/zero/1.0/
+Lift mechanisms reuse Joseph SARDIN's air compressor, automatic sliding gate and barn lock recordings, CC0 1.0.
+https://bigsoundbank.com/air-compressor-s1487.html
+https://bigsoundbank.com/portail-automatique-coulissant-s0513.html
+https://bigsoundbank.com/barn-lock-locking-s1540.html
+Original source records: Assets/Audio/Moonkov/Airlock/Sources.json.
+Rebuild recipe and hashes: Assets/Audio/Moonkov/RaidPresenceSources.json.

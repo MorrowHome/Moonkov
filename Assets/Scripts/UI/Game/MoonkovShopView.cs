@@ -22,7 +22,6 @@ namespace Unity.MP_FPS.Client
         private string m_SelectedCode;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private ShopOffer[] m_Offers;
-        private ShopCommand m_Pending;
         private bool m_Busy, m_Disposed;
         private int m_Tab;
         private string m_StatusSource;
@@ -40,7 +39,7 @@ namespace Unity.MP_FPS.Client
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/ShopPurchase"));
             var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
             m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop, openStorage);
-            if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.Inventory);
+            if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.MenuInventory);
             catalog.Insert(3, m_Research.Root);
             if (!research)
             {
@@ -55,13 +54,13 @@ namespace Unity.MP_FPS.Client
             var tabs = catalog.Q("shopTabs");
             string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
             for (int i = 0; i < names.Length; i++)
-            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if ((tab == 0 || tab == 3) && m_Pending == null) Status(""); Render(); }); }
+            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if ((tab == 0 || tab == 3) && !PlayerProfileClient.MenuInventoryNeedsRetry) Status(""); Render(); }); }
             m_List = catalog.Q<ScrollView>("shopList");
             var statusHost = catalog.Q("shopStatusHost");
             m_StatusHost = statusHost; statusHost.AddToClassList("research-transaction-status");
             m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
             Status(research || m_Tab == 0 ? "" : "Contacting lunar supply…");
-            m_Retry = MoonkovTerminal.ActionButton(statusHost, "CHECK LAST ORDER", () => Execute(m_Pending)); m_Retry.style.display = DisplayStyle.None;
+            m_Retry = MoonkovTerminal.ActionButton(statusHost, "RETRY SYNC", Retry); m_Retry.style.display = DisplayStyle.None;
             window.RegisterCallback<DetachFromPanelEvent>(Detached); PlayerProfileClient.InventoryChanged += Changed;
             Load();
         }
@@ -71,16 +70,19 @@ namespace Unity.MP_FPS.Client
             try
             {
                 m_Offers = await PlayerProfileClient.GetShopOffersAsync(m_Stop.Token);
-                if (!m_Disposed) Status(m_Tab == 0 || m_Tab == 3 ? "" : "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
+                if (!m_Disposed) Status(m_Tab == 0 || m_Tab == 3 ? "" : "Purchases arrive in personal storage.");
             }
             catch (OperationCanceledException) { if (!m_Disposed) Status("Supply contact timed out. Close and reopen the supplier to reconnect."); }
             catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
             finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
         private void Changed() { if (!m_Busy && !m_Disposed) Render(); }
-        private bool Ready => !m_Busy && m_Pending == null && m_Offers != null && PlayerProfileClient.Inventory != null && !PlayerProfileClient.RaidActive;
+        private bool Ready => !m_Busy && m_Offers != null && PlayerProfileClient.CanQueueMenuInventory;
         private void Render()
         {
+            if (PlayerProfileClient.MenuInventoryNeedsRetry) Status("Inventory confirmation is interrupted. Retry synchronization first.");
+            else if (PlayerProfileClient.MenuInventoryPending > 0) Status("Syncing inventory…");
+            else if (PlayerProfileClient.MenuInventoryError != null) Status(PlayerProfileClient.MenuInventoryError.Message);
             m_Window.EnableInClassList("is-busy", m_Busy);
             m_Window.EnableInClassList("research-window", m_Tab == 3);
             m_Window.EnableInClassList("shop-buy-window", m_Tab == 0);
@@ -94,13 +96,13 @@ namespace Unity.MP_FPS.Client
             m_Research.Root.EnableInClassList("research-hidden", m_Tab != 3);
             m_List.Clear();
             m_SelectedRow = null; m_InspectArt.Clear(); MoonkovLocalization.Set(m_InspectTitle, ""); MoonkovLocalization.Set(m_InspectDetail, "");
-            MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.StashDust);
+            MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.MenuInventory?.Count("dust") ?? 0);
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
-            m_Retry.style.display = m_Pending != null && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Retry.style.display = PlayerProfileClient.MenuInventoryNeedsRetry && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
             if (m_Tab == 3) { Research(); return; }
             if (m_Tab == 0 && m_Purchases != null)
             {
-                m_Purchases.Present(m_Offers, PlayerProfileClient.Inventory, Ready, m_Busy,
+                m_Purchases.Present(m_Offers, PlayerProfileClient.MenuInventory, Ready, m_Busy,
                     PlayerProfileClient.RaidActive ? "Finish or leave your active raid before trading or requesting emergency supplies." : null);
                 return;
             }
@@ -113,7 +115,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Research()
         {
-            m_Research.Present(PlayerProfileClient.Inventory, Ready, m_Busy, m_Pending != null, m_Offers == null && m_Busy);
+            m_Research.Present(PlayerProfileClient.MenuInventory, Ready, m_Busy, PlayerProfileClient.MenuInventoryNeedsRetry, m_Offers == null && m_Busy);
         }
         private void Status(string source)
         { m_StatusSource = source; MoonkovLocalization.Set(m_Status, source); }
@@ -149,7 +151,7 @@ namespace Unity.MP_FPS.Client
         }
         private void SellRows()
         {
-            var graph = PlayerProfileClient.Inventory; int rows = 0;
+            var graph = PlayerProfileClient.MenuInventory; int rows = 0;
             if (graph != null) foreach (var item in graph.Items.Where(i => m_Offers.Any(o => o.Code == i.Code)).ToArray())
             {
                 var offer = m_Offers.First(o => o.Code == item.Code); rows++;
@@ -175,7 +177,7 @@ namespace Unity.MP_FPS.Client
         {
             var row = Product("pistol", "EMERGENCY FIELD KIT", "FREE / SIX-ROUND REVOLVER + 3 ENERGY CELLS");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
-            bool eligible = ShopCatalog.CanClaim(PlayerProfileClient.Inventory);
+            bool eligible = ShopCatalog.CanClaim(PlayerProfileClient.MenuInventory);
             var claim = MoonkovTerminal.ActionButton(order, eligible ? "CLAIM FREE KIT" : "WEAPON ALREADY OWNED", () => Order(ShopOperation.Emergency, null, null, 0), "terminal-primary");
             claim.SetEnabled(Ready && eligible);
             MoonkovTerminal.Text(m_List, "Available when no halo weapon remains, including weapons stored inside containers. The revolver equips into the pistol slot; cells go into carried storage when space allows. Emergency supplies cannot be sold.", "terminal-copy");
@@ -183,33 +185,30 @@ namespace Unity.MP_FPS.Client
         private void Order(ShopOperation operation, string code, string itemId, int quantity)
         {
             if (!Ready) return;
-            Execute(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = PlayerProfileClient.Inventory.Version,
+            Execute(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = PlayerProfileClient.MenuInventory.Version,
                 Operation = operation, Code = code, ItemId = itemId, Quantity = quantity });
         }
         private async void Execute(ShopCommand command)
         {
-            if (command == null || m_Busy || m_Disposed) return;
-            m_Pending = command; m_Busy = true; Status("Confirming supply order…"); Render();
+            if (command == null || !Ready || m_Disposed) return;
             try
             {
-                await PlayerProfileClient.TradeAsync(command, m_Stop.Token);
-                m_Pending = null;
-                if (!m_Disposed) Status(command.Operation == ShopOperation.Fabricate ? "Module added to storage." :
-                    command.Operation == ShopOperation.Research ? "Research saved." :
-                    command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.");
+                var confirmation = PlayerProfileClient.QueueMenuTradeAsync(command, m_Offers);
+                Status("Syncing inventory…"); Render();
+                await confirmation;
+                if (!m_Disposed) { Status(""); Render(); }
             }
-            catch (AccountClient.InventoryRequestException ex)
-            {
-                if (ex.ErrorCode.StartsWith("service_")) Uncertain();
-                else { m_Pending = null; if (!m_Disposed) Status(ex.Message); }
-            }
-            catch (OperationCanceledException) { if (!m_Disposed) Uncertain(); }
-            catch (System.Net.Http.HttpRequestException) { Uncertain(); }
-            catch (Exception) { Uncertain(); }
-            finally { m_Busy = false; if (!m_Disposed) Render(); }
+            catch (OperationCanceledException) { if (!m_Disposed) { Status(""); Render(); } }
+            catch (Exception ex) { if (!m_Disposed) { Status(ex.Message); Render(); } }
         }
-        private void Uncertain()
-        { if (!m_Disposed) Status("Confirmation was interrupted. CHECK LAST ORDER safely retries the same order without a second charge."); }
+        private async void Retry()
+        {
+            if (m_Disposed || m_Busy) return;
+            try { await PlayerProfileClient.FlushMenuInventoryAsync(m_Stop.Token); if (!m_Disposed) Status(""); }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
+            finally { if (!m_Disposed) Render(); }
+        }
         private void Detached(DetachFromPanelEvent evt) { if (evt.target == m_Window) Dispose(); }
         public void Dispose()
         {

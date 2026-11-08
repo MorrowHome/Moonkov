@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder, Fists }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder, Fists, TeamTracker }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]

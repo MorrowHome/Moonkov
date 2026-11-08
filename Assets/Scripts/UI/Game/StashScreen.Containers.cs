@@ -14,7 +14,7 @@ namespace Unity.MP_FPS.Client
         private InventoryGraph m_PreviewInventory;
         private VisualElement m_RecoveryPanel;
         private Label m_RecoveryNote;
-        private Button m_ClaimAll;
+        private Button m_ClaimAll, m_InventoryRetry;
         private ListView m_RecoveryList;
         private List<InventoryItem> m_RecoveryRoots=new List<InventoryItem>();
         private bool m_RecoveryBusy;
@@ -24,6 +24,9 @@ namespace Unity.MP_FPS.Client
             var body=m_Root.Q<VisualElement>(className:"stash-body");
             foreach (var child in body.Children()) child.style.display=DisplayStyle.None;
             m_Containers=new ContainerInventoryView(body, true, SendContainerCommand);
+            m_InventoryRetry = new Button(RetryInventory) { name = "stashInventoryRetry" };
+            m_InventoryRetry.AddToClassList("terminal-button"); MoonkovLocalization.Set(m_InventoryRetry, "RETRY SYNC");
+            m_Containers.Element.Add(m_InventoryRetry);
             m_RecoveryPanel=new VisualElement {name="stashRecovery"};m_RecoveryPanel.AddToClassList("inventory-container");
             var header=new VisualElement();header.style.flexDirection=FlexDirection.Row;header.style.flexShrink=0;m_RecoveryPanel.Add(header);
             m_RecoveryNote=new Label();m_RecoveryNote.style.flexGrow=1;m_RecoveryNote.style.minWidth=0;m_RecoveryNote.style.whiteSpace=WhiteSpace.Normal;
@@ -78,12 +81,13 @@ namespace Unity.MP_FPS.Client
         private void PresentContainers()
         {
             if (m_Containers == null) return;
-            m_Terminal.PresentEquipment(m_Preview ? m_PreviewInventory : PlayerProfileClient.Inventory);
+            m_Terminal.PresentEquipment(m_Preview ? m_PreviewInventory : PlayerProfileClient.MenuInventory);
             PresentRecovery(m_Preview ? null : PlayerProfileClient.Recovery,PlayerProfileClient.RaidActive);
             m_Containers.SetReadOnly(!m_Preview && PlayerProfileClient.RaidActive ? AccountClient.InventoryFailureMessage("raid_active") : null);
-            m_Containers.Present(m_Preview ? m_PreviewInventory : PlayerProfileClient.Inventory,
-                m_Preview ? "LOCAL PREVIEW / SAMPLE ITEMS · Double click a backpack to open its contents" : PlayerProfileClient.Inventory==null ? "Loading account inventory…" : null,
+            m_Containers.Present(m_Preview ? m_PreviewInventory : PlayerProfileClient.MenuInventory,
+                m_Preview ? "LOCAL PREVIEW / SAMPLE ITEMS" : PlayerProfileClient.MenuInventory == null ? "Loading account inventory…" : InventorySyncMessage(),
                 operationCompleted: false);
+            m_InventoryRetry.style.display = !m_Preview && PlayerProfileClient.MenuInventoryNeedsRetry ? DisplayStyle.Flex : DisplayStyle.None;
         }
         private void PresentRecovery(RecoveryInbox inbox,bool raidActive)
         {
@@ -94,25 +98,41 @@ namespace Unity.MP_FPS.Client
                 MoonkovLocalization.Set(m_RecoveryNote,"RECOVERY / {0} items · Extracted items are saved. Make room or sell stored items, then claim them before deploying again.",inbox.ItemCount());
                 m_RecoveryRoots=inbox.Roots().ToList();m_RecoveryList.itemsSource=m_RecoveryRoots;m_RecoveryList.Rebuild();
             }
-            m_RecoveryPanel.SetEnabled(!m_RecoveryBusy && !raidActive);
+            m_RecoveryPanel.SetEnabled(!m_RecoveryBusy && !raidActive && PlayerProfileClient.MenuInventoryPending == 0);
         }
+        private static string InventorySyncMessage() => PlayerProfileClient.MenuInventoryNeedsRetry ?
+            "Inventory confirmation is interrupted. Retry synchronization first." :
+            PlayerProfileClient.MenuInventoryPending > 0 ? "Syncing inventory…" : PlayerProfileClient.MenuInventoryError?.Message;
         private async void SendContainerCommand(InventoryCommand command)
         {
-            if (m_Preview) { var error=m_PreviewInventory.TryApply(command); m_Containers.Present(m_PreviewInventory,error==InventoryError.None ? "LOCAL PREVIEW / SAMPLE ITEMS" : "Move blocked: "+error); return; }
+            if (m_Preview) { var error=m_PreviewInventory.TryApply(command); m_Containers.Present(m_PreviewInventory,error==InventoryError.None ? null : "Move blocked: "+error); return; }
             try
             {
-                await PlayerProfileClient.MoveInventoryAsync(command,m_ContainerStop.Token);
-                if (!m_ContainerStop.IsCancellationRequested) m_Containers.Present(PlayerProfileClient.Inventory, "Inventory updated.");
+                var confirmation = PlayerProfileClient.QueueMenuMoveAsync(command);
+                // Acknowledge the local gesture now; later receipts only reconcile state.
+                m_Containers.Present(PlayerProfileClient.MenuInventory);
+                PresentContainers();
+                await confirmation;
+                if (!m_ContainerStop.IsCancellationRequested) PresentContainers();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException) { if (!m_ContainerStop.IsCancellationRequested) PresentContainers(); }
+            catch (Exception ex)
             {
-                if (!m_ContainerStop.IsCancellationRequested) m_Containers.Present(PlayerProfileClient.Inventory, "Inventory request timed out. Refresh storage before retrying.");
+                if (!m_ContainerStop.IsCancellationRequested)
+                    m_Containers.Present(PlayerProfileClient.MenuInventory, ex.Message);
             }
-            catch (Exception ex) { if (!m_ContainerStop.IsCancellationRequested) m_Containers.Present(PlayerProfileClient.Inventory,ex.Message); }
+        }
+        private async void RetryInventory()
+        {
+            if (m_Preview) return;
+            try { await PlayerProfileClient.FlushMenuInventoryAsync(m_ContainerStop.Token); }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) { if (!m_ContainerStop.IsCancellationRequested) m_Containers.Present(PlayerProfileClient.MenuInventory, ex.Message); }
+            finally { if (!m_ContainerStop.IsCancellationRequested) PresentContainers(); }
         }
         private async void ClaimRecovery(string itemId)
         {
-            if(m_RecoveryBusy || m_Preview || PlayerProfileClient.RaidActive || PlayerProfileClient.Inventory==null || PlayerProfileClient.Recovery==null)return;
+            if(m_RecoveryBusy || PlayerProfileClient.MenuInventoryPending > 0 || m_Preview || PlayerProfileClient.RaidActive || PlayerProfileClient.Inventory==null || PlayerProfileClient.Recovery==null)return;
             m_RecoveryBusy=true;m_RecoveryPanel.SetEnabled(false);
             var request=new RecoveryClaim {RequestId=Guid.NewGuid().ToString("D"),ItemId=itemId,
                 ExpectedVersion=PlayerProfileClient.Inventory.Version,ExpectedRecoveryVersion=PlayerProfileClient.Recovery.Version};

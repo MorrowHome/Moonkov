@@ -116,6 +116,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        public static Task RefreshInventoryAsync(CancellationToken ct) => ValidateAsync(s_BaseUrl, ct);
         public static async Task ValidateAsync(string baseUrl, CancellationToken ct)
         {
             s_BaseUrl = baseUrl;

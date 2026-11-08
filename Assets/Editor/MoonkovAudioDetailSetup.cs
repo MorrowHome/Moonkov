@@ -25,9 +25,9 @@ public static class MoonkovAudioDetailSetup
         if (!lib) throw new InvalidOperationException("Missing audio library.");
         lib.SuitWallBrush = Bank("SuitWallBrush", -21, 9, 175, SoundDef.MixRole.Foley, 4, .08f);
         lib.SuitWallMetal = Bank("SuitWallMetal", -22, 11, 175, SoundDef.MixRole.Foley, 4, .08f);
-        lib.Crawl = Bank("Crawl", -20, 10, 160, SoundDef.MixRole.Foley, 5, .08f);
-        lib.StanceChange = Bank("StanceChange", -23, 8, 175, SoundDef.MixRole.Foley, 4, .12f);
-        lib.GearMotion = Bank("GearMotion", -25, 7, 185, SoundDef.MixRole.Foley, 3, .15f);
+        lib.Crawl = Bank("Crawl", -17, 10, 160, SoundDef.MixRole.Foley, 5, .08f);
+        lib.StanceChange = Bank("StanceChange", -19, 8, 175, SoundDef.MixRole.Foley, 4, .12f);
+        lib.GearMotion = Bank("GearMotion", -19, 7, 185, SoundDef.MixRole.Foley, 3, .15f);
         lib.AlienWallScrape = Bank("AlienWallScrape", -18, 22, 165, SoundDef.MixRole.Foley, 4, .1f);
         lib.AlienWallMetal = Bank("AlienWallMetal", -19, 25, 165, SoundDef.MixRole.Foley, 4, .1f);
         lib.AlienIdleMotion = Bank("AlienIdleMotion", -25, 16, 185, SoundDef.MixRole.Ambience, 3, .3f);
