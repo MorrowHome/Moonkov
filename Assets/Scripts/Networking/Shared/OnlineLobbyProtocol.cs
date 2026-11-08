@@ -40,10 +40,27 @@ namespace Unity.MP_FPS.Online
         public int Port;
         public bool PublicQueue;
         public LobbyMember[] Members = Array.Empty<LobbyMember>();
+        public bool RoomDirectoryAvailable, CanRequestJoin;
+        public LobbyRoomInfo[] Rooms;
+        public LobbyJoinRequest JoinRequest;
+        public LobbyJoinRequest[] JoinRequests = Array.Empty<LobbyJoinRequest>();
+    }
+    [Serializable] public sealed class LobbyRoomInfo
+    {
+        public string RoomId, LeaderName, Mode, ConnectionPath, Status;
+        public int MemberCount, Capacity;
+        public bool SameAs(LobbyRoomInfo other) => RoomId == other.RoomId && LeaderName == other.LeaderName &&
+            Mode == other.Mode && ConnectionPath == other.ConnectionPath && Status == other.Status &&
+            MemberCount == other.MemberCount && Capacity == other.Capacity;
+    }
+    [Serializable] public sealed class LobbyJoinRequest
+    {
+        public string RequestId, RoomId, LeaderName, ApplicantName, Status;
     }
     [Serializable] public sealed class LobbyAction
     {
         public string Action, Code, Mode, TargetPlayerId;
+        public string RoomId, RequestId;
         public string ConnectionPath;
         public bool Ready, PublicQueue;
         public int Team;

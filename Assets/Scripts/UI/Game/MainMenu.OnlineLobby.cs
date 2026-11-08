@@ -31,7 +31,7 @@ namespace Unity.MP_FPS.Client
                 GameSettings.Instance.PlayerCharacter = character;
                 OnlineLobbyClient.SelectedPose = pose;
                 PollLobby();
-            });
+            }, PollLobby);
             m_OnlineLobby = m_SquadPanel.Element;
             m_MainMenu.Add(m_OnlineLobby);
             var advanced = m_MainMenu.Q("AdvancedConnection");
@@ -47,6 +47,7 @@ namespace Unity.MP_FPS.Client
         }
         private bool OnlineAtMenu => PlayerProfileClient.IsLoggedIn && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan &&
             GameSettings.Instance.GameState == GlobalGameState.MainMenu;
+        private bool BrowseLobbyRooms => m_LobbyOpen && m_SquadPanel?.BrowsingRooms == true;
         private async void PollLobby()
         {
             PresentLobby();
@@ -56,7 +57,7 @@ namespace Unity.MP_FPS.Client
             m_LobbyPolling = true;
             try
             {
-                m_LobbyRefreshTask = OnlineLobbyClient.RefreshAsync(lifetime.Token);
+                m_LobbyRefreshTask = OnlineLobbyClient.RefreshAsync(lifetime.Token, BrowseLobbyRooms);
                 await m_LobbyRefreshTask;
                 m_LobbyError = null;
                 var s = OnlineLobbyClient.Snapshot;
@@ -82,7 +83,7 @@ namespace Unity.MP_FPS.Client
                 }
                 lifetime.Token.ThrowIfCancellationRequested();
                 if (action.Action == "return") await OnlineLobbyClient.RetryReturnAsync(lifetime.Token);
-                else await OnlineLobbyClient.ActAsync(action, lifetime.Token);
+                else await OnlineLobbyClient.ActAsync(action, lifetime.Token, BrowseLobbyRooms);
                 if (action.Action == "retry")
                 {
                     if (SessionReconnect.Available) GameManager.Instance.ReconnectLastGameAsync();

@@ -124,12 +124,83 @@ Check(!EntryGet(d, now.AddMinutes(5)).CanRetry && EntryGet(d, now.AddMinutes(5))
     "Expired first-entry window lost its exit or retained retry");
 Reject(() => entry.Act(d, "Operator", false, new LobbyAction { Action = "retry" }, now.AddMinutes(5)), "Expired first entry was reopened");
 
+var directory = new OnlineLobbies();
+var f = Guid.NewGuid();
+LobbySnapshot Browse(Guid id, DateTime? at = null) => directory.Snapshot(id, at ?? now, "game.example", "test", 7979, browseRooms: true);
+void RoomAct(Guid id, string action, string? roomId = null, string? requestId = null, string? invite = null, Guid? eligible = null, bool active = false) =>
+    directory.Act(id, id == a ? "A" : id == f ? "F" : "Applicant", active, new LobbyAction { Action = action,
+        RoomId = roomId, RequestId = requestId, Code = invite, Ready = true }, now, eligible);
+RoomAct(a, "create"); RoomAct(c, "join", invite: Browse(a).Code); RoomAct(f, "create");
+var rooms = Browse(b).Rooms;
+var roomA = rooms.Single(r => r.LeaderName == "A");
+var roomF = rooms.Single(r => r.LeaderName == "F");
+Check(Browse(b).RoomDirectoryAvailable && rooms.Length == 2 && roomA.MemberCount == 2 && roomA.Capacity == 4 &&
+    roomA.Status == "Open" && roomA.Mode == "Coop" && roomA.ConnectionPath == OnlineNetworkProtocol.P2P && roomA.RoomId != Browse(a).Code,
+    "Directory omitted public room details or revealed the invite code");
+Check(Browse(c).Rooms.Single().RoomId == roomF.RoomId && directory.Snapshot(b, now, "host", "host", 7979).Rooms == null,
+    "Directory includes the member's own room or is sent when not requested");
+Reject(() => RoomAct(c, "request-join", roomF.RoomId), "Existing member applied to a second party");
+Reject(() => RoomAct(b, "request-join", roomA.RoomId, active: true), "Unsettled raid applied to a party");
+RoomAct(b, "request-join", roomA.RoomId);
+string application = Browse(b).JoinRequest.RequestId;
+RoomAct(b, "request-join", roomA.RoomId);
+Check(Browse(b).Phase == "None" && Browse(b).JoinRequest.RequestId == application &&
+    Browse(a).JoinRequests.Single().RequestId == application && Browse(c).JoinRequests.Length == 0,
+    "Application added a member, duplicated a request, or leaked the leader's inbox");
+Reject(() => RoomAct(b, "request-join", roomF.RoomId), "Applicant sent simultaneous requests");
+Reject(() => directory.ApprovalApplicant(c, application, now), "Nonleader read the approval target");
+Reject(() => RoomAct(f, "approve-join", requestId: application, eligible: b), "Wrong leader approved the request");
+Reject(() => RoomAct(a, "approve-join", requestId: application), "Approval skipped the applicant's settlement check");
+RoomAct(a, "ready"); RoomAct(c, "ready");
+RoomAct(a, "approve-join", requestId: application, eligible: directory.ApprovalApplicant(a, application, now));
+Check(Browse(b).Code == Browse(a).Code && Browse(b).JoinRequest == null && Browse(a).JoinRequests.Length == 0 &&
+    Browse(a).Members.All(m => !m.Ready), "Approval did not join the party atomically and reset readiness");
+
+RoomAct(d, "request-join", roomA.RoomId); RoomAct(e, "request-join", roomA.RoomId);
+string requestD = Browse(d).JoinRequest.RequestId, requestE = Browse(e).JoinRequest.RequestId;
+Guid eligibleD = directory.ApprovalApplicant(a, requestD, now), eligibleE = directory.ApprovalApplicant(a, requestE, now);
+RoomAct(a, "approve-join", requestId: requestD, eligible: eligibleD);
+Reject(() => RoomAct(a, "approve-join", requestId: requestE, eligible: eligibleE), "Concurrent approvals both consumed the last seat");
+var full = Browse(e);
+Check(full.JoinRequest.Status == "Unavailable" && full.Rooms.Single(r => r.RoomId == roomA.RoomId).Status == "Full",
+    "Full party stayed open to applications");
+foreach (var id in new[] { a, b, c, d }) RoomAct(id, "ready");
+RoomAct(a, "start");
+Check(Browse(e).Rooms.Single(r => r.RoomId == roomA.RoomId).Status == "Queued", "Queued party not marked unavailable");
+var directoryRaid = directory.Allocate(now)!;
+Check(Browse(e).Rooms.Single(r => r.RoomId == roomA.RoomId).Status == "Starting", "Starting room state missing");
+directory.Ready(directoryRaid.Id, now, OnlineNetworkProtocol.Version, true);
+var inRaid = Browse(e);
+Check(inRaid.Rooms.Single(r => r.RoomId == roomA.RoomId).Status == "InRaid" && inRaid.Address == null && inRaid.InstanceId == null,
+    "Active room is missing or its game endpoint leaked to a browser");
+
+RoomAct(e, "request-join", roomF.RoomId);
+string oldRequest = Browse(e).JoinRequest.RequestId;
+RoomAct(e, "withdraw-join", requestId: oldRequest);
+RoomAct(e, "request-join", roomF.RoomId);
+string newRequest = Browse(e).JoinRequest.RequestId;
+Reject(() => RoomAct(f, "approve-join", requestId: oldRequest, eligible: e), "Stale approval accepted a replacement request");
+RoomAct(e, "withdraw-join", requestId: oldRequest);
+Check(Browse(e).JoinRequest.RequestId == newRequest, "Old withdrawal canceled a different request");
+RoomAct(f, "decline-join", requestId: newRequest);
+Check(Browse(e).JoinRequest.Status == "Declined" && Browse(f).JoinRequests.Length == 0, "Decline did not notify the applicant");
+RoomAct(Guid.NewGuid(), "request-join", roomF.RoomId);
+Browse(f, now.AddSeconds(24));
+Check(Browse(f, now.AddSeconds(31)).JoinRequests.Length == 0, "Offline applicants still occupy the approval inbox");
+Check(!Browse(e, now.AddSeconds(62)).Rooms.Any(r => r.RoomId == roomF.RoomId), "Offline room remained advertised");
+
 string folder = Path.Combine(Path.GetTempPath(), "moon-lobby-check-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(folder);
 try
 {
     var disk = new OnlineLobbies(Path.Combine(folder, "lobbies.json"));
     disk.Act(a, "A", false, new LobbyAction { Action = "create" }, now);
+    var diskRoom = disk.Snapshot(e, now, "host", "host", 7979, browseRooms: true).Rooms.Single();
+    disk.Act(e, "Applicant", false, new LobbyAction { Action = "request-join", RoomId = diskRoom.RoomId }, now);
+    disk = new OnlineLobbies(Path.Combine(folder, "lobbies.json"));
+    Check(disk.Snapshot(e, now, "host", "host", 7979, browseRooms: true).Rooms.Single().RoomId == diskRoom.RoomId &&
+        disk.Snapshot(a, now, "host", "host", 7979).JoinRequests.Single().ApplicantName == "Applicant",
+        "Restart lost a room's public identifier or pending application");
     disk.Act(a, "A", false, new LobbyAction { Action = "ready", Ready = true }, now);
     disk.Act(a, "A", false, new LobbyAction { Action = "start" }, now);
     var lease = disk.Allocate(now)!;
