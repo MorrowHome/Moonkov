@@ -85,6 +85,13 @@ MonoBehaviour:
   ExtractCancel: {fileID: 11400000, guid: c2197aa8a3f44492eb92eb8fb48854ff, type: 2}
   ExtractTick: {fileID: 11400000, guid: 28e7d4409b4994afcbe9b5b4ccc0e952, type: 2}
   SuitBreathEffort: {fileID: 11400000, guid: e1bff0ec88b4942f7bda58b81af45a5c, type: 2}
+  JumpEffort: {fileID: 11400000, guid: 949da8aa9834148feb32bba746c462e2, type: 2}
+  LiftMotor: {fileID: 11400000, guid: 5617ad71a5eff4b4c8af10c90ca1b71e, type: 2}
+  LiftGate: {fileID: 11400000, guid: e0e57f9dbe40a402d947808c338ae17e, type: 2}
+  LiftStart: {fileID: 11400000, guid: 9f826fc17afb64d31ada0a799e84456c, type: 2}
+  LiftStop: {fileID: 11400000, guid: 357536ae655804111bd221e5f36d9f11, type: 2}
+  InteriorVent: {fileID: 11400000, guid: 6ed9496a9a58347b6a646d044efbc897, type: 2}
+  SuitVent: {fileID: 11400000, guid: 6ce7f62a9ccab4751a0856c058088b79, type: 2}
   OxygenSupply: {fileID: 11400000, guid: 159b75ad441a3b94997ed895834cb52e, type: 2}
   ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}
   AccessCarrier: {fileID: 11400000, guid: 12b15eecdab584efebb38bfd93a3ccf8, type: 2}

@@ -22,6 +22,9 @@ namespace Unity.MP_FPS
         public SoundDef Aim, Light, DryFire, ReloadReady, Medical, Pickup, OxygenRefill;
         public SoundDef SuitBreath, Heartbeat, SuitWarning, ExtractStart, ExtractCancel, ExtractTick;
         public SoundDef SuitBreathEffort;
+        public SoundDef JumpEffort;
+        public SoundDef LiftMotor, LiftGate, LiftStart, LiftStop;
+        public SoundDef InteriorVent, SuitVent;
         public SoundDef OxygenSupply;
         public SoundDef ShipInterior;
         public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;

@@ -34,6 +34,7 @@ namespace Unity.MP_FPS
         private bool m_Initialized;
         private bool m_Remote;
         private float m_PoseTravel, m_PoseGate;
+        private readonly MoonkovLiftAudio m_Audio = new MoonkovLiftAudio();
 
         public string LiftId => m_LiftId;
         public RaidLiftState State { get; private set; }
@@ -49,7 +50,14 @@ namespace Unity.MP_FPS
             if (!m_Initialized && m_Cabin && m_Floor) ResetToLower();
         }
 
-        private void OnDisable() => s_Active.Remove(this);
+        private void OnDisable() { s_Active.Remove(this); m_Audio.Stop(); }
+
+        private void LateUpdate()
+        {
+            if (!Ready || !GameManager.Instance || GameManager.Instance.IsHeadless || Time.deltaTime <= 0)
+            { m_Audio.Stop(); return; }
+            m_Audio.Update(m_Cabin, m_PoseTravel, m_PoseGate, Time.unscaledTime);
+        }
 
         public void Configure(string id, Transform cabin, BoxCollider floor, float rise, float travelSeconds, float gateSeconds,
             AirlockPanelPose[] cabinLeaves, AirlockPanelPose[] lowerLeaves, AirlockPanelPose[] upperLeaves,

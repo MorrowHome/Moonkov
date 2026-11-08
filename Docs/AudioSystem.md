@@ -1,5 +1,15 @@
 # Moonkov 音效系统
 
+## 2026-11-08 实际游玩声音层
+
+- 衣料声从 -26 dB 提到 -21 dB，脚步触发增益从 0.2 提到 0.55。站立移动每两步增加一次装备碰撞，奔跑更强。落地也按落速和负重触发装备声。蹲伏和爬行保留原隐蔽性规则。脚步仍由动画落脚事件驱动。
+- 跳跃增加三条 Cici Fyre 的 CC0 短发力录音，保留原音高。受击、咳嗽和挥拳优先；跳跃人声期间暂停呻吟与喘息。
+- 根据实际 BreathableAir 状态，平滑切换室内通风声和头盔通风声。使用 lfyaudio 的 CC0 通风实录，经滤波和循环接缝处理。原低频环境底声保留，结构异响间隔改为 9–16 秒。
+- 升降机补上门机、驱动、启动和停靠声音。根据实际舱体与门的运动触发，声音跟随舱体，停止和失活收束循环。沿用已有 CC0 气闸机械拟音，不改变升降机运行和网络规则。
+- 新增五条 48 kHz 单声道 PCM，约 1.63 MB；新增七个音库，复用原声音池。来源与哈希见 `RaidPresenceSources.json`，许可随 `MoonkovRaidPresenceCredits.txt` 分发。重建用 `Tools/Audio/build_raid_presence_audio.py`，绑定用 `MoonkovPresenceAudioSetup.Install()`。
+- 单 Editor、一次性离线存档进入正式地图，连续 32 秒实际移动约 28.8 米。记录到 43 次脚步、41 次衣料、21 次装备、2 次跳跃与落地、1 次跳跃发力、3 次喘息、6 次擦墙、2 次结构异响，以及通风、射击和换弹。记录包含场景内发声对象，不等同于纯玩家轨道。最高同时使用 13 个声音发射器。验证脚本为 `Tools/Validation/GameplayPresenceReview.cs`。
+- 10 个源文件与成品哈希、5 条 PCM 格式、峰值、直流偏移和循环边界通过。90 个库入口与 14 组原有回归通过。`LiftPresenceReview.RunIsolated()` 的 8 项实际声音池检查通过，覆盖门机、驱动、启动、停靠、跟随、路由和重复触发。未做联机、Player 构建或主观听感验收。退出战局后发现 `ActionFeed.LateUpdate` 与 `LeaderboardUi.Update` 空引用，未在本次音效任务中修改。
+
 ## 2026-11-08 呛咳与全库复查
 
 - 烟雾呛咳从面罩呼吸占位音改为 OwlStorm 的 1.11 秒女性真人咳嗽。CC0 授权，保留原速度和音高。来源及处理见 `CoughSources.json`，许可随 `MoonkovCoughCredits.txt` 分发。

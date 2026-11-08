@@ -1,0 +1,67 @@
+{
+  "license": "CC0-1.0",
+  "vent_author": "lfyaudio",
+  "vent_page": "https://freesound.org/people/lfyaudio/sounds/848969/",
+  "vent_download": "https://cdn.freesound.org/previews/848/848969_14122564-hq.mp3",
+  "voice_author": "Cici Fyre",
+  "voice_page": "https://opengameart.org/content/female-rpg-voice-starter-pack",
+  "voice_archive": "RPG Voice Starter Pack/Type 1/jump1.wav through jump3.wav",
+  "processing": "Natural pitch/speed; ventilation crop 10-19 s with 1 s loop crossfade; mono 48k PCM16; DC removal and peak 0.7.",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Presence/InteriorVent.wav",
+      "source": "SourceData/Audio/RaidPresence/AirVent.mp3",
+      "filters": "highpass=f=110,lowpass=f=6000",
+      "source_sha256": "3b98142cc2a83a47448ec4584a8b787bfd7ce8a10f06f565c82d6125c9b32f53",
+      "sha256": "8014b9ed43f76607520c69f348c38971d17a069917fa4ea22807f9a91c981c93",
+      "seconds": 8.0,
+      "loop": true,
+      "peak": 0.7,
+      "rms": 0.17234381411131833
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Presence/SuitVent.wav",
+      "source": "SourceData/Audio/RaidPresence/AirVent.mp3",
+      "filters": "highpass=f=220,lowpass=f=2200",
+      "source_sha256": "3b98142cc2a83a47448ec4584a8b787bfd7ce8a10f06f565c82d6125c9b32f53",
+      "sha256": "d11bc7643dc75c74b2fb73c4e5062bab1f610b8c4d3ab440900bc050537375c9",
+      "seconds": 8.0,
+      "loop": true,
+      "peak": 0.7,
+      "rms": 0.15323142994534703
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Presence/JumpEffort1.wav",
+      "source": "SourceData/Audio/RaidPresence/jump1.wav",
+      "filters": "highpass=f=90,lowpass=f=11000",
+      "source_sha256": "5405969d768c3bc97f3eca478eed725c1234b73fe31e708aa5939e55a1a62c92",
+      "sha256": "3679e4b1bba05b3dc8181041e8d8b9870f21b386d4f1d36d0f34f4fce5af2738",
+      "seconds": 0.33208333333333334,
+      "loop": false,
+      "peak": 0.7,
+      "rms": 0.15847529876591462
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Presence/JumpEffort2.wav",
+      "source": "SourceData/Audio/RaidPresence/jump2.wav",
+      "filters": "highpass=f=90,lowpass=f=11000",
+      "source_sha256": "b570b0e87270254fe5e0bcaaaed08596bb05887c6047bf39035c0a5ce753beca",
+      "sha256": "353403a2c9485fad2a77717b969da62611b3fa752ad5bae01f667d5a1a0b4e04",
+      "seconds": 0.31416666666666665,
+      "loop": false,
+      "peak": 0.7,
+      "rms": 0.11390387920666756
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Presence/JumpEffort3.wav",
+      "source": "SourceData/Audio/RaidPresence/jump3.wav",
+      "filters": "highpass=f=90,lowpass=f=11000",
+      "source_sha256": "74093adbb3700b162cad950afcd36581e65422d62782fd5b7eec2d57ff9990c7",
+      "sha256": "584384f6c8cb60534e65b4893476358b9e9aebabbd04ed524527da8b9b8bfadb",
+      "seconds": 0.31416666666666665,
+      "loop": false,
+      "peak": 0.7,
+      "rms": 0.11167346851608384
+    }
+  ]
+}
