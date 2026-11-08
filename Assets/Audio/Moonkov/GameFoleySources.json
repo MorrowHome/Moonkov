@@ -1082,6 +1082,429 @@
       "peak": 0.5564234907343077,
       "rms": 0.13,
       "sha256": "ce868b224c99440abed167eff41fa3d43f10453440a7e66cff6ac2b40573409a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSSmokeBurst.wav",
+      "source": {
+        "name": "CSSSmokeBurst",
+        "use": "烟雾与消散弹开始喷放",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/smokegrenade/sg_explode.wav",
+        "original_file": "sound/weapons/smokegrenade/sg_explode.wav",
+        "file": "SourceData/Audio/GameFoley/CSSSmokeBurstOriginal.wav",
+        "sha256": "c1676094892bab13b106133fbd55aabf005286d283a9e5453a2eec5f55205c8a",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          0.85
+        ]
+      },
+      "seconds": 0.85,
+      "peak": 0.65,
+      "rms": 0.10551850432999219,
+      "sha256": "36ee46d03d459ce80396bd9cbdf849946ef7a626fc137873461d5c096b4c41aa"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSFlashBurst1.wav",
+      "source": {
+        "name": "CSSFlashBurst1",
+        "use": "闪光弹爆响",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/flashbang/flashbang_explode1.wav",
+        "original_file": "sound/weapons/flashbang/flashbang_explode1.wav",
+        "file": "SourceData/Audio/GameFoley/CSSFlashBurst1Original.wav",
+        "sha256": "fb300b3cf51f10a8199e45221e522e16aee5fc1764e06ace267dfe38ce0bb6f8",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          1.75
+        ]
+      },
+      "seconds": 1.75,
+      "peak": 0.65,
+      "rms": 0.10735531492993526,
+      "sha256": "c2853cd5e3e5d77d86179e4dc9d32606b7e031c99d5c1d3bf891229bc5380b26"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSFlashBurst2.wav",
+      "source": {
+        "name": "CSSFlashBurst2",
+        "use": "闪光弹爆响",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/flashbang/flashbang_explode2.wav",
+        "original_file": "sound/weapons/flashbang/flashbang_explode2.wav",
+        "file": "SourceData/Audio/GameFoley/CSSFlashBurst2Original.wav",
+        "sha256": "5c493c75c172d5a65bff638c994e823e50484e263db2563a131bbc9932d9b3fa",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          1.75
+        ]
+      },
+      "seconds": 1.75,
+      "peak": 0.59617348066634,
+      "rms": 0.13,
+      "sha256": "65fbdee2744e395bb483e597a9c7da4ac44dda4c660180c2fa780c703afe9dd4"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSFragBlast1.wav",
+      "source": {
+        "name": "CSSFragBlast1",
+        "use": "破片与炸药爆炸",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/hegrenade/explode3.wav",
+        "original_file": "sound/weapons/hegrenade/explode3.wav",
+        "file": "SourceData/Audio/GameFoley/CSSFragBlast1Original.wav",
+        "sha256": "37db559314b89be5ade4b44d283c5f6fa6220bf6ae26508f73ba84a87a93b524",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          2.2
+        ]
+      },
+      "seconds": 2.2,
+      "peak": 0.4674175975788614,
+      "rms": 0.12999999999999998,
+      "sha256": "5832c74ad6b4d46fa9c4d79d9bdf0b9adb69c9e8137557fef8dfb47c6ba6fc09"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSFragBlast2.wav",
+      "source": {
+        "name": "CSSFragBlast2",
+        "use": "破片与炸药爆炸",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/hegrenade/explode4.wav",
+        "original_file": "sound/weapons/hegrenade/explode4.wav",
+        "file": "SourceData/Audio/GameFoley/CSSFragBlast2Original.wav",
+        "sha256": "e878c1dd8b47352378bdd1eef089a0ad91756ddd44464cfb32021d3804361b24",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          2.35
+        ]
+      },
+      "seconds": 2.35,
+      "peak": 0.44664248405615425,
+      "rms": 0.12999999999999998,
+      "sha256": "9ae4abe82f2134b3f147e50c1e336aa48b71a617cbe561f599de5673284bd877"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2FireIgnite.wav",
+      "source": {
+        "name": "HL2FireIgnite",
+        "use": "燃烧瓶点燃",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/fire/ignite.wav",
+        "original_file": "sound/ambient/fire/ignite.wav",
+        "file": "SourceData/Audio/GameFoley/HL2FireIgniteOriginal.wav",
+        "sha256": "6e8587b4535f90c9bf128d3afbc7e8ee326b04d354d781f289c047e71dce4b43",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 2.9547083333333335,
+      "peak": 0.65,
+      "rms": 0.10443033221383044,
+      "sha256": "b6544a36c3ae03964a7c07c047331910a59798ea444410ebdeb6e85239bf24ac"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2FireLoop.wav",
+      "source": {
+        "name": "HL2FireLoop",
+        "use": "地面火焰持续燃烧",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/fire/fire_med_loop1.wav",
+        "original_file": "sound/ambient/fire/fire_med_loop1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2FireLoopOriginal.wav",
+        "sha256": "57a38f69a42d124f6743beca053f9a98b232c4d8706be8c0f6b7d06c67f7154a",
+        "loop": true,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 4.50625,
+      "peak": 0.6499999999999999,
+      "rms": 0.1296413324912761,
+      "sha256": "475adc1a86fb7cc03f6fbc74088ca6bbbb642a6ce046abc4601f021d00f09251"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2SmokeLoop.wav",
+      "source": {
+        "name": "HL2SmokeLoop",
+        "use": "烟雾罐持续喷放",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/gas/cannister_loop.wav",
+        "original_file": "sound/ambient/gas/cannister_loop.wav",
+        "file": "SourceData/Audio/GameFoley/HL2SmokeLoopOriginal.wav",
+        "sha256": "dc621868026ff755665a0097bd2bd4cde1977d0c1d8846bb164ac9c776145305",
+        "loop": true,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 2.849479166666667,
+      "peak": 0.65,
+      "rms": 0.1260152220893614,
+      "sha256": "335340830cc65c1b2e62cee3cd88d7b09b6c12dcec77c03aeade91a356c5209a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ChokeLoop.wav",
+      "source": {
+        "name": "HL2ChokeLoop",
+        "use": "消散弹气流",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/gas/steam_loop1.wav",
+        "original_file": "sound/ambient/gas/steam_loop1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ChokeLoopOriginal.wav",
+        "sha256": "d0fa61ce62615ab430de984e2a890769a5e27d3c9941c66ac7527b76340ae6e6",
+        "loop": true,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 2.0964375,
+      "peak": 0.5487970870712893,
+      "rms": 0.13,
+      "sha256": "8d9688f9632669da03c04285f7d138e1262b720caeb3dd2b9f78c9f5f272aaaa"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2PoisonLoop.wav",
+      "source": {
+        "name": "HL2PoisonLoop",
+        "use": "毒气区域腐蚀嘶声",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/levels/canals/toxic_slime_loop1.wav",
+        "original_file": "sound/ambient/levels/canals/toxic_slime_loop1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2PoisonLoopOriginal.wav",
+        "sha256": "f6247d8c434c56e8b4bf24045128bd99f7191c058b52f9697f9cd5bd7c98cf5f",
+        "loop": true,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          4.5
+        ]
+      },
+      "seconds": 4.46,
+      "peak": 0.65,
+      "rms": 0.056495519413013257,
+      "sha256": "418ec1e683a2e59f8bc93e297c4ef0d3ca5955231b5ee7e52f06acbd1f4f3773"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2TrapAlarm.wav",
+      "source": {
+        "name": "HL2TrapAlarm",
+        "use": "警报陷阱持续报警",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/ambient/alarms/apc_alarm_loop1.wav",
+        "original_file": "sound/ambient/alarms/apc_alarm_loop1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2TrapAlarmOriginal.wav",
+        "sha256": "c0b37d23d65f14fd18b761f67d4c5e5c6e34f130f1e5c5770ad4aff00af72b49",
+        "loop": true,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 1.8989583333333333,
+      "peak": 0.65,
+      "rms": 0.11532642422585829,
+      "sha256": "1fb2bb8d42f1a2bd00dd4d522fb0b76e5f70f7c2d5fe7e7228a36e26acbebdb3"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2TrapArm.wav",
+      "source": {
+        "name": "HL2TrapArm",
+        "use": "陷阱布设锁定",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/slam/mine_mode.wav",
+        "original_file": "sound/weapons/slam/mine_mode.wav",
+        "file": "SourceData/Audio/GameFoley/HL2TrapArmOriginal.wav",
+        "sha256": "5b5f00cc6103d662fdbf762135fb5f35ff03a538e4db2c8ba0dd084ca0e45325",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.43972916666666667,
+      "peak": 0.65,
+      "rms": 0.05233770541672894,
+      "sha256": "471783bde8a5c58a90718c3a883cba7e27417afca334c9e0bd91e947bd528299"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2WireRelease.wav",
+      "source": {
+        "name": "HL2WireRelease",
+        "use": "铁丝陷阱展开",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/metal/metal_solid_strain1.wav",
+        "original_file": "sound/physics/metal/metal_solid_strain1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2WireReleaseOriginal.wav",
+        "sha256": "7232707c473c42866bc7bd85556fd9e3b8661f9b14af18d6d07a90bdb1cf38eb",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.8572083333333333,
+      "peak": 0.4692600187020492,
+      "rms": 0.13,
+      "sha256": "18b69be9380588f9ea8922431fb15223be7c7005b7b4a066401ea8dbc614a255"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldImpact1.wav",
+      "source": {
+        "name": "HL2ShieldImpact1",
+        "use": "护盾命中电击",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/stunstick/stunstick_impact1.wav",
+        "original_file": "sound/weapons/stunstick/stunstick_impact1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldImpact1Original.wav",
+        "sha256": "4db8e04b40791c7b4769acca6cbdd0d8d4d767309ed8629ac8d5f10e9f684774",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.7430416666666667,
+      "peak": 0.65,
+      "rms": 0.0857747629708667,
+      "sha256": "d385d857680b5e11de25d0cfb7c85fc0d75b6d5e32cb77cd5f7abc6e58fd6b16"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldImpact2.wav",
+      "source": {
+        "name": "HL2ShieldImpact2",
+        "use": "护盾命中电击",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/stunstick/stunstick_impact2.wav",
+        "original_file": "sound/weapons/stunstick/stunstick_impact2.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldImpact2Original.wav",
+        "sha256": "33dbd153d7f44e1824ae15dfcc36d932c045d3a6eb9d87e3bf70c77a99f408c8",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.55725,
+      "peak": 0.65,
+      "rms": 0.08925311345952887,
+      "sha256": "abd03479991db63903ce923e4cc094c17a5fee32466fe8173b0a7add7fcb9c1e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldBreak.wav",
+      "source": {
+        "name": "HL2ShieldBreak",
+        "use": "护盾破裂放电",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/energy_disintegrate4.wav",
+        "original_file": "sound/weapons/physcannon/energy_disintegrate4.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldBreakOriginal.wav",
+        "sha256": "e9b21a60865bcf6c5d5dda92ac1402730c25701beeacc43b82166fc5f3360ee9",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 2.578333333333333,
+      "peak": 0.47932026863601246,
+      "rms": 0.13,
+      "sha256": "111ff76df60646d2bcb7a165774fd52b84c3cd267642d1b59ce9e9d96c522ab2"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldRestore.wav",
+      "source": {
+        "name": "HL2ShieldRestore",
+        "use": "护盾恢复蓄能",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_charge.wav",
+        "original_file": "sound/weapons/physcannon/physcannon_charge.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldRestoreOriginal.wav",
+        "sha256": "0debdab6af87f4f9cf0cd95ad297a5afe684c44bb634a3ea440e48e37b556c60",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 1.7572291666666666,
+      "peak": 0.4881857636178856,
+      "rms": 0.13000000000000003,
+      "sha256": "4875efa9a6698996680354d357533bd7b430855d40270a5a0d63fd89a4e7424f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldRaise.wav",
+      "source": {
+        "name": "HL2ShieldRaise",
+        "use": "主动防御展开",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_pickup.wav",
+        "original_file": "sound/weapons/physcannon/physcannon_pickup.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldRaiseOriginal.wav",
+        "sha256": "c853b86dff27e7edfe84a135d22de867cb2e5c7386d25942bf9adfa116506a9d",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 1.0535625,
+      "peak": 0.65,
+      "rms": 0.1180477961245487,
+      "sha256": "c8dc79c5dffa3a73b2a1ff9a3f7707a418f92a516f027ad09b724db1e9a8f9df"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ShieldLower.wav",
+      "source": {
+        "name": "HL2ShieldLower",
+        "use": "主动防御收回",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_drop.wav",
+        "original_file": "sound/weapons/physcannon/physcannon_drop.wav",
+        "file": "SourceData/Audio/GameFoley/HL2ShieldLowerOriginal.wav",
+        "sha256": "e2044f068be630423eb2d68ac5b1e24e42496604097ff490bbbcd8f5eeb933cd",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.5499375,
+      "peak": 0.65,
+      "rms": 0.11672506182860762,
+      "sha256": "a083d3960e2623066b05a94ed286bd4ee49c1789017c3884c07da51c0b934a01"
     }
   ]
 }

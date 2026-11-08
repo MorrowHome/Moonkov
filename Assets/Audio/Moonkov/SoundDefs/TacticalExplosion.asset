@@ -26,9 +26,8 @@ MonoBehaviour:
   PlaybackType: 1
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: e91919c4e9d89f44fb9c519738e2a666, type: 3}
-  - {fileID: 8300000, guid: bad46d857a610a2448ec2f0242097d5f, type: 3}
-  - {fileID: 8300000, guid: 8b969f35a6f6b794a94cbd58d9a4c5a1, type: 3}
+  - {fileID: 8300000, guid: 119c6437b2cde4e57872095bedd7cee2, type: 3}
+  - {fileID: 8300000, guid: fff9c59cb79244466a6bd13b358798a3, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -40,9 +39,9 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -9
+    VolumeMin: -8
     VolumeMax: -7
-    PitchMin: -64
+    PitchMin: 0
     PitchMax: 0
   DistanceInfo:
     VolumeDistMin: 1.5
@@ -50,24 +49,24 @@ MonoBehaviour:
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
-    LPFRollOffCurveType: 4
-    LPF_MinCutoff: 6833
-    LPF_MaxDistance: 80
+    LPFRollOffCurveType: 0
+    LPF_MinCutoff: 0
+    LPF_MaxDistance: 0
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
-    SpatialBlendCurveType: 4
-    SpatialBlend_MaxDistance: 27.4
+    SpatialBlendCurveType: 0
+    SpatialBlend_MaxDistance: 0
     PanMin: 0
     PanMax: 0
   LowPassFilter:
-    EnableComponent: 1
-    CutoffMin: 9152
+    EnableComponent: 0
+    CutoffMin: 22000
     CutoffMax: 22000
   HighPassFilter:
     EnableComponent: 0
-    CutoffMin: 0
-    CutoffMax: 0
+    CutoffMin: 22000
+    CutoffMax: 22000
   DistortionFilter:
     EnableComponent: 0
     DistortionMin: 0

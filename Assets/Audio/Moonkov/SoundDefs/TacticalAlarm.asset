@@ -17,18 +17,18 @@ MonoBehaviour:
   Role: 6
   Priority: 60
   MaxVoices: 4
-  MinimumInterval: 0.035
+  MinimumInterval: 0
   Occlusion: 1
   MixerGroup: 1
   BasePitchInCents: 0
   VolumeScale: 1
   BaseLowPassCutoff: 0
-  PlaybackType: 1
+  PlaybackType: 2
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 7198cc86f072241928d338ad0cd2226c, type: 3}
+  - {fileID: 8300000, guid: 2c19da4f2c9f24c5da5548081d7ef4e4, type: 3}
   RepeatInfo:
-    LoopCount: 1
+    LoopCount: 0
     RepeatMin: 1
     RepeatMax: 1
   StartStopInfo:
@@ -38,8 +38,8 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -12
-    VolumeMax: -10
+    VolumeMin: -13
+    VolumeMax: -12
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:
@@ -49,8 +49,8 @@ MonoBehaviour:
     DopplerScale: 0
     VolumeRolloffMode: 1
     LPFRollOffCurveType: 0
-    LPF_MinCutoff: 1500
-    LPF_MaxDistance: 55
+    LPF_MinCutoff: 0
+    LPF_MaxDistance: 0
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
     PanMax: 0
   LowPassFilter:
     EnableComponent: 0
-    CutoffMin: 14000
-    CutoffMax: 14000
+    CutoffMin: 22000
+    CutoffMax: 22000
   HighPassFilter:
     EnableComponent: 0
     CutoffMin: 22000

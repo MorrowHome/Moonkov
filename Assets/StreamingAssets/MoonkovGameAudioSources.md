@@ -4,7 +4,7 @@
 
 这些是原游戏录音。版权归原权利人。用户指定用于个人非商用作品；此记录不声明额外授权。
 
-成品统一为 48 kHz 单声道 PCM。保留原音高和速度。做剪辑、去直流、音量和边缘淡化；塔科夫片段另压低瞬时尖峰以提高主体音量，包扎循环加 40 毫秒交叉淡化。猎杀针剂不做压缩。
+成品统一为 48 kHz 单声道 PCM。保留原音高和速度。做剪辑、去直流、音量和边缘淡化；塔科夫片段另压低瞬时尖峰以提高主体音量，循环片段加 40 毫秒交叉淡化。猎杀针剂不做压缩。
 
 | 成品文件 | 游戏内用途 | 原游戏 / 权利人 | 录音出处 | 原片段 |
 | --- | --- | --- | --- | --- |
@@ -55,10 +55,29 @@
 | `Clips/GameFoley/HL2DryFire.wav` | 空仓扣扳机 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/pistol/pistol_empty.wav) | sound/weapons/pistol/pistol_empty.wav |
 | `Clips/GameFoley/HL2TerminalStart.wav` | 设备操作开始及取消 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/buttons/button14.wav) | sound/buttons/button14.wav |
 | `Clips/GameFoley/HL2TerminalComplete.wav` | 设备操作与设置成功 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/battery_pickup.wav) | sound/items/battery_pickup.wav |
+| `Clips/GameFoley/CSSSmokeBurst.wav` | 烟雾与消散弹开始喷放 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/smokegrenade/sg_explode.wav) | sound/weapons/smokegrenade/sg_explode.wav；取 0.000–0.850 秒 |
+| `Clips/GameFoley/CSSFlashBurst1.wav` | 闪光弹爆响 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/flashbang/flashbang_explode1.wav) | sound/weapons/flashbang/flashbang_explode1.wav；取 0.000–1.750 秒 |
+| `Clips/GameFoley/CSSFlashBurst2.wav` | 闪光弹爆响 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/flashbang/flashbang_explode2.wav) | sound/weapons/flashbang/flashbang_explode2.wav；取 0.000–1.750 秒 |
+| `Clips/GameFoley/CSSFragBlast1.wav` | 破片与炸药爆炸 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/hegrenade/explode3.wav) | sound/weapons/hegrenade/explode3.wav；取 0.000–2.200 秒 |
+| `Clips/GameFoley/CSSFragBlast2.wav` | 破片与炸药爆炸 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/hegrenade/explode4.wav) | sound/weapons/hegrenade/explode4.wav；取 0.000–2.350 秒 |
+| `Clips/GameFoley/HL2FireIgnite.wav` | 燃烧瓶点燃 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/fire/ignite.wav) | sound/ambient/fire/ignite.wav |
+| `Clips/GameFoley/HL2FireLoop.wav` | 地面火焰持续燃烧 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/fire/fire_med_loop1.wav) | sound/ambient/fire/fire_med_loop1.wav |
+| `Clips/GameFoley/HL2SmokeLoop.wav` | 烟雾罐持续喷放 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/gas/cannister_loop.wav) | sound/ambient/gas/cannister_loop.wav |
+| `Clips/GameFoley/HL2ChokeLoop.wav` | 消散弹气流 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/gas/steam_loop1.wav) | sound/ambient/gas/steam_loop1.wav |
+| `Clips/GameFoley/HL2PoisonLoop.wav` | 毒气区域腐蚀嘶声 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/levels/canals/toxic_slime_loop1.wav) | sound/ambient/levels/canals/toxic_slime_loop1.wav；取 0.000–4.500 秒 |
+| `Clips/GameFoley/HL2TrapAlarm.wav` | 警报陷阱持续报警 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/ambient/alarms/apc_alarm_loop1.wav) | sound/ambient/alarms/apc_alarm_loop1.wav |
+| `Clips/GameFoley/HL2TrapArm.wav` | 陷阱布设锁定 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/slam/mine_mode.wav) | sound/weapons/slam/mine_mode.wav |
+| `Clips/GameFoley/HL2WireRelease.wav` | 铁丝陷阱展开 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/metal/metal_solid_strain1.wav) | sound/physics/metal/metal_solid_strain1.wav |
+| `Clips/GameFoley/HL2ShieldImpact1.wav` | 护盾命中电击 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/stunstick/stunstick_impact1.wav) | sound/weapons/stunstick/stunstick_impact1.wav |
+| `Clips/GameFoley/HL2ShieldImpact2.wav` | 护盾命中电击 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/stunstick/stunstick_impact2.wav) | sound/weapons/stunstick/stunstick_impact2.wav |
+| `Clips/GameFoley/HL2ShieldBreak.wav` | 护盾破裂放电 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/energy_disintegrate4.wav) | sound/weapons/physcannon/energy_disintegrate4.wav |
+| `Clips/GameFoley/HL2ShieldRestore.wav` | 护盾恢复蓄能 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_charge.wav) | sound/weapons/physcannon/physcannon_charge.wav |
+| `Clips/GameFoley/HL2ShieldRaise.wav` | 主动防御展开 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_pickup.wav) | sound/weapons/physcannon/physcannon_pickup.wav |
+| `Clips/GameFoley/HL2ShieldLower.wav` | 主动防御收回 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/physcannon/physcannon_drop.wav) | sound/weapons/physcannon/physcannon_drop.wav |
 
 路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。
 
 原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。
 猎杀针剂详表：`SourceData/Audio/MedicalFoley/Sources.json` 与 `Assets/Audio/Moonkov/MedicalFoleySources.json`。
-重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()` 与 `AirlockButtonAudioSetup.Install()`。
+重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 与 `TacticalFoleySetup.Install()`。
 本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。

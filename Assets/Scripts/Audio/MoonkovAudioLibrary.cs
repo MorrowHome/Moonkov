@@ -13,7 +13,10 @@ namespace Unity.MP_FPS
         public SoundDef GrenadeDraw, GrenadePin, GrenadeThrow, OxygenConnect, OxygenDisconnect, RoomSwitch;
         public SoundDef TerminalStart, TerminalComplete;
         public SoundDef ShieldImpact, ShieldBreak, ShieldRestore;
+        public SoundDef ShieldRaise, ShieldLower;
         public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
+        public SoundDef TacticalTrapArm, TacticalWireRelease, TacticalSupplyDeploy, TacticalFlash, TacticalFireStart;
+        public SoundDef TacticalFireLoop, TacticalSmokeLoop, TacticalChokeLoop, TacticalPoisonLoop;
         public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;
         public SoundDef MeleeEffort;
         public SoundDef Consume, PlayerPain, PlayerGroan;

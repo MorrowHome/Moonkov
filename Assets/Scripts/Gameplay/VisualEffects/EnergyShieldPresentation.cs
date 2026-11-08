@@ -51,6 +51,7 @@ namespace Unity.MP_FPS
             bool head=snapshot.HeadDomeEquipped;
             if(head&&!m_HeadEquipped)m_VisorEquippedAt=Time.unscaledTime;
             m_HeadEquipped=head;m_ShieldEquipped=snapshot.HaloEquipped;
+            bool wasDefending=m_Defending;
             m_Defending=snapshot.HaloDefending && EnergyShieldRules.Alive(snapshot);
             m_DefenseWeapon=(Unity.MP_FPS.DollSinger.DollSingerHaloAim.HaloWeapon)(HaloAppearanceCatalog.CurrentWeapon(snapshot)-1);
             m_StandardCollar=snapshot.HeadDomeStandard;
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS
                 if(hit){m_HitAt=now;m_Impact=(Vector3)snapshot.ShieldHitPoint;m_Strength=EnergyShieldRules.Resource(snapshot.ShieldHitStrength*100)/100;}
                 if(broken)m_BreakAt=now;if(restored)m_RestoreAt=now;
                 if(broken)PlayCue(1);else if(hit)PlayCue(0);else if(restored)PlayCue(2);
+                else if(wasDefending!=m_Defending && EnergyShieldRules.Alive(snapshot))PlayCue(m_Defending ? 3 : 4);
             }
         }
         // Optional inventory-portrait bridge; uses real item values, not a second loadout model.
@@ -180,10 +182,10 @@ namespace Unity.MP_FPS
             if (!PresentationAudioEnabled || !Application.isPlaying || cue == 0 && Time.unscaledTime - m_LastSound < .18f) return;
             var library = MoonkovAudio.Library;
             if (!library) return;
-            m_LastSound = Time.unscaledTime;
+            if(cue<=2)m_LastSound = Time.unscaledTime;
             GameManager.Instance?.SoundSystem?.Stop(m_Sound, .025f);
             m_Sound = MoonkovAudio.PlayWeaponLayer(cue == 1 ? library.ShieldBreak :
-                cue == 2 ? library.ShieldRestore : library.ShieldImpact,
+                cue == 2 ? library.ShieldRestore : cue == 3 ? library.ShieldRaise : cue == 4 ? library.ShieldLower : library.ShieldImpact,
                 cue == 0 ? m_Impact : transform.position, 1, m_Owned ? .05f : 1);
         }
         public void ResetPresentation()

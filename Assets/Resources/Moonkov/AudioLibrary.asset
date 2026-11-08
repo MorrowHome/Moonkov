@@ -45,11 +45,22 @@ MonoBehaviour:
   ShieldImpact: {fileID: 11400000, guid: a369643e2b9604cdb831a740c7c5ec78, type: 2}
   ShieldBreak: {fileID: 11400000, guid: 92892d6ed57e243e394a7259fd31006b, type: 2}
   ShieldRestore: {fileID: 11400000, guid: 1f4a8eae002854fc086b946404272a71, type: 2}
+  ShieldRaise: {fileID: 11400000, guid: 71a55f19954a24c09948160669e8bf35, type: 2}
+  ShieldLower: {fileID: 11400000, guid: d7c0b9a519fcf4f13bebac8f524815b2, type: 2}
   TacticalDeploy: {fileID: 11400000, guid: a9b60d4af04f1459d9717f09ca3cd00f, type: 2}
   TacticalAlarm: {fileID: 11400000, guid: 59b205c9425e74d92aa8763ee2682a90, type: 2}
   TacticalExplosion: {fileID: 11400000, guid: 0f617e8f33dc14edf91fb10f7ab96b63, type: 2}
   TacticalGas: {fileID: 11400000, guid: 6243d888f3b4b446b88d24747c728cfe, type: 2}
   TacticalCough: {fileID: 11400000, guid: 2601a160eaf2f4d0c845736a595e1067, type: 2}
+  TacticalTrapArm: {fileID: 11400000, guid: 2063c30d594114a37893e3dda1aaa556, type: 2}
+  TacticalWireRelease: {fileID: 11400000, guid: d96c8b81adb084895a3d8ca2e24cc088, type: 2}
+  TacticalSupplyDeploy: {fileID: 11400000, guid: c6e3a34e0e5654ef78ea52a19eb72c16, type: 2}
+  TacticalFlash: {fileID: 11400000, guid: 1a1f0c753e25e4ee6b7a96e9d277e5b3, type: 2}
+  TacticalFireStart: {fileID: 11400000, guid: f9ca99b70accb415db90397ca84c0cb3, type: 2}
+  TacticalFireLoop: {fileID: 11400000, guid: 8df19ea29db6d411a83267b5e1d5c22d, type: 2}
+  TacticalSmokeLoop: {fileID: 11400000, guid: 5d9ec80d0e6434b4ea7bddee99e7c22a, type: 2}
+  TacticalChokeLoop: {fileID: 11400000, guid: 899e4022dcbdf41ba86b9d5a0ea1f354, type: 2}
+  TacticalPoisonLoop: {fileID: 11400000, guid: d4fae901ec2ab45049dc14feeef19544, type: 2}
   MeleeSwing: {fileID: 11400000, guid: 9fcc28e1e35fa4d0ebf4b4c815359b33, type: 2}
   MeleeEnergySwing: {fileID: 11400000, guid: 5b17d7ef7c1e7454799cfad1de9dc162, type: 2}
   MeleeImpact: {fileID: 11400000, guid: 9ffa710eed8d1472ca20079eafef4d88, type: 2}

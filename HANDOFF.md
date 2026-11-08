@@ -978,6 +978,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 战术区域的火、烟、消散、毒气和警报改为各自持续音。`TacticalItemsFeedback` 为每个已确认世界对象持有 `MoonkovTacticalAudio`，移除、过期、轮次变化、失活与离开听距必须停止循环。晚到只接续循环。`TacticalAlarm` 已是循环，不能再当无人管理的短声播放。爆炸画面正常移除后应让短音余响播完，不能按 0.35 秒显示时长截断。护盾展开与收回独立，破裂和命中优先。重建入口 `TacticalFoleySetup.Install()` 位于战斗安装链最后；来源仍用统一游戏原声清单。
+
 - 2026-11-08 武器切换同时比较型号、插槽和物品 ID，避免两把同型号互切无声。取枪、收枪、瞄准进出、近战取出、手雷各阶段、补氧接头、灯和终端各自配声。手雷拔销句柄与投掷分开，不能在快速投掷时截断尾音。`InteractionFoleySetup.Install()` 在重建链最后绑定；统一来源仍用 `MoonkovGameAudioSources.md`。验收和试听见 [音效系统](Docs/AudioSystem.md#2026-11-08-武器操作与设备细节)。
 
 - 2026-11-08 背包、容器、拾取整理、装备、丢弃和电池使用分开的声音。物品材质选择在 `MoonkovInventoryAudio`，声音仍等成功回执，不能改成点击即成功。`InteractionFoleySetup.Install()` 在音库重建最后覆盖。搜刮沿用服务端每 1.2 秒的序号事件；结束停止翻找，不新增本地循环计时器。来源统一登记 `MoonkovGameAudioSources.md`。

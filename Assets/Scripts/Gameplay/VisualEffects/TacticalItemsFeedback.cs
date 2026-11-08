@@ -4,8 +4,8 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS
 {
-    // Original procedural Moonkov props. No Hunt textures, models or audio are used.
-    // This component owns visuals only; server PhysicsScene checks own all gameplay.
+    // Original procedural Moonkov props. Audio sources are listed in MoonkovGameAudioSources.md.
+    // This component owns presentation only; server PhysicsScene checks own all gameplay.
     [DefaultExecutionOrder(150)]
     public sealed class TacticalItemsFeedback : MonoBehaviour
     {
@@ -14,6 +14,7 @@ namespace Unity.MP_FPS
             public TacticalWorldStateRpc State; public GameObject Root; public Transform Core;
             public Renderer Smoke; public MaterialPropertyBlock SmokeProperties;
             public Vector3 Position,Velocity; public float Received,Expire; public uint Sequence;
+            public readonly MoonkovTacticalAudio Audio = new MoonkovTacticalAudio();
         }
         private static TacticalItemsFeedback s_Active;
         private TacticalItemsTransparentRenderer m_TransparentRenderer;
@@ -135,22 +136,11 @@ namespace Unity.MP_FPS
                 visual.Root=new GameObject("Tactical "+state.Kind+" / "+state.Phase);
                 visual.Root.transform.SetParent(transform,false);Build(visual,state);
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(visual.Root);
-                var library = MoonkovAudio.Library;
-                if (library)
-                {
-                    var cue = state.Phase == TacticalWorldPhase.Alarm ? library.TacticalAlarm :
-                        state.Phase == TacticalWorldPhase.Explosion ? library.TacticalExplosion :
-                        state.Phase == TacticalWorldPhase.Choke || state.Phase == TacticalWorldPhase.Smoke ||
-                        state.Phase == TacticalWorldPhase.Poison || state.Phase == TacticalWorldPhase.Fire ? library.TacticalGas :
-                        state.Phase == TacticalWorldPhase.Armed || state.Phase == TacticalWorldPhase.Supply ||
-                        state.Phase == TacticalWorldPhase.Wire || state.Phase == TacticalWorldPhase.Flying ? library.TacticalDeploy : null;
-                    // Use the received world position, before the visual root is positioned.
-                    MoonkovAudio.Play(cue, state.Position);
-                }
             }
             visual.State=state;visual.Position=state.Position;visual.Velocity=state.Velocity;
             visual.Received=Time.time;visual.Expire=Time.time+Mathf.Max(.3f,state.Remaining+.5f);
             visual.Root.transform.position=state.Position;
+            visual.Audio.Present(state);
             // Sequence records are bounded by the world's monotonic id range. No stale resurrection.
             if(m_Sequences.Count>512)
             {m_Expired.Clear();foreach(var pair in m_Sequences)if(pair.Key+256<state.Id)m_Expired.Add(pair.Key);foreach(uint id in m_Expired)m_Sequences.Remove(id);}
@@ -187,6 +177,7 @@ namespace Unity.MP_FPS
             {
                 var v=pair.Value;
                 if(Time.time>=v.Expire){m_Expired.Add(pair.Key);continue;}
+                v.Audio.Update();
                 float age=Mathf.Clamp(Time.time-v.Received,0,.3f);
                 v.Root.transform.position=v.State.Phase==TacticalWorldPhase.Flying && v.Velocity.sqrMagnitude>.001f ?
                     Ballistics.Position(v.Position,v.Velocity,EnergyGrenadeRules.Gravity,age) : v.Position;
@@ -439,8 +430,9 @@ namespace Unity.MP_FPS
         private static void Ring(Transform root,float radius,float width,Material material,float height=.04f)
         {var points=new Vector3[48];for(int i=0;i<48;i++){float a=i*Mathf.PI*2/48;points[i]=new Vector3(Mathf.Cos(a)*radius,height,Mathf.Sin(a)*radius);}Line(root,points,width,material,true);}
         private void Remove(uint id)
-        {if(m_Visuals.TryGetValue(id,out var v)){if(v.Root)Release(v.Root);m_Visuals.Remove(id);}}
-        private void Clear(){foreach(var v in m_Visuals.Values)if(v.Root)Release(v.Root);m_Visuals.Clear();m_Sequences.Clear();m_HighestSequence=0;}
+        {if(m_Visuals.TryGetValue(id,out var v)){v.Audio.Stop(finishExplosion:true);if(v.Root)Release(v.Root);m_Visuals.Remove(id);}}
+        private void Clear(){foreach(var v in m_Visuals.Values){v.Audio.Stop();if(v.Root)Release(v.Root);}m_Visuals.Clear();m_Sequences.Clear();m_HighestSequence=0;}
+        private void OnDisable() => Clear();
         private static void Release(UnityEngine.Object value)
         {if(!value)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
         private void OnDestroy()
