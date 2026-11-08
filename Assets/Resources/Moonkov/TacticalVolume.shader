@@ -30,21 +30,26 @@ Shader "Moonkov/TacticalVolume"
         }
         half4 ParticleColor(Varyings input)
         {
-            if(_UseTexture>.5)return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,input.uv)*_BaseColor*input.color;
-            float2 q=input.uv*2-1;
-            float noise=sin(q.x*11+q.y*7+_Time.y*2)*sin(q.y*9-q.x*5-_Time.y*1.6);
-            float radial=dot(q,q);
-            float soft=smoothstep(1,.1,radial+.12*noise);
-            half3 color=_BaseColor.rgb*input.color.rgb;
-            if(_Flame>.5)
+            half4 result=_BaseColor*input.color;
+            if(_UseTexture>.5)
+                result*=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,input.uv);
+            else
             {
-                float width=max(.08,1-input.uv.y*.85);
-                q.x+=(sin(input.uv.y*9+_Time.y*7)*.1)*input.uv.y;
-                soft=smoothstep(1,.2,abs(q.x)/width)*smoothstep(1,.15,input.uv.y)*smoothstep(0,.15,input.uv.y);
-                soft*=saturate(1-radial*.3+noise*.35);
-                color=lerp(half3(2.1,.95,.18),half3(.95,.12,.015),input.uv.y);
+                float2 q=input.uv*2-1;
+                float noise=sin(q.x*11+q.y*7+_Time.y*2)*sin(q.y*9-q.x*5-_Time.y*1.6);
+                float radial=dot(q,q);
+                float soft=smoothstep(1,.1,radial+.12*noise);
+                if(_Flame>.5)
+                {
+                    float width=max(.08,1-input.uv.y*.85);
+                    q.x+=(sin(input.uv.y*9+_Time.y*7)*.1)*input.uv.y;
+                    soft=smoothstep(1,.2,abs(q.x)/width)*smoothstep(1,.15,input.uv.y)*smoothstep(0,.15,input.uv.y);
+                    soft*=saturate(1-radial*.3+noise*.35);
+                    result.rgb=lerp(half3(2.1,.95,.18),half3(.95,.12,.015),input.uv.y);
+                }
+                result.a*=soft;
             }
-            return half4(color,soft*_BaseColor.a*input.color.a);
+            return result;
         }
         ENDHLSL
         Pass

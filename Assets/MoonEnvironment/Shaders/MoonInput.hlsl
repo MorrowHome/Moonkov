@@ -125,40 +125,46 @@ half3 MoonLight(SurfaceOutputStandard surface, half3 normal, half3 view, Light l
 // This adds no uniform ambient term, and deliberately does not claim full GI.
 half3 MoonLocalBounce(float3 position, half3 normal, Light sun)
 {
+    half3 result = 0;
     float cameraDistance=distance(position,_WorldSpaceCameraPos);
-    UNITY_BRANCH if (_LocalTerrainReady<.5 || _LocalBounceStrength<=0 || cameraDistance>80) return 0;
-    float2 uv=(position.xz-_LocalTerrainRect.xy)/max(_LocalTerrainRect.zw,1);
-    UNITY_BRANCH if (any(uv<.02) || any(uv>.98)) return 0;
-    float2 offsets[4]={float2(3,0),float2(-3,0),float2(0,3),float2(0,-3)};
-    float energy=0;
-    [unroll] for (int i=0;i<4;i++)
+    UNITY_BRANCH if (_LocalTerrainReady>=.5 && _LocalBounceStrength>0 && cameraDistance<=80)
     {
-        float2 sourceXZ=position.xz+offsets[i];
-        float2 sourceUV=(sourceXZ-_LocalTerrainRect.xy)/_LocalTerrainRect.zw;
-        float4 ground=tex2Dlod(_LocalTerrainGeometry,float4(sourceUV,0,0));
-        float3 source=float3(sourceXZ.x,ground.r+.04,sourceXZ.y);
-        float3 delta=source-position;
-        float distance2=max(dot(delta,delta),.01);
-        float3 direction=delta*rsqrt(distance2);
-        float3 groundNormal=normalize(ground.gba);
-        float form=saturate(dot(normal,direction))*saturate(dot(groundNormal,-direction));
-        float sunlight=saturate(dot(groundNormal,sun.direction));
-        UNITY_BRANCH if (form*sunlight<.0001) continue;
-        float3 middle=lerp(position+normal*.04,source,.5);
-        float middleHeight=tex2Dlod(_LocalTerrainGeometry,float4((middle.xz-_LocalTerrainRect.xy)/_LocalTerrainRect.zw,0,0)).r;
-        float visible=step(middleHeight,middle.y);
-        float shadow=1;
-        // Screen-space shadows cannot be sampled at an arbitrary world-space
-        // bounce source. Disable that approximation in that unsupported variant.
-        #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
-            shadow=0;
-        #elif defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE)
-            shadow=MainLightRealtimeShadow(TransformWorldToShadowCoord(source+groundNormal*.04));
-        #endif
-        energy+=form*sunlight*visible*shadow*9/(distance2+9);
+        float2 uv=(position.xz-_LocalTerrainRect.xy)/max(_LocalTerrainRect.zw,1);
+        UNITY_BRANCH if (all(uv>=.02) && all(uv<=.98))
+        {
+            float2 offsets[4]={float2(3,0),float2(-3,0),float2(0,3),float2(0,-3)};
+            float energy=0;
+            [unroll] for (int i=0;i<4;i++)
+            {
+                float2 sourceXZ=position.xz+offsets[i];
+                float2 sourceUV=(sourceXZ-_LocalTerrainRect.xy)/_LocalTerrainRect.zw;
+                float4 ground=tex2Dlod(_LocalTerrainGeometry,float4(sourceUV,0,0));
+                float3 source=float3(sourceXZ.x,ground.r+.04,sourceXZ.y);
+                float3 delta=source-position;
+                float distance2=max(dot(delta,delta),.01);
+                float3 direction=delta*rsqrt(distance2);
+                float3 groundNormal=normalize(ground.gba);
+                float form=saturate(dot(normal,direction))*saturate(dot(groundNormal,-direction));
+                float sunlight=saturate(dot(groundNormal,sun.direction));
+                UNITY_BRANCH if (form*sunlight<.0001) continue;
+                float3 middle=lerp(position+normal*.04,source,.5);
+                float middleHeight=tex2Dlod(_LocalTerrainGeometry,float4((middle.xz-_LocalTerrainRect.xy)/_LocalTerrainRect.zw,0,0)).r;
+                float visible=step(middleHeight,middle.y);
+                float shadow=1;
+                // Screen-space shadows cannot be sampled at an arbitrary world-space
+                // bounce source. Disable that approximation in that unsupported variant.
+                #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
+                    shadow=0;
+                #elif defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+                    shadow=MainLightRealtimeShadow(TransformWorldToShadowCoord(source+groundNormal*.04));
+                #endif
+                energy+=form*sunlight*visible*shadow*9/(distance2+9);
+            }
+            result = sun.color * min(energy,.5) * _BounceAlbedo * _LocalBounceStrength
+                * (1-smoothstep(50,80,cameraDistance));
+        }
     }
-    return sun.color * min(energy,.5) * _BounceAlbedo * _LocalBounceStrength
-        * (1-smoothstep(50,80,cameraDistance));
+    return result;
 }
 void MoonFragmentFade(float3 position)
 {
