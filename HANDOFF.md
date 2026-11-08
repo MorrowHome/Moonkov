@@ -216,12 +216,16 @@
 
 - 修改代码前确认 `BuildPipeline.isBuildingPlayer` 为 false。构建期间不要修改脚本，尤其是 Ghost 组件字段。Player 编译可能读到新文件，而 Editor 仍使用旧程序集，造成布局不一致并让整次构建失败。等待原构建结束后再修改和重编译，不另开 Editor。
 
-## Mac 构建 Windows 包（2026-11-07）
+## Mac 构建 Windows 包（2026-11-08）
 
 - 本机 Unity `6000.5.10f1` 已安装 Windows Build Support (Mono)，可构建 Windows x64 客户端。若在本机打 `MoonServer.exe`，还要在同版本 Unity Hub 安装 Windows Dedicated Server Build Support。本机缺此模块。Windows IL2CPP 构建使用 Windows 主机。
 - 11 月 7 日 12:44 的旧 Windows 包由这台 Mac 生成。Unity 报告为 Succeeded，但仍记录了 32 条 STP 的 D3D12 DXC 编译错误。该次构建早于 P2P 接入。
 - Windows 全局配置与 `Windows Client.asset` 的独立覆盖均已关闭 Auto Graphics API，只留 Direct3D11。`Windows.asset` 继承全局设置。修改后须同时核对 Editor 当前值和配置文件中的 `WindowsStandaloneSupport` 条目，不能只看内存读数。2026-11-08 已在刷新、重读配置后确认两处仍为 D3D11，渲染预检通过。
-- 三份 STP 的 32 个 Direct3D11 普通精度变体通过定点编译。保留 STP、五份运行时管线登记和现有变体裁剪，不清理 Library。新版 Windows 客户端脚本已在 Mac 编译通过。只用 D3D11 的整包和 Windows 运行仍待验证。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
+- 只留 D3D11 仍会编译 STP 的原生 16 位变体。`MoonkovStpShaderStripper` 在 Windows 且图形 API 全为 D3D11 时，裁掉三份官方 STP 的这类 D3D 变体。保留普通精度、Metal 和包含 D3D12 的构建。定向资源包的 32 条 STP 错误已降为 0。保留 STP、五份运行时管线和现有裁剪，不清理 Library。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
+- 自有 Shader 的 158 个 D3D11／Metal 定向编译用例为 0 错误、0 警告。流体索引转成无符号时不能改变骨骼 0 的负数余数，也不能改掉邻接链的 -1 哨兵。Unity USS 不支持 `:first-child`、`:last-child`，改用生成元素时附加的类名。
+- 旧 `PreventDefault` 的行为包含焦点拦截。替换时保留停止传播和 `FocusController.IgnoreEvent`。`CampaignProgress` 是 JSON 数据，字典和集合不走 Unity 序列化。旧 JSON 往返、导航连接释放及聊天键盘行为已验证。
+- 经用户确认，已通过 UPM 移除未使用的 AI Inference 2.6.1 及其独占依赖 App UI；其余包版本不变。不要为消除 Pipeline 的构建提示而开启玩家调试服务器，也不要直接改只读包缓存来隐藏 lilToon 的提示。
+- 11 月 8 日 22:21 的完整 Windows Player 构建成功，0 错误、4 条第三方警告，耗时 421.9 秒。C# 与 Shader 均无警告。产物与报告在 `Build/WarningReview-20261108`。Windows 实机画面、性能和联机仍待验收。通过 Pipeline 安排长构建后，只读磁盘报告，不轮询繁忙 Editor 的主线程命令。
 - 正式地图和画质设置都引用 `MC00BakedPipeline.asset`。构建可能改写其中的 `m_Prefilter*` 字段。保留该资产及其 `.meta` 的 Git 跟踪。单次构建生成的字段差异可留在本地。
 
 ## 本地 Windows 独立服构建（2026-11-06）

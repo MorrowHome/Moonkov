@@ -1,5 +1,59 @@
 # Windows 玩家包渲染检查（2026-10-23）
 
+## 2026-11-08：构建警告清理
+
+22:21 完成完整 Windows x64 / Mono 玩家包构建：`Succeeded`，0 错误，4 条警告。
+总耗时 421.9 秒，Addressables 为 33.9 秒，产物约 4.88 GiB。
+本次复用了缓存，不能把耗时差异全部归因于代码修复。
+产物为 `Build/WarningReview-20261108/Moonkov.exe`，同目录有 `build-report.json`。
+本轮完整构建中的 C# 与 Shader 编译均为 0 错误、0 警告。
+
+21:11 完成的 Windows 包显示 Succeeded，但粘贴日志仍有三类 STP DXC 错误。
+只选择 Direct3D11 不足以消除它们。原生 16 位变体仍进入编译。
+同机定向资源包构建复现了 32 条错误。
+
+`MoonkovStpShaderStripper` 只在 Windows 的图形 API 全部为 Direct3D11 时，
+裁掉三份官方 STP 计算着色器的 D3D 原生 16 位变体。
+保留普通精度、Metal 和含 Direct3D12 的构建。保留全部运行时管线和 STP 设置。
+使用 `Tools/Validation/StpBuildReview.cs` 重建同一资源集合后，STP 错误为 0。
+
+液态异形计算着色器统一了索引比较类型。骨骼分段仍保留负数余数的含义。
+粒子、地表反照和银砂光照改成明确初始化的返回值。
+扫描轮廓在幂运算前约束输入范围，避免浮点误差产生负底数。
+`Tools/Validation/BuildShaderWarningReview.cs` 的 158 个 D3D11 与 Metal 编译用例，
+警告由 288 条降为 0，编译错误为 0。没有屏蔽着色器诊断。
+
+任务面板的首行边框和结局选项的末尾间距改用显式类名。
+Unity USS 不支持 `:first-child` 和 `:last-child`。
+`BuildUiWarningReview` 已检查原生面板：首行上边框为 1，后行是 0；
+三个结局选项的右间距依次为 8、8、0。
+
+运行时代码的旧 API、同名辅助方法和未使用字段警告已处理。
+UI 事件用停止传播与 `FocusController.IgnoreEvent` 保留原来的输入拦截行为。
+不能只删除 `PreventDefault`，否则 Tab 等输入可能改变焦点。
+`CampaignProgress` 只通过 JSON 存档，不再声明 Unity 的 `[Serializable]`。
+字段名和存档格式不变。`RuntimeBuildWarningReview` 已验证旧 JSON 往返、
+导航连接创建与释放，以及聊天的 Tab、回车、Esc 和草稿保留。
+
+经用户确认，通过 UPM 移除未使用的 `com.unity.ai.inference@2.6.1`。
+移除前检查了代码、13,667 份序列化资源和其他包依赖，没有发现使用位置。
+Unity 同时移除了只由它依赖的 `com.unity.dt.app-ui@2.1.7`，其余包版本不变。
+
+构建提示需要按来源判断：
+
+- Pipeline 包在缺少运行时配置或明确关闭运行时功能时都会发警告。
+  这不是 URP 失效。不要为消除它而开启玩家包的调试服务器。
+- ServicesCore 提示项目未关联 Unity Cloud。现有代码仍保留 UGS 入口，不能直接删包或伪造关联。
+- lilToon 在构建期间改写只读包内的 Shader。这是该包的构建优化行为。
+  本次出现两条。不要直接修改 `Library/PackageCache`，也不要为清空提示而关闭材质优化。
+
+定向证据位于忽略目录 `Library/BuildValidation/WarningCleanup`。
+`Tools/Validation/WindowsWarningBuild.cs` 可通过既有 Editor 的 Pipeline `run_script`
+调用 `WindowsWarningBuild.Start`，参数为一个尚不存在的输出目录。
+长构建会占用 Editor 主线程。提交后只读磁盘报告，不轮询主线程命令，以免产生工具超时日志。
+构建后已确认 MainMenu 无未保存修改，Windows Player 目标不变，协议标记为 2，原生网络库随包输出。
+没有进入 Play、启动第二个 Editor 或进行联机验证。Windows 实机画面与性能仍待验收。
+
 ## 2026-11-06：Mac 构建 Windows 客户端
 
 本机为 macOS，Unity 为 `6000.5.10f1`，URP 为 `17.5.0`。
@@ -7,7 +61,7 @@
 脚本后端为 Mono，Development Build 与 Script Debugging 均关闭。这些设置可保留。
 Windows IL2CPP 构建需要 Windows 主机；本机继续使用 Mono。
 
-当前 Windows 的 Auto Graphics API 开启，原生 API 返回 `Direct3D12, Direct3D11`。
+11 月 6 日检查时，Windows 的 Auto Graphics API 开启，原生 API 返回 `Direct3D12, Direct3D11`。
 最近一次已取消的恢复构建有 65 条错误：1 条取消记录，64 条 STP 的 DXC 编译错误。
 其中 `StpSetup` 32 条，`StpPreTaa` 和 `StpTaa` 各 16 条。报错明确指出，
 本版本只能从 Windows Editor 使用 DXC 编译 D3D 着色器。
@@ -26,13 +80,12 @@ STP 同时提供原生 16 位和普通 32 位路径。Apollo12Laptop 与 MC00Int
 建议本机 Windows 客户端构建关闭 Auto Graphics API，只保留 Direct3D11。
 入口为 Windows 的 Player Settings > Other Settings > Rendering。
 Direct3D11 不支持上述原生 16 位功能，可使用已通过检查的 STP 普通精度路径。
-保留 STP、分辨率、光照和阴影配置。此建议尚未应用；完整构建与 Windows 运行画面
-尚未验证，不能根据定点编译保证整包成功或性能不变。
+保留 STP、分辨率、光照和阴影配置。该建议在 11 月 8 日已应用。
+后续构建与警告处理见本文前部；Windows 运行画面仍需实机验证。
 
-当前活动配置是默认配置。`Windows.asset` 继承全局 Player Settings；
-`Windows Client.asset` 有独立 Player Settings 覆盖。后者目前也没有显式 Windows
-图形 API 列表，仍走自动选择。下次构建须核对实际使用的配置，不能只改全局设置
-就认定独立配置同步生效。服务器配置不在本次建议范围内。
+`Windows.asset` 继承全局 Player Settings；`Windows Client.asset` 有独立覆盖。
+11 月 8 日已确认两处均只保留 Direct3D11。下次构建仍须核对实际使用的配置，
+不能只改全局设置就认定独立配置同步生效。服务器配置不在本次建议范围内。
 
 此前 Windows 构建优化仍有效：URP 未使用变体裁剪、包含场景管线、BRG 条件裁剪、
 普通实例化裁剪及两份保留材质、运行时光照贴图模式保留均在。
