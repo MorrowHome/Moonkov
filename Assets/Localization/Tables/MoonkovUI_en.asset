@@ -6710,6 +6710,24 @@ MonoBehaviour:
       it.
     m_Metadata:
       m_Items: []
+  - m_Id: 11508279430602752
+    m_Localized: Regeneration shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11508279455768576
+    m_Localized: Inject for 3 seconds to restore 2 total HP per second for 120 seconds.
+      Prioritizes injured surviving parts. Poison pauses healing; destroyed parts
+      and lost health limits stay unchanged. Reuse refreshes duration without stacking.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11508279455768577
+    m_Localized: REGEN {0:0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11508279455768578
+    m_Localized: REGEN PAUSED {0:0}s
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

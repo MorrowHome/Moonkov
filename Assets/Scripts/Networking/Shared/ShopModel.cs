@@ -41,6 +41,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("vitality_shot", 20, 6),
             new ShopOffer("stamina_shot", 18, 6),
             new ShopOffer("antidote_shot", 15, 5),
+            new ShopOffer("regeneration_shot", 28, 9),
             new ShopOffer("dynamite_bundle", 24, 8),
             new ShopOffer("frag_bomb", 28, 9),
             new ShopOffer("fire_bomb", 16, 5),

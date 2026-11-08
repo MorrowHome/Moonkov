@@ -8,7 +8,7 @@ internal static class FieldExpansionChecks
         int checks=0;
         void Check(bool value,string label){checks++;if(!value)throw new Exception(label);}
         string[] codes={"oxygen_recycler","glare_filter","survey_multitool","hemostatic_bandage","rescue_kit",
-            "hydration_gel","compressed_ration","emergency_oxygen","flash_grenade","poison_bomb"};
+            "hydration_gel","compressed_ration","emergency_oxygen","flash_grenade","poison_bomb","regeneration_shot"};
         foreach(string code in codes)
         {
             var graph=InventoryGraph.Create(true,false);
@@ -26,6 +26,9 @@ internal static class FieldExpansionChecks
             Check(ShopRules.Apply(graph,stale,out var rejected)!=null && rejected==null && graph.Count("dust")==original,"stale purchase is atomic "+code);
         }
         var equipment=InventoryGraph.Create(true,false);
+        var injection=TacticalItemRules.Find("regeneration_shot");
+        Check(injection.Injectable && !injection.Throwable && !injection.Deployable && !injection.Trap,"regeneration follows injection flow");
+        Check(!TacticalItemRules.IsInjection(TacticalItemKind.Flash) && !TacticalItemRules.IsInjection(TacticalItemKind.PoisonBomb),"grenades remain distinct from injections");
         equipment.AddSupply("oxygen_recycler",1,InventoryCatalog.Stash);equipment.AddSupply("glare_filter",1,InventoryCatalog.Stash);
         Check(SpecialEquipmentRules.OxygenDrainMultiplier(equipment)==1 && SpecialEquipmentRules.GlareMultiplier(equipment)==1,"stored passives inactive");
         var recycler=equipment.Items.First(i=>i.Code=="oxygen_recycler");recycler.Parent=InventoryCatalog.Equipment;recycler.Region="Special1";recycler.X=recycler.Y=0;

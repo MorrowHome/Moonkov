@@ -9,19 +9,23 @@ using UnityEngine;
 using UnityEngine.Localization.Tables;
 using UnityEngine.Rendering.Universal;
 
-// Native editable mesh source for the ten field items. Uses the existing Editor only.
+// Native editable mesh source for the field items. Uses the existing Editor only.
 public static class FieldExpansionAssets
 {
     [Serializable] public sealed class Entry { public string code,name,zh,description,descriptionZh; }
     [Serializable] public sealed class Manifest { public Entry[] items; }
     const string Root="Assets/Resources/Moonkov/Items/";
-    public static string Build()
+    public static string Build() => BuildItems(null);
+    public static string BuildRegeneration() => BuildItems("regeneration_shot");
+    static string BuildItems(string only)
     {
         if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Use Edit mode.");
         // Pipeline scripts live in an in-memory assembly; Unity serialization cannot instantiate their nested records.
         var json=Type.GetType("Newtonsoft.Json.JsonConvert, Newtonsoft.Json",true);
         var manifest=(Manifest)json.GetMethod("DeserializeObject",new[]{typeof(string),typeof(Type)}).Invoke(null,
             new object[]{File.ReadAllText("Tools/Art/field_expansion.json"),typeof(Manifest)});
+        var entries=manifest.items.Where(e=>only==null || e.code==only).ToArray();
+        if(entries.Length==0)throw new InvalidOperationException("No matching item.");
         var scene=EditorSceneManager.NewPreviewScene();
         var temporary=new List<Mesh>();
         var iconMaterials=new List<Material>();
@@ -49,9 +53,10 @@ public static class FieldExpansionAssets
             var light=lamp.AddComponent<Light>();light.type=LightType.Directional;light.intensity=2.6f;light.cullingMask=1<<5;light.shadows=LightShadows.None;
             lamp.transform.rotation=Quaternion.Euler(35,-25,0);
             target=new RenderTexture(512,512,24,RenderTextureFormat.ARGB32);target.Create();camera.targetTexture=target;
-            sheet=new Texture2D(2560,1024,TextureFormat.RGBA32,false);
+            int columns=Math.Min(5,entries.Length),rows=(entries.Length+columns-1)/columns;
+            sheet=new Texture2D(columns*512,rows*512,TextureFormat.RGBA32,false);
             int index=0,triangles=0;
-            foreach(var entry in manifest.items)
+            foreach(var entry in entries)
             {
                 var root=new GameObject(entry.code);UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root,scene);
                 var pieces=new List<GameObject>();
@@ -68,6 +73,11 @@ public static class FieldExpansionAssets
                 void Panel(float y,float w,float h,float z,int m)=>Box(0,y,z,w,h,.004f,m);
                 switch(entry.code)
                 {
+                    case "regeneration_shot":
+                        Can(0,0,0,.018f,.105f,2);Can(0,.057f,0,.02f,.01f,3);Can(0,-.057f,0,.02f,.01f,3);
+                        Can(0,.075f,0,.01f,.026f,1);Box(0,.093f,0,.047f,.009f,.022f,3);
+                        Can(0,-.081f,0,.01f,.036f,0);Panel(.003f,.021f,.062f,-.019f,3);
+                        Cross(.006f,-.022f,.014f,2);Box(0,-.018f,-.022f,.012f,.003f,.002f,2);break;
                     case "oxygen_recycler":
                         Box(0,0,0,.13f,.14f,.045f,0);Panel(0,.112f,.125f,-.026f,2);
                         Can(-.032f,.005f,-.045f,.023f,.11f,3);Can(.032f,.005f,-.045f,.023f,.11f,1);
@@ -132,6 +142,18 @@ public static class FieldExpansionAssets
                 foreach(var go in pieces)UnityEngine.Object.DestroyImmediate(go);
                 root.AddComponent<MeshFilter>().sharedMesh=saved;root.AddComponent<MeshRenderer>().sharedMaterials=used;
                 PrefabUtility.SaveAsPrefabAsset(root,Root+"Prefabs/"+entry.code+".prefab");root.layer=5;
+                if(entry.code=="regeneration_shot")
+                {
+                    // Reuse the tested injection geometry, anchors and moving parts. No animation or source mesh rebake.
+                    var source=Resources.Load<GameObject>("Moonkov/Actions/Props/vitality_shot");
+                    if(!source)throw new InvalidOperationException("Missing authored injector action prop.");
+                    var action=UnityEngine.Object.Instantiate(source);action.name=entry.code;
+                    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(action,scene);
+                    foreach(var part in action.GetComponentsInChildren<Renderer>(true))
+                        part.sharedMaterials=part.sharedMaterials.Select(m=>m==materials[5]?materials[3]:m).ToArray();
+                    PrefabUtility.SaveAsPrefabAsset(action,"Assets/Resources/Moonkov/Actions/Props/"+entry.code+".prefab");
+                    UnityEngine.Object.DestroyImmediate(action);
+                }
                 // Tiny inventory previews must not sample the open level's shadow cascades.
                 var renderer=root.GetComponent<MeshRenderer>();renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
                 renderer.sharedMaterials=used.Select(material=>
@@ -149,7 +171,7 @@ public static class FieldExpansionAssets
                     RenderTexture.active=target;icon.ReadPixels(new Rect(0,0,512,512),0,0);icon.Apply();
                     var pixels=icon.GetPixels();int visible=pixels.Count(p=>p.a>.1f);
                     if(visible<4000 || visible>240000)throw new InvalidOperationException("Bad icon framing: "+entry.code+" "+visible);
-                    File.WriteAllBytes(iconPath,icon.EncodeToPNG());sheet.SetPixels((index%5)*512,(1-index/5)*512,512,512,pixels);
+                    File.WriteAllBytes(iconPath,icon.EncodeToPNG());sheet.SetPixels((index%columns)*512,(rows-1-index/columns)*512,512,512,pixels);
                 }
                 finally{RenderTexture.active=previous;UnityEngine.Object.DestroyImmediate(icon);}
                 AssetDatabase.ImportAsset(iconPath,ImportAssetOptions.ForceSynchronousImport);
@@ -160,18 +182,24 @@ public static class FieldExpansionAssets
                     throw new InvalidOperationException("Invalid physical presentation: "+entry.code);
                 triangles+=saved.triangles.Length/3;index++;UnityEngine.Object.DestroyImmediate(root);
             }
-            sheet.Apply();Directory.CreateDirectory("LocalData/FieldExpansion");File.WriteAllBytes("LocalData/FieldExpansion/items.png",sheet.EncodeToPNG());
+            string output=only==null?"items":"regeneration";
+            sheet.Apply();Directory.CreateDirectory("LocalData/FieldExpansion");File.WriteAllBytes("LocalData/FieldExpansion/"+output+".png",sheet.EncodeToPNG());
             var collection=LocalizationEditorSettings.GetStringTableCollection("MoonkovUI");
-            foreach(var entry in manifest.items)
+            foreach(var entry in entries)
                 foreach(var reference in collection.Tables)
                 {
                     var table=(StringTable)reference.asset;bool zh=table.LocaleIdentifier.Code=="zh-Hans";
                     table.AddEntry(entry.name,zh?entry.zh:entry.name);table.AddEntry(entry.description,zh?entry.descriptionZh:entry.description);
+                    if(entry.code=="regeneration_shot")
+                    {
+                        table.AddEntry("REGEN {0:0}s",zh?"再生 {0:0} 秒":"REGEN {0:0}s");
+                        table.AddEntry("REGEN PAUSED {0:0}s",zh?"再生暂停 {0:0} 秒":"REGEN PAUSED {0:0}s");
+                    }
                     EditorUtility.SetDirty(table);AssetDatabase.SaveAssetIfDirty(table);
                 }
             EditorUtility.SetDirty(collection.SharedData);AssetDatabase.SaveAssetIfDirty(collection.SharedData);
-            string result=$"{index} static models and transparent icons; {triangles} triangles total; 20 bilingual entries. Preview: LocalData/FieldExpansion/items.png";
-            File.WriteAllText("LocalData/FieldExpansion/assets-review.txt",result);return result;
+            string result=$"{index} static models and transparent icons; {triangles} triangles total. Preview: LocalData/FieldExpansion/{output}.png";
+            File.WriteAllText("LocalData/FieldExpansion/"+(only==null?"assets-review":"regeneration-assets-review")+".txt",result);return result;
         }
         finally
         {

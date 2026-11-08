@@ -12,7 +12,7 @@ namespace Unity.MP_FPS.Client
         private static string CategoryClass(string code)
         {
             var tactical = TacticalItemRules.Find(code);
-            if (tactical != null && (tactical.Kind == TacticalItemKind.Vitality || tactical.Kind == TacticalItemKind.Stamina || tactical.Kind == TacticalItemKind.Antidote))
+            if (tactical?.Injectable == true)
                 return "item-category-medical";
             return InventoryCatalog.Get(code)?.Kind switch
             {
@@ -218,6 +218,7 @@ namespace Unity.MP_FPS.Client
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
                 case "cells": description = "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
+                case "regeneration_shot": description = "Inject for 3 seconds to restore 2 total HP per second for 120 seconds. Prioritizes injured surviving parts. Poison pauses healing; destroyed parts and lost health limits stay unchanged. Reuse refreshes duration without stacking."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
                 case "dynamite_bundle": description = "Select, then left click to throw after a 1-second action. Explodes after a 4-second fuse: up to 650 damage within 8 metres. Cover blocks the blast. Clears concertina wire; can kill teammates and the thrower."; break;

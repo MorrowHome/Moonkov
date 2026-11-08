@@ -5,12 +5,13 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum TacticalItemKind : byte
-    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke, Flash, PoisonBomb }
+    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke, Flash, PoisonBomb, Regeneration }
     public enum TacticalItemAction : byte { Use, Cancel, Disarm, Resupply, Extinguish }
     public enum TacticalItemFeedback : byte { None, Started, Cancelled, Interrupted, Completed, NeedGround, Limit, Poisoned, NoWound, NoTarget, NoRoom, Stale, Unavailable }
     public enum TacticalWorldPhase : byte { Flying, Armed, Fire, Choke, Wire, Poison, Alarm, Supply, Explosion, Removed, Smoke }
     public sealed class TacticalItemDefinition
     {
+        public bool Injectable => TacticalItemRules.IsInjection(Kind);
         public readonly string Code;
         public readonly TacticalItemKind Kind;
         public readonly float UseSeconds, Fuse, Radius, Lifetime;
@@ -27,11 +28,12 @@ namespace Unity.MP_FPS
         public const int RulesVersion=1, MaxWorldObjects=64, MaxOwnerTraps=8;
         public const float TrapVerticalTolerance=.65f, InteractionRange=2.2f;
         public const float StaminaDuration=420, AntidoteDuration=600, BleedDuration=8, BurningDuration=4;
+        public const float RegenerationDuration=120, RegenerationPerSecond=2;
         public const float BulletWoundThreshold=20, BulletWoundDuration=30, StopBleedSeconds=3;
         public const int SupplyEnergy=400, EnergyPerUse=100;
         public static readonly TacticalItemDefinition[] Definitions = {
             new("vitality_shot",TacticalItemKind.Vitality,3), new("stamina_shot",TacticalItemKind.Stamina,3),
-            new("antidote_shot",TacticalItemKind.Antidote,3),
+            new("antidote_shot",TacticalItemKind.Antidote,3), new("regeneration_shot",TacticalItemKind.Regeneration,3),
             new("dynamite_bundle",TacticalItemKind.Dynamite,1,4,8), new("frag_bomb",TacticalItemKind.Frag,1,4,8),
             new("fire_bomb",TacticalItemKind.Fire,1,6,3,30), new("choke_bomb",TacticalItemKind.Choke,1,3,4,20),
             new("alert_trip_mine",TacticalItemKind.AlertTrap,3,0,1,180),
@@ -44,6 +46,8 @@ namespace Unity.MP_FPS
         };
         public static TacticalItemDefinition Find(string code)
         { foreach(var d in Definitions) if(d.Code==code)return d; return null; }
+        public static bool IsInjection(TacticalItemKind kind) => kind==TacticalItemKind.Vitality ||
+            kind==TacticalItemKind.Stamina || kind==TacticalItemKind.Antidote || kind==TacticalItemKind.Regeneration;
         public static bool Accessible(InventoryGraph graph, InventoryItem item) => graph!=null && item!=null &&
             item.Quantity>0 && Find(item.Code)!=null && graph.Carried(item) &&
             (item.Parent==InventoryCatalog.Pockets || item.Parent==graph.Equipped("ChestRig")?.Id);

@@ -64,6 +64,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("vitality_shot", "Vitality shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("stamina_shot", "Stamina shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("antidote_shot", "Antidote shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
+                new ItemDefinition("regeneration_shot", "Regeneration shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("dynamite_bundle", "Dynamite bundle", ItemKind.Throwable, 1, 2, 2, 0.6f),
                 new ItemDefinition("frag_bomb", "Fragmentation bomb", ItemKind.Throwable, 1, 1, 2, 0.4f),
                 new ItemDefinition("fire_bomb", "Fire bomb", ItemKind.Throwable, 1, 2, 2, 0.5f),

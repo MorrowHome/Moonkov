@@ -149,6 +149,21 @@
       "art": "PoisonBomb",
       "description": "3-second fuse. Creates a 3-metre poison cloud for 15 seconds. Poison deals damage and prevents healing. Antidote protects; choke clouds disperse it.",
       "descriptionZh": "引信 3 秒。产生半径 3 米、持续 15 秒的毒雾。中毒持续受伤且无法治疗。解毒针提供保护，驱散弹可清除毒雾。"
+    },
+    {
+      "code": "regeneration_shot",
+      "name": "Regeneration shot",
+      "zh": "再生针剂",
+      "kind": "Throwable",
+      "width": 1,
+      "height": 1,
+      "stack": 3,
+      "weight": 0.15,
+      "buy": 28,
+      "sell": 9,
+      "art": "RegenerationShot",
+      "description": "Inject for 3 seconds to restore 2 total HP per second for 120 seconds. Prioritizes injured surviving parts. Poison pauses healing; destroyed parts and lost health limits stay unchanged. Reuse refreshes duration without stacking.",
+      "descriptionZh": "注射 3 秒后，持续 120 秒，每秒全身合计回复 2 点生命，优先恢复受伤的存活部位。中毒时暂停回血，不恢复损毁部位和已损失的生命上限。重复注射只刷新时长。"
     }
   ]
 }

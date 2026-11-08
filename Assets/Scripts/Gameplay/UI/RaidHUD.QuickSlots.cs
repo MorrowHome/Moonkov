@@ -324,6 +324,10 @@ namespace Unity.MP_FPS
                 text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"STAMINA BOOST {owner.StaminaSeconds:0}s");
             if (owner.AntidoteSeconds > 0)
                 text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"ANTIDOTE {owner.AntidoteSeconds:0}s");
+            if (owner.RegenerationSeconds > 0)
+                text += (text.Length > 0 ? " / " : "") + (owner.PoisonSeconds>0
+                    ? MoonkovLocalization.Format($"REGEN PAUSED {owner.RegenerationSeconds:0}s")
+                    : MoonkovLocalization.Format($"REGEN {owner.RegenerationSeconds:0}s"));
             return text.Length > 0 ? text : null;
         }
         private bool TryQuickTacticalInteraction(bool active, bool missionFocused, bool controlFocused)

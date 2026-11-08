@@ -357,7 +357,7 @@ namespace Unity.MP_FPS
                 if(definition.Kind==kind && PhysicalItemVisuals.Create(definition.Code,root,true))return;
             if(kind==TacticalItemKind.AmmoBox){BuildSupply(root);return;}
             if(kind>=TacticalItemKind.AlertTrap && kind<=TacticalItemKind.PoisonTrap){BuildTrap(root,accent,false);return;}
-            if(kind<=TacticalItemKind.Antidote)
+            if(TacticalItemRules.IsInjection(kind))
             {
                 Primitive(root,PrimitiveType.Cylinder,new Vector3(.03f,.065f,.03f),Vector3.zero,m_White);
                 Primitive(root,PrimitiveType.Cylinder,new Vector3(.032f,.018f,.032f),Vector3.up*.025f,accent);

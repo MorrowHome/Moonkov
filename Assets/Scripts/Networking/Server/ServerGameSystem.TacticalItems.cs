@@ -36,6 +36,7 @@ namespace Unity.MP_FPS
         {
             public double Fire,Poison,Bleed,Stamina,Antidote,Wire,Cough;
             public double FlashUntil;
+            public double Regeneration,RegenerationTick;
             public float FlashStrength;
             public TacticalSprintState Sprint;public float3 SprintPosition;public bool SprintPositionKnown;
             public int FireOwner,PoisonOwner,BleedOwner;
@@ -263,7 +264,7 @@ namespace Unity.MP_FPS
                         FireSeconds=TacticalRemaining(status?.Fire ?? 0,now),PoisonSeconds=TacticalRemaining(status?.Poison ?? 0,now),
                         BleedSeconds=TacticalRemaining(status?.Bleed ?? 0,now),StaminaSeconds=TacticalRemaining(status?.Stamina ?? 0,now),
                         AntidoteSeconds=TacticalRemaining(status?.Antidote ?? 0,now),WireSeconds=TacticalRemaining(status?.Wire ?? 0,now),
-                        CoughSeconds=TacticalRemaining(status?.Cough ?? 0,now)});
+                        CoughSeconds=TacticalRemaining(status?.Cough ?? 0,now),RegenerationSeconds=TacticalRemaining(status?.Regeneration ?? 0,now)});
                     ecb.AddComponent(rpc,new SendRpcCommandRequest {TargetConnection=connection});
                 }
             }
@@ -335,7 +336,7 @@ namespace Unity.MP_FPS
                 Until=now+seconds,Hit=health.LastHitTick,DamageSequence=health.NonPhysiologicalDamageSequence,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
                 Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth};
             if (r.Action == TacticalItemAction.Extinguish || r.Action == TacticalItemAction.Use && definition != null &&
-                (definition.Kind == TacticalItemKind.Vitality || definition.Kind == TacticalItemKind.Stamina || definition.Kind == TacticalItemKind.Antidote))
+                definition.Injectable)
             {
                 var actionHealth = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                 RaidConsumableAcoustics.Mark(ref actionHealth.ValueRW);
@@ -390,6 +391,8 @@ namespace Unity.MP_FPS
             }
             else if(definition.Kind==TacticalItemKind.Stamina)status.Stamina=now+TacticalItemRules.StaminaDuration;
             else if(definition.Kind==TacticalItemKind.Antidote){status.Antidote=now+TacticalItemRules.AntidoteDuration;status.Poison=0;}
+            else if(definition.Kind==TacticalItemKind.Regeneration)
+            {status.Regeneration=now+TacticalItemRules.RegenerationDuration;status.RegenerationTick=now;}
             else
             {
                 var obj=new TacticalServerWorld.Object {Id=++world.NextId,Owner=SystemAPI.HasComponent<GhostOwner>(use.Player) ? SystemAPI.GetComponent<GhostOwner>(use.Player).NetworkId : 0,
@@ -616,7 +619,7 @@ namespace Unity.MP_FPS
                 if(!SystemAPI.Exists(victim)||!SystemAPI.HasComponent<PredictedPlayerGhost>(victim)) {world.Scratch.Add(victim);continue;}
                 var health=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
                 bool canHurt=health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
-                if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=status.FlashUntil=0;}
+                if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=status.FlashUntil=status.Regeneration=0;}
                 health.TacticalWireSeconds=TacticalRemaining(status.Wire,now);health.TacticalCoughSeconds=TacticalRemaining(status.Cough,now);
                 health.TacticalPoisonSeconds=TacticalRemaining(status.Poison,now);
                 health.TacticalBleeding=status.Bleed>now;SystemAPI.SetComponent(victim,health);
@@ -668,7 +671,18 @@ namespace Unity.MP_FPS
                         {pending.Hit=after.LastHitTick;pending.DamageSequence=after.NonPhysiologicalDamageSequence;
                             pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;}
                 }
-                if(!status.Sprint.Initialized && status.FlashUntil<=now &&
+                if(status.Regeneration>0)
+                {
+                    // Only credit elapsed active time, including a partial expiry tick. Poison/full health never bank healing.
+                    float seconds=(float)Math.Max(0,Math.Min(now,status.Regeneration)-Math.Max(status.RegenerationTick,now-dt));
+                    status.RegenerationTick=now;
+                    var after=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
+                    if(after.CurrentHealth<=0 || after.ClashEnabled && after.ClashLife!=ClashLife.Alive)status.Regeneration=0;
+                    else if(seconds>0 && RaidHealth.Regenerate(ref after,seconds*TacticalItemRules.RegenerationPerSecond)>0)
+                        SystemAPI.SetComponent(victim,after);
+                    if(now>=status.Regeneration)status.Regeneration=0;
+                }
+                if(!status.Sprint.Initialized && status.FlashUntil<=now && status.Regeneration<=now &&
                     Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
             }
             foreach(var entity in world.Scratch)world.Statuses.Remove(entity);
