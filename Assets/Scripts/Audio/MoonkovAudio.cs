@@ -128,18 +128,23 @@ namespace Unity.MP_FPS
             Play(Library?.Hover, Vector3.zero);
         }
 
-        public static float MasterVolume => PlayerPrefs.GetFloat("Moonkov.Audio.Master", .8f);
-        public static float EffectsVolume => PlayerPrefs.GetFloat("Moonkov.Audio.Effects", .85f);
-        public static float InterfaceVolume => PlayerPrefs.GetFloat("Moonkov.Audio.Interface", .65f);
+        public static float MasterVolume => Mathf.Clamp01(PlayerPrefs.GetFloat("Moonkov.Audio.Master", .8f));
+        public static float EffectsVolume => Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Effects", .85f), 0f, SoundMixer.MaximumCategoryVolume);
+        public static float MusicVolume => Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Music", SoundMixer.soundMusicVol?.FloatValue ?? 1f), 0f, SoundMixer.MaximumCategoryVolume);
+        public static float InterfaceVolume => Mathf.Clamp01(PlayerPrefs.GetFloat("Moonkov.Audio.Interface", .65f));
+        public static float MaximumVolume(string channel) =>
+            channel == "Effects" || channel == "Music" ? SoundMixer.MaximumCategoryVolume : 1f;
+
         public static void ApplyVolumes()
         {
             AudioListener.volume = MasterVolume;
             if (SoundMixer.soundSFXVol != null) SoundMixer.soundSFXVol.Value = EffectsVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (SoundMixer.soundMusicVol != null) SoundMixer.soundMusicVol.Value = MusicVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
             if (SoundMixer.soundMenuVol != null) SoundMixer.soundMenuVol.Value = InterfaceVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
         public static void SetVolume(string channel, float value)
         {
-            PlayerPrefs.SetFloat("Moonkov.Audio." + channel, Mathf.Clamp01(value));
+            PlayerPrefs.SetFloat("Moonkov.Audio." + channel, Mathf.Clamp(value, 0f, MaximumVolume(channel)));
             ApplyVolumes();
         }
     }

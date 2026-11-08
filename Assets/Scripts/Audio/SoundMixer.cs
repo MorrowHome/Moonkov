@@ -7,6 +7,9 @@ using UnityEngine.Audio;
 /// </summary>
 public class SoundMixer
 {   
+    // Gameplay and music can be amplified independently without exceeding the mixer gain range.
+    public const float MaximumCategoryVolume = 3f;
+
     [ConfigVar(Name = "sound.mute", DefaultValue = "-1", Description = "Is audio enabled. -1 causes default behavior (on when window has focus)", Flags = ConfigVar.Flags.None)]
     public static ConfigVar soundMute;
 
@@ -81,8 +84,8 @@ public class SoundMixer
     public void Update(float masterVolume)
     {
         m_AudioMixer.SetFloat("MasterVolume", DecibelFromAmplitude(Mathf.Clamp(soundMasterVol.FloatValue, 0.0f, 1.0f) * masterVolume));
-        m_AudioMixer.SetFloat("MusicVolume", DecibelFromAmplitude(Mathf.Clamp(soundMusicVol.FloatValue, 0.0f, 1.0f)));
-        m_AudioMixer.SetFloat("SFXVolume", DecibelFromAmplitude(Mathf.Clamp(soundSFXVol.FloatValue, 0.0f, 1.0f)));
+        m_AudioMixer.SetFloat("MusicVolume", DecibelFromAmplitude(Mathf.Clamp(soundMusicVol.FloatValue, 0.0f, MaximumCategoryVolume)));
+        m_AudioMixer.SetFloat("SFXVolume", DecibelFromAmplitude(Mathf.Clamp(soundSFXVol.FloatValue, 0.0f, MaximumCategoryVolume)));
         m_AudioMixer.SetFloat("MenuVolume", DecibelFromAmplitude(Mathf.Clamp(soundMenuVol.FloatValue, 0.0f, 1.0f)));
     }
 

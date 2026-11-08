@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Client
             BindViewSettings(content);
             BindAudioSlider(content, "audioMaster", "Master", MoonkovAudio.MasterVolume);
             BindAudioSlider(content, "audioEffects", "Effects", MoonkovAudio.EffectsVolume);
+            BindAudioSlider(content, "audioMusic", "Music", MoonkovAudio.MusicVolume);
             BindAudioSlider(content, "audioInterface", "Interface", MoonkovAudio.InterfaceVolume);
             var hud = content.Q<Toggle>("alwaysShowHUD");
             hud.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0);
@@ -33,13 +34,29 @@ namespace Unity.MP_FPS.Client
 
         private static void BindAudioSlider(VisualElement content, string name, string channel, float value)
         {
-            var slider = content.Q<Slider>(name); slider.SetValueWithoutNotify(value);
+            var slider = content.Q<Slider>(name);
+            slider.highValue = MoonkovAudio.MaximumVolume(channel);
+            slider.SetValueWithoutNotify(value);
             var readout = content.Q<Label>(name + "Value");
             var tracker = slider.Q(className: "unity-base-slider__tracker");
             var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("archive-slider-fill"); tracker?.Add(fill);
-            void Present(float v) { MoonkovLocalization.Set(readout, "{0:0}%", v * 100); fill.style.width = Length.Percent(v * 100); }
+            void Present(float v)
+            {
+                MoonkovLocalization.Set(readout, "{0:0}%", v * 100);
+                fill.style.width = Length.Percent(Mathf.InverseLerp(slider.lowValue, slider.highValue, v) * 100);
+            }
+            var save = slider.schedule.Execute(PlayerPrefs.Save);
+            save.Pause();
             Present(value);
-            slider.RegisterValueChangedCallback(e => { MoonkovAudio.SetVolume(channel, e.newValue); Present(e.newValue); });
+            slider.RegisterValueChangedCallback(e =>
+            {
+                float volume = Mathf.Round(e.newValue * 100) / 100;
+                slider.SetValueWithoutNotify(volume);
+                MoonkovAudio.SetVolume(channel, volume);
+                Present(volume);
+                save.ExecuteLater(250);
+            });
+            slider.RegisterCallback<DetachFromPanelEvent>(_ => PlayerPrefs.Save());
         }
 
         private static void BindViewSettings(VisualElement content)

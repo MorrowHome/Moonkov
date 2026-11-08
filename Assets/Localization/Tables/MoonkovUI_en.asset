@@ -6728,6 +6728,10 @@ MonoBehaviour:
     m_Localized: REGEN PAUSED {0:0}s
     m_Metadata:
       m_Items: []
+  - m_Id: 11540479890939904
+    m_Localized: BACKGROUND MUSIC
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

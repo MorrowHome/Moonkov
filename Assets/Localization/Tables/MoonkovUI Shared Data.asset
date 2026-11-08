@@ -6697,6 +6697,10 @@ MonoBehaviour:
     m_Key: REGEN PAUSED {0:0}s
     m_Metadata:
       m_Items: []
+  - m_Id: 11540479890939904
+    m_Key: BACKGROUND MUSIC
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
