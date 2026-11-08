@@ -2,15 +2,15 @@
 
 ## 2026-11-08 吃喝补氧与医疗
 
-- 吃喝和开包装声提高约 8–11 dB，统一走 SFX。录音原本尖峰高、主体轻，现离线压缩尖峰并补偿主体音量。保留原速度和音高，48 kHz 单声道 PCM，峰值不超过 0.7。
+- 吃喝、食品包装、瓶盖和包扎现用《逃离塔科夫》游戏录音，共 12 条短片段、9.66 秒、约 0.93 MB PCM。来源为 Ultimate Weapon Games 的食品演示和 Joe Iz Gaming 的医疗演示。统一走 SFX。离线压低瞬时尖峰，再校准主体音量。保留原速度和音高，48 kHz 单声道 PCM，峰值不超过 0.65。吃喝各有三条轮换，相邻不重复。
 - 吃喝在真实动作的接触段增加第二次咀嚼或吞咽。能量凝胶与异形软食使用吞咽声。瓶装水增加独立的拧回瓶盖录音，不再重播开瓶声。没有给裸露食材增加拆包装声。
 - 注射主体按用户明确要求，直接使用《猎杀：对决》v0.309 原声。来源为原设计师 Kylan Klein Lenderink / Noise Nerd Audio 发布的演示视频 https://www.youtube.com/watch?v=i3-9okS87S8 。保留 8.60–11.68 秒的来源片段，取其中扎入、推注和拔针三段，去掉停顿后组成 1.38 秒。只调整线性电平和边界，不变速、变调、压缩或添加自制拟音。针帽沿用 Coniela 的 CC0 干燥弹响。旧机械注射笔和此前拟音停用。
-- 医疗包已停用拆盒录音。开始时播放 SecureSubset 的 CC0 绷带撕拉声，再用 Frostnox 的两条棉布摩擦拟音组成 1.2 秒循环。动作进度 0.28–0.88 期间缠绕，成功回执后收紧。创伤包、止血绷带和救援包共用此流程；凝胶另用短涂抹拟音。每个角色最多保持一个缠绕循环，中途接收状态只接续循环，不补播撕开声。
-- 六条当前医疗素材为 48 kHz 单声道 PCM，合计约 0.43 MB，峰值不超过 0.6。猎杀原声版权为 Crytek GmbH，用户指定用于个人非商用作品；不标为 CC0，不声明商业复用授权。棉布为 CC BY 4.0，必须保留署名。原文件、来源和配方见 `SourceData/Audio/MedicalFoley` 与 `MedicalFoleySources.json`，说明随 `MoonkovMedicalFoleyCredits.txt` 打包。
+- 医疗包使用塔科夫绷带的拆封、1.36 秒缠绕循环和收紧片段。动作进度 0.28–0.88 期间缠绕，成功回执后收紧。创伤包、止血绷带和救援包共用此流程；凝胶仍用 Frostnox 的独立棉布接触拟音。每个角色最多保持一个缠绕循环，中途接收状态只接续循环，不补播撕开声。
+- 所有引入的游戏原声逐条登记在 `Assets/StreamingAssets/MoonkovGameAudioSources.md`。包括既有猎杀针剂。记录游戏、权利人、录制者、链接、原片段及处理方式，随包发布。塔科夫版权为 Battlestate Games Limited，猎杀版权为 Crytek GmbH。不得把游戏原声标为 CC0。旧棉布素材及凝胶保留 `MoonkovMedicalFoleyCredits.txt` 的 CC BY 4.0 署名。
 - 便携氧气罐在接好后开始持续气流，拆下前停止。支持中途收到状态时接续气流。补氧成功的短声改为气流释压，不再使用衣料占位声。自动供氧站沿用独立的 `OxygenSupply`，不受便携罐增益影响。
 - 动作声音跟随角色。自己保持近身 2D，其他角色保留空间衰减与遮挡。重复快照不重播；取消、死亡和失活收束当前声音。HUD 不叠加吃喝完成时的通用衣料声，也不重复播放医疗和补氧开始声。打针与凝胶完成时不叠加包扎声。补氧与包扎成功反馈仍等待真实回执，不决定资源或库存。
-- 重建用 `build_survival_action_audio.py`、`build_consumable_foley.py` 和 `build_medical_foley.py`。`RaidActionAudioSetup.Install()` 统一导入和绑定，经过 `ConsumableAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`；通用战局音库重建会调用整条链。修改安装脚本后，先等待编译完成，再执行安装并读取音库增益确认。命令返回成功不代表使用了新程序集。旧水声和拆盒成品保留作来源存档，不再绑定。所有播放复用原声音池。
-- 既有服务端使用、取消、死亡及三套骨架的 174 项检查曾通过。本次更换原声并修复断链后，重跑 `ConsumableAudioReview.Run()` 的 155 项原生声音池检查，覆盖 13 类物品的自己与远端表现、重复快照、接续补氧与缠绕、停止及回收。原有针帽和包扎成品字节不变。新注射成品格式、来源哈希、峰值、直流偏移和首尾边界通过。未重跑全库、正式战局、联机或 Player 构建。
+- 重建用 `build_survival_action_audio.py`、`build_consumable_foley.py`、`build_medical_foley.py` 和 `build_game_foley.py`。`RaidActionAudioSetup.Install()` 统一导入和绑定，经过 `ConsumableAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`，最后由 `GameFoleySetup.Install()` 覆盖吃喝和包扎绑定；通用战局音库重建会调用整条链。修改安装脚本后，先等待编译完成，再执行安装并读取音库增益确认。命令返回成功不代表使用了新程序集。旧水声和拆盒成品保留作来源存档，不再绑定。所有播放复用原声音池。
+- 既有服务端使用、取消、死亡及三套骨架的 174 项检查曾通过。本轮接入塔科夫短片段后，重跑 `ConsumableAudioReview.Run()` 的 155 项原生声音池检查，覆盖 13 类物品的自己与远端表现、重复快照、接续补氧与缠绕、停止及回收。原有针帽与猎杀注射成品字节不变。新注射成品格式、来源哈希、峰值、直流偏移和首尾边界通过。未重跑全库、正式战局、联机或 Player 构建。
 - 原声从针头接触身体的 `contactIn=0.42` 开始播放。三段在成品的 0、0.24、1.00 秒开始，对齐现有 3 秒使用动作及收手阶段。音库增益 −1 至 0 dB，最低增益下文件 RMS 约 −28.5 dBFS。单 Editor 隔离 Play 中，`InjectorPresentationReview.Run()` 的 68 项检查通过，覆盖三套正式角色和三类注射道具的触发、时钟推进、重复快照、成功时保留拔针尾音、死亡停止与音源回收。
 - 当前试听使用 `Assets/Audio/Moonkov/Clips/Medical/InjectorHuntShot.wav`。这是作者公开视频中的游戏录音，不是解包的独立无损素材；保留原录背景。旧组合试听、`InjectorBody-v2.wav` 和重做拟音草案均已过时。自动播放检查不能替代主观听感验收；本次确认了素材来源，未声称直接听辨音频。
 

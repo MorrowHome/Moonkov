@@ -1,0 +1,230 @@
+[
+  {
+    "name": "TarkovEat1",
+    "use": "食物咬合与咀嚼",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovEat1Original.wav",
+    "source_excerpt_seconds": [
+      5.22,
+      5.92
+    ],
+    "loop": false,
+    "sha256": "7619c5573d040490fefe91b4334549ec0d1280050acbef26d704fdb5b096041c",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovEat2",
+    "use": "食物咬合与咀嚼",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovEat2Original.wav",
+    "source_excerpt_seconds": [
+      11.5,
+      12.15
+    ],
+    "loop": false,
+    "sha256": "a7c7a7037df6e3d608d16e1401702cecb519d8ccc43f7e52ad938f4d1411d658",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovEat3",
+    "use": "食物咬合与咀嚼",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovEat3Original.wav",
+    "source_excerpt_seconds": [
+      17.45,
+      18.15
+    ],
+    "loop": false,
+    "sha256": "1fa8320c355d4421e8fd0fec697a32782a7bdb353ea205da80d1780989116a01",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovDrink1",
+    "use": "喝水吞咽",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovDrink1Original.wav",
+    "source_excerpt_seconds": [
+      193.35,
+      194.05
+    ],
+    "loop": false,
+    "sha256": "21dc8c6948ea4fabb32b70becb302402f1a74b3bd803745044e4aad41e5008bc",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovDrink2",
+    "use": "喝水吞咽",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovDrink2Original.wav",
+    "source_excerpt_seconds": [
+      194.05,
+      194.75
+    ],
+    "loop": false,
+    "sha256": "4835aad92018e0da03bf92e89ed8c46d97798b5493681462c0121a9d59d3efac",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovDrink3",
+    "use": "喝水吞咽",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovDrink3Original.wav",
+    "source_excerpt_seconds": [
+      194.75,
+      195.5
+    ],
+    "loop": false,
+    "sha256": "69b765ff705c8cffd8ef18753f3e04287bc2482dcf6073cc4e0d1f2395232238",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovPacketOpen",
+    "use": "撕开食物包装",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovPacketOpenOriginal.wav",
+    "source_excerpt_seconds": [
+      7.28,
+      8.1
+    ],
+    "loop": false,
+    "sha256": "f56ca7cb7341ddf35eac24ce3d149edd5ddb9d63506d249c3b220bfaa52e8a68",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovBottleOpen",
+    "use": "旋开水瓶盖",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovBottleOpenOriginal.wav",
+    "source_excerpt_seconds": [
+      191.75,
+      192.9
+    ],
+    "loop": false,
+    "sha256": "29bf4ada37654733fbfffb578d4f1fdab54b8cb0bfa700b00a92767d1249f879",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovBottleClose",
+    "use": "旋回水瓶盖",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Ultimate Weapon Games",
+    "page": "https://www.youtube.com/watch?v=a4G8H5r1n6A",
+    "title": "Epic Beautiful All Food and Drinks Animation - Escape from Tarkov [2022] | 4k",
+    "upload_date": "20221031",
+    "file": "SourceData/Audio/GameFoley/TarkovBottleCloseOriginal.wav",
+    "source_excerpt_seconds": [
+      196.2,
+      197.05
+    ],
+    "loop": false,
+    "sha256": "4b7eed5eba8652bd8f1bf3baf7a50537c2e94ae24b05b6c95c4afc996f9a870c",
+    "downloaded_video_sha256": "e347d834f7b060d4037673babcfa8ca279b2c2ee6174e6787a6a2c721431a97b",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovBandageOpen",
+    "use": "撕开绷带包装",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Joe Iz Gaming",
+    "page": "https://www.youtube.com/watch?v=0EQEZ7RMr5I",
+    "title": "All Medical Animations in Escape From Tarkov",
+    "upload_date": "20200310",
+    "file": "SourceData/Audio/GameFoley/TarkovBandageOpenOriginal.wav",
+    "source_excerpt_seconds": [
+      1.72,
+      2.5
+    ],
+    "loop": false,
+    "sha256": "7f8a15b73fcf0aa2e6481eb12c1d8ce653e80b333c5af5239cea9fb8a2b2b4f3",
+    "downloaded_video_sha256": "cc05a699a75b242934378fd76ea87ad95be51ce4109e7e073e05a622a2869f96",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovBandageWrap",
+    "use": "持续缠绕绷带",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Joe Iz Gaming",
+    "page": "https://www.youtube.com/watch?v=0EQEZ7RMr5I",
+    "title": "All Medical Animations in Escape From Tarkov",
+    "upload_date": "20200310",
+    "file": "SourceData/Audio/GameFoley/TarkovBandageWrapOriginal.wav",
+    "source_excerpt_seconds": [
+      3.25,
+      4.65
+    ],
+    "loop": true,
+    "sha256": "95c1adcbd54cb6a24f22cc4af2179409ab507aeefa9b90682b8a2a75530996a0",
+    "downloaded_video_sha256": "cc05a699a75b242934378fd76ea87ad95be51ce4109e7e073e05a622a2869f96",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "TarkovBandageTighten",
+    "use": "包扎结束收紧",
+    "game": "Escape from Tarkov",
+    "copyright": "Battlestate Games Limited",
+    "uploader": "Joe Iz Gaming",
+    "page": "https://www.youtube.com/watch?v=0EQEZ7RMr5I",
+    "title": "All Medical Animations in Escape From Tarkov",
+    "upload_date": "20200310",
+    "file": "SourceData/Audio/GameFoley/TarkovBandageTightenOriginal.wav",
+    "source_excerpt_seconds": [
+      4.85,
+      5.35
+    ],
+    "loop": false,
+    "sha256": "2a0871db19353b5bb76b39be1d6769cbeb3e9925de7375c8a54e3949889d9524",
+    "downloaded_video_sha256": "cc05a699a75b242934378fd76ea87ad95be51ce4109e7e073e05a622a2869f96",
+    "license": "All rights reserved; no Creative Commons license asserted"
+  }
+]

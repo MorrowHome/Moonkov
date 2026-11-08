@@ -29,6 +29,7 @@ public static class MedicalFoleySetup
         lib.MedicalGel=Bank("MedicalGel",lib.Medical,"MedicalGelRub",-17,false);
         lib.Medical=Bank("Medical",lib.Medical,"BandageTighten",-17,false);
         EditorUtility.SetDirty(lib);AssetDatabase.SaveAssetIfDirty(lib);
+        GameFoleySetup.Install();
     }
     static SoundDef Bank(string name,SoundDef template,string clipName,float db,bool loop)
     {

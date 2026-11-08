@@ -23,12 +23,10 @@ MonoBehaviour:
   BasePitchInCents: 0
   VolumeScale: 1
   BaseLowPassCutoff: 0
-  PlaybackType: 1
+  PlaybackType: 2
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 2a7d8840b6869af4c837286c278b4f89, type: 3}
-  - {fileID: 8300000, guid: 70df13c7d67342e47baf3cc4b2b52d0a, type: 3}
-  - {fileID: 8300000, guid: 87d6016de17ef5c43bca982f5ed376ff, type: 3}
+  - {fileID: 8300000, guid: bc8691875af994d10a795b79b398674d, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -40,8 +38,8 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -17
-    VolumeMax: -16
+    VolumeMin: -12
+    VolumeMax: -11
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:
