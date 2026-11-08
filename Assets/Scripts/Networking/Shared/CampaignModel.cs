@@ -28,8 +28,8 @@ namespace Unity.MP_FPS.Campaign
         public NodeDefinition[] Nodes;
     }
 
-    // Stored in the existing offline profile. A server run uses a clone until extraction.
-    [Serializable]
+    // JSON-only profile data: Unity serialization cannot store these dictionaries and sets.
+    // A server run uses a clone until extraction.
     public sealed class CampaignProgress
     {
         public int SchemaVersion = 1, ContentVersion = 1, Revision, PreferenceRevision;
