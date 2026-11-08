@@ -1,5 +1,5 @@
 {
-  "processing": "Mono 48 kHz PCM16; DC removal, filters, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. InjectorDryPress uses 4:1 peak compression; other clips do not.",
+  "processing": "Mono 48 kHz PCM16; DC removal, 8 ms fades; natural pitch/speed; target RMS <=0.13, peak <=0.6. InjectorHuntShot uses original game audio excerpts with linear gain only; other clips retain their foley filters.",
   "sources": [
     {
       "name": "SyringePop",
@@ -40,6 +40,24 @@
       "download": "https://cdn.freesound.org/previews/692/692581_1025379-hq.mp3",
       "license": "CC0-1.0",
       "bytes": 95856
+    },
+    {
+      "name": "HuntSyringeOriginal",
+      "file": "HuntSyringeOriginal.wav",
+      "title": "Hunt Showdown - Syringe Sound Design",
+      "author": "Kylan Klein Lenderink / Noise Nerd Audio",
+      "game": "Hunt: Showdown v0.309",
+      "copyright": "Crytek GmbH",
+      "page": "https://www.youtube.com/watch?v=i3-9okS87S8",
+      "source_excerpt_seconds": [
+        8.6,
+        11.68
+      ],
+      "license": "All rights reserved; no Creative Commons license asserted",
+      "project_use": "Original game sound requested by the user for a personal non-commercial project; no commercial reuse permission inferred",
+      "bytes": 295758,
+      "sha256": "d568803483f06312e2f82421c4eb3c860ffa66fc41a25f15a9dce23ef4b2a5cc",
+      "downloaded_video_sha256": "31df563a176e39364b6757092505645106ad369e04b047a64e5ef58bfd305093"
     }
   ],
   "clips": [
@@ -59,19 +77,19 @@
       "rms": 0.057696585532562725
     },
     {
-      "asset": "Assets/Audio/Moonkov/Clips/Medical/InjectorDryPress.wav",
-      "recipe": "1.45-2.17 s actual injection-pen dispensing stroke; filtered, 4:1 peak compression and levelled; no speed/pitch change",
+      "asset": "Assets/Audio/Moonkov/Clips/Medical/InjectorHuntShot.wav",
+      "recipe": "Original Hunt: Showdown v0.309 syringe audio from its sound designer demonstration. Source video 8.64-8.94 s at 0 s, 9.22-10.34 s at 0.24 s, 11.25-11.62 s at 1.00 s. Only crop/reposition, mono conversion, DC removal, edge fades and linear gain. No synthesis, EQ, compression or pitch/speed change.",
       "loop": false,
-      "seconds": 0.72,
+      "seconds": 1.38,
       "sources": [
         {
-          "file": "SourceData/Audio/MedicalFoley/InsulinPen.mp3",
-          "sha256": "6a273d1b248741424e9134010f14cbef01703303b8d167a5bc1dfb9bf3f5eb9f"
+          "file": "SourceData/Audio/MedicalFoley/HuntSyringeOriginal.wav",
+          "sha256": "d568803483f06312e2f82421c4eb3c860ffa66fc41a25f15a9dce23ef4b2a5cc"
         }
       ],
-      "sha256": "548eef95b6518d2b8f7ac8b06de424751671b2f458d5e9de13b732bfb0e97e59",
+      "sha256": "a1e8b4dd0b41ac5ad23a1ca59be17e2c8fdb5c98701a47e544e6159a79accf70",
       "peak": 0.6,
-      "rms": 0.09308923037888162
+      "rms": 0.042311015952697456
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/Medical/BandageOpen.wav",

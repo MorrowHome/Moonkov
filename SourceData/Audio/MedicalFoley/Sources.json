@@ -38,5 +38,23 @@
     "download": "https://cdn.freesound.org/previews/692/692581_1025379-hq.mp3",
     "license": "CC0-1.0",
     "bytes": 95856
+  },
+  {
+    "name": "HuntSyringeOriginal",
+    "file": "HuntSyringeOriginal.wav",
+    "title": "Hunt Showdown - Syringe Sound Design",
+    "author": "Kylan Klein Lenderink / Noise Nerd Audio",
+    "game": "Hunt: Showdown v0.309",
+    "copyright": "Crytek GmbH",
+    "page": "https://www.youtube.com/watch?v=i3-9okS87S8",
+    "source_excerpt_seconds": [
+      8.6,
+      11.68
+    ],
+    "license": "All rights reserved; no Creative Commons license asserted",
+    "project_use": "Original game sound requested by the user for a personal non-commercial project; no commercial reuse permission inferred",
+    "bytes": 295758,
+    "sha256": "d568803483f06312e2f82421c4eb3c860ffa66fc41a25f15a9dce23ef4b2a5cc",
+    "downloaded_video_sha256": "31df563a176e39364b6757092505645106ad369e04b047a64e5ef58bfd305093"
   }
 ]

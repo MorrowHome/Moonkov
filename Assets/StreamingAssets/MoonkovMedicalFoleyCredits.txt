@@ -10,10 +10,19 @@ https://freesound.org/people/Coniela/sounds/458423/
 Changes: cropped dry plunger transient and filtered for cap foley.
 "Insulin Pen - 34 units" by MutilatorBCB, CC0 1.0.
 https://freesound.org/people/MutilatorBCB/sounds/692581/
-Changes: 1.45-2.17 s dispensing excerpt, mono 48 kHz conversion, filtering, 4:1 peak compression, fades and gain adjustment. Natural pitch and speed retained.
+Archived prior clip; no longer bound to injection playback.
+
+Original syringe audio from Hunt: Showdown v0.309, copyright Crytek GmbH.
+Sound design: Kylan Klein Lenderink / Noise Nerd Audio.
+Source: "Hunt Showdown - Syringe Sound Design", published by the sound designer.
+https://www.youtube.com/watch?v=i3-9okS87S8
+Video excerpt: 8.60-11.68 seconds. All rights reserved; no Creative Commons license asserted.
+Original audio was requested by the project owner for a personal non-commercial project. This credit does not assert a commercial reuse license.
+Changes: mono 48 kHz conversion, excerpt placement, DC removal, edge fades and linear gain only. Pitch and playback speed retained. No synthesized or replacement foley layer added.
+
 "Tape Bandages Rip" by SecureSubset, CC0 1.0.
 https://freesound.org/people/SecureSubset/sounds/800275/
 Changes: mono conversion, filtering, fades and gain adjustment.
 CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
 
-Source previews, edit recipes and SHA-256: Assets/Audio/Moonkov/MedicalFoleySources.json.
+Source provenance, edit recipes and SHA-256: Assets/Audio/Moonkov/MedicalFoleySources.json.
