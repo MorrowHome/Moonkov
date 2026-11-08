@@ -569,7 +569,7 @@
     -unity-text-align: upper-left;
 }
 
-.research-quest .research-ending-option:last-child {
+.research-quest .research-ending-option-last {
     margin-right: 0;
 }
 

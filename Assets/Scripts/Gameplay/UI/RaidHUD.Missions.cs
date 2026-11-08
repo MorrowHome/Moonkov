@@ -364,7 +364,9 @@ namespace Unity.MP_FPS
                         else MoonkovAudio.Error();
                         SetMissionDetails(false);
                     }) { text = objective.Choices[i] };
-                    button.AddToClassList("mission-circuit-row"); controls.Add(button);
+                    button.AddToClassList("mission-circuit-row");
+                    if (i == 0) button.AddToClassList("mission-circuit-row-first");
+                    controls.Add(button);
                 }
             m_Root.Q<Button>("missionCircuitTab").SetEnabled(controls.childCount > 0);
             ShowMissionInspectionTab(choices && controls.childCount > 0);

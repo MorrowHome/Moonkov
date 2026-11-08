@@ -72,6 +72,7 @@ namespace Unity.MP_FPS.Client
                 var ending = (ResearchEnding)(i + 1);
                 var copy = Ending(ending);
                 var option = Button(choices, "research-ending-option", () => SelectEnding(ending));
+                if (i == m_EndingChoices.Length - 1) option.AddToClassList("research-ending-option-last");
                 option.name = $"questEnding{(int)ending}";
                 option.SetEnabled(!m_StorySaving);
                 m_EndingChoices[i] = option;

@@ -46,7 +46,7 @@
 .mission-plate { font-size: 20px; color: #eeeee6; white-space: normal; padding: 16px; border-bottom-width: 1px; border-bottom-color: #414b4e; }
 .mission-inline-notification { min-height: 48px; margin-top: 16px; padding: 8px 16px; border-left-width: 3px; border-left-color: #c8cfaa; color: #eeeee6; background-color: #222b2b; white-space: normal; font-size: 14px; }
 .mission-controls > .mission-circuit-row { min-height: 48px; margin: 0; padding: 8px 16px; border-width: 0; border-bottom-width: 1px; border-bottom-color: #414b4e; border-radius: 0; background-color: transparent; color: #eeeee6; font-size: 14px; white-space: normal; -unity-text-align: middle-left; }
-.mission-controls > .mission-circuit-row:first-child { border-top-width: 1px; border-top-color: #414b4e; }
+.mission-controls > .mission-circuit-row-first { border-top-width: 1px; border-top-color: #414b4e; }
 .mission-controls > .mission-circuit-row:hover { background-color: #303b38; }
 .mission-controls > .mission-circuit-row:focus { background-color: #354139; border-left-width: 2px; border-left-color: #c8cfaa; }
 .mission-controls > .mission-circuit-row:active { background-color: #354139; }
