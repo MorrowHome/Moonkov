@@ -28,6 +28,20 @@ MonoBehaviour:
   InventoryEquip: {fileID: 11400000, guid: 9c6e0721d964e45f98d0b751a1b48dd2, type: 2}
   InventoryDrop: {fileID: 11400000, guid: a0b3abc0435764d72833006b4a00b6cb, type: 2}
   BatteryInsert: {fileID: 11400000, guid: 491e42c3c98254256a6061becde1057e, type: 2}
+  WeaponDraw: {fileID: 11400000, guid: 7f5f6916ba1a84f93acb6b044bd4d20f, type: 2}
+  WeaponDrawPistol: {fileID: 11400000, guid: 3c65135d3bbbd4438902f2a200e7584b, type: 2}
+  WeaponStow: {fileID: 11400000, guid: d3059ce60614e4a07a99082e8b4aa4f5, type: 2}
+  WeaponAimIn: {fileID: 11400000, guid: 3aecf115a67df45179319d02719594ae, type: 2}
+  WeaponAimOut: {fileID: 11400000, guid: bc4bfafc8e66749e382eae4d1fe6e47d, type: 2}
+  MeleeDraw: {fileID: 11400000, guid: 22d26aa75063f46a9a7dc1977c5e1dfd, type: 2}
+  GrenadeDraw: {fileID: 11400000, guid: 6908432d4dcf34e629dd038969d0291f, type: 2}
+  GrenadePin: {fileID: 11400000, guid: e6252c02b241c44b188658599c1be4fc, type: 2}
+  GrenadeThrow: {fileID: 11400000, guid: fca5096711eff4915ab971b6063231d8, type: 2}
+  OxygenConnect: {fileID: 11400000, guid: b299a20634c4044bd8ab10a50a16d325, type: 2}
+  OxygenDisconnect: {fileID: 11400000, guid: 8b81e6ac2ce96465fa2d0ea5723e09e8, type: 2}
+  RoomSwitch: {fileID: 11400000, guid: 793fd0889bb80498ea576bdf64981ed2, type: 2}
+  TerminalStart: {fileID: 11400000, guid: ef01d3fc0bca8431796951406e048eae, type: 2}
+  TerminalComplete: {fileID: 11400000, guid: 75331dd21f2b749abb15543a04dd24db, type: 2}
   ShieldImpact: {fileID: 11400000, guid: a369643e2b9604cdb831a740c7c5ec78, type: 2}
   ShieldBreak: {fileID: 11400000, guid: 92892d6ed57e243e394a7259fd31006b, type: 2}
   ShieldRestore: {fileID: 11400000, guid: 1f4a8eae002854fc086b946404272a71, type: 2}

@@ -311,8 +311,8 @@ namespace Unity.MP_FPS
             bool sent = Send(new RaidMissionActionRpc { RaidId = captured.RaidId, OperationId = captured.OperationId,
                 Epoch = captured.Epoch, Node = node, RequestId = m_MissionRequest, Intent = intent });
             if (sent && intent == MissionIntent.Begin)
-                m_MissionAudio.Track(m_MissionSnapshot.RaidId, m_MissionRequest, MoonkovAudio.Library?.Confirm, MoonkovAudio.Library?.Equipment);
-            else if (intent == MissionIntent.Cancel) { m_MissionAudio.Reset(); MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero, .6f); }
+                m_MissionAudio.Track(m_MissionSnapshot.RaidId, m_MissionRequest, MoonkovAudio.Library?.TerminalComplete, MoonkovAudio.Library?.TerminalStart);
+            else if (intent == MissionIntent.Cancel) { m_MissionAudio.Reset(); MoonkovAudio.Play(MoonkovAudio.Library?.TerminalStart, Vector3.zero, .6f); }
             else if (!sent && intent != MissionIntent.Renew)
             { MoonkovAudio.Error(); m_MissionHolding = -1; MissionNotice("连接不可用，设备操作尚未确认。"); }
         }
@@ -360,7 +360,7 @@ namespace Unity.MP_FPS
                         m_MissionRequestedAction = objective.Name;
                         bool sent = Send(new RaidMissionActionRpc { RaidId = captured.RaidId, Epoch = captured.Epoch,
                             OperationId = captured.OperationId, Node = node, RequestId = m_MissionRequest, Intent = MissionIntent.Configure, Choice = choice });
-                        if (sent) m_MissionAudio.Track(captured.RaidId, m_MissionRequest, MoonkovAudio.Library?.Confirm);
+                        if (sent) m_MissionAudio.Track(captured.RaidId, m_MissionRequest, MoonkovAudio.Library?.TerminalComplete);
                         else MoonkovAudio.Error();
                         SetMissionDetails(false);
                     }) { text = objective.Choices[i] };

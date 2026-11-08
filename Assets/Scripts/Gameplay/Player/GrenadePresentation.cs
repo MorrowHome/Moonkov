@@ -32,7 +32,7 @@ namespace Unity.MP_FPS
         private float remaining, receivedAt, blend;
         private float pitch;
         private bool active, prepared, low, owner, sounded;
-        private SoundSystem.SoundInfo sound;
+        private SoundSystem.SoundInfo sound, pinSound;
         public bool OwnsHands => library != null && (active || blend > .001f);
         public bool PropVisible => prop && prop.activeSelf;
         public Vector3 PropPosition => prop ? prop.transform.position : hand ? hand.position : transform.position;
@@ -116,12 +116,25 @@ namespace Unity.MP_FPS
                     Quaternion.LookRotation(-normal, across));
             }
             if (halo) halo.ExternalHandPoseActive = true;
-            if (active && !sounded && (phase == GrenadePhase.Drawing || phase == GrenadePhase.Priming && progress >= .8f || phase == GrenadePhase.Throwing))
+            if (active && !sounded && (phase == GrenadePhase.Drawing || phase == GrenadePhase.Priming && progress >= .8f ||
+                phase == GrenadePhase.Throwing || phase == GrenadePhase.Stowing))
             {
                 sounded = true;
                 var audio = MoonkovAudio.Library;
-                sound = MoonkovAudio.PlayWeaponLayer(phase == GrenadePhase.Priming ? audio?.ReloadReady : audio?.Equipment,
-                    hand.position, phase == GrenadePhase.Throwing ? .6f : .8f, owner ? 0 : 1);
+                var cue = phase == GrenadePhase.Priming ? audio?.GrenadePin : phase == GrenadePhase.Throwing ? audio?.GrenadeThrow :
+                    phase == GrenadePhase.Stowing ? audio?.WeaponStow : audio?.GrenadeDraw;
+                // A queued throw can begin immediately after the pin clears. Let its
+                // short metallic tail finish; both handles are still owned and stopped.
+                if (phase == GrenadePhase.Priming)
+                {
+                    GameManager.Instance?.SoundSystem?.Stop(pinSound, .025f);
+                    pinSound = MoonkovAudio.PlayWeaponLayer(cue, hand.position, 1, owner ? 0 : 1, follow: hand);
+                }
+                else
+                {
+                    GameManager.Instance?.SoundSystem?.Stop(sound, .025f);
+                    sound = MoonkovAudio.PlayWeaponLayer(cue, hand.position, 1, owner ? 0 : 1, follow: hand);
+                }
             }
         }
         private void Sample(Motion motion, float phaseTime, float weight)
@@ -159,6 +172,7 @@ namespace Unity.MP_FPS
             active = prepared = false; blend = 0; phase = GrenadePhase.None; holdId = 0;
             if (prop) prop.SetActive(false);
             GameManager.Instance?.SoundSystem?.Stop(sound, .03f); sound = null;
+            GameManager.Instance?.SoundSystem?.Stop(pinSound, .03f); pinSound = null;
         }
         private void OnDisable() => ResetPresentation();
         private void OnDestroy() { ResetPresentation(); foreach (var value in props.Values) if (value) DestroyObject(value); props.Clear(); }

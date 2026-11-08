@@ -978,6 +978,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 武器切换同时比较型号、插槽和物品 ID，避免两把同型号互切无声。取枪、收枪、瞄准进出、近战取出、手雷各阶段、补氧接头、灯和终端各自配声。手雷拔销句柄与投掷分开，不能在快速投掷时截断尾音。`InteractionFoleySetup.Install()` 在重建链最后绑定；统一来源仍用 `MoonkovGameAudioSources.md`。验收和试听见 [音效系统](Docs/AudioSystem.md#2026-11-08-武器操作与设备细节)。
+
 - 2026-11-08 背包、容器、拾取整理、装备、丢弃和电池使用分开的声音。物品材质选择在 `MoonkovInventoryAudio`，声音仍等成功回执，不能改成点击即成功。`InteractionFoleySetup.Install()` 在音库重建最后覆盖。搜刮沿用服务端每 1.2 秒的序号事件；结束停止翻找，不新增本地循环计时器。来源统一登记 `MoonkovGameAudioSources.md`。
 
 - 2026-11-08 气闸成功按键使用独立 `AirlockButtonPress` 音库，原声为 Half-Life 2 的 0.081 秒按钮声。不要再调用用于撤离成功的 `MoonkovAudio.Confirm()`。Pending 不播放，拒绝保留 Error。重建入口 `AirlockButtonAudioSetup.Install()` 已接入通用音库安装。来源在统一游戏原声清单。

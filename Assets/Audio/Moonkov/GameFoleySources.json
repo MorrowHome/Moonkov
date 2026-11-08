@@ -732,6 +732,356 @@
       "peak": 0.65,
       "rms": 0.08529510863060703,
       "sha256": "55f41598de8d7ac1c815fa1f5b9a1dd6e9c9e7479f2bc94aed92e569e6279c55"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSWeaponDraw.wav",
+      "source": {
+        "name": "CSSWeaponDraw",
+        "use": "取出长枪",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/m4a1/m4a1_deploy.wav",
+        "original_file": "sound/weapons/m4a1/m4a1_deploy.wav",
+        "file": "SourceData/Audio/GameFoley/CSSWeaponDrawOriginal.wav",
+        "sha256": "7e8dd5a5103706c78ce454668496b99986be827acc53becd30f76ec9f50d3881",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.35352083333333334,
+      "peak": 0.65,
+      "rms": 0.08219729708534369,
+      "sha256": "99a9ede024d22e319fd5270389e547ba0ae38973ced358ef461266d476bab3a6"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSPistolDraw.wav",
+      "source": {
+        "name": "CSSPistolDraw",
+        "use": "取出手枪",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/deagle/de_deploy.wav",
+        "original_file": "sound/weapons/deagle/de_deploy.wav",
+        "file": "SourceData/Audio/GameFoley/CSSPistolDrawOriginal.wav",
+        "sha256": "263e79551e04bc2cc232113706ae459c7f48e263efcc177164b750696fad5e1b",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0.26,
+          1.32
+        ]
+      },
+      "seconds": 1.06,
+      "peak": 0.65,
+      "rms": 0.05816429282878502,
+      "sha256": "6a9ad27a273251770102011246da2fded106533c84a917c8f3c801ebf587995c"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSKnifeDraw.wav",
+      "source": {
+        "name": "CSSKnifeDraw",
+        "use": "取出近战武器",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/knife/knife_deploy1.wav",
+        "original_file": "sound/weapons/knife/knife_deploy1.wav",
+        "file": "SourceData/Audio/GameFoley/CSSKnifeDrawOriginal.wav",
+        "sha256": "9d8f451c798e77880f0cb68421cf4946ff34e228472c1aa7ce374d389450e97a",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0,
+          0.48
+        ]
+      },
+      "seconds": 0.48,
+      "peak": 0.65,
+      "rms": 0.06851843218434313,
+      "sha256": "e67f3f76593f2dbb3b00993fb63d222fd15b9e93e0a60d4d29479eb7596e23af"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2WeaponStow.wav",
+      "source": {
+        "name": "HL2WeaponStow",
+        "use": "收起武器",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/357/357_reload1.wav",
+        "original_file": "sound/weapons/357/357_reload1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2WeaponStowOriginal.wav",
+        "sha256": "bed0d2024f60beb8f6a88cb2c5cff76a95f154259f164f549f05de72e184fffd",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.58875,
+      "peak": 0.65,
+      "rms": 0.0200208723005475,
+      "sha256": "0c76e3b7fc627cc24ce4280df0d75e5d6dc9ea358b890205851a6dd588e0464a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2AimIn.wav",
+      "source": {
+        "name": "HL2AimIn",
+        "use": "进入瞄准",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/sniper/sniper_zoomin.wav",
+        "original_file": "sound/weapons/sniper/sniper_zoomin.wav",
+        "file": "SourceData/Audio/GameFoley/HL2AimInOriginal.wav",
+        "sha256": "4c3272573d086ffd7190ca9533b4fa95006d406e477679c2d791f9485c46232c",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.15752083333333333,
+      "peak": 0.65,
+      "rms": 0.058289095726215365,
+      "sha256": "d2ec4110e17d6d2243675d1a33080aa8334bb4e36aa531987fd326dab6165b07"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2AimOut.wav",
+      "source": {
+        "name": "HL2AimOut",
+        "use": "退出瞄准",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/sniper/sniper_zoomout.wav",
+        "original_file": "sound/weapons/sniper/sniper_zoomout.wav",
+        "file": "SourceData/Audio/GameFoley/HL2AimOutOriginal.wav",
+        "sha256": "084999892ec78890283c92c2d54a1eb4b8fa1f72dbd9a8f976d3421af4be0788",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.15752083333333333,
+      "peak": 0.65,
+      "rms": 0.08765651339545397,
+      "sha256": "d708ec145328a27aaec3bba2e819c1b6ae645781777bacb5127bf254bb313db3"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2GrenadeDraw.wav",
+      "source": {
+        "name": "HL2GrenadeDraw",
+        "use": "取出手雷时装备摩擦",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_reload1.wav",
+        "original_file": "sound/weapons/shotgun/shotgun_reload1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2GrenadeDrawOriginal.wav",
+        "sha256": "0c0f2c728f3cd4b201ee9d45e395179fade28242e93bdecebc1dd8c4e2d2d111",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.5010833333333333,
+      "peak": 0.65,
+      "rms": 0.052928349128642575,
+      "sha256": "a1f8a144a6b3af5bcc0a6e68725f5e20abe433d73c53ea5068fbfddcfa19930d"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/CSSGrenadePin.wav",
+      "source": {
+        "name": "CSSGrenadePin",
+        "use": "拔出手雷保险销",
+        "game": "Counter-Strike: Source",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/pinpull.wav",
+        "original_file": "sound/weapons/pinpull.wav",
+        "file": "SourceData/Audio/GameFoley/CSSGrenadePinOriginal.wav",
+        "sha256": "12c801feb82675306bed6364edfea06bd04f7e4d910d5a68d64e4a652297711a",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "source_file_excerpt_seconds": [
+          0.24,
+          0.8
+        ]
+      },
+      "seconds": 0.56,
+      "peak": 0.65,
+      "rms": 0.02335597452257643,
+      "sha256": "31dc8ed2b7145e838f28ae30ac78aefd89b4d4ac427b8bce02b911d3a205b6ea"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2GrenadeThrow.wav",
+      "source": {
+        "name": "HL2GrenadeThrow",
+        "use": "投掷手雷",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/slam/throw.wav",
+        "original_file": "sound/weapons/slam/throw.wav",
+        "file": "SourceData/Audio/GameFoley/HL2GrenadeThrowOriginal.wav",
+        "sha256": "3999c6653ea4f81c51555f60d94e7d18bfbdea6551bce63e085624098dc2f48c",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.22204166666666666,
+      "peak": 0.6159509367105306,
+      "rms": 0.13,
+      "sha256": "20c4ac1ca7bcca1e813c614632c7ddafdf64b99f7e04947fa097ee34596314d6"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2OxygenConnect.wav",
+      "source": {
+        "name": "HL2OxygenConnect",
+        "use": "锁定补氧接头",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_cock.wav",
+        "original_file": "sound/weapons/shotgun/shotgun_cock.wav",
+        "file": "SourceData/Audio/GameFoley/HL2OxygenConnectOriginal.wav",
+        "sha256": "9836ab0084340a691b10cd2c5efa31ea8dd9b7d01610d641d9b3d1763a74bc31",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.5981458333333334,
+      "peak": 0.65,
+      "rms": 0.061834486168649894,
+      "sha256": "126577ececf8f5aa08ef9e029eceefcc2c33c021fd47eb6e915e4b1ed29a51e0"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2OxygenDisconnect.wav",
+      "source": {
+        "name": "HL2OxygenDisconnect",
+        "use": "取下补氧接头",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_reload2.wav",
+        "original_file": "sound/weapons/shotgun/shotgun_reload2.wav",
+        "file": "SourceData/Audio/GameFoley/HL2OxygenDisconnectOriginal.wav",
+        "sha256": "ac8a195ecce30802751cd35626373b1992f57b6780faf7e4d65a4ec6b4a75aa3",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.4415208333333333,
+      "peak": 0.65,
+      "rms": 0.037154679266824336,
+      "sha256": "f1205f5f5b7e8d4a0316b24458dcefb8d62f6572dbb7b8c070cfbd7624b9e77e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2Flashlight.wav",
+      "source": {
+        "name": "HL2Flashlight",
+        "use": "手电开关",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/items/flashlight1.wav",
+        "original_file": "sound/items/flashlight1.wav",
+        "file": "SourceData/Audio/GameFoley/HL2FlashlightOriginal.wav",
+        "sha256": "4653beec13dbf6d28e7eb6b9ed374d2679a56814a5182d04b95fad1b0f5b5cf6",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "target_rms": 0.18
+      },
+      "seconds": 0.06839583333333334,
+      "peak": 0.65,
+      "rms": 0.09642035595908363,
+      "sha256": "084cc9583d28486d7bb3900ed6494b55173966c04c8636d1c4b85eab1762fc29"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2RoomSwitch.wav",
+      "source": {
+        "name": "HL2RoomSwitch",
+        "use": "房间灯开关",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/buttons/lightswitch2.wav",
+        "original_file": "sound/buttons/lightswitch2.wav",
+        "file": "SourceData/Audio/GameFoley/HL2RoomSwitchOriginal.wav",
+        "sha256": "df9acab53ca02d7c356288085f7258dc6d322d6220a9251e31c250361eae3e5d",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.07635416666666667,
+      "peak": 0.65,
+      "rms": 0.06808183851768594,
+      "sha256": "581fabe64dd9a496f60e5b1618df13bd1bb414af7822994f9160d67a5947ee24"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2DryFire.wav",
+      "source": {
+        "name": "HL2DryFire",
+        "use": "空仓扣扳机",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/pistol/pistol_empty.wav",
+        "original_file": "sound/weapons/pistol/pistol_empty.wav",
+        "file": "SourceData/Audio/GameFoley/HL2DryFireOriginal.wav",
+        "sha256": "8865e638adf18549e9653993125482bc0ec40af2e78addb3d5246db053bae68d",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted",
+        "target_rms": 0.18
+      },
+      "seconds": 0.038375,
+      "peak": 0.65,
+      "rms": 0.11656008840250563,
+      "sha256": "9768304076fb5b77ea749ca60c219c7c0218a8171f5ab314694964a27a11b20b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2TerminalStart.wav",
+      "source": {
+        "name": "HL2TerminalStart",
+        "use": "设备操作开始及取消",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/buttons/button14.wav",
+        "original_file": "sound/buttons/button14.wav",
+        "file": "SourceData/Audio/GameFoley/HL2TerminalStartOriginal.wav",
+        "sha256": "bf7f477b258a9df95f75c65e86fb9d3129bdf21019c10f2fd50a6b669eca1a72",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.20325,
+      "peak": 0.65,
+      "rms": 0.11288831403161527,
+      "sha256": "183d615e049f1a1c8681fd2d8a9049c45e6d2906281ee3a4a917f2eb62212c59"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2TerminalComplete.wav",
+      "source": {
+        "name": "HL2TerminalComplete",
+        "use": "设备操作与设置成功",
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/items/battery_pickup.wav",
+        "original_file": "sound/items/battery_pickup.wav",
+        "file": "SourceData/Audio/GameFoley/HL2TerminalCompleteOriginal.wav",
+        "sha256": "a1773fe265390159b37a96ad96a4eb2f5fa0ccdd6170e64513b56496575e172c",
+        "loop": false,
+        "compress": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.6077916666666666,
+      "peak": 0.5564234907343077,
+      "rms": 0.13,
+      "sha256": "ce868b224c99440abed167eff41fa3d43f10453440a7e66cff6ac2b40573409a"
     }
   ]
 }

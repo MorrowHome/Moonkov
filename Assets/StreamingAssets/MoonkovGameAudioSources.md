@@ -39,6 +39,22 @@
 | `Clips/GameFoley/HL2CellInsert.wav` | 插入护盾电池 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_push.wav) | sound/weapons/ar2/ar2_reload_push.wav |
 | `Clips/GameFoley/HL2ContainerOpen.wav` | 搜刮容器打开成功 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_open.wav) | sound/items/ammocrate_open.wav |
 | `Clips/GameFoley/HL2ContainerClose.wav` | 关闭搜刮容器 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_close.wav) | sound/items/ammocrate_close.wav |
+| `Clips/GameFoley/CSSWeaponDraw.wav` | 取出长枪 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/m4a1/m4a1_deploy.wav) | sound/weapons/m4a1/m4a1_deploy.wav |
+| `Clips/GameFoley/CSSPistolDraw.wav` | 取出手枪 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/deagle/de_deploy.wav) | sound/weapons/deagle/de_deploy.wav；取 0.260–1.320 秒 |
+| `Clips/GameFoley/CSSKnifeDraw.wav` | 取出近战武器 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/knife/knife_deploy1.wav) | sound/weapons/knife/knife_deploy1.wav；取 0.000–0.480 秒 |
+| `Clips/GameFoley/HL2WeaponStow.wav` | 收起武器 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/357/357_reload1.wav) | sound/weapons/357/357_reload1.wav |
+| `Clips/GameFoley/HL2AimIn.wav` | 进入瞄准 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/sniper/sniper_zoomin.wav) | sound/weapons/sniper/sniper_zoomin.wav |
+| `Clips/GameFoley/HL2AimOut.wav` | 退出瞄准 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/sniper/sniper_zoomout.wav) | sound/weapons/sniper/sniper_zoomout.wav |
+| `Clips/GameFoley/HL2GrenadeDraw.wav` | 取出手雷时装备摩擦 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_reload1.wav) | sound/weapons/shotgun/shotgun_reload1.wav |
+| `Clips/GameFoley/CSSGrenadePin.wav` | 拔出手雷保险销 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/pinpull.wav) | sound/weapons/pinpull.wav；取 0.240–0.800 秒 |
+| `Clips/GameFoley/HL2GrenadeThrow.wav` | 投掷手雷 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/slam/throw.wav) | sound/weapons/slam/throw.wav |
+| `Clips/GameFoley/HL2OxygenConnect.wav` | 锁定补氧接头 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_cock.wav) | sound/weapons/shotgun/shotgun_cock.wav |
+| `Clips/GameFoley/HL2OxygenDisconnect.wav` | 取下补氧接头 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/shotgun/shotgun_reload2.wav) | sound/weapons/shotgun/shotgun_reload2.wav |
+| `Clips/GameFoley/HL2Flashlight.wav` | 手电开关 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/flashlight1.wav) | sound/items/flashlight1.wav |
+| `Clips/GameFoley/HL2RoomSwitch.wav` | 房间灯开关 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/buttons/lightswitch2.wav) | sound/buttons/lightswitch2.wav |
+| `Clips/GameFoley/HL2DryFire.wav` | 空仓扣扳机 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/pistol/pistol_empty.wav) | sound/weapons/pistol/pistol_empty.wav |
+| `Clips/GameFoley/HL2TerminalStart.wav` | 设备操作开始及取消 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/buttons/button14.wav) | sound/buttons/button14.wav |
+| `Clips/GameFoley/HL2TerminalComplete.wav` | 设备操作与设置成功 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/battery_pickup.wav) | sound/items/battery_pickup.wav |
 
 路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。
 

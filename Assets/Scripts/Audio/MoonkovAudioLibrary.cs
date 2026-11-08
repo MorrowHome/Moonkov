@@ -9,6 +9,9 @@ namespace Unity.MP_FPS
         public SoundDef AirlockButtonPress;
         public SoundDef InventoryOpen, InventoryClose, ContainerClose;
         public SoundDef InventoryCloth, InventoryMetal, InventoryPlastic, InventoryFood, InventoryEquip, InventoryDrop, BatteryInsert;
+        public SoundDef WeaponDraw, WeaponDrawPistol, WeaponStow, WeaponAimIn, WeaponAimOut, MeleeDraw;
+        public SoundDef GrenadeDraw, GrenadePin, GrenadeThrow, OxygenConnect, OxygenDisconnect, RoomSwitch;
+        public SoundDef TerminalStart, TerminalComplete;
         public SoundDef ShieldImpact, ShieldBreak, ShieldRestore;
         public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
         public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;

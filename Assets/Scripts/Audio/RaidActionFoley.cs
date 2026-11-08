@@ -38,14 +38,14 @@ namespace Unity.MP_FPS
             }
             if (Crossed(1, openMarker>0?openMarker:.08f))
             {
-                var sound = kind == HandAction.RefillOxygen ? library.Equipment : kind == HandAction.Inject ? library.InjectorCap :
+                var sound = kind == HandAction.RefillOxygen ? library.OxygenConnect : kind == HandAction.Inject ? library.InjectorCap :
                     kind == HandAction.Drink && code == "water" ? library.BottleOpen :
                     kind == HandAction.Eat && !code.StartsWith("alien_", System.StringComparison.Ordinal) ||
                     kind == HandAction.Drink ? library.PacketOpen : wrapping ? library.MedicalOpen : kind == HandAction.Treat ? library.PacketOpen : null;
                 openSound = Play(sound);
             }
             if(kind==HandAction.Drink&&code=="water"&&Crossed(4,.74f))closeSound=Play(library.BottleClose);
-            if(kind==HandAction.RefillOxygen&&Crossed(4,.82f))closeSound=Play(library.Equipment,.8f);
+            if(kind==HandAction.RefillOxygen&&Crossed(4,.82f))closeSound=Play(library.OxygenDisconnect,.8f);
             float contactAt = Mathf.Clamp(contact, .28f, .72f);
             bool firstContact = Crossed(2, contactAt);
             SoundDef mouth = kind == HandAction.Eat && !code.Contains("gel") && !code.StartsWith("alien_", System.StringComparison.Ordinal)

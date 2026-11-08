@@ -29,6 +29,11 @@ def main():
         raw = subprocess.check_output(['ffmpeg', '-v', 'error', '-i', str(path)] + filters + [
                                        '-ac', '1', '-ar', str(RATE), '-f', 'f32le', '-'])
         a = np.frombuffer(raw, '<f4').astype(float).copy()
+        if 'source_file_excerpt_seconds' in row:
+            start, end = row['source_file_excerpt_seconds']
+            if not 0 <= start < end <= len(a) / RATE:
+                raise ValueError('Invalid excerpt: ' + row['name'])
+            a = a[round(start * RATE):round(end * RATE)]
         a -= a.mean()
         if row.get('loop'):
             # Rotate the splice away from the loop boundary and crossfade its overlap.
@@ -59,6 +64,8 @@ def main():
              '| `Clips/Medical/InjectorHuntShot.wav` | 扎入、推注、拔针 | Hunt: Showdown v0.309 / Crytek GmbH | [Kylan Klein Lenderink / Noise Nerd Audio](https://www.youtube.com/watch?v=i3-9okS87S8) | 8.64–8.94、9.22–10.34、11.25–11.62 秒；依次放在成品 0、0.24、1.00 秒 |']
     for r in sources:
         excerpt = r.get('original_file') or '–'.join(f'{v:.3f}' for v in r['source_excerpt_seconds']) + ' 秒'
+        if 'source_file_excerpt_seconds' in r:
+            excerpt += '；取 ' + '–'.join(f'{v:.3f}' for v in r['source_file_excerpt_seconds']) + ' 秒'
         lines.append(f"| `Clips/GameFoley/{r['name']}.wav` | {r['use']} | {r['game']} / {r['copyright']} | [{r['uploader']}]({r['page']}) | {excerpt} |")
     lines += ['', '路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。', '',
               '原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。',

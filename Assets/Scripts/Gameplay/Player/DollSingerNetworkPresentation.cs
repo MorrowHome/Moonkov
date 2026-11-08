@@ -398,7 +398,8 @@ namespace Unity.MP_FPS
             if (Role == MultiplayerRole.ClientOwned)
             {
                 bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
-                if (audibleAim != m_AudioAiming) MoonkovAudio.Play(MoonkovAudio.Library?.Aim, transform.position, .65f);
+                if (ghost.CurrentHealth > 0 && audibleAim != m_AudioAiming)
+                    MoonkovAudio.Play(audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut, transform.position);
                 m_AudioAiming = audibleAim;
                 if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
                     !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&

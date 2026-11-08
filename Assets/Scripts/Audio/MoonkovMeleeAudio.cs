@@ -61,8 +61,9 @@ namespace Unity.MP_FPS
             var library = MoonkovAudio.Library;
             if (!library) return false;
             bool effort = false;
-            if ((cues & Cues.Equip) != 0)
-                MoonkovAudio.PlayWeaponLayer(library.Equipment, position, .65f, owned ? 0 : 1);
+            if ((cues & Cues.Equip) != 0 && state.MeleeWeapon != (byte)MeleeWeaponKind.None)
+                MoonkovAudio.PlayWeaponLayer(state.MeleeWeapon == (byte)MeleeWeaponKind.Fists ? library.InventoryCloth : library.MeleeDraw,
+                    position, .8f, owned ? 0 : 1);
             if ((cues & Cues.Swing) != 0)
             {
                 bool sword = (MeleeWeaponKind)state.MeleeAttackWeapon == MeleeWeaponKind.EnergySword;

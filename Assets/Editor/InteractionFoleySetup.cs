@@ -28,6 +28,22 @@ public static class InteractionFoleySetup
         Bind(nameof(library.Container), -12, 0, "HL2ContainerOpen");
         Bind(nameof(library.ContainerClose), -13, 0, "HL2ContainerClose");
         Bind(nameof(library.LootSearchWorld), -14, 10, "TarkovPouchSearch1", "TarkovPouchSearch2");
+        Bind(nameof(library.WeaponDraw), -12, 10, "CSSWeaponDraw");
+        Bind(nameof(library.WeaponDrawPistol), -12, 10, "CSSPistolDraw");
+        Bind(nameof(library.MeleeDraw), -13, 10, "CSSKnifeDraw");
+        Bind(nameof(library.WeaponStow), -14, 10, "HL2WeaponStow");
+        Bind(nameof(library.WeaponAimIn), -18, 0, "HL2AimIn");
+        Bind(nameof(library.WeaponAimOut), -20, 0, "HL2AimOut");
+        Bind(nameof(library.GrenadeDraw), -13, 10, "HL2GrenadeDraw");
+        Bind(nameof(library.GrenadePin), -10, 10, "CSSGrenadePin");
+        Bind(nameof(library.GrenadeThrow), -13, 10, "HL2GrenadeThrow");
+        Bind(nameof(library.OxygenConnect), -12, 8, "HL2OxygenConnect");
+        Bind(nameof(library.OxygenDisconnect), -13, 8, "HL2OxygenDisconnect");
+        Bind(nameof(library.Light), -12, 0, "HL2Flashlight");
+        Bind(nameof(library.RoomSwitch), -12, 0, "HL2RoomSwitch");
+        Bind(nameof(library.DryFire), -14, 0, "HL2DryFire");
+        Bind(nameof(library.TerminalStart), -15, 0, "HL2TerminalStart");
+        Bind(nameof(library.TerminalComplete), -14, 0, "HL2TerminalComplete");
         EditorUtility.SetDirty(library); AssetDatabase.SaveAssetIfDirty(library);
 
         void Bind(string field, float db, float range, params string[] names)

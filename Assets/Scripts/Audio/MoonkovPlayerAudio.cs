@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
         private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_ConsumableSequence, m_Weapon;
+        private int m_WeaponSlot;
+        private Unity.Collections.FixedString64Bytes m_WeaponItem;
         private bool m_CanStep;
         private float m_LastMovementTime = float.NegativeInfinity;
         private Vector3 m_Position;
@@ -26,6 +28,7 @@ namespace Unity.MP_FPS
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
         private UnityEngine.CharacterController m_Capsule;
         private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound, m_ReloadSound;
+        private SoundSystem.SoundInfo m_WeaponSound;
         private float m_LastStepTime = -1, m_HeartAt;
         private readonly MoonkovBreathingAudio m_Breath = new MoonkovBreathingAudio();
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
@@ -75,7 +78,8 @@ namespace Unity.MP_FPS
                 m_LandTick = ghost.LastLandTick; m_ImpactTick = ghost.LastImpactTick;
                 m_LootSequence = ghost.LootSearchSequence;m_WasLootSearching=ghost.LootSearching;
                 m_ConsumableSequence = ghost.ConsumableUseSequence;
-                m_Weapon = ghost.EquippedWeaponID; m_Position = position;
+                m_Weapon = ghost.EquippedWeaponID; m_WeaponSlot = ghost.EquippedWeaponSlot;
+                m_WeaponItem = ghost.EquippedWeaponItem; m_Position = position;
                 m_HeartAt = Time.unscaledTime + 1;
                 m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
@@ -157,7 +161,14 @@ namespace Unity.MP_FPS
             {
                 GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
             }
-            if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
+            if (m_Weapon != ghost.EquippedWeaponID || ghost.EquippedWeaponID != DollSingerWeapons.None &&
+                (m_WeaponSlot != ghost.EquippedWeaponSlot || !m_WeaponItem.Equals(ghost.EquippedWeaponItem)))
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_WeaponSound, .03f);
+                m_WeaponSound = MoonkovAudio.PlayWeaponLayer(ghost.EquippedWeaponID == DollSingerWeapons.None ?
+                    library.WeaponStow : ghost.EquippedWeaponID == DollSingerWeapons.Revolver ? library.WeaponDrawPistol : library.WeaponDraw,
+                    position, owned ? 1 : .8f, owned ? 0 : 1, follow: player);
+            }
             if (owned || m_OxygenSupplySound != null) UpdateOxygenSupply(ghost, library, position, owned);
             // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
@@ -192,6 +203,7 @@ namespace Unity.MP_FPS
             }
             m_Stance = ghost.ControllerState.Stance;
             m_Weapon = ghost.EquippedWeaponID;
+            m_WeaponSlot = ghost.EquippedWeaponSlot; m_WeaponItem = ghost.EquippedWeaponItem;
             m_FallSpeed = Mathf.Max(m_FallSpeed, -ghost.ControllerState.JumpFallSpeed);
 
             var travel = position - m_Position;
@@ -274,6 +286,7 @@ namespace Unity.MP_FPS
             system?.Stop(m_CoughSound, .08f); m_CoughSound = null; m_NextCough = 0;
             system?.Stop(m_JumpVoice, .08f); m_JumpVoice = null; m_FoleyStep = 0;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
+            system?.Stop(m_WeaponSound, .04f); m_WeaponSound = null;
             StopBreathing();
             system?.Stop(m_OxygenSupplySound, .12f); m_OxygenSupplySound = null; m_OxygenSupplyRetryAt = 0;
             system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);

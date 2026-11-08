@@ -221,7 +221,7 @@ namespace Unity.MP_FPS
                     if (!World.IsThinClient())
                     {
                         if (r.Feedback == LightSwitchFeedback.Accepted)
-                            MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Light, UnityEngine.Vector3.zero, 1, 0);
+                            MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.RoomSwitch, UnityEngine.Vector3.zero, 1, 0);
                         else MoonkovAudio.Error();
                     }
                     state.PendingRequest = 0; state.Feedback = r.Feedback; state.FeedbackUntil = UnityEngine.Time.unscaledTime + 1.5f; }
