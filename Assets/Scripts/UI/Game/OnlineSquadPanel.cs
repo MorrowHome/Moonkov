@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.Client
 {
     // The account service owns the party. This view only presents snapshots and
     // emits player intent; it can also be reviewed with isolated sample data.
-    public sealed class OnlineSquadPanel : IDisposable
+    public sealed partial class OnlineSquadPanel : IDisposable
     {
         public VisualElement Element { get; }
         public OnlineSquadStage Stage { get; }
@@ -22,7 +22,7 @@ namespace Unity.MP_FPS.Client
         private LobbySnapshot m_Snapshot;
         private bool m_Disposed;
 
-        public OnlineSquadPanel(Action<LobbyAction> action, Action back, Action retry, Action<int, int> appearanceChanged)
+        public OnlineSquadPanel(Action<LobbyAction> action, Action back, Action retry, Action<int, int> appearanceChanged, Action browseRooms = null)
         {
             m_Action = action;
             Element = TerminalLayout.Clone("OnlineLobby", "onlineLobby");
@@ -63,6 +63,7 @@ namespace Unity.MP_FPS.Client
                 row.Add(button); manage.Add(row);
             }
             m_Glass = new SquadGlass(Element, image, Stage);
+            InitializeRooms(browseRooms);
             Element.Q<Button>("onlineBack").clicked += back;
             Element.RegisterCallback<KeyDownEvent>(e =>
             { if (e.keyCode == KeyCode.Escape) { back?.Invoke(); e.StopPropagation(); } });
@@ -103,6 +104,7 @@ namespace Unity.MP_FPS.Client
             Element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
             {
+                m_BrowseFromParty = false;
                 Stage.Suspend();
                 m_Badges.style.visibility = Visibility.Hidden;
             }
@@ -119,6 +121,7 @@ namespace Unity.MP_FPS.Client
 
         public void Present(LobbySnapshot snapshot, LobbyAppearance self, string displayName, string error, bool busy, bool reconnect)
         {
+            if (m_Snapshot?.Code != snapshot?.Code) m_BrowseFromParty = false;
             m_Snapshot = snapshot;
             bool party = snapshot != null && snapshot.Phase != "None" && !string.IsNullOrEmpty(snapshot.Code);
             bool leader = party && snapshot.SelfId == snapshot.LeaderId;
@@ -131,8 +134,8 @@ namespace Unity.MP_FPS.Client
             pose.SetValueWithoutNotify(pose.choices[Mathf.Clamp(self.PoseIndex + 1, 0, 4)]);
             Element.Q(className: "online-personal").SetEnabled((!party || lobby) && !busy);
             Element.Q("onlineEntry").style.display = party ? DisplayStyle.None : DisplayStyle.Flex;
-            Element.Q("onlineParty").style.display = party ? DisplayStyle.Flex : DisplayStyle.None;
             Element.Q("onlineEntry").SetEnabled(!busy);
+            PresentRooms(party, lobby && leader, busy, error);
             Element.Q("onlineManage").style.display = lobby && leader && snapshot.Members.Length > 1 ? DisplayStyle.Flex : DisplayStyle.None;
             Element.Q("onlineReconnectHost").style.display = reconnect ? DisplayStyle.Flex : DisplayStyle.None;
             if (party)

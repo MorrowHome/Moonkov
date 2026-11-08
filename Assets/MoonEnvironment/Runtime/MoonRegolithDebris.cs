@@ -12,10 +12,12 @@ namespace Unity.MP_FPS.Moon
         // Two rings cover at least 40 m, beyond this layer's 36 m fade.
         private const float TileSize = 20;
         private const int Radius = 2;
-        private const int MaximumFragmentsPerTile = 64;
         private readonly Transform parent;
         private readonly Terrain[] terrains;
         private readonly Material rock, ground;
+        private readonly SurfaceSampler sampleSurface;
+        private readonly int fragmentsPerTile;
+        private readonly float largestFragment;
         private readonly MoonRockMesh shapes = new(7319);
         private readonly Dictionary<Vector2Int, GameObject> tiles = new();
         private readonly List<Vector2Int> expired = new();
@@ -27,9 +29,28 @@ namespace Unity.MP_FPS.Moon
         private static readonly int ReflectanceScale = Shader.PropertyToID("_ReflectanceScale");
         private static readonly int FragmentFadeRange = Shader.PropertyToID("_FragmentFadeRange");
 
+        internal delegate bool SurfaceSampler(float x, float z, out Vector3 point, out Vector3 normal);
+
         public MoonRegolithDebris(Transform parent, Terrain[] terrains, Material rock, Material ground)
+            : this(parent, rock, ground, 64, .3f)
         {
-            this.parent = parent; this.terrains = terrains; this.rock = rock; this.ground = ground;
+            this.terrains = terrains;
+            sampleSurface = SampleTerrain;
+        }
+
+        internal MoonRegolithDebris(Transform parent, SurfaceSampler surface, Material rock, Material ground)
+            : this(parent, rock, ground, 88, .58f)
+        {
+            sampleSurface = surface;
+        }
+
+        private MoonRegolithDebris(Transform parent, Material rock, Material ground, int budget, float largest)
+        {
+            this.parent = parent;
+            this.rock = rock;
+            this.ground = ground;
+            fragmentsPerTile = budget;
+            largestFragment = largest;
         }
 
         public void Tick()
@@ -73,31 +94,22 @@ namespace Unity.MP_FPS.Moon
             var colors = new List<Color>(); var triangles = new List<int>();
             var origin = new Vector3(key.x * TileSize, 0, key.y * TileSize);
             int fragments = 0;
-            for (int i = 0; i < 128 && fragments < MaximumFragmentsPerTile; i++)
+            for (int i = 0; i < fragmentsPerTile * 2 && fragments < fragmentsPerTile; i++)
             {
                 float x = origin.x + (float)random.NextDouble() * TileSize;
                 float z = origin.z + (float)random.NextDouble() * TileSize;
-                Terrain terrain = Surface(x, z);
-                if (!terrain) continue;
-                var data = terrain.terrainData;
-                float u = (x - terrain.transform.position.x) / data.size.x;
-                float v = (z - terrain.transform.position.z) / data.size.z;
-                // Do not scatter into authored mine/airlock openings.
-                int hx = Mathf.Clamp((int)(u * data.holesResolution), 0, data.holesResolution - 1);
-                int hz = Mathf.Clamp((int)(v * data.holesResolution), 0, data.holesResolution - 1);
-                if (data.IsHole(hx, hz)) continue;
-                var normal = data.GetInterpolatedNormal(u, v);
+                if (!sampleSurface(x, z, out var point, out var normal)) continue;
                 float cluster = Mathf.PerlinNoise(x * .17f + 19, z * .17f + 73);
                 if (normal.y < .65f || random.NextDouble() > Mathf.Lerp(.15f, .85f, cluster)) continue;
-                float diameter = Mathf.Lerp(.025f, .3f, Mathf.Pow((float)random.NextDouble(), 2.7f));
-                var point = new Vector3(x, terrain.transform.position.y + data.GetInterpolatedHeight(u, v), z);
+                float diameter = Mathf.Lerp(.025f, largestFragment, Mathf.Pow((float)random.NextDouble(), 2.7f));
                 shapes.Append(random, point - origin - normal * diameter * .06f, normal, diameter,
                     (float)random.NextDouble(), vertices, uv, colors, triangles);
                 fragments++;
             }
+            if (vertices.Count == 0) return null;
             var mesh = new Mesh { name = "Lunar cosmetic scree", indexFormat = IndexFormat.UInt32, hideFlags = HideFlags.DontSave };
             mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetColors(colors); mesh.SetTriangles(triangles, 0);
-            if (vertices.Count > 0) { mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds(); }
+            mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds();
             mesh.UploadMeshData(true);
             var tile = new GameObject($"Lunar scree {key.x},{key.y}") { hideFlags = HideFlags.DontSave };
             tile.transform.SetParent(parent, true); tile.transform.position = origin;
@@ -111,6 +123,22 @@ namespace Unity.MP_FPS.Moon
             properties.SetVector(FragmentFadeRange, new Vector4(26, 36, 0, 0));
             renderer.SetPropertyBlock(properties);
             return tile;
+        }
+
+        private bool SampleTerrain(float x, float z, out Vector3 point, out Vector3 normal)
+        {
+            point = normal = default;
+            var terrain = Surface(x, z);
+            if (!terrain) return false;
+            var data = terrain.terrainData;
+            float u = (x - terrain.transform.position.x) / data.size.x;
+            float v = (z - terrain.transform.position.z) / data.size.z;
+            int hx = Mathf.Clamp((int)(u * data.holesResolution), 0, data.holesResolution - 1);
+            int hz = Mathf.Clamp((int)(v * data.holesResolution), 0, data.holesResolution - 1);
+            if (data.IsHole(hx, hz)) return false;
+            point = new Vector3(x, terrain.transform.position.y + data.GetInterpolatedHeight(u, v), z);
+            normal = data.GetInterpolatedNormal(u, v);
+            return true;
         }
 
         private Terrain Surface(float x, float z)

@@ -34,7 +34,9 @@ namespace Unity.MP_FPS.Inventory
         public static readonly InventoryRegion HaloCargoRegion = new InventoryRegion("Halo cargo", 1, 1);
         public static bool CanStoreHaloCargo(string code) =>
             Get(code)?.Kind is ItemKind.LongGun or ItemKind.Pistol;
-        public static bool IsResearchSupply(string code) => code is "rq_tablet" or "rq_flash" or "rq_drive" or "rq_sample" or "rq_package";
+        public static bool IsResearchSupply(string code) => code is "rq_tablet" or "rq_flash" or "rq_drive" or "rq_sample" or "rq_package"
+            or "rq_sample_kit" or "rq_nadir_records" or "rq_lucent_access" or "rq_original_archive";
+        public static bool IsHaloResearchCargo(string code) => code is "rq_package" or "rq_original_archive";
         private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker", "oxygen_canister" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
@@ -96,6 +98,10 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("rq_drive", "Research storage drive", ItemKind.Material, 1, 1, 1, .25f),
                 new ItemDefinition("rq_sample", "Sealed biological sample", ItemKind.Material, 1, 1, 1, .12f),
                 new ItemDefinition("rq_package", "Sealed research package", ItemKind.Material, 1, 1, 1, .18f),
+                new ItemDefinition("rq_sample_kit", "Biological sample kit", ItemKind.Material, 1, 1, 1, .14f),
+                new ItemDefinition("rq_nadir_records", "Nadir's research records", ItemKind.Material, 1, 2, 1, .42f),
+                new ItemDefinition("rq_lucent_access", "LUCENT access credentials", ItemKind.Material, 1, 1, 1, .04f),
+                new ItemDefinition("rq_original_archive", "Original LUCENT archive", ItemKind.Material, 1, 1, 1, .27f),
                 new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
                 new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
@@ -258,7 +264,7 @@ namespace Unity.MP_FPS.Inventory
                 if (depth >= InventoryCatalog.MaxDepth) return InventoryError.Cycle;
                 ancestor = Find(ancestor)?.Parent;
             }
-            if (region == InventoryCatalog.HaloCargoRegion.Id && item.Code != "rq_package") return InventoryError.Incompatible;
+            if (region == InventoryCatalog.HaloCargoRegion.Id && !InventoryCatalog.IsHaloResearchCargo(item.Code)) return InventoryError.Incompatible;
             if (region != InventoryCatalog.HaloCargoRegion.Id && HaloModules.IsWeapon(target.Code) && (!HaloModules.Compatible(target.Code, item.Code) ||
                 region != HaloModules.Slot(HaloModules.FromCode(item.Code)))) return InventoryError.Incompatible;
             if (target.Code == "secure_case" && !SecureInventory.Allowed(item.Code)) return InventoryError.Incompatible;
@@ -306,7 +312,7 @@ namespace Unity.MP_FPS.Inventory
             var source = Find(request.ItemId);
             if (source?.Region == InventoryCatalog.HaloCargoRegion.Id || request.Region == InventoryCatalog.HaloCargoRegion.Id)
             {
-                if (source?.Code != "rq_package" || request.Operation != InventoryOperation.Move || Find(InventoryCatalog.Stash) != null)
+                if (!InventoryCatalog.IsHaloResearchCargo(source?.Code) || request.Operation != InventoryOperation.Move || Find(InventoryCatalog.Stash) != null)
                     return InventoryError.Inaccessible;
                 if (request.Region == InventoryCatalog.HaloCargoRegion.Id &&
                     (!Carried(source) || Find(request.Parent)?.Parent != InventoryCatalog.Equipment))

@@ -49,6 +49,32 @@
 .online-member-row { flex-direction: row; align-items: center; padding: 3px 0; }
 .online-member-row Label { flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+.online-squad-screen .online-browse-rooms { margin-left: 12px; }
+.online-directory {
+    position: absolute; top: 0; right: 0; width: 384px; max-width: 47%; max-height: 72%; padding: 10px 11px;
+}
+.online-directory-header { flex-direction: row; justify-content: space-between; align-items: center; flex-shrink: 0; margin: 0 2px 5px; }
+.online-directory-title { margin: 0; color: #f0f3fa; font-size: 16px; -unity-font-style: bold; }
+.online-directory-count, .online-directory-status, .online-room-meta { margin: 0; color: #d4d9e0; font-size: 12px; }
+.online-directory-status { white-space: normal; margin: 3px 2px; }
+.online-directory-list { min-height: 0; flex-shrink: 1; }
+.online-directory-list .unity-list-view__item:hover { background-color: transparent; }
+.online-room-row, .online-application {
+    flex-direction: row; align-items: center; background-color: rgba(230,239,255,0.07);
+    border-width: 1px; border-color: rgba(222,235,255,0.14); border-radius: 11px;
+}
+.online-room-row { flex-grow: 1; margin: 3px 2px; padding: 5px 8px; }
+.online-room-summary { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.online-room-title, .online-room-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.online-room-title { margin: 0 0 3px; color: #f0f3fa; font-size: 14px; -unity-font-style: bold; }
+.online-room-state { margin: 0 4px 0 8px; color: #c3d3e6; font-size: 12px; }
+.online-squad-screen .online-apply { min-width: 78px; min-height: 32px; font-size: 12px; }
+.online-application { flex-shrink: 0; padding: 5px 7px; margin: 3px 2px 4px; }
+.online-application .online-directory-status { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.online-join-requests { padding: 5px 0; margin-bottom: 4px; border-bottom-width: 1px; border-bottom-color: rgba(222,235,255,0.15); }
+.online-request-title { margin: 0 0 3px; color: #b9e0ff; font-size: 14px; -unity-font-style: bold; }
+.online-squad-screen .online-approve { background-color: rgba(56,151,247,0.23); border-color: rgba(112,184,255,0.38); }
+
 .online-squad-screen .online-member { position: absolute; top: 0; width: 23%; padding: 4px 10px; align-items: center; border-radius: 12px; }
 .online-member-name, .online-member-status {
     margin: 0; padding: 0; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -96,4 +122,5 @@
 .online-compact .online-left { top: 16px; left: 16px; }
 .online-compact .online-controls { top: 16px; right: 16px; bottom: 16px; left: 16px; }
 .online-compact .online-bottom { bottom: 16px; left: 16px; }
+.online-compact .online-directory { max-width: 50%; }
 .online-squad-screen.online-reduced-motion Button { transition-duration: 0s; }

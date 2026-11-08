@@ -12,13 +12,14 @@ namespace Unity.MP_FPS
 {
     public static partial class AccountClient
     {
-        internal static async Task<LobbySnapshot> LobbyAsync(LobbyAction action, CancellationToken ct)
+        internal static async Task<LobbySnapshot> LobbyAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false)
         {
             string token = Token;
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl)) throw new InvalidOperationException("请先登录在线账号。");
             using var request = new HttpRequestMessage(action == null ? HttpMethod.Get : HttpMethod.Post,
                 Address(s_BaseUrl, (action == null ? "auth/lobby" : "auth/lobby/action") +
-                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose + "&networkProtocol=" + OnlineNetworkProtocol.Version));
+                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose +
+                    "&networkProtocol=" + OnlineNetworkProtocol.Version + (browseRooms ? "&browseRooms=true" : "")));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             if (action != null) request.Content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
@@ -31,7 +32,8 @@ namespace Unity.MP_FPS
     }
     public static class OnlineLobbyClient
     {
-        public static LobbySnapshot Snapshot { get; private set; }
+        private static LobbySnapshot s_Snapshot;
+        public static LobbySnapshot Snapshot => s_Account == PlayerProfileClient.LocalPreferenceScope ? s_Snapshot : null;
         public static string InstanceId { get; private set; }
         public static string ServerName { get; private set; }
         public static bool InInstance => !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan &&
@@ -42,18 +44,23 @@ namespace Unity.MP_FPS
         public static string Error { get; private set; }
         public static int SelectedPose { get; set; } = -1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; s_PreserveFailedJoin = false; }
-        public static async Task RefreshAsync(CancellationToken ct)
+        static void Reset() { s_Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; s_PreserveFailedJoin = false; }
+        private static void SelectAccount()
         {
             string scope = PlayerProfileClient.LocalPreferenceScope;
             if (s_Account != scope) { Reset(); SessionReconnect.Dismiss(); s_Account = scope; }
-            Snapshot = await AccountClient.LobbyAsync(null, ct);
         }
-        public static async Task ActAsync(LobbyAction action, CancellationToken ct)
+        public static async Task RefreshAsync(CancellationToken ct, bool browseRooms = false)
         {
+            SelectAccount();
+            s_Snapshot = await AccountClient.LobbyAsync(null, ct, browseRooms);
+        }
+        public static async Task ActAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false)
+        {
+            SelectAccount();
             if (action.Action == "start" || action.Action == "ready" && action.Ready)
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
-            Snapshot = await AccountClient.LobbyAsync(action, ct); Error = null;
+            s_Snapshot = await AccountClient.LobbyAsync(action, ct, browseRooms); Error = null;
             if (action.Action == "leave")
             {
                 InstanceId = ServerName = LastAttempt = null; s_PreserveFailedJoin = false;

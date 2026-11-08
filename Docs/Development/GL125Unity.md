@@ -7,6 +7,9 @@
 - `Tools/Blender/build_gl125_collision.py` 从当前可见结构生成静态碰撞，按实际尺寸筛掉小件和薄装饰。单面结构片补反面，地形直接使用显示网格。旧 V73 代理不进入正式场景。输出 `PreparedQuality/StaticCollision/Collision.json`，绑定原渲染 `World.json` 哈希。传入 `Evaluated`、`PreparedQuality` 和 `GL124_PLACEMENT_CONTRACT.json`。只修现有地图碰撞时执行 `GL125SceneInstall.ReplaceStaticCollision(工作目录)`。
 - `Tools/Blender/bake_gl125.py` 用 Cycles OptiX 计算 486 盏固定灯的光照，分离线性 EXR 与材质。图集为 50 张 2K、24 张 4K，每张 128 次采样。主日照及阴影在 Unity 实时计算。按同一 `World.json` 哈希和各图集回执续烘。
 - `GL125WorldAssets` 导入 Unity 原生网格、材质和光照图。URP Lit 使用实际能直接映射的基色、法线及 PBR 参数。复杂程序材质使用近似参数。角色探针基于新版灯位和新碰撞估算。局部反射需要单独制作。
+- GL125 的 256 块 `DEM_` 使用从 `TheophilusOriginalRegolith` 恢复的月壤材质。Unity 用原月壤的多尺度纹理、法线和月面反射计算日照，并从网格 UV2 取现有的非方向性 Blender 光照图。材质须同时保存 `_MeshLightmap` 和 `_MOON_MESH_LIGHTMAP`，否则阴影区会失去间接光。日照掠过坑壁时，减少直接光受细法线影响的程度，保留地形明暗交界。
+- `Tools/Blender/plan_gl125_surface_detail.py PreparedQuality 正式场景 Geology` 生成月坑布局、喷出物遮罩和碎石避让数据。依赖 NumPy、SciPy、Pillow。首次安装执行 `GL125CraterInstall.Install(PreparedQuality, Geology)`。它核对源地图哈希，并按旧月坑的坑底和抬升坑沿改写现有 DEM。显示与碰撞共用网格，保留 UV2。重新生成不同布局时，先从 `MeshBundlesBeforeCraters` 恢复对应地形包。
+- `GL125SceneInstall.InstallScree()` 在正式场景挂接 `MoonMeshDebris`。它用实际地形碰撞放置碎石，用 2 米网格避开建筑和铺装。客户端按相机位置加载最多 25 个网格，每格最多 88 块，距相机 26 到 36 米淡出。碎石只参与显示和阴影。
 - `GL125SceneInstall` 保留气闸、任务设备、补氧区和搜刮规则。旧抽屉的交互引用改为独立位置锚点。气闸结构传声引用指向新版 MC00 碰撞。灯钮按废弃处理。
 - `GL125AirlockInstall.Install(工作目录)` 接入 MC00 东 EVA、西货运和北人员三处。西、北的内外门叶按原门框尺寸制作。每处有室内和室外呼叫台，舱内有去室内和去室外两台。按 F 后，气闸先关另一扇门，再均压并开启目标门。门洞有人时禁止关闭，关门中有人进入时反开并取消本次请求。
 - `Tools/Blender/build_gl125_lifts.py Evaluated PreparedQuality LiftStage` 从原渲染和碰撞中拆出四台电梯的 47 组活动部件。`GL125LiftInstall.Install(LiftStage)` 写入正式场景。UL39 北侧直达上升 51 米，中央塔 N62 上升 48.3 米，FT55 上下两台各上升 1.3 米。每台有上下站呼叫和舱内换层，共 12 个控制点。N62 上站饰条随门叶移动。FT55 的开门行程在源动画基础上加高，使站立的玩家可以通过。
@@ -30,6 +33,10 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 2026-11-08 修复 MC00 和中央塔亮面接缝的黑点。窄折边和旁边的板面属于不同光照块，缝口出现亮度断点。使用 `Tools/Blender/soften_gl125_lightmap_seams.py PreparedQuality 原始EXR目录 输出目录` 按三维位置匹配同材质的邻接表面。只在接缝附近取光，较宽的表面仅补窄边。脚本需要 NumPy、SciPy 和 OpenEXR。重新导入原始烘焙后执行一次，并用输出的同名 EXR 覆盖 Unity 光照图。43 张图更新，原 74 张图的尺寸、UV 和 BC6H 格式沿用。
 
 正式场景用玩家相机参数比较 12 处机位，并在转运走廊、收货区、中央塔上层横移连拍。11 个室内机位里，平坦受光区域的局部暗像素候选从 6889 降到 4830。候选包含较窄的结构阴影，收货区仍有明显深色边缘。外部太阳直射的对照变化很小。对照图 `TwelveViewsBeforeAfter.png`、`MotionReview.png` 和改前贴图 `LightmapsBeforeSeamContinuity` 在 `20261108_FixtureNoise`。实际 Play 走图和 Player 性能待验收。
+
+2026-11-08 补做大平面的光照去斑。关太阳后，MC00 的成片斑驳仍在。临时换成均匀光照时斑驳消失，定位到烘焙贴图。接缝修复后用 `Tools/Blender/filter_gl125_planar_irradiance.py PreparedQuality EXR目录 输出目录` 处理一次。只在同一 UV 图块内处理大平面，保留明显的灯影边界，并在图块边缘逐步减弱。更新 69 张图集，正式场景重开后加载 74 张 BC6H 光照图。MC00 转运走廊远墙和中转厅天花板的局部斑驳幅度下降约一半。对照图 `WholeSurfacesBeforeAfter.png` 和原贴图在 `20261108_BroadSurface`。若 Windows 仍锁定已卸载场景的 EXR，先在 Editor 调用 `AssetDatabase.ReleaseCachedFileHandles()`，再原位替换，沿用原 `.meta`。
+
+中央塔第 28 和 31 张用 RTX 4070 SUPER 的 OptiX 按 2 倍、256 次采样重烘。参数为 `bake_gl125.py --atlas 28 31 --scale 2 --samples 256`，结果回到原 2048 尺寸，再处理接缝和大平面。回执在 `20261108_BroadSurface/TowerSupersample`。塔内修前、原贴图去斑、重烘后去斑的对照为 `TowerBakeReview.png`。
 
 2026-11-08 清理表面重叠。用 `Tools/Blender/build_gl125_surface_cleanup.py PreparedQuality EXR目录 LiftStage/Lifts.json SurfaceCleanup.json` 生成面索引和哈希。执行 `GL125SurfaceCleanup.Install(SurfaceCleanup.json)`，在 234 个显示块中去除 340,290 个同向重合面。其中 1188 处异材质重合按外饰面或铺装层保留。保留三角面的顶点、材质和光照 UV 沿用原数据。网格包备份在 `20261108_FixtureNoise/MeshesBeforeOverlapCleanup`。
 

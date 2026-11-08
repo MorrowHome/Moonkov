@@ -34,6 +34,16 @@ namespace Unity.MP_FPS
             return changed;
         }
 
+        public static async Task<bool> ChooseResearchEndingAsync(ResearchEnding ending)
+        {
+            if (ResearchQuests == null) return false;
+            var store = s_Offline;
+            bool changed = await Task.Run(() => store.ChooseResearchEnding(ending));
+            if (store != s_Offline) return false;
+            if (changed) RefreshOffline();
+            return changed;
+        }
+
         public static async Task SetCampaignTrackingAsync(string taskId, bool secondary = false,
             bool remove = false, CancellationToken ct = default)
         {

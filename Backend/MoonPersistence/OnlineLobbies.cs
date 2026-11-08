@@ -3,8 +3,9 @@ using Unity.MP_FPS.Online;
 
 // One server slot is intentional on the host PC. Lobby/account traffic stays light;
 // each allocation gets a new process and a clean map, never a reused raid World.
-public sealed class OnlineLobbies
+public sealed partial class OnlineLobbies
 {
+    private const int PartyCapacity = 4;
     private static readonly TimeSpan HeartbeatTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ReconnectGrace = TimeSpan.FromSeconds(90);
     private static readonly System.Text.Json.JsonSerializerOptions StateJson = new() { IncludeFields = true };
@@ -20,6 +21,7 @@ public sealed class OnlineLobbies
     public sealed class Party
     {
         public string Code { get; set; } = "";
+        public string RoomId { get; set; } = Guid.NewGuid().ToString("N");
         public Guid Leader { get; set; }
         public string Mode { get; set; } = "Coop";
         public string ConnectionPath { get; set; } = OnlineNetworkProtocol.P2P;
@@ -55,6 +57,7 @@ public sealed class OnlineLobbies
     public sealed class State
     {
         public List<Party> Parties { get; set; } = new();
+        public Dictionary<Guid, JoinApplication> JoinApplications { get; set; } = new();
         public Allocation? Active { get; set; }
     }
     private readonly object gate = new();
@@ -93,7 +96,7 @@ public sealed class OnlineLobbies
             if (party.Members.All(m => m.Id != party.Leader))
                 party.Leader = party.Members.OrderByDescending(m => now - m.Seen < HeartbeatTimeout).First().Id;
         }
-        return changed;
+        return MaintainJoinApplications(now) || changed;
     }
     private void Save()
     {
@@ -103,13 +106,20 @@ public sealed class OnlineLobbies
         File.WriteAllText(temp, System.Text.Json.JsonSerializer.Serialize(state, StateJson));
         File.Move(temp, stateFile, true);
     }
-    public LobbySnapshot Snapshot(Guid id, DateTime now, string address, string serverName, int port)
+    public LobbySnapshot Snapshot(Guid id, DateTime now, string address, string serverName, int port,
+        bool browseRooms = false, bool raidActive = false)
     {
         lock (gate)
         {
             bool changed = Maintain(now);
             var p = Find(id);
-            if (p == null) { if (changed) Save(); return new LobbySnapshot { SelfId = id.ToString(), Phase = "None" }; }
+            if (p == null)
+            {
+                var request = ApplicantSnapshot(id, now, raidActive, ref changed);
+                if (changed) Save();
+                return new LobbySnapshot { SelfId = id.ToString(), Phase = "None", RoomDirectoryAvailable = true,
+                    CanRequestJoin = !raidActive, JoinRequest = request, Rooms = browseRooms ? BrowseRooms(null, now) : null };
+            }
             p.Members.Single(m => m.Id == id).Seen = now;
             // Keep restart recovery bounded without writing a file for every poll.
             if (changed || now >= nextHeartbeatSave) { Save(); nextHeartbeatSave = now.AddSeconds(15); }
@@ -123,6 +133,8 @@ public sealed class OnlineLobbies
                 NetworkProtocol = OnlineNetworkProtocol.Version, ConnectionPath = a?.ConnectionPath ?? p.ConnectionPath,
                 IceAvailable = a?.IceAvailable ?? false, IceHostId = a?.IceHostId, IceHostAddress = a?.IceHostAddress,
                 CanRetry = CanRetry(a, seat, now), CanLeave = a == null || seat != null && (!seat.Admitted || seat.Settled),
+                RoomDirectoryAvailable = true, Rooms = browseRooms ? BrowseRooms(p, now) : null,
+                JoinRequests = p.Leader == id && p.Phase == "Lobby" && p.Instance == null ? LeaderRequests(p) : Array.Empty<LobbyJoinRequest>(),
                 Members = p.Members.Select(m => new LobbyMember { PlayerId = m.Id.ToString(), Name = m.Name,
                     Ready = m.Ready, Team = m.Team, Appearance = m.Appearance.Copy(), Connected = now - m.Seen < HeartbeatTimeout,
                     ReconnectSeconds = Math.Max(0, (int)Math.Ceiling((ReconnectGrace - (now - m.Seen)).TotalSeconds)),
@@ -144,12 +156,17 @@ public sealed class OnlineLobbies
             Save();
         }
     }
-    public void Act(Guid id, string name, bool raidActive, LobbyAction request, DateTime now)
+    public void Act(Guid id, string name, bool raidActive, LobbyAction request, DateTime now, Guid? eligibleApplicant = null)
     {
         lock (gate)
         {
             if (Maintain(now)) Save();
             var p = Find(id);
+            if (request.Action is "request-join" or "withdraw-join")
+            {
+                if (UpdateJoinApplication(id, name, raidActive, p, request, now)) Save();
+                return;
+            }
             if (request.Action == "create" || request.Action == "join")
             {
                 Require(p == null, "请先离开当前队伍。");
@@ -166,9 +183,10 @@ public sealed class OnlineLobbies
                 {
                     p = state.Parties.FirstOrDefault(x => x.Code == request.Code?.Trim().ToUpperInvariant());
                     Require(p != null && p.Phase == "Lobby" && p.Instance == null, "队伍不存在或已经出发。");
-                    Require(p!.Members.Count < 4, "队伍已满（最多 4 人）。");
+                    Require(p!.Members.Count < PartyCapacity, "队伍已满（最多 4 人）。");
                 }
                 p!.Members.Add(new Member { Id = id, Name = name, Seen = now });
+                state.JoinApplications.Remove(id);
                 Reset(p);
             }
             else
@@ -228,6 +246,9 @@ public sealed class OnlineLobbies
                         case "team":
                             Require(request.Team is 0 or 1, "请选择 A 队或 B 队。"); Reset(p); me.Team = request.Team; break;
                         case "ready": me.Ready = request.Ready; break;
+                        case "approve-join":
+                        case "decline-join":
+                            ResolveJoinApplication(p, id, request, now, eligibleApplicant); break;
                         case "kick":
                             Require(p.Leader == id, "只有队长可移除队员。");
                             Require(Guid.TryParse(request.TargetPlayerId, out var target) && target != id && p.Members.Any(m => m.Id == target),
@@ -267,7 +288,7 @@ public sealed class OnlineLobbies
                 if (first.PublicQueue)
                 {
                     foreach (var other in queued.Where(p => p != first && p.PublicQueue && p.Mode == first.Mode && p.ConnectionPath == first.ConnectionPath))
-                        if (chosen.Sum(p => p.Members.Count) + other.Members.Count <= 4) chosen.Add(other);
+                        if (chosen.Sum(p => p.Members.Count) + other.Members.Count <= PartyCapacity) chosen.Add(other);
                     if (first.Mode == "Versus" && chosen.Count < 2) { chosen = null; continue; }
                     // Coop never waits for strangers; public queue just allows another ready party to join this allocation.
                 }

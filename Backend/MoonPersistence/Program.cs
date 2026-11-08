@@ -128,15 +128,16 @@ auth.MapPost("/game-ticket", async (HttpRequest request, AccountRepository accou
     var profile = await accounts.ResolveSessionAsync(request.Headers.Authorization.ToString().Replace("Bearer ", ""), ct);
     return profile is null ? Results.Unauthorized() : Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow) });
 }).RequireRateLimiting("auth");
-auth.MapGet("/lobby", async (HttpRequest request, int? character, int? pose, int? networkProtocol, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapGet("/lobby", async (HttpRequest request, int? character, int? pose, int? networkProtocol, bool? browseRooms, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     if (networkProtocol != OnlineNetworkProtocol.Version) return Results.Conflict(new { error = "请更新客户端，当前大厅已启用 P2P/VPS 连接选择。" });
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
     if (profile == null) return Results.Unauthorized();
     RefreshLobbyAppearance(lobbies, profile, character, pose);
-    return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port)));
+    return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName,
+        instanceOptions.Port, browseRooms == true, profile.ActiveDeploymentId != null)));
 });
-auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, int? character, int? pose, int? networkProtocol, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, int? character, int? pose, int? networkProtocol, bool? browseRooms, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     if (networkProtocol != OnlineNetworkProtocol.Version) return Results.Conflict(new { error = "请更新客户端，当前大厅已启用 P2P/VPS 连接选择。" });
     var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
@@ -144,9 +145,16 @@ auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, in
     try
     {
         RefreshLobbyAppearance(lobbies, profile, character, pose);
-        lobbies.Act(profile.PlayerId, profile.DisplayName, profile.ActiveDeploymentId != null, action, DateTime.UtcNow);
+        Guid? eligibleApplicant = null;
+        if (action.Action == "approve-join")
+        {
+            var applicant = lobbies.ApprovalApplicant(profile.PlayerId, action.RequestId, DateTime.UtcNow);
+            if ((await accounts.ReadProfileAsync(applicant, ct)).ActiveDeploymentId == null) eligibleApplicant = applicant;
+        }
+        lobbies.Act(profile.PlayerId, profile.DisplayName, profile.ActiveDeploymentId != null, action, DateTime.UtcNow, eligibleApplicant);
         RefreshLobbyAppearance(lobbies, profile, character, pose);
-        return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port)));
+        return Results.Ok(ConnectionOptions(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName,
+            instanceOptions.Port, browseRooms == true, profile.ActiveDeploymentId != null)));
     }
     catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
@@ -226,7 +234,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, OnlineLobbies lobbies
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2", "lobby-chest-badge-v1", "lobby-entry-actions-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2", "lobby-chest-badge-v1", "lobby-entry-actions-v1", "lobby-room-directory-v1" },
         onlineInstances = true, instancePhase = lobbies.Current()?.Phase ?? "Idle", build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });

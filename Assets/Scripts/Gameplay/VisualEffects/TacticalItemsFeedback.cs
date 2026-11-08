@@ -160,14 +160,24 @@ namespace Unity.MP_FPS
             targetId=0;action=default;if(!s_Active)return false;float best=TacticalItemRules.InteractionRange;
             foreach(var pair in s_Active.m_Visuals)
             {
-                var v=pair.Value;bool supply=v.State.Phase==TacticalWorldPhase.Supply;
-                if(!supply && v.State.Phase!=TacticalWorldPhase.Armed || supply && v.State.Energy<=0)continue;
+                var v=pair.Value;
+                if (!CanInteract(v)) continue;
                 Vector3 pos=v.Position+Vector3.up*.15f,delta=pos-eye;float distance=delta.magnitude;
                 if(distance>best || Vector3.Dot(delta.normalized,direction.normalized)<.6f ||
                     UnityEngine.Physics.Linecast(eye,pos,LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))continue;
-                best=distance;targetId=pair.Key;action=supply ? TacticalItemAction.Resupply : TacticalItemAction.Disarm;
+                best=distance;targetId=pair.Key;action=v.State.Phase==TacticalWorldPhase.Supply ? TacticalItemAction.Resupply : TacticalItemAction.Disarm;
             }
             return targetId!=0;
+        }
+        private static bool CanInteract(Visual visual) => visual.State.Phase == TacticalWorldPhase.Armed ||
+            visual.State.Phase == TacticalWorldPhase.Supply && visual.State.Energy > 0;
+
+        internal static void AddInteractionOutlines(RaidInteractionOutline outline)
+        {
+            if (!s_Active) return;
+            foreach (var visual in s_Active.m_Visuals.Values)
+                if (visual.Root && CanInteract(visual))
+                    outline.Add(visual.Root.transform, visual.Position + Vector3.up * .15f, TacticalItemRules.InteractionRange);
         }
         private void Update()
         {

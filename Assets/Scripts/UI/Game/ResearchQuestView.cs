@@ -7,17 +7,17 @@ using static Unity.MP_FPS.Client.ResearchQuestCopy;
 
 namespace Unity.MP_FPS.Client
 {
-    public sealed class ResearchQuestView : IDisposable
+    public sealed partial class ResearchQuestView : IDisposable
     {
         private readonly Func<ResearchQuestProgress> m_Read;
         private readonly Func<ResearchQuest, bool, Task<bool>> m_Advance;
         private readonly Action m_Prepare, m_Close;
         private readonly ResearchQuestRadio m_Radio = new ResearchQuestRadio();
-        private readonly VisualElement m_Deck;
+        private readonly VisualElement m_Deck, m_QuestHeader, m_QuestScroll;
         private readonly Image m_Photo;
         private readonly Label m_Heading, m_Count, m_Title, m_Status, m_Brief, m_Goal, m_Feedback, m_Unlocks;
         private readonly Label m_VoiceHeading, m_GoalHeading, m_RewardHeading, m_ExhibitId, m_ExhibitMass, m_ExhibitIndex;
-        private readonly Button m_Back, m_Legacy, m_Action, m_Play;
+        private readonly Button m_Back, m_Legacy, m_Action, m_Play, m_Nadir, m_EndingNav;
         private readonly Button[] m_Choices = new Button[ResearchQuestRules.Count];
         private readonly Label[] m_ChoiceTitles = new Label[ResearchQuestRules.Count];
         private readonly IVisualElementScheduledItem m_Refresh;
@@ -28,16 +28,17 @@ namespace Unity.MP_FPS.Client
         public VisualElement Element { get; }
 
         public ResearchQuestView(VisualElement host, Func<ResearchQuestProgress> read, Func<ResearchQuest, bool, Task<bool>> advance,
-            Action prepare, Action legacy, Action close)
+            Action prepare, Action legacy, Action close, Func<ResearchEnding, Task<bool>> chooseEnding = null)
         {
             m_Read = read; m_Advance = advance; m_Prepare = prepare; m_Close = close;
+            m_ChooseEnding = chooseEnding;
             Element = new VisualElement { name = "researchQuestScreen" };
             Element.AddToClassList("research-quest");
             Element.AddToClassList("moonkov-style-font");
             var stylesheet = Resources.Load<StyleSheet>("Moonkov/UI/ResearchQuests");
             if (stylesheet) Element.styleSheets.Add(stylesheet);
 
-            var header = Box(Element, "research-quest-header");
+            var header = m_QuestHeader = Box(Element, "research-quest-header");
             var emblem = new Image
             {
                 image = Resources.Load<Texture2D>("Moonkov/UI/Halos/Emblem"),
@@ -49,11 +50,14 @@ namespace Unity.MP_FPS.Client
             header.Add(emblem);
             m_Heading = Label(header, "research-quest-heading");
             m_Count = Label(header, "research-quest-count");
+            m_EndingNav = Button(header, "research-quest-nav", OpenEnding);
+            m_EndingNav.name = "questDecision";
             m_Legacy = Button(header, "research-quest-nav", legacy);
             m_Back = Button(header, "research-quest-nav", Close);
             m_Back.name = "questBack";
 
             var scroll = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+            m_QuestScroll = scroll;
             scroll.AddToClassList("research-quest-scroll"); Element.Add(scroll);
             scroll.RegisterCallback<GeometryChangedEvent>(Layout);
             m_Deck = Box(scroll, "research-quest-deck");
@@ -77,10 +81,19 @@ namespace Unity.MP_FPS.Client
             var footer = Box(left, "research-quest-footer");
             var objectives = Box(footer, "research-quest-objectives");
             var voice = Panel(objectives, "research-quest-voice", out m_VoiceHeading);
-            m_Play = Button(voice, "research-quest-listen", ToggleRadio);
+            var voiceButtons = Box(voice, "research-quest-voice-buttons");
+            m_Play = Button(voiceButtons, "research-quest-listen", ToggleRadio);
             m_Play.name = "questListen";
+            m_Nadir = Button(voiceButtons, "research-quest-listen", () =>
+            {
+                m_Radio.PlayStory("nadir", Chinese);
+                RefreshRadio();
+            });
             var goal = Panel(objectives, "research-quest-goal-panel", out m_GoalHeading);
-            m_Goal = Label(goal, "research-quest-goal");
+            var goalScroll = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+            goalScroll.AddToClassList("research-quest-brief-scroll");
+            goal.Add(goalScroll);
+            m_Goal = Label(goalScroll, "research-quest-goal");
             var rewards = Panel(footer, "research-quest-rewards", out m_RewardHeading);
             m_Unlocks = Label(rewards, "research-quest-unlocks");
 
@@ -112,16 +125,18 @@ namespace Unity.MP_FPS.Client
             Element.RegisterCallback<DetachFromPanelEvent>(_ => Dispose());
             host.Add(Element);
             MoonkovAudio.BindUI(Element);
-            Select(InitialQuest(m_Read()), false);
-            m_Choices[(int)m_Selected.Value].Focus();
+            Select(InitialQuest(m_Read()), true);
+            m_Choices[ResearchQuestRules.Number(m_Selected.Value) - 1].Focus();
+            if (ResearchQuestRules.DecisionAvailable(m_Read()) && m_Read().Ending == ResearchEnding.None && m_ChooseEnding != null)
+                OpenEnding();
         }
 
         private static ResearchQuest InitialQuest(ResearchQuestProgress progress)
         {
             foreach (var preferred in new[] { ResearchQuestStatus.Ready, ResearchQuestStatus.Active, ResearchQuestStatus.Available })
                 for (int i = 0; i < ResearchQuestRules.Count; i++)
-                    if (ResearchQuestRules.Status(progress, (ResearchQuest)i) == preferred) return (ResearchQuest)i;
-            return progress == null || progress.Completed == 0 ? ResearchQuest.Exposure : ResearchQuest.Sentry;
+                    if (ResearchQuestRules.Status(progress, ResearchQuestRules.At(i)) == preferred) return ResearchQuestRules.At(i);
+            return progress == null || progress.Completed == 0 ? ResearchQuest.Exposure : ResearchQuest.EndOfTransmission;
         }
 
         private void BuildMatrix(VisualElement matrix)
@@ -129,10 +144,11 @@ namespace Unity.MP_FPS.Client
             for (int row = 0; row < 2; row++)
             {
                 var line = Box(matrix, "research-quest-matrix-row");
-                for (int column = 0; column < 4; column++)
+                int columns = ResearchQuestRules.Count / 2;
+                for (int column = 0; column < columns; column++)
                 {
-                    int index = row * 4 + column;
-                    var id = (ResearchQuest)index;
+                    int index = row * columns + column;
+                    var id = ResearchQuestRules.At(index);
                     var button = Button(line, "research-quest-node", () => Select(id, true));
                     button.name = "questCard" + index;
                     Label(button, "research-quest-node-number", (index + 1).ToString("00"));
@@ -159,8 +175,8 @@ namespace Unity.MP_FPS.Client
                 m_Selected = quest;
                 m_Error = m_BriefPlayed = false;
                 var entry = For(quest);
-                m_Photo.image = Resources.Load<Texture2D>(entry.Item == null
-                    ? "Moonkov/UI/" + entry.Art : "Moonkov/UI/QuestExhibits/" + entry.Item);
+                m_Photo.image = entry.Item == null ? Resources.Load<Texture2D>("Moonkov/UI/" + entry.Art) :
+                    Resources.Load<Texture2D>("Moonkov/UI/QuestExhibits/" + entry.Photo) ?? PhysicalItemVisuals.Icon(entry.Item);
                 m_Photo.scaleMode = entry.Item == null ? ScaleMode.ScaleAndCrop : ScaleMode.ScaleToFit;
                 m_Photo.EnableInClassList("research-quest-scene-image", entry.Item == null);
             }
@@ -175,7 +191,11 @@ namespace Unity.MP_FPS.Client
             m_Radio.Play(m_Selected.Value, false, Chinese);
         }
 
-        private void Close() => m_Close?.Invoke();
+        private void Close()
+        {
+            if (m_StoryEvent != null) { CloseEnding(); return; }
+            m_Close?.Invoke();
+        }
 
         private void ToggleRadio()
         {
@@ -196,8 +216,10 @@ namespace Unity.MP_FPS.Client
         {
             var saved = m_Read();
             if (m_Disposed || saved == null || !m_Selected.HasValue) return;
+            m_Radio.Update();
+            RefreshEndingAudio();
             RefreshRadio();
-            string signature = $"{saved.Accepted}/{saved.Ready}/{saved.Completed}/{saved.HaloKills}/{saved.SentryKills}/{m_Selected}/{m_Busy}/{m_Error}/{Chinese}";
+            string signature = $"{saved.Accepted}/{saved.Ready}/{saved.Completed}/{saved.HaloKills}/{saved.SentryKills}/{saved.Ending}/{m_Selected}/{m_Busy}/{m_Error}/{Chinese}";
             if (signature == m_Signature) return;
             m_Signature = signature;
             Element.EnableInClassList("research-quest-en", !Chinese);
@@ -206,7 +228,7 @@ namespace Unity.MP_FPS.Client
             int complete = 0;
             for (int i = 0; i < m_Choices.Length; i++)
             {
-                var quest = (ResearchQuest)i;
+                var quest = ResearchQuestRules.At(i);
                 var state = ResearchQuestRules.Status(saved, quest);
                 if (state == ResearchQuestStatus.Completed) complete++;
                 Set(m_ChoiceTitles[i], For(quest).NodeTitle);
@@ -219,14 +241,19 @@ namespace Unity.MP_FPS.Client
             var status = ResearchQuestRules.Status(saved, selected);
             Set(m_Back, Text("返回作业船", "Back to ship"));
             Set(m_Legacy, Text("设施调查", "Facility records"));
+            m_EndingNav.style.display = m_ChooseEnding != null && ResearchQuestRules.DecisionAvailable(saved) ? DisplayStyle.Flex : DisplayStyle.None;
+            Set(m_EndingNav, saved.Ending == ResearchEnding.None ? Text("最终抉择", "Final decision") : Text("结局", "Epilogue"));
             Set(m_Heading, Text("任务管理", "Quest Management"));
             Set(m_Count, $"{complete:00} / {ResearchQuestRules.Count:00}");
             Set(m_Title, entry.Title);
             Set(m_Status, State(status));
-            var prior = ResearchQuestRules.Prerequisite(selected);
+            var prior = ResearchQuestRules.MissingPrerequisite(saved, selected);
             Set(m_Brief, status == ResearchQuestStatus.Locked && prior.HasValue
-                ? entry.Brief + "\n\n" + Text("完成前置任务  ", "Requires  ") + For(prior.Value).Title : entry.Brief);
+                ? Text("完成前置任务：", "Requires: ") + For(prior.Value).Title : entry.Brief);
             Set(m_VoiceHeading, Text("任务通讯", "Quest Comms"));
+            m_Nadir.style.display = selected == ResearchQuest.NoWayBack &&
+                status is ResearchQuestStatus.Ready or ResearchQuestStatus.Completed ? DisplayStyle.Flex : DisplayStyle.None;
+            Set(m_Nadir, Text("奈迪尔录音", "Nadir's recording"));
             Set(m_GoalHeading, Text("任务目标", "Quest Requirements"));
             Set(m_RewardHeading, Text("交付收益", "Rewards"));
             string progress = status == ResearchQuestStatus.Active ? selected switch
@@ -235,19 +262,21 @@ namespace Unity.MP_FPS.Client
                 ResearchQuest.Sentry => $"  {saved.SentryKills} / {ResearchQuestRules.SentryKillGoal}",
                 _ => ""
             } : "";
-            Set(m_Goal, entry.Goal + progress);
+            Set(m_Goal, status == ResearchQuestStatus.Locked ? "—" : entry.Goal + progress);
             Set(m_Unlocks, Rewards(selected));
             Set(m_ExhibitId, ExhibitId(selected));
-            Set(m_ExhibitIndex, $"RQ-{(int)selected + 1:00}");
+            Set(m_ExhibitIndex, $"RQ-{ResearchQuestRules.Number(selected):00}");
             var item = InventoryCatalog.Get(entry.Item);
             m_ExhibitMass.style.display = item == null ? DisplayStyle.None : DisplayStyle.Flex;
             if (item != null) Set(m_ExhibitMass, Text("重量  ", "MASS  ") + $"{item.Weight:0.00} kg");
             m_Play.SetEnabled(status != ResearchQuestStatus.Locked);
-            m_Action.SetEnabled(!m_Busy && status != ResearchQuestStatus.Locked && status != ResearchQuestStatus.Completed);
+            bool decision = selected == ResearchQuest.EndOfTransmission && status == ResearchQuestStatus.Completed && m_ChooseEnding != null;
+            m_Action.SetEnabled(!m_Busy && status != ResearchQuestStatus.Locked && (status != ResearchQuestStatus.Completed || decision));
             Set(m_Action, m_Busy ? Text("正在保存", "Saving") : status switch
             {
                 ResearchQuestStatus.Active => Text("准备出战", "Prepare raid"),
                 ResearchQuestStatus.Ready => Text("交付任务", "Turn in quest"),
+                ResearchQuestStatus.Completed when decision => saved.Ending == ResearchEnding.None ? Text("最终抉择", "Final decision") : Text("查看结局", "View epilogue"),
                 ResearchQuestStatus.Completed or ResearchQuestStatus.Locked => State(status),
                 _ => Text("接取任务", "Accept Quest")
             });
@@ -257,6 +286,7 @@ namespace Unity.MP_FPS.Client
 
         private static string Rewards(ResearchQuest quest)
         {
+            if (quest == ResearchQuest.EndOfTransmission) return Text("最终抉择", "Final decision");
             string unlocked = null;
             for (int i = 0; i < ResearchQuestRules.Count; i++)
                 if (ResearchQuestRules.Prerequisite((ResearchQuest)i) == quest)
@@ -269,6 +299,8 @@ namespace Unity.MP_FPS.Client
             ResearchQuest.Tablet => Text("证物  IT-07", "EXHIBIT  IT-07"),
             ResearchQuest.FlashDrive => Text("证物  FK-12", "EXHIBIT  FK-12"),
             ResearchQuest.HardDrive => Text("证物  RD-04", "EXHIBIT  RD-04"),
+            ResearchQuest.NoWayBack => Text("证物  门禁凭证", "EXHIBIT  ACCESS KEY"),
+            ResearchQuest.EndOfTransmission => Text("证物  原始档案", "EXHIBIT  ORIGINAL ARCHIVE"),
             _ => "THEOPHILUS"
         };
 
@@ -285,6 +317,7 @@ namespace Unity.MP_FPS.Client
             if (m_Disposed || m_Busy || !m_Selected.HasValue) return;
             var quest = m_Selected.Value;
             var status = ResearchQuestRules.Status(m_Read(), quest);
+            if (quest == ResearchQuest.EndOfTransmission && status == ResearchQuestStatus.Completed) { OpenEnding(); return; }
             if (status == ResearchQuestStatus.Active) { m_Prepare?.Invoke(); return; }
             if (status != ResearchQuestStatus.Available && status != ResearchQuestStatus.Ready) return;
             bool claim = status == ResearchQuestStatus.Ready;
@@ -295,7 +328,8 @@ namespace Unity.MP_FPS.Client
                 if (!m_Disposed && m_Selected == quest)
                 {
                     m_Error = !changed;
-                    if (changed && claim) m_Radio.Play(quest, true, Chinese);
+                    if (changed && claim && quest == ResearchQuest.EndOfTransmission && m_ChooseEnding != null) OpenEnding();
+                    else if (changed && claim) m_Radio.Play(quest, true, Chinese);
                     else if (changed) PlayBriefing();
                 }
             }

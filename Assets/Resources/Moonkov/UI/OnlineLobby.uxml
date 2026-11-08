@@ -10,6 +10,7 @@
             <ui:VisualElement class="online-header squad-glass">
                 <ui:Button name="onlineBack" text="仓库" class="online-back online-secondary" />
                 <ui:Label text="在线小队" class="online-title" />
+                <ui:Button name="onlineBrowseRooms" text="房间列表" class="online-secondary online-browse-rooms" style="display: none;" />
             </ui:VisualElement>
             <ui:Foldout text="外观" class="online-personal online-foldout squad-glass" value="false">
                 <ui:DropdownField name="onlineCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
@@ -25,6 +26,10 @@
                 <ui:Label name="onlineCount" class="online-count" />
                 <ui:RadioButtonGroup name="onlineTeam" label="队伍" choices="A 队,B 队" value="0" />
                 <ui:ScrollView class="online-room-details" horizontal-scroller-visibility="Hidden">
+                    <ui:VisualElement name="onlineJoinRequests" class="online-join-requests" style="display: none;">
+                        <ui:Label name="onlineJoinRequestCount" class="online-request-title" />
+                        <ui:VisualElement name="onlineJoinRequestRows" />
+                    </ui:VisualElement>
                     <ui:Foldout text="房间设置" class="online-foldout" value="false">
                         <ui:VisualElement name="onlineSettings" class="online-settings">
                             <ui:RadioButtonGroup name="onlineMode" label="玩法" choices="合作,好友对抗" value="0" />
@@ -35,9 +40,21 @@
                     <ui:Foldout name="onlineManage" text="管理成员" class="online-foldout" value="false" />
                 </ui:ScrollView>
             </ui:VisualElement>
+            <ui:VisualElement name="onlineDirectory" class="online-directory squad-glass">
+                <ui:VisualElement class="online-directory-header">
+                    <ui:Label text="公网房间" class="online-directory-title" />
+                    <ui:Label name="onlineRoomCount" class="online-directory-count" />
+                </ui:VisualElement>
+                <ui:Label name="onlineDirectoryStatus" class="online-directory-status" />
+                <ui:VisualElement name="onlineApplication" class="online-application" style="display: none;">
+                    <ui:Label name="onlineApplicationStatus" class="online-directory-status" enable-rich-text="false" />
+                    <ui:Button name="onlineWithdrawJoin" text="撤回" class="online-member-action" />
+                </ui:VisualElement>
+                <ui:ListView name="onlineRoomList" class="online-directory-list" fixed-item-height="66" selection-type="None" />
+            </ui:VisualElement>
             <ui:VisualElement name="onlineEntry" class="online-entry squad-glass">
                 <ui:TextField name="onlineInvite" label="队伍码" max-length="8" />
-                <ui:Button name="onlineJoin" text="加入小队" class="online-secondary" />
+                <ui:Button name="onlineJoin" text="凭码加入" class="online-secondary" />
                 <ui:Button name="onlineCreate" text="创建小队" class="online-primary" />
             </ui:VisualElement>
             <ui:VisualElement name="onlineActions" class="online-actions squad-glass">

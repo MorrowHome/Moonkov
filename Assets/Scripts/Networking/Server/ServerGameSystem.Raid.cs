@@ -84,7 +84,8 @@ namespace Unity.MP_FPS
                     {
                         var player = joined.ValueRO.PlayerEntity;
                         ResearchQuestRuntime.Tick(state.World, connection, player, session.ValueRO, GetRaidInventory(ref state, connection),
-                            profile.ResearchQuests, SystemAPI.GetComponent<PredictedPlayerGhost>(player), position, SystemAPI.Time.ElapsedTime, dt);
+                            profile.ResearchQuests, SystemAPI.GetComponent<PredictedPlayerGhost>(player), position, SystemAPI.Time.ElapsedTime, dt,
+                            SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick);
                     }
                     map.AdvanceExtraction(ref session.ValueRW, (Vector3)position, dt);
                     // Expiry takes precedence over extraction; death is handled before this method.

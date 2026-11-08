@@ -18,6 +18,7 @@ namespace Unity.MP_FPS
     public sealed class RaidMissionSite : MonoBehaviour
     {
         [SerializeField] private RaidMissionAnchor[] m_Anchors = Array.Empty<RaidMissionAnchor>();
+        [SerializeField] private RaidMissionAnchor[] m_ResearchAnchors = Array.Empty<RaidMissionAnchor>();
         [SerializeField] private MissionDefinition[] m_Definitions = { MissionCatalog.Mooncore(), MissionCatalog.Archive() };
         [SerializeField, Min(0)] private int m_Seed;
         [SerializeField, Min(10)] private float m_DiscoveryRadius = 120;
@@ -72,6 +73,7 @@ namespace Unity.MP_FPS
         public float DiscoveryRadius => m_DiscoveryRadius;
         public Vector3 Center => Anchor("sampler")?.Approach ?? transform.position;
         public RaidMissionAnchor Anchor(string id) => Array.Find(m_Anchors, a => a != null && a.Id == id);
+        public RaidMissionAnchor ResearchAnchor(string id) => Array.Find(m_ResearchAnchors, a => a != null && a.Id == id);
 
         public void Present(RaidMissionSnapshotRpc snapshot, bool playerActive)
         {

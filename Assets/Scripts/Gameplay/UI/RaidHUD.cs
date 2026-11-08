@@ -77,7 +77,7 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         private int m_MenuEscapeFrame = -1;
-        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
+        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible || s_Active.m_FieldRecordOpen);
         public static bool InventoryDefenseAllowed => s_Active != null && s_Active.m_InventoryVisible && s_Active.QuickAlive &&
             !s_Active.m_MissionDetailsVisible && !s_Active.m_CampaignJournalVisible && !s_Active.m_ClashLobbyPointer &&
             !ChatInputBlocked && !s_Active.CinematicInputBlocked && !MapInputBlocked &&
@@ -99,6 +99,7 @@ namespace Unity.MP_FPS
         private static bool CloseActiveMenu()
         {
             if (s_Active != null && s_Active.CloseChatForEscape()) return true;
+            if (s_Active != null && s_Active.m_FieldRecordOpen) { s_Active.SetFieldRecordOpen(false); return true; }
             if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
             { s_Active.CloseRaidMapFromUI(); return true; }
             if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
@@ -195,6 +196,7 @@ namespace Unity.MP_FPS
             InitializeMissions();
             InitializeCampaignHUD();
             InitializeResearchQuests();
+            InitializeFieldRecords();
             InitializeQuickSlots();
             InitializeMelee();
             InitializeBountyClash();
@@ -382,6 +384,7 @@ namespace Unity.MP_FPS
         }
         private void SetInventory(bool visible)
         {
+            if (visible && m_FieldRecordOpen) return;
             if (visible) SetRaidMapOpen(false);
             if (visible && m_CampaignJournalVisible) SetCampaignJournal(false);
             if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
@@ -459,6 +462,7 @@ namespace Unity.MP_FPS
                 if (!world.IsCreated || !world.IsClient() || world.IsThinClient()) continue;
                 m_World = world;
                 m_StateQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<RaidClientState>());
+                m_FieldRecordClock = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ExpeditionClockState>());
                 m_PlayerQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PredictedPlayerGhost>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>(), ComponentType.ReadOnly<LocalTransform>());
                 m_ConnectionQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>(), ComponentType.ReadOnly<NetworkStreamInGame>());
@@ -471,9 +475,9 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
@@ -535,6 +539,8 @@ namespace Unity.MP_FPS
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked && !CinematicInputBlocked;
+            PresentFieldRecords(ready && !settled && !clash && !m_TutorialConfigured);
+            if (!alive) SetFieldRecordOpen(false);
             bool haloBusy = alive && HaloTransferRules.Occupied(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
             bool haloBlocksLoot = haloBusy && !HaloSupportRules.Anchored(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
             PresentMelee(alive && ready && !settled);
@@ -543,7 +549,7 @@ namespace Unity.MP_FPS
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
             bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
-                !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible &&
+                !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
@@ -557,8 +563,9 @@ namespace Unity.MP_FPS
             UpdateCampaignHUD(alive && ready && !settled && !clash);
             UpdateTaskPanel(alive && ready && !settled);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
-            bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy, missionControl, m_WorldControlFocused);
-            if (liveInteraction && !missionControl && !haloBlocksLoot)
+            bool readingTarget = ReadFieldRecord(liveInteraction && !missionControl);
+            bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy, missionControl || readingTarget, m_WorldControlFocused);
+            if (liveInteraction && !missionControl && !readingTarget && !haloBlocksLoot)
             {
                 bool controlPressed = !haloBusy && !tacticalInteraction && !clash && m_WorldControlFocused &&
                     m_InteractionBindings.Operate.WasPressedThisFrame() && m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
@@ -566,7 +573,8 @@ namespace Unity.MP_FPS
                     OpenLootContainer(nearest);
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
-            bool interactionVisible = liveInteraction;
+            bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
+            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, position, deathBags);
             if (!interactionVisible)
             {
                 m_Interaction.EnableInClassList("is-visible", false);
@@ -580,7 +588,7 @@ namespace Unity.MP_FPS
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !missionControl && !m_WorldControlFocused,alien,IsDroppedLoot(nearest));
-            RefreshHaloTransferInteraction(interactionVisible && !missionControl && !m_WorldControlFocused && nearest < 0 && Time.unscaledTime >= m_LootErrorUntil);
+            RefreshHaloTransferInteraction(interactionVisible && !missionControl && !readingTarget && !m_WorldControlFocused && nearest < 0 && Time.unscaledTime >= m_LootErrorUntil);
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             bool showReturn = !m_InventoryVisible && !MapInputBlocked && !m_MissionDetailsVisible &&
                 !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;
@@ -660,14 +668,22 @@ namespace Unity.MP_FPS
         private void RefreshInteraction(int nearest, float distance, bool deathBag, bool empty, bool allowed,bool alien=false,bool dropped=false)
         {
             m_Interaction.EnableInClassList("is-halo-transfer", false);
-            bool error = Time.unscaledTime < m_LootErrorUntil;
-            bool visible = allowed && (nearest >= 0 || error);
+            bool record = m_FieldRecordFocus.HasValue;
+            bool error = !record && Time.unscaledTime < m_LootErrorUntil;
+            bool visible = allowed && (nearest >= 0 || record || error);
             m_Interaction.EnableInClassList("is-visible", visible);
             if (!visible) return;
             m_Interaction.EnableInClassList("is-error", error);
             m_Interaction.EnableInClassList("is-empty", !error && empty);
             MoonkovLocalization.Set(m_InteractionKey, error ? "!" : m_InteractionBindings.Label(m_InteractionBindings.Loot));
             m_InteractionDetails.style.display = error ? DisplayStyle.None : DisplayStyle.Flex;
+            if (record)
+            {
+                MoonkovLocalization.Set(m_Prompt, Client.ResearchQuestCopy.Text("读取日志", "Read field log"));
+                MoonkovLocalization.Set(m_InteractionState, m_FieldRecordFocus.Value.Title);
+                MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
+                return;
+            }
             if (error)
             {
                 MoonkovLocalization.Set(m_Prompt, m_DissectionInterrupted ? "搜索中断。请留在容器旁，保持静止并避免受伤。" :
@@ -1018,6 +1034,9 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ReleaseResearchHold();
+            m_ResearchRadio.Dispose();
+            ClearFieldRecords();
+            m_InteractionOutline.Dispose();
             ClearInventoryBackdrop();
             m_Root?.UnregisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
@@ -1044,7 +1063,7 @@ namespace Unity.MP_FPS
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             if (m_World != null && m_World.IsCreated)
             {
-                m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose(); m_InventoryQuery.Dispose();
+                m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose(); m_InventoryQuery.Dispose(); m_FieldRecordClock.Dispose();
             }
             m_World = null;
             if (s_Active == this) s_Active = null;

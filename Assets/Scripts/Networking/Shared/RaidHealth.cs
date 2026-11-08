@@ -279,7 +279,11 @@ namespace Unity.MP_FPS
             return constants;
         }
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
-        public static bool HandsBusy(in PredictedPlayerGhost state) => GrenadeHandling.Occupied(state) || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
+        public static bool HandsBusy(in PredictedPlayerGhost state, bool allowAnchoredHalo = false) =>
+            GrenadeHandling.Occupied(state) || state.HaloDefenseHeld ||
+            (HaloTransferRules.Occupied(state) && !(allowAnchoredHalo && HaloSupportRules.Anchored(state) &&
+                state.HaloTransferPhase == HaloTransferPhase.Sending)) ||
+            state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
         public static bool SearchHandsBusy(in PredictedPlayerGhost state) => GrenadeHandling.Occupied(state) ||
             state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0 ||
             HaloTransferRules.Occupied(state) && !HaloSupportRules.Anchored(state);

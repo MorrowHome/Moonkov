@@ -20,7 +20,7 @@ namespace Unity.MP_FPS.Client
                     m_FacilityRecords = true;
                     CloseResearchTasks();
                     Render();
-                }, () => Navigate(0));
+                }, () => Navigate(0), PlayerProfileClient.ChooseResearchEndingAsync);
             return true;
         }
 

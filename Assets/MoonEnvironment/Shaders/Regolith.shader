@@ -13,6 +13,7 @@ Shader "MoonEnvironment/Regolith"
         [Toggle(_MOON_LUNAR_LIGHTING)] _LunarLighting("Lunar diffuse lighting", Float) = 1
         _LunarWeight("Lommel-Seeliger weight", Range(0,1)) = 0.55
         _IndirectStrength("Indirect light contribution", Range(0,1)) = 0
+        [HideInInspector] [Toggle(_MOON_MESH_LIGHTMAP)] _MeshLightmap("Use mesh UV2 lightmap", Float) = 0
         _ReflectanceScale("Reflectance calibration (exposure independent)", Range(0.1,1.5)) = 0.8
         _PhotographicSurface("Filtered powder microrelief", Range(0,1)) = 0
         _LocalBounceStrength("Local terrain bounce", Range(0,2)) = 1
@@ -164,7 +165,12 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     // URP's clustered LIGHT_LOOP macros require this exact variable name.
     InputData inputData = (InputData)0;
     inputData.positionWS=input.positionWS; inputData.normalWS=normal; inputData.viewDirectionWS=view;
-    inputData.shadowCoord=MoonFragmentShadowCoord(input); inputData.bakedGI=SampleSH(normal) * _IndirectStrength;
+    inputData.shadowCoord=MoonFragmentShadowCoord(input);
+#if defined(_MOON_MESH_LIGHTMAP) && defined(LIGHTMAP_ON)
+    inputData.bakedGI=SampleLightmap(input.staticLightmapUV,normal);
+#else
+    inputData.bakedGI=SampleSH(normal) * _IndirectStrength;
+#endif
     inputData.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(input.positionCS);
     inputData.shadowMask=half4(1,1,1,1);
 #if !defined(_MOON_LUNAR_LIGHTING)
@@ -176,7 +182,15 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     return lit;
 #else
     Light mainLight=MoonMainLight(input);
-    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo *
+    half3 sunNormal = normal;
+#if defined(_MOON_MESH_LIGHTMAP)
+    // Keep fine normal-map relief from breaking up the geometric terminator on crater walls.
+    half3 groundNormal = normalize(input.normalWS);
+    half incidence = dot(groundNormal, mainLight.direction);
+    half relief = lerp(.22h, 1.0h, smoothstep(.06h, .32h, incidence));
+    sunNormal = normalize(lerp(groundNormal, normal, relief));
+#endif
+    half3 color=MoonLight(surface,sunNormal,view,mainLight) + surface.Albedo *
         (inputData.bakedGI + MoonLocalBounce(input.positionWS,normal,mainLight));
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();
@@ -218,6 +232,8 @@ half4 MoonDepthNormals(MoonVaryings input) : SV_Target
             #pragma fragment MoonFragment
             #pragma multi_compile_instancing
             #pragma shader_feature_local _MOON_LUNAR_LIGHTING
+            #pragma shader_feature_local _MOON_MESH_LIGHTMAP
+            #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
             #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
