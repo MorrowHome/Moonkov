@@ -157,7 +157,7 @@ namespace Unity.MP_FPS
             var scale = transform.lossyScale;
             root.transform.localScale = new Vector3(1/scale.x, 1/scale.y, 1/scale.z);
             if (!PhysicalItemVisuals.Create(code, root.transform, true))
-            { DestroyObject(root); return null; }
+            { ReleaseObject(root); return null; }
             foreach (var collider in root.GetComponentsInChildren<Collider>(true)) collider.enabled = false;
             foreach (var body in root.GetComponentsInChildren<Rigidbody>(true)) body.isKinematic = true;
             root.SetActive(false); props.Add(code, root); return root;
@@ -175,8 +175,8 @@ namespace Unity.MP_FPS
             GameManager.Instance?.SoundSystem?.Stop(pinSound, .03f); pinSound = null;
         }
         private void OnDisable() => ResetPresentation();
-        private void OnDestroy() { ResetPresentation(); foreach (var value in props.Values) if (value) DestroyObject(value); props.Clear(); }
-        private static void DestroyObject(UnityEngine.Object value) { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
+        private void OnDestroy() { ResetPresentation(); foreach (var value in props.Values) if (value) ReleaseObject(value); props.Clear(); }
+        private static void ReleaseObject(UnityEngine.Object value) { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] private static void ResetCache() => Libraries.Clear();
     }
 }

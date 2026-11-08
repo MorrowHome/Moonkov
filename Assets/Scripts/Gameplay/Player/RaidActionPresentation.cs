@@ -166,7 +166,7 @@ namespace Unity.MP_FPS
             root.transform.localScale = new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z);
             var variant = Resources.Load<GameObject>("Moonkov/Actions/Props/" + item);
             var world = variant ? Instantiate(variant, root.transform, false) : PhysicalItemVisuals.Create(item, root.transform, true);
-            if (!world) { DestroyObject(root); return null; }
+            if (!world) { ReleaseObject(root); return null; }
             var worldRenderers = world.GetComponentsInChildren<Renderer>(true);
             var bounds = worldRenderers[0].bounds;
             foreach (var renderer in worldRenderers) bounds.Encapsulate(renderer.bounds);
@@ -235,8 +235,8 @@ namespace Unity.MP_FPS
         }
         public void DisposePresentation() => ResetPresentation();
         private void OnDisable() => DisposePresentation();
-        private void OnDestroy() { DisposePresentation(); foreach (var value in props.Values) if (value.Root) DestroyObject(value.Root); props.Clear(); }
-        private static void DestroyObject(UnityEngine.Object value)
+        private void OnDestroy() { DisposePresentation(); foreach (var value in props.Values) if (value.Root) ReleaseObject(value.Root); props.Clear(); }
+        private static void ReleaseObject(UnityEngine.Object value)
         { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
     }
 }
