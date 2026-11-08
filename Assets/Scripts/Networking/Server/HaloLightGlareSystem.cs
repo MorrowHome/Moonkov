@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
@@ -21,6 +22,7 @@ namespace Unity.MP_FPS
             public PhysicsScene Physics;
         }
         private readonly List<Actor> m_Actors = new();
+        private readonly Dictionary<Entity, float> m_Filters = new();
         private EntityQuery m_Smoke;
         private double m_NextSample;
         protected override void OnCreate()
@@ -34,6 +36,9 @@ namespace Unity.MP_FPS
             if (SystemAPI.Time.ElapsedTime < m_NextSample) return;
             m_NextSample = SystemAPI.Time.ElapsedTime + HaloLightGlareRules.SampleInterval;
             m_Actors.Clear();
+            m_Filters.Clear();
+            foreach(var (joined, connection) in SystemAPI.Query<RefRO<JoinedClient>>().WithAll<RaidInventoryState>().WithEntityAccess())
+                m_Filters[joined.ValueRO.PlayerEntity]=SpecialEquipmentRules.GlareMultiplier(EntityManager.GetComponentObject<RaidInventoryState>(connection).Graph);
             foreach (var (health, pose, entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<LocalTransform>>()
                          .WithAll<GhostGameObjectLink>().WithEntityAccess())
             {
@@ -72,7 +77,16 @@ namespace Unity.MP_FPS
                         strongest = strength; sourcePoint = source.Eye;
                     }
                 var state = EntityManager.GetComponentData<PredictedPlayerGhost>(target.Entity);
-                state.HaloLightGlare = strongest;
+                if(state.CurrentHealth>0 && (!state.ClashEnabled || state.ClashLife==ClashLife.Alive) && smoke!=null &&
+                    smoke.Statuses.TryGetValue(target.Entity,out var exposure) && exposure.FlashUntil>SystemAPI.Time.ElapsedTime)
+                {
+                    float flash=exposure.FlashStrength*Mathf.Clamp01((float)(exposure.FlashUntil-SystemAPI.Time.ElapsedTime)/4);
+                    if(flash>strongest){strongest=flash;sourcePoint=target.Eye+target.Forward*2;}
+                }
+                float filter=m_Filters.TryGetValue(target.Entity,out var equipped) ? equipped :
+                    EntityManager.HasComponent<DollSingerEnemyBrain>(target.Entity) ?
+                    SpecialEquipmentRules.GlareMultiplier(EntityManager.GetComponentObject<DollSingerEnemyBrain>(target.Entity).Inventory) : 1;
+                state.HaloLightGlare = strongest*filter;
                 state.HaloGlareSource = sourcePoint;
                 EntityManager.SetComponentData(target.Entity, state);
             }

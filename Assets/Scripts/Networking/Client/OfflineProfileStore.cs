@@ -27,6 +27,7 @@ namespace Unity.MP_FPS
             public OfflineClashState Clash;
             public CampaignProgress Campaign;
             public TutorialProgress Tutorial;
+            public ResearchQuestProgress ResearchQuests = new ResearchQuestProgress();
             public int ActiveCampaignVersion;
         }
 
@@ -146,6 +147,8 @@ namespace Unity.MP_FPS
             ValidateClash(save);
             ValidateCampaign(save);
             ValidateTutorial(save);
+            if (!ResearchQuestRules.Valid(save.ResearchQuests))
+                throw new InvalidDataException("Invalid research quest progress.");
         }
 
         private SaveData Copy() => JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(m_Save));
@@ -177,7 +180,8 @@ namespace Unity.MP_FPS
                     PlayerId = m_Save.PlayerId, DisplayName = "Single-player Operator",
                     Dust = m_Save.Inventory.Count("dust"), Alloy = m_Save.Inventory.Count("alloy"),
                     Cells = m_Save.Inventory.Count("cells"), InventoryJson = RaidInventoryTransport.Encode(m_Save.Inventory), MissionSchemaVersion = 1,
-                    CampaignSchemaVersion = 1, CampaignJson = JsonConvert.SerializeObject(m_Save.Campaign)
+                    CampaignSchemaVersion = 1, CampaignJson = JsonConvert.SerializeObject(m_Save.Campaign),
+                    ResearchQuests = m_Save.ResearchQuests.Copy()
                 };
             }
         }
@@ -253,6 +257,8 @@ namespace Unity.MP_FPS
                     if(m_Save.Recovery.ItemCount()>0)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"recovery_pending");
                     var next = Copy(); SupersedeClashRegistration(next); PrepareCells(next.Inventory, payload.Cells);
                     var raid = next.Inventory.ExtractLoadout();
+                    if (ResearchQuestRules.Issue(raid, next.ResearchQuests.Active) != InventoryError.None)
+                        throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected, "No space for mission-issued equipment.");
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);
                     next.DeploymentId = payload.DeploymentId; next.CarriedCells = payload.Cells;
@@ -327,12 +333,18 @@ namespace Unity.MP_FPS
                         throw new InvalidDataException("Invalid single-player extraction inventory.");
                     foreach (var artifact in raid.Items.Where(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
                         if (!next.MissionArtifacts.Add(artifact.Id)) throw new InvalidDataException("Mission artifact was already extracted.");
+                    ApplyResearchSettlement(next, payload, raid, true);
+                    ResearchQuestRules.RemoveSupplies(raid);
                     var error=RecoveryInventory.Settle(next.Inventory,next.Recovery,raid,out var stored,out var pending);
                     if(error!=InventoryError.None)throw new InvalidDataException("Unable to return single-player equipment: "+error);
                     next.Inventory=stored;next.Recovery=pending;
                     ApplyCampaignExtraction(next, payload, raid);
                 }
-                else ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
+                else
+                {
+                    ApplyResearchSettlement(next, payload, null, false);
+                    ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
+                }
                 next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0; next.ActiveCampaignVersion = 0;
                 FinishTutorialAttempt(next, payload.Outcome == "Extracted");
                 next.Receipts.Add(payload.SettlementId, receipt); Commit(next); return Read();
@@ -366,6 +378,7 @@ namespace Unity.MP_FPS
         private static void ReturnProtected(SaveData save, InventoryGraph raid)
         {
             var retained = SecureInventory.FailureReturn(raid);
+            ResearchQuestRules.RemoveSupplies(retained);
             if (retained.Items.Count == 2) return;
             var error = RecoveryInventory.Settle(save.Inventory, save.Recovery, retained, out var stored, out var pending, missionRewards: false);
             if (error != InventoryError.None) throw new InvalidDataException("Unable to return protected equipment: " + error);

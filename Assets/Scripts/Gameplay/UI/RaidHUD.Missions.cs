@@ -178,6 +178,12 @@ namespace Unity.MP_FPS
                 return false;
             }
             var local = m_PlayerQuery.GetSingleton<LocalTransform>();
+            if (m_ResearchInputPriority)
+            {
+                CancelMissionHold();
+                m_MissionInteraction.style.display = DisplayStyle.None;
+                return false;
+            }
             var view = Camera.main;
             bool pressed = m_InteractionBindings.Operate.WasPressedThisFrame();
             bool held = m_InteractionBindings.Operate.IsPressed();

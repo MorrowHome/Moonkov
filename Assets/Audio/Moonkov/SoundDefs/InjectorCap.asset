@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundDef
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
-  Role: 2
-  Priority: 160
-  MaxVoices: 3
-  MinimumInterval: 0.08
+  Role: 6
+  Priority: 100
+  MaxVoices: 6
+  MinimumInterval: 0
   Occlusion: 1
-  MixerGroup: 2
+  MixerGroup: 1
   BasePitchInCents: 0
   VolumeScale: 1
   BaseLowPassCutoff: 0
-  PlaybackType: 1
+  PlaybackType: 2
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: c7715a54b28eb459fb35be87dfa53df8, type: 3}
+  - {fileID: 8300000, guid: 2bf4e0c1dc14547568e5cb23c184156f, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -38,19 +38,19 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -25
-    VolumeMax: -24
-    PitchMin: -25
-    PitchMax: 25
+    VolumeMin: -17
+    VolumeMax: -16
+    PitchMin: 0
+    PitchMax: 0
   DistanceInfo:
-    VolumeDistMin: 0.6
-    VolumeDistMax: 8
+    VolumeDistMin: 1
+    VolumeDistMax: 10
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
     LPFRollOffCurveType: 0
     LPF_MinCutoff: 1800
-    LPF_MaxDistance: 8
+    LPF_MaxDistance: 10
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0

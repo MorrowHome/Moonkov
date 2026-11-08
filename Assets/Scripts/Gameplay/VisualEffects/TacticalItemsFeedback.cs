@@ -232,7 +232,7 @@ namespace Unity.MP_FPS
         private void Build(Visual visual,in TacticalWorldStateRpc state)
         {
             var root=visual.Root.transform;var phase=state.Phase;
-            var accent=state.Kind==TacticalItemKind.Fire ? m_Amber : state.Kind==TacticalItemKind.PoisonTrap ? m_Green :
+            var accent=state.Kind==TacticalItemKind.Fire ? m_Amber : state.Kind==TacticalItemKind.PoisonTrap || state.Kind==TacticalItemKind.PoisonBomb ? m_Green :
                 state.Kind==TacticalItemKind.Choke || state.Kind==TacticalItemKind.AmmoBox ? m_Cyan : m_Red;
             if(phase==TacticalWorldPhase.Flying)
             {
@@ -247,6 +247,11 @@ namespace Unity.MP_FPS
                 BuildSupply(root);return;
             }
             visual.Core=new GameObject("Active effect").transform;visual.Core.SetParent(root,false);var core=visual.Core;
+            if(phase==TacticalWorldPhase.Explosion && state.Kind==TacticalItemKind.Flash)
+            {
+                Ring(core,.8f,.035f,m_Cyan);
+                Primitive(core,PrimitiveType.Sphere,Vector3.one*.18f,Vector3.zero,m_Cyan);return;
+            }
             if(phase==TacticalWorldPhase.Smoke)
             {
                 core.localPosition=SmokeVisibility.Center(Vector3.zero);
@@ -352,7 +357,7 @@ namespace Unity.MP_FPS
                 if(definition.Kind==kind && PhysicalItemVisuals.Create(definition.Code,root,true))return;
             if(kind==TacticalItemKind.AmmoBox){BuildSupply(root);return;}
             if(kind>=TacticalItemKind.AlertTrap && kind<=TacticalItemKind.PoisonTrap){BuildTrap(root,accent,false);return;}
-            if(kind<=TacticalItemKind.Antidote)
+            if(TacticalItemRules.IsInjection(kind))
             {
                 Primitive(root,PrimitiveType.Cylinder,new Vector3(.03f,.065f,.03f),Vector3.zero,m_White);
                 Primitive(root,PrimitiveType.Cylinder,new Vector3(.032f,.018f,.032f),Vector3.up*.025f,accent);

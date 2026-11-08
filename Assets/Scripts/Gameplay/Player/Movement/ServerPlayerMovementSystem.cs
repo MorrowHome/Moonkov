@@ -430,6 +430,8 @@ namespace Unity.MP_FPS
                                     predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick, sentryShot, shotOriginPosition);
                             }
 
+                            var shotSource = ResearchQuestRuntime.TagShot(World, entity,
+                                DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID), sentryShot, BountyClashDamage.Capture(World, entity));
                             switch (weaponData.Type)
                             {
                                 case WeaponType.Hitscan:
@@ -448,7 +450,7 @@ namespace Unity.MP_FPS
                                                 var targetNetworkId = ghostOwnerLookup[hitGhostObject.LinkedEntity]
                                                     .NetworkId;
 
-                                                if (BountyClashDamage.IsSelf(World, hitGhostObject.LinkedEntity, BountyClashDamage.Capture(World, entity)))
+                                                if (BountyClashDamage.IsSelf(World, hitGhostObject.LinkedEntity, shotSource))
                                                 {
                                                     //skip hitting self
                                                     continue;
@@ -456,7 +458,7 @@ namespace Unity.MP_FPS
 
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
-                                                BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,BountyClashDamage.Capture(World,entity),
+                                                BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,shotSource,
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),
                                                     Ballistics.DamageAtDistance(weaponData, hit.distance),serverTick,RaidDamageKind.Bullet,(float3)hit.point);
                                                 if (RaidHealth.ImpactFlags(healthBeforeDamage, targetPredictedPlayer.ValueRO) != 0 &&
@@ -510,7 +512,7 @@ namespace Unity.MP_FPS
                                                 Position = shotOriginPosition,
                                                 Rotation = spawnRotation,
                                                 OwnerNetworkId = ghostOwnerLookup[entity].NetworkId,
-                                                DamageSource = BountyClashDamage.Capture(World,entity),
+                                                DamageSource = shotSource,
                                                 SpawnTick = commandInput.Tick.TickIndexForValidTick,
                                                 WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
                                                 FireTick = serverTick,

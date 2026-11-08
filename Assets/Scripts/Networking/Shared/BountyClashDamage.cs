@@ -14,6 +14,8 @@ namespace Unity.MP_FPS
         // Server-world identity captured at release; unlike NetworkId it is not
         // reassigned to a different entity after a disconnect.
         public Entity OnlineActor;
+        public Entity ResearchShooter;
+        public bool ResearchSentry;
     }
     public static class BountyClashDamage
     {
@@ -96,6 +98,9 @@ namespace Unity.MP_FPS
                 health.PendingBulletWoundSource=source;
             }
             manager.SetComponentData(victim,health);
+            if (source.ResearchShooter != Entity.Null && healthBefore > 0 && health.CurrentHealth <= 0 &&
+                (kind == RaidDamageKind.Bullet || kind == RaidDamageKind.Explosion))
+                ResearchQuestRuntime.RecordKill(world, victim, source);
             if(!health.ClashEnabled&&healthBefore>0&&health.CurrentHealth<=0&&manager.HasComponent<GhostOwner>(victim))
             {
                 int target=manager.GetComponentData<GhostOwner>(victim).NetworkId;

@@ -135,7 +135,8 @@ namespace Unity.MP_FPS
                 if(authored)PresentParts(prop.Model,motion,phase);
             }
             var soundPosition = prop?.Model && prop.Model.Grip ? prop.Model.Grip.position : animation.RightHand.position;
-            foley.Observe(action, sequence, phase, animation.Contact(action, code), code, soundPosition, owner, active || finishing,animation.GetMotion(action,code)?.openMarker??.08f);
+            foley.Observe(action, sequence, phase, animation.Contact(action, code), code, soundPosition, owner,
+                active || finishing, animation.GetMotion(action,code)?.openMarker??.08f, UseEnd, transform);
             // The real prop and body always share world depth. Walls occlude
             // them without a second copy, camera or per-action physics queries.
         }

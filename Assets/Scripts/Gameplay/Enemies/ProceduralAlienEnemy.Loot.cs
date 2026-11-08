@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
             Vector3 point = transform.position;
             if (!UnityEngine.Physics.Raycast(point + Vector3.up * .1f, Vector3.down, out var floor, 100,
                 LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) return;
+            ResearchQuestRuntime.AddSample(World, inventory);
             loot.DropHarvest(inventory, floor.point, Quaternion.FromToRotation(Vector3.up, floor.normal), World.Time.ElapsedTime);
         }
     }

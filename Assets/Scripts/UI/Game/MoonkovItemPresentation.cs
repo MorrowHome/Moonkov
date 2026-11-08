@@ -12,7 +12,7 @@ namespace Unity.MP_FPS.Client
         private static string CategoryClass(string code)
         {
             var tactical = TacticalItemRules.Find(code);
-            if (tactical != null && (tactical.Kind == TacticalItemKind.Vitality || tactical.Kind == TacticalItemKind.Stamina || tactical.Kind == TacticalItemKind.Antidote))
+            if (tactical?.Injectable == true)
                 return "item-category-medical";
             return InventoryCatalog.Get(code)?.Kind switch
             {
@@ -186,11 +186,30 @@ namespace Unity.MP_FPS.Client
         private static string Description(string code)
         {
             var organ=AlienBiology.Organ(code);if(organ!=null)return MoonkovLocalization.Text(organ.Description);
+            if (InventoryCatalog.IsResearchSupply(code))
+                return code switch
+                {
+                    ResearchQuestRules.Tablet => ResearchQuestCopy.Text("研究员的便携平板，存有事故前的个人日志。", "The crew's portable terminal with logs from before the incident."),
+                    ResearchQuestRules.Flash => ResearchQuestCopy.Text("配发的数据 U 盘，用于读取管理员工作站。", "Mission-issued drive for the administrator workstation."),
+                    ResearchQuestRules.Drive => ResearchQuestCopy.Text("配发的移动硬盘，用于拷贝研究服务器的数据。", "Mission-issued drive for copying data from the research server."),
+                    ResearchQuestRules.Sample => ResearchQuestCopy.Text("从一具遗骸取得的封存样本。成功撤离后交给研究部。", "A sealed sample from one specimen. Extract to deliver it to research."),
+                    _ => ResearchQuestCopy.Text("封存的研究材料。用光环收纳形态运回。", "Sealed research materials for transport in the Halo storage form.")
+                };
             string description;
             switch (code)
             {
                 case "secure_case": description = "装备在中栏保险箱槽后，箱体与内部 2×2 格物品在死亡或超时结算时保留。仅保护仍在箱内的物品；不计成功撤离或任务首次回收。禁止武器、穿戴装备、嵌套容器和任务产物。箱内补给须先移至衣兜或胸章才能使用。"; break;
                 case "survey_compass": description = "装入任意特殊装备槽后，HUD 自动显示当前视线的罗盘方位。0° 为世界北向（+Z）。死亡和超时保留；放在普通背包中不生效且会掉落。"; break;
+                case "oxygen_recycler": description = "Equip in a special slot to reduce suit oxygen consumption by 25%. Requires a life-support collar. Multiple recyclers do not stack."; break;
+                case "glare_filter": description = "Equip in a special slot to reduce aimed-light glare and flash grenade exposure by 60%. Multiple filters do not stack."; break;
+                case "survey_multitool": description = "Combines compass bearings and 500-metre laser ranging in one special slot. Measures the first solid surface; cannot see through walls."; break;
+                case "hemostatic_bandage": description = "Apply for 1.5 seconds to stop bleeding and restore up to 15 HP to one body part. Use from pockets or an equipped badge."; break;
+                case "rescue_kit": description = "Treat one body part for 5 seconds to restore up to 100 HP. Use from an equipped badge. Does not raise the recoverable health limit."; break;
+                case "hydration_gel": description = "Consume in 1.5 seconds for 10 energy and 25 hydration. Occupies 10 fullness."; break;
+                case "compressed_ration": description = "Eat for 5 seconds for 75 energy and 50 fullness. Consumes 15 hydration."; break;
+                case "emergency_oxygen": description = "Refill 20 oxygen in 1 second. Use from pockets or an equipped badge with a life-support collar. Excess oxygen is lost."; break;
+                case "flash_grenade": description = "2-second fuse. Dazzles exposed targets within 12 metres for up to 4 seconds. Looking away, cover and smoke reduce or block exposure. Can dazzle the thrower."; break;
+                case "poison_bomb": description = "3-second fuse. Creates a 3-metre poison cloud for 15 seconds. Poison deals damage and prevents healing. Antidote protects; choke clouds disperse it."; break;
                 case "team_tracker": description = "Equip in a special slot to see teammates outlined in teal, even through walls. Only the wearer sees the effect. No energy cost. Inactive in a backpack; retained on death or timeout while equipped."; break;
                 case "laser_rangefinder": description = "装入任意特殊装备槽后，HUD 自动显示视线首个实体表面的距离，上限 500m；无命中显示超出量程，不透墙。死亡和超时保留；普通背包中不生效且会掉落。"; break;
                 case "energy_shield_generator": description = "Legacy generator. Defense now uses the halo and its shared energy. Can be stored or sold."; break;
@@ -199,6 +218,7 @@ namespace Unity.MP_FPS.Client
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
                 case "cells": description = "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
+                case "regeneration_shot": description = "Inject for 3 seconds to restore 2 total HP per second for 120 seconds. Prioritizes injured surviving parts. Poison pauses healing; destroyed parts and lost health limits stay unchanged. Reuse refreshes duration without stacking."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
                 case "dynamite_bundle": description = "Select, then left click to throw after a 1-second action. Explodes after a 4-second fuse: up to 650 damage within 8 metres. Cover blocks the blast. Clears concertina wire; can kill teammates and the thrower."; break;

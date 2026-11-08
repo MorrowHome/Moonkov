@@ -151,7 +151,7 @@ namespace Unity.MP_FPS.Client
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
             if(organ>=0)return (StashArtKind)((int)StashArtKind.AlienSpider+organ);
-            switch (code) { case "team_tracker":return StashArtKind.TeamTracker; case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
+            switch (code) { case "regeneration_shot":return StashArtKind.RegenerationShot; case "oxygen_recycler":return StashArtKind.OxygenRecycler; case "glare_filter":return StashArtKind.GlareFilter; case "survey_multitool":return StashArtKind.SurveyMultitool; case "hemostatic_bandage":return StashArtKind.HemostaticBandage; case "rescue_kit":return StashArtKind.RescueKit; case "hydration_gel":return StashArtKind.HydrationGel; case "compressed_ration":return StashArtKind.CompressedRation; case "emergency_oxygen":return StashArtKind.EmergencyOxygen; case "flash_grenade":return StashArtKind.FlashGrenade; case "poison_bomb":return StashArtKind.PoisonBomb; case "team_tracker":return StashArtKind.TeamTracker; case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "alien_raw_meat":return StashArtKind.AlienMeat;
                 case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
                 case "alien_tissue":return StashArtKind.AlienTissue;
@@ -304,13 +304,26 @@ namespace Unity.MP_FPS.Client
             AddSpecialEquipment();
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
+            if (!m_Stash)
+            {
+                var package = m_Graph.Items.Find(item => item.Code == ResearchQuestRules.Package && m_Graph.Carried(item));
+                if (package != null)
+                {
+                    var halo = m_Graph.Children(InventoryCatalog.Equipment)
+                        .Where(item => InventoryCatalog.CanStoreHaloCargo(item.Code))
+                        .OrderByDescending(item => item.Id == package.Parent).FirstOrDefault();
+                    if (halo != null) AddContainer(m_ContainerPane, halo,
+                        ResearchQuestCopy.Text("光环收纳形态", "Halo storage form"), onlyRegion: InventoryCatalog.HaloCargoRegion);
+                }
+            }
             if (!m_Stash) RenderRaidLoot(loot);
             else if(loot!=null)AddContainer(m_LootPane,loot,RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
                 : m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
         }
-        private void AddContainer(VisualElement pane, InventoryItem item, string title, HashSet<string> hidden = null, bool compact = false, string corpseSlot = null)
+        private void AddContainer(VisualElement pane, InventoryItem item, string title, HashSet<string> hidden = null, bool compact = false,
+            string corpseSlot = null, InventoryRegion onlyRegion = null)
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
@@ -328,11 +341,11 @@ namespace Unity.MP_FPS.Client
             var def = InventoryCatalog.Get(item.Code);
             caption.style.display = DisplayStyle.None;
             var regionRow = group.Q("containerRegions");
-            foreach (var region in def.Regions)
+            foreach (var region in onlyRegion == null ? def.Regions : new[] { onlyRegion })
             {
                 if (region.SlotKind.HasValue) continue;
                 var wrapper = new VisualElement(); wrapper.AddToClassList("inventory-region"); regionRow.Add(wrapper);
-                Text(wrapper, region.Id.ToUpperInvariant(), "inventory-region-title");
+                if (onlyRegion == null) Text(wrapper, region.Id.ToUpperInvariant(), "inventory-region-title");
                 VisualElement gridParent = wrapper;
                 var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id)).ToArray();
                 var displayed = compact ? CompactLoot(entries, region.Width) : entries.ToDictionary(e => e.Id, e => e);
@@ -346,10 +359,12 @@ namespace Unity.MP_FPS.Client
                     var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem"); tile.name="inventoryItem"+entry.Id;
                     MoonkovItemPresentation.ApplyCategory(tile, entry.Code);
                     var icon = new StashItemArt(entry.Code); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
-                    var itemDef = InventoryCatalog.Get(entry.Code); MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant());
+                    var itemDef = InventoryCatalog.Get(entry.Code);
+                    string itemName = ResearchQuestCopy.ItemName(entry.Code) ?? MoonkovLocalization.Text(itemDef.Name);
+                    MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), itemName.Split(' ')[0].ToUpperInvariant());
                     MoonkovLocalization.Set(tile.Q<Label>("quantity"), itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());
                     tile.EnableInClassList("inventory-selected", entry.Id == m_SelectedItemId);
-                    tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    tile.tooltip=itemName + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
                     tile.tooltip += "\n" + MoonkovItemPresentation.Details(entry.Code);
                     string state = MoonkovItemPresentation.ItemState(entry);
                     if (!string.IsNullOrEmpty(state)) tile.tooltip += "\n" + state;
@@ -391,7 +406,7 @@ namespace Unity.MP_FPS.Client
                 def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent),
                 BatteryEnergy.Stored(item), item.Quantity * BatteryEnergy.Capacity, BatteryEnergy.Charge(item), BatteryEnergy.Capacity);
             else MoonkovLocalization.Set(m_Message, "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
-                def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent), MoonkovItemPresentation.Details(item.Code));
+                ResearchQuestCopy.ItemName(item.Code) ?? def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent), MoonkovItemPresentation.Details(item.Code));
         }
         private string Path(string id)
         {

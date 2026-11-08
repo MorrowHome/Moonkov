@@ -37,6 +37,7 @@ namespace Unity.MP_FPS
             public int MissionSchemaVersion;
             public int CampaignSchemaVersion;
             public string CampaignJson;
+            public ResearchQuestProgress ResearchQuests;
             public string Mode, MatchId; public int RulesVersion, TeamId;
         }
 
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
             [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public BountyRedemption Redemption;
             [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public CampaignProgress CampaignProgress;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public ResearchQuestResult ResearchQuests;
         }
 
         public sealed class Join
@@ -230,7 +232,7 @@ namespace Unity.MP_FPS
             }
         }
 
-        public void BeginSave(Entity connection, RaidSession session)
+        public void BeginSave(Entity connection, RaidSession session, ResearchQuestResult researchQuests = null)
         {
             if (Saves.TryGetValue(session.SettlementId.ToString(),out var pending))
             { pending.Connection=connection;pending.RaidId=session.RaidId;return; }
@@ -243,7 +245,8 @@ namespace Unity.MP_FPS
                 DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null,
                 InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null,
                 CampaignProgress = m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
-                    ? CampaignRules.Clone(campaign) : null
+                    ? CampaignRules.Clone(campaign) : null,
+                ResearchQuests = m_Offline != null && profile.Mode == null ? researchQuests : null
             };
             Saves.Add(payload.SettlementId, new Save
             {

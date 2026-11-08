@@ -15,6 +15,21 @@ OUT = ROOT / 'Assets/Audio/Moonkov/Clips/Actions'
 RATE = 48000
 
 
+def present_level(audio):
+    # Tame sharp peaks before raising quiet mouth/plastic details. No pitch/time change.
+    audio *= .65 / max(np.max(np.abs(audio)), 1e-9)
+    loud = np.abs(audio) > .06
+    audio[loud] = np.sign(audio[loud]) * .06 * (np.abs(audio[loud]) / .06) ** .25
+    # Asymmetric transients can acquire DC after compression; remove it again.
+    audio -= audio.mean()
+    edge = min(int(.004 * RATE), len(audio) // 4)
+    audio[:edge] *= np.linspace(0, 1, edge)
+    audio[-edge:] *= np.linspace(1, 0, edge)
+    rms = np.sqrt(np.mean(audio * audio))
+    audio *= min(.16 / max(rms, 1e-9), .7 / max(np.max(np.abs(audio)), 1e-9))
+    return audio
+
+
 def prepare():
     WORK.mkdir(parents=True, exist_ok=True)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -46,14 +61,15 @@ def clip(name, path, maximum):
     audio[:n] *= np.linspace(0, 1, n)
     n = min(int(.055 * RATE), len(audio) // 4)
     audio[-n:] *= np.linspace(1, 0, n) ** 1.5
-    audio *= .65 / max(np.max(np.abs(audio)), 1e-9)
+    audio = present_level(audio)
     target = OUT / (name + '.wav')
     with wave.open(str(target), 'wb') as output:
         output.setparams((1, 2, RATE, 0, 'NONE', 'not compressed'))
         output.writeframes(np.round(audio * 32767).astype('<i2').tobytes())
     return dict(asset=target.relative_to(ROOT).as_posix(), source=path.name,
                 source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                seconds=round(len(audio) / RATE, 4), sha256=hashlib.sha256(target.read_bytes()).hexdigest())
+                seconds=round(len(audio) / RATE, 4), rms=float(np.sqrt(np.mean(audio*audio))),
+                sha256=hashlib.sha256(target.read_bytes()).hexdigest())
 
 
 def main():
@@ -66,7 +82,7 @@ def main():
     made.append(clip('PacketOpen1', SOURCE / 'Vinrax-Pickup.wav', .60))
     made.append(clip('InjectorCap1', SOURCE / 'Kenney-MetalClick.ogg', .22))
     made.append(clip('InjectorPress1', SOURCE / 'Kenney-HandleLeather.ogg', .35))
-    manifest = dict(processing='Recorded foley; mono PCM16/48kHz; remove DC; trim leading silence; 8ms/55ms edge fades; -3.74dBFS peak. Runtime sound banks apply restrained gains.',
+    manifest = dict(processing='Recorded foley; natural speed/pitch; mono PCM16/48kHz; remove DC before/after compression; trim leading silence; 8ms/55ms fades; 4:1 peak compression, target RMS 0.16, peak at most 0.7.',
                     sources=[
                         dict(author='Tito / StarNinjas', license='CC0-1.0', url='https://opengameart.org/content/7-eating-crunches', file='crunch_-_tito.zip'),
                         dict(author='qubodup', license='CC0-1.0', url='https://opengameart.org/content/liquid-bottle-drink-set', file='qubodup-bottle-and-drink-sounds.7z'),

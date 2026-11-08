@@ -221,14 +221,40 @@ namespace Unity.MP_FPS
         }
         public static bool CanHeal(in PredictedPlayerGhost state, BodyPart part) => state.BodyHealthInitialized &&
             state.CurrentHealth > 0 && Maximum(state,part) > 0 && Get(state, part) < Maximum(state,part);
+        // One total budget across the body. Never reconstruct a destroyed part or a lost Clash health cap.
+        public static float Regenerate(ref PredictedPlayerGhost state, float amount)
+        {
+            if (!float.IsFinite(amount) || amount<=0 || !state.BodyHealthInitialized || state.CurrentHealth<=0 ||
+                state.TacticalPoisonSeconds>0 || state.ClashEnabled && state.ClashLife!=ClashLife.Alive) return 0;
+            float before=state.CurrentHealth;
+            for (int n=0; n<PartCount && amount>0; n++)
+            {
+                BodyPart selected=BodyPart.Auto;float fraction=1;
+                for (int p=0; p<PartCount; p++)
+                {
+                    var part=(BodyPart)p;float value=Get(state,part),maximum=Maximum(state,part);
+                    if (value>0 && maximum>value && value/maximum<fraction)
+                    { selected=part;fraction=value/maximum; }
+                }
+                if (selected==BodyPart.Auto) break;
+                float current=Get(state,selected),healed=Mathf.Min(amount,Maximum(state,selected)-current);
+                Set(ref state,selected,current+healed);amount-=healed;
+            }
+            return state.CurrentHealth-before;
+        }
         public static Inventory.InventoryError UseMedical(ref PredictedPlayerGhost state, Inventory.InventoryGraph inventory,
             string itemId, int expectedVersion, BodyPart part)
         {
             if(state.TacticalPoisonSeconds>0)return Inventory.InventoryError.Inaccessible;
+            bool bandage = state.TacticalBleeding && Inventory.ConsumableCatalog.StopsBleeding(inventory?.Find(itemId)?.Code);
             if (part == BodyPart.Auto) part = MostInjured(state);
-            if (!CanHeal(state, part)) return Inventory.InventoryError.Invalid;
-            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(state,part), out var healed, allowZeroHealth: true);
-            if (error == Inventory.InventoryError.None) Set(ref state, part, healed);
+            if (bandage && part == BodyPart.Auto) part = BodyPart.Chest;
+            if (!CanHeal(state, part) && !(bandage && state.BodyHealthInitialized && state.CurrentHealth > 0 && Maximum(state,part)>0))
+                return Inventory.InventoryError.Invalid;
+            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(state,part), out var healed,
+                allowZeroHealth: true, allowFullHealth: bandage);
+            if (error == Inventory.InventoryError.None)
+            { Set(ref state, part, healed); if (bandage) state.TacticalBleeding = false; }
             return error;
         }
 

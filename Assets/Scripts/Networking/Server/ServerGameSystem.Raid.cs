@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
             var caches=LootContainers(ref state);
             InitializeLootContainers(ref state);
             bool clash=ClashEnabled(ref state);
+            var solo = !clash && SystemAPI.HasSingleton<OfflineRaidMode>() ? Persistence(ref state) : null;
             if(!clash)HandleMissions(ref state, ecb);
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
@@ -78,6 +79,13 @@ namespace Unity.MP_FPS
                 if (!clash && session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);
+                    if (solo != null && solo.Profiles.TryGetValue(connection, out var profile) && profile.Mode == null &&
+                        profile.ResearchQuests != null && profile.ResearchQuests.Active != 0)
+                    {
+                        var player = joined.ValueRO.PlayerEntity;
+                        ResearchQuestRuntime.Tick(state.World, connection, player, session.ValueRO, GetRaidInventory(ref state, connection),
+                            profile.ResearchQuests, SystemAPI.GetComponent<PredictedPlayerGhost>(player), position, SystemAPI.Time.ElapsedTime, dt);
+                    }
                     map.AdvanceExtraction(ref session.ValueRW, (Vector3)position, dt);
                     // Expiry takes precedence over extraction; death is handled before this method.
                     if (session.ValueRO.TimeLeft <= 0)
@@ -154,7 +162,8 @@ namespace Unity.MP_FPS
             if (persistence.Enabled)
             {
                 session.ValueRW.SaveState = RaidSaveState.Saving;
-                persistence.BeginSave(connection, session.ValueRO);
+                persistence.BeginSave(connection, session.ValueRO,
+                    ResearchQuestRuntime.Finish(state.World, connection, session.ValueRO.RaidId, outcome == RaidPhase.Extracted));
             }
             var joined = SystemAPI.GetComponentRW<JoinedClient>(connection);
             Entity player = joined.ValueRO.PlayerEntity;

@@ -17,7 +17,7 @@ namespace Unity.MP_FPS
         public static GameObject Create(string code, Transform parent, bool centered = false)
         {
             if (!IsPhysical(code)) return null;
-            var prefab = Resources.Load<GameObject>("Moonkov/Items/Prefabs/" + code);
+            var prefab = Prefab(code);
             if (!prefab) return null;
             var instance = Object.Instantiate(prefab, parent, false);
             if (centered)
@@ -33,7 +33,17 @@ namespace Unity.MP_FPS
             return instance;
         }
 
+        public static GameObject Prefab(string code) => IsPhysical(code)
+            ? Resources.Load<GameObject>("Moonkov/Items/Prefabs/" + ArtCode(code)) : null;
+
         public static Texture2D Icon(string code) => IsPhysical(code)
-            ? Resources.Load<Texture2D>("Moonkov/Items/Icons/" + code) : null;
+            ? Resources.Load<Texture2D>("Moonkov/Items/Icons/" + ArtCode(code)) : null;
+
+        private static string ArtCode(string code) => code switch
+        {
+            ResearchQuestRules.Sample => "alien_tissue",
+            ResearchQuestRules.Package => "black_box",
+            _ => code
+        };
     }
 }

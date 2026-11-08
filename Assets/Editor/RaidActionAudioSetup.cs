@@ -19,16 +19,19 @@ public static class RaidActionAudioSetup
             settings.compressionFormat = AudioCompressionFormat.PCM; settings.loadType = AudioClipLoadType.DecompressOnLoad;
             settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate; settings.sampleRateOverride = 48000;
             settings.preloadAudioData = true; importer.forceToMono = true;
-            importer.defaultSampleSettings = settings; importer.SaveAndReimport();
+            importer.defaultSampleSettings = settings;
+            var serialized = new SerializedObject(importer); serialized.FindProperty("m_Normalize").boolValue = false;
+            serialized.ApplyModifiedPropertiesWithoutUndo(); importer.SaveAndReimport();
         }
         var library = AssetDatabase.LoadAssetAtPath<MoonkovAudioLibrary>("Assets/Resources/Moonkov/AudioLibrary.asset");
-        library.EatBite = Bank("EatBite", 3, -21);
-        library.DrinkSip = Bank("DrinkSip", 3, -20);
-        library.BottleOpen = Bank("BottleOpen", 3, -23);
-        library.PacketOpen = Bank("PacketOpen", 1, -23);
-        library.InjectorCap = Bank("InjectorCap", 1, -24);
-        library.InjectorPress = Bank("InjectorPress", 1, -25);
+        library.EatBite = Bank("EatBite", 3, -12);
+        library.DrinkSip = Bank("DrinkSip", 3, -12);
+        library.BottleOpen = Bank("BottleOpen", 3, -15);
+        library.PacketOpen = Bank("PacketOpen", 1, -15);
+        library.InjectorCap = Bank("InjectorCap", 1, -15);
+        library.InjectorPress = Bank("InjectorPress", 1, -14);
         EditorUtility.SetDirty(library); AssetDatabase.SaveAssetIfDirty(library);
+        ConsumableAudioSetup.Install();
     }
     private static SoundDef Bank(string name, int count, float db)
     {
@@ -44,11 +47,11 @@ public static class RaidActionAudioSetup
             sound.Clips.Add(clip);
         }
         sound.UnityAudioMixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Audio/Mixers/DefaultMixer.mixer");
-        sound.Role = SoundDef.MixRole.Foley; sound.MixerGroup = SoundMixer.SoundMixerGroup.Footsteps;
-        sound.Priority = 160; sound.MaxVoices = 3; sound.MinimumInterval = .08f; sound.Occlusion = true;
+        sound.Role = SoundDef.MixRole.Interaction; sound.MixerGroup = SoundMixer.SoundMixerGroup.SFX;
+        sound.Priority = 100; sound.MaxVoices = 6; sound.MinimumInterval = 0; sound.Occlusion = true;
         sound.PlaybackType = SoundDef.PlaybackTypes.RandomNotLast; sound.PlayCount = 1; sound.VolumeScale = 1;
         sound.RepeatInfo = new SoundDef.Repeat(); sound.StartStopInfo = new SoundDef.StartStop();
-        sound.PitchAndVolumeInfo = new SoundDef.PitchAndVolume { VolumeMin = db - 1, VolumeMax = db, PitchMin = -25, PitchMax = 25 };
+        sound.PitchAndVolumeInfo = new SoundDef.PitchAndVolume { VolumeMin = db - 1, VolumeMax = db };
         sound.DistanceInfo = new SoundDef.Distance { SpatialBlend = 1, VolumeDistMin = .6f, VolumeDistMax = 8,
             VolumeRolloffMode = AudioRolloffMode.Linear, DopplerScale = 0, LPF_MaxDistance = 8, LPF_MinCutoff = 1800 };
         sound.LowPassFilter = new SoundDef.Filter(); sound.HighPassFilter = new SoundDef.Filter(); sound.DistortionFilter = new SoundDef.Distortion();

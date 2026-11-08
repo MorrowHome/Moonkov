@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
         private EntityQuery connections, players, tactical, loot, missions;
         private readonly Dictionary<Entity, RaidInventoryState> inventories = new Dictionary<Entity, RaidInventoryState>();
         private readonly HashSet<Entity> timedActors = new HashSet<Entity>();
+        private readonly Dictionary<Entity, TacticalServerWorld.Use> tacticalUses = new Dictionary<Entity, TacticalServerWorld.Use>();
         protected override void OnCreate()
         {
             connections = GetEntityQuery(typeof(RaidInventoryState), typeof(JoinedClient));
@@ -41,6 +42,8 @@ namespace Unity.MP_FPS
                         timedActors.Add(player);
                 }
             var world = tactical.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<TacticalServerWorld>(tactical.GetSingletonEntity());
+            tacticalUses.Clear();
+            if (world != null) foreach (var use in world.Uses.Values) tacticalUses[use.Player] = use;
             var caches = loot.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<RaidLootContainers>(loot.GetSingletonEntity());
             double now = SystemAPI.Time.ElapsedTime;
             using var actors = players.ToEntityArray(Allocator.Temp);
@@ -59,7 +62,7 @@ namespace Unity.MP_FPS
                         code = inventory.Graph.Find(inventory.MedicalItemId)?.Code;
                         action = Kind(code, inventory.MedicalIsConsumable);
                         remaining = (float)System.Math.Max(0, inventory.MedicalUntil - now);
-                        duration = inventory.MedicalIsConsumable ? UseSeconds(code) : MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3;
+                        duration = inventory.MedicalIsConsumable ? UseSeconds(code) : ConsumableCatalog.MedicalSeconds(code, MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3);
                     }
                     else if (inventory.DissectingLootId >= 0)
                     {
@@ -83,13 +86,13 @@ namespace Unity.MP_FPS
                     else if (brain.HealUntil > now)
                     {
                         code = brain.Inventory.Find(brain.HealItemId)?.Code; action = Kind(code, false);
-                        remaining = (float)(brain.HealUntil - now); duration = 3;
+                        remaining = (float)(brain.HealUntil - now); duration = ConsumableCatalog.MedicalSeconds(code);
                     }
                     else if (brain.LootUntil > now)
                     { action = HandAction.Search; remaining = (float)(brain.LootUntil - now); duration = 2.5f; target = brain.LootLookPoint; }
                 }
-                if (alive && action == HandAction.None && world != null && world.Uses.TryGetValue(actor, out var use) && use.Until > now &&
-                    (use.Definition?.Kind == TacticalItemKind.Vitality || use.Definition?.Kind == TacticalItemKind.Stamina || use.Definition?.Kind == TacticalItemKind.Antidote))
+                if (alive && action == HandAction.None && tacticalUses.TryGetValue(actor, out var use) && use.Until > now &&
+                    use.Definition?.Injectable == true)
                 {
                     action = HandAction.Inject; code = use.Definition.Code;
                     remaining = (float)(use.Until - now); duration = use.Definition.UseSeconds;
@@ -107,10 +110,9 @@ namespace Unity.MP_FPS
                 if (definition?.Oxygen > 0) return HandAction.RefillOxygen;
                 return definition?.Food == true ? HandAction.Eat : definition?.Hydration > 0 ? HandAction.Drink : HandAction.Treat;
             }
-            return code == "medkit" || code == "vitality_shot" || code == "stamina_shot" || code == "antidote_shot" ? HandAction.Inject : HandAction.Treat;
+            return code == "medkit" || TacticalItemRules.Find(code)?.Injectable == true ? HandAction.Inject : HandAction.Treat;
         }
-        private static float UseSeconds(string code) => ConsumableCatalog.Get(code)?.Oxygen > 0 ? RaidOxygenConsumables.UseSeconds :
-            ConsumableCatalog.Get(code)?.Food == true ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+        private static float UseSeconds(string code) => ConsumableCatalog.UseSeconds(code);
         public static void Publish(ref PredictedPlayerGhost health, HandAction action, string code, float remaining, float duration)
         {
             if (remaining <= 0 || duration <= 0) action = HandAction.None;

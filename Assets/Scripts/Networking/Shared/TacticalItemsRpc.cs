@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
         public bool SprintExhausted,SprintTracked;
         public FixedString64Bytes ItemId;
         public float Remaining,FireSeconds,PoisonSeconds,BleedSeconds,StaminaSeconds,AntidoteSeconds,WireSeconds,CoughSeconds;
+        public float RegenerationSeconds;
     }
     public struct TacticalWorldStateRpc : IRpcCommand
     {

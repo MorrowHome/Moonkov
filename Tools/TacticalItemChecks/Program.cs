@@ -98,4 +98,5 @@ float lightBefore=light.Value,heavyBefore=heavy.Value;
 TacticalSprintRules.Tick(ref light,2,false,false,true,0);TacticalSprintRules.Tick(ref heavy,2,false,false,true,InventoryCatalog.CarryWeightLimit);
 Check(heavy.Value-heavyBefore<light.Value-lightBefore,"heavy equipment slows sprint recovery");
 
+checks+=FieldExpansionChecks.Run();
 Console.WriteLine($"Tactical rules: {checks} checks passed.");

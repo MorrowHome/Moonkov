@@ -8,6 +8,27 @@ namespace Unity.MP_FPS.Client
     public sealed partial class MoonkovTerminal
     {
         private CampaignChapterView m_CampaignTasks;
+        private ResearchQuestView m_ResearchTasks;
+        private bool m_FacilityRecords;
+
+        private bool TryPresentResearchTasks()
+        {
+            if (PlayerProfileClient.ResearchQuests == null || m_FacilityRecords) return false;
+            m_ResearchTasks = new ResearchQuestView(m_Root, () => PlayerProfileClient.ResearchQuests,
+                PlayerProfileClient.AdvanceResearchQuestAsync, Prepare, () =>
+                {
+                    m_FacilityRecords = true;
+                    CloseResearchTasks();
+                    Render();
+                }, () => Navigate(0));
+            return true;
+        }
+
+        private void CloseResearchTasks()
+        {
+            m_ResearchTasks?.Dispose();
+            m_ResearchTasks = null;
+        }
 
         private bool TryPresentCampaignTasks()
         {
@@ -23,7 +44,7 @@ namespace Unity.MP_FPS.Client
             var current = CampaignCatalog.Find(CampaignRules.CurrentMain(progress));
             if (headings.Count > 1) headings[1].text = current == null ? "调查记录" :
                 "第" + (current.Chapter == 1 ? "一" : "二") + "章 " + current.ChapterTitle;
-            if (headings.Count > 2) headings[2].text = "现场通讯";
+            if (headings.Count > 2) headings[2].text = "调查记录";
             side.Q<Label>(className: "terminal-title").text = "清理任务";
             side.Q<Label>(className: "terminal-heading").text = current?.Title ?? "调查记录已保存";
             side.Q<Label>(className: "terminal-meter-name").text = "调查进度";
@@ -31,14 +52,14 @@ namespace Unity.MP_FPS.Client
             int complete = CampaignCatalog.Tasks.Count(t => progress.CompletedTasks.Contains(t.Id));
             m_Content.Q<ArcMeter>().Value = complete / (float)CampaignCatalog.PlannedMainTaskCount;
             m_Content.Q<Label>("missionCareerCount").text = "已保存 " + complete + " 项";
-            m_Content.Q<Label>("mooncoreKnowledge").text = "顾衡：先恢复本地终端，核实设施和人员情况。样本回收后保持封存。";
-            m_Content.Q<Label>("archiveKnowledge").text = progress.CompletedTasks.Contains("CM04") ? CampaignCatalog.Find("CM04").CompletionText :
-                progress.CompletedTasks.Contains("CM03") ? CampaignCatalog.Find("CM03").CompletionText :
-                "沈禾：船这边正常。我守着回程通道，你先确认里面能不能走。";
+            m_Content.Q<Label>("mooncoreKnowledge").text = progress.CompletedTasks.Contains("CM03") ? "月核样本已带回。" : "月核样本等待回收。";
+            m_Content.Q<Label>("archiveKnowledge").text = progress.CompletedTasks.Contains("CM04") ? "事故档案已带回。" : "事故档案等待回收。";
             var wide = m_Content.Q<VisualElement>(className: "terminal-wide");
             wide.Clear();
             m_CampaignTasks?.Dispose();
             m_CampaignTasks = new CampaignChapterView(wide, () => CampaignScene.ReadProgress(), Prepare, "准备出战");
+            if (m_FacilityRecords)
+                ActionButton(side, ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => { m_FacilityRecords = false; Render(); });
             var replay = new Button(async () =>
             {
                 if (m_Busy || PlayerProfileClient.IsTutorialPractice || PlayerProfileClient.RaidActive) return;

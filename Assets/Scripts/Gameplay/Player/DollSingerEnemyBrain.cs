@@ -289,7 +289,8 @@ namespace Unity.MP_FPS
             in AtmosphereSample atmosphere, in OxygenParameters settings, float dt, uint tick, float supply, bool moving, bool flush = true)
         {
             var before = health;
-            RaidOxygen.Tick(ref health, atmosphere, settings, dt, tick, supply, health.HeadDomeEquipped, moving);
+            RaidOxygen.Tick(ref health, atmosphere, settings, dt, tick, supply, health.HeadDomeEquipped, moving,
+                SpecialEquipmentRules.OxygenDrainMultiplier(inventory));
             PmcStatusDamage.Record(status, before, health);
             if (flush || health.CurrentHealth <= 0) EnergyShieldEquipment.Flush(ref health, inventory);
         }
@@ -408,13 +409,12 @@ namespace Unity.MP_FPS
             if (!eligible || now < brain.NextNutrition) return;
             var item = Choose(health, brain.Inventory);
             if (item == null) { brain.NextNutrition = now + 1; return; }
-            var definition = ConsumableCatalog.Get(item.Code);
             brain.NutritionItemId = item.Id; brain.NutritionVersion = brain.Inventory.Version;
             brain.NutritionOrigin = position; brain.NutritionDamageSequence = health.NonPhysiologicalDamageSequence;
             brain.NutritionShieldSequence = health.ShieldHitSequence; brain.NutritionShot = health.LastShotTick;
             brain.NutritionGrenade = health.LastGrenadeShotTick; brain.NutritionReload = health.LastReloadTick;
             brain.NutritionWeapon = health.EquippedWeaponID;
-            brain.NutritionUntil = now + (definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds);
+            brain.NutritionUntil = now + ConsumableCatalog.UseSeconds(item.Code);
             RaidConsumableAcoustics.Mark(ref health);
         }
 

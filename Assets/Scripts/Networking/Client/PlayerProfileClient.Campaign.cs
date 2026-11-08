@@ -9,16 +9,29 @@ namespace Unity.MP_FPS
     public static partial class PlayerProfileClient
     {
         private static CampaignProgress s_Campaign;
+        private static ResearchQuestProgress s_ResearchQuests;
         // UI treats this cache as read-only. All writes are intents handled by
         // the selected store, and campaign facts come from the local server.
         public static CampaignProgress Campaign => IsOffline ? s_Campaign : null;
+        public static ResearchQuestProgress ResearchQuests => IsOffline && !IsTutorialPractice ? s_ResearchQuests : null;
 
         private static void RefreshCampaign(RaidPersistenceContext.Profile profile)
         {
+            s_ResearchQuests = profile.ResearchQuests;
             s_Campaign = string.IsNullOrEmpty(profile.CampaignJson)
                 ? CampaignRules.Create() : JsonConvert.DeserializeObject<CampaignProgress>(profile.CampaignJson);
             string error = CampaignRules.Validate(s_Campaign);
             if (error != null) throw new InvalidOperationException("Invalid chapter profile: " + error);
+        }
+
+        public static async Task<bool> AdvanceResearchQuestAsync(ResearchQuest quest, bool claim)
+        {
+            if (ResearchQuests == null) return false;
+            var store = s_Offline;
+            bool changed = await Task.Run(() => store.AdvanceResearchQuest(quest, claim));
+            if (store != s_Offline) return false;
+            if (changed) RefreshOffline();
+            return changed;
         }
 
         public static async Task SetCampaignTrackingAsync(string taskId, bool secondary = false,

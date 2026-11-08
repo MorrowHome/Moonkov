@@ -201,7 +201,7 @@ namespace Unity.MP_FPS
                 brain.HealStatus = false;
                 brain.HealItemId = medical.Id;
                 brain.HealInventoryVersion = brain.Inventory.Version;
-                brain.HealUntil = now + m_Tuning.HealSeconds;
+                brain.HealUntil = now + ConsumableCatalog.MedicalSeconds(medical.Code,m_Tuning.HealSeconds);
                 brain.CommitUntil = brain.HealUntil;
                 RaidConsumableAcoustics.Mark(ref health);
                 return;

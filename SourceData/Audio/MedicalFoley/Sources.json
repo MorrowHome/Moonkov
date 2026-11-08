@@ -1,0 +1,34 @@
+[
+  {
+    "name": "SyringePop",
+    "author": "Coniela",
+    "page": "https://freesound.org/people/Coniela/sounds/458423/",
+    "download": "https://cdn.freesound.org/previews/458/458423_9092070-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 61056
+  },
+  {
+    "name": "ClothWrap1",
+    "author": "Frostnox",
+    "page": "https://freesound.org/people/Frostnox/sounds/796014/",
+    "download": "https://cdn.freesound.org/previews/796/796014_14089324-hq.mp3",
+    "license": "CC-BY-4.0",
+    "bytes": 13920
+  },
+  {
+    "name": "ClothWrap2",
+    "author": "Frostnox",
+    "page": "https://freesound.org/people/Frostnox/sounds/796015/",
+    "download": "https://cdn.freesound.org/previews/796/796015_14089324-hq.mp3",
+    "license": "CC-BY-4.0",
+    "bytes": 11232
+  },
+  {
+    "name": "BandageTear",
+    "author": "SecureSubset",
+    "page": "https://freesound.org/people/SecureSubset/sounds/800275/",
+    "download": "https://cdn.freesound.org/previews/800/800275_16752880-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 15469
+  }
+]

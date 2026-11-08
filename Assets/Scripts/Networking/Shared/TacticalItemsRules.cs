@@ -5,16 +5,18 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum TacticalItemKind : byte
-    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke }
+    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke, Flash, PoisonBomb, Regeneration }
     public enum TacticalItemAction : byte { Use, Cancel, Disarm, Resupply, Extinguish }
     public enum TacticalItemFeedback : byte { None, Started, Cancelled, Interrupted, Completed, NeedGround, Limit, Poisoned, NoWound, NoTarget, NoRoom, Stale, Unavailable }
     public enum TacticalWorldPhase : byte { Flying, Armed, Fire, Choke, Wire, Poison, Alarm, Supply, Explosion, Removed, Smoke }
     public sealed class TacticalItemDefinition
     {
+        public bool Injectable => TacticalItemRules.IsInjection(Kind);
         public readonly string Code;
         public readonly TacticalItemKind Kind;
         public readonly float UseSeconds, Fuse, Radius, Lifetime;
-        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke || Kind == TacticalItemKind.Smoke;
+        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke ||
+            Kind == TacticalItemKind.Smoke || Kind == TacticalItemKind.Flash || Kind == TacticalItemKind.PoisonBomb;
         public bool Trap => Kind >= TacticalItemKind.AlertTrap && Kind <= TacticalItemKind.PoisonTrap;
         public bool Deployable => Trap || Kind == TacticalItemKind.AmmoBox;
         public TacticalItemDefinition(string code, TacticalItemKind kind, float use, float fuse=0, float radius=0, float lifetime=0)
@@ -26,21 +28,26 @@ namespace Unity.MP_FPS
         public const int RulesVersion=1, MaxWorldObjects=64, MaxOwnerTraps=8;
         public const float TrapVerticalTolerance=.65f, InteractionRange=2.2f;
         public const float StaminaDuration=420, AntidoteDuration=600, BleedDuration=8, BurningDuration=4;
+        public const float RegenerationDuration=120, RegenerationPerSecond=2;
         public const float BulletWoundThreshold=20, BulletWoundDuration=30, StopBleedSeconds=3;
         public const int SupplyEnergy=400, EnergyPerUse=100;
         public static readonly TacticalItemDefinition[] Definitions = {
             new("vitality_shot",TacticalItemKind.Vitality,3), new("stamina_shot",TacticalItemKind.Stamina,3),
-            new("antidote_shot",TacticalItemKind.Antidote,3),
+            new("antidote_shot",TacticalItemKind.Antidote,3), new("regeneration_shot",TacticalItemKind.Regeneration,3),
             new("dynamite_bundle",TacticalItemKind.Dynamite,1,4,8), new("frag_bomb",TacticalItemKind.Frag,1,4,8),
             new("fire_bomb",TacticalItemKind.Fire,1,6,3,30), new("choke_bomb",TacticalItemKind.Choke,1,3,4,20),
             new("alert_trip_mine",TacticalItemKind.AlertTrap,3,0,1,180),
             new("concertina_trip_mine",TacticalItemKind.WireTrap,3,0,1,180),
             new("poison_trip_mine",TacticalItemKind.PoisonTrap,3,0,1,180),
             new("ammo_box",TacticalItemKind.AmmoBox,3,0,0,120),
-            new("smoke_grenade",TacticalItemKind.Smoke,1,3,5,20)
+            new("smoke_grenade",TacticalItemKind.Smoke,1,3,5,20),
+            new("flash_grenade",TacticalItemKind.Flash,1,2,12,4),
+            new("poison_bomb",TacticalItemKind.PoisonBomb,1,3,3,15)
         };
         public static TacticalItemDefinition Find(string code)
         { foreach(var d in Definitions) if(d.Code==code)return d; return null; }
+        public static bool IsInjection(TacticalItemKind kind) => kind==TacticalItemKind.Vitality ||
+            kind==TacticalItemKind.Stamina || kind==TacticalItemKind.Antidote || kind==TacticalItemKind.Regeneration;
         public static bool Accessible(InventoryGraph graph, InventoryItem item) => graph!=null && item!=null &&
             item.Quantity>0 && Find(item.Code)!=null && graph.Carried(item) &&
             (item.Parent==InventoryCatalog.Pockets || item.Parent==graph.Equipped("ChestRig")?.Id);
@@ -62,6 +69,11 @@ namespace Unity.MP_FPS
         {
             if(!float.IsFinite(distance)||distance<0||distance>=8)return 0;
             return (kind==TacticalItemKind.Dynamite ? 650 : kind==TacticalItemKind.Frag ? 320 : 0)*Math.Min(1,(8-distance)/6);
+        }
+        public static float FlashStrength(float distance, float facing)
+        {
+            if (!float.IsFinite(distance) || !float.IsFinite(facing) || distance < 0 || distance >= 12) return 0;
+            return Math.Clamp((facing + .2f) / 1.05f, 0, 1) * Math.Clamp((12 - distance) / 8, 0, 1);
         }
         // Works on a copy so inventory capacity failures never spend the box or alter cells.
         // Recharges an existing legal carried cell before adding one real cell to the rig/pockets.

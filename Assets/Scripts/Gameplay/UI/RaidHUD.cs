@@ -194,6 +194,7 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
             InitializeCampaignHUD();
+            InitializeResearchQuests();
             InitializeQuickSlots();
             InitializeMelee();
             InitializeBountyClash();
@@ -225,6 +226,7 @@ namespace Unity.MP_FPS
                 !m_CampaignJournalVisible && !ChatInputBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
                 (m_ClashMode || m_MissionHud.style.display == DisplayStyle.Flex ||
                  m_CampaignHud != null && !m_CampaignHud.ClassListContains("campaign-hidden") ||
+                 m_ResearchList != null && m_ResearchList.style.display == DisplayStyle.Flex ||
                  m_ExtractionPanel.ClassListContains("is-visible"));
             m_TaskPanel.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             m_ClashView.Tasks.style.display = visible && m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
@@ -546,7 +548,9 @@ namespace Unity.MP_FPS
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
             SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest, out distance, !haloBusy);
+            bool researchControl = UpdateResearchQuests(alive && ready && !settled && !clash, liveInteraction && !clash && !haloBusy, position);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash && !haloBusy);
+            missionControl |= researchControl;
             m_AirlockPrompt.BindingLabel = m_InteractionBindings.Label(m_InteractionBindings.Operate);
             m_AirlockPrompt.SetPresentation(liveInteraction && !missionControl && m_WorldControlFocused);
             PresentTimedAction();
@@ -936,13 +940,12 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
             {
                 TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.Equipment :
-                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : MoonkovAudio.Library?.Consume,
-                    oxygenSupply ? MoonkovAudio.Library?.Equipment : null);
+                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : null);
                 m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
                 if(!shieldSupply)
                 {
                     BeginTimedAction();m_MedicalActive=m_ConsumableActive=true;m_ConsumableFood=definition.Food;m_ConsumableOxygen=oxygenSupply;
-                    m_ActionDuration=oxygenSupply ? RaidOxygenConsumables.UseSeconds : definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+                    m_ActionDuration=Inventory.ConsumableCatalog.UseSeconds(item.Code);
                     m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
                 }
             }
@@ -969,9 +972,9 @@ namespace Unity.MP_FPS
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             {
                 BeginTimedAction();
-                TrackInventoryAudio(MoonkovAudio.Library?.Medical, MoonkovAudio.Library?.Consume);
+                TrackInventoryAudio(item.Code == "medkit" || item.Code == "med_gel" ? null : MoonkovAudio.Library?.Medical);
                 m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
-                m_ActionDuration=MoonRaidMap.Active.MedicalSeconds;m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
+                m_ActionDuration=Inventory.ConsumableCatalog.MedicalSeconds(item.Code,MoonRaidMap.Active.MedicalSeconds);m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container."); }
             RefreshHealth();
@@ -1014,6 +1017,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            ReleaseResearchHold();
             ClearInventoryBackdrop();
             m_Root?.UnregisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;

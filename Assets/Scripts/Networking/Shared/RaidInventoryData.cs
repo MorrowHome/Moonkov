@@ -224,7 +224,7 @@ namespace Unity.MP_FPS
             if(error!=InventoryError.None)return error;
             CancelActions(ActionPending ? "原操作已取消：开始治疗；未获取物品或消耗医疗物品。" : null);
             MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
-            StartItemAction(health,id,version,origin,now,seconds,false);
+            StartItemAction(health,id,version,origin,now,ConsumableCatalog.MedicalSeconds(Graph.Find(id).Code,seconds),false);
             return InventoryError.None;
         }
         public InventoryError BeginConsumable(in PredictedPlayerGhost health,string id,int version,
@@ -237,10 +237,9 @@ namespace Unity.MP_FPS
             var probe=health;var copy=Graph.Clone();
             var error=oxygen ? RaidOxygenConsumables.Consume(ref probe,copy,id,version) : RaidNutrition.Consume(ref probe,copy,id,version);
             if(error!=InventoryError.None)return error;
-            var definition=ConsumableCatalog.Get(Graph.Find(id).Code);
             CancelActions();
             StartItemAction(health,id,version,origin,now,
-                oxygen ? RaidOxygenConsumables.UseSeconds : definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds,true);
+                ConsumableCatalog.UseSeconds(Graph.Find(id).Code),true);
             return InventoryError.None;
         }
         private void StartItemAction(in PredictedPlayerGhost health,string id,int version,Unity.Mathematics.float3 origin,

@@ -31,6 +31,10 @@ namespace Unity.MP_FPS.Inventory
         public const int MaxDepth = 8, MaxItems = 2048;
         public const int StartingDust = 10_000;
         public const float CarryWeightLimit = 45;
+        public static readonly InventoryRegion HaloCargoRegion = new InventoryRegion("Halo cargo", 1, 1);
+        public static bool CanStoreHaloCargo(string code) =>
+            Get(code)?.Kind is ItemKind.LongGun or ItemKind.Pistol;
+        public static bool IsResearchSupply(string code) => code is "rq_tablet" or "rq_flash" or "rq_drive" or "rq_sample" or "rq_package";
         private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker", "oxygen_canister" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
@@ -60,6 +64,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("vitality_shot", "Vitality shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("stamina_shot", "Stamina shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("antidote_shot", "Antidote shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
+                new ItemDefinition("regeneration_shot", "Regeneration shot", ItemKind.Throwable, 1, 1, 3, 0.15f),
                 new ItemDefinition("dynamite_bundle", "Dynamite bundle", ItemKind.Throwable, 1, 2, 2, 0.6f),
                 new ItemDefinition("frag_bomb", "Fragmentation bomb", ItemKind.Throwable, 1, 1, 2, 0.4f),
                 new ItemDefinition("fire_bomb", "Fire bomb", ItemKind.Throwable, 1, 2, 2, 0.5f),
@@ -86,6 +91,11 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("data_drive", "Encrypted data drive", ItemKind.Material, 1, 1, 1, .12f),
                 new ItemDefinition("mooncore_fragment", "Mooncore fragment", ItemKind.Material, 1, 1, 1, .3f),
                 new ItemDefinition("mc00_archive_drive", "MC00 事故档案盘", ItemKind.Material, 1, 1, 1, .12f),
+                new ItemDefinition("rq_tablet", "Personnel information tablet", ItemKind.Material, 1, 2, 1, .42f),
+                new ItemDefinition("rq_flash", "Encrypted extraction drive", ItemKind.Material, 1, 1, 1, .04f),
+                new ItemDefinition("rq_drive", "Research storage drive", ItemKind.Material, 1, 1, 1, .25f),
+                new ItemDefinition("rq_sample", "Sealed biological sample", ItemKind.Material, 1, 1, 1, .12f),
+                new ItemDefinition("rq_package", "Sealed research package", ItemKind.Material, 1, 1, 1, .18f),
                 new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
                 new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
@@ -123,6 +133,16 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("survey_compass", "C-01 月面指南针", ItemKind.SpecialEquipment, 1, 1, 1, .15f),
                 new ItemDefinition("laser_rangefinder", "R-500 激光测距仪", ItemKind.SpecialEquipment, 1, 1, 1, .35f),
                 new ItemDefinition("team_tracker", "T-01 Squad tracker", ItemKind.SpecialEquipment, 1, 1, 1, .25f),
+                new ItemDefinition("oxygen_recycler", "O-25 Oxygen recycler", ItemKind.SpecialEquipment, 1, 1, 1, 0.4f),
+                new ItemDefinition("glare_filter", "G-60 Glare filter", ItemKind.SpecialEquipment, 1, 1, 1, 0.15f),
+                new ItemDefinition("survey_multitool", "SR-500 Survey instrument", ItemKind.SpecialEquipment, 1, 1, 1, 0.45f),
+                new ItemDefinition("hemostatic_bandage", "Hemostatic bandage", ItemKind.Medical, 1, 1, 5, 0.06f),
+                new ItemDefinition("rescue_kit", "Rescue medical kit", ItemKind.Medical, 2, 1, 2, 0.65f),
+                new ItemDefinition("hydration_gel", "Hydration gel", ItemKind.Food, 1, 1, 4, 0.12f),
+                new ItemDefinition("compressed_ration", "Compressed expedition ration", ItemKind.Food, 1, 2, 3, 0.4f),
+                new ItemDefinition("emergency_oxygen", "O-20 Rapid oxygen flask", ItemKind.Oxygen, 1, 1, 4, 0.18f),
+                new ItemDefinition("flash_grenade", "Flash grenade", ItemKind.Throwable, 1, 1, 3, 0.25f),
+                new ItemDefinition("poison_bomb", "Poison gas bomb", ItemKind.Throwable, 1, 1, 2, 0.4f),
                 new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
                 new ItemDefinition("scout_rig", "R-02 Scout badge", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
@@ -222,6 +242,8 @@ namespace Unity.MP_FPS.Inventory
         private InventoryRegion RegionFor(string parent, string region)
         {
             var code = Find(parent)?.Code;
+            if (region == InventoryCatalog.HaloCargoRegion.Id && InventoryCatalog.CanStoreHaloCargo(code))
+                return InventoryCatalog.HaloCargoRegion;
             return InventoryCatalog.Get(code)?.Regions.FirstOrDefault(r => r.Id == region) ??
                 (HaloModules.IsWeapon(code) ? HaloModules.Slots.FirstOrDefault(r => r.Id == region) : null);
         }
@@ -236,7 +258,8 @@ namespace Unity.MP_FPS.Inventory
                 if (depth >= InventoryCatalog.MaxDepth) return InventoryError.Cycle;
                 ancestor = Find(ancestor)?.Parent;
             }
-            if (HaloModules.IsWeapon(target.Code) && (!HaloModules.Compatible(target.Code, item.Code) ||
+            if (region == InventoryCatalog.HaloCargoRegion.Id && item.Code != "rq_package") return InventoryError.Incompatible;
+            if (region != InventoryCatalog.HaloCargoRegion.Id && HaloModules.IsWeapon(target.Code) && (!HaloModules.Compatible(target.Code, item.Code) ||
                 region != HaloModules.Slot(HaloModules.FromCode(item.Code)))) return InventoryError.Incompatible;
             if (target.Code == "secure_case" && !SecureInventory.Allowed(item.Code)) return InventoryError.Incompatible;
             if (compartment.SlotKind.HasValue)
@@ -281,7 +304,15 @@ namespace Unity.MP_FPS.Inventory
             // Mounting, removing and swapping modules are base-only transactions. Whole
             // weapon subtrees can still move freely during a raid.
             var source = Find(request.ItemId);
-            if (HaloModules.IsWeapon(Find(source?.Parent)?.Code) ||
+            if (source?.Region == InventoryCatalog.HaloCargoRegion.Id || request.Region == InventoryCatalog.HaloCargoRegion.Id)
+            {
+                if (source?.Code != "rq_package" || request.Operation != InventoryOperation.Move || Find(InventoryCatalog.Stash) != null)
+                    return InventoryError.Inaccessible;
+                if (request.Region == InventoryCatalog.HaloCargoRegion.Id &&
+                    (!Carried(source) || Find(request.Parent)?.Parent != InventoryCatalog.Equipment))
+                    return InventoryError.Incompatible;
+            }
+            else if (HaloModules.IsWeapon(Find(source?.Parent)?.Code) ||
                 HaloModules.IsWeapon(Find(request.Parent)?.Code))
                 if (Find(InventoryCatalog.Stash) == null || Find("loot") != null) return InventoryError.Inaccessible;
             var copy = Clone(); var error = copy.Apply(request);
@@ -468,7 +499,7 @@ namespace Unity.MP_FPS.Inventory
 
         // Only the match server commits this result. Full health/death/stale versions
         // leave both health and the stack untouched; a replay cannot consume it twice.
-        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed, bool allowZeroHealth = false)
+        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed, bool allowZeroHealth = false, bool allowFullHealth = false)
         {
             healed = health;
             if (expectedVersion != Version) return InventoryError.Stale;
@@ -476,7 +507,8 @@ namespace Unity.MP_FPS.Inventory
             if (item == null) return InventoryError.Missing;
             if (!MedicalAccessible(item)) return InventoryError.Inaccessible;
             if (float.IsNaN(health) || float.IsInfinity(health) || float.IsNaN(maximum) || float.IsInfinity(maximum) ||
-                health < 0f || (!allowZeroHealth && health == 0f) || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
+                health < 0f || (!allowZeroHealth && health == 0f) || maximum <= 0 || maximum < health ||
+                (!allowFullHealth && maximum == health) || item.Quantity < 1) return InventoryError.Invalid;
             healed = Math.Min(maximum, health + ConsumableCatalog.MedicalRestore(item.Code));
             if (--item.Quantity == 0) Items.Remove(item);
             Version++;
@@ -556,7 +588,7 @@ namespace Unity.MP_FPS.Inventory
         public static bool Allowed(string code)
         {
             var def = InventoryCatalog.Get(code);
-            if (def == null || def.Container || MissionInventory.IsArtifact(code)) return false;
+            if (def == null || def.Container || MissionInventory.IsArtifact(code) || InventoryCatalog.IsResearchSupply(code)) return false;
             return def.Kind == ItemKind.Material || def.Kind == ItemKind.Cell || def.Kind == ItemKind.Medical ||
                 def.Kind == ItemKind.Food || def.Kind == ItemKind.Drink || def.Kind == ItemKind.Oxygen ||
                 def.Kind == ItemKind.StorageModule || def.Kind == ItemKind.ShapingModule || def.Kind == ItemKind.UtilityModule;

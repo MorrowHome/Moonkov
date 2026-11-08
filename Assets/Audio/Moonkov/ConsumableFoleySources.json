@@ -1,0 +1,106 @@
+{
+  "processing": "Natural speed/pitch; mono PCM16 48 kHz; source crops, filtering, DC removal before/after compression, 8/50 ms fades; 4:1 peak compression, target RMS 0.16, peak at most 0.7.",
+  "sources": [
+    {
+      "name": "Syringe",
+      "author": "taure",
+      "page": "https://freesound.org/people/taure/sounds/465495/",
+      "download": "https://cdn.freesound.org/previews/465/465495_2940947-hq.mp3",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "Bandage",
+      "author": "SpliceSound",
+      "page": "https://freesound.org/people/SpliceSound/sounds/188189/",
+      "download": "https://cdn.freesound.org/previews/188/188189_1480854-hq.mp3",
+      "license": "CC0-1.0"
+    }
+  ],
+  "existing_sources": [
+    "SurvivalActionSources.json",
+    "Airlock/Sources.json"
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/BottleClose1.wav",
+      "source": "LocalData/SurvivalActionAudio/Sources/qubodup-bottle-and-drink-sounds/qubodup-bottle-and-drink-sounds/bottle-close-01.flac",
+      "start": 0,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "640293378fb11b33f3deeb24816f3ca26461d3adea9ab6209b4e69ac8cbd3912",
+      "sha256": "3bf985a43bc7256bfdd8c3351583fe5a8b6f973ee5d78e420b89e09640a9c5ad"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/BottleClose2.wav",
+      "source": "LocalData/SurvivalActionAudio/Sources/qubodup-bottle-and-drink-sounds/qubodup-bottle-and-drink-sounds/bottle-close-02.flac",
+      "start": 0,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "b763aec7f1ea74eccd5493c4b840258d9cc5a64ad2e176a8eb7bf6d2ee8fbb3c",
+      "sha256": "cf713b4570e1cb8270c026dd65f9ece4a7ce97a8fa3dfdb0f59501f685c69bfa"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/BottleClose3.wav",
+      "source": "LocalData/SurvivalActionAudio/Sources/qubodup-bottle-and-drink-sounds/qubodup-bottle-and-drink-sounds/bottle-close-03.flac",
+      "start": 0,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "bae3b67d264d548a1442281d3b135d93ae4defaafd06a23324526e20923e442c",
+      "sha256": "05b91c0ca22e1f674d869d145fcb5ee86c1aa625a22a34db26d4ba638ca956c1"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/InjectorPush1.wav",
+      "source": "SourceData/Audio/ConsumableFoley/Syringe.mp3",
+      "start": 7.15,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "6b2fb0f09aa180c60506348ae52b2e25bda2fb3ca168e8e54db40dfc0ead2bef",
+      "sha256": "5e9df1d581f603983002c10c51d2d435a1dfd9b21060beaf0eca37f203708bd4"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/InjectorPush2.wav",
+      "source": "SourceData/Audio/ConsumableFoley/Syringe.mp3",
+      "start": 18,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "6b2fb0f09aa180c60506348ae52b2e25bda2fb3ca168e8e54db40dfc0ead2bef",
+      "sha256": "f07674bd1b35866c920f8010efd68db0bc6dd173132d818bd26c4a1a08ccfa08"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/MedicalHandling1.wav",
+      "source": "SourceData/Audio/ConsumableFoley/Bandage.mp3",
+      "start": 7.5,
+      "seconds": 0.8,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "dd7507e9c5d3b7f1a1deeea960502e0a777e0a29dce0f4c48775e6092a51f9bd",
+      "sha256": "4b1a0b34511108435b5463c13b0326fbe15b8c8cbeb25e6db49ad88dbcd99600"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/MedicalHandling2.wav",
+      "source": "SourceData/Audio/ConsumableFoley/Bandage.mp3",
+      "start": 9,
+      "seconds": 0.65,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "dd7507e9c5d3b7f1a1deeea960502e0a777e0a29dce0f4c48775e6092a51f9bd",
+      "sha256": "0196d9a9c67cae82f71f4f144b6ad12fb58e1677d5bc4c0deabbaf19ab45435f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/MedicalFinish.wav",
+      "source": "SourceData/Audio/ConsumableFoley/Bandage.mp3",
+      "start": 10.05,
+      "seconds": 0.3,
+      "filters": "highpass=f=100,lowpass=f=11000",
+      "source_sha256": "dd7507e9c5d3b7f1a1deeea960502e0a777e0a29dce0f4c48775e6092a51f9bd",
+      "sha256": "517b74ebb8f27e70747dee11fe37422e1c3af83b7eed242a6e3a0a5be08d259d"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Consumables/OxygenRelease.wav",
+      "source": "Assets/Audio/Moonkov/Airlock/Clips/ValveAir_Loop.wav",
+      "start": 0.3,
+      "seconds": 0.28,
+      "filters": "highpass=f=180,lowpass=f=8500",
+      "source_sha256": "d0087a003eae3c5c4bf25ef06029680ced087dbfeef7e835daafcb1e26e3f7c8",
+      "sha256": "1d65688c37a2fc20835ca1ecf35b42bfe676a27338eab97f4cb6c0a1ca0a4398"
+    }
+  ]
+}

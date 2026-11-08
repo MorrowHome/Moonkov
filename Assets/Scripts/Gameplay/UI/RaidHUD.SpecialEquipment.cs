@@ -32,7 +32,7 @@ namespace Unity.MP_FPS
             var graph = QuickGraph; bool compass = false, rangefinder = false;
             if (graph != null)
                 foreach (var slot in SurveySlots)
-                { string code = graph.Equipped(slot)?.Code; compass |= code == "survey_compass"; rangefinder |= code == "laser_rangefinder"; }
+                { string code = graph.Equipped(slot)?.Code; compass |= Inventory.SpecialEquipmentRules.Compass(code); rangefinder |= Inventory.SpecialEquipmentRules.Rangefinder(code); }
             if ((!compass && !rangefinder) || !TryGetLocalPlayerEntity(out var owner))
             { m_SurveyLabel.style.display = DisplayStyle.None; return; }
             if (owner != m_SurveyOwner || m_SurveyWorld != m_World || !m_SurveyCamera)
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS
                     if ((!m_SurveyActor || !m_SurveyHits[n].transform.IsChildOf(m_SurveyActor)) && m_SurveyHits[n].distance < nearest) nearest = m_SurveyHits[n].distance;
                 // A full buffer may omit a closer surface; never present a false precise distance.
                 string distance = hits == m_SurveyHits.Length ? "测距遮挡复杂" : float.IsPositiveInfinity(nearest) ? "测距 >500 m／无实体表面" : "测距 " + nearest.ToString("0.0") + " m";
-                readout += (readout.Length == 0 ? "" : "  ·  ") + distance;
+                readout += (readout.Length == 0 ? "" : "  /  ") + distance;
             }
             m_SurveyLabel.style.display = DisplayStyle.Flex;
             if (m_SurveyLabel.text != readout) MoonkovLocalization.Set(m_SurveyLabel, readout);

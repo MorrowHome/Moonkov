@@ -29,7 +29,7 @@ namespace Unity.MP_FPS
             var rows = new Dictionary<string, RaidResultItem>(StringComparer.Ordinal);
             foreach (var item in graph.Items)
             {
-                if (InventoryCatalog.Get(item.Code).Kind == ItemKind.Root || !graph.Carried(item)) continue;
+                if (InventoryCatalog.Get(item.Code).Kind == ItemKind.Root || InventoryCatalog.IsResearchSupply(item.Code) || !graph.Carried(item)) continue;
                 if (!rows.TryGetValue(item.Code, out var row))
                     rows.Add(item.Code, row = new RaidResultItem { Code = item.Code });
                 if (outcome == RaidPhase.Extracted || protectedIds.Contains(item.Id)) row.Returned += item.Quantity;
