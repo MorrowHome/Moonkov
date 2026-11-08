@@ -21,10 +21,11 @@
 | `Clips/GameFoley/TarkovBandageOpen.wav` | 撕开绷带包装 | Escape from Tarkov / Battlestate Games Limited | [Joe Iz Gaming](https://www.youtube.com/watch?v=0EQEZ7RMr5I) | 1.720–2.500 秒 |
 | `Clips/GameFoley/TarkovBandageWrap.wav` | 持续缠绕绷带 | Escape from Tarkov / Battlestate Games Limited | [Joe Iz Gaming](https://www.youtube.com/watch?v=0EQEZ7RMr5I) | 3.250–4.650 秒 |
 | `Clips/GameFoley/TarkovBandageTighten.wav` | 包扎结束收紧 | Escape from Tarkov / Battlestate Games Limited | [Joe Iz Gaming](https://www.youtube.com/watch?v=0EQEZ7RMr5I) | 4.850–5.350 秒 |
+| `Clips/GameFoley/HL2AirlockButton.wav` | 气闸按钮按下成功反馈 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/84f5de61421d95ce1eb9dcf9625a90782b41b278/sound/buttons/button17.wav) | sound/buttons/button17.wav（完整 0.081 秒） |
 
 路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。
 
 原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。
 猎杀针剂详表：`SourceData/Audio/MedicalFoley/Sources.json` 与 `Assets/Audio/Moonkov/MedicalFoleySources.json`。
-重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`。
+重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()` 与 `AirlockButtonAudioSetup.Install()`。
 本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。

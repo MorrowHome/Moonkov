@@ -68,6 +68,7 @@ namespace Unity.MP_FPS
 
         public static void Click() => Play(Library?.Click, Vector3.zero);
         public static void Confirm() => Play(Library?.Confirm, Vector3.zero);
+        public static void AirlockButtonPress() => Play(Library?.AirlockButtonPress, Vector3.zero);
         public static void Error() => Play(Library?.Error, Vector3.zero);
 
         // Bind before activation, including buttons created dynamically between document scans.

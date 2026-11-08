@@ -226,5 +226,20 @@
     "sha256": "2a0871db19353b5bb76b39be1d6769cbeb3e9925de7375c8a54e3949889d9524",
     "downloaded_video_sha256": "cc05a699a75b242934378fd76ea87ad95be51ce4109e7e073e05a622a2869f96",
     "license": "All rights reserved; no Creative Commons license asserted"
+  },
+  {
+    "name": "HL2AirlockButton",
+    "use": "气闸按钮按下成功反馈",
+    "game": "Half-Life 2",
+    "copyright": "Valve Corporation",
+    "uploader": "sourcesounds 公开资源镜像",
+    "page": "https://github.com/sourcesounds/hl2/blob/84f5de61421d95ce1eb9dcf9625a90782b41b278/sound/buttons/button17.wav",
+    "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+    "original_file": "sound/buttons/button17.wav（完整 0.081 秒）",
+    "file": "SourceData/Audio/GameFoley/HL2Button17Original.wav",
+    "loop": false,
+    "compress": false,
+    "sha256": "71f913f328655c907dd01fa2e4174e904e8c6d3852487e7163bd4a1c4c7aac2a",
+    "license": "All rights reserved; no Creative Commons license asserted"
   }
 ]

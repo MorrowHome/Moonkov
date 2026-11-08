@@ -1,5 +1,12 @@
 # Moonkov 音效系统
 
+## 2026-11-08 气闸按钮反馈
+
+- 气闸按下成功改用独立 `AirlockButtonPress` 音库。原声来自 Half-Life 2 的 `sound/buttons/button17.wav`，时长 0.081 秒。来源列入统一游戏原声清单。保留原音高和速度，只做单声道、采样率、边缘与音量处理。
+- 音库走 SFX、近身 2D、固定 −10 dB、最多 2 个音源。收到 Accepted 才播放；Pending 静音，拒绝仍用原 Error。撤离成功的 Confirm 和升降机按钮没有改动。沿用声音池，不增加常驻 AudioSource。
+- 安装入口为 `AirlockButtonAudioSetup.Install()`。通用音库重建会补装。
+- 单 Editor 编译和 `AirlockButtonAudioReview.Run()` 的 10 项原生播放检查通过，覆盖成功、等待、拒绝、撤离分离、SFX 路由和自然播完回收。未做联机或 Player 构建；自动检查不代替主观听感。
+
 ## 2026-11-08 吃喝补氧与医疗
 
 - 吃喝、食品包装、瓶盖和包扎现用《逃离塔科夫》游戏录音，共 12 条短片段、9.66 秒、约 0.93 MB PCM。来源为 Ultimate Weapon Games 的食品演示和 Joe Iz Gaming 的医疗演示。统一走 SFX。离线压低瞬时尖峰，再校准主体音量。保留原速度和音高，48 kHz 单声道 PCM，峰值不超过 0.65。吃喝各有三条轮换，相邻不重复。

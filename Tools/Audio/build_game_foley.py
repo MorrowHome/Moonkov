@@ -63,7 +63,7 @@ def main():
     lines += ['', '路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。', '',
               '原始短片段和哈希：`SourceData/Audio/GameFoley/Sources.json`；成品校验和：`Assets/Audio/Moonkov/GameFoleySources.json`。',
               '猎杀针剂详表：`SourceData/Audio/MedicalFoley/Sources.json` 与 `Assets/Audio/Moonkov/MedicalFoleySources.json`。',
-              '重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`。',
+              '重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()` 与 `AirlockButtonAudioSetup.Install()`。',
               '本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。', '']
     (ROOT / 'Assets/StreamingAssets/MoonkovGameAudioSources.md').write_text('\n'.join(lines))
     print(json.dumps(dict(clips=len(records), seconds=sum(r['seconds'] for r in records)), ensure_ascii=False))

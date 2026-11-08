@@ -17,6 +17,7 @@ MonoBehaviour:
   Confirm: {fileID: 11400000, guid: 9654833cd35b13740ad8154e0c6b5d8c, type: 2}
   Error: {fileID: 11400000, guid: 46975e11edb870b48b911dcb228aa1ae, type: 2}
   Notification: {fileID: 11400000, guid: e4da94686cce2b84382d79e1a930e756, type: 2}
+  AirlockButtonPress: {fileID: 11400000, guid: b12ef9e7a802e4f34a2df86a4f3bbfb2, type: 2}
   ShieldImpact: {fileID: 11400000, guid: a369643e2b9604cdb831a740c7c5ec78, type: 2}
   ShieldBreak: {fileID: 11400000, guid: 92892d6ed57e243e394a7259fd31006b, type: 2}
   ShieldRestore: {fileID: 11400000, guid: 1f4a8eae002854fc086b946404272a71, type: 2}

@@ -48,7 +48,7 @@ namespace Unity.MP_FPS
             ReceiveFeedback(result); return result;
         }
         public void ReceiveFeedback(AirlockFeedback result) {
-            if (result == AirlockFeedback.Accepted) MoonkovAudio.Confirm();
+            if (result == AirlockFeedback.Accepted) MoonkovAudio.AirlockButtonPress();
             else if (result != AirlockFeedback.Pending) MoonkovAudio.Error();
             m_LastFeedback = result; m_FeedbackUntil = Time.unscaledTime + 1.5f; Refresh(); }
         private void Update() { if (m_FeedbackUntil > 0 && Time.unscaledTime >= m_FeedbackUntil) { m_FeedbackUntil = 0; Refresh(); } }
