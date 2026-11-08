@@ -230,6 +230,8 @@
 - 本地服务器改用未压缩 Addressables 包。`OnlineGameServerBuild.LocalBundleCompression` 在 SBP 完成分包后临时覆盖压缩值，不写客户端源分组。成功、取消和异常都会恢复原值、脏标记和回调。保留正常依赖检查，不跳过资源更新。详见[本地独立服构建](Docs/OnlineSessions-20261024.md)。
 - 本机实测：总构建由 1055.7 秒降到 357.7 秒，Archive 由 387.3 秒降到 8.4 秒。总耗时也受本次缓存命中影响。产物由 1.79 GiB 增到 2.64 GiB。报告 `Library/BuildValidation/OnlineServer/build-report.json` 新增总构建、Addressables 和 Archive 秒数。
 - 单 Editor 构建成功，0 错误，4271 条既有警告。8 项压缩作用域检查通过。9 组源压缩设置、文件哈希和 Player 子目标已恢复。原 MainMenu 保持未修改，没有进入 Play、启动游戏服或进行联机验收。
+- 2026-11-08 构建报告返回 `Succeeded`，但 `Errors` 为 5。FMOD 和 `Failed to pack resource file` 指向同一段爆炸音效。用 `VirtualArtifacts/Primary/` 后的 GUID 查资产，再到 `Logs/AssetImportWorker*.log` 看导入失败原因。本次后台导入遇到文件占用和磁盘空间不足。盘上有足够空间后，在现有 Editor 中单独重导入日志点名的资源。
+- 本次 16 段音频重导入后均可加载。按 Windows Server 子目标单独打包 `CSSFragBlast1` 后可读出 PCM。完整服务器包待复验。Inter 和 Roboto 字体错误出现在构建结束后的 Editor 界面重绘阶段，对应的四个项目字体均通过加载检查。
 
 ## 手雷动作与温雷（2026-11-05）
 
