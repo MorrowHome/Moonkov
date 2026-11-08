@@ -42,7 +42,7 @@ namespace Unity.MP_FPS.Client
             {
                 image = Resources.Load<Texture2D>("Moonkov/UI/Halos/Emblem"),
                 scaleMode = ScaleMode.ScaleToFit,
-                tintColor = new Color32(13, 14, 19, 255),
+                tintColor = new Color32(161, 166, 175, 255),
                 pickingMode = PickingMode.Ignore
             };
             emblem.AddToClassList("research-quest-emblem");
@@ -308,7 +308,7 @@ namespace Unity.MP_FPS.Client
             float width = context.visualElement.contentRect.width;
             if (width < 8) return;
             var painter = context.painter2D;
-            painter.strokeColor = new Color32(161, 168, 187, 204);
+            painter.strokeColor = new Color32(90, 97, 105, 230);
             painter.lineWidth = 1;
             painter.BeginPath();
             for (int i = 0; i <= 20; i++)
