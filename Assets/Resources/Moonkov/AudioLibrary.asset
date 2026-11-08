@@ -18,6 +18,16 @@ MonoBehaviour:
   Error: {fileID: 11400000, guid: 46975e11edb870b48b911dcb228aa1ae, type: 2}
   Notification: {fileID: 11400000, guid: e4da94686cce2b84382d79e1a930e756, type: 2}
   AirlockButtonPress: {fileID: 11400000, guid: b12ef9e7a802e4f34a2df86a4f3bbfb2, type: 2}
+  InventoryOpen: {fileID: 11400000, guid: 6b54108e826b44e97b9e87c4a86fb7a8, type: 2}
+  InventoryClose: {fileID: 11400000, guid: f5775e39753eb4cb28c9d4c1ab1d5f30, type: 2}
+  ContainerClose: {fileID: 11400000, guid: e7356e17b9aa04d33a99e188d4ad3970, type: 2}
+  InventoryCloth: {fileID: 11400000, guid: 304568a47e81742708806d756fe95965, type: 2}
+  InventoryMetal: {fileID: 11400000, guid: bb37686c5bcdb40258f5a8c7af2b061b, type: 2}
+  InventoryPlastic: {fileID: 11400000, guid: 38ee3d1112ade4415a0aaceddd25a302, type: 2}
+  InventoryFood: {fileID: 11400000, guid: c294217aff37b4a2c8bfcf7466487ba1, type: 2}
+  InventoryEquip: {fileID: 11400000, guid: 9c6e0721d964e45f98d0b751a1b48dd2, type: 2}
+  InventoryDrop: {fileID: 11400000, guid: a0b3abc0435764d72833006b4a00b6cb, type: 2}
+  BatteryInsert: {fileID: 11400000, guid: 491e42c3c98254256a6061becde1057e, type: 2}
   ShieldImpact: {fileID: 11400000, guid: a369643e2b9604cdb831a740c7c5ec78, type: 2}
   ShieldBreak: {fileID: 11400000, guid: 92892d6ed57e243e394a7259fd31006b, type: 2}
   ShieldRestore: {fileID: 11400000, guid: 1f4a8eae002854fc086b946404272a71, type: 2}

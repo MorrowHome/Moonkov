@@ -203,6 +203,7 @@ public static class MoonkovAudioSetup
         AssetDatabase.SaveAssets();
         if (overwriteExisting) MoonkovBodyImpactAudioSetup.Install();
         if (overwriteExisting || !library.AirlockButtonPress) AirlockButtonAudioSetup.Install();
+        if (overwriteExisting || !library.InventoryOpen) InteractionFoleySetup.Install();
         Debug.Log($"Moonkov audio: {written} SoundDefs written, {kept} left as they were, " +
                   $"{CountClips()} clips in the table.");
     }

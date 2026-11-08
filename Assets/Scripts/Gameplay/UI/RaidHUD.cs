@@ -393,7 +393,9 @@ namespace Unity.MP_FPS
                 if(!TimedActionActive && !QuickTacticalActionPending)return;
             }
             if(!visible && m_DissectingLootId>=0)CancelTimedAction();
-            if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending)) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
+            if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending))
+                MoonkovAudio.Play(visible ? MoonkovAudio.Library?.InventoryOpen :
+                    m_OpenedLootId >= 0 ? MoonkovAudio.Library?.ContainerClose : MoonkovAudio.Library?.InventoryClose, Vector3.zero);
             if(visible)m_CloseLootWhenIdle=false;
             else if(m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)
             {
@@ -792,7 +794,7 @@ namespace Unity.MP_FPS
             m_InventoryRequestId=NextManualActionRequest();
             if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))
             { MoonkovAudio.Error(); return false; }
-            TrackInventoryAudio(lootId >= 0 ? MoonkovAudio.Library?.Container : null, MoonkovAudio.Library?.Equipment);
+            TrackInventoryAudio(lootId >= 0 ? MoonkovAudio.Library?.Container : null);
             m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
         }
         private void UpdateInventoryView()
@@ -903,7 +905,7 @@ namespace Unity.MP_FPS
             m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidInventoryDropRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId,
                 ExpectedVersion=inventory.Graph.Version,ItemId=item.Id}))
-            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
+            {TrackInventoryAudio(MoonkovAudio.Library?.InventoryDrop);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots); }
         }
         private void SendInventoryMove(Inventory.InventoryCommand command)
@@ -920,10 +922,7 @@ namespace Unity.MP_FPS
                 X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated });
             if(sent)
             {
-                string target = command.Operation == Inventory.InventoryOperation.Merge ? command.TargetId : command.Parent;
-                bool pickup = inventory.Graph.RootOf(command.ItemId) == Inventory.LootInventoryExchange.Root &&
-                    inventory.Graph.RootOf(target) != Inventory.LootInventoryExchange.Root;
-                TrackInventoryAudio(pickup ? MoonkovAudio.Library?.Pickup : MoonkovAudio.Library?.Equipment);
+                TrackInventoryAudio(MoonkovInventoryAudio.ForMove(inventory.Graph, command, MoonkovAudio.Library));
                 m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true;
             }
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container."); }
@@ -956,7 +955,7 @@ namespace Unity.MP_FPS
             if (Send(new RaidConsumableUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
             {
-                TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.Equipment :
+                TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.BatteryInsert :
                     oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : null);
                 m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
                 if(!shieldSupply)

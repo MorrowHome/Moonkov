@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client
         private InventoryGraph m_Graph;
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
+        private SoundDef m_OperationSound;
         private sealed class QuickTransferIntent
         {
             public string ItemId;
@@ -200,8 +201,9 @@ namespace Unity.MP_FPS.Client
             if (OperationAudioEnabled && m_Busy && operationCompleted)
             {
                 if (message != null) MoonkovAudio.Error();
-                else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
+                else MoonkovAudio.Play(m_OperationSound ? m_OperationSound : MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
+            if (operationCompleted) m_OperationSound = null;
             string layout = LayoutKey(graph);
             if(searchFootprints!=null)layout+="/search/"+string.Join(";",searchFootprints.Select(f=>$"{f.Id}:{f.Region}:{f.X}:{f.Y}:{f.Width}:{f.Height}"));
             bool corpseSlotsChanged = !SameCorpseSlots(m_CorpseEquipmentSlots, corpseEquipmentSlots);
@@ -600,6 +602,7 @@ namespace Unity.MP_FPS.Client
             var error=m_Graph.Clone().TryApply(command);
             if (error!=InventoryError.None) { ClearQuickTransfers(); MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message,
                 error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString()); return; }
+            m_OperationSound = MoonkovInventoryAudio.ForMove(m_Graph, command, MoonkovAudio.Library);
             m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); RefreshWorkshop(); m_Send(command);
         }
         private void FlushDeferredLayout()

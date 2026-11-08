@@ -39,6 +39,7 @@ public static class GameFoleySetup
         lib.MedicalHandling = Bank("MedicalHandling", -11, true, "TarkovBandageWrap");
         lib.Medical = Bank("Medical", -10, false, "TarkovBandageTighten");
         EditorUtility.SetDirty(lib); AssetDatabase.SaveAssetIfDirty(lib);
+        InteractionFoleySetup.Install();
     }
 
     static SoundDef Bank(string name, float db, bool loop, params string[] clips)

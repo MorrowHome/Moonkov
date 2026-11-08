@@ -334,6 +334,404 @@
       "peak": 0.29016429399337573,
       "rms": 0.13,
       "sha256": "66d485b865ff44a284c587858bd5ea8d2bbd68a5d01423e43b6e4e4be588da41"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchOpen.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          89.75,
+          90.35
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchOpen",
+        "use": "打开背包",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchOpenOriginal.wav",
+        "sha256": "63eabf7f06ee49150c00a2cdc744222c59baec60daefab0622d8f5e7c0a65a09",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.6,
+      "peak": 0.65,
+      "rms": 0.11031813544626902,
+      "sha256": "8a278bc78e4982aa505e37504dcc19a442a01da3c301e1790868ac9a96c9b566"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchClose.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          91.35,
+          91.85
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchClose",
+        "use": "合上背包",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchCloseOriginal.wav",
+        "sha256": "735a0f5862171751f52f34513e38c05ae44a2cf3d48281535e4a46b35c29a1ba",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.5,
+      "peak": 0.5245474554381451,
+      "rms": 0.13,
+      "sha256": "9fd40a2a8787af1a0d3032aa46ba8ba5bc40e2f4b52d58e43bfd0024cc1c3aca"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchHandle1.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          94.05,
+          94.5
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchHandle1",
+        "use": "软质装备移动",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchHandle1Original.wav",
+        "sha256": "a0231f55973046021f78f5609a1ba89e47fb80c5de9b8287cdd4b4371f14cda4",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.45,
+      "peak": 0.65,
+      "rms": 0.0660527614827432,
+      "sha256": "69436b86d609b68877f16833bc4c6b8f1168d5ff554ae5e41bfe9988b22f1778"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchHandle2.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          98.6,
+          99.1
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchHandle2",
+        "use": "软质装备移动",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchHandle2Original.wav",
+        "sha256": "221a70cb45527c21f850b0286da8d53a07b95a714c28061628bfb452ac3dfcff",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.5,
+      "peak": 0.65,
+      "rms": 0.09791003492503286,
+      "sha256": "240655e35fb0a86abc2c1a0a73d04be700241e335648d151d3226f29485ab7a6"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchSearch1.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          90.15,
+          91.25
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchSearch1",
+        "use": "搜刮翻找",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchSearch1Original.wav",
+        "sha256": "40e52e3f1ede7f1aa87df36de278bde96d1f306afde7e6aa64ad928e7765a443",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 1.1,
+      "peak": 0.65,
+      "rms": 0.10387224046675916,
+      "sha256": "5b4e7ddc097767f705e447aaf84d01413f8781f110a99c6cf2b88f402c6c1c00"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/TarkovPouchSearch2.wav",
+      "source": {
+        "game": "Escape from Tarkov",
+        "copyright": "Battlestate Games Limited",
+        "uploader": "Syrekx",
+        "page": "https://www.youtube.com/watch?v=MXkf808Nmvw",
+        "title": "Escape from Tarkov - All Healing and Medical Animations (2023) | 4k",
+        "source_excerpt_seconds": [
+          94.05,
+          95.15
+        ],
+        "downloaded_video_sha256": "aa29577c7abc0bb8ce40d0f1630098ae276253e3bad131ca66d8673192e15078",
+        "compress": true,
+        "name": "TarkovPouchSearch2",
+        "use": "搜刮翻找",
+        "file": "SourceData/Audio/GameFoley/TarkovPouchSearch2Original.wav",
+        "sha256": "a64329f0e6af254da6b56bc3973551efb9559898783d003ae2e3d381bbccfdda",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 1.1,
+      "peak": 0.65,
+      "rms": 0.09422922039687376,
+      "sha256": "11dba6aa505f1fbfb68fd2f9cc7685697232559201e34975d2a4b8ef205b4df5"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemMetal.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/items/ammo_pickup.wav",
+        "original_file": "sound/items/ammo_pickup.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemMetal",
+        "use": "金属物品拾取与整理",
+        "file": "SourceData/Audio/GameFoley/HL2ItemMetalOriginal.wav",
+        "sha256": "ff50ad0232a31c879241fecd964c8d8b5cc9cc5a25d579319510b540401a176e",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.7544375,
+      "peak": 0.65,
+      "rms": 0.06082123742741639,
+      "sha256": "ec49b68a07e1abf75677e94afb113ea008117ee0bab637472bbc0eef10416b66"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemPlastic1.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/plastic/plastic_box_impact_soft1.wav",
+        "original_file": "sound/physics/plastic/plastic_box_impact_soft1.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemPlastic1",
+        "use": "医疗品和瓶装物品移动",
+        "file": "SourceData/Audio/GameFoley/HL2ItemPlastic1Original.wav",
+        "sha256": "70db02083d46a1ad2b6205bccfc02b7f4e00671b8348772d9d114f3c1a4fc79c",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.12214583333333333,
+      "peak": 0.48422994913184325,
+      "rms": 0.13000000000000003,
+      "sha256": "508c9841a67b94fae7f6d370e2a65514ba25e0cf1fdddb629db2c9313ee9d468"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemPlastic2.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/plastic/plastic_box_impact_soft2.wav",
+        "original_file": "sound/physics/plastic/plastic_box_impact_soft2.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemPlastic2",
+        "use": "医疗品和瓶装物品移动",
+        "file": "SourceData/Audio/GameFoley/HL2ItemPlastic2Original.wav",
+        "sha256": "f6623c13fdab13b1af22dc882bf4d431af79ccbd6df32958723c107d01f83309",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.17197916666666666,
+      "peak": 0.5510948590419301,
+      "rms": 0.13000000000000003,
+      "sha256": "1883cd9a3615308d75dc8e8674ad7bb6b66a1798b66e5ece08bd3b667132f9c8"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemSoft1.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_soft1.wav",
+        "original_file": "sound/physics/cardboard/cardboard_box_impact_soft1.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemSoft1",
+        "use": "食物包装移动",
+        "file": "SourceData/Audio/GameFoley/HL2ItemSoft1Original.wav",
+        "sha256": "df4faa311cdee56fec12f2a97ae5b78833c7f90b53c8d4f6d92b1788764d2ab4",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.338125,
+      "peak": 0.65,
+      "rms": 0.1299206407489555,
+      "sha256": "35ad4180d527f158f96d1c12233ff586fd5ee6ea05e8f50cd883d144b347c7ca"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemSoft2.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_soft2.wav",
+        "original_file": "sound/physics/cardboard/cardboard_box_impact_soft2.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemSoft2",
+        "use": "食物包装移动",
+        "file": "SourceData/Audio/GameFoley/HL2ItemSoft2Original.wav",
+        "sha256": "8a1e4c0b1918eed71ecca1a2b4ba87e88ab44ab5a0cdd67b394a4f7042a1ca5a",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.2655625,
+      "peak": 0.6295942701551451,
+      "rms": 0.13,
+      "sha256": "03630468257b6f27bff7f760b8bfa816c331e78f24e2089118cd4b23b2d1e4f5"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2EquipmentLatch.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_rotate.wav",
+        "original_file": "sound/weapons/ar2/ar2_reload_rotate.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2EquipmentLatch",
+        "use": "穿戴装备与安装模块",
+        "file": "SourceData/Audio/GameFoley/HL2EquipmentLatchOriginal.wav",
+        "sha256": "6ab20a90d2cd43ebab4d9745c6d038be24fd8b9369e2c2893201fe45a700b238",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.44116666666666665,
+      "peak": 0.65,
+      "rms": 0.06439893610805486,
+      "sha256": "0411ead3f6ef9ef050607f5252bf324f95785f8a2844cd51c9e9a1bdf0c7d08a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemDrop1.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard1.wav",
+        "original_file": "sound/physics/cardboard/cardboard_box_impact_hard1.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemDrop1",
+        "use": "放下丢弃物品",
+        "file": "SourceData/Audio/GameFoley/HL2ItemDrop1Original.wav",
+        "sha256": "6a505af60ae0f5cb65b506311675ca10b7027952c7311afd49319eb31e34db27",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.4891666666666667,
+      "peak": 0.45810112259109986,
+      "rms": 0.13,
+      "sha256": "729ada90b2288566d98fd4a993af122904ddda6cd408e2302997f34be09c4804"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ItemDrop2.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard3.wav",
+        "original_file": "sound/physics/cardboard/cardboard_box_impact_hard3.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ItemDrop2",
+        "use": "放下丢弃物品",
+        "file": "SourceData/Audio/GameFoley/HL2ItemDrop2Original.wav",
+        "sha256": "28da15085e0d725a29d14fb9725955cf286e05959dad3a47da7a2e8e35de3f82",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.2796666666666667,
+      "peak": 0.42470718561389603,
+      "rms": 0.13,
+      "sha256": "ba4ca02c278a8efa43a619d0c7d839053129b5fad00a8a7e1ccf372eb50fbf35"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2CellInsert.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_push.wav",
+        "original_file": "sound/weapons/ar2/ar2_reload_push.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2CellInsert",
+        "use": "插入护盾电池",
+        "file": "SourceData/Audio/GameFoley/HL2CellInsertOriginal.wav",
+        "sha256": "07dba6db2c030f8d2a5395c342e2c756ed02216ac39e7cc31b30b7543a9daa9f",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.43602083333333336,
+      "peak": 0.65,
+      "rms": 0.07362843901260319,
+      "sha256": "9f2a5708ee8251ecd4bf27f1673ba9c2b2ff1057f16f77424d9fde623f96b3bf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ContainerOpen.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_open.wav",
+        "original_file": "sound/items/ammocrate_open.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ContainerOpen",
+        "use": "搜刮容器打开成功",
+        "file": "SourceData/Audio/GameFoley/HL2ContainerOpenOriginal.wav",
+        "sha256": "450f8114a06b4ce84694aa4f8f9da5f372e25a0483954c4c68ea86bc1ff6ae1e",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.3318541666666667,
+      "peak": 0.65,
+      "rms": 0.12860263398512817,
+      "sha256": "fbfdeec9105fbe9c4ad39aa5eb45357ef0bbf3fd7d95f05ba26f9b4bb425a367"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/GameFoley/HL2ContainerClose.wav",
+      "source": {
+        "game": "Half-Life 2",
+        "copyright": "Valve Corporation",
+        "uploader": "sourcesounds 公开资源镜像",
+        "page": "https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_close.wav",
+        "original_file": "sound/items/ammocrate_close.wav",
+        "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
+        "compress": false,
+        "name": "HL2ContainerClose",
+        "use": "关闭搜刮容器",
+        "file": "SourceData/Audio/GameFoley/HL2ContainerCloseOriginal.wav",
+        "sha256": "502a40dad63d88c5ba6e35434d5859a08aeb9d5c6d041ee2e48a0faff89eb1eb",
+        "loop": false,
+        "license": "All rights reserved; no Creative Commons license asserted"
+      },
+      "seconds": 0.49983333333333335,
+      "peak": 0.65,
+      "rms": 0.08529510863060703,
+      "sha256": "55f41598de8d7ac1c815fa1f5b9a1dd6e9c9e7479f2bc94aed92e569e6279c55"
     }
   ]
 }

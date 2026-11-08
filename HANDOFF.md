@@ -978,6 +978,8 @@
 
 ## 受伤人声
 
+- 2026-11-08 背包、容器、拾取整理、装备、丢弃和电池使用分开的声音。物品材质选择在 `MoonkovInventoryAudio`，声音仍等成功回执，不能改成点击即成功。`InteractionFoleySetup.Install()` 在音库重建最后覆盖。搜刮沿用服务端每 1.2 秒的序号事件；结束停止翻找，不新增本地循环计时器。来源统一登记 `MoonkovGameAudioSources.md`。
+
 - 2026-11-08 气闸成功按键使用独立 `AirlockButtonPress` 音库，原声为 Half-Life 2 的 0.081 秒按钮声。不要再调用用于撤离成功的 `MoonkovAudio.Confirm()`。Pending 不播放，拒绝保留 Error。重建入口 `AirlockButtonAudioSetup.Install()` 已接入通用音库安装。来源在统一游戏原声清单。
 
 - 2026-11-08 注射主体按用户要求直接使用《猎杀：对决》原声，用于个人非商用作品。来源为原设计师 Noise Nerd Audio 的针剂演示，游戏 v0.309，版权 Crytek GmbH；不得标为 CC0 或自行声明商业复用授权。成品 `InjectorHuntShot.wav` 为 1.38 秒，保留原音高和速度，从 `contactIn=0.42` 播放，覆盖扎入、推注及拔针。不要恢复机械注射笔、抽排水或重做拟音。吃喝、瓶盖、包装和包扎现用塔科夫原声。`GameFoleySetup.Install()` 在医疗安装链最后绑定，不能再被旧棉布覆盖。凝胶独立涂抹。所有游戏原声逐条登记在 `Assets/StreamingAssets/MoonkovGameAudioSources.md`，新增素材须同步该文件。保留 `MoonkovMedicalFoleyCredits.txt`，其中有原声出处与 Frostnox 的 CC BY 4.0 署名。原声音库的旧 GUID 曾与现存素材不匹配；安装后须检查空引用，不能只看 WAV 文件存在。`RaidActionAudioSetup.Install()` 自动调用 `MedicalFoleySetup.Install()`。来源、时序和验证边界见[音效系统](Docs/AudioSystem.md#2026-11-08-吃喝补氧与医疗)。

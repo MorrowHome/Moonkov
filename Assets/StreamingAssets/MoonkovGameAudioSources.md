@@ -22,6 +22,23 @@
 | `Clips/GameFoley/TarkovBandageWrap.wav` | 持续缠绕绷带 | Escape from Tarkov / Battlestate Games Limited | [Joe Iz Gaming](https://www.youtube.com/watch?v=0EQEZ7RMr5I) | 3.250–4.650 秒 |
 | `Clips/GameFoley/TarkovBandageTighten.wav` | 包扎结束收紧 | Escape from Tarkov / Battlestate Games Limited | [Joe Iz Gaming](https://www.youtube.com/watch?v=0EQEZ7RMr5I) | 4.850–5.350 秒 |
 | `Clips/GameFoley/HL2AirlockButton.wav` | 气闸按钮按下成功反馈 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/84f5de61421d95ce1eb9dcf9625a90782b41b278/sound/buttons/button17.wav) | sound/buttons/button17.wav（完整 0.081 秒） |
+| `Clips/GameFoley/TarkovPouchOpen.wav` | 打开背包 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 89.750–90.350 秒 |
+| `Clips/GameFoley/TarkovPouchClose.wav` | 合上背包 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 91.350–91.850 秒 |
+| `Clips/GameFoley/TarkovPouchHandle1.wav` | 软质装备移动 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 94.050–94.500 秒 |
+| `Clips/GameFoley/TarkovPouchHandle2.wav` | 软质装备移动 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 98.600–99.100 秒 |
+| `Clips/GameFoley/TarkovPouchSearch1.wav` | 搜刮翻找 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 90.150–91.250 秒 |
+| `Clips/GameFoley/TarkovPouchSearch2.wav` | 搜刮翻找 | Escape from Tarkov / Battlestate Games Limited | [Syrekx](https://www.youtube.com/watch?v=MXkf808Nmvw) | 94.050–95.150 秒 |
+| `Clips/GameFoley/HL2ItemMetal.wav` | 金属物品拾取与整理 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammo_pickup.wav) | sound/items/ammo_pickup.wav |
+| `Clips/GameFoley/HL2ItemPlastic1.wav` | 医疗品和瓶装物品移动 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/plastic/plastic_box_impact_soft1.wav) | sound/physics/plastic/plastic_box_impact_soft1.wav |
+| `Clips/GameFoley/HL2ItemPlastic2.wav` | 医疗品和瓶装物品移动 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/plastic/plastic_box_impact_soft2.wav) | sound/physics/plastic/plastic_box_impact_soft2.wav |
+| `Clips/GameFoley/HL2ItemSoft1.wav` | 食物包装移动 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_soft1.wav) | sound/physics/cardboard/cardboard_box_impact_soft1.wav |
+| `Clips/GameFoley/HL2ItemSoft2.wav` | 食物包装移动 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_soft2.wav) | sound/physics/cardboard/cardboard_box_impact_soft2.wav |
+| `Clips/GameFoley/HL2EquipmentLatch.wav` | 穿戴装备与安装模块 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_rotate.wav) | sound/weapons/ar2/ar2_reload_rotate.wav |
+| `Clips/GameFoley/HL2ItemDrop1.wav` | 放下丢弃物品 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard1.wav) | sound/physics/cardboard/cardboard_box_impact_hard1.wav |
+| `Clips/GameFoley/HL2ItemDrop2.wav` | 放下丢弃物品 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard3.wav) | sound/physics/cardboard/cardboard_box_impact_hard3.wav |
+| `Clips/GameFoley/HL2CellInsert.wav` | 插入护盾电池 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_push.wav) | sound/weapons/ar2/ar2_reload_push.wav |
+| `Clips/GameFoley/HL2ContainerOpen.wav` | 搜刮容器打开成功 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_open.wav) | sound/items/ammocrate_open.wav |
+| `Clips/GameFoley/HL2ContainerClose.wav` | 关闭搜刮容器 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_close.wav) | sound/items/ammocrate_close.wav |
 
 路径前缀为 `Assets/Audio/Moonkov/`。视频截录保留原录背景，不作为解包无损文件标注。
 

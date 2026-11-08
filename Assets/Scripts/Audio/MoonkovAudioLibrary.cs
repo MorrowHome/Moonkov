@@ -7,6 +7,8 @@ namespace Unity.MP_FPS
     {
         public SoundDef Click, Hover, Confirm, Error, Notification;
         public SoundDef AirlockButtonPress;
+        public SoundDef InventoryOpen, InventoryClose, ContainerClose;
+        public SoundDef InventoryCloth, InventoryMetal, InventoryPlastic, InventoryFood, InventoryEquip, InventoryDrop, BatteryInsert;
         public SoundDef ShieldImpact, ShieldBreak, ShieldRestore;
         public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
         public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;
