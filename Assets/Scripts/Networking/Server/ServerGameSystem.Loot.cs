@@ -258,7 +258,10 @@ namespace Unity.MP_FPS
                     BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out _);
                 var health=accessible ? SystemAPI.GetComponent<PredictedPlayerGhost>(player) : default;
                 var position=accessible ? SystemAPI.GetComponent<LocalTransform>(player).Position : inventory.MedicalOrigin;
+                bool wasBleeding=health.TacticalBleeding;
                 inventory.RefreshMedical(ref health,accessible,position,SystemAPI.Time.ElapsedTime);
+                if(accessible && wasBleeding && !health.TacticalBleeding)
+                    TacticalStatus(TacticalWorld(ref state),player).Bleed=0;
                 if(accessible)SystemAPI.SetComponent(player,health);
             }
             var actionPlayer=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;

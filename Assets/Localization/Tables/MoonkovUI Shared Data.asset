@@ -6591,6 +6591,94 @@ MonoBehaviour:
       retained on death or timeout while equipped.
     m_Metadata:
       m_Items: []
+  - m_Id: 11496533064146944
+    m_Key: O-25 Oxygen recycler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496533089312768
+    m_Key: Equip in a special slot to reduce suit oxygen consumption by 25%. Requires
+      a life-support collar. Multiple recyclers do not stack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496537791127552
+    m_Key: G-60 Glare filter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496537791127553
+    m_Key: Equip in a special slot to reduce aimed-light glare and flash grenade
+      exposure by 60%. Multiple filters do not stack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496542903984128
+    m_Key: SR-500 Survey instrument
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496542903984129
+    m_Key: Combines compass bearings and 500-metre laser ranging in one special slot.
+      Measures the first solid surface; cannot see through walls.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496547622576128
+    m_Key: Hemostatic bandage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496547622576129
+    m_Key: Apply for 1.5 seconds to stop bleeding and restore up to 15 HP to one
+      body part. Use from pockets or an equipped badge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496551753965568
+    m_Key: Rescue medical kit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496551753965569
+    m_Key: Treat one body part for 5 seconds to restore up to 100 HP. Use from an
+      equipped badge. Does not raise the recoverable health limit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496556023767040
+    m_Key: Hydration gel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496556023767041
+    m_Key: Consume in 1.5 seconds for 10 energy and 25 hydration. Occupies 10 fullness.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496561535082496
+    m_Key: Compressed expedition ration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496561535082497
+    m_Key: Eat for 5 seconds for 75 energy and 50 fullness. Consumes 15 hydration.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496566777962496
+    m_Key: O-20 Rapid oxygen flask
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496566777962497
+    m_Key: Refill 20 oxygen in 1 second. Use from pockets or an equipped badge with
+      a life-support collar. Excess oxygen is lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496570636722176
+    m_Key: Flash grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496570636722177
+    m_Key: 2-second fuse. Dazzles exposed targets within 12 metres for up to 4 seconds.
+      Looking away, cover and smoke reduce or block exposure. Can dazzle the thrower.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496574482898944
+    m_Key: Poison gas bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11496574482898945
+    m_Key: 3-second fuse. Creates a 3-metre poison cloud for 15 seconds. Poison deals
+      damage and prevents healing. Antidote protects; choke clouds disperse it.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

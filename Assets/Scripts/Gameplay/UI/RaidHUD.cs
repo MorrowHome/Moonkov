@@ -941,7 +941,7 @@ namespace Unity.MP_FPS
                 if(!shieldSupply)
                 {
                     BeginTimedAction();m_MedicalActive=m_ConsumableActive=true;m_ConsumableFood=definition.Food;m_ConsumableOxygen=oxygenSupply;
-                    m_ActionDuration=oxygenSupply ? RaidOxygenConsumables.UseSeconds : definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+                    m_ActionDuration=Inventory.ConsumableCatalog.UseSeconds(item.Code);
                     m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
                 }
             }
@@ -970,7 +970,7 @@ namespace Unity.MP_FPS
                 BeginTimedAction();
                 TrackInventoryAudio(MoonkovAudio.Library?.Medical);
                 m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
-                m_ActionDuration=MoonRaidMap.Active.MedicalSeconds;m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
+                m_ActionDuration=Inventory.ConsumableCatalog.MedicalSeconds(item.Code,MoonRaidMap.Active.MedicalSeconds);m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container."); }
             RefreshHealth();

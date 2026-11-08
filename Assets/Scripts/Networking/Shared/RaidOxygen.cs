@@ -57,7 +57,8 @@ namespace Unity.MP_FPS
             oxygen >= Capacity ? 100 : Mathf.Clamp(Mathf.FloorToInt(oxygen), 1, 99);
 
         public static void Tick(ref PredictedPlayerGhost state, in AtmosphereSample atmosphere,
-            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true,bool? movingOverride=null)
+            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true,bool? movingOverride=null,
+            float equipmentDrainMultiplier = 1)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(dt) || dt <= 0) return;
             // C# default(struct) bypasses constructors; make that public API case safe too.
@@ -70,6 +71,8 @@ namespace Unity.MP_FPS
             bool moving = movingOverride ?? (state.ControllerState.MovementSpeed > .1f);
             float exertion = moving ? (state.ControllerState.Sprinting ? parameters.SprintingMultiplier : parameters.WalkingMultiplier) : 1;
             state.OxygenDrainPerSecond = atmosphere.Breathable ? 0 : Capacity / parameters.OutdoorSeconds * exertion;
+            if (sealedReserve && float.IsFinite(equipmentDrainMultiplier))
+                state.OxygenDrainPerSecond *= Mathf.Clamp(equipmentDrainMultiplier, .75f, 1);
             if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.OxygenReserve)state.OxygenDrainPerSecond*=.75f;
             float ambientRefill = sealedReserve && atmosphere.Breathable && atmosphere.AllowsSuitRefill ? parameters.AirRefillPerSecond : 0;
             // Overlapping sources do not multiply supply. A station can also supply a sealed suit in vacuum.

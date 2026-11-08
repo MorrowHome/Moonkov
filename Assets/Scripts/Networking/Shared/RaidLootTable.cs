@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
                 new Entry("oxygen_canister", 20, 1, 2), new Entry("cells", 16, 1, 3),
                 new Entry("energy_grenade", 9, 1, 2), new Entry("medkit", 10), new Entry("dust", 10, 2, 5),
                 new Entry("energy_gel", 14, 1, 2), new Entry("protein_bar", 12, 1, 2),
+                new Entry("hydration_gel", 12, 1, 2), new Entry("compressed_ration", 8), new Entry("emergency_oxygen", 10),
                 new Entry("electrolyte", 12), new Entry("med_gel", 8, 1, 2),
                 new Entry("oxygen_reserve", 6), new Entry("sling_pack", 5),
                 new Entry("small_pack", 5), new Entry("alloy", 5, 1, 2)
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS
             new Table(new[] { new Entry("medkit", 1, 2, 4) }, new[]
             {
                 new Entry("med_gel", 30, 2, 3), new Entry("trauma_kit", 18),
+                new Entry("hemostatic_bandage", 20, 1, 2), new Entry("rescue_kit", 10), new Entry("emergency_oxygen", 12),
                 new Entry("vitality_shot", 5), new Entry("stamina_shot", 4), new Entry("antidote_shot", 4),
                 new Entry("electrolyte", 16, 1, 2), new Entry("oxygen_reserve", 12),
                 new Entry("water", 12, 1, 2), new Entry("oxygen_canister", 12, 1, 2),
@@ -47,6 +49,7 @@ namespace Unity.MP_FPS
             new Table(new[] { new Entry("alloy", 1, 2, 5), new Entry("dust", 1, 3, 8) }, new[]
             {
                 new Entry("cells", 18, 2, 5), new Entry("oxygen_canister", 10),
+                new Entry("oxygen_recycler", 3), new Entry("glare_filter", 3), new Entry("survey_multitool", 2),
                 new Entry("halo_capacitor", 8), new Entry("halo_charge_bridge", 8),
                 new Entry("halo_focus_lens", 4), new Entry("halo_hit_marker", 4),
                 new Entry("circuit_board", 22, 1, 2), new Entry("copper_coil", 20, 1, 2),
@@ -58,6 +61,8 @@ namespace Unity.MP_FPS
             new Table(new[] { new Entry("cells", 1, 2, 4) }, new[]
             {
                 new Entry("halo_capacitor", 12), new Entry("halo_charge_bridge", 12),
+                new Entry("oxygen_recycler", 3), new Entry("glare_filter", 3), new Entry("survey_multitool", 2),
+                new Entry("flash_grenade", 4), new Entry("poison_bomb", 3),
                 new Entry("halo_focus_lens", 10), new Entry("halo_fan_array", 10),
                 new Entry("halo_pulse_controller", 10), new Entry("halo_hit_marker", 8),
                 new Entry("scout_rig", 12), new Entry("field_rig", 8),
@@ -82,6 +87,10 @@ namespace Unity.MP_FPS
         // mooncore recycler on their existing acquisition paths.
         private static readonly Entry[] SharedPool =
         {
+            new Entry("hemostatic_bandage", 10, 1, 2), new Entry("rescue_kit", 5),
+            new Entry("hydration_gel", 10), new Entry("compressed_ration", 7), new Entry("emergency_oxygen", 10),
+            new Entry("oxygen_recycler", 2), new Entry("glare_filter", 3), new Entry("survey_multitool", 2),
+            new Entry("flash_grenade", 4), new Entry("poison_bomb", 3),
             new Entry("ration", 16, 1, 2), new Entry("water", 16),
             new Entry("energy_gel", 14, 1, 2), new Entry("protein_bar", 14, 1, 2), new Entry("electrolyte", 12),
             new Entry("medkit", 14, 1, 2), new Entry("med_gel", 14, 1, 2), new Entry("trauma_kit", 6),
@@ -113,9 +122,11 @@ namespace Unity.MP_FPS
         private static readonly Entry[][] DrawerPools =
         {
             new[] { new Entry("ration", 12), new Entry("water", 12), new Entry("protein_bar", 18),
+                new Entry("hydration_gel", 12), new Entry("compressed_ration", 6), new Entry("emergency_oxygen", 8),
                 new Entry("energy_gel", 14), new Entry("electrolyte", 5), new Entry("oxygen_canister", 6),
                 new Entry("dust", 12, 1, 2), new Entry("cells", 8) },
             new[] { new Entry("med_gel", 25), new Entry("medkit", 12), new Entry("electrolyte", 18),
+                new Entry("hemostatic_bandage", 18), new Entry("rescue_kit", 5), new Entry("emergency_oxygen", 8),
                 new Entry("trauma_kit", 5), new Entry("vitality_shot", 3), new Entry("antidote_shot", 3),
                 new Entry("oxygen_canister", 5), new Entry("water", 10) },
             new[] { new Entry("copper_coil", 22), new Entry("circuit_board", 18), new Entry("alloy", 18, 1, 2),

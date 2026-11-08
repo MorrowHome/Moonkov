@@ -123,6 +123,16 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("survey_compass", "C-01 月面指南针", ItemKind.SpecialEquipment, 1, 1, 1, .15f),
                 new ItemDefinition("laser_rangefinder", "R-500 激光测距仪", ItemKind.SpecialEquipment, 1, 1, 1, .35f),
                 new ItemDefinition("team_tracker", "T-01 Squad tracker", ItemKind.SpecialEquipment, 1, 1, 1, .25f),
+                new ItemDefinition("oxygen_recycler", "O-25 Oxygen recycler", ItemKind.SpecialEquipment, 1, 1, 1, 0.4f),
+                new ItemDefinition("glare_filter", "G-60 Glare filter", ItemKind.SpecialEquipment, 1, 1, 1, 0.15f),
+                new ItemDefinition("survey_multitool", "SR-500 Survey instrument", ItemKind.SpecialEquipment, 1, 1, 1, 0.45f),
+                new ItemDefinition("hemostatic_bandage", "Hemostatic bandage", ItemKind.Medical, 1, 1, 5, 0.06f),
+                new ItemDefinition("rescue_kit", "Rescue medical kit", ItemKind.Medical, 2, 1, 2, 0.65f),
+                new ItemDefinition("hydration_gel", "Hydration gel", ItemKind.Food, 1, 1, 4, 0.12f),
+                new ItemDefinition("compressed_ration", "Compressed expedition ration", ItemKind.Food, 1, 2, 3, 0.4f),
+                new ItemDefinition("emergency_oxygen", "O-20 Rapid oxygen flask", ItemKind.Oxygen, 1, 1, 4, 0.18f),
+                new ItemDefinition("flash_grenade", "Flash grenade", ItemKind.Throwable, 1, 1, 3, 0.25f),
+                new ItemDefinition("poison_bomb", "Poison gas bomb", ItemKind.Throwable, 1, 1, 2, 0.4f),
                 new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
                 new ItemDefinition("scout_rig", "R-02 Scout badge", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
@@ -468,7 +478,7 @@ namespace Unity.MP_FPS.Inventory
 
         // Only the match server commits this result. Full health/death/stale versions
         // leave both health and the stack untouched; a replay cannot consume it twice.
-        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed, bool allowZeroHealth = false)
+        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed, bool allowZeroHealth = false, bool allowFullHealth = false)
         {
             healed = health;
             if (expectedVersion != Version) return InventoryError.Stale;
@@ -476,7 +486,8 @@ namespace Unity.MP_FPS.Inventory
             if (item == null) return InventoryError.Missing;
             if (!MedicalAccessible(item)) return InventoryError.Inaccessible;
             if (float.IsNaN(health) || float.IsInfinity(health) || float.IsNaN(maximum) || float.IsInfinity(maximum) ||
-                health < 0f || (!allowZeroHealth && health == 0f) || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
+                health < 0f || (!allowZeroHealth && health == 0f) || maximum <= 0 || maximum < health ||
+                (!allowFullHealth && maximum == health) || item.Quantity < 1) return InventoryError.Invalid;
             healed = Math.Min(maximum, health + ConsumableCatalog.MedicalRestore(item.Code));
             if (--item.Quantity == 0) Items.Remove(item);
             Version++;

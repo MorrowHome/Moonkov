@@ -225,10 +225,15 @@ namespace Unity.MP_FPS
             string itemId, int expectedVersion, BodyPart part)
         {
             if(state.TacticalPoisonSeconds>0)return Inventory.InventoryError.Inaccessible;
+            bool bandage = state.TacticalBleeding && Inventory.ConsumableCatalog.StopsBleeding(inventory?.Find(itemId)?.Code);
             if (part == BodyPart.Auto) part = MostInjured(state);
-            if (!CanHeal(state, part)) return Inventory.InventoryError.Invalid;
-            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(state,part), out var healed, allowZeroHealth: true);
-            if (error == Inventory.InventoryError.None) Set(ref state, part, healed);
+            if (bandage && part == BodyPart.Auto) part = BodyPart.Chest;
+            if (!CanHeal(state, part) && !(bandage && state.BodyHealthInitialized && state.CurrentHealth > 0 && Maximum(state,part)>0))
+                return Inventory.InventoryError.Invalid;
+            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(state,part), out var healed,
+                allowZeroHealth: true, allowFullHealth: bandage);
+            if (error == Inventory.InventoryError.None)
+            { Set(ref state, part, healed); if (bandage) state.TacticalBleeding = false; }
             return error;
         }
 

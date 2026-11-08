@@ -64,7 +64,8 @@ namespace Unity.MP_FPS
                 var samplePosition = position + Vector3.up;
                 BreathableZone.TrySample(samplePosition, out var atmosphere);
                 RaidOxygen.Tick(ref health.ValueRW, atmosphere, map.OxygenParameters, SystemAPI.Time.DeltaTime,
-                    tick, OxygenRefillZone.SampleSupply(samplePosition, atmosphere.Breathable),health.ValueRO.HeadDomeEquipped,moving);
+                    tick, OxygenRefillZone.SampleSupply(samplePosition, atmosphere.Breathable),health.ValueRO.HeadDomeEquipped,moving,
+                    Inventory.SpecialEquipmentRules.OxygenDrainMultiplier(inventory?.Graph));
                 RaidNutrition.Tick(ref health.ValueRW, SystemAPI.Time.DeltaTime,
                     map.EnergyReserveSeconds, map.HydrationReserveSeconds, map.DigestionSeconds,
                     map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick,moving);

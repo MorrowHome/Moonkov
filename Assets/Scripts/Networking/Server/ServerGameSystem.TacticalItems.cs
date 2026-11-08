@@ -35,6 +35,8 @@ namespace Unity.MP_FPS
         public sealed class Status
         {
             public double Fire,Poison,Bleed,Stamina,Antidote,Wire,Cough;
+            public double FlashUntil;
+            public float FlashStrength;
             public TacticalSprintState Sprint;public float3 SprintPosition;public bool SprintPositionKnown;
             public int FireOwner,PoisonOwner,BleedOwner;
             public ClashDamageSource FireSource,PoisonSource,BleedSource;
@@ -132,6 +134,8 @@ namespace Unity.MP_FPS
         // Disposable-world authority fixture; never runs automatically or touches a player profile.
         public void TacticalTestTick(ref SystemState state,EntityCommandBuffer ecb) => UpdateTacticalItems(ref state,ecb);
         public void TacticalTestClear(ref SystemState state,EntityCommandBuffer ecb) => ClearTacticalItems(ref state,ecb);
+        public void TacticalTestRefreshMedical(ref SystemState state,Entity connection) =>
+            RefreshLootAccess(ref state,connection,state.EntityManager.GetComponentData<RaidSession>(connection));
 #endif
         private TacticalServerWorld TacticalWorld(ref SystemState state)
         {
@@ -468,15 +472,24 @@ namespace Unity.MP_FPS
             (phase==TacticalWorldPhase.Fire || phase==TacticalWorldPhase.Poison || phase==TacticalWorldPhase.Wire);
         private void TacticalDetonate(ref SystemState state,EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,double now,uint tick)
         {
+            if(obj.Definition.Kind==TacticalItemKind.Flash)
+            {
+                TacticalFlash(state.EntityManager,world,obj,now);
+                RaidEnvironmentalNoise.EmitExplosion(state.EntityManager,obj.Scene,obj.Position,
+                    RaidEnvironmentalNoise.ExplosionId(false,world.Epoch,obj.Id),now);
+                obj.Phase=TacticalWorldPhase.Explosion;obj.Velocity=Vector3.zero;
+                obj.Until=now+.35;obj.NextSnapshot=0;TacticalBroadcast(ecb,world,obj,false);return;
+            }
             if(obj.Definition.Kind==TacticalItemKind.Smoke)
             {
                 obj.Phase=TacticalWorldPhase.Smoke;obj.Velocity=Vector3.zero;
                 obj.Until=now+obj.Definition.Lifetime;obj.NextSnapshot=0;return;
             }
-            if(obj.Definition.Kind==TacticalItemKind.Fire || obj.Definition.Kind==TacticalItemKind.Choke)
+            if(obj.Definition.Kind==TacticalItemKind.Fire || obj.Definition.Kind==TacticalItemKind.Choke || obj.Definition.Kind==TacticalItemKind.PoisonBomb)
             {
                 if(obj.Definition.Kind==TacticalItemKind.Fire && TacticalChoked(world,obj.Position,obj.Scene,now)){obj.Until=now;return;}
-                obj.Phase=obj.Definition.Kind==TacticalItemKind.Fire ? TacticalWorldPhase.Fire : TacticalWorldPhase.Choke;
+                obj.Phase=obj.Definition.Kind==TacticalItemKind.Fire ? TacticalWorldPhase.Fire :
+                    obj.Definition.Kind==TacticalItemKind.PoisonBomb ? TacticalWorldPhase.Poison : TacticalWorldPhase.Choke;
                 obj.Velocity=Vector3.zero;obj.Until=now+obj.Definition.Lifetime;obj.NextSnapshot=0;return;
             }
             if(obj.Definition.Kind!=TacticalItemKind.Dynamite && obj.Definition.Kind!=TacticalItemKind.Frag)return;
@@ -500,6 +513,34 @@ namespace Unity.MP_FPS
             RaidEnvironmentalNoise.EmitExplosion(state.EntityManager,obj.Scene,obj.Position,
                 RaidEnvironmentalNoise.ExplosionId(false,world.Epoch,obj.Id),now);
             obj.Phase=TacticalWorldPhase.Explosion;obj.Until=now+.6;obj.NextSnapshot=0;TacticalBroadcast(ecb,world,obj,false);
+        }
+        // Reuses the normal victim list and collision scene. No extra overlap scans or network messages per target.
+        public static void TacticalFlash(EntityManager manager,TacticalServerWorld world,TacticalServerWorld.Object obj,double now)
+        {
+            foreach(var victim in world.Victims)
+            {
+                if(!manager.HasComponent<PredictedPlayerGhost>(victim) || !manager.HasComponent<GhostGameObjectLink>(victim))continue;
+                var health=manager.GetComponentData<PredictedPlayerGhost>(victim);
+                if(health.CurrentHealth<=0 || health.ClashEnabled && health.ClashLife!=ClashLife.Alive ||
+                    BountyClashDamage.TeamProtected(manager,victim,obj.Source))continue;
+                var root=manager.GetComponentObject<GhostGameObjectLink>(victim).LinkedInstance;
+                if(!root || root.gameObject.scene.GetPhysicsScene()!=obj.Scene)continue;
+                var eye=TacticalEye(root);var forward=TacticalDirection(health);
+                if(root.TryGetComponent<ProceduralAlienEnemy>(out var alien)){eye=alien.AimPoint;forward=root.transform.forward;}
+                else
+                {
+                    var look=health.ControllerState.FreeLookOffset;
+                    forward=Quaternion.Euler(health.ControllerState.PitchDegrees+look.y,health.ControllerState.YawDegrees+look.x,0)*Vector3.forward;
+                }
+                var delta=obj.Position-eye;float distance=delta.magnitude;
+                float strength=TacticalItemRules.FlashStrength(distance,distance>.01f ? Vector3.Dot(forward,delta/distance) : 1);
+                if(strength<=0 || !EnergyGrenadePhysics.ClearSight(obj.Scene,obj.Position,eye,root.transform) ||
+                    SmokeVisibility.Blocked(world,obj.Scene,obj.Position,eye))continue;
+                var status=TacticalStatus(world,victim);
+                float remaining=status.FlashStrength*Mathf.Clamp01((float)(status.FlashUntil-now)/4);
+                if(strength<=remaining)continue;
+                status.FlashStrength=strength;status.FlashUntil=now+obj.Definition.Lifetime;
+            }
         }
         private void TacticalArea(ref SystemState state,TacticalServerWorld world,TacticalServerWorld.Object obj,double now,uint tick)
         {
@@ -575,7 +616,7 @@ namespace Unity.MP_FPS
                 if(!SystemAPI.Exists(victim)||!SystemAPI.HasComponent<PredictedPlayerGhost>(victim)) {world.Scratch.Add(victim);continue;}
                 var health=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
                 bool canHurt=health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
-                if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=0;}
+                if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=status.FlashUntil=0;}
                 health.TacticalWireSeconds=TacticalRemaining(status.Wire,now);health.TacticalCoughSeconds=TacticalRemaining(status.Cough,now);
                 health.TacticalPoisonSeconds=TacticalRemaining(status.Poison,now);
                 health.TacticalBleeding=status.Bleed>now;SystemAPI.SetComponent(victim,health);
@@ -596,6 +637,23 @@ namespace Unity.MP_FPS
                     var before=monitorPmc ? SystemAPI.GetComponent<PredictedPlayerGhost>(victim) : default;
                     BountyClashDamage.Apply(state.World,victim,status.BleedSource,BodyPart.Auto,4*dt,tick,RaidDamageKind.Bleed);
                     if(monitorPmc)PmcStatusDamage.Record(status,before,SystemAPI.GetComponent<PredictedPlayerGhost>(victim));
+                    // A bandage must survive its own wound ticks. New attacks, fire and poison still interrupt it.
+                    if(status.Fire<=now && status.Poison<=now)
+                    {
+                        var connection=FindTacticalConnection(ref state,victim);
+                        if(state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                        {
+                            var inventory=GetRaidInventory(ref state,connection);
+                            if(inventory.MedicalItemId!=null && !inventory.MedicalIsConsumable &&
+                                ConsumableCatalog.StopsBleeding(inventory.Graph.Find(inventory.MedicalItemId)?.Code) &&
+                                RaidHealth.SelfTreatmentDamageUnchanged(health,inventory.MedicalDamageSequence,inventory.MedicalShieldHitSequence))
+                            {
+                                var after=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
+                                inventory.MedicalDamageSequence=after.NonPhysiologicalDamageSequence;
+                                inventory.MedicalShieldHitSequence=after.ShieldHitSequence;
+                            }
+                        }
+                    }
                 }
                 if(treating && status.Poison<=now)
                 {
@@ -610,7 +668,8 @@ namespace Unity.MP_FPS
                         {pending.Hit=after.LastHitTick;pending.DamageSequence=after.NonPhysiologicalDamageSequence;
                             pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;}
                 }
-                if(!status.Sprint.Initialized && Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
+                if(!status.Sprint.Initialized && status.FlashUntil<=now &&
+                    Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
             }
             foreach(var entity in world.Scratch)world.Statuses.Remove(entity);
         }

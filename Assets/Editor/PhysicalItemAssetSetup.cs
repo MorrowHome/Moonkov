@@ -16,8 +16,8 @@ public static class PhysicalItemAssetSetup
     public static string Import(string stagingDirectory)
     {
         if(EditorApplication.isPlaying)throw new InvalidOperationException("Import physical item assets outside Play Mode.");
-        // The tracker mesh and icon are authored by Tools/Validation/TeamTrackerAssets.cs in Unity.
-        var definitions=InventoryCatalog.Definitions.Values.Where(d=>PhysicalItemVisuals.IsPhysical(d.Code) && d.Code!=TeamOutlineRules.ItemCode).ToArray();
+        // Native meshes are authored by the item builders in Tools/Validation.
+        var definitions=InventoryCatalog.Definitions.Values.Where(d=>PhysicalItemVisuals.IsPhysical(d.Code) && !File.Exists(Root+"/Models/"+d.Code+".asset")).ToArray();
         foreach(var d in definitions)
             foreach(string ext in new[]{".fbx",".png"})
                 if(!File.Exists(Path.Combine(stagingDirectory,d.Code+ext)))throw new FileNotFoundException(d.Code+ext);

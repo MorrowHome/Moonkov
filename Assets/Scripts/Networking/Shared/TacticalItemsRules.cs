@@ -5,7 +5,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum TacticalItemKind : byte
-    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke }
+    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke, Flash, PoisonBomb }
     public enum TacticalItemAction : byte { Use, Cancel, Disarm, Resupply, Extinguish }
     public enum TacticalItemFeedback : byte { None, Started, Cancelled, Interrupted, Completed, NeedGround, Limit, Poisoned, NoWound, NoTarget, NoRoom, Stale, Unavailable }
     public enum TacticalWorldPhase : byte { Flying, Armed, Fire, Choke, Wire, Poison, Alarm, Supply, Explosion, Removed, Smoke }
@@ -14,7 +14,8 @@ namespace Unity.MP_FPS
         public readonly string Code;
         public readonly TacticalItemKind Kind;
         public readonly float UseSeconds, Fuse, Radius, Lifetime;
-        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke || Kind == TacticalItemKind.Smoke;
+        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke ||
+            Kind == TacticalItemKind.Smoke || Kind == TacticalItemKind.Flash || Kind == TacticalItemKind.PoisonBomb;
         public bool Trap => Kind >= TacticalItemKind.AlertTrap && Kind <= TacticalItemKind.PoisonTrap;
         public bool Deployable => Trap || Kind == TacticalItemKind.AmmoBox;
         public TacticalItemDefinition(string code, TacticalItemKind kind, float use, float fuse=0, float radius=0, float lifetime=0)
@@ -37,7 +38,9 @@ namespace Unity.MP_FPS
             new("concertina_trip_mine",TacticalItemKind.WireTrap,3,0,1,180),
             new("poison_trip_mine",TacticalItemKind.PoisonTrap,3,0,1,180),
             new("ammo_box",TacticalItemKind.AmmoBox,3,0,0,120),
-            new("smoke_grenade",TacticalItemKind.Smoke,1,3,5,20)
+            new("smoke_grenade",TacticalItemKind.Smoke,1,3,5,20),
+            new("flash_grenade",TacticalItemKind.Flash,1,2,12,4),
+            new("poison_bomb",TacticalItemKind.PoisonBomb,1,3,3,15)
         };
         public static TacticalItemDefinition Find(string code)
         { foreach(var d in Definitions) if(d.Code==code)return d; return null; }
@@ -62,6 +65,11 @@ namespace Unity.MP_FPS
         {
             if(!float.IsFinite(distance)||distance<0||distance>=8)return 0;
             return (kind==TacticalItemKind.Dynamite ? 650 : kind==TacticalItemKind.Frag ? 320 : 0)*Math.Min(1,(8-distance)/6);
+        }
+        public static float FlashStrength(float distance, float facing)
+        {
+            if (!float.IsFinite(distance) || !float.IsFinite(facing) || distance < 0 || distance >= 12) return 0;
+            return Math.Clamp((facing + .2f) / 1.05f, 0, 1) * Math.Clamp((12 - distance) / 8, 0, 1);
         }
         // Works on a copy so inventory capacity failures never spend the box or alter cells.
         // Recharges an existing legal carried cell before adding one real cell to the rig/pockets.

@@ -59,7 +59,7 @@ namespace Unity.MP_FPS
                         code = inventory.Graph.Find(inventory.MedicalItemId)?.Code;
                         action = Kind(code, inventory.MedicalIsConsumable);
                         remaining = (float)System.Math.Max(0, inventory.MedicalUntil - now);
-                        duration = inventory.MedicalIsConsumable ? UseSeconds(code) : MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3;
+                        duration = inventory.MedicalIsConsumable ? UseSeconds(code) : ConsumableCatalog.MedicalSeconds(code, MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3);
                     }
                     else if (inventory.DissectingLootId >= 0)
                     {
@@ -83,7 +83,7 @@ namespace Unity.MP_FPS
                     else if (brain.HealUntil > now)
                     {
                         code = brain.Inventory.Find(brain.HealItemId)?.Code; action = Kind(code, false);
-                        remaining = (float)(brain.HealUntil - now); duration = 3;
+                        remaining = (float)(brain.HealUntil - now); duration = ConsumableCatalog.MedicalSeconds(code);
                     }
                     else if (brain.LootUntil > now)
                     { action = HandAction.Search; remaining = (float)(brain.LootUntil - now); duration = 2.5f; target = brain.LootLookPoint; }
@@ -109,8 +109,7 @@ namespace Unity.MP_FPS
             }
             return code == "medkit" || code == "vitality_shot" || code == "stamina_shot" || code == "antidote_shot" ? HandAction.Inject : HandAction.Treat;
         }
-        private static float UseSeconds(string code) => ConsumableCatalog.Get(code)?.Oxygen > 0 ? RaidOxygenConsumables.UseSeconds :
-            ConsumableCatalog.Get(code)?.Food == true ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds;
+        private static float UseSeconds(string code) => ConsumableCatalog.UseSeconds(code);
         public static void Publish(ref PredictedPlayerGhost health, HandAction action, string code, float remaining, float duration)
         {
             if (remaining <= 0 || duration <= 0) action = HandAction.None;
