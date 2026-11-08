@@ -31,6 +31,10 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 
 正式场景用玩家相机参数比较 12 处机位，并在转运走廊、收货区、中央塔上层横移连拍。11 个室内机位里，平坦受光区域的局部暗像素候选从 6889 降到 4830。候选包含较窄的结构阴影，收货区仍有明显深色边缘。外部太阳直射的对照变化很小。对照图 `TwelveViewsBeforeAfter.png`、`MotionReview.png` 和改前贴图 `LightmapsBeforeSeamContinuity` 在 `20261108_FixtureNoise`。实际 Play 走图和 Player 性能待验收。
 
+2026-11-08 补做大平面的光照去斑。关太阳后，MC00 的成片斑驳仍在。临时换成均匀光照时斑驳消失，定位到烘焙贴图。接缝修复后用 `Tools/Blender/filter_gl125_planar_irradiance.py PreparedQuality EXR目录 输出目录` 处理一次。只在同一 UV 图块内处理大平面，保留明显的灯影边界，并在图块边缘逐步减弱。更新 69 张图集，正式场景重开后加载 74 张 BC6H 光照图。MC00 转运走廊远墙和中转厅天花板的局部斑驳幅度下降约一半。对照图 `WholeSurfacesBeforeAfter.png` 和原贴图在 `20261108_BroadSurface`。若 Windows 仍锁定已卸载场景的 EXR，先在 Editor 调用 `AssetDatabase.ReleaseCachedFileHandles()`，再原位替换，沿用原 `.meta`。
+
+中央塔第 28 和 31 张用 RTX 4070 SUPER 的 OptiX 按 2 倍、256 次采样重烘。参数为 `bake_gl125.py --atlas 28 31 --scale 2 --samples 256`，结果回到原 2048 尺寸，再处理接缝和大平面。回执在 `20261108_BroadSurface/TowerSupersample`。塔内修前、原贴图去斑、重烘后去斑的对照为 `TowerBakeReview.png`。
+
 2026-11-08 清理表面重叠。用 `Tools/Blender/build_gl125_surface_cleanup.py PreparedQuality EXR目录 LiftStage/Lifts.json SurfaceCleanup.json` 生成面索引和哈希。执行 `GL125SurfaceCleanup.Install(SurfaceCleanup.json)`，在 234 个显示块中去除 340,290 个同向重合面。其中 1188 处异材质重合按外饰面或铺装层保留。保留三角面的顶点、材质和光照 UV 沿用原数据。网格包备份在 `20261108_FixtureNoise/MeshesBeforeOverlapCleanup`。
 
 2026-11-08 补齐固定灯。用 `Tools/Blender/build_gl125_practical_lights.py Evaluated PreparedQuality PracticalLights.json` 生成灯位，再执行 `GL125PracticalLightInstall.Install(PracticalLights.json, 烘焙根目录)`。22 种灯罩恢复发光。178 个烘焙灯位保存在正式场景的 `GL125 Fixed Lights (Bake Sources)` 下，组默认关闭并标记为 EditorOnly。93 处只有发光网格的灯补入现有角色探针，含距离和碰撞遮挡限制。7227 个探针位置沿用原数据，其中 3599 个探针更新了光照。运行时沿用原有探针采样。回执和探针备份在 `20261108_FixtureNoise`。
