@@ -202,6 +202,9 @@ namespace Unity.MP_FPS
         }
         private readonly System.Collections.Generic.Dictionary<int,string> m_DropVisualCodes = new System.Collections.Generic.Dictionary<int,string>();
         private readonly System.Collections.Generic.List<int> m_HiddenBags = new System.Collections.Generic.List<int>();
+        internal Transform LootVisual(int index) => m_Markers != null && index >= 0 && index < m_Markers.Length && m_Markers[index]
+            ? m_Markers[index].transform : null;
+
         public bool TryGetCorpseAimPoint(int lootId, Camera camera, out Vector3 point)
         {
             point = default;

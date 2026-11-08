@@ -64,7 +64,7 @@ namespace Unity.MP_FPS
             if (m_CampaignJournalModal == null || open == m_CampaignJournalVisible) return;
             if (open)
             {
-                if (!CampaignJournalAvailable || m_InventoryVisible || GameSettings.Instance.IsPauseMenuOpen) return;
+                if (!CampaignJournalAvailable || m_InventoryVisible || m_FieldRecordOpen || GameSettings.Instance.IsPauseMenuOpen) return;
                 SetRaidMapOpen(false); SetMissionDetails(false); CancelMissionHold();
                 m_CampaignJournal.Refresh();
             }
