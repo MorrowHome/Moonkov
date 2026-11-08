@@ -18,10 +18,11 @@ namespace Unity.MP_FPS
                 s_LanCarry = UnityEngine.Mathf.Clamp(s_LanInventory.Count("cells", true), 0, RaidRules.BagCapacity);
             s_LanPlayerId = profile.PlayerId;
             GameSettings.Instance.PlayerName = DisplayName;
+            RefreshMenuInventory();
             s_OfflineChanged?.Invoke();
         }
         public static void ClearLanProfile()
-        { s_LanInventory = null; s_LanPlayerId = null; s_LanCarry = 0; s_OfflineChanged?.Invoke(); }
+        { ResetMenuInventory(); s_LanInventory = null; s_LanPlayerId = null; s_LanCarry = 0; s_OfflineChanged?.Invoke(); }
         private static async Task RefreshLanAsync(CancellationToken ct)
         { await LanRoomClient.RequestAsync("profile", ct: ct); }
     }

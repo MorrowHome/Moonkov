@@ -190,6 +190,7 @@ namespace Unity.MP_FPS.Client
                 m_ShowConnectionMenu = false;
                 if (PlayerProfileClient.IsOffline)
                 {
+                    await PlayerProfileClient.FlushMenuInventoryAsync(ct);
                     PlayerProfileClient.LeaveOffline(); m_AccountVerified = false;
                     MoonkovLocalization.Set(m_AccountMessage, "Sign in to your online account.");
                 }

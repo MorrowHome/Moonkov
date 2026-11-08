@@ -12,6 +12,9 @@ void Check(bool ok, string message) { if (!ok) throw new Exception(message); che
 ShopCommand Command(InventoryGraph graph, ShopOperation operation, string? code = null, int quantity = 0, string? item = null) =>
     new() { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = graph.Version, Operation = operation, Code = code!, Quantity = quantity, ItemId = item! };
 await ClientCatalogChecks.Run(Check);
+int queueChecks = 0;
+ProfileQueueChecks.Run((ok, message) => { Check(ok, message); queueChecks++; });
+Console.WriteLine($"Profile queue checks passed: {queueChecks}; delayed receipts, rollback, ID reconciliation and safe retries.");
 QuickMoveChecks.Run(Check);
 foreach (string code in new[] { "rifle", "pistol", "shotgun", "sniper", "cells", "medkit", "ration", "water", "oxygen_canister", "helmet", "energy_head_dome" })
 {

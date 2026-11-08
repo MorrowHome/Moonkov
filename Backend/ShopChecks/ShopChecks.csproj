@@ -4,6 +4,7 @@
     <ProjectReference Include="../MoonPersistence/MoonPersistence.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../../Assets/Scripts/Networking/Client/AccountClient.cs" Link="AccountClient.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Client/ProfileInventoryQueue.cs" Link="ProfileInventoryQueue.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/LootInventoryExchange.cs" Link="Shared/LootInventoryExchange.cs" />
     <Content Include="../MoonPersistence/schema.sql" Link="schema.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

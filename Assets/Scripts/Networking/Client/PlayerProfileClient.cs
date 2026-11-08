@@ -55,10 +55,11 @@ namespace Unity.MP_FPS
             remove { s_OfflineChanged -= value; AccountClient.InventoryChanged -= value; }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() { s_Offline?.Dispose(); s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_LanInventory=null;s_LanPlayerId=null;s_Recovery=null;s_Campaign=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
+        private static void Reset() { ResetMenuInventory(); s_Offline?.Dispose(); s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_LanInventory=null;s_LanPlayerId=null;s_Recovery=null;s_Campaign=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
 
         public static async Task EnterOfflineAsync(CancellationToken ct)
         {
+            await FlushMenuInventoryAsync(ct);
             if (!SupportsSinglePlayer) throw new InvalidOperationException("Single player requires a Client+Server build.");
             string path = Path.Combine(Application.persistentDataPath, "SinglePlayer", "profile-v1.json");
 #if UNITY_EDITOR
@@ -79,25 +80,25 @@ namespace Unity.MP_FPS
             catch { if (s_Offline == store) { s_Offline = null; s_Inventory = null;s_Recovery=null; } store.Dispose(); throw; }
         }
 
-        public static void LeaveOffline() { var store = s_Offline; s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_Recovery=null;s_Campaign=null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
+        public static void LeaveOffline() { ResetMenuInventory(); var store = s_Offline; s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_Recovery=null;s_Campaign=null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
         private static void RefreshOffline()
         {
             var profile = s_Offline.Read();s_Recovery=s_Offline.ReadRecovery(); s_Inventory = RaidInventoryTransport.Decode(profile.InventoryJson);
             RefreshCampaign(profile); s_Tutorial = s_Offline.ReadTutorial();
             s_Dust = profile.Dust; s_Alloy = profile.Alloy; s_Cells = profile.Cells;
             s_Carry = Mathf.Clamp(s_Inventory.Count("cells", true), 0, RaidRules.BagCapacity);
-            GameSettings.Instance.PlayerName = DisplayName; s_OfflineChanged?.Invoke();
+            GameSettings.Instance.PlayerName = DisplayName; RefreshMenuInventory(); s_OfflineChanged?.Invoke();
         }
         public static void SelectCarryCells(int cells)
         { if(IsLan) { if(!LanRoomClient.Ready && LanRoomClient.Room.Phase==LanRoomPhase.Lobby) s_LanCarry=Mathf.Clamp(cells,0,Mathf.Min(StashCells,RaidRules.BagCapacity)); return; } if (IsOffline) s_Carry = Mathf.Clamp(cells, 0, Mathf.Min(s_Cells, RaidRules.BagCapacity)); else AccountClient.SelectCarryCells(cells); }
         public static void UpdateStash(int dust, int alloy, int cells)
         { if(IsLan)return; if (IsOffline) { s_Dust = dust; s_Alloy = alloy; s_Cells = cells; } else AccountClient.UpdateStash(dust, alloy, cells); }
-        public static Task AuthenticateAsync(string url, string username, string password, bool register, CancellationToken ct)
-        { if(IsLan)throw new InvalidOperationException("请先退出局域网房间。"); LeaveOffline(); return AccountClient.AuthenticateAsync(url, username, password, register, ct); }
+        public static async Task AuthenticateAsync(string url, string username, string password, bool register, CancellationToken ct)
+        { if(IsLan)throw new InvalidOperationException("请先退出局域网房间。"); await FlushMenuInventoryAsync(ct); LeaveOffline(); await AccountClient.AuthenticateAsync(url, username, password, register, ct); }
         public static Task ValidateAsync(string url, CancellationToken ct)
         { ct.ThrowIfCancellationRequested(); if(IsLan)return RefreshLanAsync(ct); if (!IsOffline) return AccountClient.ValidateAsync(url, ct); RefreshOffline(); return Task.CompletedTask; }
-        public static Task LogoutAsync(string url, CancellationToken ct)
-        { ct.ThrowIfCancellationRequested(); if(IsLan)return LanRoomClient.LeaveAsync(); if (!IsOffline) return AccountClient.LogoutAsync(url, ct); LeaveOffline(); return Task.CompletedTask; }
+        public static async Task LogoutAsync(string url, CancellationToken ct)
+        { await FlushMenuInventoryAsync(ct); if(IsLan) { await LanRoomClient.LeaveAsync(); return; } if (!IsOffline) { await AccountClient.LogoutAsync(url, ct); return; } LeaveOffline(); }
         public static async Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct)
         { if(IsLan) { await LanRoomClient.RequestAsync("move",command,ct:ct);return; } if (!IsOffline) { await AccountClient.MoveInventoryAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Move(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
         public static async Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct)

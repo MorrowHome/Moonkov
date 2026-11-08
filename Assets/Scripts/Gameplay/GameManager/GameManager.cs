@@ -201,6 +201,17 @@ namespace Unity.MP_FPS
                 return;
             }
 
+            if (!IsHeadless)
+            {
+                string scope = PlayerProfileClient.LocalPreferenceScope;
+                try
+                {
+                    using var sync = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                    await PlayerProfileClient.FlushMenuInventoryAsync(sync.Token);
+                    if (scope != PlayerProfileClient.LocalPreferenceScope) return;
+                }
+                catch (Exception ex) { ConnectionSettings.Instance.ConnectionError = ex.Message; return; }
+            }
             Debug.Log($"[{nameof(StartGameAsync)}] Called with creation type '{creationType}'");
             ConnectionSettings.Instance.ConnectionError = null;
             ConnectionSettings.Instance.ModeConfirmed = false;

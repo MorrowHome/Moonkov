@@ -52,6 +52,7 @@ namespace Unity.MP_FPS
         }
         public static async Task CreateAsync(string name, string playerName, RaidGameMode mode, int capacity, int port, int gamePort, CancellationToken ct)
         {
+            await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (Active || s_Closing) throw new InvalidOperationException("请先离开当前房间。");
             if (!PlayerProfileClient.SupportsSinglePlayer) throw new InvalidOperationException("开房需要 Client+Server 游戏版本。");
             string root = Path.Combine(Application.persistentDataPath, "LAN", "host-v1");
@@ -75,6 +76,7 @@ namespace Unity.MP_FPS
         }
         public static async Task JoinAsync(string address, int port, string playerName, CancellationToken ct)
         {
+            await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (Active || s_Closing) throw new InvalidOperationException("请先离开当前房间。");
             string credential = GetCredential();
             var reply = await LanProtocol.SendAsync(address, port, new LanRequest { Action = "join", Credential = credential, Name = playerName,
@@ -108,6 +110,7 @@ namespace Unity.MP_FPS
         }
         public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
         {
+            if (action == "start" || action == "ready" && ready) await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (!Active || s_Closing) throw new InvalidOperationException("尚未加入局域网房间。");
             int generation = s_Generation;
             var request = new LanRequest { Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,
@@ -168,6 +171,7 @@ namespace Unity.MP_FPS
         public static async Task LeaveAsync(bool afterWorldShutdown = false)
         {
             if (s_Closing) return;
+            if (!afterWorldShutdown) await PlayerProfileClient.FlushMenuInventoryAsync(CancellationToken.None);
             // Worlds must have released their deployment receipts before the host store closes.
             if (!afterWorldShutdown && Active && GameSettings.Instance.GameState != GlobalGameState.MainMenu)
                 throw new InvalidOperationException("请先返回主菜单，再关闭或离开房间。");

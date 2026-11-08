@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
         }
         public static async Task BeginTutorialPracticeAsync()
         {
+            await FlushMenuInventoryAsync(CancellationToken.None);
             if (!IsOffline || IsTutorialPractice || RaidActive) throw new InvalidOperationException("请先结束当前行动。 ");
             string path = Path.Combine(Path.GetDirectoryName(s_Offline.FilePath), "TutorialPractice", Guid.NewGuid().ToString("N"), "profile.json");
             var previous = s_Offline;

@@ -6589,6 +6589,26 @@ MonoBehaviour:
     m_Localized: ELEVATOR UNAVAILABLE
     m_Metadata:
       m_Items: []
+  - m_Id: 11490055704010752
+    m_Localized: "Syncing inventory\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11490055712399360
+    m_Localized: RETRY SYNC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11490055712399361
+    m_Localized: Inventory confirmation is interrupted. Retry synchronization first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11490055712399362
+    m_Localized: Inventory synchronization is catching up. Please wait briefly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11490055712399363
+    m_Localized: Purchases arrive in personal storage.
+    m_Metadata:
+      m_Items: []
   - m_Id: 11490179486310400
     m_Localized: T-01 Squad tracker
     m_Metadata:

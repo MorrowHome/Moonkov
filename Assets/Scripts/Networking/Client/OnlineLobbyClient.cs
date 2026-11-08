@@ -51,6 +51,8 @@ namespace Unity.MP_FPS
         }
         public static async Task ActAsync(LobbyAction action, CancellationToken ct)
         {
+            if (action.Action == "start" || action.Action == "ready" && action.Ready)
+                await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             Snapshot = await AccountClient.LobbyAsync(action, ct); Error = null;
             if (action.Action == "leave")
             {
