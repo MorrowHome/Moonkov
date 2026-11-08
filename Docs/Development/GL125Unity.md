@@ -27,7 +27,9 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 
 2026-11-08 接入全部四台电梯。正式安装验证覆盖 12 个按钮的瞄准选取、双向行程和两站门洞。重开场景后，用正式角色的碰撞尺寸和移动控制器验证了静止乘客双向随车，以及关门时遇人反开。回执和切换前备份在 `20261108`。活动部件用场景光照探针取光。更新静态碰撞时，同一碰撞清单复用电梯剔除块。更换碰撞清单后需重新拆分并安装，避免门叶或轿厢留在原位。联机版本需要客户端与服务端一起更新。
 
-2026-11-08 修复亮墙和地板接缝的黑点。定位到 MC00 墙板和塔区地板的窄折边。暗处沿边缘露出，画面上形成断点。使用 `Tools/Blender/soften_gl125_lightmap_seams.py PreparedQuality 原始EXR目录 输出目录` 补少量邻近面光照。脚本需要 NumPy、SciPy 和 OpenEXR。42 张图集共修改约 35 万个边缘像素，单张最多约 0.25%。图集大小、UV 和 BC6H 格式沿用。重开正式场景后，74 张光照图全部加载。两处同机位的高反差暗点计数分别从 124 降到 10、从 28 降到 10。对照和原 EXR 备份在 `20261108` 的 `SeamPilot_*`、`Final_*` 和 `LightRepairOriginal`。重新导入原始烘焙后，执行一次脚本，并用输出同名 EXR 覆盖 Unity 光照图。
+2026-11-08 修复 MC00 和中央塔亮面接缝的黑点。窄折边和旁边的板面属于不同光照块，缝口出现亮度断点。使用 `Tools/Blender/soften_gl125_lightmap_seams.py PreparedQuality 原始EXR目录 输出目录` 按三维位置匹配同材质的邻接表面。只在接缝附近取光，较宽的表面仅补窄边。脚本需要 NumPy、SciPy 和 OpenEXR。重新导入原始烘焙后执行一次，并用输出的同名 EXR 覆盖 Unity 光照图。43 张图更新，原 74 张图的尺寸、UV 和 BC6H 格式沿用。
+
+正式场景用玩家相机参数比较 12 处机位，并在转运走廊、收货区、中央塔上层横移连拍。11 个室内机位里，平坦受光区域的局部暗像素候选从 6889 降到 4830。候选包含较窄的结构阴影，收货区仍有明显深色边缘。外部太阳直射的对照变化很小。对照图 `TwelveViewsBeforeAfter.png`、`MotionReview.png` 和改前贴图 `LightmapsBeforeSeamContinuity` 在 `20261108_FixtureNoise`。实际 Play 走图和 Player 性能待验收。
 
 2026-11-08 清理表面重叠。用 `Tools/Blender/build_gl125_surface_cleanup.py PreparedQuality EXR目录 LiftStage/Lifts.json SurfaceCleanup.json` 生成面索引和哈希。执行 `GL125SurfaceCleanup.Install(SurfaceCleanup.json)`，在 234 个显示块中去除 340,290 个同向重合面。其中 1188 处异材质重合按外饰面或铺装层保留。保留三角面的顶点、材质和光照 UV 沿用原数据。网格包备份在 `20261108_FixtureNoise/MeshesBeforeOverlapCleanup`。
 
