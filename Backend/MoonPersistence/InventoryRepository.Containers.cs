@@ -116,6 +116,8 @@ public sealed partial class InventoryRepository
         bool extracted = request.Outcome == "Extracted";
         if (raid.Find("stash") != null || raid.Find("loot")!=null || extracted && (raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells)
             || raid.Validate() != InventoryError.None) throw new ReceiptConflictException();
+        await ApplyResearchSettlementAsync(connection, transaction, request, raid, ct);
+        Unity.MP_FPS.ResearchQuestRules.RemoveSupplies(raid);
         if (!extracted) raid = SecureInventory.FailureReturn(raid);
         if (!extracted && raid.Items.Count == 2) return;
         if (clash && raid.Items.Any(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered)) throw new ReceiptConflictException();

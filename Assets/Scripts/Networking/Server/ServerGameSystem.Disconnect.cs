@@ -136,6 +136,8 @@ namespace Unity.MP_FPS
             // player's transform still exist. BeginSave snapshots the remainder,
             // including items moved into/out of the secure case during this raid.
             DropDeathInventory(ref state, connection);
+            if (manager.HasComponent<JoinedClient>(connection))
+                ResearchQuestRuntime.Finish(state.World, manager.GetComponentData<JoinedClient>(connection).PlayerEntity, session.RaidId, false);
             if (!RaidRules.TrySettle(ref session, RaidPhase.Dead, !persistence.Enabled)) return;
             if (persistence.Enabled) session.SaveState = RaidSaveState.Saving;
             manager.SetComponentData(connection, session);

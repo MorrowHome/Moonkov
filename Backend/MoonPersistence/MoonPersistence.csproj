@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DefineConstants>$(DefineConstants);MOON_PERSISTENCE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../Assets/Scripts/Networking/Shared/OnlineLobbyProtocol.cs" Link="Shared/OnlineLobbyProtocol.cs" />
@@ -16,6 +17,7 @@
     <Compile Include="../../Assets/DollSinger/Runtime/HaloModule.cs" Link="Shared/HaloModule.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/HaloModules.cs" Link="Shared/HaloModules.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ShopModel.cs" Link="Shared/ShopModel.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Shared/ResearchQuestRules.cs" Link="Shared/ResearchQuestRules.cs" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <Content Include="schema.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="appsettings.local.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />

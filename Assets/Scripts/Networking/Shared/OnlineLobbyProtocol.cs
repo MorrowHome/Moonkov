@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Online
 {
     public static class OnlineNetworkProtocol
     {
-        public const int Version = 2;
+        public const int Version = 3;
         public const string P2P = "p2p", Vps = "vps";
         public static bool ValidPath(string path) => path == P2P || path == Vps;
     }

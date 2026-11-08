@@ -76,6 +76,7 @@ namespace Unity.MP_FPS
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public bool Refund;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int ResearchVersion;
         }
 
         public sealed class Deploy
@@ -246,7 +247,7 @@ namespace Unity.MP_FPS
                 InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null,
                 CampaignProgress = m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
                     ? CampaignRules.Clone(campaign) : null,
-                ResearchQuests = m_Offline != null && profile.Mode == null ? researchQuests : null
+                ResearchQuests = profile.ResearchQuests != null && profile.Mode == null ? researchQuests : null
             };
             Saves.Add(payload.SettlementId, new Save
             {
@@ -256,7 +257,8 @@ namespace Unity.MP_FPS
 
         public void BeginDeploy(Entity connection, int cells, Join join = null)
         {
-            var payload = new Deployment { PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells };
+            var payload = new Deployment { PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells,
+                ResearchVersion = m_Offline == null && m_Lan == null ? ResearchQuestRules.DeploymentVersion : 0 };
             Deployments.Add(connection, new Deploy { Connection=connection, Join=join, Payload=payload, Task=DeployAsync(payload) });
         }
 
@@ -342,7 +344,9 @@ namespace Unity.MP_FPS
                 if (path.EndsWith("/deployments",StringComparison.Ordinal) && (response.StatusCode == HttpStatusCode.Conflict || response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound))
                 {
                     var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    throw new LoadoutRejectedException(body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells : RaidLoadoutError.Rejected);
+                    var error = body.Contains("research_supplies_no_space") ? RaidLoadoutError.ResearchSuppliesNoSpace :
+                        body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells : RaidLoadoutError.Rejected;
+                    throw new LoadoutRejectedException(error);
                 }
                 response.EnsureSuccessStatusCode();
                 var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));

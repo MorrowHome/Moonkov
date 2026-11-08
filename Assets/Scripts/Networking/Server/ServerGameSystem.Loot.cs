@@ -215,6 +215,8 @@ namespace Unity.MP_FPS
                                 caches.RefillGeneration(r.LootId),caches.Containers[r.LootId].Children(LootInventoryExchange.Root).Count(),caches.Containers[r.LootId]);
                             inventory.NextLootNoiseAt=System.Math.Max(inventory.NextLootNoiseAt,SystemAPI.Time.ElapsedTime+RaidLootAcoustics.SearchInterval);
                         }
+                        else if (accepted && r.LootId >= 0)
+                            CollectResearchSample(ref state, caches, connection, session.RaidId, r.LootId);
                         if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
                         inventory.LastSentVersion=-1;
@@ -240,7 +242,11 @@ namespace Unity.MP_FPS
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
                                 X=r.X,Y=r.Y,Rotated=r.Rotated,Quantity=r.Quantity},r.ExpectedLootVersion);
                         if(chargeBlocked)inventory.ActionFeedback="充能中不能移动当前武器。";
-                        if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
+                        if (inventory.Error == InventoryError.None)
+                        {
+                            ResearchQuestRuntime.InventoryChanged(state.World, connection, session.ValueRO.RaidId);
+                            UpdateInventoryProtection(ref state, connection, true);
+                        }
                         inventory.LastSentVersion=-1;
                         if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
                     }
@@ -279,7 +285,10 @@ namespace Unity.MP_FPS
                     position=SystemAPI.GetComponent<LocalTransform>(player).Position;
                     health=SystemAPI.GetComponent<PredictedPlayerGhost>(player);
                 }
-                inventory.RefreshDissection(LootContainers(ref state),accessible,position,health,SystemAPI.Time.ElapsedTime);
+                var caches = LootContainers(ref state);
+                inventory.RefreshDissection(caches,accessible,position,health,SystemAPI.Time.ElapsedTime);
+                if (accessible && inventory.DissectingLootId < 0 && inventory.OpenedLootId == id && !inventory.NeedsSearch(caches, id))
+                    CollectResearchSample(ref state, caches, connection, session.RaidId, id);
             }
             if(SystemAPI.Exists(actionPlayer) && SystemAPI.HasComponent<PredictedPlayerGhost>(actionPlayer))
             {
@@ -290,6 +299,13 @@ namespace Unity.MP_FPS
             if(inventory.OpenedLootId<0 || session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
             if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session)) return;
             inventory.OpenedLootId=-1;inventory.Error=InventoryError.Inaccessible;inventory.LastSentVersion=-1;
+        }
+
+        private void CollectResearchSample(ref SystemState state, RaidLootContainers caches, Entity connection, int raidId, int lootId)
+        {
+            if (!caches.DeathBags.TryGetValue(lootId, out var corpse) || corpse.CharacterIndex != -1) return;
+            var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+            ResearchQuestRuntime.CollectSample(state.World, connection, player, raidId, lootId, SystemAPI.Time.ElapsedTime);
         }
     }
 }

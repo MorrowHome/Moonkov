@@ -32,15 +32,26 @@ Settlement Receipt(Profile profile,Deployment deployment,string outcome="Extract
     return new Settlement(profile.PlayerId,deployment.DeploymentId,outcome,graph.Count("dust",true),graph.Count("alloy",true),graph.Count("cells",true),
         deployment.DeploymentId,InventoryRepository.Encode(graph),deployment.Mode,deployment.MatchId,deployment.RulesVersion,deployment.TeamId,eventId);
 }
-// Start with the real schema8 text; prove incremental initialization retains its account graph.
-await using(var c=await db.OpenConnectionAsync())
-{await using var old=new NpgsqlCommand(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"schema.sql")).Split("-- Version 9:")[0],c);await old.ExecuteNonQueryAsync();}
-var oldPlayer=await Player("legacy");string oldGraph=oldPlayer.InventoryJson!;
+// Seed with the actual v8 schema before applying the current migrations.
+var oldId = Guid.NewGuid();
+string oldGraph;
+await using (var c = await db.OpenConnectionAsync())
+{
+    await using var old = new NpgsqlCommand(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "schema.sql")).Split("-- Version 9:")[0], c);
+    await old.ExecuteNonQueryAsync();
+    await using var tx = await c.BeginTransactionAsync();
+    await using var player = new NpgsqlCommand("INSERT INTO players (id,display_name) VALUES ($1,'legacy')", c, tx);
+    player.Parameters.AddWithValue(oldId);
+    await player.ExecuteNonQueryAsync();
+    await InventoryRepository.EnsureStacksAsync(c, tx, oldId, default, InventoryCatalog.StartingDust);
+    oldGraph = InventoryRepository.Encode(await InventoryRepository.ReadGraphAsync(c, tx, oldId, default));
+    await tx.CommitAsync();
+}
 await store.InitializeAsync();await store.InitializeAsync();
 Check(await Scalar("SELECT count(*) FROM schema_version WHERE version=9")==1,"schema9 missing");
 await using(var c=await db.OpenConnectionAsync())await using(var tx=await c.BeginTransactionAsync())
-    Check((await InventoryRepository.ReadAsync(c,tx,oldPlayer.PlayerId,default)).InventoryJson==oldGraph,"schema8 inventory changed");
-var ordinary=new Deployment(oldPlayer.PlayerId,Guid.NewGuid(),0);
+    Check((await InventoryRepository.ReadAsync(c,tx,oldId,default)).InventoryJson==oldGraph,"schema8 inventory changed");
+var ordinary=new Deployment(oldId,Guid.NewGuid(),0);
 var oldLive=await inventory.DeployAsync(ordinary,default);var oldSaved=await store.SettleAsync(Receipt(oldLive,ordinary),default);
 Check(oldSaved.ActiveDeploymentId==null,"ordinary expedition regression");
 var a=await Player("duo-a");var b=await Player("duo-b");var cplayer=await Player("enemy");var d=await Player("solo-full");
@@ -120,8 +131,8 @@ var match3=Guid.NewGuid();var token3=Guid.NewGuid();
 var t1=new Deployment(a.PlayerId,Guid.NewGuid(),0,"BountyClash",match3,1,0);
 var t2=new Deployment(b.PlayerId,Guid.NewGuid(),0,"BountyClash",match3,1,0);
 var t3=new Deployment(cplayer.PlayerId,Guid.NewGuid(),0,"BountyClash",match3,1,0);
-var enemy=new Deployment(oldPlayer.PlayerId,Guid.NewGuid(),0,"BountyClash",match3,1,1);
-await clash.RegisterAsync(new(match3,1,token3,new[]{new BountyParticipant(a.PlayerId,t1.DeploymentId,0),new BountyParticipant(b.PlayerId,t2.DeploymentId,0),new BountyParticipant(cplayer.PlayerId,t3.DeploymentId,0),new BountyParticipant(oldPlayer.PlayerId,enemy.DeploymentId,1)}),default);
+var enemy=new Deployment(oldId,Guid.NewGuid(),0,"BountyClash",match3,1,1);
+await clash.RegisterAsync(new(match3,1,token3,new[]{new BountyParticipant(a.PlayerId,t1.DeploymentId,0),new BountyParticipant(b.PlayerId,t2.DeploymentId,0),new BountyParticipant(cplayer.PlayerId,t3.DeploymentId,0),new BountyParticipant(oldId,enemy.DeploymentId,1)}),default);
 var l1=await inventory.DeployAsync(t1,default,true);var l2=await inventory.DeployAsync(t2,default,true);var l3=await inventory.DeployAsync(t3,default,true);var le=await inventory.DeployAsync(enemy,default,true);
 await store.SettleAsync(Receipt(l2,t2,"Dead"),default,true);
 var ex3=new BountyRedemption(match3,token3,Guid.NewGuid(),t1.DeploymentId,new[]{t1.DeploymentId});await clash.RedeemAsync(ex3,default);

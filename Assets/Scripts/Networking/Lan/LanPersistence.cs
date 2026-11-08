@@ -90,6 +90,10 @@ namespace Unity.MP_FPS
                     case "move": store.Move(payload.ToObject<InventoryCommand>()); break;
                     case "trade": store.Trade(payload.ToObject<ShopCommand>()); break;
                     case "recovery": store.ClaimRecovery(payload.ToObject<RecoveryClaim>()); break;
+                    case "research":
+                        if (!store.ApplyResearchCommand(payload.ToObject<ResearchQuestCommand>()))
+                            throw new InvalidOperationException("当前任务状态无法执行此操作。");
+                        break;
                     default: throw new InvalidDataException("未知仓库操作。");
                 }
                 return Read(id);

@@ -259,7 +259,7 @@ namespace Unity.MP_FPS
                     var next = Copy(); SupersedeClashRegistration(next); PrepareCells(next.Inventory, payload.Cells);
                     var raid = next.Inventory.ExtractLoadout();
                     if (ResearchQuestRules.Issue(raid, next.ResearchQuests) != InventoryError.None)
-                        throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected, "No space for mission-issued equipment.");
+                        throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.ResearchSuppliesNoSpace, "No space for mission-issued equipment.");
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);
                     next.DeploymentId = payload.DeploymentId; next.CarriedCells = payload.Cells;

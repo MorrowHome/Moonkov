@@ -1,6 +1,9 @@
+#nullable disable
 using System;
 using System.Collections.Generic;
+#if !MOON_PERSISTENCE
 using Newtonsoft.Json;
+#endif
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
@@ -13,35 +16,61 @@ namespace Unity.MP_FPS
 
     public enum ResearchQuestStatus { Locked, Available, Active, Ready, Completed }
     public enum ResearchEnding { None, Expose, Corporate, Erase }
+    public enum ResearchQuestAction { Accept = 1, Claim, Decide }
+
+    [Serializable]
+    public sealed class ResearchQuestCommand
+    {
+        public ResearchQuestAction Action;
+        public ResearchQuest Quest;
+        public ResearchEnding Ending;
+    }
 
     [Serializable]
     public sealed class ResearchQuestProgress
     {
         public int Accepted, Ready, Completed, HaloKills, SentryKills;
         public int SequenceVersion, LegacyAccepted;
+        public long Revision;
         public string CredentialsId, EvidenceId;
         public ResearchEnding Ending;
         public int Active => Accepted & ~(Ready | Completed);
         public ResearchQuestProgress Copy() => (ResearchQuestProgress)MemberwiseClone();
     }
 
-    // The offline server freezes this evidence in the existing settlement journal.
+    // The raid server freezes this evidence in the existing settlement journal.
     [Serializable]
     public sealed class ResearchQuestResult
     {
         public int Active, ExposureSeconds, HaloKills, SentryKills;
         public string TabletId, FlashId, HardDriveId, PackageId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public string NadirRecordsId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public string CredentialsId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public string OriginalArchiveId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public bool PackageSecured;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public bool SystemsDisabled;
+#if !MOON_PERSISTENCE
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+#endif
+        public string NadirRecordsId;
+#if !MOON_PERSISTENCE
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+#endif
+        public string CredentialsId;
+#if !MOON_PERSISTENCE
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+#endif
+        public string OriginalArchiveId;
+#if !MOON_PERSISTENCE
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+#endif
+        public bool PackageSecured;
+#if !MOON_PERSISTENCE
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+#endif
+        public bool SystemsDisabled;
         public string[] SampleIds = Array.Empty<string>();
     }
 
     public static class ResearchQuestRules
     {
         public const int Count = 10;
+        public const int DeploymentVersion = 1;
         public const int ExposureSeconds = 300, HaloKillGoal = 5, SampleGoal = 3, SentryKillGoal = 3;
         public const string Tablet = "rq_tablet", Flash = "rq_flash", Drive = "rq_drive", Sample = "rq_sample", Package = "rq_package";
         public const string SampleKit = "rq_sample_kit", NadirRecords = "rq_nadir_records", Credentials = "rq_lucent_access", OriginalArchive = "rq_original_archive";
@@ -111,7 +140,7 @@ namespace Unity.MP_FPS
 
         public static bool Valid(ResearchQuestProgress progress)
         {
-            if (progress == null || progress.SequenceVersion != SequenceVersion ||
+            if (progress == null || progress.SequenceVersion != SequenceVersion || progress.Revision < 0 ||
                 (progress.Accepted & ~All) != 0 || (progress.Ready & progress.Completed) != 0 ||
                 ((progress.Ready | progress.Completed) & ~progress.Accepted) != 0 ||
                 (progress.LegacyAccepted & ~(Bit(ResearchQuest.HaloStorage) | Bit(ResearchQuest.HardDrive))) != 0 ||
@@ -148,6 +177,7 @@ namespace Unity.MP_FPS
             if (Status(progress, quest) != ResearchQuestStatus.Available) return false;
             Migrate(progress);
             progress.Accepted |= Bit(quest);
+            progress.Revision++;
             return true;
         }
 
@@ -156,6 +186,7 @@ namespace Unity.MP_FPS
             if (Status(progress, quest) != ResearchQuestStatus.Ready) return false;
             progress.Ready &= ~Bit(quest);
             progress.Completed |= Bit(quest);
+            progress.Revision++;
             return true;
         }
 
@@ -168,7 +199,41 @@ namespace Unity.MP_FPS
                 ending <= ResearchEnding.None || ending > ResearchEnding.Erase) return false;
             progress.EvidenceId = null;
             progress.Ending = ending;
+            progress.Revision++;
             return true;
+        }
+
+        public static bool ApplyCommand(ResearchQuestProgress progress, ResearchQuestCommand command)
+        {
+            if (command == null || progress == null) return false;
+            return command.Action switch
+            {
+                ResearchQuestAction.Accept when ValidQuest(command.Quest) =>
+                    Has(progress.Accepted, command.Quest) || Accept(progress, command.Quest),
+                ResearchQuestAction.Claim when ValidQuest(command.Quest) =>
+                    Has(progress.Completed, command.Quest) || Claim(progress, command.Quest),
+                ResearchQuestAction.Decide when command.Ending > ResearchEnding.None && command.Ending <= ResearchEnding.Erase =>
+                    progress.Ending == command.Ending || ChooseEnding(progress, command.Ending),
+                _ => false
+            };
+        }
+
+        public static bool GrantCorporateReward(InventoryGraph inventory)
+        {
+            string weapon = Guid.NewGuid().ToString("D"), module = Guid.NewGuid().ToString("D");
+            if (!DepositReward(inventory, "dust", CorporateDust) ||
+                !DepositReward(inventory, CorporateHalo, 1, weapon) ||
+                !DepositReward(inventory, CorporateModule, 1, module)) return false;
+            return inventory.TryApply(new InventoryCommand { ExpectedVersion = inventory.Version, Operation = InventoryOperation.Move,
+                ItemId = module, Parent = weapon, Region = "Storage" }) == InventoryError.None;
+        }
+
+        private static bool DepositReward(InventoryGraph inventory, string code, int quantity, string id = null)
+        {
+            InventoryError error;
+            while ((error = inventory.AddSupply(code, quantity, InventoryCatalog.Stash, id: id)) == InventoryError.Full && inventory.StashRows < 4096)
+                inventory.StashRows = Math.Min(4096, inventory.StashRows * 2);
+            return error == InventoryError.None;
         }
 
         public static InventoryError Issue(InventoryGraph loadout, ResearchQuestProgress progress)
@@ -203,12 +268,13 @@ namespace Unity.MP_FPS
                 InventoryCatalog.CanStoreHaloCargo(weapon.Code);
         }
 
-        public static void Record(ResearchQuestProgress progress, ResearchQuestResult result, InventoryGraph loadout, InventoryGraph raid, bool extracted)
+        public static bool Record(ResearchQuestProgress progress, ResearchQuestResult result, InventoryGraph loadout, InventoryGraph raid, bool extracted)
         {
             if (!extracted || raid == null || result == null || result.Active != progress.Active || (uint)result.ExposureSeconds > ExposureSeconds ||
                 (uint)result.HaloKills > HaloKillGoal || (uint)result.SentryKills > SentryKillGoal ||
-                result.SampleIds == null || result.SampleIds.Length > SampleGoal) return;
+                result.SampleIds == null || result.SampleIds.Length > SampleGoal) return false;
 
+            int ready = progress.Ready, haloKills = progress.HaloKills, sentryKills = progress.SentryKills;
             if (Has(result.Active, ResearchQuest.Exposure) && result.ExposureSeconds == ExposureSeconds)
                 progress.Ready |= Bit(ResearchQuest.Exposure);
             if (Has(result.Active, ResearchQuest.HaloTrial))
@@ -247,6 +313,9 @@ namespace Unity.MP_FPS
                 progress.EvidenceId = result.OriginalArchiveId;
                 progress.Ready |= Bit(ResearchQuest.EndOfTransmission);
             }
+            if (ready == progress.Ready && haloKills == progress.HaloKills && sentryKills == progress.SentryKills) return false;
+            progress.Revision++;
+            return true;
         }
 
         public static void RemoveSupplies(InventoryGraph graph)

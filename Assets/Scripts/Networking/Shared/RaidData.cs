@@ -6,7 +6,7 @@ namespace Unity.MP_FPS
 {
     public enum RaidPhase : byte { Active, Extracted, Dead, TimedOut }
     public enum RaidSaveState : byte { SessionOnly, Saved, Saving, Retrying }
-    public enum RaidLoadoutError : byte { None, InvalidCount, InsufficientCells, Rejected }
+    public enum RaidLoadoutError : byte { None, InvalidCount, InsufficientCells, Rejected, ResearchSuppliesNoSpace }
 
     // This component lives on the connection, so settlement survives character despawning.
     public struct RaidSession : IComponentData

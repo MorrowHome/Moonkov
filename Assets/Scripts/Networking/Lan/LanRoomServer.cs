@@ -137,7 +137,7 @@ namespace Unity.MP_FPS
                     case "leave":
                         if (member.View.Host) throw new InvalidOperationException("房主请使用关闭房间。");
                         Persistence.RevokePlayer(member.View.Id); m_Members.Remove(member.Credential); ResetRoundIfEmpty(); break;
-                    case "move": case "trade": case "recovery":
+                    case "move": case "trade": case "recovery": case "research":
                         RequireLobby();
                         if (member.View.Ready) throw new InvalidOperationException("请先取消准备再修改装备。");
                         var changed = Persistence.Mutate(member.View.Id, request.Action, request.Payload ?? throw new ArgumentException("装备操作为空。"));

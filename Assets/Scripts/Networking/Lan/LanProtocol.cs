@@ -50,7 +50,7 @@ namespace Unity.MP_FPS
     // Length-prefixed, bounded UTF-8 JSON; no polymorphic deserialization.
     public static class LanProtocol
     {
-        public const int Version = 2, ControlPort = 7978, GamePort = 7979, DiscoveryPort = 7980;
+        public const int Version = 3, ControlPort = 7978, GamePort = 7979, DiscoveryPort = 7980;
         public const string DiscoveryQuery = "Moonkov.LAN/2?";
         public const int MaxFrame = 2 * 1024 * 1024;
         public static readonly JsonSerializerSettings Json = new JsonSerializerSettings { MaxDepth = 48, TypeNameHandling = TypeNameHandling.None };

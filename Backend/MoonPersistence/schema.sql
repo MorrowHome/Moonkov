@@ -174,3 +174,8 @@ CREATE TABLE IF NOT EXISTS bounty_clash_awards (
     claimed boolean NOT NULL DEFAULT false
 );
 INSERT INTO schema_version VALUES (9) ON CONFLICT DO NOTHING;
+-- Version 10: per-account research progress and deployment evidence.
+ALTER TABLE players ADD COLUMN IF NOT EXISTS research_quests jsonb NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS research_quests jsonb;
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS research_quests jsonb;
+INSERT INTO schema_version VALUES (10) ON CONFLICT DO NOTHING;

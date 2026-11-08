@@ -47,11 +47,14 @@ public sealed class StashRepository(NpgsqlDataSource db)
         await BountyClashRepository.CheckBindingAsync(connection,transaction,InventoryRepository.AsDeployment(request),clash,ct);
         if (clash && (!request.DeploymentId.HasValue || request.InventoryJson==null || (request.Outcome!="Extracted" && request.BountyEventId.HasValue))) throw new ReceiptConflictException();
         if (!clash && request.BountyEventId.HasValue) throw new ReceiptConflictException();
+        if (request.ResearchQuests != null && (clash || !request.DeploymentId.HasValue || request.InventoryJson == null))
+            throw new ReceiptConflictException();
+        string? researchReceipt = InventoryRepository.EncodeResearchReceipt(request.ResearchQuests);
         if (request.DeploymentId.HasValue)
             await InventoryRepository.CheckDeploymentAsync(connection, transaction, request, ct);
         await using var receipt = new NpgsqlCommand("""
-            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells, deployment_id,inventory,mode,match_id,rules_version,team_id,bounty_event_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7,$8::jsonb,$9,$10,$11,$12,$13) ON CONFLICT (id) DO NOTHING
+            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells, deployment_id,inventory,mode,match_id,rules_version,team_id,bounty_event_id,research_quests)
+            VALUES ($1, $2, $3, $4, $5, $6, $7,$8::jsonb,$9,$10,$11,$12,$13,$14::jsonb) ON CONFLICT (id) DO NOTHING
             """, connection, transaction);
         receipt.Parameters.AddWithValue(request.SettlementId);
         receipt.Parameters.AddWithValue(request.PlayerId);
@@ -63,10 +66,12 @@ public sealed class StashRepository(NpgsqlDataSource db)
         receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Text, Value = (object?)request.InventoryJson ?? DBNull.Value });
         InventoryRepository.AddBindingParameters(receipt,InventoryRepository.AsDeployment(request));
         receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType=NpgsqlTypes.NpgsqlDbType.Uuid, Value=(object?)request.BountyEventId ?? DBNull.Value });
+        receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Text,
+            Value = (object?)researchReceipt ?? DBNull.Value });
         var inserted = await receipt.ExecuteNonQueryAsync(ct) == 1;
         if (!inserted)
         {
-            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells, deployment_id, inventory::text,mode,match_id,rules_version,team_id,bounty_event_id FROM raid_settlements WHERE id = $1", connection, transaction);
+            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells, deployment_id, inventory::text,mode,match_id,rules_version,team_id,bounty_event_id,research_quests::text FROM raid_settlements WHERE id = $1", connection, transaction);
             previous.Parameters.AddWithValue(request.SettlementId);
             await using var reader = await previous.ExecuteReaderAsync(ct);
             if (!await reader.ReadAsync(ct) || reader.GetGuid(0) != request.PlayerId
@@ -78,6 +83,8 @@ public sealed class StashRepository(NpgsqlDataSource db)
             if ((reader.IsDBNull(6) ? null : reader.GetString(6)) is string saved)
             { if (request.InventoryJson == null || InventoryRepository.Encode(InventoryRepository.Decode(saved)) != InventoryRepository.Encode(InventoryRepository.Decode(request.InventoryJson))) throw new ReceiptConflictException(); }
             else if (request.InventoryJson != null) throw new ReceiptConflictException();
+            if (InventoryRepository.NormalizeResearchReceipt(reader.IsDBNull(12) ? null : reader.GetString(12)) != researchReceipt)
+                throw new ReceiptConflictException();
         }
         int bountyDust = inserted && clash ? await BountyClashRepository.ClaimAwardAsync(connection,transaction,request,ct) : 0;
         if (inserted)

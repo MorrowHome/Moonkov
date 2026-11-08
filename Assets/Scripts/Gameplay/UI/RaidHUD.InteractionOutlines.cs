@@ -57,13 +57,13 @@ namespace Unity.MP_FPS
                 if (snapshot.Phase == MissionPhase.OutputReady)
                     AddMissionSurface(site.Anchor(definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive"));
             }
-            if (!researchOperate || !PlayerProfileClient.IsOffline) return;
+            if (!researchOperate || m_ResearchSnapshot.RaidId != raid) return;
             foreach (var quest in s_ResearchDevices)
             {
-                if (!ResearchQuestRuntime.NeedsDevice(raid, quest)) continue;
+                if (!m_ResearchSnapshot.Needs(quest)) continue;
                 var anchor = ResearchQuestRuntime.Anchor(quest);
                 if (anchor == null) continue;
-                m_InteractionOutline.Add(ResearchQuestRuntime.DeviceVisual(raid, quest, anchor), ResearchQuestRuntime.InteractionPoint(quest, anchor));
+                m_InteractionOutline.Add(m_ResearchField.Surface(quest, anchor, outline: true), ResearchQuestRuntime.InteractionPoint(quest, anchor));
             }
         }
 

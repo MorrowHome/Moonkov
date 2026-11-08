@@ -28,11 +28,40 @@ public sealed class ResearchQuestChecks : EditorWindow
         {
             Directory.CreateDirectory(Output);
             check.CheckProfile();
+            check.CheckLanProfile();
             check.CheckField();
             check.CheckAssets();
             return $"{check.m_Passed} research quest persistence, field and asset checks passed.";
         }
         finally { DestroyImmediate(check); }
+    }
+
+    private void CheckLanProfile()
+    {
+        string root = Path.Combine(Output, "Online", "lan-" + Guid.NewGuid().ToString("N"));
+        using var lan = new LanPersistence(root);
+        string Open(string name) => lan.OpenPlayer(Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"), name);
+        string first = Open("Research LAN A"), peer = Open("Research LAN B");
+        var accept = JObject.FromObject(new ResearchQuestCommand { Action = ResearchQuestAction.Accept, Quest = ResearchQuest.Exposure });
+        var accepted = lan.Mutate(first, "research", accept);
+        Require(accepted.Profile.ResearchQuests.Active == 1 && lan.Mutate(first, "research", accept).Profile.ResearchQuests.Revision == 1,
+            "LAN command retry is idempotent");
+        Require(lan.Read(peer).Profile.ResearchQuests.Accepted == 0, "LAN profiles keep separate research state");
+        var request = new RaidPersistenceContext.Deployment { PlayerId = first, DeploymentId = Guid.NewGuid().ToString("D") };
+        var live = lan.Request("internal/deployments", request);
+        Require(live.ResearchQuests.Active == 1, "Host deploys the member's research state");
+        var raid = RaidInventoryTransport.Decode(live.RaidInventoryJson);
+        var receipt = new RaidPersistenceContext.Settlement
+        {
+            PlayerId = first, DeploymentId = request.DeploymentId, SettlementId = request.DeploymentId, Outcome = "Extracted",
+            InventoryJson = live.RaidInventoryJson, Dust = raid.Count("dust", true), Alloy = raid.Count("alloy", true), Cells = raid.Count("cells", true),
+            ResearchQuests = new ResearchQuestResult { Active = 1, ExposureSeconds = ResearchQuestRules.ExposureSeconds }
+        };
+        var result = lan.Request("internal/settlements", receipt);
+        Require(result.ResearchQuests.Ready == 1 && lan.Read(peer).Profile.ResearchQuests.Ready == 0,
+            "Host credits the extracting member only");
+        var claim = JObject.FromObject(new ResearchQuestCommand { Action = ResearchQuestAction.Claim, Quest = ResearchQuest.Exposure });
+        Require(lan.Mutate(first, "research", claim).Profile.ResearchQuests.Completed == 1, "LAN member turns in the quest");
     }
 
     private void CheckProfile()
@@ -308,33 +337,34 @@ public sealed class ResearchQuestChecks : EditorWindow
                 ResearchQuestRuntime.Tick(world, connection, player, raid, inventory, progress, health, position, now, .1f);
             }
             Tick(Vector3.zero);
-            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
+            ResearchQuestRuntime.Hold(world, connection, player, 1, ResearchDevice.Administrator, true);
             Tick(Vector3.zero);
-            Require(ResearchQuestRuntime.TryRead(1, out var frame) && frame.CanOperate, "Authoritative terminal hold starts");
+            Require(ResearchQuestRuntime.TryRead(world, player, 1, out var frame) && frame.CanOperate, "Authoritative terminal hold starts");
             Tick(Vector3.right);
-            Require(ResearchQuestRuntime.TryRead(1, out frame) && !frame.CanOperate && frame.Notice == "interrupted",
+            Require(ResearchQuestRuntime.TryRead(world, player, 1, out frame) && !frame.CanOperate && frame.Notice.ToString() == "interrupted",
                 "Moving interrupts the hold");
-            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
+            ResearchQuestRuntime.Hold(world, connection, player, 1, ResearchDevice.Administrator, true);
             Tick(Vector3.zero);
-            Require(ResearchQuestRuntime.TryRead(1, out frame) && !frame.CanOperate, "Interrupted hold needs a fresh press");
-            ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, false);
+            Require(ResearchQuestRuntime.TryRead(world, player, 1, out frame) && !frame.CanOperate, "Interrupted hold needs a fresh press");
+            ResearchQuestRuntime.Hold(world, connection, player, 1, ResearchDevice.Administrator, false);
             for (int i = 0; i < 63; i++)
             {
-                ResearchQuestRuntime.Hold(1, ResearchDevice.Administrator, true);
+                ResearchQuestRuntime.Hold(world, connection, player, 1, ResearchDevice.Administrator, true);
                 Tick(Vector3.zero);
             }
-            Require(ResearchQuestRuntime.TryRead(1, out frame) && ResearchQuestRules.Has(frame.Recovered, ResearchQuest.FlashDrive),
+            Require(ResearchQuestRuntime.TryRead(world, player, 1, out frame) && ResearchQuestRules.Has(frame.Recovered, ResearchQuest.FlashDrive),
                 "A complete hold marks that exact carried drive");
             var manual = ResearchQuestRuntime.TagShot(world, player, true, false, default);
             var sentry = ResearchQuestRuntime.TagShot(world, player, true, true, default);
             ResearchQuestRuntime.RecordKill(world, specimen, manual);
             ResearchQuestRuntime.RecordKill(world, human, sentry);
             ResearchQuestRuntime.RecordKill(world, specimen, sentry);
-            Require(ResearchQuestRuntime.TryRead(1, out frame) && frame.SentryKills == 1, "Sentry credits only specimens from the actual sentry shot");
-            var result = ResearchQuestRuntime.Finish(world, connection, 1, true);
-            Require(result.FlashId == issued && result.SentryKills == 1 && !ResearchQuestRuntime.TryRead(1, out _),
+            Require(ResearchQuestRuntime.TryRead(world, player, 1, out frame) && frame.SentryKills == 1, "Sentry credits only specimens from the actual sentry shot");
+            var result = ResearchQuestRuntime.Finish(world, player, 1, true);
+            Require(result.FlashId == issued && result.SentryKills == 1 && !ResearchQuestRuntime.TryRead(world, player, 1, out _),
                 "Settlement freezes the proof and clears the run");
             CheckLateField(world, connection, player, now);
+            CheckPeerField(world, connection, player, now + 90);
         }
         finally
         {
@@ -373,23 +403,26 @@ public sealed class ResearchQuestChecks : EditorWindow
             for (int i = 0; i < ticks; i++)
             {
                 if (sentry && i % 7 == 0) health.LastShotTick = health.LastSentryShotTick = (uint)i + 100;
-                ResearchQuestRuntime.Hold(raid.RaidId, device, true);
+                ResearchQuestRuntime.Hold(world, connection, player, raid.RaidId, device, true);
                 Tick(p);
             }
-            ResearchQuestRuntime.Hold(raid.RaidId, device, false);
+            ResearchQuestRuntime.Hold(world, connection, player, raid.RaidId, device, false);
         }
 
+        bool Needs(int raidId, ResearchDevice device) =>
+            ResearchQuestRuntime.TryRead(world, player, raidId, out var snapshot) && snapshot.Needs(device);
+
         Tick(Vector3.zero);
-        Require(!ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.NadirTerminal) &&
-            !ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.CredentialsLocker), "Q9 evidence is sealed until the sector is opened");
+        Require(!Needs(2, ResearchDevice.NadirTerminal) &&
+            !Needs(2, ResearchDevice.CredentialsLocker), "Q9 evidence is sealed until the sector is opened");
         Use(ResearchDevice.LowerSeal, 23);
-        Require(ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.NadirTerminal) &&
-            ResearchQuestRuntime.NeedsDevice(2, ResearchDevice.CredentialsLocker), "Sector release exposes two independent objectives");
+        Require(Needs(2, ResearchDevice.NadirTerminal) &&
+            Needs(2, ResearchDevice.CredentialsLocker), "Sector release exposes two independent objectives");
         Use(ResearchDevice.NadirTerminal, 44);
-        Require(ResearchQuestRuntime.TryRead(2, out var q9) && q9.RecordsHeld && q9.HeardNadir && !q9.CredentialsHeld,
+        Require(ResearchQuestRuntime.TryRead(world, player, 2, out var q9) && q9.RecordsHeld && q9.HeardNadir && !q9.CredentialsHeld,
             "Recovering Nadir's records triggers her recording without awarding credentials");
         Use(ResearchDevice.CredentialsLocker, 8);
-        var evidence = ResearchQuestRuntime.Finish(world, connection, 2, true);
+        var evidence = ResearchQuestRuntime.Finish(world, player, 2, true);
         Require(ResearchQuestRules.Holds(inventory.Graph, evidence.NadirRecordsId, ResearchQuestRules.NadirRecords, true) &&
             ResearchQuestRules.Holds(inventory.Graph, evidence.CredentialsId, ResearchQuestRules.Credentials, true),
             "Both Q9 interactions award distinct real carried evidence");
@@ -398,26 +431,93 @@ public sealed class ResearchQuestChecks : EditorWindow
         raid.RaidId = 3;
         inventory.Graph = InventoryGraph.Create(stash: false);
         Tick(Vector3.zero);
-        Require(!ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.ControlAccess) &&
-            !ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.OriginalArchive) &&
-            !ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.Shutdown), "Q10 remains sealed without recovered credentials");
+        Require(!Needs(3, ResearchDevice.ControlAccess) &&
+            !Needs(3, ResearchDevice.OriginalArchive) &&
+            !Needs(3, ResearchDevice.Shutdown), "Q10 remains sealed without recovered credentials");
         Require(ResearchQuestRules.Issue(inventory.Graph, progress) == InventoryError.None &&
-            ResearchQuestRuntime.NeedsDevice(3, ResearchDevice.ControlAccess), "Reissued credential enables the access reader");
+            Needs(3, ResearchDevice.ControlAccess), "Reissued credential enables the access reader");
         Use(ResearchDevice.ControlAccess, 23);
-        Require(ResearchQuestRuntime.TryRead(3, out var q10) && q10.ControlOpened && !q10.ArchiveHeld && !q10.SystemsDisabled,
+        Require(ResearchQuestRuntime.TryRead(world, player, 3, out var q10) && q10.ControlOpened && !q10.ArchiveHeld && !q10.SystemsDisabled,
             "Authenticating opens control but does not finish the objectives");
         health.HaloDeploymentMode = HaloDeploymentMode.Sentry;
         health.HaloTransferPhase = HaloTransferPhase.Sending;
         Use(ResearchDevice.OriginalArchive, 165, sentry: true);
-        Require(ResearchQuestRuntime.TryRead(3, out q10) && q10.ArchiveHeld && !q10.SystemsDisabled,
+        Require(ResearchQuestRuntime.TryRead(world, player, 3, out q10) && q10.ArchiveHeld && !q10.SystemsDisabled,
             "Stationary sentry fire does not interrupt the original archive transfer");
         Use(ResearchDevice.Shutdown, 54);
-        Require(ResearchQuestRuntime.TryRead(3, out q10) && q10.SystemsDisabled &&
+        Require(ResearchQuestRuntime.TryRead(world, player, 3, out q10) && q10.SystemsDisabled &&
             ResearchQuestRules.Has(q10.Recovered, ResearchQuest.EndOfTransmission), "Shutdown and archive together enable extraction");
-        var final = ResearchQuestRuntime.Finish(world, connection, 3, true);
+        var final = ResearchQuestRuntime.Finish(world, player, 3, true);
         Require(final.CredentialsId == progress.CredentialsId && final.SystemsDisabled &&
             ResearchQuestRules.Holds(inventory.Graph, final.OriginalArchiveId, ResearchQuestRules.OriginalArchive, true),
             "Final server settlement freezes exact credentials, archive and shutdown proof");
+    }
+
+    private void CheckPeerField(World world, Entity connection, Entity player, double now)
+    {
+        var peer = world.EntityManager.CreateEntity();
+        var peerConnection = world.EntityManager.CreateEntity();
+        var rebound = world.EntityManager.CreateEntity();
+        var state = new ResearchQuestProgress { Accepted = 31, Completed = 15, HaloKills = ResearchQuestRules.HaloKillGoal };
+        var raid = new RaidSession { RaidId = 9, Phase = RaidPhase.Active };
+        var first = new RaidInventoryState { Graph = InventoryGraph.Create(stash: false) };
+        var second = new RaidInventoryState { Graph = InventoryGraph.Create(stash: false) };
+        Require(ResearchQuestRules.Issue(first.Graph, state) == InventoryError.None &&
+            ResearchQuestRules.Issue(second.Graph, state) == InventoryError.None, "Both teammates receive their own mission drive");
+        string a = Issued(first.Graph, ResearchQuestRules.Flash), b = Issued(second.Graph, ResearchQuestRules.Flash);
+        Require(a != b, "Mission drives are scoped to the player");
+        var health = new PredictedPlayerGhost { CurrentHealth = 100 };
+        void Tick(Entity connectionA)
+        {
+            now += .1;
+            world.SetTime(new TimeData(now, .1f));
+            ResearchQuestRuntime.Tick(world, connectionA, player, raid, first, state, health, Vector3.zero, now, .1f);
+            ResearchQuestRuntime.Tick(world, peerConnection, peer, raid, second, state, health, Vector3.zero, now, .1f);
+        }
+        Tick(connection);
+        ResearchQuestRuntime.Hold(world, connection, peer, raid.RaidId, ResearchDevice.Administrator, true);
+        Tick(connection);
+        Require(ResearchQuestRuntime.TryRead(world, peer, raid.RaidId, out var peerView) && !peerView.CanOperate,
+            "A teammate cannot submit an intent for another owner");
+        for (int i = 0; i < 64; i++)
+        {
+            ResearchQuestRuntime.Hold(world, connection, player, raid.RaidId, ResearchDevice.Administrator, true);
+            Tick(connection);
+        }
+        Tick(rebound);
+        Require(ResearchQuestRuntime.TryRead(world, player, raid.RaidId, out var resumed) &&
+            ResearchQuestRules.Has(resumed.Recovered, ResearchQuest.FlashDrive) && !resumed.CanOperate,
+            "Rebinding the connection preserves recovered evidence and cancels the hold");
+        Require(ResearchQuestRuntime.TryRead(world, peer, raid.RaidId, out peerView) &&
+            !ResearchQuestRules.Has(peerView.Recovered, ResearchQuest.FlashDrive), "Shared terminal does not advance the teammate");
+        Require(ResearchQuestRuntime.Finish(world, player, raid.RaidId, true).FlashId == a &&
+            ResearchQuestRuntime.TryRead(world, peer, raid.RaidId, out _), "Extracting one owner leaves the teammate's run alive");
+        for (int i = 0; i < 64; i++)
+        {
+            ResearchQuestRuntime.Hold(world, peerConnection, peer, raid.RaidId, ResearchDevice.Administrator, true);
+            now += .1;
+            world.SetTime(new TimeData(now, .1f));
+            ResearchQuestRuntime.Tick(world, peerConnection, peer, raid, second, state, health, Vector3.zero, now, .1f);
+        }
+        Require(ResearchQuestRuntime.Finish(world, peer, raid.RaidId, true).FlashId == b, "Teammate can copy using their original drive");
+        state = new ResearchQuestProgress { Accepted = 7, Completed = 3, HaloKills = ResearchQuestRules.HaloKillGoal };
+        raid.RaidId++;
+        first.Graph = InventoryGraph.Create(stash: false);
+        second.Graph = InventoryGraph.Create(stash: false);
+        Require(ResearchQuestRules.Issue(first.Graph, state) == InventoryError.None &&
+            ResearchQuestRules.Issue(second.Graph, state) == InventoryError.None, "Both players enter with a sample kit");
+        Tick(rebound);
+        ResearchQuestRuntime.CollectSample(world, rebound, player, raid.RaidId, 64, now);
+        ResearchQuestRuntime.CollectSample(world, rebound, player, raid.RaidId, 64, now);
+        ResearchQuestRuntime.CollectSample(world, peerConnection, peer, raid.RaidId, 64, now);
+        var firstSamples = ResearchQuestRuntime.Finish(world, player, raid.RaidId, true).SampleIds;
+        var peerSamples = ResearchQuestRuntime.Finish(world, peer, raid.RaidId, true).SampleIds;
+        Require(firstSamples.Length == 1 && peerSamples.Length == 1 && firstSamples[0] != peerSamples[0],
+            "A shared corpse yields one independently owned sample per eligible player");
+        Require(LootInventoryExchange.PrepareDrop(first.Graph, firstSamples[0], first.Graph.Version, out _, out _) ==
+            InventoryError.Inaccessible, "Quest supplies cannot be dropped for a teammate");
+        Require(!LootInventoryExchange.DropOnDeath(first.Graph).Items.Any(i => InventoryCatalog.IsResearchSupply(i.Code)),
+            "Death bags exclude personal evidence");
     }
 
     public static void Capture()

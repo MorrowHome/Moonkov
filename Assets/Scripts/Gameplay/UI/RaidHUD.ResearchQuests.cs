@@ -14,8 +14,10 @@ namespace Unity.MP_FPS
         private readonly Label[] m_ResearchLines = new Label[ResearchQuestRules.Count];
         private ResearchDevice? m_ResearchHold;
         private readonly ResearchQuestRadio m_ResearchRadio = new();
+        private readonly ResearchQuestFieldView m_ResearchField = new();
+        private ResearchQuestSnapshotRpc m_ResearchSnapshot;
         private int m_LastNadirRaid = -1;
-        private float m_ResearchNextRefresh;
+        private float m_ResearchNextRefresh, m_ResearchNextHold;
         private bool m_ResearchInputPriority;
 
         private void InitializeResearchQuests()
@@ -54,14 +56,22 @@ namespace Unity.MP_FPS
             m_ResearchInputPriority = false;
             if (m_ResearchList == null) return false;
             int raid = m_Snapshot.RaidId;
-            if (!live || !PlayerProfileClient.IsOffline || !ResearchQuestRuntime.TryRead(raid, out var quest))
+            var entity = m_StateQuery.GetSingletonEntity();
+            var manager = m_World.EntityManager;
+            var quest = live && manager.HasComponent<ResearchQuestClientState>(entity)
+                ? manager.GetComponentData<ResearchQuestClientState>(entity).Snapshot : default;
+            if (quest.RaidId != raid || quest.Active == 0)
             {
+                m_ResearchSnapshot = default;
+                m_ResearchField.Clear();
                 m_ResearchList.style.display = DisplayStyle.None;
                 m_ResearchPrompt.style.display = DisplayStyle.None;
                 ReleaseResearchHold();
                 m_ResearchRadio.Stop();
                 return false;
             }
+            m_ResearchSnapshot = quest;
+            m_ResearchField.Present(quest);
             if (quest.HeardNadir && m_LastNadirRaid != raid)
             {
                 m_LastNadirRaid = raid;
@@ -89,21 +99,28 @@ namespace Unity.MP_FPS
             if (canInteract)
                 foreach (var id in s_ResearchDevices)
                 {
-                    if (!ResearchQuestRuntime.NeedsDevice(raid, id)) continue;
+                    if (!quest.Needs(id)) continue;
                     var anchor = ResearchQuestRuntime.Anchor(id);
                     if (anchor == null) continue;
                     float score = RaidInteractionAim.Score(Camera.main, position, ResearchQuestRuntime.InteractionPoint(id, anchor), 3,
-                        ResearchQuestRuntime.AimSurface(raid, id, anchor));
+                        m_ResearchField.Surface(id, anchor));
                     if (score >= 0 && score >= best) { best = score; target = id; }
                 }
             if (!m_ResearchHold.HasValue && target.HasValue && held && m_InteractionBindings.Operate.WasPressedThisFrame())
+            {
                 m_ResearchHold = target;
+                m_ResearchNextHold = 0;
+            }
             if (m_ResearchHold.HasValue)
             {
-                if (target == m_ResearchHold) ResearchQuestRuntime.Hold(raid, target.Value, true);
-                else ReleaseResearchHold();
+                if (target != m_ResearchHold) ReleaseResearchHold();
+                else if (Time.unscaledTime >= m_ResearchNextHold)
+                {
+                    Send(new ResearchQuestHoldRpc { RaidId = raid, Device = target.Value, Pressed = true });
+                    m_ResearchNextHold = Time.unscaledTime + .1f;
+                }
             }
-            string notice = quest.Notice switch
+            string notice = quest.Notice.IsEmpty ? null : quest.Notice.ToString() switch
             {
                 "interrupted" => Text("操作中断", "Transfer interrupted"),
                 "space" => Text("背包空间不足", "Not enough inventory space"),
@@ -115,10 +132,11 @@ namespace Unity.MP_FPS
                 "shutdown" => Text("档案已取得。关闭实验系统", "Archive secured. Disable the experiments."),
                 "archive" => Text("实验系统已关闭。回收原始档案", "Experiments disabled. Recover the original archive."),
                 "discharge" => Text("能量放电。可用光环护盾抵挡", "Energy discharge. Use your Halo shield."),
+                "sample" => Text("已封存生物样本", "Biological sample sealed"),
                 _ => null
             };
             string prompt = target.HasValue ? m_InteractionBindings.Label(m_InteractionBindings.Operate) + "   " + DeviceAction(target.Value)
-                + (quest.CanOperate && quest.Target == target.Value ? $"   {Mathf.FloorToInt(quest.InteractionProgress * 100)}%" : "")
+                + (quest.CanOperate && quest.Target == target.Value ? $"   {quest.InteractionPercent}%" : "")
                 : notice;
             m_ResearchPrompt.style.display = canInteract && prompt != null ? DisplayStyle.Flex : DisplayStyle.None;
             if (prompt != null && m_ResearchPromptText.text != prompt) MoonkovLocalization.Set(m_ResearchPromptText, prompt);
@@ -128,7 +146,7 @@ namespace Unity.MP_FPS
         private void ReleaseResearchHold()
         {
             if (!m_ResearchHold.HasValue) return;
-            ResearchQuestRuntime.Hold(m_Snapshot.RaidId, m_ResearchHold.Value, false);
+            Send(new ResearchQuestHoldRpc { RaidId = m_Snapshot.RaidId, Device = m_ResearchHold.Value, Pressed = false });
             m_ResearchHold = null;
         }
 
@@ -146,7 +164,7 @@ namespace Unity.MP_FPS
             _ => ""
         };
 
-        private static string FieldProgress(ResearchQuest id, ResearchQuestRuntime.Presentation view)
+        private static string FieldProgress(ResearchQuest id, ResearchQuestSnapshotRpc view)
         {
             if (ResearchQuestRules.Has(view.Recovered, id)) return Text("带回后交付", "Extract to turn in");
             return id switch

@@ -142,7 +142,16 @@ namespace Unity.MP_FPS
                         else context.Abandon(deploy.Payload);
                         removeDeploys.Add(connection);
                         if (deploy.Join != null)
+                        {
+                            if (rejected.Error == RaidLoadoutError.ResearchSuppliesNoSpace)
+                            {
+                                var reason = ecb.CreateEntity();
+                                ecb.AddComponent(reason, new ClashJoinAcceptedRpc { Mode = RaidGameMode.Expedition, Accepted = false,
+                                    Reason = "任务配发物品放不下。请回仓库腾出空间后再出战。" });
+                                ecb.AddComponent(reason, new SendRpcCommandRequest { TargetConnection = connection });
+                            }
                             ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                        }
                         else
                         {
                             var raid = SystemAPI.GetComponentRW<RaidSession>(connection);

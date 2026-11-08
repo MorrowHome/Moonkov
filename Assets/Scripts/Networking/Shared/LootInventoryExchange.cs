@@ -56,14 +56,16 @@ namespace Unity.MP_FPS.Inventory
             var cache=InventoryGraph.Create(false,false);cache.LootRows=24;
             var retained = SecureInventory.ProtectedIds(carried);
             cache.Items.Add(new InventoryItem {Id=Root,Code=Root});
-            foreach(var source in carried.Items.Where(i=>!retained.Contains(i.Id) && (i.Parent==InventoryCatalog.Equipment || i.Parent==InventoryCatalog.Pockets)))
+            foreach(var source in carried.Items.Where(i=>!InventoryCatalog.IsResearchSupply(i.Code) &&
+                !retained.Contains(i.Id) && (i.Parent==InventoryCatalog.Equipment || i.Parent==InventoryCatalog.Pockets)))
             {
                 var item=source.Clone();
                 if(!cache.FindSpace(item,Root,out var region,out var x,out var y))
                     throw new InvalidOperationException("Death bag cannot fit carried equipment.");
                 item.Parent=Root;item.Region=region;item.X=x;item.Y=y;cache.Items.Add(item);
             }
-            cache.Items.AddRange(carried.Items.Where(i=>!retained.Contains(i.Id) && i.Parent!=null && i.Parent!=InventoryCatalog.Equipment && i.Parent!=InventoryCatalog.Pockets).Select(i=>i.Clone()));
+            cache.Items.AddRange(carried.Items.Where(i=>!InventoryCatalog.IsResearchSupply(i.Code) && !retained.Contains(i.Id) &&
+                i.Parent!=null && i.Parent!=InventoryCatalog.Equipment && i.Parent!=InventoryCatalog.Pockets).Select(i=>i.Clone()));
             if(cache.Validate()!=InventoryError.None)throw new InvalidOperationException("Death bag lost an inventory hierarchy.");
             carried.Items.RemoveAll(i=>InventoryCatalog.Get(i.Code).Kind!=ItemKind.Root && !retained.Contains(i.Id));carried.Version++;
             return cache;
@@ -82,6 +84,7 @@ namespace Unity.MP_FPS.Inventory
             var ids = new System.Collections.Generic.HashSet<string> { itemId };
             for (int depth = 0; depth < InventoryCatalog.MaxDepth; depth++)
                 foreach (var child in carried.Items) if (child.Parent != null && ids.Contains(child.Parent)) ids.Add(child.Id);
+            if (carried.Items.Any(i => ids.Contains(i.Id) && InventoryCatalog.IsResearchSupply(i.Code))) return InventoryError.Inaccessible;
             var cache = InventoryGraph.Create(false, false); cache.LootRows = 24;
             cache.Items.Add(new InventoryItem { Id = Root, Code = Root });
             var top = item.Clone(); top.Rotated = false;
@@ -106,6 +109,7 @@ namespace Unity.MP_FPS.Inventory
             nextCarried.Items=joined.Items.Where(i=>joined.RootOf(i.Id)!=Root).ToList();
             nextCache.Items.RemoveAll(i=>i.Id==Root || cache.RootOf(i.Id)==Root);
             nextCache.Items.AddRange(joined.Items.Where(i=>joined.RootOf(i.Id)==Root));
+            if (nextCache.Items.Any(i => InventoryCatalog.IsResearchSupply(i.Code))) return InventoryError.Inaccessible;
             if(nextCarried.Validate()!=InventoryError.None || nextCache.Validate()!=InventoryError.None) return InventoryError.Invalid;
             carried.Items=nextCarried.Items; carried.Version++;
             if(touchesCache) {cache.Items=nextCache.Items;cache.Version++;}

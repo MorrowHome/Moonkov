@@ -51,6 +51,7 @@ try
     { query.Parameters.AddWithValue(deploymentB.DeploymentId); Check((string)(await query.ExecuteScalarAsync())! == "Open", "failed deployment remains recoverable"); }
     await using (var query = new NpgsqlCommand("SELECT count(*) FROM mission_artifact_receipts", connection))
         Check((long)(await query.ExecuteScalarAsync())! == 1, "one global artifact receipt");
+    checks += await ResearchQuestDatabaseChecks.RunAsync(db);
     var dead = await store.SettleAsync(new Settlement(second.PlayerId, deploymentB.DeploymentId, "Dead", 0, 0, 0, deploymentB.DeploymentId), default);
     Check(InventoryRepository.Decode(dead.InventoryJson!).MissionFirsts == 0 && dead.Dust == second.Dust, "death awards nothing");
 }

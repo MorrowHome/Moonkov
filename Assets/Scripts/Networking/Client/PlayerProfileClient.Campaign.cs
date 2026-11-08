@@ -13,7 +13,15 @@ namespace Unity.MP_FPS
         // UI treats this cache as read-only. All writes are intents handled by
         // the selected store, and campaign facts come from the local server.
         public static CampaignProgress Campaign => IsOffline ? s_Campaign : null;
-        public static ResearchQuestProgress ResearchQuests => IsOffline && !IsTutorialPractice ? s_ResearchQuests : null;
+        public static ResearchQuestProgress ResearchQuests
+        {
+            get
+            {
+                if (IsLan) return LanRoomClient.Profile.Profile.ResearchQuests;
+                if (IsOffline) return IsTutorialPractice ? null : s_ResearchQuests;
+                return AccountClient.IsLoggedIn ? AccountClient.ResearchQuests : null;
+            }
+        }
 
         private static void RefreshCampaign(RaidPersistenceContext.Profile profile)
         {
@@ -27,6 +35,9 @@ namespace Unity.MP_FPS
         public static async Task<bool> AdvanceResearchQuestAsync(ResearchQuest quest, bool claim)
         {
             if (ResearchQuests == null) return false;
+            if (!IsOffline)
+                return await SendResearchCommand(new ResearchQuestCommand { Quest = quest,
+                    Action = claim ? ResearchQuestAction.Claim : ResearchQuestAction.Accept });
             var store = s_Offline;
             bool changed = await Task.Run(() => store.AdvanceResearchQuest(quest, claim));
             if (store != s_Offline) return false;
@@ -37,11 +48,21 @@ namespace Unity.MP_FPS
         public static async Task<bool> ChooseResearchEndingAsync(ResearchEnding ending)
         {
             if (ResearchQuests == null) return false;
+            if (!IsOffline)
+                return await SendResearchCommand(new ResearchQuestCommand { Action = ResearchQuestAction.Decide, Ending = ending });
             var store = s_Offline;
             bool changed = await Task.Run(() => store.ChooseResearchEnding(ending));
             if (store != s_Offline) return false;
             if (changed) RefreshOffline();
             return changed;
+        }
+
+        private static async Task<bool> SendResearchCommand(ResearchQuestCommand command)
+        {
+            if (RaidActive) return false;
+            if (IsLan) await LanRoomClient.RequestAsync("research", command);
+            else await AccountClient.AdvanceResearchQuestAsync(command, CancellationToken.None);
+            return true;
         }
 
         public static async Task SetCampaignTrackingAsync(string taskId, bool secondary = false,

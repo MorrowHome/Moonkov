@@ -530,6 +530,7 @@ namespace Unity.MP_FPS
                 MoonkovLocalization.Set(m_LoadoutNote, deploying ? "Preparing loadout. Waiting for server confirmation..."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
+                    : m_Snapshot.LoadoutError == RaidLoadoutError.ResearchSuppliesNoSpace ? Client.ResearchQuestCopy.Text("任务配发物品放不下。请回仓库腾出空间。", "Make room in your loadout for mission equipment.")
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
                     : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction."));
                 if (!m_WasSettled && !saving) m_Return.Focus();
@@ -1034,6 +1035,7 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ReleaseResearchHold();
+            m_ResearchField.Clear();
             m_ResearchRadio.Dispose();
             ClearFieldRecords();
             m_InteractionOutline.Dispose();

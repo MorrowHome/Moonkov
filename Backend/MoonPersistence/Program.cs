@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Npgsql;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.Online;
 
@@ -103,6 +104,14 @@ auth.MapPost("/inventory/move", async (HttpRequest request, InventoryCommand com
     if (profile is null) return Results.Unauthorized();
     try { return Results.Ok(await inventory.MoveAsync(profile.PlayerId, command, ct)); }
     catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+});
+auth.MapPost("/research/advance", async (HttpRequest request, ResearchQuestCommand command, AccountRepository accounts,
+    InventoryRepository inventory, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile is null) return Results.Unauthorized();
+    try { return Results.Ok(await inventory.ApplyResearchCommandAsync(profile.PlayerId, command, ct)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
 auth.MapGet("/shop", async (HttpRequest request, AccountRepository accounts, CancellationToken ct) =>
 {
@@ -234,7 +243,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, OnlineLobbies lobbies
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2", "lobby-chest-badge-v1", "lobby-entry-actions-v1", "lobby-room-directory-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1", "embedded-ice-v2", "lobby-chest-badge-v1", "lobby-entry-actions-v1", "lobby-room-directory-v1", "research-quests-v1" },
         onlineInstances = true, instancePhase = lobbies.Current()?.Phase ?? "Idle", build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
@@ -341,9 +350,9 @@ static string? BearerToken(HttpRequest request)
 }
 
 public sealed record ResolveProfile(string GuestToken, string DisplayName);
-public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0, Guid? BountyEventId=null);
+public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0, Guid? BountyEventId=null, ResearchQuestResult? ResearchQuests=null);
 public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
     Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null,
-    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1, string? RecoveryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0);
+    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1, string? RecoveryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0, ResearchQuestProgress? ResearchQuests=null);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

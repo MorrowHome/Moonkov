@@ -1,29 +1,21 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum ResearchDevice { Tablet, Administrator, Server, LowerSeal, NadirTerminal, CredentialsLocker, ControlAccess, OriginalArchive, Shutdown }
-
-    // One authoritative solo deployment. The local HUD can read a copy and submit a hold
-    // intent. Only the server tick can consume a device, write data or advance a counter.
+    // One server-owned run per deployed player. The player entity survives a
+    // retained connection, so reconnects resume evidence without sharing it.
     public sealed partial class ResearchQuestRuntime
     {
-        public struct Presentation
-        {
-            public int Active, Seconds, HaloKills, SentryKills, Samples, Recovered, Issued;
-            public bool CanOperate, TabletAvailable, PackageRemoved, HeardNadir, LowerOpened, RecordsHeld, CredentialsHeld, ControlOpened, ArchiveHeld, SystemsDisabled;
-            public ResearchDevice Target;
-            public float InteractionProgress;
-            public string Notice;
-        }
-
-        private static ResearchQuestRuntime s_Run;
+        private static readonly Dictionary<World, Dictionary<Entity, ResearchQuestRuntime>> s_Runs = new();
+        private static readonly ResearchDevice[] s_Devices = (ResearchDevice[])Enum.GetValues(typeof(ResearchDevice));
         private readonly World m_World;
-        private readonly Entity m_Connection, m_Player;
+        private readonly Entity m_Player;
+        private Entity m_Connection;
         private readonly int m_RaidId;
         private readonly RaidInventoryState m_Inventory;
         private readonly ResearchQuestProgress m_Saved;
@@ -31,9 +23,10 @@ namespace Unity.MP_FPS
         private readonly HashSet<string> m_Samples = new HashSet<string>();
         private readonly string m_TabletId, m_FlashId, m_HardDriveId, m_PackageId, m_SampleKitId;
         private readonly RaidMissionWorld.Actor m_Action = new RaidMissionWorld.Actor();
-        private GameObject m_TabletModel;
+        private readonly HashSet<int> m_SampledCorpses = new();
+        private uint m_Sequence;
         private float m_AliveSeconds;
-        private bool m_TabletPicked, m_TabletPlaced, m_RequireRelease;
+        private bool m_TabletPicked, m_RequireRelease;
         private ResearchDevice m_Requested;
         private bool m_PackageLoaded, m_PackageRemoved;
         private double m_HoldLease, m_HoldStart, m_NoticeUntil;
@@ -53,14 +46,11 @@ namespace Unity.MP_FPS
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset()
-        {
-            s_Run?.RemoveFieldObjects();
-            s_Run = null;
-        }
+        private static void Reset() => s_Runs.Clear();
 
-        private bool Matches(int raidId) => m_World.IsCreated && m_RaidId == raidId &&
-            m_World.EntityManager.Exists(m_Connection) && m_World.EntityManager.Exists(m_Player);
+        private static ResearchQuestRuntime Find(World world, Entity player) =>
+            s_Runs.TryGetValue(world, out var runs) && runs.TryGetValue(player, out var run) ? run : null;
+
         private bool Active(ResearchQuest quest) => ResearchQuestRules.Has(m_Result.Active, quest);
         private InventoryGraph Inventory => m_Inventory.Graph;
 
@@ -68,57 +58,57 @@ namespace Unity.MP_FPS
             ResearchQuestProgress progress, in PredictedPlayerGhost health, Vector3 position, double now, float dt, uint tick = 0)
         {
             if (progress == null || progress.Active == 0) return;
-            if (s_Run == null || s_Run.m_World != world || s_Run.m_Connection != connection || !s_Run.Matches(session.RaidId))
+            if (!s_Runs.TryGetValue(world, out var runs)) s_Runs.Add(world, runs = new Dictionary<Entity, ResearchQuestRuntime>());
+            if (!runs.TryGetValue(player, out var run) || run.m_RaidId != session.RaidId)
             {
-                s_Run?.RemoveFieldObjects();
-                s_Run = new ResearchQuestRuntime(world, connection, player, session.RaidId, inventory, progress);
+                run = new ResearchQuestRuntime(world, connection, player, session.RaidId, inventory, progress);
+                runs[player] = run;
             }
-            s_Run.Advance(health, position, now, dt, tick);
+            if (run.m_Connection != connection)
+            {
+                run.m_Connection = connection;
+                run.ReleaseHold();
+            }
+            run.Advance(health, position, now, dt, tick);
         }
 
-        public static void Clear(World world)
-        {
-            if (s_Run?.m_World != world) return;
-            s_Run.RemoveFieldObjects();
-            s_Run = null;
-        }
+        public static void Clear(World world) => s_Runs.Remove(world);
 
-        public static ResearchQuestResult Finish(World world, Entity connection, int raidId, bool extracted)
+        public static ResearchQuestResult Finish(World world, Entity player, int raidId, bool extracted)
         {
-            var run = s_Run;
-            if (run == null || run.m_World != world || run.m_Connection != connection || run.m_RaidId != raidId) return null;
+            var run = Find(world, player);
+            if (run == null || run.m_RaidId != raidId) return null;
+            s_Runs[world].Remove(player);
+            if (!extracted) return null;
             var result = run.m_Result;
-            if (extracted)
-            {
-                result.TabletId = run.m_TabletPicked ? run.m_TabletId : null;
-                result.PackageId = run.m_PackageId;
-                result.PackageSecured = run.ObserveCargo();
-                var samples = new List<string>(ResearchQuestRules.SampleGoal);
-                foreach (string id in run.m_Samples)
-                {
-                    if (ResearchQuestRules.Holds(run.Inventory, id, ResearchQuestRules.Sample, found: true)) samples.Add(id);
-                    if (samples.Count == ResearchQuestRules.SampleGoal) break;
-                }
-                result.SampleIds = samples.ToArray();
-            }
-            Clear(world);
+            result.TabletId = run.m_TabletPicked ? run.m_TabletId : null;
+            result.PackageId = run.m_PackageId;
+            result.PackageSecured = run.ObserveCargo();
+            var samples = new List<string>(ResearchQuestRules.SampleGoal);
+            foreach (string id in run.m_Samples)
+                if (ResearchQuestRules.Holds(run.Inventory, id, ResearchQuestRules.Sample, found: true)) samples.Add(id);
+            result.SampleIds = samples.ToArray();
             return result;
         }
 
-        public static void AddSample(World world, InventoryGraph harvest)
+        public static void CollectSample(World world, Entity connection, Entity player, int raidId, int corpseId, double now)
         {
-            var run = s_Run;
-            if (run == null || run.m_World != world || !run.Matches(run.m_RaidId) || !run.Active(ResearchQuest.Biology) ||
+            var run = Find(world, player);
+            if (run == null || run.m_Connection != connection || run.m_RaidId != raidId || !run.Active(ResearchQuest.Biology) ||
+                run.m_Samples.Count >= ResearchQuestRules.SampleGoal || run.m_SampledCorpses.Contains(corpseId) ||
                 !ResearchQuestRules.Holds(run.Inventory, run.m_SampleKitId, ResearchQuestRules.SampleKit)) return;
             string id = Guid.NewGuid().ToString("D");
-            if (harvest.AddSupply(ResearchQuestRules.Sample, 1, LootInventoryExchange.Root, foundInRaid: true, id: id) == InventoryError.None)
-                run.m_Samples.Add(id);
+            if (!run.Recover(ResearchQuestRules.Sample, id, now)) return;
+            run.m_SampledCorpses.Add(corpseId);
+            run.m_Samples.Add(id);
+            run.Notice(run.m_Samples.Count == ResearchQuestRules.SampleGoal ? "extract" : "sample", now);
         }
 
         public static void InventoryChanged(World world, Entity connection, int raidId)
         {
-            var run = s_Run;
-            if (run != null && run.m_World == world && run.m_Connection == connection && run.Matches(raidId)) run.ObserveCargo();
+            if (!s_Runs.TryGetValue(world, out var runs)) return;
+            foreach (var run in runs.Values)
+                if (run.m_Connection == connection && run.m_RaidId == raidId) run.ObserveCargo();
         }
 
         private bool ObserveCargo()
@@ -132,8 +122,8 @@ namespace Unity.MP_FPS
 
         public static ClashDamageSource TagShot(World world, Entity shooter, bool halo, bool sentry, ClashDamageSource source)
         {
-            var run = s_Run;
-            if (halo && run != null && run.m_World == world && run.m_Player == shooter &&
+            var run = halo ? Find(world, shooter) : null;
+            if (run != null &&
                 (run.Active(ResearchQuest.HaloTrial) || run.Active(ResearchQuest.Sentry)))
             {
                 source.ResearchShooter = shooter;
@@ -144,9 +134,8 @@ namespace Unity.MP_FPS
 
         public static void RecordKill(World world, Entity victim, ClashDamageSource source)
         {
-            var run = s_Run;
-            if (run == null || run.m_World != world || source.ResearchShooter == Entity.Null ||
-                run.m_Player != source.ResearchShooter || !run.Matches(run.m_RaidId) ||
+            var run = Find(world, source.ResearchShooter);
+            if (run == null ||
                 !world.EntityManager.HasComponent<ProceduralAlienEnemy.State>(victim)) return;
             if (run.Active(ResearchQuest.HaloTrial) && run.m_Result.HaloKills < ResearchQuestRules.HaloKillGoal) run.m_Result.HaloKills++;
             if (source.ResearchSentry && run.Active(ResearchQuest.Sentry) && run.m_Result.SentryKills < ResearchQuestRules.SentryKillGoal) run.m_Result.SentryKills++;
@@ -178,7 +167,7 @@ namespace Unity.MP_FPS
             return mount + Vector3.up * .018f;
         }
 
-        private static Vector3 TabletMount(RaidMissionAnchor anchor)
+        internal static Vector3 TabletMount(RaidMissionAnchor anchor)
         {
             var surface = RaidInteractionAim.MissionSurface(anchor.Id);
             var casing = surface ? surface.Find("Physical equipment casing") : null;
@@ -190,11 +179,15 @@ namespace Unity.MP_FPS
             return anchor.Position + Vector3.up * .19f;
         }
 
-        public static bool TryRead(int raidId, out Presentation view)
+        public static bool TryRead(World world, Entity player, int raidId, out ResearchQuestSnapshotRpc view)
         {
             view = default;
-            var run = s_Run;
-            if (run == null || !run.Matches(raidId)) return false;
+            var run = Find(world, player);
+            if (run == null || run.m_RaidId != raidId) return false;
+            view.RaidId = raidId;
+            view.Sequence = ++run.m_Sequence;
+            foreach (var device in s_Devices)
+                if (run.Needs(device)) view.Devices |= (ushort)(1 << (int)device);
             view.Active = run.m_Result.Active;
             view.Seconds = run.m_Result.ExposureSeconds;
             view.HaloKills = Math.Min(ResearchQuestRules.HaloKillGoal, run.m_Saved.HaloKills + run.m_Result.HaloKills);
@@ -226,15 +219,10 @@ namespace Unity.MP_FPS
             double now = run.m_World.Time.ElapsedTime;
             view.CanOperate = run.m_Action.Node >= 0;
             view.Target = (ResearchDevice)run.m_Action.Node;
-            if (view.CanOperate) view.InteractionProgress = Mathf.Clamp01((float)(now - run.m_HoldStart) / Duration(view.Target));
-            if (now < run.m_NoticeUntil) view.Notice = run.m_Notice;
+            if (view.CanOperate)
+                view.InteractionPercent = (byte)Mathf.FloorToInt(100 * Mathf.Clamp01((float)(now - run.m_HoldStart) / Duration(view.Target)));
+            if (now < run.m_NoticeUntil) view.Notice = new FixedString32Bytes(run.m_Notice);
             return true;
-        }
-
-        public static bool NeedsDevice(int raidId, ResearchDevice device)
-        {
-            var run = s_Run;
-            return run != null && run.Matches(raidId) && run.Needs(device);
         }
 
         private bool Needs(ResearchDevice device)
@@ -257,20 +245,21 @@ namespace Unity.MP_FPS
             };
         }
 
-        public static void Hold(int raidId, ResearchDevice device, bool pressed)
+        public static void Hold(World world, Entity connection, Entity player, int raidId, ResearchDevice device, bool pressed)
         {
-            var run = s_Run;
-            if (run == null || !run.Matches(raidId)) return;
-            if (!pressed)
-            {
-                run.m_HoldLease = 0;
-                run.m_RequireRelease = false;
-                run.m_Action.Node = -1;
-                return;
-            }
+            var run = Find(world, player);
+            if (run == null || run.m_RaidId != raidId || run.m_Connection != connection) return;
+            if (!pressed) { run.ReleaseHold(); return; }
             if (run.m_RequireRelease || !run.Needs(device)) return;
             run.m_Requested = device;
-            run.m_HoldLease = run.m_World.Time.ElapsedTime + .24;
+            run.m_HoldLease = world.Time.ElapsedTime + .45;
+        }
+
+        private void ReleaseHold()
+        {
+            m_HoldLease = 0;
+            m_RequireRelease = false;
+            m_Action.Node = -1;
         }
 
         private static float Duration(ResearchDevice device) => device switch
@@ -291,8 +280,7 @@ namespace Unity.MP_FPS
                 m_Result.ExposureSeconds = Mathf.FloorToInt(m_AliveSeconds);
             }
             ObserveCargo();
-            if (Active(ResearchQuest.Tablet) && !m_TabletPlaced) PlaceTablet();
-            UpdateFieldDevices(position, now, tick);
+            UpdateHazards(position, now, tick);
             if (m_HoldLease <= now || m_RequireRelease) { m_Action.Node = -1; return; }
             var anchor = Anchor(m_Requested);
             var target = anchor == null ? default : InteractionPoint(m_Requested, anchor);
@@ -301,7 +289,7 @@ namespace Unity.MP_FPS
             bool accessible = anchor != null && Needs(m_Requested) && !m_Inventory.ActionPending &&
                 !RaidHealth.HandsBusy(health, allowAnchoredHalo: true) &&
                 (position - target).sqrMagnitude <= 9 && Vector3.Dot(forward, (target - eye).normalized) >= .65f &&
-                RaidInteractionAim.Visible(eye, target, Surface(m_Requested, anchor));
+                RaidInteractionAim.Visible(eye, target, RaidInteractionAim.MissionSurface(anchor.Id));
             if (!accessible || m_Action.Node >= 0 && (m_Action.Node != (int)m_Requested ||
                 ((Vector3)m_Action.Origin - position).sqrMagnitude > .36f || m_Action.Interrupted(health, position, allowAnchoredHalo: true)))
             {
@@ -323,7 +311,6 @@ namespace Unity.MP_FPS
                 case ResearchDevice.Tablet:
                     if (!Recover(ResearchQuestRules.Tablet, m_TabletId, now)) return;
                     m_TabletPicked = true;
-                    RemoveTablet();
                     break;
                 case ResearchDevice.Administrator: m_Result.FlashId = m_FlashId; break;
                 case ResearchDevice.Server: m_Result.HardDriveId = m_HardDriveId; break;
@@ -342,37 +329,5 @@ namespace Unity.MP_FPS
             return true;
         }
 
-        private void PlaceTablet()
-        {
-            var anchor = Anchor(ResearchDevice.Tablet);
-            if (anchor == null) return;
-            var surface = RaidInteractionAim.MissionSurface(anchor.Id);
-            if (!surface) return;
-            m_TabletPlaced = true;
-            m_TabletModel = PhysicalItemVisuals.Create(ResearchQuestRules.Tablet, surface);
-            if (!m_TabletModel) return;
-            m_TabletModel.transform.SetPositionAndRotation(TabletMount(anchor),
-                Quaternion.Euler(0, anchor.Yaw + 90, 0) * m_TabletModel.transform.localRotation);
-        }
-
-        private void RemoveTablet()
-        {
-            DestroyFieldObject(m_TabletModel);
-            m_TabletModel = null;
-        }
-
-        public static Transform DeviceVisual(int raidId, ResearchDevice device, RaidMissionAnchor anchor) =>
-            s_Run != null && s_Run.Matches(raidId)
-                ? device == ResearchDevice.Tablet && s_Run.m_TabletModel ? s_Run.m_TabletModel.transform : s_Run.Surface(device, anchor)
-                : null;
-
-        public static Transform AimSurface(int raidId, ResearchDevice device, RaidMissionAnchor anchor) =>
-            s_Run != null && s_Run.Matches(raidId) ? s_Run.Surface(device, anchor) : null;
-
-        private Transform Surface(ResearchDevice device, RaidMissionAnchor anchor)
-        {
-            if (m_FieldDevices.TryGetValue(device, out var field) && field.Root) return field.Root.transform;
-            return RaidInteractionAim.MissionSurface(anchor.Id);
-        }
     }
 }

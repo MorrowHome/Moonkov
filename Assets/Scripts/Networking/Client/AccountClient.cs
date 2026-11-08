@@ -15,7 +15,12 @@ namespace Unity.MP_FPS
     public static partial class AccountClient
     {
         private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
-        private sealed class Profile { public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson; public int Dust, Alloy, Cells; }
+        private sealed class Profile
+        {
+            public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson;
+            public int Dust, Alloy, Cells;
+            public ResearchQuestProgress ResearchQuests;
+        }
         private sealed class Failure { public string Error; }
         private sealed class ShopSnapshot { public ShopOffer[] Offers; public Profile Profile; }
         public sealed class InventoryRequestException : InvalidOperationException
@@ -30,6 +35,7 @@ namespace Unity.MP_FPS
         internal static bool AllowLanHttp { get; set; }
         public static RecoveryInbox Recovery {get;private set;} = new RecoveryInbox();
         public static InventoryGraph Inventory { get; private set; }
+        public static ResearchQuestProgress ResearchQuests { get; private set; }
         public static bool RaidActive { get; private set; }
         private static string s_VerifiedPlayerId, s_VerifiedServiceUrl;
         public static string LocalPreferenceScope
@@ -66,6 +72,7 @@ namespace Unity.MP_FPS
             CarryCells = 0;
             s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
             s_ProfileRequest = s_AppliedProfileRequest = 0;
+            ResearchQuests = null;
             AllowLanHttp = false;
         }
 
@@ -108,6 +115,7 @@ namespace Unity.MP_FPS
                     ct.ThrowIfCancellationRequested();
                     CarryCells = 0;
                     s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false;
+                    ResearchQuests = null;
                     s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
                     PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result)); PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
@@ -156,6 +164,7 @@ namespace Unity.MP_FPS
             s_Token = s_Name = ""; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
+            ResearchQuests = null;
             s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged?.Invoke();
             PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
         }
@@ -181,6 +190,12 @@ namespace Unity.MP_FPS
                 throw new InvalidOperationException("Invalid account inventory snapshot. Existing inventory was preserved.");
             var recovery=string.IsNullOrEmpty(profile.RecoveryJson) ? new RecoveryInbox() : JsonConvert.DeserializeObject<RecoveryInbox>(profile.RecoveryJson);
             if(recovery==null || recovery.Validate(graph)!=InventoryError.None)throw new InvalidOperationException("Invalid recovery inbox. Existing inventory was preserved.");
+            var research = profile.ResearchQuests;
+            if (research != null && !ResearchQuestRules.Valid(research))
+                throw new InvalidOperationException("Invalid account research quest snapshot.");
+            // Research progress and the inventory have separate revisions.
+            if (research != null && (ResearchQuests == null || research.Revision > ResearchQuests.Revision))
+                ResearchQuests = research;
             // A delayed background refresh cannot roll back a successful move or a newer raid state.
             if (Inventory != null && (graph.Version < Inventory.Version ||
                 graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)) return;
@@ -197,6 +212,8 @@ namespace Unity.MP_FPS
         public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) => PostInventoryAsync("auth/inventory/move", command, ct);
         public static Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct) => PostInventoryAsync("auth/inventory/recovery/claim",request,ct);
         public static Task TradeAsync(ShopCommand command, CancellationToken ct) => PostInventoryAsync("auth/shop/trade", command, ct);
+        public static Task AdvanceResearchQuestAsync(ResearchQuestCommand command, CancellationToken ct) =>
+            PostInventoryAsync("auth/research/advance", command, ct);
         private sealed class GameTicket { public string Ticket; }
         public static async Task<string> CreateGameTicketAsync(CancellationToken ct)
         {

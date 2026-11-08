@@ -15,8 +15,22 @@ namespace Unity.MP_FPS
             var caches=LootContainers(ref state);
             InitializeLootContainers(ref state);
             bool clash=ClashEnabled(ref state);
-            var solo = !clash && SystemAPI.HasSingleton<OfflineRaidMode>() ? Persistence(ref state) : null;
+            var research = !clash ? Persistence(ref state) : null;
             if(!clash)HandleMissions(ref state, ecb);
+            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<ResearchQuestHoldRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                var connection = received.ValueRO.SourceConnection;
+                var intent = request.ValueRO;
+                if (!clash && SystemAPI.HasComponent<RaidSession>(connection) && SystemAPI.HasComponent<JoinedClient>(connection) &&
+                    !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
+                {
+                    var raid = SystemAPI.GetComponent<RaidSession>(connection);
+                    if (raid.Phase == RaidPhase.Active && raid.RaidId == intent.RaidId)
+                        ResearchQuestRuntime.Hold(state.World, connection, SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity,
+                            raid.RaidId, intent.Device, intent.Pressed);
+                }
+                ecb.DestroyEntity(entity);
+            }
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
             RefreshLootContainers(ref state);
@@ -79,7 +93,7 @@ namespace Unity.MP_FPS
                 if (!clash && session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);
-                    if (solo != null && solo.Profiles.TryGetValue(connection, out var profile) && profile.Mode == null &&
+                    if (research != null && research.Profiles.TryGetValue(connection, out var profile) && profile.Mode == null &&
                         profile.ResearchQuests != null && profile.ResearchQuests.Active != 0)
                     {
                         var player = joined.ValueRO.PlayerEntity;
@@ -99,6 +113,13 @@ namespace Unity.MP_FPS
                 if (session.ValueRO.SnapshotTimer <= 0)
                 {
                     SendDeathBags(ref state,ecb,connection);
+                    if (!clash && session.ValueRO.Phase == RaidPhase.Active &&
+                        ResearchQuestRuntime.TryRead(state.World, joined.ValueRO.PlayerEntity, session.ValueRO.RaidId, out var quest))
+                    {
+                        var questRpc = ecb.CreateEntity();
+                        ecb.AddComponent(questRpc, quest);
+                        ecb.AddComponent(questRpc, new SendRpcCommandRequest { TargetConnection = connection });
+                    }
                     session.ValueRW.SnapshotTimer = 0.25f;
                     session.ValueRW.SnapshotSequence++;
                     var rpc = ecb.CreateEntity();
@@ -164,7 +185,8 @@ namespace Unity.MP_FPS
             {
                 session.ValueRW.SaveState = RaidSaveState.Saving;
                 persistence.BeginSave(connection, session.ValueRO,
-                    ResearchQuestRuntime.Finish(state.World, connection, session.ValueRO.RaidId, outcome == RaidPhase.Extracted));
+                    ResearchQuestRuntime.Finish(state.World, SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity,
+                        session.ValueRO.RaidId, outcome == RaidPhase.Extracted));
             }
             var joined = SystemAPI.GetComponentRW<JoinedClient>(connection);
             Entity player = joined.ValueRO.PlayerEntity;

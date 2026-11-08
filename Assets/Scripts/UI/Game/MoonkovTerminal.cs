@@ -261,6 +261,9 @@ namespace Unity.MP_FPS.Client
             if (TryPresentResearchTasks()) return;
             if (TryPresentCampaignTasks()) return;
             TerminalLayout.Populate(m_Content, "Tasks");
+            if (m_FacilityRecords && PlayerProfileClient.ResearchQuests != null)
+                ActionButton(m_Content.Q<VisualElement>(className: "terminal-side"),
+                    ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => { m_FacilityRecords = false; Render(); });
             var graph = PlayerProfileClient.Inventory;
             int facts = graph?.MissionFirsts ?? 0, count = 0;
             for (int i = 0; i < 3; i++)

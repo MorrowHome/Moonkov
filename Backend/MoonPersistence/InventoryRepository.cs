@@ -1,4 +1,6 @@
 using Npgsql;
+using System.Text.Json;
+using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 
 public sealed partial class InventoryRepository(NpgsqlDataSource db)
@@ -37,10 +39,14 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
     {
         var items = new List<InventoryStack>();
         string name;
-        await using (var command = new NpgsqlCommand("SELECT display_name FROM players WHERE id=$1", connection, transaction))
+        ResearchQuestProgress research;
+        await using (var command = new NpgsqlCommand("SELECT display_name,research_quests::text FROM players WHERE id=$1", connection, transaction))
         {
             command.Parameters.AddWithValue(playerId);
-            name = (string?)await command.ExecuteScalarAsync(ct) ?? throw new ProfileNotFoundException();
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            if (!await reader.ReadAsync(ct)) throw new ProfileNotFoundException();
+            name = reader.GetString(0);
+            research = DecodeResearch(reader.GetString(1));
         }
         await using (var command = new NpgsqlCommand("""
             SELECT i.id,i.item_code,i.quantity,i.grid_x,i.grid_y,i.rotated,d.width,d.height,d.display_name
@@ -59,7 +65,7 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
         var recovery=await ReadRecoveryAsync(connection,transaction,playerId,ct);
         if(recovery.Validate(graph)!=InventoryError.None)throw new DeploymentRejectedException("invalid_recovery");
         return new Profile(playerId, graph.Count("dust"), graph.Count("alloy"), graph.Count("cells"), name,
-            Items: items, InventoryJson: Encode(graph), ActiveDeploymentId: activeId is Guid id ? id : null, RecoveryJson: System.Text.Json.JsonSerializer.Serialize(recovery,InventoryJsonOptions));
+            Items: items, InventoryJson: Encode(graph), ActiveDeploymentId: activeId is Guid id ? id : null, RecoveryJson: JsonSerializer.Serialize(recovery,InventoryJsonOptions), ResearchQuests: research);
     }
 
     public async Task<Profile> DeployAsync(Deployment request, CancellationToken ct, bool clash = false)
@@ -68,10 +74,13 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
         await using var transaction = await connection.BeginTransactionAsync(ct);
         await LockPlayerAsync(connection, transaction, request.PlayerId, ct);
         await BountyClashRepository.CheckBindingAsync(connection, transaction, request, clash, ct);
+        if (request.ResearchVersion != 0 && (clash || request.ResearchVersion != ResearchQuestRules.DeploymentVersion))
+            throw new DeploymentRejectedException("research_deployment_version");
         Guid? stackId = null;
         string? raidJson = null;
         bool existing = false;
-        await using (var previous = new NpgsqlCommand("SELECT player_id,cells,cell_stack_id,status,inventory,mode,match_id,rules_version,team_id FROM raid_deployments WHERE id=$1", connection, transaction))
+        ResearchQuestProgress? research = null;
+        await using (var previous = new NpgsqlCommand("SELECT player_id,cells,cell_stack_id,status,inventory,mode,match_id,rules_version,team_id,research_quests::text FROM raid_deployments WHERE id=$1", connection, transaction))
         {
             previous.Parameters.AddWithValue(request.DeploymentId);
             await using var reader = await previous.ExecuteReaderAsync(ct);
@@ -83,6 +92,8 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
                 if (reader.GetString(3) != "Open") throw new DeploymentRejectedException("deployment_closed");
                 stackId = reader.IsDBNull(2) ? null : reader.GetGuid(2);
                 raidJson = reader.IsDBNull(4) ? null : Encode(Decode(reader.GetString(4)));
+                research = reader.IsDBNull(9) ? null : DecodeResearch(reader.GetString(9));
+                if ((research != null) != (request.ResearchVersion != 0)) throw new ReceiptConflictException();
             }
         }
         if (!existing)
@@ -98,20 +109,28 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
             if(recovery.ItemCount()>0)throw new DeploymentRejectedException("recovery_pending");
             PrepareCells(graph, request.Cells);
             var raid = graph.ExtractLoadout();
+            if (request.ResearchVersion != 0)
+            {
+                research = await ReadResearchAsync(connection, transaction, request.PlayerId, ct);
+                if (ResearchQuestRules.Issue(raid, research) != InventoryError.None)
+                    throw new DeploymentRejectedException("research_supplies_no_space");
+            }
             if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit) throw new DeploymentRejectedException("invalid_loadout");
             raidJson = Encode(raid);
             stackId = request.Cells > 0 ? Guid.Parse(raid.Items.First(i => i.Code == "cells").Id) : null;
             await WriteGraphAsync(connection, transaction, request.PlayerId, graph, ct);
-            await using var record = new NpgsqlCommand("INSERT INTO raid_deployments (id,player_id,cells,cell_stack_id,inventory,mode,match_id,rules_version,team_id) VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9)", connection, transaction);
+            await using var record = new NpgsqlCommand("INSERT INTO raid_deployments (id,player_id,cells,cell_stack_id,inventory,mode,match_id,rules_version,team_id,research_quests) VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10::jsonb)", connection, transaction);
             record.Parameters.AddWithValue(request.DeploymentId); record.Parameters.AddWithValue(request.PlayerId); record.Parameters.AddWithValue(request.Cells);
             record.Parameters.Add(new NpgsqlParameter { NpgsqlDbType=NpgsqlTypes.NpgsqlDbType.Uuid, Value=(object?)stackId ?? DBNull.Value });
             record.Parameters.AddWithValue(raidJson);
             AddBindingParameters(record, request);
+            record.Parameters.Add(new NpgsqlParameter { NpgsqlDbType=NpgsqlTypes.NpgsqlDbType.Text,
+                Value = research == null ? DBNull.Value : JsonSerializer.Serialize(research, InventoryJsonOptions) });
             await record.ExecuteNonQueryAsync(ct);
         }
         var profile = await ReadAsync(connection, transaction, request.PlayerId, ct);
         await transaction.CommitAsync(ct);
-        return profile with { DeploymentId=request.DeploymentId, CarriedCells=request.Cells, CellStackId=stackId, RaidInventoryJson=raidJson, Mode=request.Mode, MatchId=request.MatchId, RulesVersion=request.RulesVersion, TeamId=request.TeamId };
+        return profile with { DeploymentId=request.DeploymentId, CarriedCells=request.Cells, CellStackId=stackId, RaidInventoryJson=raidJson, Mode=request.Mode, MatchId=request.MatchId, RulesVersion=request.RulesVersion, TeamId=request.TeamId, ResearchQuests=research };
     }
 
     public static async Task CheckDeploymentAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Settlement request, CancellationToken ct)
@@ -212,5 +231,5 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
 }
 
 public sealed record InventoryStack(Guid Id, string ItemCode, int Quantity, int X, int Y, bool Rotated, int Width, int Height, string DisplayName);
-public sealed record Deployment(Guid PlayerId, Guid DeploymentId, int Cells, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0);
+public sealed record Deployment(Guid PlayerId, Guid DeploymentId, int Cells, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0, int ResearchVersion=0);
 public sealed class DeploymentRejectedException(string code) : Exception(code);
