@@ -24,6 +24,7 @@ namespace Unity.MP_FPS
         private SoundDef m_Surface;
         private DollSingerStance m_Stance;
         private float m_TurnTravel, m_Yaw, m_GearAt;
+        private float m_MoveSpeed, m_TurnSpeed;
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
         private UnityEngine.CharacterController m_Capsule;
         private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound, m_ReloadSound;
@@ -43,6 +44,22 @@ namespace Unity.MP_FPS
             last = tick;
             return true;
         }
+
+        // Presentation gain only. Posture caps preserve quiet movement; AI hearing is separate.
+        public static float FootstepVolume(float speed, DollSingerStance stance)
+        {
+            if (!float.IsFinite(speed) || speed <= 0) return 0;
+            if (stance != DollSingerStance.Standing)
+            {
+                float cap = stance == DollSingerStance.Tiptoe ? .2f : stance == DollSingerStance.Crouching ? .38f : .65f;
+                return cap * Mathf.Clamp01(speed / (2 * DollSingerStances.SpeedScale(stance)));
+            }
+            // Walk at 2 m/s; retain the full running mix at the production sprint speed.
+            return speed <= 2 ? .7f * speed / 2 : Mathf.Lerp(.7f, 1, Mathf.InverseLerp(2, 5.335f, speed));
+        }
+
+        public static float TurnVolume(float degreesPerSecond) => float.IsFinite(degreesPerSecond) ?
+            .65f * Mathf.Clamp01(degreesPerSecond / 180) : 0;
 
         public void Update(in PredictedPlayerGhost ghost, Transform player, bool owned, float deltaTime)
         {
@@ -212,14 +229,20 @@ namespace Unity.MP_FPS
             travel.y = 0f;
             m_Position = position;
             bool grounded = ghost.ControllerState.MovementType == FirstPersonController.MovementType.Standing;
-            if (!grounded || ghost.CurrentHealth <= 0f || deltaTime <= 0f || deltaTime > .25f || travel.magnitude > 2f)
+            float yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
+            float turn = Mathf.Abs(Mathf.DeltaAngle(m_Yaw, yaw)); m_Yaw = yaw;
+            if (!grounded || ghost.CurrentHealth <= 0f || !float.IsFinite(deltaTime) || deltaTime <= 0f ||
+                deltaTime > .25f || !float.IsFinite(travel.sqrMagnitude) || travel.sqrMagnitude > 4f)
             {
                 m_LastMovementTime = float.NegativeInfinity;
+                m_MoveSpeed = m_TurnSpeed = 0;
                 m_TurnTravel = 0; m_Wall.Reset();
                 return;
             }
-            float yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
-            float turn = Mathf.Abs(Mathf.DeltaAngle(m_Yaw, yaw)); m_Yaw = yaw;
+            // Sample rendered displacement, not requested sprint speed. Smooth across simulation snapshots.
+            float response = 1 - Mathf.Exp(-deltaTime / .12f);
+            m_MoveSpeed = Mathf.Lerp(m_MoveSpeed, travel.magnitude / deltaTime, response);
+            m_TurnSpeed = Mathf.Lerp(m_TurnSpeed, float.IsFinite(turn) && turn < 90 ? turn / deltaTime : 0, response);
             if (travel.sqrMagnitude >= .000001f || turn > .1f && turn < 45f)
                 m_LastMovementTime = Time.unscaledTime;
             // Rendered animation can step between two simulation snapshots. Keep
@@ -231,13 +254,13 @@ namespace Unity.MP_FPS
                 if (turn < 90) m_TurnTravel += turn;
                 if (m_TurnTravel >= 50 && Time.time >= m_GearAt && m_Stance != DollSingerStance.Prone)
                 {
-                    m_MovementSound = LocalOrWorld(library.Cloth, position, owned, .6f);
+                    m_MovementSound = LocalOrWorld(library.Cloth, position, owned, TurnVolume(m_TurnSpeed));
                     m_TurnTravel = 0; m_GearAt = Time.time + .9f;
                 }
                 return;
             }
             m_TurnTravel = 0;
-            if ((owned || MoonkovAudio.CanHearDetail(position, 12)) && ghost.ControllerState.MovementSpeed > .15f)
+            if ((owned || MoonkovAudio.CanHearDetail(position, 12)) && m_MoveSpeed > .15f)
             {
                 float height = m_Capsule ? m_Capsule.height : DollSingerStances.Height(m_Stance, 1.7f, .25f);
                 Vector3 center = m_Capsule ? player.TransformPoint(m_Capsule.center) : position + Vector3.up * (height * .55f);
@@ -246,7 +269,7 @@ namespace Unity.MP_FPS
                 {
                     bool metal = RifleImpactSurface.Classify(wall.collider) == RifleImpactKind.Metal;
                     m_WallSound = MoonkovAudio.PlayWeaponLayer(metal ? library.SuitWallMetal : library.SuitWallBrush,
-                        wall.point, ghost.ControllerState.Sprinting ? .8f : .55f, owned ? .65f : 1);
+                        wall.point, .8f * FootstepVolume(m_MoveSpeed, DollSingerStance.Standing), owned ? .65f : 1);
                 }
             }
         }
@@ -260,20 +283,19 @@ namespace Unity.MP_FPS
             m_LastStepTime = Time.unscaledTime;
             Vector3 position = player.position;
             SampleSurface(player, library);
-            float loadVolume = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
+            float volume = FootstepVolume(m_MoveSpeed, m_Stance) * RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
+            if (volume <= 0) return;
             if (m_Stance == DollSingerStance.Prone)
             {
-                m_MovementSound = LocalOrWorld(library.Crawl, position, owned, .65f * loadVolume);
+                m_MovementSound = LocalOrWorld(library.Crawl, position, owned, volume);
                 return;
             }
-            float volume = m_Stance == DollSingerStance.Tiptoe ? .2f :
-                m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .85f;
-            volume *= loadVolume;
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
         }
         public void Stop()
         {
             m_CanStep = false;
+            m_MoveSpeed = m_TurnSpeed = 0;
             m_LastMovementTime = float.NegativeInfinity;
             var system = GameManager.Instance?.SoundSystem;
             m_Melee.Stop();
