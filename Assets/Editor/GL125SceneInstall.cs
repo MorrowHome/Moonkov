@@ -458,7 +458,7 @@ public static class GL125SceneInstall
         return $"{checks} physics checks, {moved} point positions adjusted. {bindings}";
     }
 
-    private static LightProbes BuildProbes(GL125WorldAssets assets)
+    internal static LightProbes BuildProbes(GL125WorldAssets assets, IEnumerable<GL125WorldAssets.LightSpec> additional = null)
     {
         const string templatePath = "Assets/MoonEnvironment/Variants/MC00BakedBuilding/States/Baseline/Probes.asset";
         string assetPath = GL125WorldAssets.Root + "/Lighting/CharacterProbes.asset";
@@ -472,9 +472,11 @@ public static class GL125SceneInstall
             probes.name = "GL125 character lighting";
             AssetDatabase.CreateAsset(probes, assetPath);
         }
-        var fixtures = assets.Lights.Where(l => l.type == "AREA" && l.energy > 0).Select(l => (
+        var fixtures = assets.Lights.Concat(additional ?? Array.Empty<GL125WorldAssets.LightSpec>())
+            .Where(l => l.type == "AREA" && l.energy > 0).Select(l => (
             position: GL125WorldAssets.ToUnity(l.position), direction: GL125WorldAssets.ToUnity(l.forward).normalized,
-            color: new Color(l.color[0], l.color[1], l.color[2]), power: l.energy, shadow: l.shadow)).ToArray();
+            color: new Color(l.color[0], l.color[1], l.color[2]), power: l.energy, shadow: l.shadow,
+            rangeSquared: l.probeRange > 0 ? l.probeRange * l.probeRange : 625f)).ToArray();
         var positions = probes.GetPositionsSelf();
         var coefficients = new SphericalHarmonicsL2[positions.Length];
         int mask = LayerMask.GetMask("Default", "Ground");
@@ -487,7 +489,7 @@ public static class GL125SceneInstall
             {
                 var delta = fixture.position - point;
                 float sq = delta.sqrMagnitude;
-                if (sq > 625f || sq < .04f) continue;
+                if (sq > fixture.rangeSquared || sq < .04f) continue;
                 float distance = Mathf.Sqrt(sq);
                 var direction = delta / distance;
                 float cosine = -Vector3.Dot(direction, fixture.direction);

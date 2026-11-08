@@ -31,4 +31,6 @@ Windows 中间文件在 `D:/MoonkovBakeArchive/GL125Unity`。`Evaluated` 存放�
 
 2026-11-08 清理表面重叠。用 `Tools/Blender/build_gl125_surface_cleanup.py PreparedQuality EXR目录 LiftStage/Lifts.json SurfaceCleanup.json` 生成面索引和哈希。执行 `GL125SurfaceCleanup.Install(SurfaceCleanup.json)`，在 234 个显示块中去除 340,290 个同向重合面。其中 1188 处异材质重合按外饰面或铺装层保留。保留三角面的顶点、材质和光照 UV 沿用原数据。网格包备份在 `20261108_FixtureNoise/MeshesBeforeOverlapCleanup`。
 
+2026-11-08 补齐固定灯。用 `Tools/Blender/build_gl125_practical_lights.py Evaluated PreparedQuality PracticalLights.json` 生成灯位，再执行 `GL125PracticalLightInstall.Install(PracticalLights.json, 烘焙根目录)`。22 种灯罩恢复发光。178 个烘焙灯位保存在正式场景的 `GL125 Fixed Lights (Bake Sources)` 下，组默认关闭并标记为 EditorOnly。93 处只有发光网格的灯补入现有角色探针，含距离和碰撞遮挡限制。7227 个探针位置沿用原数据，其中 3599 个探针更新了光照。运行时沿用原有探针采样。回执和探针备份在 `20261108_FixtureNoise`。
+
 旧 `SourceFidelity/World` 工作副本清理释放约 6.1 GiB。共享的 `SourceWorldForwardRenderer.asset` 和对应 `.meta` 保留。清理回执为 `OldWorldRemoval.json`。回退需要从替换前提交一起恢复正式场景、战术地图底图和旧 World 目录，再用 `git lfs checkout` 恢复旧目录的大文件。切换前场景的独立副本是 `TheophilusGameScene.before-GL125.unity`。

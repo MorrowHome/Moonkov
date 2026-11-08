@@ -435,6 +435,7 @@
 - Blender OptiX 预烘 74 张线性光照图。MC00 的 28 张用 2 倍或 4 倍超采样。程序材质和角色探针使用近似。灯钮按废弃处理。导入、回执和同机位对照见 [GL125 地图接入](Docs/Development/GL125Unity.md)。
 - MC00 和中央塔亮面上的部分黑点来自板缝里的窄折边。关闭太阳或改用无压缩贴图时仍可复现。`soften_gl125_lightmap_seams.py` 用邻近受光面补一点缝口光照，保留深处阴影。原始烘焙重新导入后需再次运行这一步。
 - GL125 的合并渲染块曾包含同向重合面。几何原位相同，UV2 可能不同。用 `build_gl125_surface_cleanup.py` 生成保留面清单，在电梯拆分后执行 `GL125SurfaceCleanup.Install()`。按槽校验完整索引哈希，只改显示网格。
+- GL125 固定灯使用 Blender 光照图、灯罩自发光和角色光探针。URP 导入灯罩时设为 BakedEmissive，否则重载可能关闭发光。正式场景的固定灯源组默认关闭，供后续烘焙使用。整图重装后按接入文档恢复灯源和探针。
 - 旧整图专用资源已从工作副本清理。旧 `World/Lighting/SourceWorldForwardRenderer.asset` 仍供现有渲染管线使用。D 盘保留旧 LFS 对象和切换前场景，回退见接入文档。
 
 ## 上一版整图静态外观还原（Windows 历史记录）
