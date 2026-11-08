@@ -219,7 +219,7 @@
 
 - 本机 Unity `6000.5.10f1` 已安装 Windows Build Support (Mono)，可构建 Windows x64 客户端。若在本机打 `MoonServer.exe`，还要在同版本 Unity Hub 安装 Windows Dedicated Server Build Support。本机缺此模块。Windows IL2CPP 构建使用 Windows 主机。
 - 11 月 7 日 12:44 的旧 Windows 包由这台 Mac 生成。Unity 报告为 Succeeded，但仍记录了 32 条 STP 的 D3D12 DXC 编译错误。该次构建早于 P2P 接入。
-- Mac 构建客户端前，核对当前 Build Profile。关闭 Auto Graphics API，只留 Direct3D11。刷新项目后，本次编辑器恢复为 Auto，不能沿用刷新前的 D3D11 读数。`Windows.asset` 继承全局设置；`Windows Client.asset` 有独立覆盖。
+- Windows 全局配置与 `Windows Client.asset` 的独立覆盖均已关闭 Auto Graphics API，只留 Direct3D11。`Windows.asset` 继承全局设置。修改后须同时核对 Editor 当前值和配置文件中的 `WindowsStandaloneSupport` 条目，不能只看内存读数。2026-11-08 已在刷新、重读配置后确认两处仍为 D3D11，渲染预检通过。
 - 三份 STP 的 32 个 Direct3D11 普通精度变体通过定点编译。保留 STP、五份运行时管线登记和现有变体裁剪，不清理 Library。新版 Windows 客户端脚本已在 Mac 编译通过。只用 D3D11 的整包和 Windows 运行仍待验证。详见[玩家包渲染检查](Docs/Development/PlayerBuildRenderingAudit.md)。
 - 正式地图和画质设置都引用 `MC00BakedPipeline.asset`。构建可能改写其中的 `m_Prefilter*` 字段。保留该资产及其 `.meta` 的 Git 跟踪。单次构建生成的字段差异可留在本地。
 
