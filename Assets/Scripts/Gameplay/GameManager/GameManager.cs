@@ -376,7 +376,7 @@ namespace Unity.MP_FPS
             else
             {
                 CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.LanHost || creationType == CreationType.Offline,
-                    out server, out client, GameConnection.IceSession?.Transport);
+                    out server, out client, GameConnection);
                 if (creationType == CreationType.LanHost) server.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.LanHost || creationType == CreationType.LanJoin) client.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.Offline)
@@ -404,7 +404,7 @@ namespace Unity.MP_FPS
                 var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
                 if (!serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint))
                     throw new InvalidOperationException("Cannot start server. The port may be in use.");
-                if (creationType == CreationType.Offline)
+                if (creationType == CreationType.Offline || GameConnection.PeerRoom != null)
                 {
                     // NetCode may choose IPC or UDP for the local client (e.g. the
                     // Editor network simulator forces UDP). Port 0 gives each server
@@ -566,12 +566,12 @@ namespace Unity.MP_FPS
             }
         }
 
-        static void CreateEntityWorlds(bool isHost, out World serverWorld, out World clientWorld,
-            EmbeddedNetworking.EmbeddedIceTransport embeddedIce = null)
+        static void CreateEntityWorlds(bool isHost, out World serverWorld, out World clientWorld, GameConnection connection)
         {
-            NetworkStreamReceiveSystem.DriverConstructor = embeddedIce != null
-                ? new EntityDriverConstructor(NetworkRole.Client, embeddedIce)
-                : new EntityDriverConstructor(isHost ? NetworkRole.Host : NetworkRole.Client, !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
+            var role = isHost ? NetworkRole.Host : NetworkRole.Client;
+            if (connection.PeerRoom != null) NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(role, connection.PeerRoom);
+            else if (connection.IceSession != null) NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(role, connection.IceSession.Transport);
+            else NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(role, !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
             DestroyLocalSimulationWorld();
 
@@ -603,6 +603,7 @@ namespace Unity.MP_FPS
                 if (Time.realtimeSinceStartupAsDouble - started >= SessionConnectionPolicy.TimeoutSeconds)
                 {
                     ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
+                    if (GameConnection?.PeerRoom != null) throw new TimeoutException("跨网战局连接超时，已返回房间。");
                     throw new TimeoutException(GameConnection?.IceSession != null
                         ? "P2P 游戏连接超时，本局已断开，不会改走 VPS。请重试或在下一局更换连接方式。"
                         : $"连接 {ConnectionSettings.Instance.IPAddress}:{ConnectionSettings.Instance.Port} 超时。请在队伍中重试，并确认公网 UDP 转发可用。");

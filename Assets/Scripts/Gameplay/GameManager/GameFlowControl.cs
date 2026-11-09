@@ -62,8 +62,8 @@ namespace Unity.MP_FPS
             GameSettings.Instance.IsPauseMenuOpen = false;
             await DisconnectAndUnloadWorlds();
             await RefundFailedOfflineLoadingAsync();
-            await LanRoomClient.ReturnedToMenuAsync();
-            await OnlineLobbyClient.ReturnedAsync();
+            if (LanRoomClient.Active) await LanRoomClient.ReturnedToMenuAsync();
+            else await OnlineLobbyClient.ReturnedAsync();
             
             // Restart the main menu scene.
             Start();

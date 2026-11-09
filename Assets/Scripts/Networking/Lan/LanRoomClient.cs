@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +29,11 @@ namespace Unity.MP_FPS
         public static int Port { get; private set; }
         public static bool Active => Room != null;
         public static bool IsHost => Server != null;
+        internal static LanPeerRoom PeerRoom => Active ? s_PeerRoom : null;
         public static bool Ready => Room?.Members.FirstOrDefault(m => m.Id == MemberId)?.Ready == true;
         public static int PoseIndex => Mathf.Clamp(PlayerPrefs.GetInt("Moonkov.LAN.Pose", -1), -1, 3);
         private static string s_Credential;
+        private static LanPeerRoom s_PeerRoom;
         private static int s_Generation, s_LaunchedRound, s_Failures;
         private static bool s_Polling, s_Closing;
         private static CancellationTokenSource s_Stop = new CancellationTokenSource();
@@ -40,7 +43,8 @@ namespace Unity.MP_FPS
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset()
         {
-            s_Stop.Cancel(); Server?.Dispose(); Server?.Persistence.Dispose(); Server = null;
+            s_Stop.Cancel(); s_PeerRoom?.Dispose(); s_PeerRoom = null;
+            Server?.Dispose(); Server?.Persistence.Dispose(); Server = null;
             Room = null; Profile = null; MemberId = Ticket = Error = s_Credential = null;
             s_Stop = new CancellationTokenSource(); s_Generation++; s_LaunchedRound = s_Failures = 0;
             s_Polling = s_Closing = false; Changed = null;
@@ -50,34 +54,43 @@ namespace Unity.MP_FPS
             if (UnityEngine.Object.FindAnyObjectByType<LanRoomPump>() != null) return;
             var go = new GameObject("LAN room connection"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<LanRoomPump>();
         }
-        public static async Task CreateAsync(string name, string playerName, RaidGameMode mode, int capacity, int port, int gamePort, CancellationToken ct)
+        public static async Task CreateAsync(string name, string playerName, RaidGameMode mode, int capacity, int port, int gamePort, CancellationToken ct,
+            bool crossNetwork = false)
         {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
-            if (Active || s_Closing) throw new InvalidOperationException("请先离开当前房间。");
+            RequireRoomAvailable();
             if (!PlayerProfileClient.SupportsSinglePlayer) throw new InvalidOperationException("开房需要 Client+Server 游戏版本。");
             string root = Path.Combine(Application.persistentDataPath, "LAN", "host-v1");
 #if UNITY_EDITOR
             // Keep Editor project copies from leasing the same host save.
-            using (var hash = System.Security.Cryptography.SHA256.Create())
+            using (var hash = SHA256.Create())
                 root = Path.Combine(root, BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath))).Replace("-", ""));
 #endif
             var persistence = await Task.Run(() => new LanPersistence(root), ct);
             LanRoomServer server = null;
+            LanPeerRoom peerRoom = null;
             try
             {
                 await persistence.RecoverAsync(); ct.ThrowIfCancellationRequested();
-                server = new LanRoomServer(persistence, name, mode, capacity, port, gamePort);
+                server = new LanRoomServer(persistence, name, mode, capacity, port, gamePort, peerRoom: crossNetwork);
+                if (crossNetwork)
+                {
+                    var identity = await Task.Run(LanPeerIdentity.Create, ct);
+                    ct.ThrowIfCancellationRequested();
+                    peerRoom = new LanPeerRoom(server, identity);
+                }
                 s_Credential = GetCredential();
                 var reply = server.AddHost(s_Credential, playerName, Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex);
+                s_PeerRoom = peerRoom;
                 Server = server; Address = "127.0.0.1"; Port = server.Port;
                 Enter(reply); EnsurePump();
             }
-            catch { server?.Dispose(); persistence.Dispose(); throw; }
+            catch { peerRoom?.Dispose(); server?.Dispose(); persistence.Dispose(); throw; }
         }
         public static async Task JoinAsync(string address, int port, string playerName, CancellationToken ct)
         {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
-            if (Active || s_Closing) throw new InvalidOperationException("请先离开当前房间。");
+            RequireRoomAvailable();
             string credential = GetCredential();
             var reply = await LanProtocol.SendAsync(address, port, new LanRequest { Action = "join", Credential = credential, Name = playerName,
                 CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex }, ct);
@@ -85,19 +98,56 @@ namespace Unity.MP_FPS
             if (reply.Room == null || reply.Room.Protocol != LanProtocol.Version || reply.Profile?.Profile == null) throw new InvalidDataException("房间响应无效。");
             s_Credential = credential; Address = address; Port = port; Enter(reply); EnsurePump();
         }
+        private static void RequireRoomAvailable()
+        {
+            if (Active || s_Closing || s_PeerRoom != null) throw new InvalidOperationException("请先离开当前房间。");
+        }
+        internal static async Task JoinPeerAsync(string text, string playerName, Action<string> replyReady, CancellationToken ct)
+        {
+            await PlayerProfileClient.FlushMenuInventoryAsync(ct);
+            ct.ThrowIfCancellationRequested();
+            RequireRoomAvailable();
+            var invite = LanPeerInvitation.Decode(text, reply: false);
+            using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(GetCredential(peer: true)));
+            string credential = BitConverter.ToString(hmac.ComputeHash(Encoding.ASCII.GetBytes("Moonkov.FriendRoom.v1/" + invite.HostId)))
+                .Replace("-", "").ToLowerInvariant();
+            var request = new LanRequest { Action = "join", RoomId = invite.RoomId, Credential = credential, Name = playerName,
+                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex };
+            using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct, s_Stop.Token);
+            var room = new LanPeerRoom(null, new LanPeerIdentity(invite.Certificate));
+            s_PeerRoom = room;
+            try
+            {
+                EnsurePump();
+                var reply = await room.JoinAsync(invite, request, replyReady, stop.Token);
+                stop.Token.ThrowIfCancellationRequested();
+                if (reply.Room?.Protocol != LanProtocol.Version || reply.Room.Id != invite.RoomId ||
+                    reply.Room.HostId != invite.HostId || reply.Profile?.Profile == null)
+                    throw new InvalidDataException("跨网房间响应无效。");
+                s_Credential = credential; Address = null; Port = 0;
+                Enter(reply);
+            }
+            catch
+            {
+                if (s_PeerRoom == room) s_PeerRoom = null;
+                room.Dispose();
+                throw;
+            }
+        }
+        internal static void PumpPeerRoom() => s_PeerRoom?.Pump();
         private static void Enter(LanReply reply)
         {
             PlayerProfileClient.LeaveOffline();
             s_Generation++; s_LaunchedRound = 0; s_Failures = 0; Error = null;
             Apply(reply);
         }
-        private static string GetCredential()
+        private static string GetCredential(bool peer = false)
         {
-            const string key = "Moonkov.LAN.Credential.v1";
+            string key = peer ? "Moonkov.Friends.Credential.v1" : "Moonkov.LAN.Credential.v1";
             string value = PlayerPrefs.GetString(key, "");
             if (value.Length == 64 && value.All(Uri.IsHexDigit)) return value;
             var bytes = new byte[32];
-            using (var random = System.Security.Cryptography.RandomNumberGenerator.Create()) random.GetBytes(bytes);
+            using (var random = RandomNumberGenerator.Create()) random.GetBytes(bytes);
             value = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
             PlayerPrefs.SetString(key, value); PlayerPrefs.Save(); return value;
         }
@@ -111,7 +161,7 @@ namespace Unity.MP_FPS
         public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
         {
             if (action == "start" || action == "ready" && ready) await PlayerProfileClient.FlushMenuInventoryAsync(ct);
-            if (!Active || s_Closing) throw new InvalidOperationException("尚未加入局域网房间。");
+            if (!Active || s_Closing) throw new InvalidOperationException("尚未加入房间。");
             int generation = s_Generation;
             var request = new LanRequest { Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,
                 CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex,
@@ -122,7 +172,15 @@ namespace Unity.MP_FPS
             {
                 if (generation != s_Generation) throw new OperationCanceledException();
                 var server = Server;
-                var reply = server != null ? await Task.Run(() => server.Handle(request), linked.Token) : await LanProtocol.SendAsync(Address, Port, request, linked.Token);
+                LanReply reply;
+                if (server != null)
+                {
+                    if (action == "start" && s_PeerRoom?.HasOffer == true)
+                        throw new InvalidOperationException("请先完成或取消当前邀请。");
+                    reply = await Task.Run(() => server.Handle(request), linked.Token);
+                }
+                else if (s_PeerRoom != null) reply = await s_PeerRoom.SendAsync(request, linked.Token);
+                else reply = await LanProtocol.SendAsync(Address, Port, request, linked.Token);
                 linked.Token.ThrowIfCancellationRequested();
                 if (generation != s_Generation) throw new OperationCanceledException();
                 Apply(reply); return reply;
@@ -140,8 +198,11 @@ namespace Unity.MP_FPS
                 if ((Room.Phase == LanRoomPhase.Playing || IsHost && Room.Phase == LanRoomPhase.Preparing) && Room.Round != s_LaunchedRound && !string.IsNullOrEmpty(Ticket) && state == GlobalGameState.MainMenu)
                 {
                     s_LaunchedRound = Room.Round;
-                    ConnectionSettings.Instance.IPAddress = Address;
-                    ConnectionSettings.Instance.Port = Room.GamePort.ToString();
+                    if (s_PeerRoom == null)
+                    {
+                        ConnectionSettings.Instance.IPAddress = Address;
+                        ConnectionSettings.Instance.Port = Room.GamePort.ToString();
+                    }
                     GameManager.Instance.StartGameAsync(IsHost ? CreationType.LanHost : CreationType.LanJoin);
                 }
                 else if (Room.Phase == LanRoomPhase.Returning)
@@ -157,7 +218,7 @@ namespace Unity.MP_FPS
                 {
                     Error = "与房主的连接已中断。" + ex.Message; Changed?.Invoke();
                     if (GameSettings.Instance.GameState != GlobalGameState.MainMenu) GameManager.Instance.ReturnToMainMenuAsync();
-                    else await LeaveAsync();
+                    else await LeaveAsync(afterWorldShutdown: true);
                 }
             }
             finally { s_Polling = false; }
@@ -180,16 +241,18 @@ namespace Unity.MP_FPS
             try
             {
                 s_Generation++; var server = Server; Server = null; Room = null; Profile = null; Ticket = MemberId = null;
+                s_PeerRoom?.Dispose(); s_PeerRoom = null;
                 server?.Dispose(); server?.Persistence.Dispose(); PlayerProfileClient.ClearLanProfile(); Changed?.Invoke();
             }
             finally { s_Closing = false; }
         }
         internal static void StopAfterPumpDestroyed()
         {
-            if (!Active) return;
+            if (!Active && s_PeerRoom == null) return;
             // Editor Stop/native quit can bypass the menu's orderly shutdown.
             // Capture ECS ownership on this thread, then finish data-only writes before closing leases.
             var server = Server; server?.Dispose(); s_Stop.Cancel(); s_Generation++;
+            s_PeerRoom?.Dispose(); s_PeerRoom = null;
             Server = null; Room = null; Profile = null; Ticket = MemberId = null;
             if (server == null) return;
             var shutdowns = new List<Task>();

@@ -107,7 +107,7 @@ namespace Unity.MP_FPS
                 if (path == "internal/sessions/resolve")
                 {
                     if (!m_Tickets.TryGetValue((string)data["Token"] ?? "", out var player))
-                        throw new InvalidOperationException("请从局域网房间准备并进入对局。");
+                        throw new InvalidOperationException("请在好友房间准备并进入对局。");
                     return Named(m_Stores[player].Read());
                 }
                 string id = (string)data["PlayerId"];

@@ -58,7 +58,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking
 
         // A host-PC client must attempt the public NAT path, even if both processes
         // happen to be on the same machine. Never publish loopback candidates.
-        public static string Description(string sdp, bool publicOnly)
+        public static string Description(string sdp, bool publicOnly, bool udpDirectOnly = false)
         {
             if (string.IsNullOrEmpty(sdp) || sdp.Length > 4095) throw new InvalidOperationException("P2P 连接描述无效。");
             var result = new StringBuilder(sdp.Length);
@@ -71,6 +71,9 @@ namespace Unity.MP_FPS.EmbeddedNetworking
                     var fields = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (fields.Length < 8 || !IPAddress.TryParse(fields[4], out var ip) || IPAddress.IsLoopback(ip) ||
                         publicOnly && !IsPublic(ip)) continue;
+                    if (udpDirectOnly && (ip.AddressFamily != AddressFamily.InterNetwork || ip.Equals(IPAddress.Any) || ip.GetAddressBytes()[0] >= 224 ||
+                        !string.Equals(fields[2], "UDP", StringComparison.OrdinalIgnoreCase) || !ushort.TryParse(fields[5], out var port) || port == 0 ||
+                        fields[6] != "typ" || (fields[7] != "host" && fields[7] != "srflx"))) continue;
                     candidates++;
                 }
                 if (line.Length != 0) result.Append(line).Append("\r\n");

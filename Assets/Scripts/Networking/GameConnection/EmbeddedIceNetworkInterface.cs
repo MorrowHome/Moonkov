@@ -9,7 +9,9 @@ namespace Unity.MP_FPS.EmbeddedNetworking
     public struct EmbeddedIceNetworkInterface : INetworkInterface
     {
         readonly EmbeddedIceTransport m_Transport;
-        internal EmbeddedIceNetworkInterface(EmbeddedIceTransport transport) { m_Transport = transport; }
+        readonly bool m_OwnsTransport;
+        internal EmbeddedIceNetworkInterface(EmbeddedIceTransport transport, bool ownsTransport)
+        { m_Transport = transport; m_OwnsTransport = ownsTransport; }
         public NetworkEndpoint LocalEndpoint => m_Transport.LocalEndpoint;
         public int Initialize(ref NetworkSettings settings, ref int packetPadding)
         {
@@ -40,6 +42,6 @@ namespace Unity.MP_FPS.EmbeddedNetworking
             m_Transport.Send(ref arguments);
             return default;
         }
-        public void Dispose() => m_Transport.Dispose();
+        public void Dispose() => m_Transport.ReleaseDriver(m_OwnsTransport);
     }
 }

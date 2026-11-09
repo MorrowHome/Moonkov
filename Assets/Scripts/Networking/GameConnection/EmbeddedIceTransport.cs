@@ -21,7 +21,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking
 
     /// <summary>
     /// Windows x64 and macOS ICE datagrams selected per raid. No service or adapter is installed.
-    /// A driver owns exactly one context. Dispose its completed driver before abandoning a session.
+    /// Only one driver can attach to a context at a time. Friend rooms keep the
+    /// raid context between rounds; online sessions give ownership to the driver.
     /// Signaling must authenticate peers before calling AddPeer / SetRemoteDescription.
     /// ICE is not encryption: always put the existing DTLS layer above this interface.
     /// </summary>
@@ -35,7 +36,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking
         readonly Dictionary<int, NetworkEndpoint> m_Endpoints = new Dictionary<int, NetworkEndpoint>(MaxPeers);
         readonly Dictionary<NetworkEndpoint, int> m_Peers = new Dictionary<NetworkEndpoint, int>(MaxPeers);
         readonly byte[] m_ReceiveBuffer = new byte[MaxDatagram];
-        bool m_Attached;
+        bool m_Attached, m_CloseAfterDriver;
         public NetworkEndpoint LocalEndpoint { get; } = MakeEndpoint(0);
         public ulong AdapterDrops { get; private set; }
         public bool IsDisposed { get { lock (m_Gate) return m_Handle == null || m_Handle.IsClosed; } }
@@ -167,15 +168,38 @@ namespace Unity.MP_FPS.EmbeddedNetworking
 
         // This wrapper must be a managed STRUCT on Windows (UTP issue 1412477).
         // Ownership passes to one driver; wrapping twice would double-release UTP storage.
-        public NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> CreateNetworkInterface()
+        public NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> CreateNetworkInterface() => AttachDriver(ownsTransport: true);
+
+        internal NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> BorrowNetworkInterface() => AttachDriver(ownsTransport: false);
+
+        private NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> AttachDriver(bool ownsTransport)
         {
             lock (m_Gate)
             {
                 ThrowIfDisposed();
+                if (m_CloseAfterDriver) throw new ObjectDisposedException(nameof(EmbeddedIceTransport));
                 if (m_Attached) throw new InvalidOperationException("An ICE context can belong to only one driver.");
-                var wrapper = new EmbeddedIceNetworkInterface(this).WrapToUnmanaged();
+                var wrapper = new EmbeddedIceNetworkInterface(this, ownsTransport).WrapToUnmanaged();
                 m_Attached = true;
                 return wrapper;
+            }
+        }
+
+        internal void ReleaseDriver(bool ownsTransport)
+        {
+            lock (m_Gate)
+            {
+                m_Attached = false;
+                if (ownsTransport || m_CloseAfterDriver) Dispose();
+            }
+        }
+
+        internal void CloseAfterDriver()
+        {
+            lock (m_Gate)
+            {
+                if (m_Attached) m_CloseAfterDriver = true;
+                else Dispose();
             }
         }
 

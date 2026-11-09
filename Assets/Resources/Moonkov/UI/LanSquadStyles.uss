@@ -57,7 +57,7 @@
     width: 422px; max-width: 100%; flex-grow: 1; min-height: 0; align-self: flex-start;
     margin-bottom: 31px; padding: 12px;
 }
-.lan-squad-ui .lan-navigation { margin-bottom: 11px; border-width: 0; }
+.lan-squad-ui .lan-navigation { flex-wrap: wrap; margin-bottom: 11px; border-width: 0; }
 .lan-squad-ui .lan-screen .lan-tab { min-height: 34px; margin-right: 5px; padding: 5px 11px; }
 .lan-squad-ui .lan-screen .lan-tab.lan-selected { background-color: #26354a; border-color: #536b8c; color: #e8f4ff; }
 .lan-squad-ui .lan-browser .lan-identity { flex-direction: row; align-items: center; width: auto; margin: 0 0 10px; }
@@ -100,6 +100,8 @@
 .lan-squad-ui .lan-room-details .lan-advanced { margin: 0; }
 .lan-squad-ui .lan-room-details .lan-advanced > .unity-foldout__toggle { margin: 0; padding: 5px 0; min-height: 28px; }
 .lan-squad-ui .lan-room-details .lan-advanced > .unity-foldout__content { margin: 1px 0 7px; }
+.lan-squad-ui .lan-peer-invite Button { margin-bottom: 5px; }
+.lan-squad-ui .lan-peer-invite .lan-copy { margin-bottom: 4px; }
 .lan-squad-ui .lan-address { color: #cdd7e5; font-size: 12px; margin: 0 0 6px; }
 .lan-squad-ui .lan-members { max-height: 166px; }
 .lan-squad-ui .lan-member-row { min-height: 42px; padding: 5px 0; border-color: rgba(222,235,255,0.15); }

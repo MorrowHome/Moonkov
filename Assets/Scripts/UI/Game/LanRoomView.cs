@@ -9,7 +9,7 @@ using Unity.MP_FPS.Online;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum LanRoomPage { Browse, Create, Direct, Lobby }
+    public enum LanRoomPage { Browse, Create, Direct, Peer, Lobby }
 
     public sealed class LanRoomView : IDisposable
     {
@@ -20,6 +20,7 @@ namespace Unity.MP_FPS.Client
         private readonly Action m_Opened;
         private readonly LanSquadStage m_Squad;
         private readonly IVisualElementScheduledItem m_ViewportRefresh;
+        private CancellationTokenSource m_JoiningPeer;
         private bool m_Busy, m_Disposed;
         private string m_Roster, m_LastRoom;
         private LanRoomPage m_Page;
@@ -33,6 +34,8 @@ namespace Unity.MP_FPS.Client
             m_Container.pickingMode = PickingMode.Ignore;
             m_Container.style.position = Position.Absolute; m_Container.style.left = m_Container.style.top = 0;
             host.Add(m_Container); m_Root = m_Container.Q(className: "lan-layer"); m_Modal = m_Root.Q("lanModal");
+            var trackerTip = m_Root.Q<Label>("lanTrackerTip");
+            MoonkovLocalization.Set(trackerTip, trackerTip.text);
             m_Squad = new LanSquadStage(m_Modal);
             m_Root.Q<TextField>("lanPlayerName").value = PlayerPrefs.GetString("Moonkov.LAN.Name", "Operator");
             m_Root.Q<TextField>("lanAddress").value = PlayerPrefs.GetString("Moonkov.LAN.Address", "192.168.1.100");
@@ -48,12 +51,27 @@ namespace Unity.MP_FPS.Client
             Bind("lanBrowseTab", () => SelectPage(LanRoomPage.Browse));
             Bind("lanCreateTab", () => SelectPage(LanRoomPage.Create));
             Bind("lanDirectTab", () => SelectPage(LanRoomPage.Direct));
+            Bind("lanPeerTab", () => SelectPage(LanRoomPage.Peer));
             Bind("lanEmptyDirect", () => SelectPage(LanRoomPage.Direct));
             Bind("lanExpedition", () => SelectMode(RaidGameMode.Expedition));
             Bind("lanClash", () => SelectMode(RaidGameMode.BountyClash));
             Bind("lanRefresh", () => Run(RefreshRooms, "正在寻找附近房间…", "房间列表已更新。"));
             Bind("lanCreate", () => Run(Create, "正在创建房间…", "房间已创建，邀请成员加入后出发。"));
+            m_Root.Q<DropdownField>("lanConnectionType").RegisterValueChangedCallback(_ => Present());
             Bind("lanJoin", () => Run(() => Join(m_Root.Q<TextField>("lanAddress").value.Trim(), m_Root.Q<IntegerField>("lanJoinPort").value), "正在连接房主…", "已加入房间，整理装备后准备出发。"));
+            Bind("lanPeerJoin", () => Run(JoinPeer, "正在获取跨网地址…", "已加入跨网房间。"));
+            Bind("lanPeerCancelJoin", CancelPeerJoin);
+            Bind("lanPeerCopy", () => Run(async () =>
+            {
+                string invite = await LanRoomClient.PeerRoom.InviteAsync(m_Stop.Token);
+                if (!m_Disposed) GUIUtility.systemCopyBuffer = invite;
+            }, "正在获取跨网地址…", ""));
+            Bind("lanPeerAccept", () => Run(() =>
+            {
+                LanRoomClient.PeerRoom.AcceptReply(GUIUtility.systemCopyBuffer);
+                return Task.CompletedTask;
+            }, "", ""));
+            Bind("lanPeerCancelInvite", () => { LanRoomClient.PeerRoom.CancelInvite(); Status("", false); Present(); });
             Bind("lanReady", () => Run(async () => { await LanRoomClient.RequestAsync("ready", ready: !LanRoomClient.Ready, ct: m_Stop.Token); }, "正在更新准备状态…", "准备状态已更新。"));
             Bind("lanStart", () => Run(async () => { await LanRoomClient.RequestAsync("start", ct: m_Stop.Token); }, "正在发起对局…", "正在等待房主完成地图加载。"));
             Bind("lanLeave", () => Run(async () => { await LanRoomClient.LeaveAsync(); }, "正在离开房间…", "已离开房间。"));
@@ -104,6 +122,7 @@ namespace Unity.MP_FPS.Client
         {
             if (evt.keyCode != KeyCode.Escape) return;
             evt.StopPropagation();
+            if (m_JoiningPeer != null) { CancelPeerJoin(); return; }
             if (m_Busy) return;
             if (!LanRoomClient.Active && m_Page != LanRoomPage.Browse) SelectPage(LanRoomPage.Browse); else Close();
         }
@@ -113,6 +132,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Page == LanRoomPage.Create) m_Root.Q<TextField>("lanRoomName").Focus();
             else if (m_Page == LanRoomPage.Direct) m_Root.Q<TextField>("lanAddress").Focus();
+            else if (m_Page == LanRoomPage.Peer) m_Root.Q<Button>("lanPeerJoin").Focus();
             else m_Root.Q<Button>(m_Page == LanRoomPage.Lobby ? "lanEquipment" : "lanRefresh").Focus();
         }
         private void SelectMode(RaidGameMode mode)
@@ -143,7 +163,15 @@ namespace Unity.MP_FPS.Client
             try { await action(); if (!m_Disposed) Status(success, false); }
             catch (OperationCanceledException) { }
             catch (Exception ex) { if (!m_Disposed) Status(ex.Message, true); }
-            finally { m_Busy = false; if (!m_Disposed) Present(); }
+            finally
+            {
+                m_Busy = false;
+                if (!m_Disposed)
+                {
+                    Present();
+                    if (m_Page == LanRoomPage.Peer) FocusPage();
+                }
+            }
         }
         private string SaveName()
         {
@@ -155,13 +183,37 @@ namespace Unity.MP_FPS.Client
             GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
             await LanRoomClient.CreateAsync(m_Root.Q<TextField>("lanRoomName").value, SaveName(), m_Mode,
                 m_Root.Q<IntegerField>("lanCapacity").value, m_Root.Q<IntegerField>("lanControlPort").value,
-                m_Root.Q<IntegerField>("lanGamePort").value, m_Stop.Token);
+                m_Root.Q<IntegerField>("lanGamePort").value, m_Stop.Token, crossNetwork: m_Root.Q<DropdownField>("lanConnectionType").index == 1);
         }
         private async Task Join(string address, int port)
         {
             GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
             await LanRoomClient.JoinAsync(address, port, SaveName(), m_Stop.Token);
             PlayerPrefs.SetString("Moonkov.LAN.Address", address); PlayerPrefs.Save();
+        }
+        private async Task JoinPeer()
+        {
+            string invitation = GUIUtility.systemCopyBuffer;
+            GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
+            using var stop = CancellationTokenSource.CreateLinkedTokenSource(m_Stop.Token);
+            m_JoiningPeer = stop;
+            Present();
+            m_Root.Q<Button>("lanPeerCancelJoin").Focus();
+            try
+            {
+                await LanRoomClient.JoinPeerAsync(invitation, SaveName(), reply =>
+                {
+                    if (m_Disposed) return;
+                    GUIUtility.systemCopyBuffer = reply;
+                    Status("回执已复制。发给房主，请他尽快粘贴。", false);
+                }, stop.Token);
+            }
+            finally { m_JoiningPeer = null; }
+        }
+        private void CancelPeerJoin()
+        {
+            m_JoiningPeer?.Cancel();
+            Status("已取消加入。", false);
         }
         private async Task RefreshRooms()
         {
@@ -205,23 +257,47 @@ namespace Unity.MP_FPS.Client
             if (active) m_Page = LanRoomPage.Lobby; else if (m_Page == LanRoomPage.Lobby) m_Page = LanRoomPage.Browse;
             LanRoomPresentation.Page(m_Root, m_Page);
             m_Root.Q<TextField>("lanPlayerName").SetEnabled(!active && !m_Busy);
-            foreach (string name in new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab", "lanRefresh", "lanJoin", "lanExpedition", "lanClash", "lanClose" }) m_Root.Q<Button>(name).SetEnabled(!m_Busy);
+            foreach (string name in new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab", "lanPeerTab", "lanRefresh", "lanJoin", "lanExpedition", "lanClash", "lanClose" }) m_Root.Q<Button>(name).SetEnabled(!m_Busy);
+            var connectionType = m_Root.Q<DropdownField>("lanConnectionType");
+            connectionType.SetEnabled(!m_Busy);
+            m_Root.Q("lanCreatePorts").EnableInClassList("lan-hidden", connectionType.index == 1);
+            m_Root.Q("lanPeerJoin").EnableInClassList("lan-hidden", m_JoiningPeer != null);
+            m_Root.Q("lanPeerCancelJoin").EnableInClassList("lan-hidden", m_JoiningPeer == null);
             m_Root.Q<Button>("lanCreate").SetEnabled(!m_Busy && PlayerProfileClient.SupportsSinglePlayer);
             m_Root.Q<Label>("lanHostRequirement").text = PlayerProfileClient.SupportsSinglePlayer ? "创建后可邀请成员，再一起准备出发。" : "此版本不包含服务器功能，可加入其他房主。";
             if (!active)
             {
-                m_Entry.text = "局域网联机"; m_Roster = m_LastRoom = null;
+                m_Entry.text = "好友联机"; m_Roster = m_LastRoom = null;
                 if (!string.IsNullOrEmpty(LanRoomClient.Error)) Status(LanRoomClient.Error, true);
                 return;
             }
             var room = LanRoomClient.Room;
-            m_Entry.text = $"局域网小队 {room.Members.Length}/{room.Capacity}";
+            var peerRoom = LanRoomClient.PeerRoom;
+            m_Entry.text = $"好友房间 {room.Members.Length}/{room.Capacity}";
             var roster = room.Phase + string.Join("|", room.Members.Select(m => $"{m.Id}/{m.Name}/{m.Host}/{m.Ready}/{m.InGame}/{m.Appearance?.CharacterIndex}"));
-            LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy, HostAddress(), roster != m_Roster);
+            LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy,
+                peerRoom == null ? HostAddress() : "", roster != m_Roster);
+            m_Root.Q("lanAddressInvite").EnableInClassList("lan-hidden", peerRoom != null);
+            m_Root.Q("lanPeerInvite").EnableInClassList("lan-hidden", peerRoom == null || !LanRoomClient.IsHost);
+            if (peerRoom != null)
+            {
+                bool canInvite = !m_Busy && room.Phase == LanRoomPhase.Lobby && room.Members.Length < room.Capacity;
+                m_Root.Q<Button>("lanPeerCopy").SetEnabled(canInvite && (!peerRoom.HasOffer || peerRoom.WaitingForReply));
+                var accept = m_Root.Q<Button>("lanPeerAccept");
+                accept.EnableInClassList("lan-hidden", !peerRoom.WaitingForReply);
+                accept.SetEnabled(canInvite);
+                var cancel = m_Root.Q<Button>("lanPeerCancelInvite");
+                cancel.EnableInClassList("lan-hidden", !peerRoom.HasOffer);
+                cancel.SetEnabled(!m_Busy);
+                var inviteStatus = m_Root.Q<Label>("lanPeerInviteStatus");
+                inviteStatus.text = peerRoom.InviteStatus ?? "";
+                inviteStatus.EnableInClassList("lan-hidden", inviteStatus.text.Length == 0);
+                if (peerRoom.HasOffer) m_Root.Q<Button>("lanStart").SetEnabled(false);
+            }
             if (AppearancePending()) { m_Root.Q<Button>("lanReady").SetEnabled(false); m_Root.Q<Button>("lanStart").SetEnabled(false); }
             m_Roster = roster;
             if (m_LastRoom != room.Id) { m_LastRoom = room.Id; FocusPage(); }
-            if (LanRoomClient.IsHost && !LanRoomClient.Server.DiscoveryAvailable) Status("自动发现暂不可用，展开邀请信息，让成员通过 IPv4 加入。", true);
+            if (LanRoomClient.IsHost && peerRoom == null && !LanRoomClient.Server.DiscoveryAvailable) Status("自动发现暂不可用，展开邀请信息，让成员通过 IPv4 加入。", true);
             if (!string.IsNullOrEmpty(LanRoomClient.Error)) Status(LanRoomClient.Error, true);
         }
         private void Status(string message, bool error)
@@ -242,8 +318,8 @@ namespace Unity.MP_FPS.Client
             root.Q("lanModal").EnableInClassList("lan-in-room", page == LanRoomPage.Lobby);
             root.Q("lanBrowser").EnableInClassList("lan-hidden", page == LanRoomPage.Lobby);
             root.Q("lanLobby").EnableInClassList("lan-hidden", page != LanRoomPage.Lobby);
-            var pages = new[] { "lanBrowsePage", "lanCreatePage", "lanDirectPage" };
-            var tabs = new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab" };
+            var pages = new[] { "lanBrowsePage", "lanCreatePage", "lanDirectPage", "lanPeerPage" };
+            var tabs = new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab", "lanPeerTab" };
             for (int i = 0; i < pages.Length; i++)
             { root.Q(pages[i]).EnableInClassList("lan-hidden", (int)page != i); root.Q(tabs[i]).EnableInClassList("lan-selected", (int)page == i); }
         }

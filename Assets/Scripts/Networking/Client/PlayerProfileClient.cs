@@ -94,7 +94,7 @@ namespace Unity.MP_FPS
         public static void UpdateStash(int dust, int alloy, int cells)
         { if(IsLan)return; if (IsOffline) { s_Dust = dust; s_Alloy = alloy; s_Cells = cells; } else AccountClient.UpdateStash(dust, alloy, cells); }
         public static async Task AuthenticateAsync(string url, string username, string password, bool register, CancellationToken ct)
-        { if(IsLan)throw new InvalidOperationException("请先退出局域网房间。"); await FlushMenuInventoryAsync(ct); LeaveOffline(); await AccountClient.AuthenticateAsync(url, username, password, register, ct); }
+        { if(IsLan)throw new InvalidOperationException("请先离开好友房间。"); await FlushMenuInventoryAsync(ct); LeaveOffline(); await AccountClient.AuthenticateAsync(url, username, password, register, ct); }
         public static Task ValidateAsync(string url, CancellationToken ct)
         { ct.ThrowIfCancellationRequested(); if(IsLan)return RefreshLanAsync(ct); if (!IsOffline) return AccountClient.ValidateAsync(url, ct); RefreshOffline(); return Task.CompletedTask; }
         public static async Task LogoutAsync(string url, CancellationToken ct)

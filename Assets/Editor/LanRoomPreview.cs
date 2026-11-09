@@ -67,6 +67,7 @@ public sealed class LanRoomPreview : EditorWindow
         tree.Q<Button>("lanBrowseTab").clicked += () => LanRoomPresentation.Page(tree,LanRoomPage.Browse);
         tree.Q<Button>("lanCreateTab").clicked += () => LanRoomPresentation.Page(tree,LanRoomPage.Create);
         tree.Q<Button>("lanDirectTab").clicked += () => LanRoomPresentation.Page(tree,LanRoomPage.Direct);
+        tree.Q<Button>("lanPeerTab").clicked += () => LanRoomPresentation.Page(tree,LanRoomPage.Peer);
         tree.Q<Button>("lanExpedition").clicked += () => LanRoomPresentation.Mode(tree,RaidGameMode.Expedition);
         tree.Q<Button>("lanClash").clicked += () => LanRoomPresentation.Mode(tree,RaidGameMode.BountyClash);
         LanRoomPresentation.Status(tree,"界面预览 / 示例数据，无真实连接",false);

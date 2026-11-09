@@ -32,6 +32,7 @@ namespace Unity.MP_FPS
         EntityNetworkConfiguration m_Configuration;
         readonly bool m_SecureDirect;
         readonly EmbeddedIceTransport m_EmbeddedIce;
+        readonly LanPeerRoom m_PeerRoom;
 
         public EntityDriverConstructor(NetworkConfiguration configuration)
         {
@@ -61,6 +62,8 @@ namespace Unity.MP_FPS
             if (role == NetworkRole.Host) throw new System.ArgumentException("Online ICE does not use local host/IPC.", nameof(role));
             m_EmbeddedIce = embeddedIce ?? throw new System.ArgumentNullException(nameof(embeddedIce));
         }
+        internal EntityDriverConstructor(NetworkRole role, LanPeerRoom room) : this(role, secureDirect: false)
+        { m_PeerRoom = room; }
 
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)
         {
@@ -74,7 +77,18 @@ namespace Unity.MP_FPS
             }
 #endif
 
-            if (m_Configuration.Type == NetworkType.Relay)
+            if (m_PeerRoom != null)
+            {
+                if (m_Configuration.Role == NetworkRole.Host)
+                    DefaultDriverBuilder.RegisterClientIpcDriver(world, ref driverStore, netDebug, networkSettings);
+                else
+                {
+                    m_PeerRoom.Identity.Configure(ref networkSettings, server: false);
+                    driverStore.RegisterDriver(TransportType.Socket, DefaultDriverBuilder.CreateClientNetworkDriver(
+                        m_PeerRoom.RaidTransport.BorrowNetworkInterface(), networkSettings));
+                }
+            }
+            else if (m_Configuration.Type == NetworkType.Relay)
             {
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayClientData);
                 DefaultDriverBuilder.RegisterClientUdpDriver(world, ref driverStore, netDebug, networkSettings);
@@ -106,6 +120,13 @@ namespace Unity.MP_FPS
             if(m_Configuration.Role == NetworkRole.Host)
                 DefaultDriverBuilder.RegisterServerIpcDriver(world, ref driverStore, netDebug, networkSettings);
 
+            if (m_PeerRoom != null)
+            {
+                m_PeerRoom.Identity.Configure(ref networkSettings, server: true);
+                driverStore.RegisterDriver(TransportType.Socket, DefaultDriverBuilder.CreateServerNetworkDriver(
+                    m_PeerRoom.RaidTransport.BorrowNetworkInterface(), networkSettings));
+                return;
+            }
             if (m_Configuration.Type == NetworkType.Relay)
             {
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayServerData);

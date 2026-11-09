@@ -96,7 +96,7 @@ namespace Unity.MP_FPS.Client
             if (!loggedIn || PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan) m_LobbyOpen = false;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
             m_ProfileModeButton.SetEnabled(!transitioning && !PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
-            MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsLan ? "离开局域网房间" : PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
+            MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsLan ? "离开好友房间" : PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
             m_ProfileModeButton.tooltip = MoonkovLocalization.Text(PlayerProfileClient.SupportsSinglePlayer
                 ? "Open the independent local stash and single-player raids." : "Single player requires a Client+Server build.");
             bool showStash = loggedIn && !m_ShowConnectionMenu;

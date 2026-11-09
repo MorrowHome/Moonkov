@@ -38,6 +38,7 @@ namespace Unity.MP_FPS
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
         public EmbeddedIceClientSession IceSession { get; private set; }
+        internal LanPeerRoom PeerRoom { get; private set; }
         public void ReleaseIce() { IceSession?.Dispose(); IceSession = null; }
 
         public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(false, ct);
@@ -134,6 +135,9 @@ namespace Unity.MP_FPS
         
         public static Task<GameConnection> HostGameAsync()
         {
+            if (LanRoomClient.PeerRoom is { } room)
+                return Task.FromResult(new GameConnection { PeerRoom = room, ListenEndpoint = NetworkEndpoint.AnyIpv4,
+                    ConnectEndpoint = NetworkEndpoint.LoopbackIpv4, SessionConnectionType = NetworkType.Direct });
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = NetworkEndpoint.AnyIpv4.WithPort(port);
@@ -156,6 +160,9 @@ namespace Unity.MP_FPS
 
         public static async Task<GameConnection> ConnectGameAsync(CancellationToken ct = default)
         {
+            if (LanRoomClient.PeerRoom is { } room)
+                return new GameConnection { PeerRoom = room, ListenEndpoint = room.RaidTransport.LocalEndpoint,
+                    ConnectEndpoint = room.GuestRaidEndpoint, SessionConnectionType = NetworkType.Direct };
             if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && OnlineLobbyClient.InInstance)
             {
                 var snapshot = OnlineLobbyClient.Snapshot;

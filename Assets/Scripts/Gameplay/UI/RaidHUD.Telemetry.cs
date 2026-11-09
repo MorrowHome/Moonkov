@@ -126,8 +126,12 @@ namespace Unity.MP_FPS
         private string TelemetryConnectionMethod()
         {
             if (m_TelemetryOffline) return "Single player";
-            if (m_TelemetryLan) return "LAN";
             var game = GameManager.GameConnection;
+            if (m_TelemetryLan)
+            {
+                if (game?.PeerRoom == null) return "LAN";
+                return LanRoomClient.IsHost ? "Local" : "P2P direct";
+            }
             if (game == null) return "Unknown connection";
             if (game.IceSession != null) return "P2P direct";
             if (game.SessionConnectionType == NetworkType.Relay) return "Relay";

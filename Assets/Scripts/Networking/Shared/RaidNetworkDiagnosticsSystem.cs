@@ -51,7 +51,8 @@ namespace Unity.MP_FPS
             if (now < m_NextSample) return;
             m_NextSample = now + 10;
             bool server = World.IsServer();
-            var transport = server ? OnlineIceServer.DiagnosticTransport : GameManager.GameConnection?.IceSession?.Transport;
+            var game = GameManager.GameConnection;
+            var transport = game?.PeerRoom?.RaidTransport ?? (server ? OnlineIceServer.DiagnosticTransport : game?.IceSession?.Transport);
             if (transport == null || transport.IsDisposed)
             { m_Transport = null; m_Start = 0; m_Frames = 0; m_MaxGap = 0; return; }
 

@@ -3,13 +3,13 @@
     <ui:Style src="SquadGlassStyles.uss" />
     <ui:Style src="LanSquadStyles.uss" />
     <ui:VisualElement class="lan-layer moonkov-style-font lan-squad-ui" picking-mode="Ignore">
-        <ui:Button name="lanEntry" text="局域网联机" class="lan-entry" />
+        <ui:Button name="lanEntry" text="好友联机" class="lan-entry" />
         <ui:VisualElement name="lanModal" class="lan-screen lan-hidden">
             <ui:VisualElement name="lanStageHost" class="lan-stage-host" picking-mode="Ignore" />
             <ui:VisualElement class="lan-shell" picking-mode="Ignore">
                 <ui:VisualElement class="lan-header squad-glass">
                     <ui:Button name="lanClose" text="返回" class="lan-back" />
-                    <ui:Label text="局域网小队" class="lan-title" />
+                    <ui:Label text="好友联机" class="lan-title" />
                 </ui:VisualElement>
                 <ui:Foldout text="外观" class="lan-personal squad-glass" value="false">
                     <ui:DropdownField name="lanCharacter" label="角色" choices="DOLLSINGER,HATSUNE MIKU,SHIAN" index="0" />
@@ -20,6 +20,7 @@
                     <ui:VisualElement class="lan-navigation">
                         <ui:Button name="lanBrowseTab" text="寻找房间" class="lan-tab lan-selected" />
                         <ui:Button name="lanCreateTab" text="创建房间" class="lan-tab" />
+                        <ui:Button name="lanPeerTab" text="跨网加入" class="lan-tab" />
                         <ui:Button name="lanDirectTab" text="IP 直连" class="lan-tab" />
                     </ui:VisualElement>
                     <ui:TextField name="lanPlayerName" label="干员代号" value="Operator" max-length="20" class="lan-field lan-identity" />
@@ -34,6 +35,7 @@
                                 <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden">
                                     <ui:Label text="创建你的房间" class="lan-section-title" />
                                     <ui:TextField name="lanRoomName" label="房间名称" value="Moonkov 小队" max-length="20" class="lan-field" />
+                                    <ui:DropdownField name="lanConnectionType" label="连接方式" choices="局域网,跨网邀请" index="0" class="lan-field" />
                                     <ui:Label text="作战玩法" class="lan-field-label" />
                                     <ui:VisualElement class="lan-mode-choices">
                                         <ui:Button name="lanExpedition" class="lan-mode-choice lan-selected"><ui:Label text="远征" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="探索月面，搜寻物资并撤离" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
@@ -41,9 +43,19 @@
                                     </ui:VisualElement>
                                     <ui:IntegerField name="lanCapacity" label="人数上限" value="8" is-delayed="true" class="lan-field" />
                                     <ui:Label name="lanCapacityHint" text="远征最多 32 人，包含房主。" class="lan-muted" />
-                                    <ui:Foldout text="高级连接设置" class="lan-advanced" value="false"><ui:IntegerField name="lanControlPort" label="房间端口 / TCP" value="7978" is-delayed="true" class="lan-field" /><ui:IntegerField name="lanGamePort" label="游戏端口 / UDP" value="7979" is-delayed="true" class="lan-field" /></ui:Foldout>
+                                    <ui:Foldout name="lanCreatePorts" text="高级连接设置" class="lan-advanced" value="false"><ui:IntegerField name="lanControlPort" label="房间端口 / TCP" value="7978" is-delayed="true" class="lan-field" /><ui:IntegerField name="lanGamePort" label="游戏端口 / UDP" value="7979" is-delayed="true" class="lan-field" /></ui:Foldout>
                                 </ui:ScrollView>
                                 <ui:VisualElement class="lan-form-action"><ui:Label name="lanHostRequirement" text="开房需要包含服务器功能的游戏版本。" class="lan-muted" /><ui:Button name="lanCreate" text="创建房间" class="lan-primary" /></ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="lanPeerPage" class="lan-page lan-hidden">
+                                <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden">
+                                    <ui:Label text="加入跨网房间" class="lan-section-title" />
+                                    <ui:Label text="先复制房主发来的邀请。" class="lan-copy" />
+                                </ui:ScrollView>
+                                <ui:VisualElement class="lan-form-action">
+                                    <ui:Button name="lanPeerJoin" text="粘贴邀请并复制回执" class="lan-primary" />
+                                    <ui:Button name="lanPeerCancelJoin" text="取消加入" class="lan-secondary lan-hidden" />
+                                </ui:VisualElement>
                             </ui:VisualElement>
                             <ui:VisualElement name="lanDirectPage" class="lan-page lan-hidden">
                                 <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden"><ui:Label text="通过 IP 加入" class="lan-section-title" /><ui:Label text="向房主获取同一网络下的 IPv4 地址。" class="lan-copy" /><ui:TextField name="lanAddress" label="房主 IPv4" value="192.168.1.100" max-length="15" class="lan-field lan-ip-field" /><ui:Foldout text="更改房间端口" class="lan-advanced" value="false"><ui:IntegerField name="lanJoinPort" label="房间端口 / TCP" value="7978" is-delayed="true" class="lan-field" /></ui:Foldout></ui:ScrollView>
@@ -60,13 +72,20 @@
                             <ui:Label name="lanReadyCount" class="lan-count" />
                         </ui:VisualElement>
                         <ui:VisualElement name="lanStagePagerHost" />
+                        <ui:Label name="lanTrackerTip" text="Equip a T-01 Squad tracker in a special slot to see teammates through walls." class="squad-equipment-tip" picking-mode="Ignore" />
                         <ui:ScrollView class="lan-room-details" horizontal-scroller-visibility="Hidden">
                             <ui:Foldout name="lanRosterDetails" text="全部成员" class="lan-advanced lan-roster-details lan-hidden" value="false">
                                 <ui:ScrollView name="lanMembers" class="lan-members" horizontal-scroller-visibility="Hidden" />
                             </ui:Foldout>
-                            <ui:Foldout text="邀请与连接" class="lan-advanced lan-connection" value="false">
+                            <ui:Foldout name="lanAddressInvite" text="邀请与连接" class="lan-advanced lan-connection" value="false">
                                 <ui:Label name="lanHostAddress" class="lan-address" />
                                 <ui:Button name="lanCopy" text="复制 IPv4 地址" class="lan-secondary" />
+                            </ui:Foldout>
+                            <ui:Foldout name="lanPeerInvite" text="跨网邀请" class="lan-advanced lan-peer-invite lan-hidden" value="true">
+                                <ui:Button name="lanPeerCopy" text="复制邀请" class="lan-secondary" />
+                                <ui:Button name="lanPeerAccept" text="粘贴回执" class="lan-primary lan-hidden" />
+                                <ui:Button name="lanPeerCancelInvite" text="取消邀请" class="lan-quiet lan-hidden" />
+                                <ui:Label name="lanPeerInviteStatus" class="lan-copy lan-hidden" />
                             </ui:Foldout>
                         </ui:ScrollView>
                     </ui:VisualElement>

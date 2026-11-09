@@ -54,10 +54,17 @@ namespace Unity.MP_FPS
         public const string DiscoveryQuery = "Moonkov.LAN/2?";
         public const int MaxFrame = 2 * 1024 * 1024;
         public static readonly JsonSerializerSettings Json = new JsonSerializerSettings { MaxDepth = 48, TypeNameHandling = TypeNameHandling.None };
-        public static async Task WriteAsync<T>(Stream stream, T value, CancellationToken ct)
+        internal static byte[] Encode<T>(T value)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value, Json));
             if (bytes.Length > MaxFrame) throw new InvalidDataException("房间消息过大。");
+            return bytes;
+        }
+        internal static T Decode<T>(byte[] bytes) =>
+            JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(bytes), Json) ?? throw new InvalidDataException("房间消息为空。");
+        public static async Task WriteAsync<T>(Stream stream, T value, CancellationToken ct)
+        {
+            byte[] bytes = Encode(value);
             byte[] size = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Length));
             await stream.WriteAsync(size, 0, size.Length, ct).ConfigureAwait(false);
             await stream.WriteAsync(bytes, 0, bytes.Length, ct).ConfigureAwait(false);
@@ -68,7 +75,7 @@ namespace Unity.MP_FPS
             int length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(size, 0));
             if (length < 2 || length > MaxFrame) throw new InvalidDataException("无效房间消息长度。");
             var bytes = new byte[length]; await ReadExactly(stream, bytes, ct).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(bytes), Json) ?? throw new InvalidDataException("房间消息为空。");
+            return Decode<T>(bytes);
         }
         private static async Task ReadExactly(Stream stream, byte[] buffer, CancellationToken ct)
         {
