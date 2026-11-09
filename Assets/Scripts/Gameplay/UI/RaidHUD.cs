@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
         private EntityQuery m_InventoryQuery;
         private uint m_InventorySequence, m_InventoryRequestId;
         private readonly MoonkovActionAudio m_InventoryAudio = new MoonkovActionAudio();
+        private readonly MoonkovLootRevealAudio m_LootRevealAudio = new MoonkovLootRevealAudio();
         private void TrackInventoryAudio(SoundDef success, SoundDef start = null)
             => m_InventoryAudio.Track(m_Snapshot.RaidId, m_InventoryRequestId, success, start);
         private float m_InventoryRequestedAt;
@@ -186,7 +187,7 @@ namespace Unity.MP_FPS
             m_OxygenAir = m_Root.Q<Label>("raidOxygenAir");
             m_ActionView = new Client.RaidTimedActionView(CancelProgressAction); m_Root.Add(m_ActionView);
             ResetTimedAction();
-            m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset();
+            m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset(); m_LootRevealAudio.Reset();
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
             var closePack=m_Root.Q<Button>("raidPackClose");closePack.clicked += ClosePack;
@@ -357,7 +358,7 @@ namespace Unity.MP_FPS
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidActionCancelRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId}))
-            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_ActionCancelPending=true;}
+            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_LootRevealAudio.Cancel();m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_ActionCancelPending=true;}
         }
         private void ResetTimedAction()
         {
@@ -407,7 +408,7 @@ namespace Unity.MP_FPS
                 else RequestLoot(-1);
             }
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible) ClearInventoryBackdrop();
+            if (!visible) { ClearInventoryBackdrop(); m_LootRevealAudio.Cancel(); }
             if (visible) { UpdateInventoryView(); if(!m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
@@ -460,7 +461,7 @@ namespace Unity.MP_FPS
         private void InitializeWorld()
         {
             m_ReturnGuidance.Reset();
-            m_InventoryAudio.Reset(); m_InventorySequence = 0;
+            m_InventoryAudio.Reset(); m_LootRevealAudio.Reset(); m_InventorySequence = 0;
             ResetTimedAction(); m_ActionRaidId=0;
             ResetBountyConnection();
             foreach (var world in World.All)
@@ -799,7 +800,8 @@ namespace Unity.MP_FPS
             m_InventoryRequestId=NextManualActionRequest();
             if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))
             { MoonkovAudio.Error(); return false; }
-            TrackInventoryAudio(lootId >= 0 ? MoonkovAudio.Library?.Container : null);
+            TrackInventoryAudio(null);
+            m_LootRevealAudio.Begin(m_Snapshot.RaidId, m_InventoryRequestId, lootId, inventory.Graph);
             m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
         }
         private void UpdateInventoryView()
@@ -811,10 +813,19 @@ namespace Unity.MP_FPS
                 bool timedOut=TimedActionActive;
                 m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_ActionCancelPending=false;
                 if(timedOut) {m_ActionFeedback="ACTION INTERRUPTED";m_ActionFailed=true;m_ActionFeedbackUntil=Time.unscaledTime+3;}
-                m_InventoryAudio.Reset(); MoonkovAudio.Error();
+                m_InventoryAudio.Reset(); m_LootRevealAudio.Cancel(); MoonkovAudio.Error();
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 m_InventoryView.Present(inventory.Graph,"ACTION INTERRUPTED",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                 m_HealthView.Message("ACTION INTERRUPTED");
+            }
+            if (!m_InventoryVisible || inventory.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase != RaidPhase.Active)
+                m_LootRevealAudio.Cancel();
+            else
+            {
+                // Process closure/cancellation before draining queued item sounds.
+                if (inventory.Sequence != m_InventorySequence) m_LootRevealAudio.Observe(inventory);
+                if (m_LootRevealAudio.TryPlay(Time.unscaledTime))
+                    MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             }
             if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
             if(m_DissectingLootId>=0)

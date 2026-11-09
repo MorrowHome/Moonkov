@@ -82,7 +82,7 @@ def main():
               '旧 `SourceData/Audio/StaminaBreath/FemaleRunBreath.mp3` 已停用，不再绑定体力呼吸。其来源为 MelvinJaepel 的 CC0 [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/)，保存的是高质量 MP3 预览。', '']
     lines += ['## 恢复的搜刮提示', '',
               '| 成品文件 | 用途 | 录音出处 | 原文件 |', '| --- | --- | --- | --- |',
-              '| `Clips/Interaction/Container.wav` | 搜刮成功时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |', '',
+              '| `Clips/Interaction/Container.wav` | 每件搜刮物品揭示时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |', '',
               '此文件恢复原有音色。不是其他游戏原声，也不是 CC0。保留既有 `Assets/Audio/Moonkov/Sources.json` 的来源与哈希记录。', '']
     death_path = ROOT / 'Assets/Audio/Moonkov/PlayerDeathSources.json'
     if death_path.exists():

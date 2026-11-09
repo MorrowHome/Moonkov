@@ -112,7 +112,7 @@
 
 | 成品文件 | 用途 | 录音出处 | 原文件 |
 | --- | --- | --- | --- |
-| `Clips/Interaction/Container.wav` | 搜刮成功时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |
+| `Clips/Interaction/Container.wav` | 每件搜刮物品揭示时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |
 
 此文件恢复原有音色。不是其他游戏原声，也不是 CC0。保留既有 `Assets/Audio/Moonkov/Sources.json` 的来源与哈希记录。
 

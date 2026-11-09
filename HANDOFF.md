@@ -1018,7 +1018,7 @@
 
 - 2026-11-09 死亡声按用户要求使用日式少女声线。`Death` 已换成びたちー素材館的「少女的悲鳴２」，3.09 秒，-3 至 -2 dB，原音高原速度。不要改回恐怖片声线或 `Character/Death.wav` 的血肉撞击。`MoonkovAudioSetup` 固定绑定及 PCM 导入；来源和署名在统一清单。原素材禁止单独再分发，重建脚本从作者站下载到本地缓存。新尸体通过 `CorpseVisual` 播放独立位置声音，角色和尸体清理不截断尾音，旧尸体不补叫。
 
-- 2026-11-09 搜刮成功提示按用户要求恢复旧 `Clips/Interaction/Container.wav`，使用 `Container` 音库。`InteractionFoleySetup.Install()` 已固定此引用，不要再覆盖成 HL2 弹药箱。保留 -13 至 -12 dB 和原成功回执时序。来源补入统一音频清单。
+- 2026-11-09 搜刮按每件物品揭示播放旧 `Clips/Interaction/Container.wav`，不要改回整次搜刮完成才响，也不要覆盖成 HL2 弹药箱。`MoonkovLootRevealAudio` 比较服务端图中新出现的容器直属物品 ID。重复回执、整理、重新打开已搜过的箱子不重播；合并到达的多件物品间隔 1.3 秒播放，关闭或取消清空待播。`Container` 降至 -21 至 -20 dB，世界翻找 `LootSearchWorld` 降至 -19 至 -18 dB。`InteractionFoleySetup.Install()` 同步固定参数。来源在统一音频清单，检查与试听见 `Tools/Validation/LootRevealAudioChecks.cs`。
 
 - 2026-11-08 用户否定跑步衣料摩擦。走跑不得再逐步叠衣料或每两步叠装备声；原地转身 50 度才播短衣料，冷却 0.9 秒。脚步改为 CS:S 金属、碎石、硬地各 4 条，绑定 `MovementFoleySetup.Install()`。脚步、爬行与擦墙音量按实际水平位移速度变化，转身衣料按角速度变化，平滑时间 0.12 秒。不要改回按冲刺按钮分两档；最大奔跑响度保留，AI 听距不改。2026-11-09 用户否定 MelvinJaepel 喉音急喘，现已停用。体力呼吸沿用普通呼吸同源的 mikeask 吸气、呼气，只增加厚度和节奏，不能喘叫。耗尽每 2.3 秒一轮，音库 -7 至 -6 dB，恢复后变缓；跳跃发力提高约 11.4 dB。真实音源检查与无额外放大的对比试听见 [音效系统](Docs/AudioSystem.md#2026-11-08-脚步转身与体力人声)。
 

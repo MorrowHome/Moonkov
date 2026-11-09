@@ -16,11 +16,13 @@
 - 试听为 `LocalData/GameAudioReview/Previews/DeathAnimeVoice.wav`。按默认主音量 0.8、音效 0.85 和音库中间值 -2.5 dB 导出，没有额外试听增益。最终声线以用户试听为准。
 - 单 Editor 编译通过。`Tools/Validation/DeathVoiceReview.cs` 的 7 项原生音源检查通过，覆盖真实尸体触发、增益与原调、模型清理后尾音、播至片尾、旧尸体静音和音源回收。使用隔离 Play 场景，没有联机或整局混音验收。
 
-## 2026-11-09 恢复搜刮开箱提示
+## 2026-11-09 逐件搜刮开箱提示
 
-- `Container` 恢复旧 `Clips/Interaction/Container.wav`，时长 1.216 秒。已对照替换前的 Git 版本，WAV 内容一致。保留现有 -13 至 -12 dB，导入为预加载单声道 PCM。
-- 继续使用原搜刮成功回执触发，不增加计时器。`InteractionFoleySetup.Install()` 同步恢复此绑定，重建不会换回 HL2 弹药箱。旧 HL2 文件保留，来源清单标为停用；恢复素材的 Sonniss 来源已补入同一清单。
-- 单 Editor 编译、实际资源引用及现有交互回执检查通过。本轮没有进入 Play 或联机。试听 `LocalData/GameAudioReview/Previews/LootOriginalRestored.wav` 由 Unity 导入后的 PCM 按默认混音导出，无额外试听增益。
+- `Container` 保留旧 `Clips/Interaction/Container.wav`，时长 1.216 秒，预加载单声道 PCM。按用户反馈降低 8 dB，现为 -21 至 -20 dB。世界翻找 `LootSearchWorld` 降低 4 dB，现为 -19 至 -18 dB；空间范围和 AI 听距不变。
+- 每次服务端库存快照揭示新的容器直属物品 ID，播放一次开箱声，包含最后一件。整次搜刮完成不再另响一次。重复快照、数量变化、整理、自带物品移入和重新打开已搜过的箱子不重播。背包及其内容作为一件揭示，不能把内部物品全部叠响。
+- `MoonkovLootRevealAudio` 在本地打开请求后才监听。合并快照中的多件物品排队播放，间隔至少 1.3 秒。计时器只错开已确认的提示，不推算物品发现。关闭、取消、超时和换轮次清空待播。原服务端翻找序号照常驱动世界声音。
+- `InteractionFoleySetup.Install()` 同步绑定和音量，重建不会换回 HL2 弹药箱。旧 HL2 文件保留，来源清单标为停用；Sonniss 来源已登记。
+- 单 Editor 编译、`Tools/Validation/LootRevealAudioChecks.cs` 的逐件/防重复/合并快照/取消检查及现有交互回执检查通过。本轮没有进入 Play 或联机。试听 `LocalData/GameAudioReview/Previews/LootPerItemQuiet.wav` 使用 Unity 导入后的 PCM，三次开箱相隔 1.7 秒，按当前音库和默认主音量/SFX 导出，无额外试听增益。
 
 ## 2026-11-08 脚步、转身与体力人声
 

@@ -25,10 +25,10 @@ public static class InteractionFoleySetup
         Bind(nameof(library.InventoryEquip), -11, 0, "HL2EquipmentLatch");
         Bind(nameof(library.InventoryDrop), -11, 0, "HL2ItemDrop1", "HL2ItemDrop2");
         Bind(nameof(library.BatteryInsert), -10, 0, "HL2CellInsert");
-        // Keep the original container cue for successful loot discovery.
-        Bind(nameof(library.Container), -12, 0, "Interaction/Container");
+        // One restrained original box sound for each newly revealed item.
+        Bind(nameof(library.Container), -20, 0, "Interaction/Container");
         Bind(nameof(library.ContainerClose), -13, 0, "HL2ContainerClose");
-        Bind(nameof(library.LootSearchWorld), -14, 10, "TarkovPouchSearch1", "TarkovPouchSearch2");
+        Bind(nameof(library.LootSearchWorld), -18, 10, "TarkovPouchSearch1", "TarkovPouchSearch2");
         Bind(nameof(library.WeaponDraw), -12, 10, "CSSWeaponDraw");
         Bind(nameof(library.WeaponDrawPistol), -12, 10, "CSSPistolDraw");
         Bind(nameof(library.MeleeDraw), -13, 10, "CSSKnifeDraw");
