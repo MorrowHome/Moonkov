@@ -700,7 +700,7 @@
         "source_list": "https://wiki.facepunch.com/gmod/HL2_Sound_List",
         "compress": false,
         "name": "HL2ContainerOpen",
-        "use": "搜刮容器打开成功",
+        "use": "旧版容器开盖（已停用，保留来源）",
         "file": "SourceData/Audio/GameFoley/HL2ContainerOpenOriginal.wav",
         "sha256": "450f8114a06b4ce84694aa4f8f9da5f372e25a0483954c4c68ea86bc1ff6ae1e",
         "loop": false,

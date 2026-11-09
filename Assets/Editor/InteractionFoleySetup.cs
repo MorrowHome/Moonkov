@@ -25,7 +25,8 @@ public static class InteractionFoleySetup
         Bind(nameof(library.InventoryEquip), -11, 0, "HL2EquipmentLatch");
         Bind(nameof(library.InventoryDrop), -11, 0, "HL2ItemDrop1", "HL2ItemDrop2");
         Bind(nameof(library.BatteryInsert), -10, 0, "HL2CellInsert");
-        Bind(nameof(library.Container), -12, 0, "HL2ContainerOpen");
+        // Keep the original container cue for successful loot discovery.
+        Bind(nameof(library.Container), -12, 0, "Interaction/Container");
         Bind(nameof(library.ContainerClose), -13, 0, "HL2ContainerClose");
         Bind(nameof(library.LootSearchWorld), -14, 10, "TarkovPouchSearch1", "TarkovPouchSearch2");
         Bind(nameof(library.WeaponDraw), -12, 10, "CSSWeaponDraw");
@@ -51,7 +52,7 @@ public static class InteractionFoleySetup
             var clips = new List<AudioClip>();
             foreach (var name in names)
             {
-                string path = Root + "Clips/GameFoley/" + name + ".wav";
+                string path = Root + "Clips/" + (name.Contains("/") ? name : "GameFoley/" + name) + ".wav";
                 var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
                 if (!clip) throw new InvalidOperationException("Missing " + path);
                 if (imported.Add(path))

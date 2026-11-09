@@ -37,7 +37,7 @@
 | `Clips/GameFoley/HL2ItemDrop1.wav` | 放下丢弃物品 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard1.wav) | sound/physics/cardboard/cardboard_box_impact_hard1.wav |
 | `Clips/GameFoley/HL2ItemDrop2.wav` | 放下丢弃物品 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/physics/cardboard/cardboard_box_impact_hard3.wav) | sound/physics/cardboard/cardboard_box_impact_hard3.wav |
 | `Clips/GameFoley/HL2CellInsert.wav` | 插入护盾电池 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/weapons/ar2/ar2_reload_push.wav) | sound/weapons/ar2/ar2_reload_push.wav |
-| `Clips/GameFoley/HL2ContainerOpen.wav` | 搜刮容器打开成功 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_open.wav) | sound/items/ammocrate_open.wav |
+| `Clips/GameFoley/HL2ContainerOpen.wav` | 旧版容器开盖（已停用，保留来源） | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_open.wav) | sound/items/ammocrate_open.wav |
 | `Clips/GameFoley/HL2ContainerClose.wav` | 关闭搜刮容器 | Half-Life 2 / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/hl2/blob/master/sound/items/ammocrate_close.wav) | sound/items/ammocrate_close.wav |
 | `Clips/GameFoley/CSSWeaponDraw.wav` | 取出长枪 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/m4a1/m4a1_deploy.wav) | sound/weapons/m4a1/m4a1_deploy.wav |
 | `Clips/GameFoley/CSSPistolDraw.wav` | 取出手枪 | Counter-Strike: Source / Valve Corporation | [sourcesounds 公开资源镜像](https://github.com/sourcesounds/cstrike/blob/master/sound/weapons/deagle/de_deploy.wav) | sound/weapons/deagle/de_deploy.wav；取 0.260–1.320 秒 |
@@ -105,3 +105,11 @@
 | `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 6.25–7.81 秒 |
 
 急喘重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。
+
+## 恢复的搜刮提示
+
+| 成品文件 | 用途 | 录音出处 | 原文件 |
+| --- | --- | --- | --- |
+| `Clips/Interaction/Container.wav` | 搜刮成功时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |
+
+此文件恢复原有音色。不是其他游戏原声，也不是 CC0。保留既有 `Assets/Audio/Moonkov/Sources.json` 的来源与哈希记录。
