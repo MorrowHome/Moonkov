@@ -23,13 +23,26 @@ namespace Unity.MP_FPS.Client
             var vitalMotion = content.Q<Toggle>("animateVitalSignal");
             vitalMotion.SetValueWithoutNotify(PlayerPrefs.GetInt(RaidVitalsMonitor.AnimatePreference, 1) != 0);
             vitalMotion.RegisterValueChangedCallback(e => PlayerPrefs.SetInt(RaidVitalsMonitor.AnimatePreference, e.newValue ? 1 : 0));
-            var language = content.Q<DropdownField>("language");
-            language.choices = new List<string> { "简体中文", "English" };
-            language.SetValueWithoutNotify(MoonkovLocalization.CurrentLocaleCode == "zh-Hans" ? "简体中文" : "English");
-            language.RegisterValueChangedCallback(e =>
+            BindLanguage(content.Q<DropdownField>("language"), languageChanged);
+        }
+
+        private static void BindLanguage(DropdownField language, Action languageChanged)
+        {
+            const string chinese = "简体中文", english = "English";
+            static string CurrentChoice() => MoonkovLocalization.CurrentLocaleCode == "zh-Hans" ? chinese : english;
+
+            language.choices = new List<string> { chinese, english };
+            language.SetValueWithoutNotify(CurrentChoice());
+            int revision = 0;
+            language.RegisterValueChangedCallback(async evt =>
             {
-                MoonkovLocalization.Select(e.newValue == "简体中文" ? "zh-Hans" : "en");
-                languageChanged?.Invoke();
+                // Translated labels inside the field also send string change events.
+                if (evt.target != language || !language.choices.Contains(evt.newValue)) return;
+                int request = ++revision;
+                bool selected = await MoonkovLocalization.SelectAsync(evt.newValue == chinese ? "zh-Hans" : "en");
+                if (request != revision || language.panel == null) return;
+                language.SetValueWithoutNotify(CurrentChoice());
+                if (selected) languageChanged?.Invoke();
             });
         }
 

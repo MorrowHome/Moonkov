@@ -127,7 +127,7 @@ namespace Unity.MP_FPS
             else element.style.letterSpacing = StyleKeyword.Null;
         }
 
-        public static async void Select(string code)
+        internal static async Task<bool> SelectAsync(string code)
         {
             Initialize();
             int request = ++s_LocaleRequest;
@@ -135,15 +135,18 @@ namespace Unity.MP_FPS
             {
                 var initialization = LocalizationSettings.InitializationOperation;
                 await initialization.Task;
-                if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return;
+                if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return false;
                 var locale = LocalizationSettings.AvailableLocales.GetLocale(code);
-                if (locale == null) return;
+                if (locale == null) return false;
                 LocalizationSettings.SelectedLocale = locale;
                 PlayerPrefs.SetString("Moonkov.Locale", locale.Identifier.Code);
+                PlayerPrefs.Save();
+                return true;
             }
             catch (Exception exception)
             {
                 Debug.LogException(exception);
+                return false;
             }
         }
 
@@ -184,6 +187,13 @@ namespace Unity.MP_FPS
                 // never usernames, passwords, chat or numeric editing buffers.
                 if (element.ClassListContains("unity-text-element--inner-input-field") ||
                     element.ClassListContains("unity-text-element--inner-input-field-component")) return;
+                // The language dropdown supplies its own option names. Only apply locale fonts to its value.
+                if (element.ClassListContains(DropdownField.textUssClassName) &&
+                    element.GetFirstAncestorOfType<DropdownField>()?.ClassListContains("terminal-language") == true)
+                {
+                    if (!s_Bindings.ContainsKey(element)) s_Bindings.Add(element, new Binding(element));
+                    return;
+                }
                 if (!s_Bindings.TryGetValue(element, out var binding) || element.text != binding.Rendered)
                     Set(element, element.text);
             });
