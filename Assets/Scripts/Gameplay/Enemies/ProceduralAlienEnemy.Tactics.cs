@@ -37,8 +37,16 @@ namespace Unity.MP_FPS
             if (profile.IsSpiderBoss)
             {
                 if (TryBossPattern(AlienAttackKind.SpiderRake, phase, m_NextBossSweep, out next)) return true;
-                if (GroundDistance(ContactPoint(m_Target), transform.position) > profile.AttackReach * m_Body.Scale &&
+                Vector3 target = ContactPoint(m_Target);
+                float distance = GroundDistance(target, transform.position);
+                bool outsideMelee = distance > profile.AttackReach * m_Body.Scale;
+                if (outsideMelee &&
                     TryBossPattern(AlienAttackKind.SpiderRush, phase, m_NextBossArea, out next)) return true;
+                // One distant opener, then use the ground route to close. A blocked
+                // route or a target on another floor still permits a ranged attack.
+                bool canSpit = !GroundStrikeLevel(target) || outsideMelee &&
+                    (m_Clock < m_BlockedGroundUntil || m_Attacks == 0 && distance > profile.SpiderAmbushRange);
+                return canSpit && TryBossPattern(AlienAttackKind.MucusSpit, phase, m_NextBossSpit, out next);
             }
             else if (profile.Species == AlienSpecies.Roots)
             {
@@ -58,11 +66,13 @@ namespace Unity.MP_FPS
             pattern = AlienCombatPattern.For(profile, phase, m_Attacks + 1, kind);
             if (m_Clock < readyAt) return false;
             // Ground strikes must not lock onto an unrelated floor below an elevated player.
-            if (kind != AlienAttackKind.MucusSpit &&
-                Mathf.Abs(ContactPoint(m_Target).y - (transform.position.y - m_Body.Motor.BodyHeight + 1)) > 1.5f) return false;
-            if (kind == AlienAttackKind.SpiderRush && !TrySpiderRushLanding(transform.position, m_LastSeen - Vector3.up, out _)) return false;
-            return CanBeginSpeciesAttack(pattern);
+            if (kind != AlienAttackKind.MucusSpit && !GroundStrikeLevel(ContactPoint(m_Target))) return false;
+            return CanBeginSpeciesAttack(pattern) &&
+                (kind != AlienAttackKind.SpiderRush || TrySpiderRushLanding(transform.position, m_LastSeen - Vector3.up, out _));
         }
+
+        private bool GroundStrikeLevel(Vector3 target) =>
+            Mathf.Abs(target.y - (transform.position.y - m_Body.Motor.BodyHeight + 1)) <= 1.5f;
 
         private bool TrySpiderRushLanding(Vector3 origin, Vector3 target, out Vector3 landing)
         {
@@ -121,7 +131,7 @@ namespace Unity.MP_FPS
             {
                 // Each tool has its own recovery budget. When it is unavailable, use a
                 // different legal tool or move; never bypass a cooldown by repeating a shot.
-                float ready = m_Clock + cycle + (phase > 1 ? 1.2f : 2.5f);
+                float ready = m_Clock + cycle + (next.Kind == AlienAttackKind.SpiderRake ? .45f : phase > 1 ? 1.2f : 2.5f);
                 if (next.Kind == AlienAttackKind.MucusSpit) m_NextBossSpit = ready;
                 else if (next.Kind == AlienAttackKind.TentacleSweep || next.Kind == AlienAttackKind.SlimePulse || next.Kind == AlienAttackKind.SpiderRake) m_NextBossSweep = ready;
                 else m_NextBossArea = ready;

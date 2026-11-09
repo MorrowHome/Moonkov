@@ -61,6 +61,11 @@ namespace Unity.MP_FPS
             float distance = offset.magnitude;
             if (distance < .01f) return target;
             Vector3 toward = offset / distance;
+            if (profile.IsSpiderBoss)
+            {
+                pause = distance <= profile.BossPreferredDistance;
+                return pause ? transform.position : target - toward * profile.BossPreferredDistance;
+            }
             float side = (GhostGameObject.Owner & 1) == 0 ? 1 : -1;
             Vector3 flank = Vector3.Cross(Vector3.up, toward) * side * profile.FlankDistance;
             if (profile.Boss)

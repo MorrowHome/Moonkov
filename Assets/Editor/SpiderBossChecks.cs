@@ -25,7 +25,7 @@ public static partial class AlienEnemyChecks
         try
         {
             var passed = new List<string>();
-            CheckTacticalBoss("SpiderBoss", 3, AlienAttackKind.SpiderRake, true, passed);
+            CheckTacticalBoss("SpiderBoss", 3, AlienAttackKind.SpiderRake, false, passed);
             CheckTacticalBoss("SpiderBoss", 9, AlienAttackKind.SpiderRush, false, passed);
             CheckTacticalBoss("SpiderBoss", 30, AlienAttackKind.MucusSpit, false, passed);
             foreach (string mode in new[] { "hit", "dodge", "wall", "high", "hidden" }) CheckRangedBoss("SpiderBoss", mode, passed);
@@ -115,6 +115,7 @@ public static partial class AlienEnemyChecks
             foreach (var kind in new[] { AlienAttackKind.SpiderRake, AlienAttackKind.SpiderRush })
                 foreach (string mode in new[] { "hit", "dodge", "wall", "death", "upper-floor" })
                     CheckSpiderAttack(kind, mode, passed);
+            CheckSpiderPressure(passed);
             CheckSpiderPhaseAndLoot(passed);
             CheckSpiderWarnings(passed);
             Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
@@ -122,6 +123,37 @@ public static partial class AlienEnemyChecks
             Debug.Log("Spider boss contracts passed: " + string.Join("; ", passed));
         }
         finally { SceneManager.SetActiveScene(original); EditorSceneManager.CloseScene(scene, true); }
+    }
+
+    private static void CheckSpiderPressure(List<string> passed)
+    {
+        using var world = CounterplayWorld("Spider switches from spit to ground attacks");
+        var holder = new GameObject("Temporary spider pressure");
+        var profile = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>(SpiderBossSetup.ProfilePath));
+        profile.Damage = 1; profile.PatrolRadius = 0;
+        Vector3 origin = new Vector3(-11400, 1000, -11400);
+        try
+        {
+            CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(90, .5f, 90));
+            var actor = Alien(holder.transform, world, profile, origin + Vector3.up * SurfaceMotor.Height * profile.Scale,
+                MultiplayerRole.Server, -32004);
+            Humanoid(holder.transform, world, origin + Vector3.forward * 24, false, 42);
+            var kinds = new List<AlienAttackKind>();
+            float chaseSpeed = 0;
+            for (int frame = 0; frame < 420 && kinds.Count < 3; frame++)
+            {
+                Vector3 before = actor.transform.position;
+                Step(actor, 1);
+                if (actor.Action == AlienAction.Chase)
+                    chaseSpeed = Mathf.Max(chaseSpeed, Vector3.ProjectOnPlane(actor.transform.position - before, Vector3.up).magnitude * 30);
+                if (actor.AttackCount > kinds.Count) kinds.Add(actor.AttackKind);
+            }
+            Require(kinds.Count == 3 && kinds[0] == AlienAttackKind.MucusSpit && kinds[1] == AlienAttackKind.SpiderRush &&
+                kinds[2] == AlienAttackKind.SpiderRake, "Open ground produced an unexpected sequence: " + string.Join(", ", kinds));
+            Require(chaseSpeed >= profile.BossPursuitSpeed - .1f, "The giant could not reach its authored pursuit speed.");
+            passed.Add($"Open ground: spit, close at {chaseSpeed:F2} m/s, rush, rake");
+        }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(profile); }
     }
 
     private static void CheckSpiderAttack(AlienAttackKind kind, string mode, List<string> passed)

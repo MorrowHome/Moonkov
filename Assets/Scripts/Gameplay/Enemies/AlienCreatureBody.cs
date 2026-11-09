@@ -141,7 +141,8 @@ namespace Unity.MP_FPS
                 if (m_Phase >= .58f || m_Chain.SuckerSpan >= m_ChainShape.length * 1.25f) gaitSpeed = 0;
                 else gaitSpeed *= .8f;
             }
-            if (m_Feet != null && !(m_Profile.IsSpiderBoss && m_CombatAction == AlienAction.Strike && m_CombatKind == AlienAttackKind.SpiderRush))
+            // The giant's swept ground capsule controls travel even when a decorative foot loses contact.
+            if (m_Feet != null && !m_Profile.IsSpiderBoss)
                 gaitSpeed *= m_Feet.SpeedScale;
             if (m_StiltRig != null) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt, m_StiltRig.Height, m_StiltRig.CollisionRadius);
             else if (m_Profile.Boss) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt,

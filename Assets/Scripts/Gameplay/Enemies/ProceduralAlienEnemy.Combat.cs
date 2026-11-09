@@ -72,8 +72,8 @@ namespace Unity.MP_FPS
             {
                 bool pause = false;
                 Vector3 goal = remembered || investigating ? HuntGoal(m_Visible ? m_LastSeen : SearchGoal(), out pause) : PatrolGoal();
-                if (profile.IsUpright || profile.Boss) goal = UprightWaypoint(goal);
-                var graph = profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
+                if (!pause && (profile.IsUpright || profile.Boss)) goal = UprightWaypoint(goal);
+                var graph = pause || profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))
                 {
                     if (graph.TryGetSteering(m_Route, m_Body.Motor, goal, m_Clock, out var waypoint)) goal = waypoint;

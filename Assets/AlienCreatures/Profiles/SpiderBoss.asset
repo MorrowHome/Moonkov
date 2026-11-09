@@ -15,17 +15,17 @@ MonoBehaviour:
   Species: 0
   Scale: 3.6
   Health: 3200
-  Speed: 1.1666666
-  TurnSpeed: 95
+  Speed: 1.8055556
+  TurnSpeed: 170
   SightRange: 60
   HearingRange: 28
   MemorySeconds: 14
   PatrolRadius: 4
-  Damage: 42
+  Damage: 58
   AttackReach: 1.18
-  Windup: 1.4
-  Recovery: 1.65
-  AttackCooldown: 2.8
+  Windup: 1.25
+  Recovery: 1.35
+  AttackCooldown: 2.45
   LungeSpeed: 3
   Boss: 1
   ThreatTier: 2
@@ -35,22 +35,22 @@ MonoBehaviour:
   PreferredDistance: 7
   FlankDistance: 3
   StalkPauseSeconds: 1.4
-  BossDisplaySeconds: 1.8
-  BossPursuitSpeed: 4.2
-  BossRepositionSpeed: 5.5
+  BossDisplaySeconds: 1.15
+  BossPursuitSpeed: 6.5
+  BossRepositionSpeed: 0
   BossRepositionSeconds: 0.65
   BossRepositionCooldown: 5.5
-  BossPreferredDistance: 5
+  BossPreferredDistance: 2.7
   MucusEveryAttacks: 3
   MucusRange: 30
   MucusSpeed: 22
   MucusBlindSeconds: 1.8
   EnrageHealthFraction: 0.5
   FaceAttachSeconds: 2.4
-  SpiderAmbushRange: 12
-  SpiderWindup: 1.65
+  SpiderAmbushRange: 14
+  SpiderWindup: 1.35
   SpiderStrikeSeconds: 1
-  SpiderRecovery: 1.8
+  SpiderRecovery: 1.4
   StiltHeight: 3.2
   StiltThickness: 0.085
   StiltStride: 0.85
