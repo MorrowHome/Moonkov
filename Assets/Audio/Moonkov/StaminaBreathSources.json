@@ -1,45 +1,67 @@
 {
-  "source": "SourceData/Audio/StaminaBreath/FemaleRunBreath.mp3",
-  "source_sha256": "1c83c68220736e8b739c21dd02c0d2e868a835ecf0570c800597683405c9918e",
-  "author": "MelvinJaepel",
+  "source": "SourceData/Audio/StaminaBreath/BreathingTired.wav",
+  "source_sha256": "08d9c9e15426f0cd889b63867a3bc68bafd985e8d39fd57f805d4372b23aeeca",
+  "author": "mikeask",
+  "title": "Breathing Tired",
   "license": "CC0-1.0",
-  "source_page": "https://freesound.org/people/MelvinJaepel/sounds/435468/",
-  "download": "https://cdn.freesound.org/previews/435/435468_6125359-hq.mp3",
-  "source_format": "Freesound high-quality MP3 preview of woman run and breath.wav; not lossless original.",
-  "processing": "Recorded panting; unchanged pitch/speed; HP85/LP10000; gentle peak compression 2.5:1; DC removal; 12 ms fades; RMS target 0.18 / peak cap 0.7; 48 kHz mono PCM16.",
+  "source_page": "https://opengameart.org/content/breathing-tired",
+  "download": "https://opengameart.org/sites/default/files/breathing%20tired.wav",
+  "source_format": "Original WAV; same nonverbal air breaths used by SuitBreath. Three edits, not three independent takes.",
+  "processing": "Original pitch/speed; HP80/LP3200; broad +3 dB at 220 Hz; soft room-noise gate; DC removal; 20 ms edge fades; separate recorded inhale/exhale with 120\u2013160 ms pause; RMS target 0.10 / peak cap 0.42; 48 kHz mono PCM16.",
   "clips": [
     {
       "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav",
-      "source_excerpt_seconds": [
-        0.32,
-        1.55
+      "source_excerpts_seconds": [
+        [
+          0.08,
+          0.72
+        ],
+        [
+          1.2,
+          1.95
+        ]
       ],
-      "seconds": 1.23,
-      "peak": 0.7,
-      "rms": 0.11198527059482695,
-      "sha256": "2f8638da21cca96c56ce291a96887594d70963f27bd7adbabc153eebc0c39b61"
+      "pause_seconds": 0.12,
+      "seconds": 1.51,
+      "peak": 0.42,
+      "rms": 0.062201036942873926,
+      "sha256": "0637b7a968d4b3cdeec95530d9a9789b021bf297f62d8f8916e683665309cdff"
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort2.wav",
-      "source_excerpt_seconds": [
-        1.78,
-        2.99
+      "source_excerpts_seconds": [
+        [
+          2.42,
+          3.08
+        ],
+        [
+          1.2,
+          1.95
+        ]
       ],
-      "seconds": 1.21,
-      "peak": 0.7,
-      "rms": 0.1129924803695752,
-      "sha256": "2db8db112302f460d1f7c1fad8eff41fdd078fe2c0ff9acd58b0b1c0ce336e30"
+      "pause_seconds": 0.14,
+      "seconds": 1.55,
+      "peak": 0.42000000000000004,
+      "rms": 0.05170921759086706,
+      "sha256": "d1cc1f33728bc00e36e27294b1c54aec5384cdf00d4257c153c23a9902fe1f74"
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav",
-      "source_excerpt_seconds": [
-        6.25,
-        7.81
+      "source_excerpts_seconds": [
+        [
+          0.06,
+          0.74
+        ],
+        [
+          1.18,
+          1.98
+        ]
       ],
-      "seconds": 1.56,
-      "peak": 0.7,
-      "rms": 0.0850611557531537,
-      "sha256": "ceac661eb5104a4043809ba20b3f7ca66e0acd1097b3e84411cbc64a713db846"
+      "pause_seconds": 0.16,
+      "seconds": 1.64,
+      "peak": 0.42,
+      "rms": 0.059775175254003624,
+      "sha256": "b91839808ab315881b3b7d27f947cd3375150efc50591354cd15ede63c8cb311"
     }
   ]
 }

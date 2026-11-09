@@ -61,8 +61,8 @@ reports.append(save('FootstepsBeforeAfter',x))
 
 x=np.zeros(RATE*12)
 for at in [.2,2.6]:place(x,old('SuitBreathEffort'),at,gain('SuitBreathEffort',True,1.25)*SFX)
-for at,name in [(5.5,'SuitBreathEffort'),(7.2,'SuitBreathEffort2'),(8.9,'SuitBreathEffort3')]:
-    place(x,new(name),at,gain('SuitBreathEffort',False,1.2)*SFX)
+for at,name in [(5.5,'SuitBreathEffort'),(7.8,'SuitBreathEffort2'),(10.1,'SuitBreathEffort3')]:
+    place(x,new(name),at,gain('SuitBreathEffort',False,1)*SFX)
 reports.append(save('ExhaustedBreathBeforeAfter',x))
 
 x=np.zeros(RATE*7)
@@ -74,6 +74,6 @@ for i in range(3):
 reports.append(save('JumpBeforeAfter',x))
 (OUT/'MovementPreview.json').write_text(json.dumps(dict(mix='Bank mid-range dB; native imported new PCM; default master .8 / SFX .85; existing footsteps trim; no loudness normalization or audition boost.',
     timelines={'FootstepsBeforeAfter':'0–2.6 old running metal+friction; 3.25 new metal; 6.25 new gravel; 9.25 new concrete; 12 turn cloth',
-               'ExhaustedBreathBeforeAfter':'0–4.9 old exhausted breath; 5.5–10.5 new exhausted breath',
+               'ExhaustedBreathBeforeAfter':'0–4.9 old exhausted breath; 5.5–11.74 current controlled heavy breathing',
                'JumpBeforeAfter':'0–2.6 old jumps; 3.7–6.1 new jumps'},files=reports),ensure_ascii=False,indent=2)+'\n')
 print(json.dumps(reports))

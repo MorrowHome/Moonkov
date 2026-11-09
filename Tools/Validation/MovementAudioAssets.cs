@@ -9,6 +9,13 @@ public static class MovementAudioAssets
 {
     [Serializable] public class Row { public string name; public float dbMin, dbMax; public List<string> clips = new List<string>(); }
     [Serializable] public class Report { public List<Row> banks = new List<Row>(); }
+    public static string InstallBreathing()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode");
+        MoonkovRaidAudioSetup.InstallBreathing();
+        var result = MoonkovBreathingAudioChecks.Run(); MoonkovDistressAudioChecks.Run();
+        return result + "; distress checks passed; " + Export();
+    }
     public static string Install()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode");

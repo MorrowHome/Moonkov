@@ -60,9 +60,9 @@ namespace Unity.MP_FPS
             else if (urgency == OxygenUrgency.Low) effort = Mathf.Max(effort, .45f);
             if (state.BreathableAir && effort <= .01f) return default;
             bool exerted = effort >= .45f;
-            float interval = exerted ? Mathf.Lerp(2.6f, 1.7f, Mathf.InverseLerp(.45f, 1, effort)) :
+            float interval = exerted ? Mathf.Lerp(3f, 2.3f, Mathf.InverseLerp(.45f, 1, effort)) :
                 Mathf.Lerp(4.1f, 3.5f, effort / .45f);
-            return new OxygenBreath(true, interval, Mathf.Lerp(.8f, 1.2f, effort), 0, exerted);
+            return new OxygenBreath(true, interval, Mathf.Lerp(.8f, 1f, effort), 0, exerted);
         }
     }
 

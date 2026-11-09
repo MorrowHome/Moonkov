@@ -94,17 +94,19 @@
 重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 、`TacticalFoleySetup.Install()` 与 `MovementFoleySetup.Install()`。
 本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。
 
-## 真人急喘录音
+## 体力粗重呼吸
 
-以下为 CC0 真人录音。保存的是 Freesound 高质量 MP3 预览，不是游戏原声或无损原文件。
+使用 mikeask 的 CC0 吸气、呼气录音，与普通呼吸同源。保留原速度和音高，不使用痛苦喘叫。
 
 | 成品文件 | 用途 | 作者 / 授权 | 录音出处 | 原片段 |
 | --- | --- | --- | --- | --- |
-| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 0.32–1.55 秒 |
-| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort2.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 1.78–2.99 秒 |
-| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav` | 低体力与耗尽体力急喘 | MelvinJaepel / CC0-1.0 | [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/) | 6.25–7.81 秒 |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort.wav` | 低体力与耗尽体力的粗重呼吸 | mikeask / CC0-1.0 | [Breathing Tired](https://opengameart.org/content/breathing-tired) | 0.08–0.72 秒；1.20–1.95 秒 |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort2.wav` | 低体力与耗尽体力的粗重呼吸 | mikeask / CC0-1.0 | [Breathing Tired](https://opengameart.org/content/breathing-tired) | 2.42–3.08 秒；1.20–1.95 秒 |
+| `Assets/Audio/Moonkov/Clips/Raid/SuitBreathEffort3.wav` | 低体力与耗尽体力的粗重呼吸 | mikeask / CC0-1.0 | [Breathing Tired](https://opengameart.org/content/breathing-tired) | 0.06–0.74 秒；1.18–1.98 秒 |
 
-急喘重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。
+重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。
+
+旧 `SourceData/Audio/StaminaBreath/FemaleRunBreath.mp3` 已停用，不再绑定体力呼吸。其来源为 MelvinJaepel 的 CC0 [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/)，保存的是高质量 MP3 预览。
 
 ## 恢复的搜刮提示
 

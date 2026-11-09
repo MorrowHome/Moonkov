@@ -73,12 +73,13 @@ def main():
               '重建：`python3 Tools/Audio/build_game_foley.py`，然后在 Unity 执行 `GameFoleySetup.Install()`、`AirlockButtonAudioSetup.Install()` 、`TacticalFoleySetup.Install()` 与 `MovementFoleySetup.Install()`。',
               '本表登记所有当前主动引入的其他游戏原声。既有 CC0、CC BY 和 Sonniss 素材保留各自原署名文件。', '']
     breath = json.loads((ROOT / 'Assets/Audio/Moonkov/StaminaBreathSources.json').read_text())
-    lines += ['## 真人急喘录音', '', '以下为 CC0 真人录音。保存的是 Freesound 高质量 MP3 预览，不是游戏原声或无损原文件。', '',
+    lines += ['## 体力粗重呼吸', '', '使用 mikeask 的 CC0 吸气、呼气录音，与普通呼吸同源。保留原速度和音高，不使用痛苦喘叫。', '',
               '| 成品文件 | 用途 | 作者 / 授权 | 录音出处 | 原片段 |', '| --- | --- | --- | --- | --- |']
     for clip in breath['clips']:
-        excerpt = '–'.join(f"{v:.2f}" for v in clip['source_excerpt_seconds'])
-        lines.append(f"| `{clip['asset']}` | 低体力与耗尽体力急喘 | {breath['author']} / {breath['license']} | [woman run and breath.wav]({breath['source_page']}) | {excerpt} 秒 |")
-    lines += ['', '急喘重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。', '']
+        excerpt = '；'.join('–'.join(f'{v:.2f}' for v in part) + ' 秒' for part in clip['source_excerpts_seconds'])
+        lines.append(f"| `{clip['asset']}` | 低体力与耗尽体力的粗重呼吸 | {breath['author']} / {breath['license']} | [{breath['title']}]({breath['source_page']}) | {excerpt} |")
+    lines += ['', '重建：`python3 Tools/Audio/build_stamina_breath.py`，然后执行 `MoonkovRaidAudioSetup.InstallBreathing()`。', '',
+              '旧 `SourceData/Audio/StaminaBreath/FemaleRunBreath.mp3` 已停用，不再绑定体力呼吸。其来源为 MelvinJaepel 的 CC0 [woman run and breath.wav](https://freesound.org/people/MelvinJaepel/sounds/435468/)，保存的是高质量 MP3 预览。', '']
     lines += ['## 恢复的搜刮提示', '',
               '| 成品文件 | 用途 | 录音出处 | 原文件 |', '| --- | --- | --- | --- |',
               '| `Clips/Interaction/Container.wav` | 搜刮成功时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |', '',

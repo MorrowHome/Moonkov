@@ -63,11 +63,18 @@ public static class MovementVoiceReview
             await Task.Delay(150); Tick();
             var heavy = Voice("m_BreathSound");
             Check(heavy?.Handle?.IsValid() == true && heavy.SoundDefinition == lib.SuitBreathEffort, "Heavy breath missed immediate transition");
-            Check(Source(heavy).isPlaying && Source(heavy).volume >= .84f && Source(heavy).volume > calmVolume * 2,
-                "Heavy breathing actual source is still too quiet");
+            Check(Source(heavy).isPlaying && Source(heavy).volume >= .4f && Source(heavy).volume <= .55f &&
+                Source(heavy).volume > calmVolume * 1.5f, "Heavy breathing must be present without shouting");
             Check(Source(heavy).pitch == 1 && Source(heavy).spatialBlend == 0, "Panting changed voice pitch or lost close routing");
             for (int n = 0; n < 100; n++) Tick();
             Check(Voice("m_BreathSound") == heavy, "Snapshots restarted panting");
+            var exhaustionTime = System.Diagnostics.Stopwatch.StartNew();
+            while (exhaustionTime.Elapsed.TotalSeconds < 4.1)
+            {
+                await Task.Delay(25); Tick();
+                Check(Voice("m_GroanSound") == null && Voice("m_PainSound") == null,
+                    "Healthy exhaustion played a pain voice");
+            }
             state.BreathableAir = true; state.TacticalSprintStamina = 100; state.TacticalSprintExhausted = false; Tick();
             Check(Voice("m_BreathSound") == null, "Recovery retained panting");
             state.CurrentHealth = 0; Tick(); await Task.Delay(400); system.UpdateSoundSystem(false);

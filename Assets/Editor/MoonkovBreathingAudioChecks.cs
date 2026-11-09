@@ -24,7 +24,8 @@ public static class MoonkovBreathingAudioChecks
             "Lower stamina increases breathing volume");
         Check(fresh.Interval > tired.Interval && tired.Interval > empty.Interval,
             "Lower stamina increases breathing cadence");
-        Check(empty.Exerted && empty.Interval <= 1.8f && empty.Pitch == 0, "Exhaustion uses natural fast panting");
+        Check(empty.Exerted && empty.Interval >= 2.2f && empty.Interval <= 2.5f && empty.Pitch == 0 && empty.Volume <= 1,
+            "Exhaustion uses controlled heavy breathing with space between cycles");
         state.TacticalSprintStamina = 50; state.TacticalSprintExhausted = true;
         Check(MoonkovOxygenFeedback.Breath(state).Interval == empty.Interval, "Exhausted latch retains heavy breathing during initial recovery");
         state.TacticalSprintExhausted = false; state.TacticalSprintStamina = 0;
@@ -85,9 +86,9 @@ public static class MoonkovBreathingAudioChecks
                 "Breathing uses preloaded mono PCM");
         }
         Check(lib.SuitBreathEffort.Clips.Count == 3 && lib.SuitBreathEffort.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast &&
-            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMin >= -3 &&
-            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMin - lib.SuitBreath.PitchAndVolumeInfo.VolumeMax >= 7,
-            "Distinct panting takes must be substantially louder than calm breathing");
+            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMax <= -6 &&
+            lib.SuitBreathEffort.PitchAndVolumeInfo.VolumeMin - lib.SuitBreath.PitchAndVolumeInfo.VolumeMax >= 2,
+            "Heavy breaths should have body above calm breathing without the old near-full-volume gasp");
         return $"PASS: {s_Checks} stamina breathing, continuous cadence, voice priority and asset checks.";
     }
 }

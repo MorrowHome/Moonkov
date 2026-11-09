@@ -40,8 +40,8 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -3
-    VolumeMax: -2
+    VolumeMin: -7
+    VolumeMax: -6
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:

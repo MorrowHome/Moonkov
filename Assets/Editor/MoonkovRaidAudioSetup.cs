@@ -82,7 +82,7 @@ public static class MoonkovRaidAudioSetup
         }
         var lib = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
         lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -10, SoundDef.MixRole.Suit, 0, 1, .3f);
-        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -2, SoundDef.MixRole.Suit, 0, 1, .3f);
+        lib.SuitBreathEffort = Bank("SuitBreathEffort", "SuitBreathEffort", 1, -6, SoundDef.MixRole.Suit, 0, 1, .3f);
         lib.SuitBreathEffort.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Clips/Raid/SuitBreathEffort2.wav"));
         lib.SuitBreathEffort.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Clips/Raid/SuitBreathEffort3.wav"));
         lib.SuitBreathEffort.PlaybackType = SoundDef.PlaybackTypes.RandomNotLast;

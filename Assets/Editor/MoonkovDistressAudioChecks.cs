@@ -24,6 +24,13 @@ public static class MoonkovDistressAudioChecks
         var state = new PredictedPlayerGhost(); RaidHealth.Initialize(ref state); RaidNutrition.Initialize(ref state);
         state.BreathableAir = true; state.Oxygen = 100;
         Require(!MoonkovDistressAudio.PainfulStatus(state), "Healthy status hurts");
+        state.TacticalSprintStamina = 0; state.TacticalSprintExhausted = true;
+        var exhausted = new MoonkovDistressAudio();
+        Require(!MoonkovDistressAudio.PainfulStatus(state) &&
+            !exhausted.Observe(1, true, MoonkovDistressAudio.PainfulStatus(state), false, 0) &&
+            !exhausted.Observe(1, true, MoonkovDistressAudio.PainfulStatus(state), false, 30) && !exhausted.Active,
+            "Healthy exhaustion must never trigger a pain groan");
+        state.TacticalSprintStamina = 100; state.TacticalSprintExhausted = false;
         state.TacticalBleeding = true;
         Require(MoonkovDistressAudio.PainfulStatus(state), "Bleeding at high health is silent");
         var bleeding = new MoonkovDistressAudio();
