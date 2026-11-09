@@ -79,10 +79,14 @@ namespace Unity.MP_FPS
                     if (graph.TryGetSteering(m_Route, m_Body.Motor, goal, m_Clock, out var waypoint)) goal = waypoint;
                     else goal = transform.position;
                 }
-                intent = Vector3.ProjectOnPlane(goal - transform.position, m_Body.Motor.Current.Up).normalized;
+                var motor = m_Body.Motor;
+                Vector3 travel = Vector3.ProjectOnPlane(goal - transform.position, motor.Current.Up);
+                intent = travel.normalized;
                 speed = profile.Speed * m_Body.Scale * (m_Action == AlienAction.Roam ? .35f : .8f);
                 if (profile.Boss && m_Action != AlienAction.Roam) speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
-                if (pause || Vector3.Distance(goal, transform.position) < .7f) speed = 0;
+                if (pause) speed = 0;
+                // The path cursor owns arrival. Keep moving into its tolerance without stepping past the waypoint.
+                else if (!motor.Transitioning) speed = Mathf.Min(speed, travel.magnitude / Mathf.Max(.001f, dt));
             }
             Vector3 facingIntent = m_Action == AlienAction.Windup || profile.IsSpiderBoss && m_Action == AlienAction.Strike ? m_CombatDirection :
                 remembered && m_Visible && (profile.Boss || speed <= .1f) ?

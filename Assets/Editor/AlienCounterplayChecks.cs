@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Unity.Entities;
 using Unity.MP_FPS;
+using Unity.MP_FPS.SpiderLab;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEditor;
@@ -304,6 +305,7 @@ public static partial class AlienEnemyChecks
                 foreach (float height in new[] { 0f, 2f, 3f, 8f }) CheckNearHeightChoice(distance, height, passed);
             CheckArcAndImpact(false, passed); CheckArcAndImpact(true, passed); CheckArcAndImpact(false, passed, true);
             CheckContactPresentation(passed);
+            CheckSurfaceRouteProgress(passed);
             CheckGiantRouteBudget(passed);
             CheckBlockedBallisticCorridor(passed);
             Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
@@ -398,6 +400,37 @@ public static partial class AlienEnemyChecks
             passed.Add(body ? "Low arc body contact: no false face classification" : blocked ? "Low arc: post-lock wall contact + no damage + shared impact snapshot" : "Low arc: canopy cleared + face hit + contact snapshot, <=50 preflight queries");
         }
         finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
+    }
+
+    private static void CheckSurfaceRouteProgress(List<string> passed)
+    {
+        using var world = CounterplayWorld("surface waypoints through a doorway");
+        var holder = new GameObject("Temporary alien doorway");
+        var profile = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Snake.asset"));
+        profile.Approach = AlienApproach.Direct; profile.PatrolRadius = 0; profile.SightRange = 60;
+        var graph = holder.AddComponent<AlienSurfaceNavigation>();
+        const BindingFlags lifecycle = BindingFlags.Instance | BindingFlags.NonPublic;
+        Vector3 origin = new Vector3(-11100, 1000, -11100);
+        try
+        {
+            CounterplayBox(holder.transform, "Floor", origin + new Vector3(0, -.25f, 4), new Vector3(10, .5f, 30));
+            CounterplayBox(holder.transform, "Door left jamb", origin + new Vector3(-3.2f, 1.5f, 0), new Vector3(4.6f, 3, .35f));
+            CounterplayBox(holder.transform, "Door right jamb", origin + new Vector3(3.2f, 1.5f, 0), new Vector3(4.6f, 3, .35f));
+            Require(graph.Bake(new Bounds(origin + new Vector3(0, .5f, 3), new Vector3(4, 1.2f, 19)), .8f, profile.Scale), graph.LastBakeReport);
+            // Edit Mode does not register later graphs through OnEnable.
+            typeof(AlienSurfaceNavigation).GetMethod("OnEnable", lifecycle).Invoke(graph, null);
+            var actor = Alien(holder.transform, world, profile, origin + new Vector3(0, SurfaceMotor.Height * profile.Scale, -4.2f),
+                MultiplayerRole.Server, -22003);
+            Humanoid(holder.transform, world, origin + Vector3.forward * 11, false, 42);
+            Step(actor, 120);
+            Require(actor.transform.position.z > origin.z + 1, "Alien stopped outside the next waypoint's arrival radius.");
+            passed.Add("Surface waypoints: an active chaser passes an actual doorway and advances its route cursor");
+        }
+        finally
+        {
+            typeof(AlienSurfaceNavigation).GetMethod("OnDisable", lifecycle).Invoke(graph, null);
+            Object.DestroyImmediate(holder); Object.DestroyImmediate(profile);
+        }
     }
 
     private static void CheckGiantRouteBudget(List<string> passed)
