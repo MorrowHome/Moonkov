@@ -158,7 +158,7 @@ namespace Unity.MP_FPS
             if (Room != null)
             {
                 GameSettings.Instance.RequestedMode = Room.Mode;
-                if (IsHost) s_PeerRoom?.UpdateRoomCode(Room.Phase == LanRoomPhase.Lobby, Room.Members.Length < Room.Capacity);
+                if (IsHost) s_PeerRoom?.UpdateRoomCode(Room);
             }
             Changed?.Invoke();
         }

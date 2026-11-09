@@ -11,17 +11,32 @@ using Newtonsoft.Json;
 
 namespace Unity.MP_FPS
 {
+    internal sealed class LanRoomListing
+    {
+        public string Id, Name;
+        public bool Clash;
+        public int Members, Capacity;
+    }
+
+    internal sealed class LanJoinApplication
+    {
+        public string Id, Name;
+    }
+
     // Exchanges the same invitation and reply as the clipboard flow over HTTPS.
     // Room state, profiles and game packets use the existing ICE connections.
     internal sealed class LanRoomCode : IDisposable
     {
         private const string Alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
         private static readonly HttpClient s_Http = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
-        { MaxResponseContentBufferSize = 16_384 };
+        { MaxResponseContentBufferSize = 32_768 };
+        private static readonly JsonSerializerSettings s_RequestJson = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
         private sealed class Message
         {
-            public string Code, Token, Attempt, Offer, Reply, Error;
+            public string Code, Token, Attempt, Offer, Reply, Error, Status;
+            public LanRoomListing[] Rooms;
+            public LanJoinApplication[] Applications;
         }
 
         private sealed class SignalException : InvalidOperationException
@@ -34,8 +49,12 @@ namespace Unity.MP_FPS
         private readonly Uri m_Address;
         private readonly string m_Code, m_Token;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
+        private int m_DirectoryRevision;
         public string DisplayCode => m_Code.Insert(4, "-");
         public bool Open { get; set; } = true;
+        public int Members { get; set; } = 1;
+        public bool Listed { get; private set; }
+        public LanJoinApplication[] Applications { get; private set; } = Array.Empty<LanJoinApplication>();
 
         private LanRoomCode(LanPeerRoom room, Uri address, Message registration)
         { m_Room = room; m_Address = address; m_Code = registration.Code; m_Token = registration.Token; }
@@ -50,6 +69,23 @@ namespace Unity.MP_FPS
 
         public void Start() => _ = PollAsync(m_Stop.Token);
 
+        public async Task SetListedAsync(LanRoomSnapshot room, bool listed, CancellationToken ct)
+        {
+            Members = room.Members.Length;
+            object listing = listed ? new { name = room.Name, clash = room.Mode == RaidGameMode.BountyClash, members = Members, capacity = room.Capacity } : null;
+            await PostAsync(m_Address, "publish", new { code = m_Code, listing }, m_Token, ct);
+            m_DirectoryRevision++;
+            Listed = listed;
+            if (!listed) Applications = Array.Empty<LanJoinApplication>();
+        }
+
+        public async Task ReviewAsync(string id, bool approve, CancellationToken ct)
+        {
+            await PostAsync(m_Address, "review", new { code = m_Code, attempt = id, decision = approve ? "approve" : "decline" }, m_Token, ct);
+            m_DirectoryRevision++;
+            Applications = Applications.Where(item => item.Id != id).ToArray();
+        }
+
         private async Task PollAsync(CancellationToken ct)
         {
             try
@@ -60,7 +96,10 @@ namespace Unity.MP_FPS
                     bool open = Open && !m_Room.HasManualOffer;
                     try
                     {
-                        var poll = await HostAsync(new { code = m_Code, open }, ct);
+                        int revision = m_DirectoryRevision;
+                        var poll = await HostAsync(new { code = m_Code, open, listing = Listed ? new { members = Members } : null }, ct);
+                        if (Listed && revision == m_DirectoryRevision)
+                            Applications = poll.Applications ?? Array.Empty<LanJoinApplication>();
                         if (Open && m_Room.CanInvite && poll.Attempt != null) await ExchangeAsync(poll.Attempt, ct);
                     }
                     catch (SignalException ex) when (ex.Reason != "room_closed")
@@ -106,26 +145,48 @@ namespace Unity.MP_FPS
 
         private Task<Message> HostAsync(object body, CancellationToken ct) => PostAsync(m_Address, "host", body, m_Token, ct);
 
-        public static async Task JoinAsync(string input, string playerName, CancellationToken ct)
+        public static async Task<LanRoomListing[]> BrowseAsync(CancellationToken ct) =>
+            (await PostAsync(Address(), "list", new { }, null, ct)).Rooms ?? Array.Empty<LanRoomListing>();
+
+        public static Task JoinAsync(string input, string playerName, CancellationToken ct)
         {
             string code = (input ?? "").Trim().Replace("-", "").ToUpperInvariant();
             if (!ValidCode(code)) throw new InvalidOperationException("请输入 8 位房间码。");
+            return JoinAsync(code, null, playerName, null, ct);
+        }
+
+        public static Task ApplyAsync(string roomId, string playerName, Action<string> progress, CancellationToken ct) =>
+            JoinAsync(null, roomId, playerName, progress, ct);
+
+        private static async Task JoinAsync(string code, string roomId, string playerName, Action<string> progress, CancellationToken ct)
+        {
             var address = Address();
+            bool applying = roomId != null;
             using var wait = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            wait.CancelAfter(TimeSpan.FromSeconds(85));
+            wait.CancelAfter(TimeSpan.FromSeconds(applying ? 185 : 85));
             string token = null;
             try
             {
-                token = (await PostAsync(address, "join", new { code }, null, wait.Token)).Token;
+                token = (await PostAsync(address, applying ? "apply" : "join", new { code, roomId, name = applying ? playerName : null }, null, wait.Token)).Token;
+                wait.Token.ThrowIfCancellationRequested();
                 if (string.IsNullOrEmpty(token)) throw new SignalException("invalid_response");
+                if (applying) progress?.Invoke("等待房主同意…");
+                bool approved = false;
                 while (true)
                 {
-                    var poll = await PostAsync(address, "guest", new { code }, token, wait.Token);
+                    var poll = await PostAsync(address, "guest", new { code, roomId }, token, wait.Token);
+                    wait.Token.ThrowIfCancellationRequested();
+                    if (poll.Status == "declined") throw new SignalException("declined");
+                    if (poll.Status == "approved" && !approved)
+                    {
+                        approved = true;
+                        progress?.Invoke("已同意，正在连接房主…");
+                    }
                     if (poll.Offer != null)
                     {
                         await LanRoomClient.JoinPeerAsync(poll.Offer, playerName, async (reply, replyCt) =>
                         {
-                            await PostAsync(address, "guest", new { code, reply }, token, replyCt);
+                            await PostAsync(address, "guest", new { code, roomId, reply }, token, replyCt);
                         }, wait.Token);
                         token = null; // The host finishes the exchange after taking the reply.
                         return;
@@ -137,7 +198,7 @@ namespace Unity.MP_FPS
             { throw new TimeoutException("加入跨网房间超时，请重试。"); }
             finally
             {
-                if (token != null) _ = BestEffortAsync(address, "guest", new { code, cancel = true }, token);
+                if (token != null) _ = BestEffortAsync(address, "guest", new { code, roomId, cancel = true }, token);
             }
         }
 
@@ -157,7 +218,7 @@ namespace Unity.MP_FPS
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(6));
             using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(address, action));
-            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            request.Content = new StringContent(JsonConvert.SerializeObject(body, s_RequestJson), Encoding.UTF8, "application/json");
             if (token != null) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             try
             {
@@ -177,9 +238,10 @@ namespace Unity.MP_FPS
 
         private static string ErrorText(string reason) => reason switch
         {
-            "room_closed" => "房间码已失效，请向房主获取新码。",
+            "room_closed" => "房间已关闭或开始对局，请向房主确认。",
             "room_busy" => "房间暂时无法加入，请稍后重试。",
-            "attempt_closed" => "这次加入已结束，请重新输入房间码。",
+            "attempt_closed" => "这次加入已结束，请重试。",
+            "declined" => "房主拒绝了加入申请。",
             "busy" => "房间码服务繁忙，请稍后重试。",
             _ => "房间码服务暂不可用，可使用手动邀请。"
         };

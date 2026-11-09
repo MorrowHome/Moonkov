@@ -20,8 +20,9 @@ namespace Unity.MP_FPS.Client
         private readonly Action m_Opened;
         private readonly LanSquadStage m_Squad;
         private readonly IVisualElementScheduledItem m_ViewportRefresh;
-        private CancellationTokenSource m_JoiningPeer;
-        private bool m_Busy, m_Disposed;
+        private CancellationTokenSource m_JoiningPeer, m_SearchRooms;
+        private LanJoinApplication[] m_Applications = Array.Empty<LanJoinApplication>();
+        private bool m_Busy, m_Disposed, m_BrowseLocal;
         private string m_Roster, m_LastRoom;
         private LanRoomPage m_Page;
         private RaidGameMode m_Mode;
@@ -55,7 +56,10 @@ namespace Unity.MP_FPS.Client
             Bind("lanEmptyDirect", () => SelectPage(LanRoomPage.Direct));
             Bind("lanExpedition", () => SelectMode(RaidGameMode.Expedition));
             Bind("lanClash", () => SelectMode(RaidGameMode.BountyClash));
-            Bind("lanRefresh", () => Run(RefreshRooms, "正在寻找附近房间…", "房间列表已更新。"));
+            Bind("lanBrowsePublic", () => SelectDirectory(false));
+            Bind("lanBrowseLocal", () => SelectDirectory(true));
+            Bind("lanRefresh", RefreshRooms);
+            Bind("lanCancelApplication", CancelPeerJoin);
             Bind("lanCreate", () => Run(Create, "正在创建房间…", "房间已创建，邀请成员加入后出发。"));
             m_Root.Q<DropdownField>("lanConnectionType").RegisterValueChangedCallback(_ => Present());
             Bind("lanJoin", () => Run(() => Join(m_Root.Q<TextField>("lanAddress").value.Trim(), m_Root.Q<IntegerField>("lanJoinPort").value), "正在连接房主…", "已加入房间，整理装备后准备出发。"));
@@ -63,6 +67,13 @@ namespace Unity.MP_FPS.Client
                 LanRoomCode.JoinAsync(m_Root.Q<TextField>("lanPeerCode").value, name, ct)), "正在连接房主…", "已加入跨网房间。"));
             Bind("lanPeerJoin", () => Run(() => JoinPeer(JoinPeerManually), "正在获取跨网地址…", "已加入跨网房间。"));
             Bind("lanPeerCancelJoin", CancelPeerJoin);
+            Bind("lanPeerPublish", () =>
+            {
+                var peer = LanRoomClient.PeerRoom;
+                bool publish = !peer.Listed;
+                Run(() => peer.SetListedAsync(LanRoomClient.Room, publish, m_Stop.Token),
+                    "", publish ? "房间已公开。" : "房间已停止公开。");
+            });
             Bind("lanPeerCopyCode", () => Run(async () =>
             {
                 string code = await LanRoomClient.PeerRoom.GetRoomCodeAsync(m_Stop.Token);
@@ -118,11 +129,12 @@ namespace Unity.MP_FPS.Client
             FocusPage();
             if (LanRoomClient.Active && LanRoomClient.Room.Phase == LanRoomPhase.Lobby && AppearancePending())
                 Run(() => LanRoomClient.RequestAsync("appearance", ct: m_Stop.Token), "正在同步角色配置…", "角色配置已更新。");
-            else if (!LanRoomClient.Active && m_Page == LanRoomPage.Browse) Run(RefreshRooms, "正在寻找附近房间…", "房间列表已更新。");
+            else RefreshRooms();
         }
         private void Close()
         {
             if (m_Busy) return;
+            CancelRoomSearch();
             m_Modal.AddToClassList("lan-hidden"); m_ViewportRefresh.Pause(); m_Squad.SetVisible(false); m_Entry.Focus();
         }
         private void Key(KeyDownEvent evt)
@@ -134,7 +146,20 @@ namespace Unity.MP_FPS.Client
             if (!LanRoomClient.Active && m_Page != LanRoomPage.Browse) SelectPage(LanRoomPage.Browse); else Close();
         }
         private void SelectPage(LanRoomPage page)
-        { if (m_Busy) return; m_Page = page; LanRoomPresentation.Page(m_Root, page); FocusPage(); }
+        {
+            if (m_Busy || m_Page == page) return;
+            CancelRoomSearch();
+            m_Page = page; LanRoomPresentation.Page(m_Root, page); FocusPage();
+            RefreshRooms();
+        }
+        private void SelectDirectory(bool local)
+        {
+            if (m_Busy || local == m_BrowseLocal) return;
+            CancelRoomSearch();
+            m_BrowseLocal = local;
+            Status("", false);
+            RefreshRooms();
+        }
         private void FocusPage()
         {
             if (m_Page == LanRoomPage.Create) m_Root.Q<TextField>("lanRoomName").Focus();
@@ -166,7 +191,9 @@ namespace Unity.MP_FPS.Client
         }
         private async void Run(Func<Task> action, string waiting, string success)
         {
-            if (m_Busy || m_Disposed) return; m_Busy = true; Status(waiting, false); Present();
+            if (m_Busy || m_Disposed) return;
+            CancelRoomSearch();
+            m_Busy = true; Status(waiting, false); Present();
             try { await action(); if (!m_Disposed) Status(success, false); }
             catch (OperationCanceledException) { }
             catch (Exception ex) { if (!m_Disposed) Status(ex.Message, true); }
@@ -204,7 +231,7 @@ namespace Unity.MP_FPS.Client
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(m_Stop.Token);
             m_JoiningPeer = stop;
             Present();
-            m_Root.Q<Button>("lanPeerCancelJoin").Focus();
+            m_Root.Q<Button>(m_Page == LanRoomPage.Browse ? "lanCancelApplication" : "lanPeerCancelJoin").Focus();
             try { await join(SaveName(), stop.Token); }
             finally { m_JoiningPeer = null; }
         }
@@ -221,17 +248,54 @@ namespace Unity.MP_FPS.Client
         private void CancelPeerJoin()
         {
             m_JoiningPeer?.Cancel();
-            Status("已取消加入。", false);
+            Status(m_Page == LanRoomPage.Browse ? "已撤回申请。" : "已取消加入。", false);
         }
-        private async Task RefreshRooms()
+        private void CancelRoomSearch()
         {
-            m_Root.Q<Label>("lanRoomCount").text = "搜索中";
-            var rooms = await LanRoomClient.DiscoverAsync(m_Stop.Token);
-            if (m_Disposed) return;
-            LanRoomPresentation.Rooms(m_Root, rooms, room => Run(() =>
+            var search = m_SearchRooms;
+            m_SearchRooms = null;
+            search?.Cancel();
+        }
+        private async void RefreshRooms()
+        {
+            if (m_Disposed || m_Busy || m_Page != LanRoomPage.Browse || m_SearchRooms != null || m_Modal.ClassListContains("lan-hidden")) return;
+            using var search = CancellationTokenSource.CreateLinkedTokenSource(m_Stop.Token);
+            m_SearchRooms = search;
+            LanRoomPresentation.DirectoryHeading(m_Root, m_BrowseLocal, "搜索中");
+            m_Root.Q("lanRooms").AddToClassList("lan-hidden");
+            m_Root.Q("lanEmptyState").AddToClassList("lan-hidden");
+            m_Root.Q("lanRefresh").SetEnabled(false);
+            try
             {
-                var endpoint = room.Address.Split(':'); return Join(endpoint[0], int.Parse(endpoint[1]));
-            }, "正在连接房主…", "已加入房间，整理装备后准备出发。"));
+                if (m_BrowseLocal)
+                {
+                    var rooms = await LanRoomClient.DiscoverAsync(search.Token);
+                    if (m_SearchRooms == search) LanRoomPresentation.Rooms(m_Root, rooms, room => Run(() =>
+                    {
+                        var endpoint = room.Address.Split(':'); return Join(endpoint[0], int.Parse(endpoint[1]));
+                    }, "正在连接房主…", "已加入房间，整理装备后准备出发。"));
+                }
+                else
+                {
+                    var rooms = await LanRoomCode.BrowseAsync(search.Token);
+                    if (m_SearchRooms == search) LanRoomPresentation.PeerRooms(m_Root, rooms, room => Run(() => JoinPeer((name, ct) =>
+                        LanRoomCode.ApplyAsync(room.Id, name, message => Status(message, false), ct)),
+                        "正在发送申请…", "已加入跨网房间。"));
+                }
+            }
+            catch (Exception)
+            {
+                if (m_SearchRooms == search)
+                    LanRoomPresentation.DirectoryEmpty(m_Root, m_BrowseLocal, m_BrowseLocal ? "暂时无法搜索局域网" : "暂时无法加载大厅");
+            }
+            finally
+            {
+                if (m_SearchRooms == search)
+                {
+                    m_SearchRooms = null;
+                    m_Root.Q("lanRefresh").SetEnabled(!m_Busy);
+                }
+            }
         }
         private static string HostAddress()
         {
@@ -262,10 +326,20 @@ namespace Unity.MP_FPS.Client
             m_Squad.Present(active ? LanRoomClient.Room : null, LanRoomClient.MemberId, m_Root.Q<TextField>("lanPlayerName").value,
                 new LobbyAppearance { CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = LanRoomClient.PoseIndex });
             m_Squad.SetVisible(!m_Modal.ClassListContains("lan-hidden"));
-            if (active) m_Page = LanRoomPage.Lobby; else if (m_Page == LanRoomPage.Lobby) m_Page = LanRoomPage.Browse;
+            if (active) m_Page = LanRoomPage.Lobby;
+            else if (m_Page == LanRoomPage.Lobby)
+            {
+                m_Page = LanRoomPage.Browse;
+                m_Root.schedule.Execute(RefreshRooms);
+            }
             LanRoomPresentation.Page(m_Root, m_Page);
             m_Root.Q<TextField>("lanPlayerName").SetEnabled(!active && !m_Busy);
-            foreach (string name in new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab", "lanPeerTab", "lanRefresh", "lanJoin", "lanExpedition", "lanClash", "lanClose" }) m_Root.Q<Button>(name).SetEnabled(!m_Busy);
+            foreach (string name in new[] { "lanBrowseTab", "lanCreateTab", "lanDirectTab", "lanPeerTab", "lanBrowsePublic", "lanBrowseLocal", "lanRooms", "lanJoin", "lanExpedition", "lanClash", "lanClose" })
+                m_Root.Q(name).SetEnabled(!m_Busy);
+            bool applying = m_JoiningPeer != null && m_Page == LanRoomPage.Browse;
+            m_Root.Q("lanRefresh").EnableInClassList("lan-hidden", applying);
+            m_Root.Q("lanRefresh").SetEnabled(!m_Busy && m_SearchRooms == null);
+            m_Root.Q("lanCancelApplication").EnableInClassList("lan-hidden", !applying);
             var connectionType = m_Root.Q<DropdownField>("lanConnectionType");
             connectionType.SetEnabled(!m_Busy);
             m_Root.Q("lanCreatePorts").EnableInClassList("lan-hidden", connectionType.index == 1);
@@ -278,6 +352,7 @@ namespace Unity.MP_FPS.Client
             if (!active)
             {
                 m_Entry.text = "好友联机"; m_Roster = m_LastRoom = null;
+                PresentApplications(Array.Empty<LanJoinApplication>(), false);
                 if (!string.IsNullOrEmpty(LanRoomClient.Error)) Status(LanRoomClient.Error, true);
                 return;
             }
@@ -288,10 +363,15 @@ namespace Unity.MP_FPS.Client
             LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy,
                 peerRoom == null ? HostAddress() : "", roster != m_Roster);
             m_Root.Q("lanAddressInvite").EnableInClassList("lan-hidden", peerRoom != null);
-            m_Root.Q("lanPeerInvite").EnableInClassList("lan-hidden", peerRoom == null || !LanRoomClient.IsHost);
-            if (peerRoom != null)
+            bool peerHost = peerRoom != null && LanRoomClient.IsHost && room.Phase == LanRoomPhase.Lobby;
+            bool canInvite = !m_Busy && room.Phase == LanRoomPhase.Lobby && room.Members.Length < room.Capacity;
+            m_Root.Q("lanPeerInvite").EnableInClassList("lan-hidden", !peerHost);
+            PresentApplications(peerHost ? peerRoom.Applications : Array.Empty<LanJoinApplication>(), canInvite && peerHost && !peerRoom.HasManualOffer);
+            if (peerHost)
             {
-                bool canInvite = !m_Busy && room.Phase == LanRoomPhase.Lobby && room.Members.Length < room.Capacity;
+                var publish = m_Root.Q<Button>("lanPeerPublish");
+                publish.text = peerRoom.Listed ? "停止公开" : "公开到大厅";
+                publish.SetEnabled(!m_Busy && (peerRoom.Listed || canInvite && !peerRoom.HasManualOffer));
                 var copyCode = m_Root.Q<Button>("lanPeerCopyCode");
                 copyCode.text = peerRoom.RoomCode == null ? "复制房间码" : $"复制 {peerRoom.RoomCode}";
                 copyCode.SetEnabled(canInvite && !peerRoom.HasManualOffer);
@@ -313,12 +393,28 @@ namespace Unity.MP_FPS.Client
             if (LanRoomClient.IsHost && peerRoom == null && !LanRoomClient.Server.DiscoveryAvailable) Status("自动发现暂不可用，展开邀请信息，让成员通过 IPv4 加入。", true);
             if (!string.IsNullOrEmpty(LanRoomClient.Error)) Status(LanRoomClient.Error, true);
         }
+        private void PresentApplications(LanJoinApplication[] applications, bool canApprove)
+        {
+            var section = m_Root.Q<Foldout>("lanPeerApplications");
+            var rows = m_Root.Q("lanPeerApplicationRows");
+            bool changed = m_Applications.Length != applications.Length ||
+                m_Applications.Where((previous, i) => previous.Id != applications[i].Id).Any();
+            if (changed)
+            {
+                if (m_Applications.Length == 0) section.SetValueWithoutNotify(true);
+                m_Applications = applications;
+                LanRoomPresentation.Applications(m_Root, applications, (id, approve) => Run(() =>
+                    LanRoomClient.PeerRoom.ReviewAsync(id, approve, m_Stop.Token), "", ""));
+            }
+            rows.SetEnabled(!m_Busy);
+            foreach (var row in rows.Children()) row.Q("lanApplicationApprove").SetEnabled(canApprove);
+        }
         private void Status(string message, bool error)
         { LanRoomPresentation.Status(m_Root, message, error); }
         public void Dispose()
         {
             m_Entry.clicked -= Open; m_Entry.RemoveFromHierarchy();
-            m_Disposed = true; m_Stop.Cancel(); m_ViewportRefresh.Pause(); m_Squad.Dispose(); LanRoomClient.Changed -= Present;
+            m_Disposed = true; CancelRoomSearch(); m_Stop.Cancel(); m_ViewportRefresh.Pause(); m_Squad.Dispose(); LanRoomClient.Changed -= Present;
             m_Host.UnregisterCallback<GeometryChangedEvent>(GeometryChanged); m_Modal.UnregisterCallback<KeyDownEvent>(Key); m_Container.RemoveFromHierarchy();
         }
     }
@@ -346,22 +442,74 @@ namespace Unity.MP_FPS.Client
         }
         public static void Rooms(VisualElement root, LanRoomSnapshot[] rooms, Action<LanRoomSnapshot> join)
         {
-            var list = root.Q<ScrollView>("lanRooms"); list.Clear();
-            bool empty = rooms.Length == 0;
-            list.EnableInClassList("lan-hidden", empty); root.Q("lanEmptyState").EnableInClassList("lan-hidden", !empty);
-            root.Q<Label>("lanRoomCount").text = $"{rooms.Length} 个房间";
-            root.Q<Label>("lanEmptyTitle").text = "暂未发现房间";
-            root.Q<Label>("lanEmpty").text = "确认房主已开房、双方处于同一网络。\n找不到时，可以通过 IP 地址加入。";
+            var list = RoomList(root, true, rooms.Length);
             var template = Resources.Load<VisualTreeAsset>("Moonkov/UI/LanRoomRow");
             foreach (var room in rooms.OrderBy(r => r.Name))
+                RoomRow(list, template, room.Name, $"{ModeName(room.Mode)} / {room.Address}", room.Mode == RaidGameMode.BountyClash,
+                    room.Members.Length, room.Capacity, "加入", () => join?.Invoke(room));
+        }
+        internal static void PeerRooms(VisualElement root, LanRoomListing[] rooms, Action<LanRoomListing> apply)
+        {
+            var list = RoomList(root, false, rooms.Length);
+            var template = Resources.Load<VisualTreeAsset>("Moonkov/UI/LanRoomRow");
+            foreach (var room in rooms)
+                RoomRow(list, template, room.Name, ModeName(room.Clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition),
+                    room.Clash, room.Members, room.Capacity, "申请加入", () => apply?.Invoke(room));
+        }
+        internal static void DirectoryHeading(VisualElement root, bool local, string count)
+        {
+            root.Q("lanBrowsePublic").EnableInClassList("lan-selected", !local);
+            root.Q("lanBrowseLocal").EnableInClassList("lan-selected", local);
+            root.Q<Label>("lanDirectoryTitle").text = local ? "附近的房间" : "跨网大厅";
+            root.Q<Label>("lanRoomCount").text = count;
+        }
+        internal static void DirectoryEmpty(VisualElement root, bool local, string title)
+        {
+            root.Q<Label>("lanRoomCount").text = "";
+            root.Q("lanRooms").AddToClassList("lan-hidden");
+            root.Q("lanEmptyState").RemoveFromClassList("lan-hidden");
+            root.Q<Label>("lanEmptyTitle").text = title;
+            root.Q("lanEmpty").EnableInClassList("lan-hidden", !local);
+            root.Q("lanEmptyDirect").EnableInClassList("lan-hidden", !local);
+        }
+        private static ScrollView RoomList(VisualElement root, bool local, int count)
+        {
+            if (count == 0) DirectoryEmpty(root, local, local ? "暂未发现房间" : "暂无公开房间");
+            else root.Q("lanEmptyState").AddToClassList("lan-hidden");
+            DirectoryHeading(root, local, $"{count} 个房间");
+            var list = root.Q<ScrollView>("lanRooms"); list.Clear();
+            list.EnableInClassList("lan-hidden", count == 0);
+            return list;
+        }
+        private static void RoomRow(ScrollView list, VisualTreeAsset template, string name, string detail, bool clash, int members, int capacity, string action, Action clicked)
+        {
+            var row = template.CloneTree(); list.Add(row);
+            var title = row.Q<Label>("roomName");
+            title.enableRichText = false; title.text = name; title.tooltip = name;
+            row.Q<Label>("roomDetail").text = detail;
+            row.Q<Label>("roomCount").text = $"{members}/{capacity}";
+            row.Q<Label>("roomAction").text = action;
+            row.Q("roomArt").EnableInClassList("lan-clash-art", clash);
+            var button = row.Q<Button>("roomJoin");
+            button.SetEnabled(members < capacity);
+            button.clicked += clicked;
+        }
+        internal static void Applications(VisualElement root, LanJoinApplication[] applications, Action<string, bool> review)
+        {
+            var section = root.Q<Foldout>("lanPeerApplications");
+            section.EnableInClassList("lan-hidden", applications.Length == 0);
+            section.text = $"加入申请 {applications.Length}";
+            var rows = root.Q("lanPeerApplicationRows"); rows.Clear();
+            foreach (var application in applications)
             {
-                var row = template.CloneTree(); list.Add(row);
-                row.Q<Label>("roomName").enableRichText = false; row.Q<Label>("roomName").text = room.Name;
-                row.Q<Label>("roomDetail").text = $"{ModeName(room.Mode)} / {room.Address}";
-                row.Q<Label>("roomCount").text = $"{room.Members.Length}/{room.Capacity}";
-                row.Q("roomArt").EnableInClassList("lan-clash-art", room.Mode == RaidGameMode.BountyClash);
-                row.Q<Button>("roomJoin").SetEnabled(room.Members.Length < room.Capacity);
-                row.Q<Button>("roomJoin").clicked += () => join?.Invoke(room);
+                var row = new VisualElement(); row.AddToClassList("lan-application-row"); rows.Add(row);
+                var name = new Label(application.Name) { enableRichText = false, tooltip = application.Name };
+                name.AddToClassList("lan-application-name"); row.Add(name);
+                var actions = new VisualElement(); actions.AddToClassList("lan-application-actions"); row.Add(actions);
+                var decline = new Button(() => review(application.Id, false)) { text = "拒绝" };
+                decline.AddToClassList("lan-secondary"); actions.Add(decline);
+                var approve = new Button(() => review(application.Id, true)) { name = "lanApplicationApprove", text = "同意" };
+                approve.AddToClassList("lan-primary"); actions.Add(approve);
             }
         }
         public static string ModeName(RaidGameMode mode) => mode == RaidGameMode.BountyClash ? "极速赏金" : "远征";

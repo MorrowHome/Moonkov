@@ -26,37 +26,47 @@ const (
 )
 
 type request struct {
-	Code    string `json:"code"`
-	Attempt string `json:"attempt"`
-	Offer   string `json:"offer"`
-	Reply   string `json:"reply"`
-	Open    bool   `json:"open"`
-	Finish  bool   `json:"finish"`
-	Cancel  bool   `json:"cancel"`
+	Code     string       `json:"code"`
+	RoomID   string       `json:"roomId"`
+	Attempt  string       `json:"attempt"`
+	Offer    string       `json:"offer"`
+	Reply    string       `json:"reply"`
+	Name     string       `json:"name"`
+	Decision string       `json:"decision"`
+	Listing  *roomListing `json:"listing"`
+	Open     bool         `json:"open"`
+	Finish   bool         `json:"finish"`
+	Cancel   bool         `json:"cancel"`
 }
 
 type response struct {
-	Code    string `json:"code,omitempty"`
-	Token   string `json:"token,omitempty"`
-	Attempt string `json:"attempt,omitempty"`
-	Offer   string `json:"offer,omitempty"`
-	Reply   string `json:"reply,omitempty"`
-	Error   string `json:"error,omitempty"`
+	Code         string            `json:"code,omitempty"`
+	Token        string            `json:"token,omitempty"`
+	Attempt      string            `json:"attempt,omitempty"`
+	Offer        string            `json:"offer,omitempty"`
+	Reply        string            `json:"reply,omitempty"`
+	Error        string            `json:"error,omitempty"`
+	Status       string            `json:"status,omitempty"`
+	Rooms        []roomListing     `json:"rooms,omitempty"`
+	Applications []joinApplication `json:"applications,omitempty"`
 }
 
 type attempt struct {
 	id, token, offer, reply string
+	applicant, source       string
+	declined                bool
 	expires                 time.Time
 }
 
 type room struct {
-	owner, source string
-	open          bool
-	expires       time.Time
-	waiting       []*attempt
+	owner, source, directoryID string
+	open                       bool
+	expires                    time.Time
+	waiting, applications      []*attempt
+	listing                    *roomListing
 }
 
-type usage struct{ created, joined int }
+type usage struct{ created, joined, browsed int }
 
 type broker struct {
 	mu          sync.Mutex
@@ -133,7 +143,7 @@ func write(w http.ResponseWriter, status int, value response) {
 	_ = json.NewEncoder(w).Encode(value)
 }
 
-func (b *broker) allow(source string, creating bool, now time.Time) bool {
+func (b *broker) allow(source, operation string, now time.Time) bool {
 	minute := now.Truncate(time.Minute)
 	if minute != b.usageMinute {
 		b.usageMinute, b.sources = minute, make(map[string]usage)
@@ -142,12 +152,18 @@ func (b *broker) allow(source string, creating bool, now time.Time) bool {
 	if !exists && len(b.sources) >= 4096 {
 		return false
 	}
-	if creating {
+	switch operation {
+	case "create":
 		if count.created >= 8 {
 			return false
 		}
 		count.created++
-	} else {
+	case "list":
+		if count.browsed >= 60 {
+			return false
+		}
+		count.browsed++
+	default:
 		if count.joined >= 48 {
 			return false
 		}
@@ -168,7 +184,7 @@ func (b *broker) handle(operation, source, token string, req request, now time.T
 				owned++
 			}
 		}
-		if !b.allow(source, true, now) || owned >= 4 || len(b.rooms) >= roomLimit {
+		if !b.allow(source, operation, now) || owned >= 4 || len(b.rooms) >= roomLimit {
 			return response{Error: "busy"}, http.StatusTooManyRequests
 		}
 		code := roomCode()
@@ -176,36 +192,53 @@ func (b *broker) handle(operation, source, token string, req request, now time.T
 			code = roomCode()
 		}
 		token := key(24)
-		b.rooms[code] = &room{owner: token, source: source, open: true, expires: now.Add(roomLease)}
+		b.rooms[code] = &room{owner: token, source: source, directoryID: key(12), open: true, expires: now.Add(roomLease)}
 		return response{Code: code, Token: token}, http.StatusOK
 	}
 
-	if operation == "join" && !b.allow(source, false, now) {
+	if (operation == "join" || operation == "apply" || operation == "list") && !b.allow(source, operation, now) {
 		return response{Error: "busy"}, http.StatusTooManyRequests
 	}
-	r := b.rooms[req.Code]
+	if operation == "list" {
+		return response{Rooms: b.listRooms(now)}, http.StatusOK
+	}
+	r := b.findRoom(req)
 	if r == nil || !r.expires.After(now) {
-		delete(b.rooms, req.Code)
 		return response{Error: "room_closed"}, http.StatusNotFound
 	}
 	r.expireAttempts(now)
 	switch operation {
 	case "join":
-		if !r.open || len(r.waiting) >= queueLimit {
+		if req.Code == "" || !r.open || len(r.waiting) >= queueLimit {
 			return response{Error: "room_busy"}, http.StatusConflict
 		}
 		a := &attempt{id: key(12), token: key(24), expires: now.Add(joinLease)}
 		r.waiting = append(r.waiting, a)
 		return response{Token: a.token}, http.StatusOK
-	case "host", "close":
-		if !sameToken(r.owner, token) {
+	case "apply":
+		if req.RoomID != r.directoryID || req.Code != "" {
 			return response{Error: "room_closed"}, http.StatusNotFound
 		}
-		if operation == "close" {
+		return r.apply(req.Name, source, now)
+	case "host", "close", "publish", "review":
+		if req.Code == "" || !sameToken(r.owner, token) {
+			return response{Error: "room_closed"}, http.StatusNotFound
+		}
+		switch operation {
+		case "close":
 			delete(b.rooms, req.Code)
 			return response{}, http.StatusOK
+		case "publish":
+			return r.publish(req.Listing)
+		case "review":
+			return r.review(req.Attempt, req.Decision, now)
 		}
 		r.expires, r.open = now.Add(roomLease), req.Open
+		if r.listing != nil && req.Listing != nil {
+			// The heartbeat updates counts for an already published room.
+			// An in-flight heartbeat cannot publish a room again after a hide.
+			r.listing.Members = min(max(req.Listing.Members, 1), r.listing.Capacity)
+		}
 		return r.host(req)
 	case "guest":
 		return r.guest(req, token)
@@ -229,25 +262,37 @@ func sameToken(expected, supplied string) bool {
 	return subtle.ConstantTimeCompare([]byte(expected), []byte(supplied)) == 1
 }
 
-func (r *room) expireAttempts(now time.Time) {
-	kept := r.waiting[:0]
-	for _, a := range r.waiting {
+func liveAttempts(queue []*attempt, now time.Time) []*attempt {
+	kept := queue[:0]
+	for _, a := range queue {
 		if a.expires.After(now) {
 			kept = append(kept, a)
 		}
 	}
-	clear(r.waiting[len(kept):])
-	r.waiting = kept
+	clear(queue[len(kept):])
+	return kept
 }
 
-func (r *room) remove(i int) {
-	last := len(r.waiting) - 1
-	copy(r.waiting[i:], r.waiting[i+1:])
-	r.waiting[last] = nil
-	r.waiting = r.waiting[:last]
+func (r *room) expireAttempts(now time.Time) {
+	r.waiting = liveAttempts(r.waiting, now)
+	r.applications = liveAttempts(r.applications, now)
+}
+
+func removeAttempt(queue []*attempt, i int) []*attempt {
+	last := len(queue) - 1
+	copy(queue[i:], queue[i+1:])
+	queue[last] = nil
+	return queue[:last]
 }
 
 func (r *room) host(req request) (response, int) {
+	if req.Attempt == "" && !req.Finish {
+		result := response{Applications: r.pendingApplications()}
+		if r.open && len(r.waiting) > 0 {
+			result.Attempt = r.waiting[0].id
+		}
+		return result, http.StatusOK
+	}
 	if len(r.waiting) == 0 {
 		if req.Attempt != "" && !req.Finish {
 			return response{Error: "attempt_closed"}, http.StatusNotFound
@@ -257,13 +302,7 @@ func (r *room) host(req request) (response, int) {
 	a := r.waiting[0]
 	if req.Finish {
 		if req.Attempt == a.id {
-			r.remove(0)
-		}
-		return response{}, http.StatusOK
-	}
-	if req.Attempt == "" {
-		if r.open {
-			return response{Attempt: a.id}, http.StatusOK
+			r.waiting = removeAttempt(r.waiting, 0)
 		}
 		return response{}, http.StatusOK
 	}
@@ -285,7 +324,7 @@ func (r *room) guest(req request, token string) (response, int) {
 			continue
 		}
 		if req.Cancel {
-			r.remove(i)
+			r.waiting = removeAttempt(r.waiting, i)
 			return response{}, http.StatusOK
 		}
 		if req.Reply != "" {
@@ -295,9 +334,13 @@ func (r *room) guest(req request, token string) (response, int) {
 			a.reply = req.Reply
 			return response{}, http.StatusOK
 		}
-		return response{Offer: a.offer}, http.StatusOK
+		result := response{Offer: a.offer}
+		if a.applicant != "" {
+			result.Status = "approved"
+		}
+		return result, http.StatusOK
 	}
-	return response{Error: "attempt_closed"}, http.StatusNotFound
+	return r.applicationStatus(req, token)
 }
 
 func main() {

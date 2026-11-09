@@ -50,6 +50,8 @@ namespace Unity.MP_FPS
         public bool HasManualOffer => m_Pending is { ViaCode: false };
         public bool WaitingForManualReply => m_Pending is { ViaCode: false, Confirmed: false };
         public string RoomCode => m_RoomCode?.DisplayCode;
+        public bool Listed => m_RoomCode?.Listed == true;
+        public LanJoinApplication[] Applications => m_RoomCode?.Applications ?? Array.Empty<LanJoinApplication>();
         public string InviteStatus { get; private set; }
 
         public LanPeerRoom(LanRoomServer server, LanPeerIdentity identity)
@@ -84,10 +86,22 @@ namespace Unity.MP_FPS
             }
         }
 
-        public async Task<string> GetRoomCodeAsync(CancellationToken ct)
+        public async Task<string> GetRoomCodeAsync(CancellationToken ct) =>
+            (await GetOrCreateCodeAsync(ct)).DisplayCode;
+
+        public async Task SetListedAsync(LanRoomSnapshot snapshot, bool listed, CancellationToken ct)
+        {
+            var code = await GetOrCreateCodeAsync(ct);
+            await code.SetListedAsync(snapshot, listed, ct);
+        }
+
+        public Task ReviewAsync(string id, bool approve, CancellationToken ct) =>
+            m_RoomCode?.ReviewAsync(id, approve, ct) ?? throw new InvalidOperationException("申请已失效。");
+
+        private async Task<LanRoomCode> GetOrCreateCodeAsync(CancellationToken ct)
         {
             ThrowIfClosed();
-            if (m_RoomCode != null) return m_RoomCode.DisplayCode;
+            if (m_RoomCode != null) return m_RoomCode;
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct, m_Stop.Token);
             var code = await LanRoomCode.CreateAsync(this, stop.Token);
             if (stop.IsCancellationRequested)
@@ -95,15 +109,24 @@ namespace Unity.MP_FPS
                 code.Dispose();
                 stop.Token.ThrowIfCancellationRequested();
             }
+            if (m_RoomCode != null)
+            {
+                code.Dispose();
+                return m_RoomCode;
+            }
             m_RoomCode = code;
             code.Start();
-            return code.DisplayCode;
+            return code;
         }
 
-        public void UpdateRoomCode(bool lobby, bool hasSpace)
+        public void UpdateRoomCode(LanRoomSnapshot snapshot)
         {
-            if (!lobby) CloseRoomCode();
-            else if (m_RoomCode != null) m_RoomCode.Open = hasSpace;
+            if (snapshot.Phase != LanRoomPhase.Lobby) CloseRoomCode();
+            else if (m_RoomCode != null)
+            {
+                m_RoomCode.Members = snapshot.Members.Length;
+                m_RoomCode.Open = m_RoomCode.Members < snapshot.Capacity;
+            }
         }
 
         public void CodeExpired(LanRoomCode code)
