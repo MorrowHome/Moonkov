@@ -6937,6 +6937,11 @@ MonoBehaviour:
     m_Localized: Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.
     m_Metadata:
       m_Items: []
+  - m_Id: 11885064504729600
+    m_Localized: Equip a T-01 Squad tracker in a special slot to see teammates through
+      walls.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -24,6 +24,7 @@
             <ui:VisualElement name="onlineParty" class="online-party squad-glass">
                 <ui:Button name="onlineCopy" text="复制队伍码" class="online-code online-secondary" />
                 <ui:Label name="onlineCount" class="online-count" />
+                <ui:Label name="onlineTrackerTip" text="Equip a T-01 Squad tracker in a special slot to see teammates through walls." class="squad-equipment-tip" picking-mode="Ignore" />
                 <ui:RadioButtonGroup name="onlineTeam" label="队伍" choices="A 队,B 队" value="0" />
                 <ui:ScrollView class="online-room-details" horizontal-scroller-visibility="Hidden">
                     <ui:VisualElement name="onlineJoinRequests" class="online-join-requests" style="display: none;">

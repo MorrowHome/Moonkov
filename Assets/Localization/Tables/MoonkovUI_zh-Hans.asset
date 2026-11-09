@@ -6732,6 +6732,10 @@ MonoBehaviour:
       {2} \u626B\u63CF\u3002"
     m_Metadata:
       m_Items: []
+  - m_Id: 11885064504729600
+    m_Localized: "\u5EFA\u8BAE\u5C06 T-01 \u961F\u53CB\u8BC6\u522B\u5668\u88C5\u5165\u7279\u6B8A\u88C5\u5907\u69FD\uFF0C\u9694\u5899\u4E5F\u80FD\u770B\u89C1\u961F\u53CB\u3002"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

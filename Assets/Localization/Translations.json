@@ -1605,5 +1605,6 @@
   "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. Reloading spends energy per round. Partial charge is retained. Lost on death.": "携带电池 {0}/{1} / 仓库 {2}。\n每块满电电池储存 {3} 能源。换弹按发数消耗能源，剩余能源保留。死亡后丢失。",
   "Storage: {0} cells / Carry limit: {1}. Reloading spends energy per round. Unspent energy returns on extraction.": "仓库电池 {0} / 携带上限 {1}。换弹按发数消耗能源，未使用能源在撤离后返还。",
   "Equip with [{0}] from pockets or an equipped badge. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast and nearby damage can kill the thrower. Move grenades out of backpacks before throwing.": "按 [{0}] 从衣兜或已装备的胸章中取出。投掷后会弹跳，3 秒后释放能量冲击。掩体可阻挡爆炸，近距离也可能炸死自己。背包内的手雷须先移到衣兜或胸章。",
-  "Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.": "按住 {0} 防御，按 {1} 抛出光环，按住 {2} 扫描。"
+  "Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.": "按住 {0} 防御，按 {1} 抛出光环，按住 {2} 扫描。",
+  "Equip a T-01 Squad tracker in a special slot to see teammates through walls.": "建议将 T-01 队友识别器装入特殊装备槽，隔墙也能看见队友。"
 }

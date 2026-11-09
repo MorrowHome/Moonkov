@@ -8,3 +8,4 @@
     overflow: hidden;
 }
 .squad-glass-image { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.squad-equipment-tip { color: #d4d9e0; font-size: 12px; white-space: normal; flex-shrink: 0; margin: 4px 0 8px; }
