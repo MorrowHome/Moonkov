@@ -102,7 +102,7 @@ namespace Unity.MP_FPS
         {
             if (Active || s_Closing || s_PeerRoom != null) throw new InvalidOperationException("请先离开当前房间。");
         }
-        internal static async Task JoinPeerAsync(string text, string playerName, Action<string> replyReady, CancellationToken ct)
+        internal static async Task JoinPeerAsync(string text, string playerName, Func<string, CancellationToken, Task> replyReady, CancellationToken ct)
         {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             ct.ThrowIfCancellationRequested();
@@ -155,7 +155,11 @@ namespace Unity.MP_FPS
         {
             Room = reply.Room ?? Room; MemberId = reply.MemberId ?? MemberId; Ticket = reply.Ticket;
             if (reply.Profile != null) { Profile = reply.Profile; PlayerProfileClient.ApplyLanProfile(); }
-            if (Room != null) GameSettings.Instance.RequestedMode = Room.Mode;
+            if (Room != null)
+            {
+                GameSettings.Instance.RequestedMode = Room.Mode;
+                if (IsHost) s_PeerRoom?.UpdateRoomCode(Room.Phase == LanRoomPhase.Lobby, Room.Members.Length < Room.Capacity);
+            }
             Changed?.Invoke();
         }
         public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
@@ -175,7 +179,7 @@ namespace Unity.MP_FPS
                 LanReply reply;
                 if (server != null)
                 {
-                    if (action == "start" && s_PeerRoom?.HasOffer == true)
+                    if (action == "start" && s_PeerRoom?.HasManualOffer == true)
                         throw new InvalidOperationException("请先完成或取消当前邀请。");
                     reply = await Task.Run(() => server.Handle(request), linked.Token);
                 }

@@ -50,10 +50,13 @@
                             <ui:VisualElement name="lanPeerPage" class="lan-page lan-hidden">
                                 <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden">
                                     <ui:Label text="加入跨网房间" class="lan-section-title" />
-                                    <ui:Label text="先复制房主发来的邀请。" class="lan-copy" />
+                                    <ui:TextField name="lanPeerCode" label="房间码" max-length="16" class="lan-field" />
+                                    <ui:Foldout text="手动邀请" class="lan-advanced" value="false">
+                                        <ui:Button name="lanPeerJoin" text="粘贴邀请并复制回执" class="lan-secondary" />
+                                    </ui:Foldout>
                                 </ui:ScrollView>
                                 <ui:VisualElement class="lan-form-action">
-                                    <ui:Button name="lanPeerJoin" text="粘贴邀请并复制回执" class="lan-primary" />
+                                    <ui:Button name="lanPeerJoinCode" text="加入房间" class="lan-primary" />
                                     <ui:Button name="lanPeerCancelJoin" text="取消加入" class="lan-secondary lan-hidden" />
                                 </ui:VisualElement>
                             </ui:VisualElement>
@@ -82,10 +85,13 @@
                                 <ui:Button name="lanCopy" text="复制 IPv4 地址" class="lan-secondary" />
                             </ui:Foldout>
                             <ui:Foldout name="lanPeerInvite" text="跨网邀请" class="lan-advanced lan-peer-invite lan-hidden" value="true">
-                                <ui:Button name="lanPeerCopy" text="复制邀请" class="lan-secondary" />
-                                <ui:Button name="lanPeerAccept" text="粘贴回执" class="lan-primary lan-hidden" />
-                                <ui:Button name="lanPeerCancelInvite" text="取消邀请" class="lan-quiet lan-hidden" />
-                                <ui:Label name="lanPeerInviteStatus" class="lan-copy lan-hidden" />
+                                <ui:Button name="lanPeerCopyCode" text="复制房间码" class="lan-secondary" />
+                                <ui:Foldout text="手动邀请" class="lan-advanced" value="false">
+                                    <ui:Button name="lanPeerCopy" text="复制邀请" class="lan-secondary" />
+                                    <ui:Button name="lanPeerAccept" text="粘贴回执" class="lan-primary lan-hidden" />
+                                    <ui:Button name="lanPeerCancelInvite" text="取消邀请" class="lan-quiet lan-hidden" />
+                                    <ui:Label name="lanPeerInviteStatus" class="lan-copy lan-hidden" />
+                                </ui:Foldout>
                             </ui:Foldout>
                         </ui:ScrollView>
                     </ui:VisualElement>

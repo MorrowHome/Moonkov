@@ -1,0 +1,22 @@
+[Unit]
+Description=Moonkov friend room signaling
+After=network.target
+
+[Service]
+ExecStart=/usr/local/libexec/moon-friend-signaling
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+Environment=GOMAXPROCS=2
+Environment=GOMEMLIMIT=24MiB
+MemoryMax=64M
+TasksMax=32
+LimitNOFILE=512
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

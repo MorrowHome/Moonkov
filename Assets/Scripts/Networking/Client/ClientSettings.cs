@@ -26,6 +26,7 @@ namespace Unity.MP_FPS
             public string GameServerName;
             public string IceBindAddress;
             public string AccountServiceUrl;
+            public string FriendSignalingUrl;
             public bool? AllowLanHttp;
             public string ServerAddress;
             public int ServerPort;
@@ -52,6 +53,9 @@ namespace Unity.MP_FPS
                         ? JsonConvert.DeserializeObject<Values>(File.ReadAllText(path))
                         : new Values();
                     if (s_Values == null) s_Values = new Values();
+                    if (string.IsNullOrWhiteSpace(s_Values.FriendSignalingUrl) &&
+                        Uri.TryCreate(s_Values.AccountServiceUrl, UriKind.Absolute, out var publicUrl) && publicUrl.Scheme == Uri.UriSchemeHttps)
+                        s_Values.FriendSignalingUrl = new Uri(publicUrl, "/friend-signaling/v1/").AbsoluteUri;
                 }
                 catch (Exception exception)
                 {
@@ -69,6 +73,7 @@ namespace Unity.MP_FPS
                         if (overrides != null)
                         {
                             if (overrides.AccountServiceUrl != null) s_Values.AccountServiceUrl = overrides.AccountServiceUrl;
+                            if (overrides.FriendSignalingUrl != null) s_Values.FriendSignalingUrl = overrides.FriendSignalingUrl;
                             if (overrides.ServerAddress != null) s_Values.ServerAddress = overrides.ServerAddress;
                             if (overrides.GameServerName != null) s_Values.GameServerName = overrides.GameServerName;
                             if (overrides.ServerPort != 0) s_Values.ServerPort = overrides.ServerPort;
@@ -91,6 +96,7 @@ namespace Unity.MP_FPS
         static void Reset() => s_Values = null;
 
         public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
+        public static string FriendSignalingUrl => Configuration.FriendSignalingUrl?.Trim();
         public static string GameServerName => string.IsNullOrWhiteSpace(Configuration.GameServerName) ? null : Configuration.GameServerName.Trim();
         public static string IceBindAddress => Configuration.IceBindAddress?.Trim();
         public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;

@@ -5,12 +5,12 @@
 ## 跨网邀请
 
 1. 双方使用相同游戏版本。房主打开「好友联机 → 创建房间」，将连接方式选为「跨网邀请」，创建房间。开房需要 Windows x64 或 macOS 的 Client+Server 游戏版本。
-2. 房主点击「复制邀请」，通过私聊发给一位朋友。一次处理一位，邀请两分钟内有效。
-3. 朋友复制收到的邀请，在「好友联机 → 跨网加入」点击「粘贴邀请并复制回执」，把剪贴板里的回执发给房主。
-4. 房主复制回执，点击「粘贴回执」。连接成功后，朋友自动加入。要再加人，房主生成下一份邀请。
-5. 成员整理装备并准备，房主出发。结算回房后可以直接开下一局。
+2. 房主点击「复制房间码」，发给朋友。朋友在「好友联机 → 跨网加入」输入同一个码。游戏自动交换连接信息并加入。
+3. 成员整理装备并准备，房主出发。结算回房后可以直接开下一局。再邀请新成员时，房主复制新的房间码。
 
-跨网模式使用公共 STUN 查询地址。房间和战局的 UDP 数据加密直达房主。玩家无需安装 VPN、申请公网 IP 或配置端口映射。部分网络会拦截打洞，连接失败时游戏会提示重试。跨网房间没有中继或自动换线。邀请和回执包含临时连接信息，只通过私聊发给受邀玩家。房主退出后本房间结束。
+VPS 通过 HTTPS 发房间码，并在加入时转交两边的连接信息。公共 STUN 帮玩家查询自己的地址。房间和战局的 UDP 数据加密直达房主。VPS 停机只影响尚未完成交换的房间码加入。部分网络会拦截 UDP 打洞，连接失败时游戏会提示重试。房主退出后本房间结束。
+
+房间码服务不可用时，双方可展开「手动邀请」。房主复制邀请给一位朋友。朋友粘贴邀请并发回生成的回执。房主粘贴回执后，游戏开始打洞。房间码、邀请和回执均应私聊分享。
 
 ## 局域网
 
@@ -33,7 +33,7 @@
 - 玩法共享这位房主的局域网仓库，但装备扣除、死亡损失及赏金队伍奖励由服务器判定。客户端不能上传仓库快照或自行提交结算。
 - 本局入场凭证由房间产生，离开或下一轮后失效；长期客户端身份不能直接绕过房间进入对局。
 - 使用原有持久化 outbox 记录扣装和结算。赏金记录保存完整真人名单，按原队伍人数计奖；多人撤离、重试及重启恢复使用不可变收据，避免重复奖励。没有结算快照的中断远征按丢失装备恢复。
-- 局域网的 TCP 控制连接适用于可信内网。跨网模式关闭 TCP 监听和广播发现。房主为每个房间创建临时证书。成员从邀请取得公钥证书，通过 DTLS 验证房主。房主确认回执后才接受成员。
+- 局域网的 TCP 控制连接适用于可信内网。跨网模式关闭 TCP 监听和广播发现。房主为每个房间创建临时证书。成员从邀请取得公钥证书，通过 DTLS 验证房主。游戏取得匹配的回执后才接受成员。
 
 ## 实现流程
 
@@ -41,13 +41,19 @@
 sequenceDiagram
     participant C as 成员
     participant R as 房主作战室
+    participant V as VPS 房间码服务
     participant G as Netcode 游戏服务器
     participant S as 房主局域网存档
     alt 局域网
         C->>R: 发现 / IPv4 加入
-    else 跨网
-        R-->>C: 私聊发邀请
-        C-->>R: 私聊发回执
+    else 跨网房间码
+        R->>V: 申请房间码
+        R-->>C: 分享房间码
+        C->>V: 输入房间码
+        R->>V: 提交邀请
+        V-->>C: 送达邀请
+        C->>V: 提交回执
+        V-->>R: 送达回执
         C->>R: 加密直连并加入
     end
     R->>S: 按独立客户端身份打开档案
@@ -65,6 +71,14 @@ sequenceDiagram
 主要代码：`Networking/Lan/` 负责轻量房间、发现与局域网档案路由；`LanRaidMode` 选择独立持久化上下文，不改变 `OfflineRaidMode` 的单人限制。`GameManager` 的 `LanHost` / `LanJoin` 复用原有直连创建世界、加载、断开和收据落盘流程。UI 固定结构保留在 `LanRoomPanel.uxml/.uss` 与行模板内，由 `LanRoomView` 绑定动态数据。
 
 跨网邀请同时交换房间和战局的 ICE 地址。房间用可靠消息同步装备与准备。NetCode 每局借用战局 ICE 上下文，回房时释放本局驱动，保留地址和连接。房主本人通过进程内 IPC 加入。公共 STUN 与账号模式沿用同一地址，详见 [P2P 实现](../Tools/Networking/EmbeddedIce/README.md#连接与生命周期)。
+
+## VPS 部署
+
+- `Backend/FriendSignaling` 是独立的 Go 服务。它使用内存保存房间码和临时连接信息，监听 `127.0.0.1:5081`。房主每 1.5 秒检查一次待加入请求。出发和关闭房间时停止检查。加入请求在 60 秒后过期。房主停止检查两分钟后，房间码失效。
+- 在 `Backend/FriendSignaling` 运行 `go test -race ./...`。创建 `../../LocalData` 后，用 `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o ../../LocalData/moon-friend-signaling .` 生成 Linux x64 可执行文件。
+- 把可执行文件安装到 `/usr/local/libexec/moon-friend-signaling`。把同目录的 systemd 文件安装到 `/etc/systemd/system/`。运行 `systemctl daemon-reload` 和 `systemctl enable --now moon-friend-signaling`。先检查回环地址的 `/friend-signaling/v1/health`。
+- 把 Nginx 片段放进 `/etc/nginx/snippets/`。在现有游戏域名的 HTTPS `server` 中引用该片段。执行 `nginx -t`，再重载 Nginx。检查公网的 `/friend-signaling/v1/health`，并核对账号入口的响应。
+- Player 从随包的 `moon-client.local.json` 读取 `FriendSignalingUrl`。未填写时，从该文件的 HTTPS 账号地址取得域名，并使用 `/friend-signaling/v1/`。房间码和账号服务可以使用同一个域名。VPS 本机处理房间码请求。
 
 ## 验证边界
 

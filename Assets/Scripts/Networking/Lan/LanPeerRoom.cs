@@ -18,13 +18,13 @@ namespace Unity.MP_FPS
         private const int ChunkSize = 1024, ChunksPerPeerUpdate = 16;
         private const string StunHost = "stun.cloudflare.com";
         private const double OfferSeconds = 120, JoinSeconds = 45;
-        private const string ConnectFailed = "跨网直连失败。请让房主重新邀请，或换一个网络再试。";
+        private const string ConnectFailed = "跨网直连失败。请重新加入，或换一个网络再试。";
 
         private sealed class Peer
         {
             public int Control, Raid;
             public NetworkConnection Connection;
-            public bool Confirmed, Connected;
+            public bool Confirmed, Connected, ViaCode;
             public double Deadline, FrameDeadline;
             public string Credential;
             public byte[] Incoming, Outgoing;
@@ -40,13 +40,16 @@ namespace Unity.MP_FPS
         private NetworkDriver m_Driver;
         private NetworkPipeline m_Reliable;
         private Peer m_Pending, m_Guest;
+        private LanRoomCode m_RoomCode;
         private string m_Offer, m_OfferId;
-        private bool m_Disposed;
+        private bool m_Disposed, m_Inviting;
 
         public LanPeerIdentity Identity { get; }
         public EmbeddedIceTransport RaidTransport { get; }
-        public bool HasOffer => m_Pending != null;
-        public bool WaitingForReply => HasOffer && !m_Pending.Confirmed;
+        public bool CanInvite => !m_Inviting && m_Pending == null;
+        public bool HasManualOffer => m_Pending is { ViaCode: false };
+        public bool WaitingForManualReply => m_Pending is { ViaCode: false, Confirmed: false };
+        public string RoomCode => m_RoomCode?.DisplayCode;
         public string InviteStatus { get; private set; }
 
         public LanPeerRoom(LanRoomServer server, LanPeerIdentity identity)
@@ -81,14 +84,52 @@ namespace Unity.MP_FPS
             }
         }
 
-        public async Task<string> InviteAsync(CancellationToken ct)
+        public async Task<string> GetRoomCodeAsync(CancellationToken ct)
         {
             ThrowIfClosed();
-            if (WaitingForReply) return m_Offer;
-            if (HasOffer) throw new InvalidOperationException("正在连接受邀玩家。");
-            var peer = await GatherAsync(ct);
+            if (m_RoomCode != null) return m_RoomCode.DisplayCode;
+            using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct, m_Stop.Token);
+            var code = await LanRoomCode.CreateAsync(this, stop.Token);
+            if (stop.IsCancellationRequested)
+            {
+                code.Dispose();
+                stop.Token.ThrowIfCancellationRequested();
+            }
+            m_RoomCode = code;
+            code.Start();
+            return code.DisplayCode;
+        }
+
+        public void UpdateRoomCode(bool lobby, bool hasSpace)
+        {
+            if (!lobby) CloseRoomCode();
+            else if (m_RoomCode != null) m_RoomCode.Open = hasSpace;
+        }
+
+        public void CodeExpired(LanRoomCode code)
+        {
+            if (m_RoomCode == code) CloseRoomCode();
+        }
+
+        private void CloseRoomCode()
+        {
+            var code = m_RoomCode;
+            m_RoomCode = null;
+            code?.Dispose();
+            CancelInvite(viaCode: true);
+        }
+
+        public async Task<string> InviteAsync(CancellationToken ct, bool viaCode = false)
+        {
+            ThrowIfClosed();
+            if (!viaCode && WaitingForManualReply) return m_Offer;
+            if (!CanInvite) throw new InvalidOperationException("正在连接受邀玩家。");
+            Peer peer = null;
+            m_Inviting = true;
             try
             {
+                peer = await GatherAsync(ct);
+                peer.ViaCode = viaCode;
                 m_OfferId = Guid.NewGuid().ToString("N");
                 var invitation = LocalDescription(peer, m_OfferId);
                 invitation.RoomId = m_Server.RoomId;
@@ -97,15 +138,17 @@ namespace Unity.MP_FPS
                 m_Offer = invitation.Encode(reply: false);
                 m_Pending = peer;
                 peer.Deadline = Time.realtimeSinceStartupAsDouble + OfferSeconds;
-                InviteStatus = "已复制，请私聊发给朋友。";
+                if (!viaCode) InviteStatus = "已复制，请私聊发给朋友。";
                 return m_Offer;
             }
-            catch { Drop(peer); throw; }
+            catch { if (peer != null) Drop(peer); throw; }
+            finally { m_Inviting = false; }
         }
 
-        public void AcceptReply(string text)
+        public void AcceptReply(string text, bool viaCode = false)
         {
-            if (!WaitingForReply || Time.realtimeSinceStartupAsDouble >= m_Pending.Deadline)
+            if (m_Pending == null || m_Pending.ViaCode != viaCode || m_Pending.Confirmed ||
+                Time.realtimeSinceStartupAsDouble >= m_Pending.Deadline)
                 throw new InvalidOperationException("邀请已过期，请重新复制邀请。");
             var reply = LanPeerInvitation.Decode(text, reply: true);
             if (reply.Id != m_OfferId) throw new InvalidOperationException("这份回执与当前邀请不匹配。");
@@ -114,22 +157,23 @@ namespace Unity.MP_FPS
             catch { Drop(peer); throw new InvalidOperationException("跨网回执无效，请重新邀请。"); }
             peer.Deadline = Time.realtimeSinceStartupAsDouble + JoinSeconds;
             m_Offer = m_OfferId = null;
-            InviteStatus = "正在连接受邀玩家…";
+            if (!viaCode) InviteStatus = "正在连接受邀玩家…";
         }
 
-        public void CancelInvite()
+        public void CancelInvite(bool viaCode = false)
         {
-            if (m_Pending == null) return;
+            if (m_Pending == null || m_Pending.ViaCode != viaCode) return;
             Drop(m_Pending);
             InviteStatus = null;
         }
 
-        public async Task<LanReply> JoinAsync(LanPeerInvitation invite, LanRequest request, Action<string> replyReady, CancellationToken ct)
+        public async Task<LanReply> JoinAsync(LanPeerInvitation invite, LanRequest request,
+            Func<string, CancellationToken, Task> replyReady, CancellationToken ct)
         {
             m_Guest = await GatherAsync(ct);
             var reply = LocalDescription(m_Guest, invite.Id).Encode(reply: true);
             SetRemote(m_Guest, invite);
-            replyReady(reply);
+            await replyReady(reply, ct);
             double until = Time.realtimeSinceStartupAsDouble + JoinSeconds;
             while (m_Guest?.Connected != true)
             {
@@ -250,7 +294,7 @@ namespace Unity.MP_FPS
                 }
                 catch (Exception)
                 {
-                    if (peer == m_Pending) InviteStatus = peer.Confirmed ? ConnectFailed : "邀请已过期，可以重新复制。";
+                    if (peer == m_Pending && !peer.ViaCode) InviteStatus = peer.Confirmed ? ConnectFailed : "邀请已过期，可以重新复制。";
                     Drop(peer);
                 }
             }
@@ -374,6 +418,7 @@ namespace Unity.MP_FPS
             if (m_Disposed) return;
             m_Disposed = true;
             m_Stop.Cancel();
+            CloseRoomCode();
             try
             {
                 if (m_Driver.IsCreated)
