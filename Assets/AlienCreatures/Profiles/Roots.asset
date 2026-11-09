@@ -21,7 +21,7 @@ MonoBehaviour:
   HearingRange: 14
   MemorySeconds: 8
   PatrolRadius: 5
-  Damage: 26
+  Damage: 36
   AttackReach: 2.6
   Windup: 0.42
   Recovery: 0.55

@@ -15,13 +15,13 @@ MonoBehaviour:
   Species: 9
   Scale: 1
   Health: 440
-  Speed: 4
+  Speed: 6.2
   TurnSpeed: 100
   SightRange: 42
   HearingRange: 16
   MemorySeconds: 11
   PatrolRadius: 8
-  Damage: 42
+  Damage: 52
   AttackReach: 3.1
   Windup: 0.85
   Recovery: 1.1

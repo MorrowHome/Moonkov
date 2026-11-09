@@ -112,8 +112,8 @@ public static class SpiderBossSetup
         boss.LiquidDistance = 16; boss.MaximumLiquidEnemies = 1;
         boss.Gait.forwardLean = 12; boss.Gait.bodyBob = .025f; boss.Gait.roll = 2;
         EditorUtility.SetDirty(boss); AssetDatabase.SaveAssetIfDirty(boss);
-        Demote("Tentacle", "触肢兽", "前方横扫；绕到侧后方反击。", 280, 28, 1, 2.8f);
-        Demote("Roots", "伏根兽", "扎根攻击附近落点；离开预兆位置。", 320, 26, 1.1f, 1.4f);
+        Demote("Tentacle", "触肢兽", "前方横扫；绕到侧后方反击。", 280, 36, 1, 5.6f);
+        Demote("Roots", "伏根兽", "扎根攻击附近落点；离开预兆位置。", 320, 36, 1.1f, 1.4f);
     }
 
     private static void Demote(string asset, string title, string hint, float health, float damage, float scale, float speed)
