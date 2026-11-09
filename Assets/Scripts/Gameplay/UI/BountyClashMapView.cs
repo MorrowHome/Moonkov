@@ -383,6 +383,14 @@ namespace Unity.MP_FPS
             { p.strokeColor = new Color(.75f, .65f, .48f, .65f); p.BeginPath(); p.Arc(ProjectXZ(m_BoundsCenter), m_Radius * Scale, Angle.Degrees(0), Angle.Degrees(360)); p.Stroke(); }
             if (m_Expedition)
             {
+                var furniture = RaidFurnitureLoot.Active;
+                if (ShowSupplies && furniture && furniture.gameObject.scene == m_ExpeditionSource.gameObject.scene)
+                    foreach (var cache in furniture.Drawers)
+                    {
+                        if (cache is not { SupplyCache: true } || !cache.Target || !cache.Target.gameObject.activeInHierarchy) continue;
+                        var point = Project(cache.Position);
+                        if (Inside(point)) RaidMinimapView.DrawRouteCacheMarker(p, point);
+                    }
                 for (int i = 0; ShowSupplies && i < m_Supplies.Length && i < RaidLootContainers.FirstDeathBagId; i++)
                 {
                     var point = Project(m_Supplies[i]); if (!Inside(point)) continue;

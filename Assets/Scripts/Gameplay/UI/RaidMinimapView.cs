@@ -101,6 +101,14 @@ namespace Unity.MP_FPS
                 Line(painter, new Vector2(size.x * i / 4, 0), new Vector2(size.x * i / 4, size.y));
                 Line(painter, new Vector2(0, size.y * i / 4), new Vector2(size.x, size.y * i / 4));
             }
+            var furniture = RaidFurnitureLoot.Active;
+            if (furniture && furniture.gameObject.scene == m_Map.gameObject.scene)
+                foreach (var cache in furniture.Drawers)
+                {
+                    if (cache is not { SupplyCache: true } || !cache.Target || !cache.Target.gameObject.activeInHierarchy) continue;
+                    var point = Project(cache.Position, origin, size);
+                    if (Inside(point, size, 8)) DrawRouteCacheMarker(painter, point);
+                }
             for (int i = 0; i < m_Map.LootPositions.Length && i < RaidLootContainers.FirstDeathBagId; i++)
             {
                 Vector2 point = Project(m_Map.LootPositions[i], origin, size);
@@ -109,12 +117,8 @@ namespace Unity.MP_FPS
                 painter.strokeColor = empty ? new Color(.56f, .6f, .63f, .65f) : SupplyColor;
                 painter.fillColor = new Color(.06f, .07f, .08f, .9f);
                 painter.lineWidth = 1.5f;
-                painter.BeginPath();
-                painter.MoveTo(point + new Vector2(-3, -3));
-                painter.LineTo(point + new Vector2(3, -3));
-                painter.LineTo(point + new Vector2(3, 3));
-                painter.LineTo(point + new Vector2(-3, 3));
-                painter.ClosePath(); painter.Fill(); painter.Stroke();
+                Square(painter, point, 3);
+                painter.Fill(); painter.Stroke();
                 if (empty) Line(painter, point + new Vector2(-3, 3), point + new Vector2(3, -3));
             }
             var stations = OxygenRefillZone.ActiveZones;
@@ -158,6 +162,23 @@ namespace Unity.MP_FPS
 
         private static bool Inside(Vector2 point, Vector2 size, float padding) =>
             point.x >= padding && point.y >= padding && point.x <= size.x - padding && point.y <= size.y - padding;
+
+        private static void Square(Painter2D painter, Vector2 point, float radius)
+        {
+            painter.BeginPath();
+            painter.MoveTo(point + new Vector2(-radius, -radius));
+            painter.LineTo(point + new Vector2(radius, -radius));
+            painter.LineTo(point + new Vector2(radius, radius));
+            painter.LineTo(point + new Vector2(-radius, radius));
+            painter.ClosePath();
+        }
+
+        internal static void DrawRouteCacheMarker(Painter2D painter, Vector2 point)
+        {
+            painter.strokeColor = SupplyColor; painter.lineWidth = 1.25f;
+            Square(painter, point, 2.75f);
+            painter.Stroke();
+        }
 
         internal static void DrawOxygenMarker(Painter2D painter, Vector2 point)
         {
