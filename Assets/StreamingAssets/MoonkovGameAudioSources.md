@@ -113,3 +113,15 @@
 | `Clips/Interaction/Container.wav` | 搜刮成功时的原开箱提示 | Jake Fielding / Sonniss GDC 2024，[原包授权](https://sonniss.com/gdc-bundle-license/) | `Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav` |
 
 此文件恢复原有音色。不是其他游戏原声，也不是 CC0。保留既有 `Assets/Audio/Moonkov/Sources.json` 的来源与哈希记录。
+
+## 死亡长惨叫
+
+声：びたちー素材館。采用原作者的日式少女角色录音，不是 CC0，也不是游戏拆包原声。
+
+| 成品文件 | 用途 | 作者 / 授权 | 录音出处 | 原片段 |
+| --- | --- | --- | --- | --- |
+| `Assets/Audio/Moonkov/Clips/PlayerDeath/PlayerDeath.wav` | 玩家死亡长惨叫 | びたちー（びたみんちぃ） / 作者免费素材条款（须署名，非 CC0，不可单独再分发） | [悲鳴７ きゃーーーー / 少女的悲鳴２](http://www.vita-chi.net/sec/voi/hora/voivoi1.htm) | 0.94–4.03 秒 |
+
+[作者使用条款](http://www.vita-chi.net/sozai1.htm)：作品内使用须署名，不可单独再分发素材。原文件仅放本地缓存。
+
+保留原音高和速度。重建：`python3 Tools/Audio/build_player_death.py`；绑定与音量在 `MoonkovAudioSetup` 的 `Death` 行。下载出处、成品哈希和处理步骤见 `Assets/Audio/Moonkov/PlayerDeathSources.json`。

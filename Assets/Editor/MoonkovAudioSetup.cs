@@ -79,8 +79,9 @@ public static class MoonkovAudioSetup
                   Clips = new[] { "Character/LandA.wav", "Character/LandB.wav" } },
         new Row { Name = "Hit", Mixer = Mixer.SFX, Spatial = 1f, Db = -13f, Range = 20f,
                   SpreadDb = 2f, PitchCents = 50f, Clips = new[] { "Character/Hit.wav" } },
-        new Row { Name = "Death", Mixer = Mixer.SFX, Spatial = 1f, Db = -12f, Range = 26f,
-                  SpreadDb = 2f, PitchCents = 50f, Clips = new[] { "Character/Death.wav" } },
+        // Full recorded dying cry. Keep its natural pitch and complete tail.
+        new Row { Name = "Death", Mixer = Mixer.SFX, Spatial = 1f, Db = -2f, Range = 26f,
+                  SpreadDb = 1f, PitchCents = 0f, Clips = new[] { "PlayerDeath/PlayerDeath.wav" } },
         new Row { Name = "RegolithFootsteps", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -19f, Range = 10f,
                   SpreadDb = 2.5f, PitchCents = 70f,
                   Clips = new[] { "Character/RegolithStep1.wav", "Character/RegolithStep2.wav",
@@ -350,10 +351,11 @@ public static class MoonkovAudioSetup
 
             bool ambience = path.Contains("/Ambience/");
             bool ui = path.Contains("/UI/");
+            bool deathVoice = path.Contains("/PlayerDeath/");
 
             var settings = importer.defaultSampleSettings;
             settings.loadType = ambience ? AudioClipLoadType.Streaming : AudioClipLoadType.DecompressOnLoad;
-            settings.compressionFormat = AudioCompressionFormat.Vorbis;
+            settings.compressionFormat = deathVoice ? AudioCompressionFormat.PCM : AudioCompressionFormat.Vorbis;
             settings.quality = .85f;
             settings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
             settings.sampleRateOverride = 48000;
@@ -361,6 +363,12 @@ public static class MoonkovAudioSetup
             importer.defaultSampleSettings = settings;
             importer.forceToMono = !ambience && !ui;
             importer.loadInBackground = ambience;
+            if (deathVoice)
+            {
+                var serialized = new SerializedObject(importer);
+                serialized.FindProperty("m_Normalize").boolValue = false;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
             importer.SaveAndReimport();
         }
     }

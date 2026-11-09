@@ -1,0 +1,27 @@
+{
+  "author": "びたちー（びたみんちぃ）",
+  "title": "悲鳴７ きゃーーーー / 少女的悲鳴２",
+  "license": "作者免费素材条款（须署名，非 CC0，不可单独再分发）",
+  "license_url": "http://www.vita-chi.net/sozai1.htm",
+  "credit": "声：びたちー素材館",
+  "source_page": "http://www.vita-chi.net/sec/voi/hora/voivoi1.htm",
+  "download": "http://www.vita-chi.net/sec/voi/hora/9_kyaaa.wav",
+  "download_date": "2026-11-09",
+  "source": "LocalData/DeathVoiceReview/9_kyaaa.wav",
+  "source_sha256": "0aeac9c11599328c85af77883b2b8b25d739379a4a25453fe1b203eab7bb954f",
+  "source_format": "Original downloadable WAV from the voice performer; raw source stays in local rebuild cache.",
+  "processing": "Original pitch/speed; HP80/LP11000; gentle 2:1 peak compression; DC removal; 10 ms entrance / 80 ms tail fades; RMS target 0.18 / peak cap 0.8; 48 kHz mono PCM16.",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerDeath/PlayerDeath.wav",
+      "source_excerpt_seconds": [
+        0.94,
+        4.03
+      ],
+      "seconds": 3.09,
+      "peak": 0.5164101133970221,
+      "rms": 0.18,
+      "sha256": "0d9751234496ed055e79510c951c28dcc85397da9981d36276f053a295246132"
+    }
+  ]
+}

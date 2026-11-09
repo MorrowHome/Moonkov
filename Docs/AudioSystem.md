@@ -1,5 +1,14 @@
 # Moonkov 音效系统
 
+## 2026-11-09 少女死亡长叫
+
+- `Death` 改为びたちー素材館的「悲鳴７ きゃーーーー / 少女的悲鳴２」。3.09 秒，保留原音高和速度。旧 `Character/Death.wav` 是 0.8 秒血肉撞击，保留文件但不再用于死亡人声。
+- 音库从 -14 至 -12 dB 提至 -3 至 -2 dB。源文件去直流、轻压峰值、淡入淡出，成品 RMS 为 0.18、峰值约 0.516。新增 PCM 约 0.30 MB。保持原声音池、26 米听距与 8 个并发上限，不增加常驻组件。
+- 绑定由 `MoonkovAudioSetup` 的 `Death` 行重建，使用预加载单声道 PCM，关闭 Normalize。`CorpseVisual` 只在新死亡时触发，独立声音不随角色或尸体销毁而截断。旧尸体静音。
+- 原作者使用条款要求署名，不是 CC0。原 WAV 仅缓存到 `LocalData/DeathVoiceReview`。重建入口为 `Tools/Audio/build_player_death.py`；下载地址、裁剪和哈希在 `PlayerDeathSources.json`；逐文件署名统一写入 `Assets/StreamingAssets/MoonkovGameAudioSources.md`。
+- 试听为 `LocalData/GameAudioReview/Previews/DeathAnimeVoice.wav`。按默认主音量 0.8、音效 0.85 和音库中间值 -2.5 dB 导出，没有额外试听增益。最终声线以用户试听为准。
+- 单 Editor 编译通过。`Tools/Validation/DeathVoiceReview.cs` 的 7 项原生音源检查通过，覆盖真实尸体触发、增益与原调、模型清理后尾音、播至片尾、旧尸体静音和音源回收。使用隔离 Play 场景，没有联机或整局混音验收。
+
 ## 2026-11-09 恢复搜刮开箱提示
 
 - `Container` 恢复旧 `Clips/Interaction/Container.wav`，时长 1.216 秒。已对照替换前的 Git 版本，WAV 内容一致。保留现有 -13 至 -12 dB，导入为预加载单声道 PCM。
