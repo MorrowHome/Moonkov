@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -57,8 +58,15 @@ namespace Unity.MP_FPS.Client
             m_HintScale = scale;
             m_Hint.style.fontSize = 14 * scale;
         }
-        private void PresentAnimation() => m_Backdrop.Present(
-            GameSettings.Instance.GameState == GlobalGameState.Loading, HalosTerminalBackdrop.PrefersReducedMotion);
+        private void PresentAnimation()
+        {
+            bool loading = GameSettings.Instance.GameState == GlobalGameState.Loading;
+            if (loading)
+                MoonkovLocalization.Set(m_Hint, "Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.",
+                    RaidKeyBindings.DisplayName(RaidKey.Defense), RaidKeyBindings.DisplayName(RaidKey.DeployHalo),
+                    RaidKeyBindings.DisplayName(RaidKey.Scan));
+            m_Backdrop.Present(loading, HalosTerminalBackdrop.PrefersReducedMotion);
+        }
 
         private void OnDisable()
         {

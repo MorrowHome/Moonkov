@@ -6900,6 +6900,10 @@ MonoBehaviour:
       kill the thrower. Move grenades out of backpacks before throwing.
     m_Metadata:
       m_Items: []
+  - m_Id: 11885046423085056
+    m_Key: Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

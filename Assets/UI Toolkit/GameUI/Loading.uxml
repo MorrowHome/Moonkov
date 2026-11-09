@@ -10,7 +10,7 @@
             <ui:VisualElement name="ProgressBarLayout" class="halos-loading-progress" picking-mode="Ignore">
                 <ui:Label name="LoadingStatus" />
                 <ui:ProgressBar high-value="1" value="0" picking-mode="Ignore" />
-                <ui:Label name="LoadingHint" text="Hold T to defend. Press U to deploy halo." class="halos-loading-hint" picking-mode="Ignore" />
+                <ui:Label name="LoadingHint" class="halos-loading-hint" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
