@@ -43,7 +43,7 @@ namespace Unity.MP_FPS.Client
         public event Action HaloModificationRequested;
         public event Action<VisualElement> HaloWorkshopShowing;
 
-        public MoonkovTerminal(VisualElement root, Action prepare)
+        public MoonkovTerminal(VisualElement root, Action prepare, Action<string> revealStorageItem = null)
         {
             m_Root = root; m_Prepare = prepare; root.AddToClassList("moonkov-terminal");
             root.AddToClassList("archive-ui");
@@ -90,7 +90,7 @@ namespace Unity.MP_FPS.Client
             m_Windows = new TerminalWindows(root, () => Navigate(0));
             m_Home = new HalosMainRoom(root, Navigate);
             Navigate(0); m_Ready = true;
-            m_Tutorial = new TutorialMenuView(root, Navigate);
+            m_Tutorial = new TutorialMenuView(root, () => Navigate(1), () => Navigate(4, 4), revealStorageItem);
         }
         public void Present(string player, int dust, int alloy, int cells, bool busy)
         {
@@ -98,18 +98,21 @@ namespace Unity.MP_FPS.Client
             m_Player = player; m_Dust = dust; m_Alloy = alloy; m_Cells = cells; m_Busy = busy;
             if (changed && m_Page != 1) Render();
         }
-        public void Navigate(int page)
+        public void Navigate(int page) => Navigate(page, null);
+
+        private void Navigate(int page, int? operationStep)
         {
             Navigating?.Invoke(); DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
             bool roomTransition = page == 0 || m_Page == 0;
             if (page == 0) m_Home.Show(m_Page != 0);
             else m_Home.Hide();
-            if (page == 4 && m_Page != 4) m_OperationStep = 0;
+            if (page == 4 && (m_Page != 4 || operationStep.HasValue)) m_OperationStep = operationStep ?? 0;
             if (page != 5) { CloseResearchTasks(); m_FacilityRecords = false; }
             m_Page = page; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
+            m_Tutorial?.Refresh();
             ApplyPageTheme();
             for (int i = 0; i < m_Tabs.Count; i++)
             {

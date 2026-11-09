@@ -412,6 +412,14 @@ namespace Unity.MP_FPS.Client
             var def=InventoryCatalog.Get(item.Code); tile.style.left=item.X*cell; tile.style.top=item.Y*cell;
             tile.style.width=(item.Rotated ? def.Height : def.Width)*cell; tile.style.height=(item.Rotated ? def.Width : def.Height)*cell;
         }
+        internal void RevealStorageItem(string id)
+        {
+            var item = m_Graph?.Find(id);
+            if (!m_Stash || item?.Parent != InventoryCatalog.Stash || m_Drag != null || !m_Tiles.TryGetValue(id, out var tile)) return;
+            tile.GetFirstAncestorOfType<ScrollView>()?.ScrollTo(tile);
+            Describe(item);
+        }
+
         private void Describe(InventoryItem item)
         {
             m_SelectedItemId = item.Id;

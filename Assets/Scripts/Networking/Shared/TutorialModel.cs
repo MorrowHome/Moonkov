@@ -22,9 +22,9 @@ namespace Unity.MP_FPS.Campaign
         public const int Equipped = 1, Cells = 2, Medicine = 4, Moved = 8, Looked = 16, Aimed = 32, Fired = 64;
         public const int AllSteps = 127;
         public static readonly string[] Introduction = {
-            "Theophilus 研究站失联。你是受雇前来的清理员，负责检查设施、核实人员情况，并带回封存样本。",
-            "沈禾：我留在作业船，保障通信和回程。先检查装备。进入研究站以后，一步一步来。",
-            "顾衡：先在 MC00 入口登记，再检查备用供电和取样装置。样本取出后保持封存，带回作业船。"
+            "Theophilus Research Station has gone silent. Inspect the facility, check on the crew, and bring back a sealed sample.",
+            "Shen He on comms. I'll stay aboard to keep communications open and get you home. Check your gear first.",
+            "Gu Heng on comms. Register at the MC00 entrance, then check the backup power and the sampler. Keep the sample sealed and bring it back to the ship."
         };
         public static string Validate(TutorialProgress state) => state == null || state.Version != 1 ||
             !Enum.IsDefined(typeof(TutorialStatus), state.Status) || state.IntroPage < 0 || state.IntroPage > Introduction.Length ||

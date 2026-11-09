@@ -41,6 +41,14 @@
 #halosOriginalHome .halos-room-hit:hover,
 #halosOriginalHome .halos-room-hit:active { background-color: transparent; }
 #halosOriginalHome.halos-keyboard-focus .halos-room-hit:focus { border-width: 2px; border-color: #dce7f2; }
+.halos-room-caption {
+    position: absolute; height: 42px; translate: -50% 0;
+    margin: 0; padding: 0 12px;
+    background-color: rgba(17, 19, 24, 0.92); color: #f1f2ed;
+    font-size: 32px; -unity-text-align: middle-center;
+}
+#halosOriginalHome .halos-room-hit:hover .halos-room-caption,
+#halosOriginalHome .halos-room-hit:focus .halos-room-caption { background-color: #243754; }
 .halos-room-edge { position: absolute; top: 0; bottom: 0; width: 200px; }
 .halos-room-left { left: 0; }
 .halos-room-right { right: 0; }

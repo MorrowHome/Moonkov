@@ -6909,6 +6909,81 @@ MonoBehaviour:
       walls.
     m_Metadata:
       m_Items: []
+  - m_Id: 12059956416077824
+    m_Key: NEW PLAYER TRAINING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437952
+    m_Key: TRAINING PRACTICE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437953
+    m_Key: GEAR UP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437954
+    m_Key: CHECK BEFORE DEPLOYING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437955
+    m_Key: CLOSE BRIEFING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437956
+    m_Key: SKIP TUTORIAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437957
+    m_Key: CLAIM TRAINING SUPPLIES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437958
+    m_Key: END PRACTICE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437959
+    m_Key: Practice complete. Return to your main profile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437960
+    m_Key: Equip a halo and pack a battery and an injector.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437961
+    m_Key: Drag a halo from storage to its weapon slot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437962
+    m_Key: Move a charged battery into a pocket.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437963
+    m_Key: Move a medical injector into a pocket.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437964
+    m_Key: Your kit is ready. Register at the MC00 entrance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437965
+    m_Key: Theophilus Research Station has gone silent. Inspect the facility, check
+      on the crew, and bring back a sealed sample.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437966
+    m_Key: Shen He on comms. I'll stay aboard to keep communications open and get
+      you home. Check your gear first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12059956445437967
+    m_Key: Gu Heng on comms. Register at the MC00 entrance, then check the backup
+      power and the sampler. Keep the sample sealed and bring it back to the ship.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12061497235595264
+    m_Key: LOCATE ITEM
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

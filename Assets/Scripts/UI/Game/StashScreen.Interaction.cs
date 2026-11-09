@@ -40,7 +40,7 @@ namespace Unity.MP_FPS.Client
             m_DragGhost = new VisualElement { pickingMode = PickingMode.Ignore };
             m_DragGhost.AddToClassList("stash-drag-ghost"); m_DragGhost.style.display = DisplayStyle.None; m_Root.Add(m_DragGhost);
             m_Root.RegisterCallback<KeyDownEvent>(ItemKey, TrickleDown.TrickleDown);
-            m_Terminal = new MoonkovTerminal(m_Root, m_OnPrepare);
+            m_Terminal = new MoonkovTerminal(m_Root, m_OnPrepare, id => m_Containers?.RevealStorageItem(id));
             m_Terminal.Navigating += CancelDrag;
             m_Root.Q<Label>(className: "stash-footer-hint").text = "DRAG / MOVE     R / ROTATE     CTRL + CLICK / EQUIP     ESC / BACK";
             m_Root.Q<Label>(className: "stash-inspect-help").text = "Drag to arrange · R to rotate\nDouble click to inspect · Right click for actions";

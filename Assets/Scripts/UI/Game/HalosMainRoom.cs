@@ -71,7 +71,19 @@ namespace Unity.MP_FPS.Client
                 monitor.Image = Sprite(m_World, art.name, new Rect(art.room * 1920 + art.x, art.y, art.width, art.height));
                 monitor.Button = new Button(() => Open(art.page)) { name = "halosRoomPage" + art.page, tooltip = MoonkovLocalization.Text(PageNames[art.page]) };
                 monitor.Button.AddToClassList("halos-room-hit");
-                Place(monitor.Button, new Rect(art.room * 1920 + art.hitX, art.hitY, art.hitWidth, art.hitHeight));
+                float hitHeight = art.hitHeight;
+                if (art.page is 1 or 4 or 5)
+                {
+                    var caption = new Label { pickingMode = PickingMode.Ignore };
+                    caption.AddToClassList("halos-room-caption");
+                    caption.style.left = art.x + art.width * .5f - art.hitX;
+                    float captionTop = art.y + art.height + 3 - art.hitY;
+                    caption.style.top = captionTop;
+                    hitHeight = Mathf.Max(hitHeight, captionTop + 42);
+                    monitor.Button.Add(caption);
+                    MoonkovLocalization.Set(caption, art.page == 4 ? "PREPARE RAID" : PageNames[art.page]);
+                }
+                Place(monitor.Button, new Rect(art.room * 1920 + art.hitX, art.hitY, art.hitWidth, hitHeight));
                 monitor.Button.RegisterCallback<PointerEnterEvent>(_ => monitor.Pointed = true);
                 monitor.Button.RegisterCallback<PointerLeaveEvent>(_ => monitor.Pointed = false);
                 monitor.Button.RegisterCallback<FocusInEvent>(_ => monitor.Focused = true);
