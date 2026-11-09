@@ -7,8 +7,10 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEditor.Localization;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -120,6 +122,17 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProc
         if (!addressables || addressables.BuildAddressablesWithPlayerBuild != AddressableAssetSettings.PlayerBuildOption.BuildWithPlayer)
             errors.Add("Addressables must build with the Player for the selected target, independently of host preferences.");
         if (!addressables) return;
+        var fontTables = LocalizationEditorSettings.GetAssetTableCollection(Unity.MP_FPS.MoonkovLocalization.Fonts);
+        foreach (var locale in LocalizationEditorSettings.GetLocales())
+        {
+            var table = fontTables?.GetTable(locale.Identifier) as AssetTable;
+            var guid = table?.GetEntry("UI")?.Guid;
+            var entry = string.IsNullOrEmpty(guid) ? null : addressables.FindAssetEntry(guid);
+            var schema = entry?.parentGroup?.GetSchema<BundledAssetGroupSchema>();
+            if (entry == null || string.IsNullOrEmpty(entry.AssetPath) ||
+                schema is not { IncludeInBuild: true, IncludeGUIDInCatalog: true })
+                errors.Add($"Register the {locale.Identifier.Code} UI font in an Addressables group that includes GUIDs in the build catalog.");
+        }
         foreach (var group in addressables.groups.Where(group => group != null && group.Name.Any(c => c > 127)))
         {
             var schema = group.GetSchema<BundledAssetGroupSchema>();
