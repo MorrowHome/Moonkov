@@ -133,13 +133,13 @@ namespace Unity.MP_FPS
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             var rightRail = m_Root.Q<ScrollView>("raidRightRail");
             rightRail.Add(m_Root.Q("raidExtractionPanel"));
+            m_TaskPanel = m_Root.Q("raidTaskPanel");
+            m_TaskPanel.Insert(0, m_Root.Q("raidMinimap"));
             var supplementary = m_Root.Q("raidSupplementaryHud");
-            supplementary.Add(m_Root.Q("raidMinimap"));
             supplementary.Add(m_Root.Q("raidStatus"));
             supplementary.Add(m_Root.Q(className: "raid-cargo-instrument"));
             supplementary.Add(m_Root.Q("raidSurveyReadout"));
             supplementary.Add(m_Root.Q("raidReceipt"));
-            m_TaskPanel = m_Root.Q("raidTaskPanel");
             m_TaskToggle = m_Root.Q<Button>("raidTaskToggle");
             m_TaskToggle.clicked += ToggleTasks;
             SetTasksCollapsed(false);
@@ -231,7 +231,10 @@ namespace Unity.MP_FPS
                  m_CampaignHud != null && !m_CampaignHud.ClassListContains("campaign-hidden") ||
                  m_ResearchList != null && m_ResearchList.style.display == DisplayStyle.Flex ||
                  m_ExtractionPanel.ClassListContains("is-visible"));
-            m_TaskPanel.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
+            bool showMinimap = m_Minimap.Visible;
+            m_TaskPanel.EnableInClassList("has-minimap", showMinimap);
+            m_TaskPanel.style.display = !m_ClashMode && (visible || showMinimap) ? DisplayStyle.Flex : DisplayStyle.None;
+            m_TaskToggle.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             m_ClashView.Tasks.style.display = visible && m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible && Application.isFocused && RaidKeyBindings.Pressed(RaidKey.Status) &&
                 !Client.QuickSlotBindings.Typing(m_Root.panel?.focusController.focusedElement as VisualElement))
@@ -550,7 +553,7 @@ namespace Unity.MP_FPS
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
             CloseLootWhenIdle();
-            m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
+            UpdateMinimap(alive && ready && !settled && !clash);
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
             bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
                 !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&

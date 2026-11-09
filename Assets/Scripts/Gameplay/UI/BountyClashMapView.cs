@@ -421,11 +421,25 @@ namespace Unity.MP_FPS
 
         private void DrawSurface(MeshGenerationContext context)
         {
-            if (!HasSurface) return;
+            if (!TryGetSatellite(out var texture, out var worldXZ)) return;
+            var topLeft = ProjectXZ(new Vector2(worldXZ.xMin, worldXZ.yMax));
+            var bottomRight = ProjectXZ(new Vector2(worldXZ.xMax, worldXZ.yMin));
+            DrawSatellite(context, texture, topLeft, bottomRight);
+        }
+
+        internal bool TryGetSatellite(out Texture2D texture, out Rect worldXZ)
+        {
+            texture = m_Surface;
+            worldXZ = default;
+            if (!texture) return false;
             float half = m_SurfaceData.span * .5f;
-            var topLeft = ProjectXZ(new Vector2(m_SurfaceData.centerX - half, m_SurfaceData.centerZ + half));
-            var bottomRight = ProjectXZ(new Vector2(m_SurfaceData.centerX + half, m_SurfaceData.centerZ - half));
-            var mesh = context.Allocate(4, 6, m_Surface);
+            worldXZ = new Rect(m_SurfaceData.centerX - half, m_SurfaceData.centerZ - half, m_SurfaceData.span, m_SurfaceData.span);
+            return true;
+        }
+
+        internal static void DrawSatellite(MeshGenerationContext context, Texture2D texture, Vector2 topLeft, Vector2 bottomRight)
+        {
+            var mesh = context.Allocate(4, 6, texture);
             Color32 tint = Color.white;
             mesh.SetNextVertex(new Vertex { position = new Vector3(topLeft.x, topLeft.y, Vertex.nearZ), tint = tint, uv = new Vector2(0, 1) });
             mesh.SetNextVertex(new Vertex { position = new Vector3(bottomRight.x, topLeft.y, Vertex.nearZ), tint = tint, uv = new Vector2(1, 1) });

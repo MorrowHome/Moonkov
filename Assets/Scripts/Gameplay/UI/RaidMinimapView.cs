@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS
@@ -10,112 +8,76 @@ namespace Unity.MP_FPS
     public sealed class RaidMinimapView : IDisposable
     {
         public const float HalfRange = 120f;
-        private const float CaptureInterval = .2f;
+        private const float ReadoutInterval = .2f;
         private static readonly Color SupplyColor = new Color(.91f, .73f, .46f);
         private static readonly Color ExitColor = new Color(.62f, .88f, .73f);
-        private readonly VisualElement m_Panel, m_Overlay;
-        private readonly Image m_Image;
+        private readonly VisualElement m_Panel, m_Overlay, m_Backdrop;
         private readonly Label m_Distance, m_Signal;
-        private readonly UniversalRenderPipeline.SingleCameraRequest m_Request = new UniversalRenderPipeline.SingleCameraRequest();
-        private Camera m_Camera;
-        private RenderTexture m_Target;
+        private Texture2D m_Surface;
+        private Rect m_SurfaceXZ;
         private MoonRaidMap m_Map;
-        private Vector3 m_Position, m_CapturePosition;
+        private Vector3 m_Position;
         private Vector2 m_Forward = Vector2.up;
         private ulong m_TakenMask;
-        private float m_NextCapture;
-        private bool m_HasCapture, m_RenderUnavailable;
+        private float m_NextReadout;
+        public bool Visible => m_Panel.style.display == DisplayStyle.Flex;
 
         public RaidMinimapView(VisualElement root)
         {
             m_Panel = root.Q("raidMinimap");
             m_Overlay = root.Q("raidMinimapOverlay");
-            m_Image = root.Q<Image>("raidMinimapImage");
+            m_Backdrop = root.Q("raidMinimapImage");
             m_Distance = root.Q<Label>("raidMinimapDistance");
             m_Signal = root.Q<Label>("raidMinimapSignal");
-            m_Image.scaleMode = ScaleMode.StretchToFill;
+            m_Backdrop.generateVisualContent += DrawSurface;
             m_Overlay.generateVisualContent += Draw;
         }
 
         public void Hide()
         {
-            m_Panel.style.display = DisplayStyle.None;
-            m_NextCapture = 0;
+            if (Visible) m_Panel.style.display = DisplayStyle.None;
+            m_NextReadout = 0;
         }
 
-        public void Present(MoonRaidMap map, Vector3 position, Vector3 forward, ulong takenMask)
+        public void Present(MoonRaidMap map, BountyClashMapView tacticalMap, Vector3 position, Vector3 forward, ulong takenMask)
         {
             if (!map || m_Panel.panel == null) { Hide(); return; }
-            m_Panel.style.display = DisplayStyle.Flex;
-            if (m_Map != map) { m_HasCapture = false; m_NextCapture = 0; }
-            m_Map = map;
+            if (!Visible) m_Panel.style.display = DisplayStyle.Flex;
+            bool changedMap = m_Map != map;
+            if (changedMap)
+            {
+                m_Map = map;
+                tacticalMap.TryGetSatellite(out m_Surface, out m_SurfaceXZ);
+                MoonkovLocalization.Set(m_Signal, m_Surface ? "SATELLITE" : "SURFACE / NO IMAGE");
+                m_NextReadout = 0;
+            }
+            bool moved = position.x != m_Position.x || position.z != m_Position.z;
+            bool changedLoot = takenMask != m_TakenMask;
             m_Position = position;
             m_TakenMask = takenMask;
             var heading = new Vector2(forward.x, forward.z);
-            if (heading.sqrMagnitude > .001f) m_Forward = heading.normalized;
-            if (Time.unscaledTime >= m_NextCapture)
+            if (heading.sqrMagnitude <= .001f) heading = m_Forward;
+            else heading.Normalize();
+            bool turned = heading != m_Forward;
+            m_Forward = heading;
+            bool refresh = Time.unscaledTime >= m_NextReadout;
+            if (refresh)
             {
-                m_NextCapture = Time.unscaledTime + CaptureInterval;
-                Capture();
+                m_NextReadout = Time.unscaledTime + ReadoutInterval;
                 Vector3 delta = map.NearestExtraction(position) - position;
                 MoonkovLocalization.Set(m_Distance, "EXIT / {0:0} m", new Vector2(delta.x, delta.z).magnitude);
-                MoonkovLocalization.Set(m_Signal, m_RenderUnavailable ? "SURFACE / NO IMAGE" : "SURFACE / LIVE");
             }
-            m_Overlay.MarkDirtyRepaint();
+            if (changedMap || moved) m_Backdrop.MarkDirtyRepaint();
+            if (changedMap || moved || turned || changedLoot || refresh) m_Overlay.MarkDirtyRepaint();
         }
 
-        private void Capture()
+        private void DrawSurface(MeshGenerationContext context)
         {
-            if (m_RenderUnavailable) return;
-            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
-            {
-                m_RenderUnavailable = true;
-                return;
-            }
-            if (!m_Camera)
-            {
-                var go = new GameObject("Raid minimap camera") { hideFlags = HideFlags.HideAndDontSave };
-                go.transform.SetParent(m_Map.transform, false);
-                m_Camera = go.AddComponent<Camera>();
-                m_Camera.enabled = false;
-                m_Camera.orthographic = true;
-                m_Camera.orthographicSize = HalfRange;
-                m_Camera.aspect = 1;
-                m_Camera.nearClipPlane = .5f;
-                m_Camera.farClipPlane = 1600f;
-                m_Camera.clearFlags = CameraClearFlags.SolidColor;
-                m_Camera.backgroundColor = new Color(.06f, .075f, .09f);
-                m_Camera.allowHDR = false;
-                m_Camera.allowMSAA = false;
-                m_Camera.useOcclusionCulling = false;
-                var data = m_Camera.GetUniversalAdditionalCameraData();
-                data.renderShadows = false;
-                data.renderPostProcessing = false;
-                data.volumeLayerMask = 0;
-                data.requiresColorOption = CameraOverrideOption.Off;
-                data.requiresDepthOption = CameraOverrideOption.Off;
-                if (!RenderPipeline.SupportsRenderRequest(m_Camera, m_Request))
-                {
-                    m_RenderUnavailable = true;
-                    return;
-                }
-                m_Target = new RenderTexture(256, 256, 24, RenderTextureFormat.ARGB32)
-                {
-                    name = "Raid minimap 256", hideFlags = HideFlags.HideAndDontSave,
-                    filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp
-                };
-                m_Target.Create();
-                m_Image.image = m_Target;
-                m_Request.destination = m_Target;
-            }
-            // Surface overview: fixed north-up. UI and first-person overlays never enter this camera.
-            m_Camera.cullingMask = ~LayerMask.GetMask("UI", "FirstPersonOverlay", "ServerPlayer", "ClientPlayer");
-            m_Camera.transform.SetPositionAndRotation(m_Position + Vector3.up * 650f, Quaternion.Euler(90, 0, 0));
-            RenderPipeline.SubmitRenderRequest(m_Camera, m_Request);
-            // Project against the captured origin so moving markers stay aligned between terrain refreshes.
-            m_CapturePosition = m_Position;
-            m_HasCapture = true;
-            m_Image.MarkDirtyRepaint();
+            var size = m_Backdrop.contentRect.size;
+            if (!m_Surface || size.x < 1 || size.y < 1) return;
+            var topLeft = Project(new Vector3(m_SurfaceXZ.xMin, 0, m_SurfaceXZ.yMax), m_Position, size);
+            var bottomRight = Project(new Vector3(m_SurfaceXZ.xMax, 0, m_SurfaceXZ.yMin), m_Position, size);
+            BountyClashMapView.DrawSatellite(context, m_Surface, topLeft, bottomRight);
         }
 
         /// <summary>North (+Z) is up; the same square projection is used for terrain and all markers.</summary>
@@ -130,7 +92,7 @@ namespace Unity.MP_FPS
             Vector2 size = m_Overlay.contentRect.size;
             if (!m_Map || size.x < 1 || size.y < 1) return;
             var painter = context.painter2D;
-            Vector3 origin = m_HasCapture ? m_CapturePosition : m_Position;
+            Vector3 origin = m_Position;
             painter.lineWidth = 1;
             painter.strokeColor = new Color(.8f, .86f, .9f, .13f);
             for (int i = 1; i < 4; i++)
@@ -207,16 +169,8 @@ namespace Unity.MP_FPS
         public void Dispose()
         {
             m_Overlay.generateVisualContent -= Draw;
-            m_Image.image = null;
-            if (m_Camera) Destroy(m_Camera.gameObject);
-            if (m_Target) { m_Target.Release(); Destroy(m_Target); }
-            m_Camera = null; m_Target = null;
-        }
-
-        private static void Destroy(UnityEngine.Object value)
-        {
-            if (Application.isPlaying) UnityEngine.Object.Destroy(value);
-            else UnityEngine.Object.DestroyImmediate(value);
+            m_Backdrop.generateVisualContent -= DrawSurface;
+            m_Surface = null;
         }
     }
 }

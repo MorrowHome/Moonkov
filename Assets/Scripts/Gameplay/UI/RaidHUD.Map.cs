@@ -62,6 +62,20 @@ namespace Unity.MP_FPS
                 Utils.SetCursorVisible(m_InventoryVisible || m_MissionDetailsVisible || m_WasSettled || m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen);
             }
         }
+        private void UpdateMinimap(bool available)
+        {
+            if (!available || m_TutorialConfigured || !MapPlayable || !MoonRaidMap.Active || m_MapOpen ||
+                m_InventoryVisible || m_MissionDetailsVisible || m_CampaignJournalVisible || m_FieldRecordOpen || ChatInputBlocked)
+            {
+                m_Minimap.Hide();
+                return;
+            }
+            var pose = m_PlayerQuery.GetSingleton<LocalTransform>();
+            var controller = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().ControllerState;
+            var forward = Quaternion.Euler(0, controller.YawDegrees + controller.FreeLookOffset.x, 0) * Vector3.forward;
+            m_Minimap.Present(MoonRaidMap.Active, m_ClashView.Map, pose.Position, forward, m_Snapshot.TakenMask);
+        }
+
         private void UpdateRaidMap(bool clash)
         {
             if (m_RaidMap == null) return;
