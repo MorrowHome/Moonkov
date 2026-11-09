@@ -1,4 +1,3 @@
-using Unity.Properties;
 using Unity.MP_FPS.Client;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -40,13 +39,7 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Bind(root);
             GameInput.Actions.UI.TogglePauseMenu.performed += TogglePauseMenuVisibility;
             GameSettings.Instance.propertyChanged += PauseStateChanged;
-
-            root.SetBinding("style.display", new DataBinding
-            {
-                dataSource = GameSettings.Instance,
-                dataSourcePath = new PropertyPath(GameSettings.PauseMenuStylePropertyName),
-                bindingMode = BindingMode.ToTarget,
-            });
+            root.style.display = GameSettings.Instance.PauseMenuStyle;
           
             m_ResumeButton = root.Q<Button>(UIElementNames.ResumeButton);
             m_ResumeButton.clicked += OnResumePressed;
@@ -123,6 +116,9 @@ namespace Unity.MP_FPS
 
         void PauseStateChanged(object sender, BindablePropertyChangedEventArgs evt)
         {
+            if (evt.propertyName != GameSettings.PauseMenuStylePropertyName) return;
+
+            m_Root.style.display = GameSettings.Instance.PauseMenuStyle;
             if (!GameSettings.Instance.IsPauseMenuOpen && m_SettingsVisible) CloseSettings(false);
         }
 
