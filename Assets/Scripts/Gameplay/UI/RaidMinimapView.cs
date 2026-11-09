@@ -11,6 +11,7 @@ namespace Unity.MP_FPS
         private const float ReadoutInterval = .2f;
         private static readonly Color SupplyColor = new Color(.91f, .73f, .46f);
         private static readonly Color ExitColor = new Color(.62f, .88f, .73f);
+        internal static readonly Color OxygenColor = new Color32(76, 204, 230, 255);
         private readonly VisualElement m_Panel, m_Overlay, m_Backdrop;
         private readonly Label m_Distance, m_Signal;
         private Texture2D m_Surface;
@@ -116,6 +117,14 @@ namespace Unity.MP_FPS
                 painter.ClosePath(); painter.Fill(); painter.Stroke();
                 if (empty) Line(painter, point + new Vector2(-3, 3), point + new Vector2(3, -3));
             }
+            var stations = OxygenRefillZone.ActiveZones;
+            for (int i = 0; i < stations.Count; i++)
+            {
+                var station = stations[i];
+                if (!station || station.gameObject.scene != m_Map.gameObject.scene) continue;
+                var point = Project(station.transform.position, origin, size);
+                if (Inside(point, size, 8)) DrawOxygenMarker(painter, point);
+            }
             int nearest = m_Map.NearestExtractionIndex(m_Position);
             for (int i = 0; i < m_Map.ExtractionCount; i++)
             {
@@ -149,6 +158,16 @@ namespace Unity.MP_FPS
 
         private static bool Inside(Vector2 point, Vector2 size, float padding) =>
             point.x >= padding && point.y >= padding && point.x <= size.x - padding && point.y <= size.y - padding;
+
+        internal static void DrawOxygenMarker(Painter2D painter, Vector2 point)
+        {
+            painter.strokeColor = OxygenColor; painter.fillColor = new Color(.04f, .11f, .13f, .96f);
+            painter.lineWidth = 2;
+            painter.BeginPath(); painter.Arc(point, 6, Angle.Degrees(0), Angle.Degrees(360));
+            painter.Fill(); painter.Stroke();
+            painter.fillColor = OxygenColor;
+            painter.BeginPath(); painter.Arc(point, 1.8f, Angle.Degrees(0), Angle.Degrees(360)); painter.Fill();
+        }
 
         private static void Line(Painter2D painter, Vector2 a, Vector2 b)
         {

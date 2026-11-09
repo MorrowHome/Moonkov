@@ -24,7 +24,7 @@ namespace Unity.MP_FPS
         private Vector2 m_SupplyMin, m_SupplyMax;
         private ulong m_TakenMask;
         private readonly List<ClashParticipantRpc> m_Friends = new List<ClashParticipantRpc>(3);
-        private readonly Label m_ExitA, m_ExitB, m_You, m_Scale, m_NearestLabel, m_PinLabel, m_CacheLabel;
+        private readonly Label m_ExitA, m_ExitB, m_You, m_Scale, m_NearestLabel, m_PinLabel, m_CacheLabel, m_OxygenLabel;
         private Vector2 m_Pin;
         private int m_Nearest = -1;
         public bool HasPin { get; private set; }
@@ -74,6 +74,8 @@ namespace Unity.MP_FPS
             Add(m_ExitA); Add(m_ExitB); Add(m_You);
             m_NearestLabel = MapLabel(""); m_PinLabel = MapLabel("PIN");
             Add(m_NearestLabel); Add(m_PinLabel);
+            m_OxygenLabel = MapLabel("O₂"); m_OxygenLabel.style.color = RaidMinimapView.OxygenColor; Add(m_OxygenLabel);
+            m_OxygenLabel.style.display = DisplayStyle.None;
             m_CacheLabel = MapLabel(""); Add(m_CacheLabel);
             m_Scale = MapLabel(""); m_Scale.RemoveFromClassList("raid-map-marker-label"); m_Scale.AddToClassList("raid-map-scale"); Add(m_Scale);
             RegisterCallback<GeometryChangedEvent>(_ => Changed());
@@ -310,6 +312,7 @@ namespace Unity.MP_FPS
             if (m_Expedition && m_Nearest >= 0 && m_Supplies != null && Vector2.Distance(Project(m_Local), Project(m_Supplies[m_Nearest])) < 90)
                 m_NearestLabel.style.top = Project(m_Supplies[m_Nearest]).y + 14;
             if (HasPin && Vector2.Distance(Project(m_Local), ProjectXZ(m_Pin)) < 90) m_PinLabel.style.top = ProjectXZ(m_Pin).y - 30;
+            PlaceOxygenLabel();
             for (int i = 0; i < m_Landmarks.Count; i++)
             {
                 var landmark = m_SurfaceData.landmarks[i];
@@ -329,6 +332,26 @@ namespace Unity.MP_FPS
             float height = float.IsFinite(size.y) && size.y > 0 ? size.y : 24;
             label.style.left = Mathf.Clamp(label.style.left.value.value, 8, Mathf.Max(8, contentRect.width - width - 8));
             label.style.top = Mathf.Clamp(label.style.top.value.value, 8, Mathf.Max(8, contentRect.height - height - 44));
+        }
+        private void PlaceOxygenLabel()
+        {
+            Vector3 closest = default;
+            float distance = float.PositiveInfinity;
+            if (m_ExpeditionSource)
+            {
+                var stations = OxygenRefillZone.ActiveZones;
+                for (int i = 0; i < stations.Count; i++)
+                {
+                    var station = stations[i];
+                    if (!station || station.gameObject.scene != m_ExpeditionSource.gameObject.scene) continue;
+                    var position = station.transform.position;
+                    float candidate = (XZ(position) - XZ(m_Local)).sqrMagnitude;
+                    if (candidate >= distance || !Inside(Project(position))) continue;
+                    closest = position; distance = candidate;
+                }
+            }
+            Place(m_OxygenLabel, closest, float.IsFinite(distance));
+            ClampLabel(m_OxygenLabel);
         }
         private static void Line(Painter2D p, Vector2 a, Vector2 b)
         { p.BeginPath(); p.MoveTo(a); p.LineTo(b); p.Stroke(); }
@@ -374,6 +397,14 @@ namespace Unity.MP_FPS
                 for (int i = 0; i < m_ExpeditionSource.ExtractionCount; i++)
                     if (m_ExpeditionSource.TryExtractionPosition(i, out var exit) && Inside(Project(exit)))
                     { Dot(p, Project(exit), 7, Color.white); Dot(p, Project(exit), 5, new Color(.16f, .57f, .32f)); }
+                var stations = OxygenRefillZone.ActiveZones;
+                for (int i = 0; i < stations.Count; i++)
+                {
+                    var station = stations[i];
+                    if (!station || station.gameObject.scene != m_ExpeditionSource.gameObject.scene) continue;
+                    var point = Project(station.transform.position);
+                    if (Inside(point)) RaidMinimapView.DrawOxygenMarker(p, point);
+                }
             }
             else
             {

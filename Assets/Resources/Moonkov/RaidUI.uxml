@@ -30,6 +30,7 @@
             <ui:VisualElement class="raid-minimap-legend" picking-mode="Ignore">
                 <ui:Label text="YOU" class="raid-minimap-you" picking-mode="Ignore" />
                 <ui:Label text="SUPPLY" class="raid-minimap-supply" picking-mode="Ignore" />
+                <ui:Label text="O₂" class="raid-minimap-oxygen" picking-mode="Ignore" />
                 <ui:Label text="EXIT" class="raid-minimap-exit" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:Label name="raidMinimapDistance" class="raid-minimap-distance" picking-mode="Ignore" />

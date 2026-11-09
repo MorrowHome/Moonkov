@@ -10,6 +10,7 @@
 .raid-ui .raid-minimap-legend Label { font-size: 12px; margin: 0; white-space: nowrap; }
 .raid-ui .raid-minimap-you { color: #f1f2ed; }
 .raid-ui .raid-minimap-supply { color: #e9bb75; }
+.raid-ui .raid-minimap-oxygen { color: #4ccce6; }
 .raid-ui .raid-minimap-exit { color: #9fe0ba; }
 .raid-ui .raid-minimap-distance { margin: 6px 0 0 0; font-size: 12px; color: #b6d3ba; white-space: nowrap; }
 /* Keep survival warnings and extraction clear of the surface instrument. */

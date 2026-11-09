@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
     public sealed class OxygenRefillZone : MonoBehaviour
     {
         private static readonly List<OxygenRefillZone> s_Zones = new List<OxygenRefillZone>();
+        internal static IReadOnlyList<OxygenRefillZone> ActiveZones => s_Zones;
         [SerializeField, Min(0)] private float m_RefillPerSecond = 10;
         [SerializeField] private bool m_Powered = true;
         [SerializeField] private bool m_RequiresBreathableAir = true;
