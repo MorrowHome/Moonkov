@@ -3,7 +3,6 @@ using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS
@@ -113,7 +112,7 @@ namespace Unity.MP_FPS
             { m_MeleePendingRequest = 0; MeleeNotice("Melee unavailable. Waiting for connection."); }
             bool typing = QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
             if (MeleeNeedsCancellation && !MeleeCancelPending && (!active || !QuickAlive || PointerRequested ||
-                GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !typing && Keyboard.current?.xKey.wasPressedThisFrame == true))
+                GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !typing && RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel)))
                 SendMelee(MeleeAction.Cancel);
         }
         private string MeleeCaption()

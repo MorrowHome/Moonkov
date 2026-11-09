@@ -28,6 +28,6 @@
             <ui:SliderInt name="haloAimStrength" low-value="0" high-value="800" />
         </ui:VisualElement>
         <ui:Button name="haloLightReset" text="RESTORE DEFAULTS" />
-        <ui:Label text="Release L to close. Tap L to switch the light. Changes are saved automatically." class="halo-light-hint" />
+        <ui:Label name="haloLightHint" class="halo-light-hint" />
     </ui:VisualElement>
 </ui:UXML>

@@ -1,9 +1,9 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Unity.MP_FPS
 {
@@ -21,7 +21,7 @@ namespace Unity.MP_FPS
             m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 &&
             (!m_ClashMode || m_Clash is { Approved: true, HasSnapshot: true } && m_Clash.Snapshot.Connected &&
                 m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive);
-        private bool MapKeyPressed => !ChatInputBlocked && Application.isFocused && Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame &&
+        private bool MapKeyPressed => !ChatInputBlocked && Application.isFocused && RaidKeyBindings.Pressed(RaidKey.Map) &&
             !Client.QuickSlotBindings.Typing(m_Root?.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement);
         // Input delegates run before this HUD's LateUpdate. Reserve the opening M frame,
         // and the closing frame, so wheel/click/look cannot slip through before UI toggles.

@@ -12,7 +12,7 @@ namespace Unity.MP_FPS.Client
         private readonly DollSingerHaloAim m_Halo;
         private readonly Slider m_Range, m_AimRange;
         private readonly SliderInt m_Idle, m_Aim;
-        private readonly Label m_RangeValue, m_AimRangeValue, m_IdleValue, m_AimValue, m_Status;
+        private readonly Label m_RangeValue, m_AimRangeValue, m_IdleValue, m_AimValue, m_Status, m_Hint;
         private readonly Button m_IdleTab, m_AimTab, m_Reset;
         private bool m_Visible;
         private uint m_LastSettings = uint.MaxValue;
@@ -33,6 +33,7 @@ namespace Unity.MP_FPS.Client
             m_AimRangeValue = m_Root.Q<Label>("haloAimRangeValue");
             m_RangeValue = m_Root.Q<Label>("haloRangeValue"); m_IdleValue = m_Root.Q<Label>("haloIdleValue");
             m_AimValue = m_Root.Q<Label>("haloAimValue"); m_Status = m_Root.Q<Label>("haloLightStatus");
+            m_Hint = m_Root.Q<Label>("haloLightHint");
             m_IdleTab = m_Root.Q<Button>("haloIdleTab"); m_AimTab = m_Root.Q<Button>("haloAimTab");
             m_Reset = m_Root.Q<Button>("haloLightReset");
             m_IdleTab.clicked += PreviewIdle; m_AimTab.clicked += PreviewAim; m_Reset.clicked += Reset;
@@ -48,6 +49,9 @@ namespace Unity.MP_FPS.Client
             bool visible = m_Input && m_Input.LightAdjusting;
             m_Root.EnableInClassList("halo-hidden", !visible);
             if (!visible) { m_Visible = false; return; }
+            if (!m_Visible)
+                MoonkovLocalization.Set(m_Hint, "Release {0} to close. Tap {0} to switch the light. Changes are saved automatically.",
+                    RaidKeyBindings.DisplayName(RaidKey.Light));
             if (!m_Visible || m_LastSettings != m_Input.LightingSettings)
             {
                 m_LastSettings = m_Input.LightingSettings;

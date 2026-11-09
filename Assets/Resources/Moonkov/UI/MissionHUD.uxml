@@ -7,7 +7,7 @@
         <ui:VisualElement class="mission-track"><ui:VisualElement name="missionFill" class="mission-fill" /></ui:VisualElement>
         <ui:Label name="missionLocation" class="mission-location" />
         <ui:Label name="missionRisk" class="mission-risk" />
-        <ui:Label text="J  设施记录" class="mission-hint" />
+        <ui:Label name="missionJournalShortcut" class="mission-hint" />
     </ui:VisualElement>
     <ui:VisualElement name="missionInteraction" class="mission-interaction" picking-mode="Ignore">
         <ui:Label name="missionObject" class="mission-eyebrow" />

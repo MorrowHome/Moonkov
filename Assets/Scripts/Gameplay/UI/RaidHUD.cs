@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -232,7 +233,7 @@ namespace Unity.MP_FPS
                  m_ExtractionPanel.ClassListContains("is-visible"));
             m_TaskPanel.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             m_ClashView.Tasks.style.display = visible && m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
-            if (visible && Application.isFocused && Keyboard.current?.hKey.wasPressedThisFrame == true &&
+            if (visible && Application.isFocused && RaidKeyBindings.Pressed(RaidKey.Status) &&
                 !Client.QuickSlotBindings.Typing(m_Root.panel?.focusController.focusedElement as VisualElement))
                 ToggleTasks();
         }
@@ -380,7 +381,7 @@ namespace Unity.MP_FPS
             m_ActionView.Present(active,m_ActionAccepted,m_ActionCancelPending,m_MedicalActive,remaining,m_ActionDuration,
                 Time.unscaledTime<m_ActionFeedbackUntil ? m_ActionFeedback : null,m_ActionFailed,visible,m_InventoryVisible,
                 m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") : null);
-            if(active && visible && !ChatInputBlocked && Keyboard.current!=null && Keyboard.current.xKey.wasPressedThisFrame)CancelTimedAction();
+            if(active && visible && !ChatInputBlocked && RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel))CancelTimedAction();
         }
         private void SetInventory(bool visible)
         {
@@ -490,7 +491,7 @@ namespace Unity.MP_FPS
             if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
+            if ((RaidKeyBindings.Pressed(RaidKey.Inventory) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             UpdateInventoryBackdrop();
@@ -532,7 +533,7 @@ namespace Unity.MP_FPS
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.ResearchSuppliesNoSpace ? Client.ResearchQuestCopy.Text("任务配发物品放不下。请回仓库腾出空间。", "Make room in your loadout for mission equipment.")
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
-                    : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction."));
+                    : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. Reloading spends energy per round. Unspent energy returns on extraction."));
                 if (!m_WasSettled && !saving) m_Return.Focus();
             }
             m_WasSettled = settled;

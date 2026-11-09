@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="RaidMapView.uss" />
-    <ui:Label name="raidMapHint" text="[M] MAP" class="raid-map-hint" picking-mode="Ignore" />
+    <ui:Label name="raidMapHint" class="raid-map-hint" picking-mode="Ignore" />
     <ui:VisualElement name="raidMapOverlay" class="raid-map-overlay archive-ui">
         <ui:VisualElement name="raidMapWindow" class="raid-map-window">
             <ui:VisualElement name="raidMapCanvasHost" class="raid-map-canvas-host" />
@@ -11,7 +11,7 @@
                 </ui:VisualElement>
                 <ui:Button name="raidMapDetails" text="MAP INFO" class="map-text-button" />
             </ui:VisualElement>
-            <ui:Button name="raidMapClose" text="×" tooltip="CLOSE / M" class="map-close map-control" />
+            <ui:Button name="raidMapClose" text="×" class="map-close map-control" />
             <ui:VisualElement name="raidMapSidebar" class="map-info">
                 <ui:Label name="raidMapExtraction" class="map-info-exit" />
                 <ui:Label name="raidMapObjective" class="map-info-copy" />

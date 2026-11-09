@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -99,7 +100,7 @@ namespace Unity.MP_FPS
                 m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
             }
             PresentCampaignCommunication(progress);
-            if (((Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame) ||
+            if ((RaidKeyBindings.Pressed(RaidKey.Journal) ||
                 (Gamepad.current != null && Gamepad.current.dpad.up.wasPressedThisFrame)) && !m_InventoryVisible &&
                 !ChatInputBlocked && !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 SetCampaignJournal(!m_CampaignJournalVisible);

@@ -2,7 +2,6 @@ using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS
@@ -18,6 +17,7 @@ namespace Unity.MP_FPS
             if (s_Input && s_Input != input) Unbind(s_Input);
             if (s_Input != input || view) s_View = view;
             s_Input = input;
+            input.UseRaidKeyBindings = true;
             input.QuickSlotSelection = RaidHUD.RouteQuickSlotSelection;
             input.QuickSlotScrollSelection = SelectScrolledWeapon;
             input.DarkSightMode = RaidHUD.UsesDarkSightViewKey;
@@ -28,6 +28,7 @@ namespace Unity.MP_FPS
         public static void Unbind(DollSingerInput input)
         {
             if (!input) return;
+            input.UseRaidKeyBindings = false;
             input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null; input.MeleeAttackInput = null;
             input.QuickSlotScrollSelection = null;
             input.GrenadeInput = null;
@@ -279,13 +280,13 @@ namespace Unity.MP_FPS
             else if (RaidQuickSlotInput.ScrolledThisFrame) m_QuickView.Reveal();
             bool cancelMenu = ChatInputBlocked || CinematicInputBlocked || MapInputBlocked || m_WasSettled ||
                 m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
-            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
+            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive || RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel) && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
                 SendQuickTactical(TacticalItemAction.Cancel);
             var selected = m_QuickBindings.SelectedItem(graph);
             TacticalItemsFeedback.SetSelectedItem(m_QuickActive ? selected?.Code : null);
             TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested || QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement));
             m_QuickView.Element.style.display = m_Snapshot.RaidId > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? "DARK SIGHT / RELEASE V TO USE ITEMS" : QuickTacticalCancelPending ? null : owner.Remaining > 0 ?
+            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? MoonkovLocalization.Format($"DARK SIGHT / RELEASE {RaidKeyBindings.DisplayName(RaidKey.ViewOrDarkSight)} TO USE ITEMS") : QuickTacticalCancelPending ? null : owner.Remaining > 0 ?
                 null : QuickManualBusy ? null :
                 Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
             string meleeStatus = MeleeCaption();
@@ -301,7 +302,7 @@ namespace Unity.MP_FPS
             visible &= owner.BleedSeconds > 0;
             m_SelfAidHint.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible) return;
-            string key = m_InteractionBindings == null ? "F" : m_InteractionBindings.Label(m_InteractionBindings.Loot);
+            string key = m_InteractionBindings == null ? RaidKeyBindings.DisplayName(RaidKey.Interact) : m_InteractionBindings.Label(m_InteractionBindings.Loot);
             if (m_SelfAidKey != key)
             {
                 m_SelfAidKey = key;

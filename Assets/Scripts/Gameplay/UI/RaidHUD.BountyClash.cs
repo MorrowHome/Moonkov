@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -65,7 +66,7 @@ namespace Unity.MP_FPS
         private VisualElement m_ClashCargoParent;
         public static bool GameplayActionsBlocked => PointerRequested || s_Active != null &&
             (s_Active.m_ClashActionsBlocked || Time.frameCount <= s_Active.m_MenuEscapeFrame);
-        public static bool DarkSightRequested => s_Active != null && s_Active.CanReadClashInput && Keyboard.current != null && Keyboard.current.vKey.isPressed;
+        public static bool DarkSightRequested => s_Active != null && s_Active.CanReadClashInput && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
         private bool CanReadClashInput => m_ClashMode && m_Clash is { Approved: true, HasSnapshot: true } &&
             m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive && m_Clash.Snapshot.Connected &&
             !PointerRequested && !QuickBusy &&
@@ -122,7 +123,7 @@ namespace Unity.MP_FPS
             Vector3 position = hasLocal ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : default;
             bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
             ReadClashInput(position, hasLocal);
-            bool worldView = hasLocal && m_ClashCamera && CanReadClashInput && Keyboard.current != null && Keyboard.current.vKey.isPressed;
+            bool worldView = hasLocal && m_ClashCamera && CanReadClashInput && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
             bool worldBoost = worldView && snapshot.IsCarrier && snapshot.SenseRemaining > 0 && Mouse.current != null && Mouse.current.rightButton.isPressed;
             if (!hasLocal || !m_ClashCamera) BountyClashDarkSightRenderer.ClearImmediate();
             else BountyClashDarkSightRenderer.Publish(m_ClashCamera, worldView, worldBoost,
@@ -160,9 +161,9 @@ namespace Unity.MP_FPS
         }
         private void ReadClashInput(Vector3 position, bool hasLocal)
         {
-            var s = m_Clash.Snapshot; var keyboard = Keyboard.current;
+            var s = m_Clash.Snapshot;
             bool allowed = hasLocal && CanReadClashInput;
-            bool view = allowed && keyboard != null && keyboard.vKey.isPressed;
+            bool view = allowed && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
             bool boost = view && s.IsCarrier && s.SenseRemaining > 0 && Mouse.current != null && Mouse.current.rightButton.isPressed;
             int flags = view ? boost ? 3 : 1 : 0;
             m_Clash.SetSenseInput(view, boost);
@@ -185,25 +186,29 @@ namespace Unity.MP_FPS
                 if (distance < nearest) { nearest = distance; candidate = member.ParticipantId; reviveProgress = member.ReviveProgress; }
             }
             m_ClashInteractionFocused = candidate >= 0;
-            bool held = keyboard != null && keyboard.fKey.isPressed;
+            bool held = RaidKeyBindings.Held(RaidKey.Interact);
             if (candidate >= 0 && held)
             {
                 if (m_ReviveTarget != candidate)
                 { CancelClashRevive(); if (SendClash(ClashIntent.ReviveBegin, target: candidate, track: false)) m_ReviveTarget = candidate; m_NextReviveLease = Time.unscaledTime + .25f; }
                 else if (Time.unscaledTime >= m_NextReviveLease)
                 { SendClash(ClashIntent.ReviveRenew, target: candidate, track: false); m_NextReviveLease = Time.unscaledTime + .25f; }
-                m_ClashView.SetAction("[F] HOLD TO REVIVE / {0:0}%", reviveProgress * 100); return;
+                m_ClashView.SetAction("[{0}] HOLD TO REVIVE / {1:0}%", RaidKeyBindings.DisplayName(RaidKey.Interact), reviveProgress * 100); return;
             }
             CancelClashRevive();
-            if (candidate >= 0) { m_ClashView.SetAction("[F] HOLD TO REVIVE TEAMMATE"); return; }
+            if (candidate >= 0) { m_ClashView.SetAction("[{0}] HOLD TO REVIVE TEAMMATE", RaidKeyBindings.DisplayName(RaidKey.Interact)); return; }
             Vector3 objective = s.Bounty == ClashBountyState.Ground ? (Vector3)s.BountyPosition : (Vector3)s.TargetPosition;
             bool near = Vector3.Distance(position, objective) <= 3;
-            string hint = near && s.Bounty == ClashBountyState.Unbanished ? "[F] BANISH DEAD TARGET" :
-                near && s.Bounty == ClashBountyState.Ground ? "[F] PICK UP THE UNIQUE BOUNTY" : null;
+            string hint = near && s.Bounty == ClashBountyState.Unbanished ? "[{0}] BANISH DEAD TARGET" :
+                near && s.Bounty == ClashBountyState.Ground ? "[{0}] PICK UP THE UNIQUE BOUNTY" : null;
             m_ClashInteractionFocused = hint != null;
-            m_ClashView.SetAction(hint);
-            if (hint != null && keyboard != null && keyboard.fKey.wasPressedThisFrame)
-                SendClash(s.Bounty == ClashBountyState.Unbanished ? ClashIntent.Banish : ClashIntent.Pickup);
+            if (hint == null) m_ClashView.SetAction(null);
+            else
+            {
+                m_ClashView.SetAction(hint, RaidKeyBindings.DisplayName(RaidKey.Interact));
+                if (RaidKeyBindings.Pressed(RaidKey.Interact))
+                    SendClash(s.Bounty == ClashBountyState.Unbanished ? ClashIntent.Banish : ClashIntent.Pickup);
+            }
         }
         private void CancelClashRevive()
         { if (m_ReviveTarget >= 0) SendClash(ClashIntent.ReviveCancel, target: m_ReviveTarget, track: false); m_ReviveTarget = -1; }

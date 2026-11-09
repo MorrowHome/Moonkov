@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,10 +42,14 @@ namespace Unity.MP_FPS
         private static string s_PadAim, s_PadReload, s_PadInteract, s_PadHealth;
         private static string Name(UnityEngine.InputSystem.Controls.ButtonControl button, string fallback)
             => !string.IsNullOrEmpty(button?.shortDisplayName) ? button.shortDisplayName : button?.displayName ?? fallback;
-        public static string HealthHint => UsingGamepad ? s_PadHealth : "按 Tab 打开装备，切换健康页使用医疗用品。可以先退回安全处。";
-        public static string MoveHint => UsingGamepad ? "左摇杆移动，右摇杆观察" : "W A S D 移动，鼠标观察";
+        public static string HealthHint => UsingGamepad ? s_PadHealth :
+            $"按 {RaidKeyBindings.DisplayName(RaidKey.Inventory)} 打开装备，切换健康页使用医疗用品。可以先退回安全处。";
+        public static string MoveHint => UsingGamepad ? "左摇杆移动，右摇杆观察" :
+            $"{RaidKeyBindings.DisplayName(RaidKey.Forward)} {RaidKeyBindings.DisplayName(RaidKey.Left)} {RaidKeyBindings.DisplayName(RaidKey.Backward)} {RaidKeyBindings.DisplayName(RaidKey.Right)} 移动，鼠标观察";
         public static string AimHint => UsingGamepad ? s_PadAim : "按住鼠标右键瞄准，左键发射光环脉冲";
-        public static string ReloadHint => UsingGamepad ? s_PadReload : "光环能量会自动恢复；R 使用电池，按住 T 防御";
-        public static string InteractHint => UsingGamepad ? s_PadInteract : "靠近并看向设备，按住 F 操作";
+        public static string ReloadHint => UsingGamepad ? s_PadReload :
+            $"光环能量会自动恢复。按 {RaidKeyBindings.DisplayName(RaidKey.Reload)} 使用电池，按住 {RaidKeyBindings.DisplayName(RaidKey.Defense)} 防御。";
+        public static string InteractHint => UsingGamepad ? s_PadInteract :
+            $"靠近并看向设备，按住 {RaidKeyBindings.DisplayName(RaidKey.Interact)} 操作";
     }
 }

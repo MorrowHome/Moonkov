@@ -1,6 +1,7 @@
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.MP_FPS.DollSinger;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,6 +28,8 @@ namespace Unity.MP_FPS
         private uint m_MissionFeedbackRequest;
         private string m_MissionRequestedAction;
         private Label m_MissionKey, m_MissionInspectKey, m_MissionObject;
+        private Label m_MissionJournalShortcut;
+        private Key m_MissionJournalKey;
         private VisualElement m_MissionHoldTrack, m_MissionHoldFill;
         private string m_MissionInspectAnchor;
         private readonly System.Collections.Generic.HashSet<string> m_MissionInspected = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
@@ -65,6 +68,8 @@ namespace Unity.MP_FPS
             m_MissionActionNote = m_Root.Q<Label>("missionActionNote");
             m_MissionKey = m_Root.Q<Label>("missionKey"); m_MissionInspectKey = m_Root.Q<Label>("missionInspectKey");
             m_MissionObject = m_Root.Q<Label>("missionObject");
+            m_MissionJournalShortcut = m_Root.Q<Label>("missionJournalShortcut");
+            m_MissionJournalKey = Key.None;
             m_MissionHoldTrack = m_Root.Q("missionHoldTrack"); m_MissionHoldFill = m_Root.Q("missionHoldFill");
             m_Root.Q<Button>("missionPlateTab").clicked += () => ShowMissionInspectionTab(false);
             m_Root.Q<Button>("missionCircuitTab").clicked += () => ShowMissionInspectionTab(true);
@@ -108,6 +113,12 @@ namespace Unity.MP_FPS
         private bool UpdateMissions(bool live)
         {
             if (m_MissionHud == null) return false;
+            var journalKey = RaidKeyBindings.GetKey(RaidKey.Journal);
+            if (m_MissionJournalKey != journalKey)
+            {
+                m_MissionJournalKey = journalKey;
+                MoonkovLocalization.Set(m_MissionJournalShortcut, "{0}  设施记录", RaidKeyBindings.DisplayName(journalKey));
+            }
             if (m_InteractionBindings != null && !m_InteractionBindings.Operate.IsPressed()) m_MissionReleaseRequired = false;
             m_Root.EnableInClassList("mission-compact", m_Root.resolvedStyle.width < 1400);
             var site = RaidMissionSite.Active;
@@ -123,7 +134,7 @@ namespace Unity.MP_FPS
                 m_MissionMarker.style.display = DisplayStyle.None;
                 if (m_MissionOperation != null)
                 { SetMissionDetails(false); m_MissionOperation = null; m_MissionSequence = 0; }
-                if (!ChatInputBlocked && live && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+                if (!ChatInputBlocked && live && !CampaignJournalAvailable && RaidKeyBindings.Pressed(RaidKey.Journal) && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     m_Root.Q<Label>("missionDetailTitle").text = "设施记录";
                     m_MissionNodes.Clear(); m_MissionNodeLabels.Clear();
@@ -139,7 +150,7 @@ namespace Unity.MP_FPS
             {
                 SetMissionDetails(false); m_MissionOperation = snapshot.OperationId.ToString(); m_MissionPinned = true;
                 if (!snapshot.CampaignEnabled)
-                    MissionNotice("发现 MC00 设施信号  无需接取，直接操作有效。去向与流程可按 J 查看。");
+                    MissionNotice(MoonkovLocalization.Format($"发现 MC00 设施信号。无需接取，直接操作有效。按 {RaidKeyBindings.DisplayName(RaidKey.Journal)} 查看去向与流程。"));
                 m_Root.Q<Button>("missionPin").text = "取消追踪";
                 if (live) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
             }
@@ -169,7 +180,7 @@ namespace Unity.MP_FPS
             }
             m_MissionHud.style.display = live && m_MissionPinned && !m_InventoryVisible ? DisplayStyle.Flex : DisplayStyle.None;
             UpdateMissionMarker(false);
-            if (!ChatInputBlocked && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+            if (!ChatInputBlocked && !CampaignJournalAvailable && RaidKeyBindings.Pressed(RaidKey.Journal) && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
             if (!live || ChatInputBlocked || MapInputBlocked || m_InventoryVisible || m_InventoryRequestPending || m_MissionDetailsVisible || m_CampaignJournalVisible || m_FieldRecordOpen || GameSettings.Instance.IsPauseMenuOpen || DarkSightRequested || !Application.isFocused || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
             {

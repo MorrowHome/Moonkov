@@ -127,7 +127,8 @@ namespace Unity.MP_FPS.Client
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
             m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
             m_CarryCells.SetEnabled(!m_AccountBusy);
-            MoonkovLocalization.Set(m_CarryNote, "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. [R] spends energy per round; partial charge is retained. Lost on death." , PlayerProfileClient.CarryCells, RaidRules.BagCapacity, PlayerProfileClient.StashCells, BatteryEnergy.Capacity);
+            MoonkovLocalization.Set(m_CarryNote, "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. Reloading spends energy per round. Partial charge is retained. Lost on death.",
+                PlayerProfileClient.CarryCells, RaidRules.BagCapacity, PlayerProfileClient.StashCells, BatteryEnergy.Capacity);
             m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
             m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);

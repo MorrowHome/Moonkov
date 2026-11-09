@@ -6732,6 +6732,207 @@ MonoBehaviour:
     m_Localized: BACKGROUND MUSIC
     m_Metadata:
       m_Items: []
+  - m_Id: 11884658286387200
+    m_Localized: KEY BINDINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330240
+    m_Localized: RESTORE KEY DEFAULTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330241
+    m_Localized: Press a key. Esc cancels.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330242
+    m_Localized: This key is reserved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330243
+    m_Localized: '{0} is already assigned to {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330244
+    m_Localized: Move forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330245
+    m_Localized: Move backward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658328330246
+    m_Localized: Move left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524544
+    m_Localized: Move right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524545
+    m_Localized: Sprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524546
+    m_Localized: Jump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524547
+    m_Localized: Toggle crouch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524548
+    m_Localized: Hold to crouch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524549
+    m_Localized: Toggle prone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524550
+    m_Localized: Tiptoe / Cancel action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524551
+    m_Localized: Lean left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524552
+    m_Localized: Lean right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524553
+    m_Localized: Reload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524554
+    m_Localized: Interact / Loot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524555
+    m_Localized: Inspect target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524556
+    m_Localized: Equip / Stow grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658332524557
+    m_Localized: Defend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718848
+    m_Localized: Transfer energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718849
+    m_Localized: Deploy / Recall halo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718850
+    m_Localized: Switch halo mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718851
+    m_Localized: Scan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718852
+    m_Localized: Halo light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718853
+    m_Localized: Change view / Dark Sight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718854
+    m_Localized: Change view (Clash)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718855
+    m_Localized: Raid map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718856
+    m_Localized: Journal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718857
+    m_Localized: '[{0}] DARK SIGHT / [RMB] BOOST / {1:0.0}s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718858
+    m_Localized: '[{0}] DARK SIGHT'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718859
+    m_Localized: DARK SIGHT / RELEASE {0} TO USE ITEMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718860
+    m_Localized: '[{0}] HOLD TO REVIVE / {1:0}%'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718861
+    m_Localized: '[{0}] HOLD TO REVIVE TEAMMATE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718862
+    m_Localized: '[{0}] BANISH DEAD TARGET'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718863
+    m_Localized: '[{0}] PICK UP THE UNIQUE BOUNTY'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718864
+    m_Localized: CLOSE / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718865
+    m_Localized: '{0}  TASKS & RADIO'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718866
+    m_Localized: D-Pad Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718867
+    m_Localized: '[{0}] COLLECT NEARBY SUPPLIES'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718868
+    m_Localized: '[{0}] CHECK YOUR RAID PACK'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718869
+    m_Localized: Release {0} to close. Tap {0} to switch the light. Changes are saved
+      automatically.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718870
+    m_Localized: Cells leave storage when the server accepts deployment. Reloading
+      spends energy per round. Unspent charge stays in the cell.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718871
+    m_Localized: 'Carry {0}/{1} cells / Stash {2}.
+
+      Each full cell stores {3}
+      energy. Reloading spends energy per round. Partial charge is retained. Lost
+      on death.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718872
+    m_Localized: 'Storage: {0} cells / Carry limit: {1}. Reloading spends energy
+      per round. Unspent energy returns on extraction.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11884658336718873
+    m_Localized: Equip with [{0}] from pockets or an equipped badge. Bounces, then
+      releases an energy blast after 3 seconds. Cover blocks the blast and nearby
+      damage can kill the thrower. Move grenades out of backpacks before throwing.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -47,8 +47,8 @@
                     <ui:Label text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." class="op-copy" />
                     <ui:VisualElement class="op-mission-rules">
                         <ui:Label text="RECOVER. SURVIVE. EXTRACT." class="op-heading" />
-                        <ui:Label text="[F] COLLECT NEARBY SUPPLIES" class="op-copy" />
-                        <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="op-copy" />
+                        <ui:Label name="operationLootKey" class="op-copy" />
+                        <ui:Label name="operationInventoryKey" class="op-copy" />
                         <ui:Label text="STAY INSIDE THE GREEN BEACON" class="op-copy" />
                     </ui:VisualElement>
                 </ui:VisualElement>

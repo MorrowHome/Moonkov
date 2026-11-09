@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Entities;
@@ -213,7 +214,7 @@ namespace Unity.MP_FPS
             // Get the player's data directly from the ECS component
             PredictedPlayerGhost playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
             FitVitals(null);
-            bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
+            bool statusCheck = RaidKeyBindings.Held(RaidKey.Status);
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
             m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;
             m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 320 : 302;

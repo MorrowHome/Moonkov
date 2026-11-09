@@ -8,6 +8,10 @@
         <ui:VisualElement class="terminal-row">
             <ui:VisualElement class="terminal-panel terminal-wide archive-settings-main">
                 <ui:VisualElement class="archive-settings-row"><ui:DropdownField name="language" label="LANGUAGE" class="terminal-language" /></ui:VisualElement>
+                <ui:Foldout name="keyBindings" text="KEY BINDINGS" class="key-bindings" value="false">
+                    <ui:Button name="keyBindingReset" text="RESTORE KEY DEFAULTS" class="key-binding-reset" />
+                    <ui:VisualElement name="keyBindingRows" />
+                </ui:Foldout>
                 <ui:Label text="VIEW &amp; AIM" class="terminal-heading view-settings-heading" />
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="lookMouse" label="MOUSE SENSITIVITY" class="terminal-slider" low-value="0.02" high-value="0.6" /><ui:Label name="lookMouseValue" class="archive-audio-value view-settings-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="lookAim" label="AIM SENSITIVITY" class="terminal-slider" low-value="0.1" high-value="2" /><ui:Label name="lookAimValue" class="archive-audio-value view-settings-value" /></ui:VisualElement>
@@ -20,13 +24,9 @@
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioInterface" label="INTERFACE AUDIO" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioInterfaceValue" class="archive-audio-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Toggle name="alwaysShowHUD" label="ALWAYS SHOW FIELD STATUS" class="terminal-toggle" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Toggle name="animateVitalSignal" label="ANIMATE VITAL SIGNAL" class="terminal-toggle" /></ui:VisualElement>
-                <ui:Label class="terminal-copy" text="The default HUD reveals critical states automatically. Hold [H] to check status or press [Tab] to open your raid pack." />
             </ui:VisualElement>
             <ui:VisualElement class="terminal-panel terminal-side terminal-keys">
                 <ui:Label text="KEYBOARD / MOUSE" class="terminal-heading" />
-                <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="RAID INVENTORY" class="terminal-stat-name" /><ui:Label text="TAB" name="statValue0" class="terminal-stat-value" /></ui:VisualElement>
-                <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="STATUS CHECK" class="terminal-stat-name" /><ui:Label text="H (HOLD)" name="statValue1" class="terminal-stat-value" /></ui:VisualElement>
-                <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="PICKUP" class="terminal-stat-name" /><ui:Label text="F" name="statValue2" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ROTATE IN STASH" class="terminal-stat-name" /><ui:Label text="R" name="statValue3" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ITEM INSPECT" class="terminal-stat-name" /><ui:Label text="DOUBLE CLICK / MIDDLE" name="statValue4" class="terminal-stat-value" /></ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="ADVANCED ACTIONS" class="terminal-stat-name" /><ui:Label text="RIGHT CLICK" name="statValue5" class="terminal-stat-value" /></ui:VisualElement>

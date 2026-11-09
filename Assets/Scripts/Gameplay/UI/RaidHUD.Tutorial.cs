@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.MP_FPS.DollSinger;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,9 +21,12 @@ namespace Unity.MP_FPS
         private Button m_TutorialSkip, m_RadioSkip;
         private Label m_TutorialShortcut;
 
+        private string m_TutorialShortcutBinding;
+
         private void InitializeTutorialHUD()
         {
             m_TutorialShortcut = m_Root.Q<Label>("campaignJournalShortcut");
+            m_TutorialShortcutBinding = null;
             m_TutorialRaid = 0; m_TutorialWriting = m_TutorialConfigured = m_TutorialModeKnown = false; m_ChapterRadioQueue.Clear();
             m_ChapterRadioRemaining = 0; m_ChapterRadioCurrent = null;
             m_ChapterRadio = new Label(); m_ChapterRadio.AddToClassList("campaign-hud-hint");
@@ -50,7 +54,12 @@ namespace Unity.MP_FPS
             bool active = state != null && state.Status == TutorialStatus.Active;
             m_Root.EnableInClassList("campaign-tutorial", active);
             m_TutorialSkip.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
-            m_TutorialShortcut.text = TutorialRuntime.UsingGamepad ? "方向键上  任务与通讯" : "J  任务与通讯";
+            string journalKey = TutorialRuntime.UsingGamepad ? "D-Pad Up" : RaidKeyBindings.DisplayName(RaidKey.Journal);
+            if (m_TutorialShortcutBinding != journalKey)
+            {
+                m_TutorialShortcutBinding = journalKey;
+                MoonkovLocalization.Set(m_TutorialShortcut, "{0}  TASKS & RADIO", journalKey);
+            }
             bool visible = live && !m_TasksCollapsed && !m_CampaignHud.ClassListContains("campaign-hidden");
             if (visible)
             {

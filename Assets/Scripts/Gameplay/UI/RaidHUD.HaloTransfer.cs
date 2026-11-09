@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,15 +21,15 @@ namespace Unity.MP_FPS
             m_Interaction.EnableInClassList("is-error", false);
             m_Interaction.EnableInClassList("is-empty", false);
             bool gamepad = TutorialRuntime.UsingGamepad;
-            MoonkovLocalization.Set(m_InteractionKey, gamepad ? "←" : "Y");
+            MoonkovLocalization.Set(m_InteractionKey, gamepad ? "←" : RaidKeyBindings.DisplayName(RaidKey.Transfer));
             if (occupied && HaloSupportRules.Anchored(sender))
             {
-                MoonkovLocalization.Set(m_InteractionKey, gamepad ? "RB+←" : "U");
+                MoonkovLocalization.Set(m_InteractionKey, gamepad ? "RB+←" : RaidKeyBindings.DisplayName(RaidKey.DeployHalo));
                 MoonkovLocalization.Set(m_Prompt, sender.HaloTransferPhase == HaloTransferPhase.Returning ? "Halo returning" : "Recall halo");
                 m_InteractionDetails.style.display = DisplayStyle.Flex;
                 string mode = sender.HaloDeploymentMode == HaloDeploymentMode.Light ? "Halo lighting" :
                     sender.HaloDeploymentMode == HaloDeploymentMode.Shield ? "Area shield" : "Halo sentry";
-                MoonkovLocalization.Set(m_InteractionState, "{0}  {1} Switch", MoonkovLocalization.Text(mode), gamepad ? "RB+→" : "K");
+                MoonkovLocalization.Set(m_InteractionState, "{0}  {1} Switch", MoonkovLocalization.Text(mode), gamepad ? "RB+→" : RaidKeyBindings.DisplayName(RaidKey.HaloMode));
                 MoonkovLocalization.Set(m_InteractionRange, $"{Vector3.Distance(HaloTransferRules.Anchor(sender), sender.HaloTransferPoint):0.0} m");
                 return;
             }

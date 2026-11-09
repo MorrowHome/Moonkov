@@ -18,6 +18,7 @@ namespace Unity.MP_FPS.DollSinger
         // Assigned by the host game; the standalone character demo has no UI dependency.
         public System.Func<bool> GameplayInputBlocked { get; set; }
         public System.Func<bool> TimedActionInputActive { get; set; }
+        public bool UseRaidKeyBindings { get; set; }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         public System.Action DevelopmentStyleToggle { get; set; }
 #endif
@@ -88,7 +89,7 @@ namespace Unity.MP_FPS.DollSinger
         }
         public bool ReloadPressed { get; private set; }
         public bool DefenseHeld { get; private set; }
-        public static bool DefenseButtonHeld => Keyboard.current?.tKey.isPressed == true ||
+        public static bool DefenseButtonHeld => RaidKeyBindings.Held(RaidKey.Defense) ||
             Gamepad.current != null && Gamepad.current.dpad.right.isPressed && !Gamepad.current.rightShoulder.isPressed;
         public bool TransferHeld { get; private set; }
         public bool GuardHeld { get; private set; }
@@ -132,13 +133,17 @@ namespace Unity.MP_FPS.DollSinger
         }
 #endif
 
+        private UnityEngine.InputSystem.Controls.KeyControl KeyButton(Keyboard keyboard, RaidKey action) =>
+            keyboard?[UseRaidKeyBindings ? RaidKeyBindings.GetKey(action) : RaidKeyBindings.DefaultKey(action)];
+
         private void Update()
         {
             ClearFrame();
             ApplyViewSettings();
             var keyboard = Keyboard.current;
-            bool tiptoe = ReadTiptoe(keyboard != null && keyboard.xKey.wasPressedThisFrame,
-                keyboard != null && keyboard.xKey.isPressed, TimedActionInputActive?.Invoke() == true);
+            var tiptoeKey = KeyButton(keyboard, RaidKey.TiptoeOrCancel);
+            bool tiptoe = ReadTiptoe(tiptoeKey?.wasPressedThisFrame == true,
+                tiptoeKey?.isPressed == true, TimedActionInputActive?.Invoke() == true);
             if (IsGameplayBlocked)
             {
                 CancelLightAdjustment();
@@ -169,8 +174,9 @@ namespace Unity.MP_FPS.DollSinger
                 return;
             }
 #endif
-            bool toggleLight = lightPress.Step(keyboard != null && keyboard.lKey.wasPressedThisFrame,
-                keyboard != null && keyboard.lKey.isPressed, Time.unscaledTime,
+            var lightKey = KeyButton(keyboard, RaidKey.Light);
+            bool toggleLight = lightPress.Step(lightKey?.wasPressedThisFrame == true,
+                lightKey?.isPressed == true, Time.unscaledTime,
                 Application.isFocused && (CanReadPlayerInput || wasAdjusting));
             if (LightAdjusting)
             {
@@ -198,25 +204,26 @@ namespace Unity.MP_FPS.DollSinger
             bool numberPressed = false;
             if (keyboard != null)
             {
-                Move = new Vector2((keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0),
-                    (keyboard.wKey.isPressed ? 1 : 0) - (keyboard.sKey.isPressed ? 1 : 0));
-                JumpPressed = keyboard.spaceKey.wasPressedThisFrame;
-                SprintHeld = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
-                if (keyboard.cKey.wasPressedThisFrame)
+                Move = new Vector2((KeyButton(keyboard, RaidKey.Right).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Left).isPressed ? 1 : 0),
+                    (KeyButton(keyboard, RaidKey.Forward).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Backward).isPressed ? 1 : 0));
+                JumpPressed = KeyButton(keyboard, RaidKey.Jump).wasPressedThisFrame;
+                var sprint = KeyButton(keyboard, RaidKey.Sprint);
+                SprintHeld = sprint.isPressed || sprint.keyCode == Key.LeftShift && keyboard.rightShiftKey.isPressed;
+                if (KeyButton(keyboard, RaidKey.Crouch).wasPressedThisFrame)
                     toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
-                if (keyboard.zKey.wasPressedThisFrame)
+                if (KeyButton(keyboard, RaidKey.Prone).wasPressedThisFrame)
                     toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
                 if (JumpPressed) toggledStance = DollSingerStance.Standing;
-                Stance = keyboard.leftCtrlKey.isPressed ? DollSingerStance.Crouching :
+                Stance = KeyButton(keyboard, RaidKey.HoldCrouch).isPressed ? DollSingerStance.Crouching :
                     tiptoe && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
-                ViewPressed = (DarkSightMode?.Invoke() == true ? keyboard.bKey : keyboard.vKey).wasPressedThisFrame;
+                ViewPressed = KeyButton(keyboard, DarkSightMode?.Invoke() == true ? RaidKey.ClashView : RaidKey.ViewOrDarkSight).wasPressedThisFrame;
                 LightPressed = toggleLight;
-                ReloadPressed = keyboard.rKey.wasPressedThisFrame;
-                DefenseHeld = keyboard.tKey.isPressed;
-                TransferHeld = keyboard.yKey.isPressed;
-                HaloAnchorHeld = keyboard.uKey.isPressed;
-                HaloModeHeld = keyboard.kKey.isPressed;
-                HaloScanHeld = keyboard.nKey.isPressed;
+                ReloadPressed = KeyButton(keyboard, RaidKey.Reload).wasPressedThisFrame;
+                DefenseHeld = KeyButton(keyboard, RaidKey.Defense).isPressed;
+                TransferHeld = KeyButton(keyboard, RaidKey.Transfer).isPressed;
+                HaloAnchorHeld = KeyButton(keyboard, RaidKey.DeployHalo).isPressed;
+                HaloModeHeld = KeyButton(keyboard, RaidKey.HaloMode).isPressed;
+                HaloScanHeld = KeyButton(keyboard, RaidKey.Scan).isPressed;
                 int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
                     keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
                     keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
@@ -225,12 +232,14 @@ namespace Unity.MP_FPS.DollSinger
                 numberPressed = number != 0;
                 WeaponSlotPressed = QuickSlotSelection != null ? QuickSlotSelection(number) : number <= 3 ? number : 0;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
-                if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
+                var leanLeft = KeyButton(keyboard, RaidKey.LeanLeft);
+                var leanRight = KeyButton(keyboard, RaidKey.LeanRight);
+                if (leanEnabled && AltHeld && leanLeft.wasPressedThisFrame)
                     lockedLean = lockedLean < 0f ? 0f : -1f;
-                else if (leanEnabled && AltHeld && keyboard.eKey.wasPressedThisFrame)
+                else if (leanEnabled && AltHeld && leanRight.wasPressedThisFrame)
                     lockedLean = lockedLean > 0f ? 0f : 1f;
                 float heldLean = !leanEnabled || AltHeld ? 0f :
-                    (keyboard.eKey.isPressed ? 1f : 0f) - (keyboard.qKey.isPressed ? 1f : 0f);
+                    (leanRight.isPressed ? 1f : 0f) - (leanLeft.isPressed ? 1f : 0f);
                 LeanTarget = leanEnabled ? (heldLean != 0f ? heldLean : lockedLean) : 0f;
             }
             if (mouse != null)

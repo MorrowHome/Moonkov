@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.MP_FPS.Inventory;
@@ -107,8 +108,8 @@ namespace Unity.MP_FPS
             if (phase == GrenadePhase.None && m_GrenadeRequest == 0)
                 m_GrenadeButtonHeld = m_GrenadeReleaseQueued = false;
             if (menu || QuickTyping(m_Root.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement)) return;
-            bool equip = Keyboard.current?.gKey.wasPressedThisFrame == true || Gamepad.current?.leftShoulder.wasPressedThisFrame == true;
-            bool cancel = Keyboard.current?.xKey.wasPressedThisFrame == true;
+            bool equip = RaidKeyBindings.Pressed(RaidKey.Grenade) || Gamepad.current?.leftShoulder.wasPressedThisFrame == true;
+            bool cancel = RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel);
             if (phase != GrenadePhase.None)
             {
                 if ((equip || cancel) && (phase == GrenadePhase.Safe || phase == GrenadePhase.Drawing)) SendGrenade(GrenadeCommand.Stow);
@@ -128,9 +129,9 @@ namespace Unity.MP_FPS
             bool pad = Gamepad.current != null && Mouse.current == null;
             return phase switch {
                 GrenadePhase.Drawing => "取出手雷",
-                GrenadePhase.Safe => pad ? "RT 远投 / LT 低抛 / LB 收回" : "左键远投 / 右键低抛 / G 收回",
+                GrenadePhase.Safe => pad ? "RT 远投 / LT 低抛 / LB 收回" : MoonkovLocalization.Format($"左键远投 / 右键低抛 / {RaidKeyBindings.DisplayName(RaidKey.Grenade)} 收回"),
                 GrenadePhase.Priming => "启用手雷",
-                GrenadePhase.Live => pad ? $"{GrenadeState.GrenadeFuseRemaining:0.0} 秒 / 松开扳机投掷" : $"{GrenadeState.GrenadeFuseRemaining:0.0} 秒 / 松开投掷 / X 丢下",
+                GrenadePhase.Live => pad ? $"{GrenadeState.GrenadeFuseRemaining:0.0} 秒 / 松开扳机投掷" : MoonkovLocalization.Format($"{GrenadeState.GrenadeFuseRemaining:0.0} 秒 / 松开投掷 / {RaidKeyBindings.DisplayName(RaidKey.TiptoeOrCancel)} 丢下"),
                 GrenadePhase.Throwing => "投掷",
                 GrenadePhase.Stowing => "收回手雷",
                 _ => null

@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,6 +25,13 @@ namespace Unity.MP_FPS.Client
         {
             TerminalLayout.Populate(m_Content, "Operation");
             TerminalLayout.Populate(m_Content.Q("operationMain"), OperationLayouts[m_OperationStep]);
+            if (m_OperationStep is 0 or 2)
+            {
+                MoonkovLocalization.Set(m_Content.Q<Label>("operationLootKey"), "[{0}] COLLECT NEARBY SUPPLIES",
+                    RaidKeyBindings.DisplayName(RaidKey.Interact));
+                MoonkovLocalization.Set(m_Content.Q<Label>("operationInventoryKey"), "[{0}] CHECK YOUR RAID PACK",
+                    RaidKeyBindings.DisplayName(RaidKey.Inventory));
+            }
             for (int i = 0; i < OperationLayouts.Length; i++)
             {
                 int step = i;

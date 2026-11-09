@@ -5,3 +5,12 @@
 .moonkov-terminal.archive-page-8 .view-settings-help { white-space: normal; margin: 4px 12px 14px; font-size: 13px; }
 .moonkov-terminal.archive-page-8 .view-settings-value { min-width: 58px; -unity-text-align: middle-right; }
 .moonkov-terminal.archive-page-8 .view-settings-reset { align-self: flex-start; margin: 0 12px 22px; padding: 10px 16px; min-height: 38px; }
+.key-bindings { margin: 6px 12px 12px; flex-shrink: 0; }
+.key-bindings > .unity-foldout__toggle { min-height: 38px; margin: 0; }
+.key-bindings > .unity-foldout__content { margin-left: 0; }
+.key-bindings .key-binding-reset { align-self: flex-end; min-height: 34px; }
+.key-binding-row { flex-direction: row; align-items: center; justify-content: space-between; min-height: 40px; }
+.key-binding-row Label { white-space: normal; flex-shrink: 1; margin-right: 10px; font-size: 14px; }
+.key-bindings .key-binding-button { min-width: 100px; min-height: 34px; margin: 2px 0; padding: 4px 12px; font-size: 14px; }
+.key-bindings .key-binding-button.is-capturing { border-color: #70b8ff; }
+.key-bindings .key-binding-status { white-space: normal; color: #b9e0ff; margin: 2px 0 8px; font-size: 12px; }

@@ -12,6 +12,7 @@ namespace Unity.MP_FPS.Client
         internal static void BindSettings(VisualElement content, Action languageChanged = null)
         {
             BindViewSettings(content);
+            new RaidKeyBindingView(content);
             BindAudioSlider(content, "audioMaster", "Master", MoonkovAudio.MasterVolume);
             BindAudioSlider(content, "audioEffects", "Effects", MoonkovAudio.EffectsVolume);
             BindAudioSlider(content, "audioMusic", "Music", MoonkovAudio.MusicVolume);

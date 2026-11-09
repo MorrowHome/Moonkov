@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using System;
 using Unity.MP_FPS.Client;
 using UnityEngine;
@@ -70,10 +71,13 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_Zoom, "ZOOM / {0:0.0}×", m_Map.Zoom);
             m_In.tooltip = MoonkovLocalization.Text("ZOOM IN"); m_Out.tooltip = MoonkovLocalization.Text("ZOOM OUT");
             m_Center.tooltip = MoonkovLocalization.Text("CENTER ON ME"); m_Full.tooltip = MoonkovLocalization.Text("FULL MAP");
-            m_Close.tooltip = MoonkovLocalization.Text("CLOSE / M");
             m_In.SetEnabled(m_Map.Zoom < BountyClashMapView.MaximumZoom); m_Out.SetEnabled(m_Map.Zoom > BountyClashMapView.MinimumZoom);
         }
-        public void Open() { m_NextReadout = 0; m_Scope.BringToFront(); m_Overlay.style.display = DisplayStyle.Flex; m_Map.Focus(); }
+        public void Open()
+        {
+            m_NextReadout = 0; m_Scope.BringToFront(); m_Overlay.style.display = DisplayStyle.Flex; m_Map.Focus();
+            m_Close.tooltip = MoonkovLocalization.Format($"CLOSE / {RaidKeyBindings.DisplayName(RaidKey.Map)}");
+        }
         public void Hide() { m_Map.CancelDrag(); m_DetailsOpen = false; m_Overlay.style.display = DisplayStyle.None; m_Hint.style.display = DisplayStyle.None; }
         private void RefreshViewport()
         {

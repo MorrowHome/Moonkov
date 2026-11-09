@@ -1,4 +1,5 @@
 using System;
+using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,12 +18,27 @@ namespace Unity.MP_FPS
         public RaidInteractionBindings()
         {
             Operate = m_Map.AddAction("Operate", InputActionType.Button);
-            Operate.AddBinding("<Keyboard>/f"); Operate.AddBinding("<Gamepad>/buttonWest");
+            Operate.AddBinding(KeyboardPath(RaidKey.Interact)); Operate.AddBinding("<Gamepad>/buttonWest");
             Loot = m_Map.AddAction("Loot", InputActionType.Button);
-            Loot.AddBinding("<Keyboard>/f"); Loot.AddBinding("<Gamepad>/buttonWest");
+            Loot.AddBinding(KeyboardPath(RaidKey.Interact)); Loot.AddBinding("<Gamepad>/buttonWest");
             Inspect = m_Map.AddAction("Inspect", InputActionType.Button);
-            Inspect.AddBinding("<Keyboard>/i"); Inspect.AddBinding("<Gamepad>/leftShoulder");
+            Inspect.AddBinding(KeyboardPath(RaidKey.Inspect)); Inspect.AddBinding("<Gamepad>/leftShoulder");
             m_Map.Enable();
+            RaidKeyBindings.Changed += RefreshKeys;
+        }
+
+        private static string KeyboardPath(RaidKey action)
+        {
+            Key key = RaidKeyBindings.GetKey(action);
+            return "<Keyboard>/" + (Keyboard.current?[key].name ?? (key == Key.Digit0 ? "0" : key.ToString()));
+        }
+
+        private void RefreshKeys()
+        {
+            string interact = KeyboardPath(RaidKey.Interact);
+            Operate.ApplyBindingOverride(0, interact);
+            Loot.ApplyBindingOverride(0, interact);
+            Inspect.ApplyBindingOverride(0, KeyboardPath(RaidKey.Inspect));
         }
 
         public void ObserveDevice()
@@ -50,7 +66,11 @@ namespace Unity.MP_FPS
             return action.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
         }
 
-        public void Dispose() { m_Map.Disable(); m_Map.Dispose(); }
+        public void Dispose()
+        {
+            RaidKeyBindings.Changed -= RefreshKeys;
+            m_Map.Disable(); m_Map.Dispose();
+        }
     }
 
     public static class RaidInteractionAim

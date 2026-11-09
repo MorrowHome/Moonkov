@@ -22,13 +22,13 @@
                         <ui:VisualElement class="op-photo op-protocol-photo op-photo-recover" />
                         <ui:Label text="01" class="op-kicker" />
                         <ui:Label text="RECOVER" class="op-heading" />
-                        <ui:Label text="[F] COLLECT NEARBY SUPPLIES" class="op-copy" />
+                        <ui:Label name="operationLootKey" class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-protocol-card">
                         <ui:VisualElement class="op-photo op-protocol-photo op-photo-survive" />
                         <ui:Label text="02" class="op-kicker" />
                         <ui:Label text="SURVIVE" class="op-heading" />
-                        <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="op-copy" />
+                        <ui:Label name="operationInventoryKey" class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-protocol-card op-protocol-last">
                         <ui:VisualElement class="op-photo op-protocol-photo op-photo-extract" />
@@ -47,7 +47,7 @@
                                 <ui:IntegerField name="operationCarryCells" class="op-carry-field" is-delayed="true" />
                                 <ui:Button name="carryPlus" text="+" class="op-amount-button" />
                             </ui:VisualElement>
-                            <ui:Label text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." class="op-copy" />
+                            <ui:Label text="Cells leave storage when the server accepts deployment. Reloading spends energy per round. Unspent charge stays in the cell." class="op-copy" />
                         </ui:VisualElement>
                         <ui:VisualElement class="op-carry-summary">
                             <ui:Label text="CARGO" class="op-kicker" />

@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using System;
 using Unity.MP_FPS.Client;
 using UnityEngine;
@@ -159,7 +160,8 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(Label("clashWarning"), s.Life == ClashLife.Downed ? "DOWNED / WAIT FOR A TEAMMATE / EQUIPMENT RETAINED" :
                 "OUTSIDE ARENA / RETURN WITHIN {0:0}s", Mathf.Max(0, s.BoundaryRemaining - (float)(now - data.ReceivedAt)));
             Visible(m_SenseLayer, false);
-            MoonkovLocalization.Set(Label("clashSense"), s.IsCarrier ? "[V] DARK SIGHT / [RMB] BOOST / {0:0.0}s" : "[V] DARK SIGHT", s.SenseRemaining);
+            MoonkovLocalization.Set(Label("clashSense"), s.IsCarrier ? "[{0}] DARK SIGHT / [RMB] BOOST / {1:0.0}s" : "[{0}] DARK SIGHT",
+                RaidKeyBindings.DisplayName(RaidKey.ViewOrDarkSight), s.SenseRemaining);
             Label("clashSense").tooltip = MoonkovLocalization.Text("125 m CLOUDS / 75 m INSTINCT WHILE IN DARK SIGHT");
             if (!lobby && !ended && s.Connected && hasLocal) m_Map.Present(s, data.Participants.Values, local, hasLocal, localForward);
             else m_Map.ResetData();
