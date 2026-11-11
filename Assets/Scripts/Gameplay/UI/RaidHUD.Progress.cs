@@ -16,9 +16,7 @@ namespace Unity.MP_FPS
         }
         private bool PresentOtherProgress(bool visible)
         {
-            if(!visible || m_PlayerQuery.IsEmptyIgnoreFilter)return false;
-            var player=m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
-            if(player.CurrentHealth<=0)return false;
+            if (!visible || !m_PlayerQuery.TryGetSingleton(out PredictedPlayerGhost player) || player.CurrentHealth <= 0) return false;
             var owner=QuickOwner;
             if(QuickTacticalActionPending && !m_InventoryVisible)
             {
