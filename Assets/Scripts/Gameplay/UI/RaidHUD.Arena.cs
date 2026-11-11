@@ -23,7 +23,7 @@ namespace Unity.MP_FPS
         private MoonkovShopPurchaseView m_ClassicShop;
         private ShopOffer[] m_ClassicOffers;
         private ItemDefinition[] m_ArenaDefinitions;
-        private bool m_ArenaFinished;
+        private bool m_ArenaFinished, m_ArenaResultSoundPlayed;
 
         private void InitializeArenaHud()
         {
@@ -209,6 +209,7 @@ namespace Unity.MP_FPS
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
             bool fighting = alive && match.Phase == ArenaPhase.Fighting;
             m_ArenaFinished = state.Received && match.Phase == ArenaPhase.Finished;
+            PresentArenaResultSound(m_ArenaFinished, match.Won, match.Draw);
             if ((m_ArenaFinished || !alive) && m_InventoryVisible) SetInventory(false);
             if (!m_ArenaFinished && alive && m_Snapshot.RaidId > 0 && !ChatInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
                 (RaidKeyBindings.Pressed(RaidKey.Inventory) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)))
@@ -236,6 +237,16 @@ namespace Unity.MP_FPS
             if (m_ArenaFinished)
                 MoonkovLocalization.Set(m_ArenaResultText, match.Players < 2 && match.BestScore == 0 && match.Draw
                     ? "对局人数不足" : match.Draw ? "平局" : match.Won ? "获胜" : "对局结束");
+        }
+
+        private void PresentArenaResultSound(bool finished, bool won, bool draw)
+        {
+            if (!finished) { m_ArenaResultSoundPlayed = false; return; }
+            if (m_ArenaResultSoundPlayed) return;
+            m_ArenaResultSoundPlayed = true;
+            if (draw) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
+            else if (won) MoonkovAudio.Confirm();
+            else MoonkovAudio.Error();
         }
 
         private void PresentClassicScoreboard(ClassicSnapshotRpc match, bool visible)

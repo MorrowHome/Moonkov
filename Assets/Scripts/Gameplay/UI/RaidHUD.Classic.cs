@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
             bool paused = GameSettings.Instance.IsPauseMenuOpen;
             bool typing = QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
             m_ArenaFinished = data.Received && match.Phase == ClassicPhase.Finished;
+            PresentArenaResultSound(m_ArenaFinished, match.Winner == match.Team, match.Winner < 0);
             if (!buy && m_ClassicBuyOpen) SetClassicBuyMenu(false);
             if ((m_ArenaFinished || !match.Alive) && m_InventoryVisible) SetInventory(false);
             bool buyPressed = RaidKeyBindings.Pressed(RaidKey.Buy);
