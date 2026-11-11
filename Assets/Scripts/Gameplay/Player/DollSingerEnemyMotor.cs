@@ -2,6 +2,7 @@ using Unity.Mathematics;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -46,8 +47,9 @@ namespace Unity.MP_FPS
             Vector3 move = FollowPath(brain, position);
             bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) && !brain.Visible;
             bool pursuing = brain.IsExpeditionRaider && brain.Action == PmcAction.Search && !brain.Visible && now - brain.LastConfirmedSight < 12;
-            bool checkingCorner = searching && brain.Corner < brain.CornerCount - 1 &&
+            bool atCorner = brain.Corner < brain.CornerCount - 1 &&
                 HorizontalDistance(position, brain.Corners[brain.Corner]) < 2.5f;
+            bool checkingCorner = searching && atCorner;
             if (searching) move *= pursuing ? (checkingCorner ? .55f : 1) : (checkingCorner ? .45f : .7f);
             if (brain.IsPeeking) move *= .65f;
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
@@ -55,6 +57,9 @@ namespace Unity.MP_FPS
                 HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
                     Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f) move = Vector3.zero;
 
+            bool blinded = ExpeditionFlashBlinded(brain, now);
+            if (brain.IsExpeditionRaider && !blinded && move.sqrMagnitude < .01f)
+                move = SidestepBetweenBursts(brain, position, health, now);
             brain.MovementRequested = move.sqrMagnitude > .01f;
             bool hasContact = brain.Target != Unity.Entities.Entity.Null;
             Vector3 aim = brain.LastSeen + brain.AimOffset;
@@ -68,7 +73,10 @@ namespace Unity.MP_FPS
             }
             Vector3 facing = hasContact ? aim - eye : move;
             bool looting = brain.Action == PmcAction.Scavenge && brain.LootUntil > 0;
+            bool preaimCorner = brain.IsExpeditionRaider && atCorner && !brain.Visible && !blinded && brain.MovementRequested &&
+                (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract) && !RaidHealth.HandsBusy(health);
             if (looting) facing = brain.LootLookPoint - eye;
+            else if (preaimCorner) facing = brain.Corners[brain.Corner + 1] + Vector3.up * 1.15f - eye;
             if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f)
                 facing = brain.MissionLookPoint - eye;
             if (searching && brain.SearchFocusValid)
@@ -85,7 +93,7 @@ namespace Unity.MP_FPS
             if (facing.sqrMagnitude > .001f)
             {
                 float yaw = Mathf.Atan2(facing.x, facing.z) * Mathf.Rad2Deg;
-                float pitch = hasContact || looting ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
+                float pitch = hasContact || looting || preaimCorner ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
                 float turn = m_Tuning.TurnSpeed * (brain.IsExpeditionRaider && brain.Visible ? 1.7f : 1f) * dt;
                 brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, turn);
                 brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, turn * .7f);
@@ -117,15 +125,23 @@ namespace Unity.MP_FPS
                 AimPoint = eye + direction * Mathf.Max(1, distance) };
             input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
             bool fighting = CanReturnFire(brain) && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
-            input.SetFlag(PlayerInput.InputFlag.Aim, fighting && brain.Visible || checkingCorner);
+            input.SetFlag(PlayerInput.InputFlag.Aim, !blinded && (fighting && brain.Visible || checkingCorner || preaimCorner));
             input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
                 brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
                     pursuing && !checkingCorner && distance > 18 ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
-            int preferred = !brain.IsClashBot && brain.Visible && CanReturnFire(brain) && brain.LootUntil <= 0 && now >= brain.NextTacticalSwitch
-                ? PmcWeaponTactics.PreferredSlot(health, distance) : 0;
+            int preferred = 0;
+            if (!brain.IsClashBot && brain.Visible && !blinded && brain.LootUntil <= 0)
+            {
+                bool returnFire = CanReturnFire(brain);
+                bool emptyUnderFire = brain.IsExpeditionRaider && health.CurrentAmmo <= 0 &&
+                    (returnFire || brain.Action == PmcAction.Reload) && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 &&
+                    !brain.Interacting && !brain.Grenade.Active(now) && !brain.HazardDanger;
+                if (emptyUnderFire) preferred = PmcWeaponTactics.LoadedAlternate(health, distance);
+                else if (returnFire && now >= brain.NextTacticalSwitch) preferred = PmcWeaponTactics.PreferredSlot(health, distance);
+            }
             uint preferredWeapon = preferred == 1 ? health.PrimaryWeaponID : preferred == 2 ? health.SecondaryWeaponID : health.PistolWeaponID;
             bool switching = preferred != 0 && WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(preferredWeapon) != null;
             if (switching)
@@ -133,8 +149,12 @@ namespace Unity.MP_FPS
                 input.SetFlag(preferred == 1 ? PlayerInput.InputFlag.EquipHalo : preferred == 2 ?
                     PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
                 brain.NextTacticalSwitch = now + 3;
+                if (brain.IsExpeditionRaider && brain.Action == PmcAction.Reload)
+                    brain.CommitUntil = brain.NextDecision = 0;
             }
-            if (!switching && brain.LootUntil <= 0 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
+            bool reachingCover = brain.IsExpeditionRaider && brain.Visible && brain.HasCover && !brain.IsPeeking &&
+                !brain.PathFailed && brain.MovementRequested;
+            if (!switching && !reachingCover && brain.LootUntil <= 0 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
                 ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
@@ -155,10 +175,11 @@ namespace Unity.MP_FPS
             float firingRange = map.EnemySightRange;
             if (brain.IsExpeditionRaider && brain.Visible && brain.Contacts.TryGetValue(brain.Target, out var contact) && contact.PlayerControlled)
                 firingRange = Mathf.Max(firingRange, m_Tuning.ExpeditionPlayerSightRange);
-            bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && health.CurrentAmmo > 0 &&
+            bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && !blinded && health.CurrentAmmo > 0 &&
                 !health.ControllerState.IsReloadingState && health.WeaponEquipRemaining <= 0 &&
                 now - brain.VisibleSince >= ReactionTime(brain) && distance < firingRange &&
                 Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
+                (!brain.IsExpeditionRaider || !DollSingerBotCombat.Obscured(ghost.gameObject.scene.GetPhysicsScene(), m_TacticalWorld, eye, input.AimPoint)) &&
                 (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));
             // Do not spend a short peek's entire burst while still reacting or
             // turning toward the contact. The burst starts when the shot is possible.
@@ -185,6 +206,30 @@ namespace Unity.MP_FPS
             input.SetFlag(PlayerInput.InputFlag.HaloDefense, defend);
             input.SetFlag(PlayerInput.InputFlag.Shoot, shoot);
             return input;
+        }
+
+        private Vector3 SidestepBetweenBursts(DollSingerEnemyBrain brain, Vector3 position, in PredictedPlayerGhost health, double now)
+        {
+            if (brain.Action != PmcAction.Engage || !brain.Visible || brain.Leaving || !CanReturnFire(brain) ||
+                health.CurrentAmmo <= 0 || RaidHealth.HandsBusy(health) || brain.Grenade.Active(now) || brain.HazardDanger ||
+                now < brain.BurstUntil || now >= brain.NextBurst || now - brain.LastDamage < .65 || brain.Suppression >= .45f)
+                return Vector3.zero;
+
+            float distance = HorizontalDistance(position, brain.LastSeen);
+            if (distance > PreferredCombatRange(brain, health.EquippedWeaponID) + 4) return Vector3.zero;
+            if (brain.SidestepBurst != brain.NextBurst)
+            {
+                float side = ((brain.Seed + (int)(brain.NextBurst * 1.7)) & 1) == 0 ? 1 : -1;
+                brain.SidestepDirection = DollSingerBotCombat.SideStep(position, brain.LastSeen - position, side, distance < 5, m_Filter);
+                brain.SidestepBurst = brain.NextBurst;
+            }
+            if (brain.SidestepDirection.sqrMagnitude > .01f)
+            {
+                // The new position is our firing position for the next burst.
+                brain.TacticalGoal = position;
+                brain.Corner = brain.CornerCount;
+            }
+            return brain.SidestepDirection * .65f;
         }
 
         private float ReactionTime(DollSingerEnemyBrain brain) => brain.IsExpeditionRaider ?

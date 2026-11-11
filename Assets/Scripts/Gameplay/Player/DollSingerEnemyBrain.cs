@@ -509,10 +509,14 @@ namespace Unity.MP_FPS
             weapon is DollSingerWeapons.Shotgun or DollSingerWeapons.Thorn or DollSingerWeapons.Cicada;
 
         // Separate thresholds keep a target near the boundary from causing a weapon swap loop.
-        public static int PreferredSlot(in PredictedPlayerGhost health, float distance)
+        public static int PreferredSlot(in PredictedPlayerGhost health, float distance) => SelectSlot(health, distance, true);
+
+        internal static int LoadedAlternate(in PredictedPlayerGhost health, float distance) => SelectSlot(health, distance, false);
+
+        private static int SelectSlot(in PredictedPlayerGhost health, float distance, bool holdTransitionBand)
         {
             if (!health.InventoryWeapons || health.CurrentHealth <= 0 || RaidHealth.HandsBusy(health) ||
-                !float.IsFinite(distance) || distance < 0 || distance > 11 && distance < 18) return 0;
+                !float.IsFinite(distance) || distance < 0 || holdTransitionBand && distance > 11 && distance < 18) return 0;
             int best = health.CurrentAmmo > 0 ? Suitability(health.EquippedWeaponID, distance) : -1;
             int preferred = 0;
             for (int slot = 1; slot <= 3; slot++)
@@ -648,6 +652,8 @@ namespace Unity.MP_FPS
         public double LastConfirmedSight = -100;
         public bool ReacquiredTarget;
         public double NextCover, NextAimError, BurstUntil, NextBurst, SearchUntil, LootUntil, SpawnTime, LastDamage = -100;
+        internal double SidestepBurst = -1;
+        internal Vector3 SidestepDirection;
         public double NextNearMiss;
         public double LastHeardTime = -100;
         public string MissionAlarmId;

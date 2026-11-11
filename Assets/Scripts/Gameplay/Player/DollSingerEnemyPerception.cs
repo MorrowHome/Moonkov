@@ -27,6 +27,7 @@ namespace Unity.MP_FPS
             }
             float memorySeconds = ContactMemorySeconds(brain);
             float glareSight = HaloLightGlareRules.SightScale(brain.LightGlare);
+            bool blinded = ExpeditionFlashBlinded(brain, now);
             Vector3 facing = Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward;
             foreach (var contact in brain.Contacts.Values)
             {
@@ -36,7 +37,7 @@ namespace Unity.MP_FPS
             }
             foreach (var candidate in m_Targets)
             {
-                if (candidate.Root == null || candidate.Root == root || !CanObserveOpponent(brain, candidate.Entity) || !EntityManager.Exists(candidate.Entity) ||
+                if (blinded || candidate.Root == null || candidate.Root == root || !CanObserveOpponent(brain, candidate.Entity) || !EntityManager.Exists(candidate.Entity) ||
                     !EntityManager.HasComponent<PredictedPlayerGhost>(candidate.Entity) ||
                     EntityManager.GetComponentData<PredictedPlayerGhost>(candidate.Entity).CurrentHealth <= 0) continue;
                 Vector3 offset = candidate.Position + candidate.AimOffset - eye;
@@ -48,17 +49,25 @@ namespace Unity.MP_FPS
                 if (recognizePlayer) cone = Mathf.Max(cone, m_Tuning.ExpeditionPlayerHalfViewAngle);
                 if (distance > sightRange * glareSight || angle > cone) continue;
                 int exposed = 0;
+                Vector3 visibleAim = candidate.AimOffset;
                 if (candidate.Alien || recognizePlayer)
                 {
                     if (ClearSight(root, eye, candidate.Position + candidate.AimOffset, candidate.Entity)) exposed = 3;
-                    else if (recognizePlayer && (ClearSight(root, eye, candidate.Position + candidate.HeadOffset, candidate.Entity) ||
-                        ClearSight(root, eye, candidate.Position + candidate.HipOffset, candidate.Entity))) exposed = 1;
+                    else if (recognizePlayer)
+                    {
+                        if (ClearSight(root, eye, candidate.Position + candidate.HeadOffset, candidate.Entity))
+                        { exposed = 1; visibleAim = candidate.HeadOffset; }
+                        else if (ClearSight(root, eye, candidate.Position + candidate.HipOffset, candidate.Entity))
+                        { exposed = 1; visibleAim = candidate.HipOffset; }
+                    }
                 }
                 else
                 {
-                    if (ClearSight(root, eye, candidate.Position + candidate.HeadOffset, candidate.Entity)) exposed++;
-                    if (ClearSight(root, eye, candidate.Position + candidate.AimOffset, candidate.Entity)) exposed++;
-                    if (ClearSight(root, eye, candidate.Position + candidate.HipOffset, candidate.Entity)) exposed++;
+                    bool head = ClearSight(root, eye, candidate.Position + candidate.HeadOffset, candidate.Entity);
+                    bool center = ClearSight(root, eye, candidate.Position + candidate.AimOffset, candidate.Entity);
+                    bool hip = ClearSight(root, eye, candidate.Position + candidate.HipOffset, candidate.Entity);
+                    exposed = (head ? 1 : 0) + (center ? 1 : 0) + (hip ? 1 : 0);
+                    if (brain.IsExpeditionRaider && !center) visibleAim = head ? candidate.HeadOffset : candidate.HipOffset;
                 }
                 if (exposed == 0) continue;
                 if (!brain.Contacts.TryGetValue(candidate.Entity, out var contact))
@@ -88,7 +97,7 @@ namespace Unity.MP_FPS
                 contact.LastVisualPosition = candidate.Position;
                 contact.HadVisualSample = true;
                 contact.PositionUncertainty = 1;
-                contact.AimOffset = candidate.AimOffset;
+                contact.AimOffset = visibleAim;
                 contact.PlayerControlled = candidate.PlayerControlled;
                 contact.LastSeen = now;
                 if (contact.Suspicion >= .99f) contact.Confirmed = true;
@@ -203,6 +212,9 @@ namespace Unity.MP_FPS
 
         private float ContactMemorySeconds(DollSingerEnemyBrain brain) => m_Tuning.MemorySeconds * (brain.IsExpeditionRaider ? 1.5f : 1);
 
+        private static bool ExpeditionFlashBlinded(DollSingerEnemyBrain brain, double now) =>
+            brain.IsExpeditionRaider && brain.SelfStatus is { FlashStrength: > .25f } status && status.FlashUntil > now;
+
         private void ObserveHazardArea(DollSingerEnemyBrain brain, Transform root, double now)
         {
             uint id = 0; Vector3 position = default; float radius = 0, closest = float.MaxValue;
@@ -290,6 +302,7 @@ namespace Unity.MP_FPS
             brain.SearchUntil = now;
             brain.BurstUntil = 0;
             brain.NextBurst = now;
+            brain.SidestepBurst = -1;
             brain.NextAimError = 0;
             brain.LastConfirmedSight = -100;
             brain.ReacquiredTarget = false;

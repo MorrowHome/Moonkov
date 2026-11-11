@@ -44,7 +44,7 @@ namespace Unity.MP_FPS
         public readonly int Id, Team, Slot;
         public Vector3 LastPosition;
         private const float SightRange = 62;
-        private static readonly int s_Obstacles = LayerMask.GetMask("Default", "Ground");
+        private static readonly NavMeshQueryFilter s_Navigation = new() { areaMask = NavMesh.AllAreas };
         private static readonly float[] s_CoverAngles = { -80, 80, -125, 125, 180 };
         private readonly NavMeshPath m_Path = new();
         private readonly Vector3[] m_Corners = new Vector3[96];
@@ -90,7 +90,7 @@ namespace Unity.MP_FPS
             }
 
             bool visible = !flashed && m_TargetSeat >= 0 && tactics.Roster[m_TargetSeat].Alive &&
-                tactics.Roster[m_TargetSeat].Actor == m_Target && !Obscured(physics, tacticalWorld, eye, m_LastSeen);
+                tactics.Roster[m_TargetSeat].Actor == m_Target && !DollSingerBotCombat.Obscured(physics, tacticalWorld, eye, m_LastSeen);
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
             float distance = Vector3.Distance(eye, m_LastSeen);
             bool recentlyHit = now - m_LastHitAt < .7;
@@ -142,7 +142,7 @@ namespace Unity.MP_FPS
             bool aimed = clear && weapon && health.CurrentAmmo > 0 && health.WeaponEquipRemaining <= 0 &&
                 now >= m_ReactAt && distance <= fireRange &&
                 Vector3.Dot(forward, (aim - eye).normalized) >= .997f &&
-                !WallBetween(physics, eye, eye + forward * distance) && ShotLaneClear(tactics, eye, eye + forward * distance);
+                !DollSingerBotCombat.WallBetween(physics, eye, eye + forward * distance) && ShotLaneClear(tactics, eye, eye + forward * distance);
             if (aimed && now >= m_NextBurst)
             {
                 double raise = DollSingerWeapons.IsHalo(health.EquippedWeaponID) ?
@@ -185,7 +185,7 @@ namespace Unity.MP_FPS
                 Vector3 to = aim - eye;
                 float squared = to.sqrMagnitude;
                 if (squared <= SightRange * SightRange && Vector3.Dot(facing, to.normalized) > .28f &&
-                    !Obscured(physics, tactical, eye, aim))
+                    !DollSingerBotCombat.Obscured(physics, tactical, eye, aim))
                 {
                     tactics.Report(Team, i, entry.Position, map, now);
                     float score = squared * (entry.Actor == m_Target ? .7f : 1);
@@ -248,15 +248,11 @@ namespace Unity.MP_FPS
             if (cover) return FollowRoute(m_CoverPoint, now, .48f);
             if (visible)
             {
-                Vector3 toward = Flat(m_LastSeen - LastPosition).normalized;
                 if (distance > fireRange * .94f)
                     return FollowRoute(m_LastSeen - Vector3.up * 1.19f, now, 2);
                 if (clearLane && now < m_BurstUntil && now >= m_ReactAt) return Vector3.zero;
                 float side = ((int)((now + Slot * .21) * 1.35) + Slot) % 2 == 0 ? 1 : -1;
-                Vector3 strafe = Vector3.Cross(Vector3.up, toward) * side;
-                if (distance < 5) strafe -= toward * .5f;
-                if (CanStep(strafe)) return strafe.normalized * .65f;
-                return CanStep(-strafe) ? -strafe.normalized * .65f : Vector3.zero;
+                return DollSingerBotCombat.SideStep(LastPosition, m_LastSeen - LastPosition, side, distance < 5, s_Navigation) * .65f;
             }
 
             if (!order.Guard && now - m_LastSeenAt < 1.55 && distance < 15)
@@ -311,7 +307,7 @@ namespace Unity.MP_FPS
                 if (!NavMesh.SamplePosition(candidate, out var hit, 1.1f, NavMesh.AllAreas) ||
                     Mathf.Abs(hit.position.y - from.position.y) > 1.25f ||
                     NavMesh.Raycast(from.position, hit.position, out _, NavMesh.AllAreas) ||
-                    !WallBetween(physics, hit.position + Vector3.up * 1.16f, threat)) continue;
+                    !DollSingerBotCombat.WallBetween(physics, hit.position + Vector3.up * 1.16f, threat)) continue;
                 m_CoverPoint = hit.position;
                 m_CoverUntil = now + 1.75;
                 return true;
@@ -353,8 +349,8 @@ namespace Unity.MP_FPS
                     if (now < m_BackOffUntil)
                     {
                         Vector3 side = Vector3.Cross(Vector3.up, offset.normalized) * ((Slot + m_Stalls) % 2 == 0 ? 1 : -1);
-                        if (CanStep(side)) return side * .8f;
-                        if (CanStep(-offset.normalized)) return -offset.normalized * .55f;
+                        if (DollSingerBotCombat.CanStep(LastPosition, side, s_Navigation)) return side * .8f;
+                        if (DollSingerBotCombat.CanStep(LastPosition, -offset.normalized, s_Navigation)) return -offset.normalized * .55f;
                     }
                     return offset.normalized;
                 }
@@ -378,27 +374,13 @@ namespace Unity.MP_FPS
                 if (offset.sqrMagnitude > 1.55f * 1.55f || Vector3.Dot(offset.normalized, move.normalized) < .55f) continue;
                 Vector3 side = Vector3.Cross(Vector3.up, move.normalized);
                 Vector3 bypass = (move + side * .8f).normalized;
-                if (CanStep(bypass)) return bypass * move.magnitude;
+                if (DollSingerBotCombat.CanStep(LastPosition, bypass, s_Navigation)) return bypass * move.magnitude;
                 bypass = (move - side * .8f).normalized;
-                return CanStep(bypass) ? bypass * move.magnitude : move * .4f;
+                return DollSingerBotCombat.CanStep(LastPosition, bypass, s_Navigation) ? bypass * move.magnitude : move * .4f;
             }
             return move;
         }
 
-        private bool CanStep(Vector3 direction) =>
-            NavMesh.SamplePosition(LastPosition, out var from, .85f, NavMesh.AllAreas) &&
-            !NavMesh.Raycast(from.position, from.position + direction * .9f, out _, NavMesh.AllAreas);
-
         private static Vector3 Flat(Vector3 vector) => new(vector.x, 0, vector.z);
-
-        private static bool WallBetween(PhysicsScene scene, Vector3 from, Vector3 to)
-        {
-            Vector3 delta = to - from;
-            float distance = delta.magnitude;
-            return distance > .05f && scene.Raycast(from, delta / distance, distance, s_Obstacles, QueryTriggerInteraction.Ignore);
-        }
-
-        private static bool Obscured(PhysicsScene scene, TacticalServerWorld tactical, Vector3 from, Vector3 to) =>
-            WallBetween(scene, from, to) || SmokeVisibility.Blocked(tactical, scene, from, to);
     }
 }

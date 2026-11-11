@@ -138,9 +138,7 @@ namespace Unity.MP_FPS
                         away.y = 0;
                         float distance = away.magnitude;
                         away.Normalize();
-                        float range = m_Tuning.PreferredRange + brain.Caution * 5;
-                        if (brain.IsExpeditionRaider && PmcWeaponTactics.PrefersCloseRange(health.EquippedWeaponID))
-                            range = Mathf.Min(range, 9 + brain.Caution * 2);
+                        float range = PreferredCombatRange(brain, health.EquippedWeaponID);
                         if (brain.IsExpeditionRaider && Mathf.Abs(distance - range) <= 3)
                             goal = position;
                         else
@@ -158,6 +156,12 @@ namespace Unity.MP_FPS
                 HorizontalDistance(position, brain.MissionGoal) > 9) goal = brain.MissionGoal;
             if (brain.IsClashBot && !InsideClashArena(goal)) goal = RecoverClashRoute(brain, position, now);
             brain.TacticalGoal = goal;
+        }
+
+        private float PreferredCombatRange(DollSingerEnemyBrain brain, uint weapon)
+        {
+            float range = m_Tuning.PreferredRange + brain.Caution * 5;
+            return brain.IsExpeditionRaider && PmcWeaponTactics.PrefersCloseRange(weapon) ? Mathf.Min(range, 9 + brain.Caution * 2) : range;
         }
 
         private static void SetCoverPhase(DollSingerEnemyBrain brain, PmcCoverPhase phase, double until)
