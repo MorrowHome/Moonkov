@@ -75,6 +75,7 @@ namespace Unity.MP_FPS
         {
             RaidGameMode.BountyClash => BountyClashRules.Version,
             RaidGameMode.Arena => ArenaMatch.Version,
+            RaidGameMode.Classic => ClassicMatch.Version,
             _ => 0
         };
 

@@ -112,7 +112,9 @@ namespace Unity.MP_FPS.UI
                 }
                 if (!alive)
                 {
-                    Vector3 target = m_HasLastRaidPosition ? MoonRaidMap.Active.NearestExtraction(m_LastRaidPosition) : MoonRaidMap.Active.ExtractionPosition;
+                    Vector3 target = ClassicDust2Map.Active
+                        ? (m_HasLastRaidPosition ? m_LastRaidPosition : ClassicDust2Map.Active.Site(0))
+                        : m_HasLastRaidPosition ? MoonRaidMap.Active.NearestExtraction(m_LastRaidPosition) : MoonRaidMap.Active.ExtractionPosition;
                     RespawnCamera.transform.position = target + new Vector3(0, 25, -25);
                     RespawnCamera.transform.LookAt(target);
                 }

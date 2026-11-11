@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusSpawnPointsSubScene.unity
     guid: 23117ec2596943141aaee4da078521fc
+  - enabled: 1
+    path: Assets/Scenes/ClassicGameScene.unity
+    guid: 1815272ef52242ef83caa2452a735f2b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 8a359052d73013046af0cccc79347d43, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}

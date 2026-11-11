@@ -201,8 +201,8 @@ public static class BountyClashUIFixture
     public static void OpenPicker(bool offline)
     {
         Inventory(true);
-        if(s_ModePicker==null)s_ModePicker=new BountyModeView(s_Hud.GetComponent<UIDocument>().rootVisualElement,value=>PickerChoice=value);
-        s_ModePicker.Present(false,offline);
+        if(s_ModePicker==null)s_ModePicker=new BountyModeView(s_Hud.GetComponent<UIDocument>().rootVisualElement,value=>PickerChoice=value==RaidGameMode.BountyClash);
+        s_ModePicker.Present(RaidGameMode.Expedition,offline);
         typeof(BountyModeView).GetMethod("Open",Hidden).Invoke(s_ModePicker,null);
     }
     public static void ClosePicker(){s_ModePicker?.Dispose();s_ModePicker=null;Inventory(false);}

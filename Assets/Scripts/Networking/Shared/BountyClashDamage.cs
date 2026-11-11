@@ -8,7 +8,8 @@ namespace Unity.MP_FPS
     // can be reused; participant+epoch identify the original combatant.
     public struct ClashDamageSource
     {
-        public int NetworkId, ParticipantId, Epoch;
+        public int NetworkId, ParticipantId, Epoch, TeamId;
+        public bool HasMatchTeam;
         public bool OnlineHuman;
         public int OnlineTeam;
         // Server-world identity captured at release; unlike NetworkId it is not
@@ -28,7 +29,13 @@ namespace Unity.MP_FPS
             if (manager.HasComponent<OnlineRaidMember>(actor))
             { source.OnlineHuman = true; source.OnlineTeam = manager.GetComponentData<OnlineRaidMember>(actor).Team; source.OnlineActor = actor; }
             if(manager.HasComponent<ClashPlayer>(actor))
-            {var player=manager.GetComponentData<ClashPlayer>(actor);source.ParticipantId=player.ParticipantId;source.Epoch=player.Epoch;}
+            {
+                var player = manager.GetComponentData<ClashPlayer>(actor);
+                source.ParticipantId = player.ParticipantId;
+                source.Epoch = player.Epoch;
+                source.TeamId = player.TeamId;
+                source.HasMatchTeam = true;
+            }
             return source;
         }
         public static ClashDamageSource Capture(World world,int networkId)
@@ -46,7 +53,7 @@ namespace Unity.MP_FPS
                 var arenaMatch = world.EntityManager.GetComponentObject<ArenaMatch>(arena.GetSingletonEntity());
                 foreach (var (connection, player) in arenaMatch.Players)
                     if (world.EntityManager.HasComponent<NetworkId>(connection) && world.EntityManager.GetComponentData<NetworkId>(connection).Value == networkId)
-                    { source.ParticipantId = player.Id; source.Epoch = 1; break; }
+                    { source.ParticipantId = player.Id; source.Epoch = arenaMatch.Epoch; source.TeamId = player.Team; source.HasMatchTeam = true; break; }
                 return source;
             }
             using var query=world.EntityManager.CreateEntityQuery(typeof(BountyClashWorld));
@@ -91,6 +98,9 @@ namespace Unity.MP_FPS
                     if (!health.ClashCanAct || !manager.HasComponent<ClashPlayer>(victim)) return 0;
                     var identity = manager.GetComponentData<ClashPlayer>(victim);
                     if (source.Epoch != 0 && source.Epoch != identity.Epoch) return 0;
+                    var match = manager.GetComponentObject<ArenaMatch>(arena.GetSingletonEntity());
+                    bool sameTeam = source.HasMatchTeam ? source.TeamId == identity.TeamId : match.IsAlly(source.ParticipantId, identity.TeamId);
+                    if (match.Classic != null && source.ParticipantId != identity.ParticipantId && sameTeam) return 0;
                     identity.LastAttacker = source.ParticipantId;
                     manager.SetComponentData(victim, identity);
                 }

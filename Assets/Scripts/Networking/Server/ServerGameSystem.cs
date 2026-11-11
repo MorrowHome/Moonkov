@@ -290,10 +290,11 @@ namespace Unity.MP_FPS
             if (arenaPlayer != null)
             {
                 playerState.ClashEnabled = true;
-                playerState.ClashTeam = arenaPlayer.Id;
+                playerState.ClashTeam = arenaPlayer.Team;
                 playerState.ClashLife = ClashLife.Waiting;
                 playerState.ClashMaxHealthFraction = 1;
-                ecb.AddComponent(playerEntity, new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Id, Epoch = 1 });
+                var match = SystemAPI.ManagedAPI.GetSingleton<ArenaMatch>();
+                ecb.AddComponent(playerEntity, new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Team, Epoch = match.Epoch });
             }
             else ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
             ecb.SetComponent(playerEntity, playerState);
@@ -323,7 +324,7 @@ namespace Unity.MP_FPS
                 {
                     PlayerEntity = playerEntity, PlayerName = playerName, CharacterIndex = characterIndex
                 });
-                if (MoonRaidMap.Active != null)
+                if (MoonRaidMap.Active != null && !SystemAPI.HasComponent<RaidSession>(connectionEntity))
                 {
                     var raid = new RaidSession();
                     var persistence = Persistence(ref state);

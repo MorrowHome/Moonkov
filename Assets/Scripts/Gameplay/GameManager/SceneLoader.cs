@@ -34,6 +34,7 @@ namespace Unity.MP_FPS
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.UnloadingWorld);
 
             await UnloadSceneAsync(GameManager.GameSceneName);
+            await UnloadSceneAsync(ClassicDust2Map.SceneName);
             await UnloadSceneAsync(GameManager.MenuPreviewSceneName);
         }
 
@@ -50,15 +51,26 @@ namespace Unity.MP_FPS
 
         static async Task LoadGameplayScenesAsync()
         {
-            bool arena = GameSettings.Instance.RequestedMode == RaidGameMode.Arena;
-            string sceneName = arena ? GameManager.MenuPreviewSceneName : GameManager.GameSceneName;
-            await LoadSceneAsync(sceneName, LoadingData.LoadingSteps.LoadGameScene);
-            if (arena && !MoonRaidMap.Active)
+            var mode = GameSettings.Instance.RequestedMode;
+            string sceneName = mode switch
             {
-                var menu = UnityEngine.Object.FindFirstObjectByType<Client.MainMenu>(FindObjectsInactive.Include);
-                var panel = menu ? menu.GetComponent<UnityEngine.UIElements.UIDocument>().panelSettings : null;
-                MoonRaidMap.AttachArena(SceneManager.GetSceneByName(sceneName), panel);
+                RaidGameMode.Arena => GameManager.MenuPreviewSceneName,
+                RaidGameMode.Classic => ClassicDust2Map.SceneName,
+                _ => GameManager.GameSceneName
+            };
+            await LoadSceneAsync(sceneName, LoadingData.LoadingSteps.LoadGameScene);
+            if (!ArenaMatch.UsesTemporaryKit(mode) || MoonRaidMap.Active) return;
+            var scene = SceneManager.GetSceneByName(sceneName);
+            if (mode == RaidGameMode.Classic)
+            {
+                var prefab = ClassicDust2Map.LoadPrefab();
+                if (!prefab || !prefab.Configured) throw new System.InvalidOperationException("沙2地图资源未配置。");
+                var map = UnityEngine.Object.Instantiate(prefab.gameObject);
+                SceneManager.MoveGameObjectToScene(map, scene);
             }
+            var menu = UnityEngine.Object.FindAnyObjectByType<Client.MainMenu>(FindObjectsInactive.Include);
+            var panel = menu ? menu.GetComponent<UnityEngine.UIElements.UIDocument>().panelSettings : null;
+            MoonRaidMap.AttachArena(scene, panel);
         }
 
         static async Task LoadSceneAsync(string sceneName, LoadingData.LoadingSteps step)

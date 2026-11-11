@@ -57,6 +57,7 @@ namespace Unity.MP_FPS.Client
             Bind("lanExpedition", () => SelectMode(RaidGameMode.Expedition));
             Bind("lanClash", () => SelectMode(RaidGameMode.BountyClash));
             Bind("lanArena", () => SelectMode(RaidGameMode.Arena));
+            Bind("lanClassic", () => SelectMode(RaidGameMode.Classic));
             Bind("lanBrowsePublic", () => SelectDirectory(false));
             Bind("lanBrowseLocal", () => SelectDirectory(true));
             Bind("lanRefresh", RefreshRooms);
@@ -440,9 +441,13 @@ namespace Unity.MP_FPS.Client
             root.Q("lanExpedition").EnableInClassList("lan-selected", mode == RaidGameMode.Expedition);
             root.Q("lanClash").EnableInClassList("lan-selected", mode == RaidGameMode.BountyClash);
             root.Q("lanArena").EnableInClassList("lan-selected", mode == RaidGameMode.Arena);
+            root.Q("lanClassic").EnableInClassList("lan-selected", mode == RaidGameMode.Classic);
+            root.Q("lanClassic").SetEnabled(ClassicDust2Map.Available);
+            root.Q<Label>("lanClassicHint").text = ClassicDust2Map.Available ? "沙2，空位由人机补齐" : "待导入沙2";
             root.Q<Label>("lanCapacityHint").text = mode switch
             {
                 RaidGameMode.Arena => "2–5 人，装备免费",
+                RaidGameMode.Classic => "最多 10 人",
                 RaidGameMode.BountyClash => "极速赏金最多 12 人，进入后再组建 1–3 人小队。",
                 _ => "远征最多 32 人，包含房主。"
             };
@@ -522,6 +527,7 @@ namespace Unity.MP_FPS.Client
         public static string ModeName(RaidGameMode mode) => mode switch
         {
             RaidGameMode.Arena => "竞技场",
+            RaidGameMode.Classic => "经典爆破",
             RaidGameMode.BountyClash => "极速赏金",
             _ => "远征"
         };
@@ -554,7 +560,8 @@ namespace Unity.MP_FPS.Client
             root.Q<Button>("lanStart").EnableInClassList("lan-hidden", !host);
             bool needsOpponent = room.Mode == RaidGameMode.Arena && room.Members.Length < 2;
             root.Q<Button>("lanStart").text = room.Mode == RaidGameMode.Expedition ? "开始远征" : "进入" + ModeName(room.Mode);
-            root.Q<Button>("lanStart").SetEnabled(lobby && !busy && !needsOpponent && count == room.Members.Length);
+            root.Q<Button>("lanStart").SetEnabled(lobby && !busy && !needsOpponent && count == room.Members.Length &&
+                (room.Mode != RaidGameMode.Classic || ClassicDust2Map.Available));
             root.Q<Button>("lanEquipment").SetEnabled(lobby && !busy);
             root.Q<Button>("lanLeave").text = host ? "关闭房间" : "离开房间"; root.Q<Button>("lanLeave").SetEnabled(!busy);
             var waiting = room.Members.FirstOrDefault(m => !m.Host && !m.Ready);

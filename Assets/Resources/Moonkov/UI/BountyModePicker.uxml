@@ -12,6 +12,10 @@
                 <ui:Label text="BOUNTY CLASH" class="bounty-mode-card-title" picking-mode="Ignore" />
                 <ui:Label text="15 minutes. One target. One bounty. Teams of 1–3; at least two teams to begin." class="bounty-mode-card-copy" picking-mode="Ignore" />
             </ui:Button>
+            <ui:Button name="modeClassic" class="bounty-mode-card">
+                <ui:Label text="经典爆破" class="bounty-mode-card-title" picking-mode="Ignore" />
+                <ui:Label name="modeClassicCopy" class="bounty-mode-card-copy" picking-mode="Ignore" />
+            </ui:Button>
             <ui:Label name="modeAvailability" class="bounty-mode-message" />
             <ui:Button name="modeClose" text="BACK" class="bounty-mode-close terminal-button" />
         </ui:VisualElement>

@@ -206,7 +206,7 @@ namespace Unity.MP_FPS
             m_ClashTaskToggle.clicked += ToggleTasks;
             SetTasksCollapsed(m_TasksCollapsed);
             InitializeRaidMap();
-            if (GameSettings.Instance.RequestedMode == RaidGameMode.Arena) InitializeArenaHud();
+            if (ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode)) InitializeArenaHud();
             InitializeSpecialEquipment();
             InitializeChat();
         }
@@ -1067,6 +1067,9 @@ namespace Unity.MP_FPS
             DisposeCampaignHUD();
             ResetRaidCinematics();
             DisposeRaidMap();
+            if (m_ClassicBomb) Destroy(m_ClassicBomb);
+            m_ClassicBomb = null;
+            m_ClassicHeld = false;
             m_ArenaHud = null;
             m_ArenaFinished = false;
             DisposeBountyClash();

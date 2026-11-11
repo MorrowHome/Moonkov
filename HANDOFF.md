@@ -1,5 +1,13 @@
 # 项目交接
 
+## 经典爆破（2026-11-11）
+
+- 单人仓库的玩法选择和好友房间建房页都可进入「经典爆破」。玩家均分两队，每回合开局由人机补足 5v5。每半场 12 回合，换边后先赢 13 回合的一方获胜。12 比 12 时平局。
+- 购买阶段按 Tab。每局使用临时装备和局内货币。开局使用 Moonkov 的手枪，购买期可补充武器和物资。安放、捡起和拆除炸弹沿用当前交互键。人机可在沙2走位、开火和处理炸弹。
+- 沙2的几何、碰撞和原始颜色贴图来自 Thunderstore 的 CS2 Dust2 移植包。灯光和材质按 Unity 重配。出生区和包点按 CS2 雷达图对齐，再在碰撞上校验。[地图包](https://thunderstore.io/c/reskate/p/anton/CS2_Dust2/) [雷达图](https://github.com/MurkyYT/cs2-map-icons/blob/main/data/available.md)
+- 导入结果在 `Assets/LocalMaps/Dust2`，该目录由 Git 忽略。换电脑时复制整个目录，包含 `.meta`。好友房间的各客户端也需要该地图。没有本地资源时，菜单禁用经典爆破。下载包和中间文件在 `LocalData/ClassicDust2`。`Tools/Validation/ClassicDust2Install.cs` 可用该处的 `extracted` 和 `Tools/Validation/ClassicDust2Anchors.json` 重建预制体。
+- 单 Editor 编译通过。保存后的 10 个出生点到 A、B 点共 20 条导航路线通过。单人实机验证 1 名玩家加 9 名人机、开火、进入第二回合和退出卸载。测试存档在进出对局后内容一致。
+
 ## 好友竞技场（2026-11-11）
 
 - 在好友房间创建页选择「竞技场」。复用模板地图和五个出生点，支持 2–5 人自由对战。先得 30 分或计时 10 分钟结束。死亡 3 秒后复活。

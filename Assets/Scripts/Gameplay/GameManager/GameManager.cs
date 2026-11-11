@@ -200,10 +200,17 @@ namespace Unity.MP_FPS
                 return;
             }
 
-            bool arena = GameSettings.Instance.RequestedMode == RaidGameMode.Arena;
-            if (arena && !lan)
+            var mode = GameSettings.Instance.RequestedMode;
+            bool arena = ArenaMatch.UsesTemporaryKit(mode);
+            if (arena && !lan && !(mode == RaidGameMode.Classic && creationType == CreationType.Offline))
             {
                 ConnectionSettings.Instance.ConnectionError = "竞技场请从好友房间进入。";
+                return;
+            }
+            if (mode == RaidGameMode.Classic && !ClassicDust2Map.Available)
+            {
+                ConnectionSettings.Instance.ConnectionError = "本机缺少沙2地图。";
+                if (lan) await LanRoomClient.ReturnedToMenuAsync();
                 return;
             }
             if (!IsHeadless && !arena)
@@ -266,7 +273,7 @@ namespace Unity.MP_FPS
                 }
             }
 
-            m_OfflineLoadingCheckpoint = creationType == CreationType.Offline
+            m_OfflineLoadingCheckpoint = creationType == CreationType.Offline && !arena
                 ? PlayerProfileClient.OfflineStore.BeginLoadingCheckpoint() : null;
             BeginEnteringGame();
 
@@ -387,7 +394,7 @@ namespace Unity.MP_FPS
                 if (creationType == CreationType.Offline)
                 {
                     server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
-                    if (PlayerProfileClient.Tutorial?.Status == Campaign.TutorialStatus.Active && GameSettings.Instance.RequestedMode != RaidGameMode.BountyClash)
+                    if (PlayerProfileClient.Tutorial?.Status == Campaign.TutorialStatus.Active && GameSettings.Instance.RequestedMode == RaidGameMode.Expedition)
                     {
                         server.EntityManager.CreateEntity(typeof(TutorialRaidMode));
                         client.EntityManager.CreateEntity(typeof(TutorialRaidMode));
@@ -470,8 +477,8 @@ namespace Unity.MP_FPS
             var entity = world.EntityManager.CreateEntity(typeof(RaidModeState));
             world.EntityManager.SetComponentData(entity, new RaidModeState
             { Mode = GameSettings.Instance.RequestedMode, RulesVersion = GameSettings.Instance.RequestedRulesVersion });
-            if (world.IsServer() && GameSettings.Instance.RequestedMode == RaidGameMode.Arena)
-                world.EntityManager.AddComponentObject(entity, new ArenaMatch());
+            if (world.IsServer() && ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode))
+                world.EntityManager.AddComponentObject(entity, new ArenaMatch(GameSettings.Instance.RequestedMode));
         }
 
         private static async Task WaitForModeApprovalAsync(World world, CancellationToken cancellationToken)

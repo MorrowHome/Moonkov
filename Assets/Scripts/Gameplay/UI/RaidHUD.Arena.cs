@@ -32,17 +32,19 @@ namespace Unity.MP_FPS
             m_ArenaResultText = new Label();
             m_ArenaResultText.AddToClassList("arena-score");
             var exit = new Button(() => GameManager.Instance.ReturnToMainMenuAsync());
-            MoonkovLocalization.Set(exit, "返回好友房间");
+            MoonkovLocalization.Set(exit, PlayerProfileClient.IsLan ? "返回好友房间" : "返回主菜单");
             m_ArenaResult.Add(m_ArenaResultText);
             m_ArenaResult.Add(exit);
             m_ArenaResult.style.display = DisplayStyle.None;
             m_Root.Add(m_ArenaResult);
 
-            m_ArenaDefinitions = InventoryCatalog.Definitions.Values.Where(ArenaArmory.Available)
+            m_ClassicHud = GameSettings.Instance.RequestedMode == RaidGameMode.Classic;
+            m_ArenaDefinitions = InventoryCatalog.Definitions.Values.Where(item => m_ClassicHud ? ClassicMatch.Price(item) > 0 : ArenaArmory.Available(item))
                 .OrderBy(item => item.Kind).ThenBy(item => item.Name).ToArray();
-            m_ArenaItems = new DropdownField(m_ArenaDefinitions.Select(item => MoonkovLocalization.Text(item.Name)).ToList(), 0);
+            m_ArenaItems = new DropdownField(m_ArenaDefinitions.Select(item => m_ClassicHud
+                ? $"{MoonkovLocalization.Text(item.Name)}   ${ClassicMatch.Price(item)}" : MoonkovLocalization.Text(item.Name)).ToList(), 0);
             m_ArenaTake = new Button(TakeArenaSupply);
-            MoonkovLocalization.Set(m_ArenaTake, "免费领取");
+            MoonkovLocalization.Set(m_ArenaTake, m_ClassicHud ? "购买" : "免费领取");
             m_ArenaArmory = new VisualElement();
             m_ArenaArmory.AddToClassList("arena-armory");
             m_ArenaArmory.Add(m_ArenaItems);
@@ -67,6 +69,7 @@ namespace Unity.MP_FPS
 
         private void PresentArenaHud()
         {
+            if (m_ClassicHud) { PresentClassicHud(); return; }
             var state = m_World.EntityManager.GetComponentData<ArenaClientState>(m_StateQuery.GetSingletonEntity());
             var match = state.Snapshot;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;

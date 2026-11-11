@@ -78,7 +78,8 @@
 .lan-squad-ui .lan-row-title { margin-bottom: 3px; }
 .lan-squad-ui .lan-row-count { margin: 0 7px; }
 .lan-squad-ui .lan-screen .lan-mode-choice.lan-selected { background-color: #26354a; border-color: #70b8ff; }
-.lan-squad-ui .lan-mode-choices { margin-bottom: 12px; }
+.lan-squad-ui .lan-mode-choices { margin-bottom: 12px; flex-wrap: wrap; }
+.lan-squad-ui .lan-screen .lan-mode-choices .lan-mode-choice { flex-basis: 44%; margin-bottom: 6px; }
 .lan-squad-ui .lan-screen .lan-mode-choice { min-height: 60px; margin-right: 6px; }
 .lan-squad-ui .lan-form-action { border-width: 0; padding-top: 6px; margin-top: 4px; }
 .lan-squad-ui .lan-empty-state { min-height: 80px; padding: 10px; }
@@ -142,5 +143,6 @@
 .lan-squad-ui.lan-small .lan-launch-summary { max-width: 140px; }
 .lan-squad-ui.lan-small .lan-footer { max-width: 24%; }
 .lan-squad-ui.lan-small .lan-browser { width: 366px; }
-.lan-squad-ui.lan-small .lan-mode-choices { flex-direction: column; }
+.lan-squad-ui.lan-small .lan-mode-choices { flex-direction: column; flex-wrap: nowrap; }
+.lan-squad-ui.lan-small .lan-screen .lan-mode-choices .lan-mode-choice { flex-basis: auto; }
 .lan-squad-ui.lan-reduced-motion Button { transition-duration: 0s; }

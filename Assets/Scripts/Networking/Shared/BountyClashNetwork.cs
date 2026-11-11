@@ -5,7 +5,7 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS
 {
-    public enum RaidGameMode : byte { Expedition, BountyClash, Arena }
+    public enum RaidGameMode : byte { Expedition, BountyClash, Arena, Classic }
     public struct RaidModeState : IComponentData { public RaidGameMode Mode; public int RulesVersion; }
     public struct ClashJoinAcceptedRpc : IRpcCommand
     { public RaidGameMode Mode; public int RulesVersion; public bool Accepted; public FixedString64Bytes Reason; }

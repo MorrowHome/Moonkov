@@ -11,10 +11,10 @@ namespace Unity.MP_FPS.Client
         private Button m_StashModeEntry;
         private void InitializeBountyModeUI()
         {
-            m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), clash =>
+            m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), mode =>
             {
                 if (PlayerProfileClient.IsLan) return;
-                GameSettings.Instance.RequestedMode = clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
+                GameSettings.Instance.RequestedMode = mode;
                 ConnectionSettings.Instance.ConnectionError = null;
                 RefreshModePicker();
             });
@@ -28,18 +28,19 @@ namespace Unity.MP_FPS.Client
         }
         private void RefreshModePicker()
         {
-            bool clash = GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash;
+            var mode = GameSettings.Instance.RequestedMode;
+            bool clash = mode == RaidGameMode.BountyClash;
             bool offline = PlayerProfileClient.IsOffline;
             bool online = !offline && !PlayerProfileClient.IsLan;
             m_StashModeEntry.style.display = online ? DisplayStyle.None : DisplayStyle.Flex;
-            m_ModePicker.Present(clash, offline);
-            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, online ? "在线小队：1–4 人合作直接进图，或选择好友对抗；无需凑满人数。" : clash && offline
+            m_ModePicker.Present(mode, offline);
+            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, online ? "在线小队：1–4 人合作直接进图，或选择好友对抗；无需凑满人数。" : mode == RaidGameMode.Classic ? "沙2 5v5，空位由人机补齐" : clash && offline
                 ? "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
                 : "Choose the game mode, then choose how to connect.");
             MoonkovLocalization.Set(m_ModeStatus, ConnectionSettings.Instance.ConnectionError ?? (clash
                 ? offline ? "SOLO BOUNTY CLASH / You against three AI duos. Prepare your offline loadout, then deploy."
                     : "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
-                : "Original expedition rules. Connection method does not change the game mode."));
+                : mode == RaidGameMode.Classic ? "" : "Original expedition rules. Connection method does not change the game mode."));
         }
         private void DisposeBountyModeUI()
         {

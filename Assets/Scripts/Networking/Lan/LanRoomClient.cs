@@ -164,7 +164,7 @@ namespace Unity.MP_FPS
         }
         public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
         {
-            if (Room?.Mode != RaidGameMode.Arena && (action == "start" || action == "ready" && ready))
+            if (!ArenaMatch.UsesTemporaryKit(Room?.Mode ?? RaidGameMode.Expedition) && (action == "start" || action == "ready" && ready))
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (!Active || s_Closing) throw new InvalidOperationException("尚未加入房间。");
             int generation = s_Generation;
@@ -247,7 +247,9 @@ namespace Unity.MP_FPS
             {
                 s_Generation++; var server = Server; Server = null; Room = null; Profile = null; Ticket = MemberId = null;
                 s_PeerRoom?.Dispose(); s_PeerRoom = null;
-                server?.Dispose(); server?.Persistence.Dispose(); PlayerProfileClient.ClearLanProfile(); Changed?.Invoke();
+                server?.Dispose(); server?.Persistence.Dispose(); PlayerProfileClient.ClearLanProfile();
+                if (ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode)) GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
+                Changed?.Invoke();
             }
             finally { s_Closing = false; }
         }

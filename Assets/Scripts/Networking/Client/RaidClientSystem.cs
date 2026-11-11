@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate()
         {
-            m_State = EntityManager.CreateEntity(typeof(RaidClientState), typeof(RaidMissionClientState), typeof(ResearchQuestClientState), typeof(ArenaClientState));
+            m_State = EntityManager.CreateEntity(typeof(RaidClientState), typeof(RaidMissionClientState), typeof(ResearchQuestClientState), typeof(ArenaClientState), typeof(ClassicClientState));
             EntityManager.AddComponentObject(m_State, new RaidInventoryClientState());
             EntityManager.AddComponentObject(m_State,new RaidDeathBagClientState());
         }
@@ -23,6 +23,12 @@ namespace Unity.MP_FPS
             {
                 received.ValueRW.Consume();
                 EntityManager.SetComponentData(m_State, new ArenaClientState { Snapshot = snapshot.ValueRO, Received = true });
+                ecb.DestroyEntity(entity);
+            }
+            foreach (var (snapshot, received, entity) in SystemAPI.Query<RefRO<ClassicSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();
+                EntityManager.SetComponentData(m_State, new ClassicClientState { Snapshot = snapshot.ValueRO, Received = true });
                 ecb.DestroyEntity(entity);
             }
             foreach (var (quest, received, entity) in SystemAPI.Query<RefRO<ResearchQuestSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
@@ -62,7 +68,7 @@ namespace Unity.MP_FPS
                 if (rpc.ValueRO.Sequence > current.Sequence)
                 {
                     EntityManager.SetComponentData(m_State, new RaidClientState { Snapshot = rpc.ValueRO });
-                    if (!World.IsThinClient() && (!SystemAPI.TryGetSingleton<RaidModeState>(out var mode) || mode.Mode != RaidGameMode.Arena))
+                    if (!World.IsThinClient() && (!SystemAPI.TryGetSingleton<RaidModeState>(out var mode) || !ArenaMatch.UsesTemporaryKit(mode.Mode)))
                         PlayerProfileClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
                 }
                 ecb.DestroyEntity(entity);
