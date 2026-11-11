@@ -383,10 +383,11 @@ namespace Unity.MP_FPS
             bool hideWeapon = downed || m_Grenade && m_Grenade.OwnsHands || ghost.HaloDefenseHeld || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
+            bool lightEnabled = ghost.CurrentHealth > 0 && (owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             m_Halo.SetNetworkPresentation(!hideWeapon && !m_HaloOccupied && (owned ? m_OwnedAiming : state.Aiming),
                 (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
                 owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
-                owned ? m_OwnedLightEnabled : state.HaloLightEnabled,
+                lightEnabled,
                 !hideWeapon && !m_HaloOccupied && (owned ? ReadOwnedReadyIntent() : m_OwnedRaised || m_OwnedPendingFire));
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
