@@ -40,6 +40,15 @@ namespace Unity.MP_FPS
                 foreach (var entity in entities)
                     if (world.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId == networkId)
                     { source.OnlineHuman = true; source.OnlineTeam = world.EntityManager.GetComponentData<OnlineRaidMember>(entity).Team; source.OnlineActor = entity; break; }
+            using var arena = world.EntityManager.CreateEntityQuery(typeof(ArenaMatch));
+            if (!arena.IsEmptyIgnoreFilter)
+            {
+                var arenaMatch = world.EntityManager.GetComponentObject<ArenaMatch>(arena.GetSingletonEntity());
+                foreach (var (connection, player) in arenaMatch.Players)
+                    if (world.EntityManager.HasComponent<NetworkId>(connection) && world.EntityManager.GetComponentData<NetworkId>(connection).Value == networkId)
+                    { source.ParticipantId = player.Id; source.Epoch = 1; break; }
+                return source;
+            }
             using var query=world.EntityManager.CreateEntityQuery(typeof(BountyClashWorld));
             if(query.CalculateEntityCount()!=1)return source;
             var match=world.EntityManager.GetComponentObject<BountyClashWorld>(query.GetSingletonEntity()).Match;
@@ -73,19 +82,19 @@ namespace Unity.MP_FPS
             if(!manager.HasComponent<PredictedPlayerGhost>(victim))return 0;
             if (TeamProtected(manager,victim,source)) return 0;
             var health=manager.GetComponentData<PredictedPlayerGhost>(victim);
-            if(health.ClashEnabled)
+            if (health.ClashEnabled)
             {
-                if(health.ClashLife!=ClashLife.Alive)return 0;
-                using var worlds=manager.CreateEntityQuery(typeof(BountyClashWorld));
-                if(worlds.CalculateEntityCount()!=1)return 0;
-                var match=manager.GetComponentObject<BountyClashWorld>(worlds.GetSingletonEntity()).Match;
-                if(match==null||match.Phase!=ClashPhase.Active)return 0;
-                if(source.Epoch!=0&&source.Epoch!=match.Epoch)return 0;
-                ClashParticipant attacker=null;
-                if(source.ParticipantId>0&&!match.Players.TryGetValue(source.ParticipantId,out attacker))return 0;
-                if(attacker!=null&&attacker.TeamId==health.ClashTeam&&(kind==RaidDamageKind.Bullet||kind==RaidDamageKind.Melee))amount*=.1f;
-                if(manager.HasComponent<ClashPlayer>(victim))
-                {var player=manager.GetComponentData<ClashPlayer>(victim);player.LastAttacker=attacker?.Id??0;manager.SetComponentData(victim,player);}
+                if (health.ClashLife != ClashLife.Alive || health.CurrentHealth <= 0) return 0;
+                using var arena = manager.CreateEntityQuery(typeof(ArenaMatch));
+                if (!arena.IsEmptyIgnoreFilter)
+                {
+                    if (!health.ClashCanAct || !manager.HasComponent<ClashPlayer>(victim)) return 0;
+                    var identity = manager.GetComponentData<ClashPlayer>(victim);
+                    if (source.Epoch != 0 && source.Epoch != identity.Epoch) return 0;
+                    identity.LastAttacker = source.ParticipantId;
+                    manager.SetComponentData(victim, identity);
+                }
+                else if (!ApplyClashAttribution(manager, victim, health, source, kind, ref amount)) return 0;
             }
             float healthBefore=health.CurrentHealth;
             float damaged=RaidHealth.CombatDamage(manager,victim,ref health,part,amount,tick,kind,impactPoint);
@@ -107,6 +116,21 @@ namespace Unity.MP_FPS
                 if(target!=source.NetworkId)Gameplay.Leaderboard.LeaderboardManager.Instance?.AddKill(source.NetworkId,target);
             }
             return damaged;
+        }
+        private static bool ApplyClashAttribution(EntityManager manager, Entity victim, PredictedPlayerGhost health,
+            ClashDamageSource source, RaidDamageKind kind, ref float amount)
+        {
+            using var worlds = manager.CreateEntityQuery(typeof(BountyClashWorld));
+            if(worlds.CalculateEntityCount()!=1)return false;
+            var match=manager.GetComponentObject<BountyClashWorld>(worlds.GetSingletonEntity()).Match;
+            if(match==null||match.Phase!=ClashPhase.Active)return false;
+            if(source.Epoch!=0&&source.Epoch!=match.Epoch)return false;
+            ClashParticipant attacker=null;
+            if(source.ParticipantId>0&&!match.Players.TryGetValue(source.ParticipantId,out attacker))return false;
+            if(attacker!=null&&attacker.TeamId==health.ClashTeam&&(kind==RaidDamageKind.Bullet||kind==RaidDamageKind.Melee))amount*=.1f;
+            if(manager.HasComponent<ClashPlayer>(victim))
+            {var player=manager.GetComponentData<ClashPlayer>(victim);player.LastAttacker=attacker?.Id??0;manager.SetComponentData(victim,player);}
+            return true;
         }
     }
 }

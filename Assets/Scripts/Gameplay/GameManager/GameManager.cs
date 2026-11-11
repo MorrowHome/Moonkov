@@ -17,8 +17,7 @@ namespace Unity.MP_FPS
         public static GameManager Instance { get; private set; }
 
         public const int MaxPlayer = 32;
-        public static int RequestedMaxPlayers => GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash
-            ? BountyClashRules.MaxPlayers : MaxPlayer;
+        public static int RequestedMaxPlayers => LanRoomServer.CapacityFor(GameSettings.Instance.RequestedMode);
         public const string MainMenuSceneName = "MainMenu";
         public const string MenuPreviewSceneName = "GameScene";
         // Shared by offline/Host, remote clients and the dedicated server.
@@ -201,7 +200,13 @@ namespace Unity.MP_FPS
                 return;
             }
 
-            if (!IsHeadless)
+            bool arena = GameSettings.Instance.RequestedMode == RaidGameMode.Arena;
+            if (arena && !lan)
+            {
+                ConnectionSettings.Instance.ConnectionError = "竞技场请从好友房间进入。";
+                return;
+            }
+            if (!IsHeadless && !arena)
             {
                 string scope = PlayerProfileClient.LocalPreferenceScope;
                 try
@@ -452,7 +457,7 @@ namespace Unity.MP_FPS
             if (client != null)
             {
                 await WaitForGhostReplicationAsync(client, cancellationToken);
-                if (GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
+                if (GameSettings.Instance.RequestedMode != RaidGameMode.Expedition)
                     await WaitForModeApprovalAsync(client, cancellationToken);
             }
         }
@@ -465,6 +470,8 @@ namespace Unity.MP_FPS
             var entity = world.EntityManager.CreateEntity(typeof(RaidModeState));
             world.EntityManager.SetComponentData(entity, new RaidModeState
             { Mode = GameSettings.Instance.RequestedMode, RulesVersion = GameSettings.Instance.RequestedRulesVersion });
+            if (world.IsServer() && GameSettings.Instance.RequestedMode == RaidGameMode.Arena)
+                world.EntityManager.AddComponentObject(entity, new ArenaMatch());
         }
 
         private static async Task WaitForModeApprovalAsync(World world, CancellationToken cancellationToken)
@@ -473,7 +480,7 @@ namespace Unity.MP_FPS
             double started = Time.realtimeSinceStartupAsDouble;
             while (true)
             {
-                CheckLoadingConnection(started, "Server did not confirm Bounty Clash rules. Check the server mode and version.");
+                CheckLoadingConnection(started, "Server did not confirm the selected game mode.");
                 if (!query.IsEmptyIgnoreFilter)
                 {
                     var state = world.EntityManager.GetComponentObject<BountyClashClientState>(query.GetSingletonEntity());

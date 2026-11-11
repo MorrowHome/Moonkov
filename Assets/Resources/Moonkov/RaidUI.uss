@@ -107,3 +107,38 @@
 #raidOxygenPanel, #raidOxygenWarning { display: none; }
 
 .raid-ui .raid-telemetry { position: absolute; left: 16px; top: 16px; margin: 0; padding: 4px 8px; font-size: 12px; -unity-font-definition: url("../../Localization/Fonts/NotoSansCJKsc-Regular.otf"); color: #edeef0; background-color: rgba(24, 25, 27, 0.72); white-space: normal; display: none; }
+
+.arena-hud {
+    position: absolute;
+    align-self: center;
+    top: 18px;
+    padding: 7px 16px;
+    align-items: center;
+    background-color: rgba(17, 24, 39, 0.9);
+    border-radius: 8px;
+    color: #f0f4ff;
+    font-size: 14px;
+}
+.arena-score {
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+.arena-result {
+    position: absolute;
+    align-self: center;
+    top: 42%;
+    width: 240px;
+    padding: 16px;
+    align-items: stretch;
+    -unity-text-align: middle-center;
+    background-color: #111827;
+    color: #f0f4ff;
+    border-radius: 12px;
+}
+.arena-result Button { margin-top: 12px; }
+.arena-armory {
+    flex-direction: row;
+    align-items: center;
+    margin: 6px 10px;
+}
+.arena-armory DropdownField { flex-grow: 1; }

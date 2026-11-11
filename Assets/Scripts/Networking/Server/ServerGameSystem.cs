@@ -83,6 +83,12 @@ namespace Unity.MP_FPS
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<DisableCharacterDynamicContacts>());
             }
 
+            if (SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>())
+            {
+                HandleArena(ref state, ecb);
+                return;
+            }
+
             PollPersistence(ref state, ecb);
             PollRetainedRaids(ref state, ecb);
             _joinedClientLookup.Update(ref state);
@@ -221,7 +227,8 @@ namespace Unity.MP_FPS
             LeaderboardManager.Instance?.RemovePlayer(networkId);
         }
 
-        private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex)
+        private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex,
+            ArenaMatch.Player arenaPlayer = null, LocalTransform? matchSpawn = null)
         {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
@@ -280,12 +287,21 @@ namespace Unity.MP_FPS
             RaidHealth.Initialize(ref playerState);
             playerState.OnlineHuman = !string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId);
             playerState.OnlineTeam = onlineProfile?.OnlineTeam ?? 0;
-            ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
+            if (arenaPlayer != null)
+            {
+                playerState.ClashEnabled = true;
+                playerState.ClashTeam = arenaPlayer.Id;
+                playerState.ClashLife = ClashLife.Waiting;
+                playerState.ClashMaxHealthFraction = 1;
+                ecb.AddComponent(playerEntity, new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Id, Epoch = 1 });
+            }
+            else ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
             ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);
 
-            if (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint))
+            if (matchSpawn.HasValue) ecb.SetComponent(playerEntity, matchSpawn.Value);
+            else if (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint))
             {
                 var spawn = new LocalTransform { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f };
                 if (!string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId))
@@ -311,7 +327,9 @@ namespace Unity.MP_FPS
                 {
                     var raid = new RaidSession();
                     var persistence = Persistence(ref state);
-                    if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared))
+                    if (arenaPlayer != null)
+                        raid = new RaidSession { RaidId = 1, Phase = RaidPhase.Active, ExtractionIndex = -1 };
+                    else if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared))
                     {
                         raid = prepared;
                         persistence.ReadyRaids.Remove(connectionEntity);
@@ -465,7 +483,7 @@ namespace Unity.MP_FPS
         }
 
         [BurstDiscard]
-        private bool FindSpawnPoint(ref SystemState state, out LocalToWorld spawnPoint)
+        private bool FindSpawnPoint(ref SystemState state, out LocalToWorld spawnPoint, System.Collections.Generic.HashSet<Unity.Mathematics.float3> reserved = null)
         {
             var spawnPointsQuery = SystemAPI.QueryBuilder().WithAll<SpawnPoint, LocalToWorld>().Build();
             var spawnPoints = spawnPointsQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp);
@@ -501,11 +519,12 @@ namespace Unity.MP_FPS
                 (spawnPoints[k], spawnPoints[i]) = (spawnPoints[i], spawnPoints[k]);
             }
 
-            int bestSpawnPointIndex = 0;
+            int bestSpawnPointIndex = -1;
             int minColliderCount = int.MaxValue;
 
             for (int i = 0; i < spawnPoints.Length; i++)
             {
+                if (reserved != null && reserved.Contains(spawnPoints[i].Position)) continue;
                 int numColliders = UnityEngine.Physics.OverlapSphereNonAlloc(spawnPoints[i].Position, 2f,
                     _overlapColliders, LayerMask.GetMask("ServerPlayer"));
 
@@ -522,9 +541,9 @@ namespace Unity.MP_FPS
                 }
             }
 
-            spawnPoint = spawnPoints[bestSpawnPointIndex];
+            spawnPoint = bestSpawnPointIndex >= 0 ? spawnPoints[bestSpawnPointIndex] : default;
             spawnPoints.Dispose();
-            return true;
+            return bestSpawnPointIndex >= 0;
         }
     }
 }

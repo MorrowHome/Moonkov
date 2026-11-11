@@ -50,7 +50,15 @@ namespace Unity.MP_FPS
 
         static async Task LoadGameplayScenesAsync()
         {
-            await LoadSceneAsync(GameManager.GameSceneName, LoadingData.LoadingSteps.LoadGameScene);
+            bool arena = GameSettings.Instance.RequestedMode == RaidGameMode.Arena;
+            string sceneName = arena ? GameManager.MenuPreviewSceneName : GameManager.GameSceneName;
+            await LoadSceneAsync(sceneName, LoadingData.LoadingSteps.LoadGameScene);
+            if (arena && !MoonRaidMap.Active)
+            {
+                var menu = UnityEngine.Object.FindFirstObjectByType<Client.MainMenu>(FindObjectsInactive.Include);
+                var panel = menu ? menu.GetComponent<UnityEngine.UIElements.UIDocument>().panelSettings : null;
+                MoonRaidMap.AttachArena(SceneManager.GetSceneByName(sceneName), panel);
+            }
         }
 
         static async Task LoadSceneAsync(string sceneName, LoadingData.LoadingSteps step)

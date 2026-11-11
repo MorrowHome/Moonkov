@@ -36,8 +36,9 @@ namespace Unity.MP_FPS
         public bool DiscoveryAvailable => m_Discovery != null;
         public LanRoomServer(LanPersistence persistence, string roomName, RaidGameMode mode, int capacity, int port, int gamePort, bool discovery = true, bool peerRoom = false)
         {
-            if (mode != RaidGameMode.Expedition && mode != RaidGameMode.BountyClash) throw new ArgumentException("无效玩法。");
-            int max = mode == RaidGameMode.BountyClash ? BountyClashRules.MaxPlayers : GameManager.MaxPlayer;
+            if (mode != RaidGameMode.Expedition && mode != RaidGameMode.BountyClash && mode != RaidGameMode.Arena)
+                throw new ArgumentException("无效玩法。");
+            int max = CapacityFor(mode);
             if (capacity < 2 || capacity > max || !peerRoom && (port < 0 || port > 65535 || gamePort < 1 || gamePort > 65535 || port == gamePort))
                 throw new ArgumentException("房间人数或端口无效。");
             Persistence = persistence;
@@ -54,6 +55,31 @@ namespace Unity.MP_FPS
         {
             value = new string((value ?? "").Trim().Where(c => !char.IsControl(c) && c != '<' && c != '>').Take(20).ToArray());
             return value.Length == 0 ? "Moonkov" : value;
+        }
+        public static int CapacityFor(RaidGameMode mode) => mode switch
+        {
+            RaidGameMode.Arena => ArenaMatch.Capacity,
+            RaidGameMode.BountyClash => BountyClashRules.MaxPlayers,
+            _ => GameManager.MaxPlayer
+        };
+
+        internal int MatchMembers
+        {
+            get { lock (m_Lock) return m_Members.Values.Count(member => member.View.InGame); }
+        }
+
+        internal bool TryAuthorizeArena(string ticket, out LanMember participant)
+        {
+            participant = null;
+            if (string.IsNullOrEmpty(ticket)) return false;
+            lock (m_Lock)
+            {
+                if (m_Disposed || m_Room.Mode != RaidGameMode.Arena || m_Room.Phase != LanRoomPhase.Playing) return false;
+                var member = m_Members.Values.FirstOrDefault(candidate => candidate.View.InGame && candidate.Ticket == ticket);
+                if (member == null) return false;
+                participant = new LanMember { Id = member.View.Id, Name = member.View.Name, Appearance = member.View.Appearance.Copy() };
+                return true;
+            }
         }
         public LanReply AddHost(string credential, string name, int character = 2, int pose = -1)
         { lock (m_Lock) { if (m_Members.Count != 0) throw new InvalidOperationException(); return Join(credential, name, true, character, pose); } }
@@ -123,13 +149,16 @@ namespace Unity.MP_FPS
                         return Reply(member, true);
                     case "ready":
                         RequireLobby();
-                        if (Persistence.Read(member.View.Id).RaidActive) throw new InvalidOperationException("上一局装备结算尚未完成。");
+                        if (m_Room.Mode != RaidGameMode.Arena && Persistence.Read(member.View.Id).RaidActive)
+                            throw new InvalidOperationException("上一局装备结算尚未完成。");
                         member.View.Ready = request.Ready; break;
                     case "start":
                         RequireLobby();
                         if (!member.View.Host) throw new InvalidOperationException("只有房主可以开始对局。");
+                        if (m_Room.Mode == RaidGameMode.Arena && m_Members.Count < 2) throw new InvalidOperationException("竞技场至少需要两名玩家。");
                         if (m_Members.Values.Any(m => !m.View.Host && !m.View.Ready)) throw new InvalidOperationException("请等待所有成员准备。");
-                        if (m_Members.Values.Any(m => Persistence.Read(m.View.Id).RaidActive)) throw new InvalidOperationException("上一局结算尚未完成。");
+                        if (m_Room.Mode != RaidGameMode.Arena && m_Members.Values.Any(m => Persistence.Read(m.View.Id).RaidActive))
+                            throw new InvalidOperationException("上一局结算尚未完成。");
                         Persistence.RevokeTickets(); m_Room.Phase = LanRoomPhase.Preparing; m_Room.Round++;
                         foreach (var player in m_Members.Values)
                         { player.Ticket = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"); player.View.InGame = true; Persistence.SetTicket(player.Ticket, player.View.Id); }

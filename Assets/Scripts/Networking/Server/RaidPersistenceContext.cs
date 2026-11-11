@@ -134,6 +134,10 @@ namespace Unity.MP_FPS
 
         public RaidPersistenceContext() : this((string)null) { }
 
+        internal static RaidPersistenceContext ForArena() => new RaidPersistenceContext(transient: true);
+
+        private RaidPersistenceContext(bool transient) { }
+
         public RaidPersistenceContext(OfflineProfileStore store)
         {
             m_Offline = store ?? throw new ArgumentNullException(nameof(store));

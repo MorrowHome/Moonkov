@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate()
         {
-            m_State = EntityManager.CreateEntity(typeof(RaidClientState), typeof(RaidMissionClientState), typeof(ResearchQuestClientState));
+            m_State = EntityManager.CreateEntity(typeof(RaidClientState), typeof(RaidMissionClientState), typeof(ResearchQuestClientState), typeof(ArenaClientState));
             EntityManager.AddComponentObject(m_State, new RaidInventoryClientState());
             EntityManager.AddComponentObject(m_State,new RaidDeathBagClientState());
         }
@@ -19,6 +19,12 @@ namespace Unity.MP_FPS
         protected override void OnUpdate()
         {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
+            foreach (var (snapshot, received, entity) in SystemAPI.Query<RefRO<ArenaSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();
+                EntityManager.SetComponentData(m_State, new ArenaClientState { Snapshot = snapshot.ValueRO, Received = true });
+                ecb.DestroyEntity(entity);
+            }
             foreach (var (quest, received, entity) in SystemAPI.Query<RefRO<ResearchQuestSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
@@ -56,7 +62,8 @@ namespace Unity.MP_FPS
                 if (rpc.ValueRO.Sequence > current.Sequence)
                 {
                     EntityManager.SetComponentData(m_State, new RaidClientState { Snapshot = rpc.ValueRO });
-                    if (!World.IsThinClient()) PlayerProfileClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
+                    if (!World.IsThinClient() && (!SystemAPI.TryGetSingleton<RaidModeState>(out var mode) || mode.Mode != RaidGameMode.Arena))
+                        PlayerProfileClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
                 }
                 ecb.DestroyEntity(entity);
             }

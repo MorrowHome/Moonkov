@@ -50,7 +50,7 @@ namespace Unity.MP_FPS
                 SetRaidInventory(ref state,connection,graph,session.RaidId);
             }
         }
-        private void HandleInventoryRequests(ref SystemState state, EntityCommandBuffer ecb)
+        private void HandleInventoryRequests(ref SystemState state, EntityCommandBuffer ecb, bool discard = false)
         {
             foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidActionCancelRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
@@ -81,6 +81,16 @@ namespace Unity.MP_FPS
                             UpdateInventoryProtection(ref state,connection);
                             if(ReloadWeaponMoveBlocked(ref state,connection,InventoryOperation.Move,r.ItemId.ToString()))
                                 inventory.ActionFeedback="充能中不能移动当前武器。";
+                            else if (discard)
+                            {
+                                inventory.Error = LootInventoryExchange.PrepareDrop(inventory.Graph, r.ItemId.ToString(),
+                                    r.ExpectedVersion, out var remaining, out _);
+                                if (inventory.Error == InventoryError.None)
+                                {
+                                    inventory.Graph = remaining;
+                                    UpdateInventoryProtection(ref state, connection, true);
+                                }
+                            }
                             else if(TryFindDropGround(position,out var grounded))
                             {
                                 inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,

@@ -111,8 +111,24 @@ namespace Unity.MP_FPS
         public float StarvationDamagePerSecond => m_StarvationDamagePerSecond;
         public float DehydrationDamagePerSecond => m_DehydrationDamagePerSecond;
 
+        private bool m_Arena;
+
+        internal static void AttachArena(UnityEngine.SceneManagement.Scene scene, PanelSettings panel)
+        {
+            var root = new GameObject("竞技场");
+            root.SetActive(false);
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, scene);
+            var map = root.AddComponent<MoonRaidMap>();
+            map.m_Arena = true;
+            map.m_EnemyCount = 0;
+            map.m_TimeRunning = false;
+            map.m_PanelSettings = panel;
+            root.SetActive(true);
+        }
+
         private void OnEnable()
         {
+            if (m_Arena) { Active = this; return; }
             if (m_LootPositions == null || m_LootPositions.Length == 0 || m_LootPositions.Length > RaidLootContainers.FirstDeathBagId)
             {
                 Debug.LogError("Moon raid needs between 1 and 64 authored loot points.", this);
@@ -135,6 +151,7 @@ namespace Unity.MP_FPS
         {
             // No presentation objects or UI are created in a dedicated server.
             if (!ClientServerBootstrap.HasClientWorlds) return;
+            if (m_Arena) { CreateRaidHud(); return; }
             m_CorpseSettings=Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
             var shader = Shader.Find("Universal Render Pipeline/Lit");
             var beaconColor = new Color(.2f, 1f, .4f);
@@ -162,6 +179,11 @@ namespace Unity.MP_FPS
                 Marker(i == 0 ? "Extraction beacon" : "Extraction beacon " + i, PrimitiveType.Cylinder, exit + Vector3.up * 4,
                     new Vector3(0.3f, 4, 0.3f), m_ExtractionMaterial);
             }
+            CreateRaidHud();
+        }
+
+        private void CreateRaidHud()
+        {
             var document = gameObject.AddComponent<UIDocument>();
             document.panelSettings = m_PanelSettings;
             document.sortingOrder = 20;

@@ -56,6 +56,7 @@ namespace Unity.MP_FPS.Client
             Bind("lanEmptyDirect", () => SelectPage(LanRoomPage.Direct));
             Bind("lanExpedition", () => SelectMode(RaidGameMode.Expedition));
             Bind("lanClash", () => SelectMode(RaidGameMode.BountyClash));
+            Bind("lanArena", () => SelectMode(RaidGameMode.Arena));
             Bind("lanBrowsePublic", () => SelectDirectory(false));
             Bind("lanBrowseLocal", () => SelectDirectory(true));
             Bind("lanRefresh", RefreshRooms);
@@ -171,7 +172,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Busy) return; m_Mode = mode;
             LanRoomPresentation.Mode(m_Root, mode);
-            var capacity = m_Root.Q<IntegerField>("lanCapacity"); capacity.value = Mathf.Clamp(capacity.value, 2, mode == RaidGameMode.BountyClash ? 12 : 32);
+            var capacity = m_Root.Q<IntegerField>("lanCapacity"); capacity.value = Mathf.Clamp(capacity.value, 2, LanRoomServer.CapacityFor(mode));
         }
         private void SetReducedMotion(bool reduced)
         { m_Squad.Stage.ReducedMotion = reduced; m_Root.EnableInClassList("lan-reduced-motion", reduced); }
@@ -436,9 +437,15 @@ namespace Unity.MP_FPS.Client
         { root.EnableInClassList("lan-compact", width < 1120); root.EnableInClassList("lan-small", width < 820); }
         public static void Mode(VisualElement root, RaidGameMode mode)
         {
-            bool clash = mode == RaidGameMode.BountyClash;
-            root.Q("lanExpedition").EnableInClassList("lan-selected", !clash); root.Q("lanClash").EnableInClassList("lan-selected", clash);
-            root.Q<Label>("lanCapacityHint").text = clash ? "极速赏金最多 12 人，进入后再组建 1–3 人小队。" : "远征最多 32 人，包含房主。";
+            root.Q("lanExpedition").EnableInClassList("lan-selected", mode == RaidGameMode.Expedition);
+            root.Q("lanClash").EnableInClassList("lan-selected", mode == RaidGameMode.BountyClash);
+            root.Q("lanArena").EnableInClassList("lan-selected", mode == RaidGameMode.Arena);
+            root.Q<Label>("lanCapacityHint").text = mode switch
+            {
+                RaidGameMode.Arena => "2–5 人，装备免费",
+                RaidGameMode.BountyClash => "极速赏金最多 12 人，进入后再组建 1–3 人小队。",
+                _ => "远征最多 32 人，包含房主。"
+            };
         }
         public static void Rooms(VisualElement root, LanRoomSnapshot[] rooms, Action<LanRoomSnapshot> join)
         {
@@ -512,7 +519,12 @@ namespace Unity.MP_FPS.Client
                 approve.AddToClassList("lan-primary"); actions.Add(approve);
             }
         }
-        public static string ModeName(RaidGameMode mode) => mode == RaidGameMode.BountyClash ? "极速赏金" : "远征";
+        public static string ModeName(RaidGameMode mode) => mode switch
+        {
+            RaidGameMode.Arena => "竞技场",
+            RaidGameMode.BountyClash => "极速赏金",
+            _ => "远征"
+        };
         public static void Lobby(VisualElement root, LanRoomSnapshot room, string localId, bool host, bool ready, bool busy, string address, bool rebuildRoster = true)
         {
             var heading = root.Q<Label>("lanRoomHeading");
@@ -540,15 +552,16 @@ namespace Unity.MP_FPS.Client
             root.Q<Button>("lanReady").EnableInClassList("lan-hidden", host);
             root.Q<Button>("lanReady").text = ready ? "取消准备" : "准备就绪"; root.Q<Button>("lanReady").SetEnabled(lobby && !busy);
             root.Q<Button>("lanStart").EnableInClassList("lan-hidden", !host);
-            root.Q<Button>("lanStart").text = room.Mode == RaidGameMode.BountyClash ? "进入极速赏金" : "开始远征";
-            root.Q<Button>("lanStart").SetEnabled(lobby && !busy && count == room.Members.Length);
+            bool needsOpponent = room.Mode == RaidGameMode.Arena && room.Members.Length < 2;
+            root.Q<Button>("lanStart").text = room.Mode == RaidGameMode.Expedition ? "开始远征" : "进入" + ModeName(room.Mode);
+            root.Q<Button>("lanStart").SetEnabled(lobby && !busy && !needsOpponent && count == room.Members.Length);
             root.Q<Button>("lanEquipment").SetEnabled(lobby && !busy);
             root.Q<Button>("lanLeave").text = host ? "关闭房间" : "离开房间"; root.Q<Button>("lanLeave").SetEnabled(!busy);
             var waiting = room.Members.FirstOrDefault(m => !m.Host && !m.Ready);
             root.Q<Label>("lanLaunchTitle").text = room.Phase == LanRoomPhase.Preparing ? "房主正在加载地图" : room.Phase == LanRoomPhase.Returning ? "等待成员返回房间" : !lobby ? "对局进行中" : waiting == null ? "全员就绪" : "等待成员准备";
             root.Q<Label>("lanLaunchHint").enableRichText = false;
             var hint = root.Q<Label>("lanLaunchHint");
-            hint.text = !lobby ? "" : waiting != null ? $"{waiting.Name} 尚未准备"
+            hint.text = !lobby ? "" : needsOpponent ? "等待一名玩家加入" : waiting != null ? $"{waiting.Name} 尚未准备"
                 : !host ? "等待房主出发" : room.Mode == RaidGameMode.BountyClash ? "进入集结区后组队" : "";
             hint.EnableInClassList("lan-hidden", hint.text.Length == 0);
         }

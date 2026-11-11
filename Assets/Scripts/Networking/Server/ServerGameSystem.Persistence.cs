@@ -14,7 +14,7 @@ namespace Unity.MP_FPS
         {
             if (!state.EntityManager.HasComponent<RaidPersistenceContext>(m_PersistenceEntity))
             {
-                var context = SystemAPI.HasSingleton<OfflineRaidMode>()
+                var context = SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>() ? RaidPersistenceContext.ForArena() : SystemAPI.HasSingleton<OfflineRaidMode>()
                     ? new RaidPersistenceContext(PlayerProfileClient.OfflineStore)
                     : SystemAPI.HasSingleton<LanRaidMode>() ? new RaidPersistenceContext(LanRoomClient.Server.Persistence) : new RaidPersistenceContext();
                 state.EntityManager.AddComponentObject(m_PersistenceEntity, context);

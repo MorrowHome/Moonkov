@@ -49,6 +49,7 @@
                                     <ui:VisualElement class="lan-mode-choices">
                                         <ui:Button name="lanExpedition" class="lan-mode-choice lan-selected"><ui:Label text="远征" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="探索月面，搜寻物资并撤离" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
                                         <ui:Button name="lanClash" class="lan-mode-choice"><ui:Label text="极速赏金" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="组建小队，争夺同一份赏金" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
+                                        <ui:Button name="lanArena" class="lan-mode-choice"><ui:Label text="竞技场" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="自由对战，免费选装" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
                                     </ui:VisualElement>
                                     <ui:IntegerField name="lanCapacity" label="人数上限" value="8" is-delayed="true" class="lan-field" />
                                     <ui:Label name="lanCapacityHint" text="远征最多 32 人，包含房主。" class="lan-muted" />

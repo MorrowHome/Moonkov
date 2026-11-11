@@ -10,7 +10,7 @@ namespace Unity.MP_FPS
     {
         public void RaidDisconnectBeforeCleanup(ref SystemState state)
         {
-            if (MoonRaidMap.Active == null || ClashEnabled(ref state)) return;
+            if (MoonRaidMap.Active == null || ClashEnabled(ref state) || SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>()) return;
             using var query = state.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection), typeof(RaidSession));
             using var connections = query.ToEntityArray(Allocator.Temp);
             foreach (var connection in connections)
@@ -126,6 +126,7 @@ namespace Unity.MP_FPS
 
         private void SettleDisconnectedRaid(ref SystemState state, Entity connection)
         {
+            if (SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>()) return;
             var manager = state.EntityManager;
             if (!manager.Exists(connection) || !manager.HasComponent<RaidSession>(connection)) return;
             var session = manager.GetComponentData<RaidSession>(connection);

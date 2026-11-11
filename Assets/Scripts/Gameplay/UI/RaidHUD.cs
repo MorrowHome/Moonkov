@@ -85,7 +85,7 @@ namespace Unity.MP_FPS
             !ChatInputBlocked && !s_Active.CinematicInputBlocked && !MapInputBlocked &&
             !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
             !QuickTyping(s_Active.m_Root.panel?.focusController.focusedElement as VisualElement);
-        public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
+        public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ArenaFinished || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
@@ -206,6 +206,7 @@ namespace Unity.MP_FPS
             m_ClashTaskToggle.clicked += ToggleTasks;
             SetTasksCollapsed(m_TasksCollapsed);
             InitializeRaidMap();
+            if (GameSettings.Instance.RequestedMode == RaidGameMode.Arena) InitializeArenaHud();
             InitializeSpecialEquipment();
             InitializeChat();
         }
@@ -489,6 +490,7 @@ namespace Unity.MP_FPS
             UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
+            if (m_ArenaHud != null) { PresentArenaHud(); return; }
             bool clash = PresentBountyClash();
             UpdateRaidCinematics(clash);
             UpdateChat();
@@ -1065,6 +1067,8 @@ namespace Unity.MP_FPS
             DisposeCampaignHUD();
             ResetRaidCinematics();
             DisposeRaidMap();
+            m_ArenaHud = null;
+            m_ArenaFinished = false;
             DisposeBountyClash();
             DisposeMelee();
             DisposeQuickSlots();

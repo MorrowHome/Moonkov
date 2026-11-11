@@ -164,7 +164,8 @@ namespace Unity.MP_FPS
         }
         public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
         {
-            if (action == "start" || action == "ready" && ready) await PlayerProfileClient.FlushMenuInventoryAsync(ct);
+            if (Room?.Mode != RaidGameMode.Arena && (action == "start" || action == "ready" && ready))
+                await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (!Active || s_Closing) throw new InvalidOperationException("尚未加入房间。");
             int generation = s_Generation;
             var request = new LanRequest { Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,

@@ -64,14 +64,19 @@ namespace Unity.MP_FPS
             get => m_RequestedMode;
             set
             {
-                if (value != RaidGameMode.Expedition && value != RaidGameMode.BountyClash) return;
+                if (!Enum.IsDefined(typeof(RaidGameMode), value)) return;
                 if (m_RequestedMode == value) return;
                 m_RequestedMode = value;
                 PlayerPrefs.SetInt(k_RaidModeKey, (int)value);
                 Notify();
             }
         }
-        public int RequestedRulesVersion => RequestedMode == RaidGameMode.BountyClash ? BountyClashRules.Version : 0;
+        public int RequestedRulesVersion => RequestedMode switch
+        {
+            RaidGameMode.BountyClash => BountyClashRules.Version,
+            RaidGameMode.Arena => ArenaMatch.Version,
+            _ => 0
+        };
 
         GameSettings()
         {
