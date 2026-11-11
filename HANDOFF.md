@@ -270,6 +270,8 @@
 - 旧 `PreventDefault` 的行为包含焦点拦截。替换时保留停止传播和 `FocusController.IgnoreEvent`。`CampaignProgress` 是 JSON 数据，字典和集合不走 Unity 序列化。旧 JSON 往返、导航连接释放及聊天键盘行为已验证。
 - 经用户确认，已通过 UPM 移除未使用的 AI Inference 2.6.1 及其独占依赖 App UI；其余包版本不变。不要为消除 Pipeline 的构建提示而开启玩家调试服务器，也不要直接改只读包缓存来隐藏 lilToon 的提示。
 - 11 月 8 日 22:21 的完整 Windows Player 构建成功，0 错误、4 条第三方警告，耗时 421.9 秒。C# 与 Shader 均无警告。产物与报告在 `Build/WarningReview-20261108`。Windows 实机画面、性能和联机仍待验收。通过 Pipeline 安排长构建后，只读磁盘报告，不轮询繁忙 Editor 的主线程命令。
+- `v26.11.11.2` 的单人爆破进图后退回菜单。新版 `ClassicSnapshotRpc` 发了 153 字节，Windows Burst 沿用了只读 61 字节的旧代码，触发 `InvalidRpc`。遇到同类错误，先核对该 RPC 的 Burst 收发代码。确认复用了旧代码后，在 Editor 空闲时将 `Library/BurstCache/Windows-Intel` 移到备份目录，再重打完整 Windows 包。保留 Bee、Addressables 和其他平台的缓存。
+- `v26.11.12.1` 重建通过，0 错误。已核对 AVX2 和 SSE2 两套 Burst 代码。爆破快照的 10 个名字、补给请求的数量字段均可完整读写。单人沙2在 Mac Editor 已验证。Windows 实机待复测。
 - 正式地图和画质设置都引用 `MC00BakedPipeline.asset`。构建可能改写其中的 `m_Prefilter*` 字段。保留该资产及其 `.meta` 的 Git 跟踪。单次构建生成的字段差异可留在本地。
 
 ## 本地 Windows 独立服构建（2026-11-06）
