@@ -101,14 +101,15 @@ namespace Unity.MP_FPS
             m_RefreshTimer = .1f;
             RefreshHealth();
             ClassicDust2Map.Active?.PresentSupplyCacheMask(match.CacheMask);
-            PresentClassicTeamStatus(m_ClassicStatusA, match.AliveMaskA);
-            PresentClassicTeamStatus(m_ClassicStatusB, match.AliveMaskB);
+            PresentClassicTeamStatus(m_ClassicStatusA, match.AliveMaskA, match.AttackTeam == 0, match.Team != 0);
+            PresentClassicTeamStatus(m_ClassicStatusB, match.AliveMaskB, match.AttackTeam == 1, match.Team != 1);
             var left = match.Team == 0 ? m_ClassicStatusA : m_ClassicStatusB;
             var right = match.Team == 0 ? m_ClassicStatusB : m_ClassicStatusA;
-            m_ArenaHud.Clear();
-            m_ArenaHud.Add(left);
-            m_ArenaHud.Add(m_ClassicCenter);
-            m_ArenaHud.Add(right);
+            if (m_ArenaHud.IndexOf(left) != 0)
+            {
+                left.SendToBack();
+                right.BringToFront();
+            }
             int seconds = Mathf.CeilToInt(match.Remaining);
             int ownScore = match.Team == 0 ? match.ScoreA : match.ScoreB;
             int enemyScore = match.Team == 0 ? match.ScoreB : match.ScoreA;
@@ -153,14 +154,17 @@ namespace Unity.MP_FPS
             }
         }
 
-        private static void PresentClassicTeamStatus(VisualElement row, byte aliveMask)
+        private static void PresentClassicTeamStatus(VisualElement row, byte aliveMask, bool attacking, bool right)
         {
-            if (row == null) return;
+            row.EnableInClassList("classic-status-attackers", attacking);
+            row.EnableInClassList("classic-status-defenders", !attacking);
+            row.EnableInClassList("is-right", right);
+            row.Q<Label>(className: "classic-status-team").text = attacking ? "T" : "CT";
             for (int i = 0; i < ClassicMatch.TeamSize; i++)
             {
                 bool alive = (aliveMask & (1 << i)) != 0;
                 var player = row.Q<Label>("player-" + i);
-                MoonkovLocalization.Set(player, alive ? "●" : "×");
+                player.text = alive ? "●" : "×";
                 player.EnableInClassList("is-dead", !alive);
             }
         }

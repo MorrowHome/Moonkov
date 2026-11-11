@@ -39,10 +39,11 @@ namespace Unity.MP_FPS
             m_ClassicHud = GameSettings.Instance.RequestedMode == RaidGameMode.Classic;
             if (m_ClassicHud)
             {
+                m_ArenaHud.AddToClassList("is-classic");
+                m_ArenaHud.AddToClassList("moonkov-style-font");
                 m_ClassicStatusA = CreateClassicTeamStatus("T");
                 m_ClassicStatusB = CreateClassicTeamStatus("CT");
                 m_ArenaHud.Add(m_ClassicStatusA);
-                m_ArenaHud.Add(m_ClassicStatusB);
                 m_ClassicCenter = new VisualElement { pickingMode = PickingMode.Ignore };
                 m_ClassicCenter.AddToClassList("classic-score-center");
                 m_ArenaScore.AddToClassList("classic-score-line");
@@ -50,6 +51,7 @@ namespace Unity.MP_FPS
                 m_ClassicCenter.Add(m_ArenaScore);
                 m_ClassicCenter.Add(m_ArenaStatus);
                 m_ArenaHud.Add(m_ClassicCenter);
+                m_ArenaHud.Add(m_ClassicStatusB);
             }
             m_Root.Add(m_ArenaHud);
             if (m_ClassicHud)
