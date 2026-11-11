@@ -10,7 +10,7 @@ namespace Unity.MP_FPS.DollSinger
         Forward, Backward, Left, Right, Sprint, Jump, Crouch, HoldCrouch, Prone, TiptoeOrCancel,
         LeanLeft, LeanRight, Reload, Interact, Inspect, Grenade,
         Defense, Transfer, DeployHalo, HaloMode, Scan, Light,
-        ViewOrDarkSight, ClashView, Inventory, Status, Map, Journal
+        ViewOrDarkSight, ClashView, Inventory, Status, Map, Journal, Buy, Scoreboard
     }
 
     public static class RaidKeyBindings
@@ -32,7 +32,7 @@ namespace Unity.MP_FPS.DollSinger
             (RaidKey.LeanRight, Key.E, "Lean right"),
             (RaidKey.Reload, Key.R, "Reload"),
             (RaidKey.Interact, Key.F, "Interact / Loot"),
-            (RaidKey.Inspect, Key.I, "Inspect target"),
+            (RaidKey.Inspect, Key.O, "Inspect target"),
             (RaidKey.Grenade, Key.G, "Equip / Stow grenade"),
             (RaidKey.Defense, Key.T, "Defend"),
             (RaidKey.Transfer, Key.Y, "Transfer energy"),
@@ -41,11 +41,13 @@ namespace Unity.MP_FPS.DollSinger
             (RaidKey.Scan, Key.N, "Scan"),
             (RaidKey.Light, Key.L, "Halo light"),
             (RaidKey.ViewOrDarkSight, Key.V, "Change view / Dark Sight"),
-            (RaidKey.ClashView, Key.B, "Change view (Clash)"),
-            (RaidKey.Inventory, Key.Tab, "RAID INVENTORY"),
+            (RaidKey.ClashView, Key.F8, "Change view (Clash)"),
+            (RaidKey.Inventory, Key.I, "RAID INVENTORY"),
             (RaidKey.Status, Key.H, "STATUS CHECK"),
             (RaidKey.Map, Key.M, "Raid map"),
-            (RaidKey.Journal, Key.J, "Journal")
+            (RaidKey.Journal, Key.J, "Journal"),
+            (RaidKey.Buy, Key.B, "Buy equipment"),
+            (RaidKey.Scoreboard, Key.Tab, "SCOREBOARD")
         };
         private static Key[] s_Keys;
 

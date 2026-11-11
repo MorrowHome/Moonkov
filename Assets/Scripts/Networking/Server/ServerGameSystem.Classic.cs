@@ -108,6 +108,12 @@ namespace Unity.MP_FPS
                     Phase = rules.Phase, Round = rules.Round, Team = seat.Team, AttackTeam = rules.AttackTeam,
                     ScoreA = rules.Score[0], ScoreB = rules.Score[1], AliveA = aliveA, AliveB = aliveB,
                     AliveMaskA = aliveMaskA, AliveMaskB = aliveMaskB,
+                    NameA0 = ClassicRosterName(match, 0, 0), NameA1 = ClassicRosterName(match, 0, 1),
+                    NameA2 = ClassicRosterName(match, 0, 2), NameA3 = ClassicRosterName(match, 0, 3),
+                    NameA4 = ClassicRosterName(match, 0, 4),
+                    NameB0 = ClassicRosterName(match, 1, 0), NameB1 = ClassicRosterName(match, 1, 1),
+                    NameB2 = ClassicRosterName(match, 1, 2), NameB3 = ClassicRosterName(match, 1, 3),
+                    NameB4 = ClassicRosterName(match, 1, 4),
                     CacheMask = rules.CacheMask(seat.Id),
                     Remaining = remaining, Credits = seat.Credits, Winner = rules.Phase == ClassicPhase.Finished ? rules.Winner : rules.RoundWinner,
                     HasBomb = rules.Carrier == seat.Id, Alive = alive,
@@ -118,6 +124,14 @@ namespace Unity.MP_FPS
                 });
                 ecb.AddComponent(rpc, new SendRpcCommandRequest { TargetConnection = connection });
             }
+        }
+
+        private static FixedString64Bytes ClassicRosterName(ArenaMatch match, int team, int slot)
+        {
+            var player = match.Players.Values.FirstOrDefault(value => value.Team == team && value.Slot == slot);
+            if (player != null) return player.Name;
+            var bot = match.Bots.Values.FirstOrDefault(value => value.Team == team && value.Slot == slot);
+            return bot == null ? default : new FixedString64Bytes($"BOT {slot + 1:00}");
         }
 
         private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now)

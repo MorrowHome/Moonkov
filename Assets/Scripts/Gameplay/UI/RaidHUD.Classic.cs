@@ -8,6 +8,9 @@ namespace Unity.MP_FPS
     public sealed partial class RaidHUD
     {
         private bool m_ClassicHud, m_ClassicHeld, m_ClassicBuyOpen;
+        private uint m_ClassicPurchaseSequence;
+        private string m_ClassicPurchaseMessage;
+        private float m_ClassicPurchaseMessageUntil;
         private double m_NextClassicUse;
         private GameObject m_ClassicBomb;
 
@@ -18,25 +21,42 @@ namespace Unity.MP_FPS
             bool buy = match.Phase == ClassicPhase.Buy;
             bool fighting = match.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             bool paused = GameSettings.Instance.IsPauseMenuOpen;
+            bool typing = QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
             m_ArenaFinished = data.Received && match.Phase == ClassicPhase.Finished;
             if (!buy && m_ClassicBuyOpen) SetClassicBuyMenu(false);
             if ((m_ArenaFinished || !match.Alive) && m_InventoryVisible) SetInventory(false);
-            bool tabPressed = RaidKeyBindings.Pressed(RaidKey.Inventory);
+            bool buyPressed = RaidKeyBindings.Pressed(RaidKey.Buy);
             bool gamepadPressed = Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame;
-            if (match.Alive && !m_ArenaFinished && !ChatInputBlocked && !paused && (tabPressed || buy && gamepadPressed))
+            if (match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && (buyPressed || buy && gamepadPressed))
             {
                 if (buy) SetClassicBuyMenu(!m_ClassicBuyOpen);
-                else SetInventory(!m_InventoryVisible);
             }
-            if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !paused && gamepadPressed)
+            if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && gamepadPressed)
                 SetInventory(!m_InventoryVisible);
+            bool scoreboard = !ChatInputBlocked && !typing && !paused && RaidKeyBindings.Held(RaidKey.Scoreboard);
+            bool inventoryPressed = RaidKeyBindings.Pressed(RaidKey.Inventory);
+            if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed)
+                SetInventory(!m_InventoryVisible);
+            PresentClassicScoreboard(match, scoreboard);
 
             m_ArenaArmory.style.display = buy && m_ClassicBuyOpen ? DisplayStyle.Flex : DisplayStyle.None;
-            int selected = m_ArenaItems.index;
-            bool affordable = selected >= 0 && selected < m_ArenaDefinitions.Length &&
-                ClassicMatch.Price(m_ArenaDefinitions[selected]) <= match.Credits;
-            m_ArenaTake.SetEnabled(affordable && !m_InventoryRequestPending && !TimedActionActive);
-            UpdateInventoryBackdrop();
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
+            {
+                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+                if (inventory.Sequence != m_ClassicPurchaseSequence)
+                {
+                    m_ClassicPurchaseSequence = inventory.Sequence;
+                    if (inventory.RequestId == m_InventoryRequestId)
+                    {
+                        m_ClassicPurchaseMessage = inventory.Error == Inventory.InventoryError.None
+                            ? null : ClassicPurchaseError(inventory.Error);
+                        m_ClassicPurchaseMessageUntil = Time.unscaledTime + 3;
+                    }
+                }
+                string purchaseError = Time.unscaledTime < m_ClassicPurchaseMessageUntil ? m_ClassicPurchaseMessage : null;
+                m_ClassicShop.Present(m_ClassicOffers, inventory.Graph, buy && match.Alive && !m_ArenaFinished &&
+                    !m_InventoryRequestPending && !TimedActionActive, false, purchaseError, match.Credits, "CREDITS");
+            }
             UpdateChat();
             PresentQuickSlots(match.Alive && !m_ArenaFinished);
             PresentMelee(fighting && match.Alive);
@@ -82,14 +102,22 @@ namespace Unity.MP_FPS
             ClassicDust2Map.Active?.PresentSupplyCacheMask(match.CacheMask);
             PresentClassicTeamStatus(m_ClassicStatusA, match.AliveMaskA);
             PresentClassicTeamStatus(m_ClassicStatusB, match.AliveMaskB);
+            var left = match.Team == 0 ? m_ClassicStatusA : m_ClassicStatusB;
+            var right = match.Team == 0 ? m_ClassicStatusB : m_ClassicStatusA;
+            m_ArenaHud.Clear();
+            m_ArenaHud.Add(left);
+            m_ArenaHud.Add(m_ClassicCenter);
+            m_ArenaHud.Add(right);
             int seconds = Mathf.CeilToInt(match.Remaining);
+            int ownScore = match.Team == 0 ? match.ScoreA : match.ScoreB;
+            int enemyScore = match.Team == 0 ? match.ScoreB : match.ScoreA;
             m_ArenaScore.text = match.Round == 0 ? MoonkovLocalization.Text("经典爆破") :
-                $"{match.ScoreA}   {seconds / 60:00}:{seconds % 60:00}   {match.ScoreB}";
+                $"{ownScore}   {seconds / 60:00}:{seconds % 60:00}   {enemyScore}";
             string role = MoonkovLocalization.Text(match.Team == match.AttackTeam ? "进攻" : "防守");
             string phase = match.Phase switch
             {
                 ClassicPhase.Waiting => MoonkovLocalization.Text("等待玩家进入"),
-                ClassicPhase.Buy => $"{role}   ${match.Credits}   {MoonkovLocalization.Text("Tab 购买")}",
+                ClassicPhase.Buy => $"{role}   ${match.Credits}   {RaidKeyBindings.DisplayName(RaidKey.Buy)} {MoonkovLocalization.Text("购买")}",
                 ClassicPhase.RoundOver => MoonkovLocalization.Text(match.Winner == match.Team ? "本回合获胜" : "本回合落败"),
                 ClassicPhase.Planted => MoonkovLocalization.Text("炸弹已安放"),
                 _ when !match.Alive => MoonkovLocalization.Text("等待下回合"),
@@ -113,16 +141,14 @@ namespace Unity.MP_FPS
             m_ClassicBuyOpen = visible;
             if (visible)
             {
-                SetInventory(true);
-                m_ArenaInventoryWindow.style.display = DisplayStyle.None;
+                if (m_InventoryVisible) SetInventory(false);
                 m_ArenaArmory.style.display = DisplayStyle.Flex;
                 Utils.SetCursorVisible(true);
             }
             else
             {
-                m_ArenaInventoryWindow.style.display = DisplayStyle.Flex;
                 m_ArenaArmory.style.display = DisplayStyle.None;
-                SetInventory(false);
+                Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen || m_MapOpen || m_WasSettled);
             }
         }
 
@@ -137,5 +163,14 @@ namespace Unity.MP_FPS
                 player.EnableInClassList("is-dead", !alive);
             }
         }
+
+        private static string ClassicPurchaseError(Inventory.InventoryError error) => error switch
+        {
+            Inventory.InventoryError.Full => "背包空间不足",
+            Inventory.InventoryError.Overweight => "超过携带重量",
+            Inventory.InventoryError.Stale => "库存已变化，请重试",
+            Inventory.InventoryError.Inaccessible => "当前无法购买",
+            _ => "购买失败"
+        };
     }
 }

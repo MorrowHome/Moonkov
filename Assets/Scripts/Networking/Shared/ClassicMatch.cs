@@ -18,6 +18,8 @@ namespace Unity.MP_FPS
         public float Remaining, UseProgress;
         public bool HasBomb, Alive, BombVisible;
         public byte AliveMaskA, AliveMaskB, CacheMask;
+        public FixedString64Bytes NameA0, NameA1, NameA2, NameA3, NameA4;
+        public FixedString64Bytes NameB0, NameB1, NameB2, NameB3, NameB4;
         public Unity.Mathematics.float3 BombPosition;
     }
 
@@ -35,7 +37,7 @@ namespace Unity.MP_FPS
 
     public sealed class ClassicMatch
     {
-        public const int Version = 2, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
+        public const int Version = 3, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
         public const double BuySeconds = 12, RoundSeconds = 115, FuseSeconds = 40, BreakSeconds = 5;
         public ClassicPhase Phase { get; private set; }
         public double Deadline { get; private set; }
@@ -196,6 +198,14 @@ namespace Unity.MP_FPS
             if (definition.Kind == ItemKind.Pistol) return 500;
             if (definition.Kind is ItemKind.Helmet or ItemKind.Shield) return 650;
             if (definition.Kind == ItemKind.Cell) return 100;
+            if (definition.Kind == ItemKind.Medical) return definition.Code switch
+            {
+                "medkit" => 400, "trauma_kit" => 900, "rescue_kit" => 700, "med_gel" => 200,
+                "hemostatic_bandage" => 150, _ => 0
+            };
+            if (definition.Kind == ItemKind.Food) return 100;
+            if (definition.Kind == ItemKind.Drink) return 150;
+            if (definition.Kind == ItemKind.Oxygen) return 250;
             if (definition.Kind != ItemKind.Throwable || TacticalItemRules.Find(definition.Code) == null) return 0;
             return definition.Code switch
             {
@@ -214,17 +224,21 @@ namespace Unity.MP_FPS
                 "concertina_trip_mine" => 300,
                 "poison_trip_mine" => 250,
                 "ammo_box" => 600,
+                "energy_grenade" => 400,
                 _ => 0
             };
         }
 
-        public static InventoryError Purchase(InventoryGraph graph, string code, int version)
+        public static InventoryError Purchase(InventoryGraph graph, string code, int version, int quantity = 1)
         {
             if (Price(InventoryCatalog.Get(code)) <= 0) return InventoryError.Invalid;
             if (graph == null || graph.Version != version) return graph == null ? InventoryError.Invalid : InventoryError.Stale;
             var definition = InventoryCatalog.Get(code);
-            if (definition.Kind is ItemKind.Cell or ItemKind.Throwable)
-                return graph.AddSupply(code, 1, InventoryCatalog.Pockets);
+            bool stackableSupply = definition.Kind is ItemKind.Cell or ItemKind.Throwable or ItemKind.Medical or
+                ItemKind.Food or ItemKind.Drink or ItemKind.Oxygen;
+            if (quantity < 1 || quantity > definition.MaxStack || !stackableSupply && quantity != 1) return InventoryError.Invalid;
+            if (stackableSupply)
+                return graph.AddSupply(code, quantity, InventoryCatalog.Pockets);
             return ArenaArmory.Issue(graph, code, version);
         }
 

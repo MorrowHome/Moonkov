@@ -27,7 +27,9 @@ namespace Unity.MP_FPS.Client
         private ShopOffer[] m_Offers;
         private InventoryGraph m_Graph;
         private string m_OfferKey, m_SelectedCode, m_ArtCode, m_Query = "", m_ReadOnlyReason;
-        private int m_Filter, m_QuantityValue = 1, m_Columns = 1;
+        private int m_Filter, m_QuantityValue = 1, m_Columns = 1, m_BalanceOverride;
+        private string m_CurrencyLabel = "DUST";
+        private bool m_HasBalanceOverride;
         private bool m_CanTrade, m_Loading, m_Disposed;
         private VisualElement m_HoverTarget;
         private string m_HoverCode;
@@ -67,10 +69,13 @@ namespace Unity.MP_FPS.Client
             Present(null, null, false, true);
         }
 
-        public void Present(ShopOffer[] offers, InventoryGraph graph, bool canTrade, bool loading, string readOnlyReason = null)
+        public void Present(ShopOffer[] offers, InventoryGraph graph, bool canTrade, bool loading, string readOnlyReason = null,
+            int? balanceOverride = null, string currencyLabel = "DUST")
         {
             if (m_Disposed) return;
             m_Offers = offers; m_Graph = graph; m_CanTrade = canTrade && graph != null; m_Loading = loading; m_ReadOnlyReason = readOnlyReason;
+            m_HasBalanceOverride = balanceOverride.HasValue; m_BalanceOverride = balanceOverride.GetValueOrDefault();
+            m_CurrencyLabel = currencyLabel ?? "DUST";
             string key = offers == null ? null : string.Join("|", offers.Where(o => o.BuyDust >= 0).Select(o => o.Code + ":" + o.Name + ":" + o.BuyDust + ":" + o.FreeSupplyRestricted));
             if (m_OfferKey != key || m_Tiles.Count == 0) { m_OfferKey = key; Rebuild(); }
             else RefreshSelection();
@@ -107,7 +112,7 @@ namespace Unity.MP_FPS.Client
                 var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = false }; title.AddToClassList("shop-purchase-tile-name"); tile.Add(title); MoonkovLocalization.Set(title, offer.Name ?? InventoryCatalog.Get(offer.Code).Name);
                 var price = new Label { name = "productPrice", pickingMode = PickingMode.Ignore }; price.AddToClassList("shop-purchase-tile-price");
                 price.EnableInClassList("shop-purchase-price-free", offer.BuyDust == 0); tile.Add(price);
-                if (offer.BuyDust == 0) MoonkovLocalization.Set(price, "FREE"); else MoonkovLocalization.Set(price, "{0} DUST", offer.BuyDust);
+                if (offer.BuyDust == 0) MoonkovLocalization.Set(price, "FREE"); else MoonkovLocalization.Set(price, "{0} {1}", offer.BuyDust, m_CurrencyLabel);
                 tile.RegisterCallback<FocusInEvent>(_ => Select(captured.Code));
                 tile.RegisterCallback<PointerEnterEvent>(evt => { if (evt.pointerType == PointerType.mouse && evt.pressedButtons == 0) Hover(tile, captured.Code, evt.position); });
                 tile.RegisterCallback<PointerMoveEvent>(evt => { if (evt.pointerType == PointerType.mouse && evt.pressedButtons == 0) Hover(tile, captured.Code, evt.position); });
@@ -151,12 +156,12 @@ namespace Unity.MP_FPS.Client
                 m_Information.Present(NewItem(offer.Code, m_QuantityValue), m_Graph);
                 MoonkovLocalization.Set(m_Amount, "× {0}", m_QuantityValue);
                 m_Minus.SetEnabled(m_CanTrade && m_QuantityValue > 1); m_Plus.SetEnabled(m_CanTrade && m_QuantityValue < definition.MaxStack);
-                MoonkovLocalization.Set(m_Purchase, offer.BuyDust == 0 ? "CLAIM FREE SUPPLY" : "BUY / {0} DUST", offer.BuyDust * m_QuantityValue);
+                MoonkovLocalization.Set(m_Purchase, offer.BuyDust == 0 ? "CLAIM FREE SUPPLY" : "BUY / {0} {1}", offer.BuyDust * m_QuantityValue, m_CurrencyLabel);
             }
             else MoonkovLocalization.Set(m_Purchase, "SELECT AN ITEM");
-            bool affordable = selected && m_Graph != null && m_Graph.Count("dust") >= offer.BuyDust * m_QuantityValue;
+            bool affordable = selected && m_Graph != null && (m_HasBalanceOverride ? m_BalanceOverride : m_Graph.Count("dust")) >= offer.BuyDust * m_QuantityValue;
             m_Purchase.SetEnabled(selected && m_CanTrade && affordable);
-            string reason = m_ReadOnlyReason ?? (selected && m_CanTrade && !affordable ? "INSUFFICIENT MOON DUST" : "");
+            string reason = m_ReadOnlyReason ?? (selected && m_CanTrade && !affordable ? (m_HasBalanceOverride ? "INSUFFICIENT CREDITS" : "INSUFFICIENT MOON DUST") : "");
             MoonkovLocalization.Set(m_Reason, reason); m_Reason.style.display = string.IsNullOrEmpty(reason) ? DisplayStyle.None : DisplayStyle.Flex;
             bool restricted = selected && offer.FreeSupplyRestricted;
             m_Notice.style.display = restricted ? DisplayStyle.Flex : DisplayStyle.None;
@@ -168,7 +173,7 @@ namespace Unity.MP_FPS.Client
         private void Purchase()
         {
             var offer = Selected;
-            if (!m_Disposed && m_CanTrade && offer != null && m_Tiles.ContainsKey(offer.Code) && m_Graph != null && m_Graph.Count("dust") >= offer.BuyDust * m_QuantityValue)
+            if (!m_Disposed && m_CanTrade && offer != null && m_Tiles.ContainsKey(offer.Code) && m_Graph != null && (m_HasBalanceOverride ? m_BalanceOverride : m_Graph.Count("dust")) >= offer.BuyDust * m_QuantityValue)
             { HideHover(); m_Buy?.Invoke(offer, m_QuantityValue); }
         }
         private void SearchChanged(ChangeEvent<string> evt) { m_Query = (evt.newValue ?? "").Trim(); Rebuild(); }

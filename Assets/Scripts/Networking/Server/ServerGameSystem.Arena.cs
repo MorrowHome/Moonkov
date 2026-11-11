@@ -177,17 +177,21 @@ namespace Unity.MP_FPS
                 inventory.ActionFeedback = null;
                 var actor = manager.GetComponentData<JoinedClient>(connection).PlayerEntity;
                 string code = intent.Code.ToString();
-                int price = match.Classic == null ? 0 : ClassicMatch.Price(Inventory.InventoryCatalog.Get(code));
+                var definition = match.Classic == null ? null : Inventory.InventoryCatalog.Get(code);
+                int price = match.Classic == null ? 0 : ClassicMatch.Price(definition);
+                int quantity = match.Classic == null ? 1 : intent.Quantity;
+                bool validQuantity = match.Classic == null || definition != null && quantity >= 1 && quantity <= definition.MaxStack;
                 bool open = match.Classic == null ? match.Phase != ArenaPhase.Finished :
-                    match.Classic.Phase == ClassicPhase.Buy && price > 0 && seat.Credits >= price;
+                    match.Classic.Phase == ClassicPhase.Buy && price > 0 && validQuantity &&
+                    (long)seat.Credits >= (long)price * quantity;
                 inventory.Error = !open || !TryGetLivingPosition(ref state, actor, out _) ||
                     inventory.InventoryMoveBlocked || manager.GetComponentData<PredictedPlayerGhost>(actor).ControllerState.IsReloadingState
                     ? Inventory.InventoryError.Inaccessible : match.Classic == null
                         ? ArenaArmory.Issue(inventory.Graph, code, intent.ExpectedVersion)
-                        : ClassicMatch.Purchase(inventory.Graph, code, intent.ExpectedVersion);
+                        : ClassicMatch.Purchase(inventory.Graph, code, intent.ExpectedVersion, quantity);
                 if (inventory.Error == Inventory.InventoryError.None)
                 {
-                    seat.Credits -= price;
+                    seat.Credits -= price * quantity;
                     UpdateInventoryProtection(ref state, connection, true);
                 }
             }

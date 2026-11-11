@@ -28,12 +28,12 @@ namespace Unity.MP_FPS
     {
         public FixedString64Bytes Code;
         public uint RequestId;
-        public int ExpectedVersion;
+        public int ExpectedVersion, Quantity;
     }
 
     public sealed class ArenaMatch : IComponentData
     {
-        public const int Version = 1, Capacity = 5, TargetScore = 30;
+        public const int Version = 2, Capacity = 5, TargetScore = 30;
         public const float Duration = 600, RespawnSeconds = 3, LoadSeconds = 45;
 
         public sealed class Player

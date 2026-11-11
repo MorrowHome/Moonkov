@@ -79,7 +79,7 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         private int m_MenuEscapeFrame = -1;
-        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible || s_Active.m_FieldRecordOpen);
+        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible || s_Active.m_FieldRecordOpen || s_Active.m_ClassicBuyOpen);
         public static bool InventoryDefenseAllowed => s_Active != null && s_Active.m_InventoryVisible && s_Active.QuickAlive &&
             !s_Active.m_MissionDetailsVisible && !s_Active.m_CampaignJournalVisible && !s_Active.m_ClashLobbyPointer &&
             !ChatInputBlocked && !s_Active.CinematicInputBlocked && !MapInputBlocked &&
@@ -188,6 +188,7 @@ namespace Unity.MP_FPS
             m_ActionView = new Client.RaidTimedActionView(CancelProgressAction); m_Root.Add(m_ActionView);
             ResetTimedAction();
             m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset(); m_LootRevealAudio.Reset();
+            m_ClassicPurchaseSequence = 0; m_ClassicPurchaseMessage = null; m_ClassicPurchaseMessageUntil = 0;
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
             var closePack=m_Root.Q<Button>("raidPackClose");closePack.clicked += ClosePack;
@@ -1081,6 +1082,7 @@ namespace Unity.MP_FPS
             m_AirlockPrompt?.RefreshSelection(null, default, false);
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
             m_InventoryView?.Dispose(); m_InventoryView=null;
+            m_ClassicShop?.Dispose(); m_ClassicShop = null;
             m_HealthView?.Dispose(); m_HealthView = null;
             if (m_EquipmentTab != null) m_EquipmentTab.clicked -= EquipmentTab;
             if (m_HealthTab != null) m_HealthTab.clicked -= HealthTab;
