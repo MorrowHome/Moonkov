@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -10,22 +11,37 @@ namespace Unity.MP_FPS
     public enum ClassicPhase : byte { Waiting, Buy, Live, Planted, RoundOver, Finished }
     public enum ClassicUse : byte { None, PickUp, PlantA, PlantB, Defuse, CacheA, CacheMid, CacheB }
 
-    public struct ClassicSnapshotRpc : IRpcCommand
+    public struct ClassicScoreboardEntry
+    {
+        public FixedString64Bytes Name;
+        public ushort Kills, Deaths;
+        public int AverageDamage;
+    }
+
+    public struct ClassicSnapshotV4Rpc : IRpcCommand
     {
         public ClassicPhase Phase;
         public ClassicUse Use;
-        public int Round, Team, AttackTeam, ScoreA, ScoreB, AliveA, AliveB, Credits, Winner;
+        public int Round, Team, Slot, AttackTeam, ScoreA, ScoreB, AliveA, AliveB, Credits, Winner;
         public float Remaining, UseProgress;
         public bool HasBomb, Alive, BombVisible;
         public byte AliveMaskA, AliveMaskB, CacheMask;
-        public FixedString64Bytes NameA0, NameA1, NameA2, NameA3, NameA4;
-        public FixedString64Bytes NameB0, NameB1, NameB2, NameB3, NameB4;
+        public ClassicScoreboardEntry SeatA0, SeatA1, SeatA2, SeatA3, SeatA4;
+        public ClassicScoreboardEntry SeatB0, SeatB1, SeatB2, SeatB3, SeatB4;
         public Unity.Mathematics.float3 BombPosition;
+
+        public readonly ClassicScoreboardEntry GetSeat(int index) => index switch
+        {
+            0 => SeatA0, 1 => SeatA1, 2 => SeatA2, 3 => SeatA3, 4 => SeatA4,
+            5 => SeatB0, 6 => SeatB1, 7 => SeatB2, 8 => SeatB3, 9 => SeatB4,
+            _ => default
+        };
     }
 
     public struct ClassicClientState : IComponentData
     {
-        public ClassicSnapshotRpc Snapshot;
+        public ClassicSnapshotV4Rpc Snapshot;
+        public uint Sequence;
         public bool Received;
     }
 
@@ -37,7 +53,7 @@ namespace Unity.MP_FPS
 
     public sealed class ClassicMatch
     {
-        public const int Version = 3, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
+        public const int Version = 4, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
         public const double BuySeconds = 12, RoundSeconds = 115, FuseSeconds = 40, BreakSeconds = 5;
         public ClassicPhase Phase { get; private set; }
         public double Deadline { get; private set; }
@@ -54,7 +70,15 @@ namespace Unity.MP_FPS
         private Vector3 m_HoldPosition;
         private uint m_HoldDamage;
         private double m_HoldStarted, m_HoldUntil;
-        private readonly System.Collections.Generic.Dictionary<int, byte> m_ClaimedCaches = new();
+        private readonly Dictionary<int, byte> m_ClaimedCaches = new();
+        private readonly Dictionary<int, CombatStats> m_CombatStats = new(Capacity);
+
+        private struct CombatStats
+        {
+            public int Rounds, LatestRound;
+            public ushort Kills, Deaths;
+            public float Damage;
+        }
         private static readonly string[][] s_CacheContents =
         {
             new[] { "flash_grenade", "smoke_grenade", "frag_bomb", "fire_bomb", "choke_bomb" },
@@ -63,6 +87,42 @@ namespace Unity.MP_FPS
         };
 
         public bool NeedsRound(double now) => Phase == ClassicPhase.Waiting || Phase == ClassicPhase.RoundOver && now >= Deadline;
+
+        internal void EnterCombat(int actor)
+        {
+            m_CombatStats.TryGetValue(actor, out var stats);
+            if (stats.LatestRound == Round) return;
+            stats.LatestRound = Round;
+            stats.Rounds++;
+            m_CombatStats[actor] = stats;
+        }
+
+        internal void RecordCombatDamage(int attacker, int victim, float damage, bool lethal)
+        {
+            if (Phase is not (ClassicPhase.Live or ClassicPhase.Planted) ||
+                !m_CombatStats.TryGetValue(victim, out var target) || target.LatestRound != Round) return;
+            if (lethal)
+            {
+                target.Deaths++;
+                m_CombatStats[victim] = target;
+            }
+            if (attacker == victim || !m_CombatStats.TryGetValue(attacker, out var source) || source.LatestRound != Round) return;
+            source.Damage += damage;
+            if (lethal) source.Kills++;
+            m_CombatStats[attacker] = source;
+        }
+
+        internal ClassicScoreboardEntry ScoreboardEntry(int actor, FixedString64Bytes name)
+        {
+            m_CombatStats.TryGetValue(actor, out var stats);
+            return new ClassicScoreboardEntry
+            {
+                Name = name,
+                Kills = stats.Kills,
+                Deaths = stats.Deaths,
+                AverageDamage = stats.Rounds > 0 ? Mathf.RoundToInt(stats.Damage / stats.Rounds) : 0
+            };
+        }
 
         public void BeginRound(double now, int carrier)
         {

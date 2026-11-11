@@ -6984,6 +6984,38 @@ MonoBehaviour:
     m_Key: LOCATE ITEM
     m_Metadata:
       m_Items: []
+  - m_Id: 12800524079325184
+    m_Key: PLAYER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685312
+    m_Key: KILLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685313
+    m_Key: DEATHS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685314
+    m_Key: ADR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685315
+    m_Key: ATTACKERS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685316
+    m_Key: DEFENDERS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685317
+    m_Key: ROUND {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12800524108685318
+    m_Key: WAITING FOR PLAYERS
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

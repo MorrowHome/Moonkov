@@ -1624,5 +1624,13 @@
   "Your kit is ready. Register at the MC00 entrance.": "装备已齐。进图后到 MC00 入口登记。",
   "Theophilus Research Station has gone silent. Inspect the facility, check on the crew, and bring back a sealed sample.": "Theophilus 研究站失联。检查设施，核实人员情况，带回封存样本。",
   "Shen He on comms. I'll stay aboard to keep communications open and get you home. Check your gear first.": "沈禾：我留在作业船，保障通信和回程。先检查装备。",
-  "Gu Heng on comms. Register at the MC00 entrance, then check the backup power and the sampler. Keep the sample sealed and bring it back to the ship.": "顾衡：先在 MC00 入口登记，再检查备用供电和取样装置。样本取出后保持封存，带回作业船。"
+  "Gu Heng on comms. Register at the MC00 entrance, then check the backup power and the sampler. Keep the sample sealed and bring it back to the ship.": "顾衡：先在 MC00 入口登记，再检查备用供电和取样装置。样本取出后保持封存，带回作业船。",
+  "PLAYER": "玩家",
+  "KILLS": "击杀",
+  "DEATHS": "死亡",
+  "ADR": "均伤",
+  "ATTACKERS": "进攻方",
+  "DEFENDERS": "防守方",
+  "ROUND {0}": "第 {0} 回合",
+  "WAITING FOR PLAYERS": "等待玩家进入"
 }

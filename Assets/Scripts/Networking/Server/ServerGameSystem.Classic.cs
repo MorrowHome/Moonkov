@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -30,7 +31,7 @@ namespace Unity.MP_FPS
             }
 
             int aliveA = 0, aliveB = 0;
-            byte aliveMaskA = 0, aliveMaskB = 0;
+            bool startingCombat = rules.Phase == ClassicPhase.Buy && now >= rules.Deadline;
             bool live = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             var tactics = match.ClassicTactics;
             if (live) tactics.BeginTick();
@@ -48,9 +49,9 @@ namespace Unity.MP_FPS
                     rules.CancelHold(seat.Id);
                     continue;
                 }
+                if (startingCombat) rules.EnterCombat(seat.Id);
                 seat.LastPosition = position;
                 if (seat.Team == 0) aliveA++; else aliveB++;
-                if (seat.Team == 0) aliveMaskA |= (byte)(1 << seat.Slot); else aliveMaskB |= (byte)(1 << seat.Slot);
                 var use = ClassicOpportunity(map, rules, seat.Id, seat.Team, position);
                 if ((use is ClassicUse.CacheA or ClassicUse.CacheMid or ClassicUse.CacheB) && now < seat.UseUntil)
                 {
@@ -76,9 +77,9 @@ namespace Unity.MP_FPS
                     rules.CancelHold(bot.Id);
                     continue;
                 }
+                if (startingCombat) rules.EnterCombat(bot.Id);
                 bot.LastPosition = position;
                 if (bot.Team == 0) aliveA++; else aliveB++;
-                if (bot.Team == 0) aliveMaskA |= (byte)(1 << bot.Slot); else aliveMaskB |= (byte)(1 << bot.Slot);
                 if (live) tactics.Observe(bot.Actor, bot.Id, bot.Team, bot.Slot, true, position,
                     manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastShotTick, now);
             }
@@ -97,23 +98,38 @@ namespace Unity.MP_FPS
 
             float remaining = (float)System.Math.Max(0, rules.Deadline - now);
             if (!UpdateMatchInventory(ref state, ecb, match, now, remaining)) return;
+            Span<ClassicScoreboardEntry> roster = stackalloc ClassicScoreboardEntry[ClassicMatch.Capacity];
+            roster.Clear();
+            Span<byte> aliveMasks = stackalloc byte[2];
+            aliveMasks.Clear();
+            foreach (var (connection, player) in match.Players)
+            {
+                roster[player.Team * ClassicMatch.TeamSize + player.Slot] = rules.ScoreboardEntry(player.Id, player.Name);
+                if (TryGetLivingPosition(ref state, MatchActor(manager, connection), out _))
+                    aliveMasks[player.Team] |= (byte)(1 << player.Slot);
+            }
+            foreach (var bot in match.Bots.Values)
+            {
+                roster[bot.Team * ClassicMatch.TeamSize + bot.Slot] =
+                    rules.ScoreboardEntry(bot.Id, new FixedString64Bytes($"BOT {bot.Slot + 1:00}"));
+                if (TryGetLivingPosition(ref state, bot.Actor, out _)) aliveMasks[bot.Team] |= (byte)(1 << bot.Slot);
+            }
+
             foreach (var (connection, seat) in match.Players)
             {
                 if (!manager.HasComponent<RaidSession>(connection)) continue;
                 var actor = MatchActor(manager, connection);
                 bool alive = TryGetLivingPosition(ref state, actor, out var position);
                 var rpc = ecb.CreateEntity();
-                ecb.AddComponent(rpc, new ClassicSnapshotRpc
+                ecb.AddComponent(rpc, new ClassicSnapshotV4Rpc
                 {
-                    Phase = rules.Phase, Round = rules.Round, Team = seat.Team, AttackTeam = rules.AttackTeam,
-                    ScoreA = rules.Score[0], ScoreB = rules.Score[1], AliveA = aliveA, AliveB = aliveB,
-                    AliveMaskA = aliveMaskA, AliveMaskB = aliveMaskB,
-                    NameA0 = ClassicRosterName(match, 0, 0), NameA1 = ClassicRosterName(match, 0, 1),
-                    NameA2 = ClassicRosterName(match, 0, 2), NameA3 = ClassicRosterName(match, 0, 3),
-                    NameA4 = ClassicRosterName(match, 0, 4),
-                    NameB0 = ClassicRosterName(match, 1, 0), NameB1 = ClassicRosterName(match, 1, 1),
-                    NameB2 = ClassicRosterName(match, 1, 2), NameB3 = ClassicRosterName(match, 1, 3),
-                    NameB4 = ClassicRosterName(match, 1, 4),
+                    Phase = rules.Phase, Round = rules.Round, Team = seat.Team, Slot = seat.Slot, AttackTeam = rules.AttackTeam,
+                    ScoreA = rules.Score[0], ScoreB = rules.Score[1],
+                    AliveA = Unity.Mathematics.math.countbits((uint)aliveMasks[0]),
+                    AliveB = Unity.Mathematics.math.countbits((uint)aliveMasks[1]),
+                    AliveMaskA = aliveMasks[0], AliveMaskB = aliveMasks[1],
+                    SeatA0 = roster[0], SeatA1 = roster[1], SeatA2 = roster[2], SeatA3 = roster[3], SeatA4 = roster[4],
+                    SeatB0 = roster[5], SeatB1 = roster[6], SeatB2 = roster[7], SeatB3 = roster[8], SeatB4 = roster[9],
                     CacheMask = rules.CacheMask(seat.Id),
                     Remaining = remaining, Credits = seat.Credits, Winner = rules.Phase == ClassicPhase.Finished ? rules.Winner : rules.RoundWinner,
                     HasBomb = rules.Carrier == seat.Id, Alive = alive,
@@ -124,14 +140,6 @@ namespace Unity.MP_FPS
                 });
                 ecb.AddComponent(rpc, new SendRpcCommandRequest { TargetConnection = connection });
             }
-        }
-
-        private static FixedString64Bytes ClassicRosterName(ArenaMatch match, int team, int slot)
-        {
-            var player = match.Players.Values.FirstOrDefault(value => value.Team == team && value.Slot == slot);
-            if (player != null) return player.Name;
-            var bot = match.Bots.Values.FirstOrDefault(value => value.Team == team && value.Slot == slot);
-            return bot == null ? default : new FixedString64Bytes($"BOT {slot + 1:00}");
         }
 
         private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now)

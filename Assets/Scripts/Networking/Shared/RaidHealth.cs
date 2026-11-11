@@ -86,10 +86,14 @@ namespace Unity.MP_FPS
                 state.RightLegHealth=Mathf.Min(state.RightLegHealth,Maximum(state,BodyPart.RightLeg));
             }
             state.MaxHealth = 440f * (state.ClashEnabled ? Mathf.Clamp01(state.ClashMaxHealthFraction) : 1);
-            state.CurrentHealth = state.ClashEnabled && state.ClashLife != ClashLife.Alive || state.HeadHealth <= 0 || state.ChestHealth <= 0 ? 0f :
-                state.HeadHealth + state.ChestHealth + state.AbdomenHealth + state.LeftArmHealth +
-                state.RightArmHealth + state.LeftLegHealth + state.RightLegHealth;
+            state.CurrentHealth = state.ClashEnabled && state.ClashLife != ClashLife.Alive || state.HeadHealth <= 0 || state.ChestHealth <= 0
+                ? 0f : TissueHealth(state);
         }
+
+        internal static float TissueHealth(in PredictedPlayerGhost state) =>
+            state.HeadHealth + state.ChestHealth + state.AbdomenHealth + state.LeftArmHealth +
+            state.RightArmHealth + state.LeftLegHealth + state.RightLegHealth;
+
         public static float Damage(ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick, bool physiological=false)
         {
             if (state.CurrentHealth <= 0 || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Maximum(part) <= 0) return 0;

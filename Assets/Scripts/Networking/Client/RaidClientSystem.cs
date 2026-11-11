@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
     public partial class RaidClientSystem : SystemBase
     {
         private Entity m_State;
+        private uint m_ClassicSequence;
 
         protected override void OnCreate()
         {
@@ -25,10 +26,15 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(m_State, new ArenaClientState { Snapshot = snapshot.ValueRO, Received = true });
                 ecb.DestroyEntity(entity);
             }
-            foreach (var (snapshot, received, entity) in SystemAPI.Query<RefRO<ClassicSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            foreach (var (snapshot, received, entity) in SystemAPI.Query<RefRO<ClassicSnapshotV4Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
-                EntityManager.SetComponentData(m_State, new ClassicClientState { Snapshot = snapshot.ValueRO, Received = true });
+                EntityManager.SetComponentData(m_State, new ClassicClientState
+                {
+                    Snapshot = snapshot.ValueRO,
+                    Sequence = ++m_ClassicSequence,
+                    Received = true
+                });
                 ecb.DestroyEntity(entity);
             }
             foreach (var (quest, received, entity) in SystemAPI.Query<RefRO<ResearchQuestSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())

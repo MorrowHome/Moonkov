@@ -18,8 +18,10 @@ namespace Unity.MP_FPS
         private DropdownField m_ArenaItems;
         private Button m_ArenaTake;
         private VisualElement m_ClassicStatusA, m_ClassicStatusB;
-        private Label m_ClassicBoardScore, m_ClassicBoardClock, m_ClassicBoardTeamAScore, m_ClassicBoardTeamBScore;
-        private Label[] m_ClassicBoardNamesA, m_ClassicBoardNamesB, m_ClassicBoardAliveA, m_ClassicBoardAliveB;
+        private Label m_ClassicBoardRound, m_ClassicBoardClock;
+        private ClassicBoardTeam[] m_ClassicBoardTeams;
+        private uint m_ClassicBoardSequence;
+        private bool m_ClassicBoardVisible;
         private MoonkovShopPurchaseView m_ClassicShop;
         private ShopOffer[] m_ClassicOffers;
         private ItemDefinition[] m_ArenaDefinitions;
@@ -118,53 +120,105 @@ namespace Unity.MP_FPS
 
         private VisualElement CreateClassicScoreboard()
         {
-            var board = new VisualElement { name = "classic-scoreboard" };
+            m_ClassicBoardSequence = 0;
+            m_ClassicBoardVisible = false;
+            var board = new VisualElement { name = "classic-scoreboard", pickingMode = PickingMode.Ignore };
             board.AddToClassList("classic-scoreboard");
-            var title = new VisualElement();
+            board.AddToClassList("moonkov-style-font");
+            var title = new VisualElement { pickingMode = PickingMode.Ignore };
             title.AddToClassList("classic-scoreboard-title");
-            m_ClassicBoardScore = new Label();
-            m_ClassicBoardClock = new Label();
-            title.Add(m_ClassicBoardScore);
-            title.Add(m_ClassicBoardClock);
+            m_ClassicBoardRound = AddClassicBoardLabel(title, "classic-scoreboard-round");
+            m_ClassicBoardClock = AddClassicBoardLabel(title, "classic-scoreboard-clock");
             board.Add(title);
-            var teams = new VisualElement();
+            var teams = new VisualElement { pickingMode = PickingMode.Ignore };
             teams.AddToClassList("classic-scoreboard-teams");
-            m_ClassicBoardNamesA = CreateClassicBoardTeam(teams, "T", out m_ClassicBoardTeamAScore, out m_ClassicBoardAliveA);
-            m_ClassicBoardNamesB = CreateClassicBoardTeam(teams, "CT", out m_ClassicBoardTeamBScore, out m_ClassicBoardAliveB);
+            m_ClassicBoardTeams = new[] { new ClassicBoardTeam(teams), new ClassicBoardTeam(teams) };
             board.Add(teams);
             return board;
         }
 
-        private static Label[] CreateClassicBoardTeam(VisualElement parent, string team, out Label score, out Label[] alive)
+        private static Label AddClassicBoardLabel(VisualElement parent, string className, string text = null)
         {
-            var column = new VisualElement();
-            column.AddToClassList("classic-scoreboard-team");
-            column.AddToClassList(team == "T" ? "classic-scoreboard-attackers" : "classic-scoreboard-defenders");
-            var heading = new VisualElement();
-            heading.AddToClassList("classic-scoreboard-team-heading");
-            var title = new Label(team);
-            title.AddToClassList("classic-scoreboard-team-name");
-            score = new Label("0");
-            score.AddToClassList("classic-scoreboard-team-score");
-            heading.Add(title);
-            heading.Add(score);
-            column.Add(heading);
-            var names = new Label[ClassicMatch.TeamSize];
-            alive = new Label[ClassicMatch.TeamSize];
-            for (int i = 0; i < ClassicMatch.TeamSize; i++)
+            var label = new Label { pickingMode = PickingMode.Ignore, enableRichText = false };
+            label.AddToClassList(className);
+            parent.Add(label);
+            if (text != null) MoonkovLocalization.Set(label, text);
+            return label;
+        }
+
+        private sealed class ClassicBoardTeam
+        {
+            private readonly VisualElement m_Column;
+            private readonly Label m_Role, m_Score;
+            private readonly ClassicBoardRow[] m_Rows = new ClassicBoardRow[ClassicMatch.TeamSize];
+
+            public ClassicBoardTeam(VisualElement parent)
             {
-                var row = new VisualElement();
-                row.AddToClassList("classic-scoreboard-player");
-                names[i] = new Label();
-                names[i].AddToClassList("classic-scoreboard-player-name");
-                alive[i] = new Label();
-                alive[i].AddToClassList("classic-scoreboard-player-alive");
-                row.Add(names[i]);
-                row.Add(alive[i]);
-                column.Add(row);
+                m_Column = new VisualElement { pickingMode = PickingMode.Ignore };
+                m_Column.AddToClassList("classic-scoreboard-team");
+                var heading = new VisualElement { pickingMode = PickingMode.Ignore };
+                heading.AddToClassList("classic-scoreboard-team-heading");
+                m_Role = AddClassicBoardLabel(heading, "classic-scoreboard-team-name");
+                m_Score = AddClassicBoardLabel(heading, "classic-scoreboard-team-score");
+                m_Column.Add(heading);
+                var header = new VisualElement { pickingMode = PickingMode.Ignore };
+                header.AddToClassList("classic-scoreboard-player");
+                header.AddToClassList("classic-scoreboard-columns");
+                AddClassicBoardLabel(header, "classic-scoreboard-player-name", "PLAYER");
+                AddClassicBoardLabel(header, "classic-scoreboard-number", "KILLS");
+                AddClassicBoardLabel(header, "classic-scoreboard-number", "DEATHS");
+                AddClassicBoardLabel(header, "classic-scoreboard-number", "K/D");
+                AddClassicBoardLabel(header, "classic-scoreboard-number", "ADR");
+                AddClassicBoardLabel(header, "classic-scoreboard-player-alive", "STATUS");
+                m_Column.Add(header);
+                for (int i = 0; i < m_Rows.Length; i++) m_Rows[i] = new ClassicBoardRow(m_Column);
+                parent.Add(m_Column);
             }
-            parent.Add(column);
-            return names;
+
+            public void Present(in ClassicSnapshotV4Rpc match, int team)
+            {
+                bool attacking = match.AttackTeam == team;
+                m_Column.EnableInClassList("classic-scoreboard-attackers", attacking);
+                m_Column.EnableInClassList("classic-scoreboard-defenders", !attacking);
+                MoonkovLocalization.Set(m_Role, attacking ? "ATTACKERS" : "DEFENDERS");
+                m_Score.text = (team == 0 ? match.ScoreA : match.ScoreB).ToString();
+                byte aliveMask = team == 0 ? match.AliveMaskA : match.AliveMaskB;
+                for (int i = 0; i < m_Rows.Length; i++)
+                    m_Rows[i].Present(match.GetSeat(team * ClassicMatch.TeamSize + i), (aliveMask & (1 << i)) != 0,
+                        match.Team == team && match.Slot == i);
+            }
+        }
+
+        private readonly struct ClassicBoardRow
+        {
+            private readonly VisualElement m_Row;
+            private readonly Label m_Name, m_Kills, m_Deaths, m_Ratio, m_Damage, m_Status;
+
+            public ClassicBoardRow(VisualElement parent)
+            {
+                m_Row = new VisualElement { pickingMode = PickingMode.Ignore };
+                m_Row.AddToClassList("classic-scoreboard-player");
+                m_Name = AddClassicBoardLabel(m_Row, "classic-scoreboard-player-name");
+                m_Kills = AddClassicBoardLabel(m_Row, "classic-scoreboard-number");
+                m_Deaths = AddClassicBoardLabel(m_Row, "classic-scoreboard-number");
+                m_Ratio = AddClassicBoardLabel(m_Row, "classic-scoreboard-number");
+                m_Damage = AddClassicBoardLabel(m_Row, "classic-scoreboard-number");
+                m_Status = AddClassicBoardLabel(m_Row, "classic-scoreboard-player-alive");
+                parent.Add(m_Row);
+            }
+
+            public void Present(in ClassicScoreboardEntry entry, bool alive, bool local)
+            {
+                bool occupied = entry.Name.Length > 0;
+                m_Row.EnableInClassList("is-local", occupied && local);
+                m_Name.text = occupied ? entry.Name.ToString() : "—";
+                m_Kills.text = occupied ? entry.Kills.ToString() : "—";
+                m_Deaths.text = occupied ? entry.Deaths.ToString() : "—";
+                m_Ratio.text = occupied ? (entry.Kills / (float)Mathf.Max(1, entry.Deaths)).ToString("0.00") : "—";
+                m_Damage.text = occupied ? entry.AverageDamage.ToString() : "—";
+                MoonkovLocalization.Set(m_Status, !occupied ? "—" : alive ? "ALIVE" : "DEAD");
+                m_Status.EnableInClassList("is-dead", !alive || !occupied);
+            }
         }
 
         private void TakeArenaSupply()
@@ -249,36 +303,24 @@ namespace Unity.MP_FPS
             else MoonkovAudio.Error();
         }
 
-        private void PresentClassicScoreboard(ClassicSnapshotRpc match, bool visible)
+        private void PresentClassicScoreboard(in ClassicClientState data, bool visible)
         {
-            m_ClassicScoreboard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible) return;
-            m_ClassicScoreboard.BringToFront();
-            int seconds = Mathf.CeilToInt(match.Remaining);
-            int own = match.Team == 0 ? match.ScoreA : match.ScoreB;
-            int enemy = match.Team == 0 ? match.ScoreB : match.ScoreA;
-            m_ClassicBoardScore.text = $"{own}  —  {enemy}";
-            m_ClassicBoardClock.text = $"{seconds / 60:00}:{seconds % 60:00}";
-            m_ClassicBoardTeamAScore.text = match.ScoreA.ToString();
-            m_ClassicBoardTeamBScore.text = match.ScoreB.ToString();
-            UpdateClassicBoardTeam(m_ClassicBoardNamesA, m_ClassicBoardAliveA, match.AliveMaskA,
-                match.NameA0, match.NameA1, match.NameA2, match.NameA3, match.NameA4);
-            UpdateClassicBoardTeam(m_ClassicBoardNamesB, m_ClassicBoardAliveB, match.AliveMaskB,
-                match.NameB0, match.NameB1, match.NameB2, match.NameB3, match.NameB4);
-        }
-
-        private static void UpdateClassicBoardTeam(Label[] names, Label[] statuses, byte mask,
-            Unity.Collections.FixedString64Bytes n0, Unity.Collections.FixedString64Bytes n1,
-            Unity.Collections.FixedString64Bytes n2, Unity.Collections.FixedString64Bytes n3,
-            Unity.Collections.FixedString64Bytes n4)
-        {
-            for (int i = 0; i < names.Length; i++)
+            visible &= data.Received;
+            if (visible != m_ClassicBoardVisible)
             {
-                bool alive = (mask & (1 << i)) != 0;
-                names[i].text = i switch { 0 => n0.ToString(), 1 => n1.ToString(), 2 => n2.ToString(), 3 => n3.ToString(), _ => n4.ToString() };
-                MoonkovLocalization.Set(statuses[i], alive ? "存活" : "阵亡");
-                statuses[i].EnableInClassList("is-dead", !alive);
+                m_ClassicBoardVisible = visible;
+                m_ClassicScoreboard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (visible) m_ClassicScoreboard.BringToFront();
             }
+            if (!visible || m_ClassicBoardSequence == data.Sequence) return;
+            m_ClassicBoardSequence = data.Sequence;
+            ref readonly var match = ref data.Snapshot;
+            int seconds = Mathf.CeilToInt(match.Remaining);
+            if (match.Round == 0) MoonkovLocalization.Set(m_ClassicBoardRound, "WAITING FOR PLAYERS");
+            else MoonkovLocalization.Set(m_ClassicBoardRound, "ROUND {0}", match.Round);
+            m_ClassicBoardClock.text = $"{seconds / 60:00}:{seconds % 60:00}";
+            m_ClassicBoardTeams[0].Present(match, 0);
+            m_ClassicBoardTeams[1].Present(match, 1);
         }
     }
 }

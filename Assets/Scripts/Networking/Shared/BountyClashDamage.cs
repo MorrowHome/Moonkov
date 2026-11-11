@@ -89,6 +89,8 @@ namespace Unity.MP_FPS
             if(!manager.HasComponent<PredictedPlayerGhost>(victim))return 0;
             if (TeamProtected(manager,victim,source)) return 0;
             var health=manager.GetComponentData<PredictedPlayerGhost>(victim);
+            ClassicMatch classic = null;
+            int classicVictim = 0;
             if (health.ClashEnabled)
             {
                 if (health.ClashLife != ClashLife.Alive || health.CurrentHealth <= 0) return 0;
@@ -100,13 +102,16 @@ namespace Unity.MP_FPS
                     if (source.Epoch != 0 && source.Epoch != identity.Epoch) return 0;
                     var match = manager.GetComponentObject<ArenaMatch>(arena.GetSingletonEntity());
                     bool sameTeam = source.HasMatchTeam ? source.TeamId == identity.TeamId : match.IsAlly(source.ParticipantId, identity.TeamId);
-                    if (match.Classic != null && source.ParticipantId != identity.ParticipantId && sameTeam) return 0;
+                    classic = match.Classic;
+                    if (classic != null && source.ParticipantId != identity.ParticipantId && sameTeam) return 0;
+                    classicVictim = identity.ParticipantId;
                     identity.LastAttacker = source.ParticipantId;
                     manager.SetComponentData(victim, identity);
                 }
                 else if (!ApplyClashAttribution(manager, victim, health, source, kind, ref amount)) return 0;
             }
             float healthBefore=health.CurrentHealth;
+            float tissueBefore = classic != null && health.BodyHealthInitialized ? RaidHealth.TissueHealth(health) : 0;
             float damaged=RaidHealth.CombatDamage(manager,victim,ref health,part,amount,tick,kind,impactPoint);
             // Several pellets can strike during one server update. Count only real
             // tissue damage; a shielded or lethal hit cannot create a new wound.
@@ -117,6 +122,12 @@ namespace Unity.MP_FPS
                 health.PendingBulletWoundSource=source;
             }
             manager.SetComponentData(victim,health);
+            if (classic != null && damaged > 0)
+            {
+                // Death zeroes CurrentHealth even when other body parts are intact.
+                float tissueDamage = health.BodyHealthInitialized ? tissueBefore - RaidHealth.TissueHealth(health) : damaged;
+                classic.RecordCombatDamage(source.ParticipantId, classicVictim, tissueDamage, health.CurrentHealth <= 0);
+            }
             if (source.ResearchShooter != Entity.Null && healthBefore > 0 && health.CurrentHealth <= 0 &&
                 (kind == RaidDamageKind.Bullet || kind == RaidDamageKind.Explosion))
                 ResearchQuestRuntime.RecordKill(world, victim, source);

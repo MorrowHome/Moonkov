@@ -17,7 +17,7 @@ namespace Unity.MP_FPS
         private void PresentClassicHud()
         {
             var data = m_World.EntityManager.GetComponentData<ClassicClientState>(m_StateQuery.GetSingletonEntity());
-            var match = data.Snapshot;
+            ref readonly var match = ref data.Snapshot;
             bool buy = match.Phase == ClassicPhase.Buy;
             bool fighting = match.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             bool paused = GameSettings.Instance.IsPauseMenuOpen;
@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
             bool inventoryPressed = RaidKeyBindings.Pressed(RaidKey.Inventory);
             if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed)
                 SetInventory(!m_InventoryVisible);
-            PresentClassicScoreboard(match, scoreboard);
+            PresentClassicScoreboard(data, scoreboard);
 
             m_ArenaArmory.style.display = buy && m_ClassicBuyOpen ? DisplayStyle.Flex : DisplayStyle.None;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
