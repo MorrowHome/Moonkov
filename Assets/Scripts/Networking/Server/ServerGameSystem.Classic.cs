@@ -31,6 +31,8 @@ namespace Unity.MP_FPS
 
             int aliveA = 0, aliveB = 0;
             bool live = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
+            var tactics = match.ClassicTactics;
+            if (live) tactics.BeginTick();
             foreach (var (connection, seat) in match.Players)
             {
                 var actor = MatchActor(manager, connection);
@@ -46,9 +48,12 @@ namespace Unity.MP_FPS
                 }
                 seat.LastPosition = position;
                 if (seat.Team == 0) aliveA++; else aliveB++;
-                if (!live || now >= seat.UseUntil) { rules.CancelHold(seat.Id); continue; }
+                if (!live) continue;
+                var health = manager.GetComponentData<PredictedPlayerGhost>(actor);
+                tactics.Observe(actor, seat.Id, seat.Team, seat.Slot, false, position, health.LastShotTick, now);
+                if (now >= seat.UseUntil) { rules.CancelHold(seat.Id); continue; }
                 var use = ClassicOpportunity(map, rules, seat.Id, seat.Team, position);
-                rules.Use(seat.Id, seat.Team, use, position, manager.GetComponentData<PredictedPlayerGhost>(actor).LastHitTick, now);
+                rules.Use(seat.Id, seat.Team, use, position, health.LastHitTick, now);
             }
             foreach (var bot in match.Bots.Values)
             {
@@ -60,12 +65,10 @@ namespace Unity.MP_FPS
                 }
                 bot.LastPosition = position;
                 if (bot.Team == 0) aliveA++; else aliveB++;
-                if (!live) continue;
-                var use = ClassicOpportunity(map, rules, bot.Id, bot.Team, position);
-                if (use != ClassicUse.None)
-                    rules.Use(bot.Id, bot.Team, use, position, manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastHitTick, now);
-                bot.MoveAndFight(manager, match, map, now, SystemAPI.Time.DeltaTime, rules.HoldActor == bot.Id);
+                if (live) tactics.Observe(bot.Actor, bot.Id, bot.Team, bot.Slot, true, position,
+                    manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastShotTick, now);
             }
+            if (live) UpdateClassicBots(ref state, match, map, now);
 
             rules.Advance(now, rules.AttackTeam == 0 ? aliveA : aliveB, rules.AttackTeam == 0 ? aliveB : aliveA);
             if ((rules.Phase is ClassicPhase.RoundOver or ClassicPhase.Finished) && match.CreditedRound != rules.Round)
@@ -101,6 +104,34 @@ namespace Unity.MP_FPS
             }
         }
 
+        private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now)
+        {
+            using var profile = s_ClassicBotProfile.Auto();
+            var manager = state.EntityManager;
+            var rules = match.Classic;
+            var tactics = match.ClassicTactics;
+            var tacticalWorld = TacticalWorld(ref state);
+            float dt = SystemAPI.Time.DeltaTime;
+            tactics.UpdateOrders(rules, map, now);
+            foreach (var bot in match.Bots.Values)
+            {
+                if (!tactics.Alive(bot)) continue;
+                var health = manager.GetComponentData<PredictedPlayerGhost>(bot.Actor);
+                var status = TacticalStatus(tacticalWorld, bot.Actor);
+                PmcSprintRules.Tick(ref status.Sprint, ref status.SprintPosition, ref status.SprintPositionKnown,
+                    bot.LastPosition, dt, true, health.ControllerState.Sprinting, health.ControllerState.MovementSpeed, 0, status.Stamina > now);
+                health.TacticalSprintStamina = status.Sprint.Value;
+                health.TacticalSprintExhausted = status.Sprint.Exhausted;
+                manager.SetComponentData(bot.Actor, health);
+                var use = ClassicOpportunity(map, rules, bot.Id, bot.Team, bot.LastPosition);
+                if (bot.Tick(manager, tactics, map, rules, health, tacticalWorld, use, now, dt))
+                    rules.Use(bot.Id, bot.Team, use, bot.LastPosition, health.LastHitTick, now);
+                else rules.CancelHold(bot.Id);
+            }
+        }
+
+        private static readonly Unity.Profiling.ProfilerMarker s_ClassicBotProfile = new("Moonkov.ClassicBots");
+
         private static Entity MatchActor(EntityManager manager, Entity connection) =>
             manager.HasComponent<JoinedClient>(connection) ? manager.GetComponentData<JoinedClient>(connection).PlayerEntity : Entity.Null;
 
@@ -126,9 +157,11 @@ namespace Unity.MP_FPS
             var rules = match.Classic;
             bool halftime = rules.Round == ClassicMatch.Half;
             int attackTeam = rules.Round < ClassicMatch.Half ? 0 : 1;
-            var assigned = match.Players.Values.FirstOrDefault(player => player.Team == attackTeam);
-            int carrier = assigned?.Id ?? BotId(attackTeam, 0);
+            int carrierSlot = (rules.Round + 1) % ClassicMatch.TeamSize;
+            var assigned = match.Players.Values.FirstOrDefault(player => player.Team == attackTeam && player.Slot == carrierSlot);
+            int carrier = assigned?.Id ?? BotId(attackTeam, carrierSlot);
             rules.BeginRound(now, carrier);
+            match.ClassicTactics.BeginRound(rules.Round, carrierSlot);
             foreach (var bot in match.Bots.Values)
             {
                 if (manager.Exists(bot.Input)) ecb.DestroyEntity(bot.Input);

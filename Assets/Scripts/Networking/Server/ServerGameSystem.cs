@@ -294,6 +294,7 @@ namespace Unity.MP_FPS
                 playerState.ClashLife = ClashLife.Waiting;
                 playerState.ClashMaxHealthFraction = 1;
                 var match = SystemAPI.ManagedAPI.GetSingleton<ArenaMatch>();
+                if (match.Classic != null) ClassicDust2Map.InitializeAir(ref playerState);
                 ecb.AddComponent(playerEntity, new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Team, Epoch = match.Epoch });
             }
             else ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);

@@ -50,6 +50,7 @@ namespace Unity.MP_FPS
         public readonly RaidGameMode Mode;
         public readonly ClassicMatch Classic;
         internal readonly Dictionary<int, ClassicBot> Bots = new();
+        internal readonly ClassicBotTactics ClassicTactics;
         public readonly Dictionary<Entity, Player> Players = new();
         public bool FirstRoundReady(double now, int expected) =>
             Players.Count > 0 && (Players.Count >= expected || now >= m_LoadDeadline);
@@ -59,7 +60,11 @@ namespace Unity.MP_FPS
         public ArenaMatch(RaidGameMode mode)
         {
             Mode = mode;
-            if (mode == RaidGameMode.Classic) Classic = new ClassicMatch();
+            if (mode == RaidGameMode.Classic)
+            {
+                Classic = new ClassicMatch();
+                ClassicTactics = new ClassicBotTactics();
+            }
         }
 
         public static bool UsesTemporaryKit(RaidGameMode mode) => mode is RaidGameMode.Arena or RaidGameMode.Classic;

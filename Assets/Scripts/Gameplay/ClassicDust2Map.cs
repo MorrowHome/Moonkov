@@ -43,6 +43,13 @@ namespace Unity.MP_FPS
             return LocalTransform.FromPositionRotation(point.position, point.rotation);
         }
 
+        internal static void InitializeAir(ref PredictedPlayerGhost player)
+        {
+            player.BreathableAir = true;
+            player.AmbientPressureKPa = 101.325f;
+            player.AmbientOxygenPartialPressureKPa = player.AmbientPressureKPa * .21f;
+        }
+
         private void OnEnable()
         {
             if (!Configured) return;
