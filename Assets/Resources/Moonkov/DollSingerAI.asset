@@ -32,6 +32,8 @@ MonoBehaviour:
   ShotSensorRange: 42
   FootstepSensorRange: 12
   NightSightMultiplier: 0.65
+  ExpeditionPlayerSightRange: 120
+  ExpeditionPlayerHalfViewAngle: 115
   PreferredRange: 18
   SettledAimError: 1.2
   FirstShotError: 3.5

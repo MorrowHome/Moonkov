@@ -26,7 +26,7 @@ namespace Unity.MP_FPS
                 brain.NextPath = 0;
                 brain.LootUntil = 0;
                 brain.CacheObstructedSince = -1;
-                if (best == PmcAction.Flank) brain.NextFlank = now + 12;
+                if (best == PmcAction.Flank) brain.NextFlank = now + (brain.IsExpeditionRaider ? 8 : 12);
                 if (best != PmcAction.Cover && best != PmcAction.Reload && best != PmcAction.Retreat && best != PmcAction.Heal)
                 { brain.HasCover = false; m_CoverReservations.Remove(brain.Seed); }
                 else if (brain.HasCover)
@@ -123,19 +123,33 @@ namespace Unity.MP_FPS
                     }
                     break;
                 case PmcAction.Flank:
-                    if (changed || brain.PathFailed)
-                        goal = ChooseFlank(brain, position);
-                    if (HorizontalDistance(position, goal) < 2 && now - brain.ActionStarted > 2)
+                    if (changed || brain.PathFailed && (!brain.IsExpeditionRaider || now >= brain.NextCover))
+                    {
+                        goal = ChooseFlank(brain, position, health.EquippedWeaponID);
+                        brain.NextCover = now + m_Tuning.CoverRescanSeconds;
+                    }
+                    if (HorizontalDistance(position, goal) < 2 && (brain.IsExpeditionRaider || now - brain.ActionStarted > 2))
                         brain.CommitUntil = 0;
                     break;
                 case PmcAction.Engage:
-                    if (changed || now >= brain.NextCover || brain.PathFailed)
+                    if (changed || now >= brain.NextCover || brain.PathFailed && !brain.IsExpeditionRaider)
                     {
-                        Vector3 away = position - brain.LastSeen; away.y = 0; away.Normalize();
-                        Vector3 side = Vector3.Cross(Vector3.up, away) * brain.Random.NextFloat(-3, 3);
+                        Vector3 away = position - brain.LastSeen;
+                        away.y = 0;
+                        float distance = away.magnitude;
+                        away.Normalize();
                         float range = m_Tuning.PreferredRange + brain.Caution * 5;
-                        Vector3 desired = brain.LastSeen + away * range + side;
-                        goal = ReachableOffset(brain, position, Vector3.ClampMagnitude(desired - position, 8));
+                        if (brain.IsExpeditionRaider && PmcWeaponTactics.PrefersCloseRange(health.EquippedWeaponID))
+                            range = Mathf.Min(range, 9 + brain.Caution * 2);
+                        if (brain.IsExpeditionRaider && Mathf.Abs(distance - range) <= 3)
+                            goal = position;
+                        else
+                        {
+                            Vector3 side = Vector3.Cross(Vector3.up, away) * brain.Random.NextFloat(-3, 3);
+                            Vector3 desired = brain.LastSeen + away * range + side;
+                            goal = ReachableOffset(brain, position, Vector3.ClampMagnitude(desired - position, 8),
+                                reverseIfBlocked: !brain.IsExpeditionRaider);
+                        }
                         brain.NextCover = now + 2;
                     }
                     break;
@@ -196,8 +210,8 @@ namespace Unity.MP_FPS
                             m_CoverReservations.Remove(brain.Seed);
                             return;
                         }
-                        SetCoverPhase(brain, PmcCoverPhase.Settling,
-                            now + brain.Random.NextFloat(.8f, 1.6f) + brain.Caution * .6f);
+                        float settle = brain.Random.NextFloat(.8f, 1.6f) + brain.Caution * .6f;
+                        SetCoverPhase(brain, PmcCoverPhase.Settling, now + settle * (brain.IsExpeditionRaider ? .65f : 1));
                     }
                     else if (now >= brain.CoverPhaseUntil)
                     {
@@ -290,6 +304,10 @@ namespace Unity.MP_FPS
             Vector3 bestPoint = position;
             float bestScore = float.MinValue, travel = 0;
             float radius = Mathf.Clamp(brain.Uncertainty(now), 3, 11);
+            bool followingPlayer = brain.IsExpeditionRaider && brain.Action == PmcAction.Search && brain.SearchStep <= 1 &&
+                brain.Contacts.TryGetValue(brain.Target, out var contact) && contact.PlayerControlled && contact.Confirmed;
+            bool machineClue = brain.Action == PmcAction.Investigate && brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil;
+            float maxTravel = followingPlayer ? Mathf.Clamp(Vector3.Distance(position, brain.SearchAnchor) + 15, 30, 140) : machineClue ? 55 : 30;
             float desiredAngle = brain.SearchStep == 0 ? 180 :
                 brain.SearchStep == 1 ? 0 : (brain.SearchStep % 2 == 0 ? 1 : -1) * (35 + brain.SearchStep * 14);
             for (int i = 0; i < 9; i++)
@@ -300,8 +318,7 @@ namespace Unity.MP_FPS
                 if (!NavMesh.SamplePosition(candidate, out var sample, 2, m_Filter) ||
                     HorizontalDistance(position, sample.position) < 1.2f ||
                     !CompletePath(brain, position, sample.position, out float length)) continue;
-                bool machineClue = brain.Action == PmcAction.Investigate && brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil;
-                if (length > (machineClue ? 55 : 30)) continue;
+                if (length > maxTravel) continue;
                 float value = 15 - i * 1.5f - length * .35f;
                 // Search exits with a useful view of the clue, and prefer a sheltered approach.
                 if (!WorldBlocked(sample.position + Vector3.up * 1.4f, brain.SearchAnchor + Vector3.up * 1.15f)) value += 5;
@@ -309,14 +326,13 @@ namespace Unity.MP_FPS
                 if (value <= bestScore) continue;
                 bestScore = value; bestPoint = sample.position; travel = length;
             }
-            bool investigatingMachine = brain.Action == PmcAction.Investigate && brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil;
-            brain.SearchUntil = now + Mathf.Clamp(travel / 2 + 2, 3, investigatingMachine ? 26 : 14);
+            brain.SearchUntil = now + Mathf.Clamp(travel / 2 + 2, 3, followingPlayer ? 38 : machineClue ? 26 : 14);
             brain.SearchLookPoint = brain.SearchAnchor + brain.SearchHeading * radius + Vector3.up * 1.15f;
             brain.NextPath = 0;
             return bestPoint;
         }
 
-        private Vector3 ChooseFlank(DollSingerEnemyBrain brain, Vector3 position)
+        private Vector3 ChooseFlank(DollSingerEnemyBrain brain, Vector3 position, uint weaponId)
         {
             Vector3 away = position - brain.LastSeen; away.y = 0;
             float distance = away.magnitude;
@@ -325,15 +341,20 @@ namespace Unity.MP_FPS
             float best = float.MinValue;
             Vector3 goal = position;
             int preferredSide = (brain.IsClashBot ? brain.ClashSlot : brain.Seed) % 2 == 0 ? 1 : -1;
+            bool closeWeapon = brain.IsExpeditionRaider && PmcWeaponTactics.PrefersCloseRange(weaponId) && distance <= 14;
             for (int i = 0; i < 6; i++)
             {
                 int side = i % 2 == 0 ? preferredSide : -preferredSide;
-                Vector3 offset = Vector3.Cross(Vector3.up, away) * side * (7 + i / 2 * 3) + away * 2;
+                float lateral = closeWeapon ? 4 + i / 2 * 2 : 7 + i / 2 * 3;
+                Vector3 offset = Vector3.Cross(Vector3.up, away) * side * lateral + away * (closeWeapon ? -1 : 2);
                 if (!NavMesh.SamplePosition(position + offset, out var sample, 2, m_Filter) ||
                     HorizontalDistance(sample.position, brain.LastSeen) < Mathf.Max(5, distance * .65f) ||
-                    !CompletePath(brain, position, sample.position, out float length) || length > 26) continue;
+                    brain.IsExpeditionRaider && Mathf.Abs(sample.position.y - position.y) > 1.2f) continue;
+                bool clearLane = !WorldBlocked(sample.position + Vector3.up * 1.4f, brain.LastSeen + brain.AimOffset);
+                if (brain.IsExpeditionRaider && !clearLane ||
+                    !CompletePath(brain, position, sample.position, out float length) || length > (closeWeapon ? 15 : 26)) continue;
                 float score = 20 - length * .5f - PathExposure(brain, brain.LastSeen) * .8f;
-                if (!WorldBlocked(sample.position + Vector3.up * 1.4f, brain.LastSeen + brain.AimOffset)) score += 5;
+                if (clearLane) score += 5;
                 if (score <= best) continue;
                 best = score; goal = sample.position;
             }
@@ -358,11 +379,11 @@ namespace Unity.MP_FPS
             return exposure;
         }
 
-        private Vector3 ReachableOffset(DollSingerEnemyBrain brain, Vector3 position, Vector3 offset)
+        private Vector3 ReachableOffset(DollSingerEnemyBrain brain, Vector3 position, Vector3 offset, bool reverseIfBlocked = true)
         {
             if (NavMesh.SamplePosition(position + offset, out var end, 3, m_Filter) &&
                 CompletePath(brain, position, end.position, out _)) return end.position;
-            if (NavMesh.SamplePosition(position - offset * .5f, out end, 3, m_Filter) &&
+            if (reverseIfBlocked && NavMesh.SamplePosition(position - offset * .5f, out end, 3, m_Filter) &&
                 CompletePath(brain, position, end.position, out _)) return end.position;
             return position;
         }

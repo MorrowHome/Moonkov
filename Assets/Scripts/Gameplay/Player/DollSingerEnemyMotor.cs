@@ -45,9 +45,10 @@ namespace Unity.MP_FPS
                 UpdatePath(brain, position, brain.TacticalGoal, now);
             Vector3 move = FollowPath(brain, position);
             bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) && !brain.Visible;
+            bool pursuing = brain.IsExpeditionRaider && brain.Action == PmcAction.Search && !brain.Visible && now - brain.LastConfirmedSight < 12;
             bool checkingCorner = searching && brain.Corner < brain.CornerCount - 1 &&
                 HorizontalDistance(position, brain.Corners[brain.Corner]) < 2.5f;
-            if (searching) move *= checkingCorner ? .45f : .7f;
+            if (searching) move *= pursuing ? (checkingCorner ? .55f : 1) : (checkingCorner ? .45f : .7f);
             if (brain.IsPeeking) move *= .65f;
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
                 brain.HealUntil > 0 || brain.NutritionUntil > 0 || brain.Interacting || searching && now < brain.SearchPauseUntil ||
@@ -62,7 +63,7 @@ namespace Unity.MP_FPS
             if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile)
             {
                 float flight = Mathf.Min(.6f, distance / Mathf.Max(1, weapon.ProjectileSpeed));
-                aim += Vector3.ClampMagnitude(brain.ObservedVelocity * flight, 3);
+                aim += Vector3.ClampMagnitude(brain.ObservedVelocity * flight, brain.IsExpeditionRaider ? 4.5f : 3);
                 aim.y += .5f * weapon.ProjectileGravity * flight * flight;
             }
             Vector3 facing = hasContact ? aim - eye : move;
@@ -85,14 +86,24 @@ namespace Unity.MP_FPS
             {
                 float yaw = Mathf.Atan2(facing.x, facing.z) * Mathf.Rad2Deg;
                 float pitch = hasContact || looting ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
-                brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, m_Tuning.TurnSpeed * dt);
-                brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, m_Tuning.TurnSpeed * .7f * dt);
+                float turn = m_Tuning.TurnSpeed * (brain.IsExpeditionRaider && brain.Visible ? 1.7f : 1f) * dt;
+                brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, turn);
+                brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, turn * .7f);
             }
             if (now >= brain.NextAimError)
             {
-                float settled = Mathf.Clamp01((float)(now - brain.VisibleSince) / 2);
+                float settled = Mathf.Clamp01((float)(now - brain.VisibleSince) / (brain.IsExpeditionRaider ? 1.1f : 2f));
                 float error = Mathf.Lerp(m_Tuning.FirstShotError, m_Tuning.SettledAimError, settled);
-                error += brain.Suppression * 4 + move.magnitude * 1.5f;
+                float movingError = 1.5f;
+                if (brain.IsExpeditionRaider && brain.Visible)
+                {
+                    // A fixed angular error would turn a small miss into several body widths at range.
+                    float aimDistance = Mathf.Max(1, distance);
+                    float offset = Mathf.Lerp(.55f, .27f, settled);
+                    error = Mathf.Min(error, Mathf.Atan2(offset, aimDistance) * Mathf.Rad2Deg);
+                    movingError = Mathf.Min(.9f, Mathf.Atan2(.4f, aimDistance) * Mathf.Rad2Deg);
+                }
+                error += brain.Suppression * 4 + move.magnitude * movingError;
                 error += HaloLightGlareRules.AimErrorDegrees(brain.LightGlare);
                 brain.AimErrorX = brain.Random.NextFloat(-error, error);
                 brain.AimErrorY = brain.Random.NextFloat(-error * .6f, error * .6f);
@@ -110,6 +121,7 @@ namespace Unity.MP_FPS
             input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
                 brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
+                    pursuing && !checkingCorner && distance > 18 ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
             int preferred = !brain.IsClashBot && brain.Visible && CanReturnFire(brain) && brain.LootUntil <= 0 && now >= brain.NextTacticalSwitch
@@ -140,9 +152,12 @@ namespace Unity.MP_FPS
                     }
                 }
             }
+            float firingRange = map.EnemySightRange;
+            if (brain.IsExpeditionRaider && brain.Visible && brain.Contacts.TryGetValue(brain.Target, out var contact) && contact.PlayerControlled)
+                firingRange = Mathf.Max(firingRange, m_Tuning.ExpeditionPlayerSightRange);
             bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && health.CurrentAmmo > 0 &&
                 !health.ControllerState.IsReloadingState && health.WeaponEquipRemaining <= 0 &&
-                now - brain.VisibleSince >= m_Tuning.ReactionSeconds && distance < map.EnemySightRange &&
+                now - brain.VisibleSince >= ReactionTime(brain) && distance < firingRange &&
                 Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
                 (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));
             // Do not spend a short peek's entire burst while still reacting or
@@ -153,9 +168,13 @@ namespace Unity.MP_FPS
                 // it before counting the short burst, including injured-hand handling.
                 float raiseTime = DollSingerWeapons.IsHalo(health.EquippedWeaponID) ?
                     (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds * RaidHealth.HandlingMultiplier(health) : 0;
-                brain.BurstUntil = now + raiseTime + brain.Random.NextFloat(.25f, .6f);
-                brain.NextBurst = brain.BurstUntil + brain.Random.NextFloat(.5f, 1.1f);
+                brain.BurstUntil = now + raiseTime + (brain.IsExpeditionRaider ?
+                    brain.Random.NextFloat(.38f, .72f) : brain.Random.NextFloat(.25f, .6f));
+                brain.NextBurst = brain.BurstUntil + (brain.IsExpeditionRaider ?
+                    brain.Random.NextFloat(.18f, .38f) : brain.Random.NextFloat(.5f, 1.1f));
             }
+            if (brain.IsExpeditionRaider && !firingSolution && HaloModuleFire.HasPendingFire(health))
+                HaloModuleFire.Reset(ref health);
             bool shoot = firingSolution && now < brain.BurstUntil;
             // A valid return-fire window releases defense; otherwise the barrier
             // silently consumes every burst while the actor stands exposed.
@@ -167,6 +186,9 @@ namespace Unity.MP_FPS
             input.SetFlag(PlayerInput.InputFlag.Shoot, shoot);
             return input;
         }
+
+        private float ReactionTime(DollSingerEnemyBrain brain) => brain.IsExpeditionRaider ?
+            m_Tuning.ReactionSeconds * (brain.ReacquiredTarget ? .18f : .35f) : m_Tuning.ReactionSeconds;
 
         private static bool CanReturnFire(DollSingerEnemyBrain brain) =>
             brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&

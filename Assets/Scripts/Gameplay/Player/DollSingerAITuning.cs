@@ -30,6 +30,9 @@ namespace Unity.MP_FPS
         [Min(1)] public float ShotSensorRange = 42;
         [Min(1)] public float FootstepSensorRange = 12;
         [Range(.2f, 1)] public float NightSightMultiplier = .65f;
+        [Header("Ordinary expedition perception of players")]
+        [Range(45, 160)] public float ExpeditionPlayerSightRange = 120;
+        [Range(70, 150)] public float ExpeditionPlayerHalfViewAngle = 115;
         [Header("Combat")]
         [Min(2)] public float PreferredRange = 18;
         [Min(.1f)] public float SettledAimError = 1.2f;

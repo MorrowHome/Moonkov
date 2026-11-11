@@ -22,6 +22,9 @@ namespace Unity.MP_FPS
             bool energyLow = health.HaloEnergyInitialized && health.HaloEnergy < cost;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
+            float holdAngleSeconds = m_Tuning.HoldAngleSeconds;
+            if (brain.IsExpeditionRaider && confirmed)
+                holdAngleSeconds = Mathf.Min(holdAngleSeconds, (position - brain.LastSeen).sqrMagnitude <= 24 * 24 ? .75f : 1.5f);
             bool needsHealing = NeedsHealing(health);
             var medical = needsHealing ? FindMedical(brain.Inventory) : null;
             bool grenadeDanger = !brain.IsClashBot && brain.Grenade.Active(now);
@@ -70,16 +73,18 @@ namespace Unity.MP_FPS
                         HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
                     bool coveringAlly = brain.IsClashBot && HasClashCoveringAlly(brain, now);
                     bool calm = !brain.Leaving && brain.Suppression < .3f && now - brain.LastDamage >= 3;
+                    bool readyToFight = health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
+                        !energyLow && brain.Suppression <= .7f;
                     // Fire first. Reposition in a later burst pause, or finish an
                     // already chosen angle; fresh damage restores counterfire priority.
                     bool squadFlank = calm && coveringAlly && betweenBursts;
+                    float flankDelay = brain.IsExpeditionRaider ? Mathf.Lerp(2.5f, 1.65f, brain.Aggression) : 8;
+                    bool enoughFireTime = !brain.IsExpeditionRaider || readyToFight && now - brain.VisibleSince >= 1;
                     bool flankOpening = calm && (!brain.IsClashBot || flanking || coveringAlly) &&
-                        (flanking || betweenBursts && brain.Action == PmcAction.Engage &&
-                            now >= brain.NextFlank && now - brain.ActionStarted > 8);
+                        (flanking || enoughFireTime && betweenBursts && brain.Action == PmcAction.Engage &&
+                            now >= brain.NextFlank && now - brain.ActionStarted > flankDelay);
                     // An armed PMC should contest a visible opponent before minor
                     // pressure or routine flanking. Serious suppression still wins cover.
-                    bool readyToFight = health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
-                        !energyLow && brain.Suppression <= .7f;
                     Consider(PmcAction.Engage, (readyToFight && !squadFlank && !flankOpening ? 82 : 50) + brain.Aggression * 12,
                         "confirmed opponent; prioritize deliberate return fire");
                     if (squadFlank)
@@ -88,9 +93,9 @@ namespace Unity.MP_FPS
                     if (flankOpening)
                         Consider(PmcAction.Flank, 64 + brain.Aggression * 8, "change the firing angle after an inconclusive duel");
                 }
-                else if (!brain.Leaving && confirmed && seenAge < m_Tuning.MemorySeconds)
+                else if (!brain.Leaving && confirmed && seenAge < ContactMemorySeconds(brain))
                 {
-                    if (seenAge < m_Tuning.HoldAngleSeconds && brain.Suppression < .3f)
+                    if (seenAge < holdAngleSeconds && brain.Suppression < .3f)
                         Consider(PmcAction.HoldAngle, 57, "watch the last exit briefly before committing to a search");
                     else Consider(PmcAction.Search, 38 + brain.Confidence * 10, "search remembered motion and plausible exits");
                 }
@@ -130,7 +135,7 @@ namespace Unity.MP_FPS
                 brain.Action == PmcAction.EvadeHazard && !hazardDanger ||
                 health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
                 brain.Visible && passive || brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now) ||
-                brain.Action == PmcAction.HoldAngle && seenAge >= m_Tuning.HoldAngleSeconds;
+                brain.Action == PmcAction.HoldAngle && seenAge >= holdAngleSeconds;
             best = choice; score = utility; reason = explanation;
         }
 

@@ -147,7 +147,8 @@ namespace Unity.MP_FPS
         {
             position = default;
             var anchors = map.EnemySpawnPositions;
-            if (TutorialRuntime.Enabled(EntityManager) && RaidMissionSite.Active)
+            bool tutorial = TutorialRuntime.Enabled(EntityManager);
+            if (tutorial && RaidMissionSite.Active)
             {
                 var anchor = RaidMissionSite.Active.Anchor("power_a");
                 if (anchor != null) anchors = new[] { anchor.Approach };
@@ -160,6 +161,8 @@ namespace Unity.MP_FPS
             int start = m_SpawnRandom.NextInt(anchors.Length);
             float inner = Mathf.Max(0, m_Tuning.SpawnInnerRadius);
             float outer = Mathf.Max(inner, m_Tuning.SpawnOuterRadius);
+            float visibilityDistance = Mathf.Max(10, m_Tuning.SpawnVisibilityDistance);
+            if (!tutorial) visibilityDistance = Mathf.Max(visibilityDistance, m_Tuning.ExpeditionPlayerSightRange);
             int attempts = Mathf.Clamp(m_Tuning.SpawnAttempts, 4, 48);
             int nearbyAttempts = 0;
             for (int attempt = 0; attempt < anchors.Length + attempts && nearbyAttempts < attempts; attempt++)
@@ -188,7 +191,7 @@ namespace Unity.MP_FPS
                     { nearExit = true; break; }
                 if (nearExit) continue;
                 if (!RaidSpawnSafety.IsSafeFromObservers(point, m_SpawnObservers,
-                    Mathf.Max(8, m_Tuning.SpawnPlayerDistance), Mathf.Max(10, m_Tuning.SpawnVisibilityDistance),
+                    Mathf.Max(8, m_Tuning.SpawnPlayerDistance), visibilityDistance,
                     Mathf.Max(1, m_Tuning.SpawnActorSpacing))) continue;
                 if (!RaidSpawnSafety.TryGroundPosition(point, .35f, 1.8f, 45, out var ground, out _) ||
                     Mathf.Abs(ground.y - point.y) > .6f) continue;

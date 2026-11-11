@@ -505,6 +505,9 @@ namespace Unity.MP_FPS
 
     public static class PmcWeaponTactics
     {
+        internal static bool PrefersCloseRange(uint weapon) =>
+            weapon is DollSingerWeapons.Shotgun or DollSingerWeapons.Thorn or DollSingerWeapons.Cicada;
+
         // Separate thresholds keep a target near the boundary from causing a weapon swap loop.
         public static int PreferredSlot(in PredictedPlayerGhost health, float distance)
         {
@@ -569,7 +572,7 @@ namespace Unity.MP_FPS
         public Vector3 AimOffset = Vector3.up * 1.15f;
         public float Suspicion, Confidence;
         public double LastSeen = -100, LastHeard = -100;
-        public bool Visible, Confirmed;
+        public bool Visible, Confirmed, PlayerControlled;
         public Vector3 LastVisualPosition, HearingBias;
         public float PositionUncertainty = 1;
         public double HearingBiasUntil = -100;
@@ -628,6 +631,7 @@ namespace Unity.MP_FPS
         // A server-assigned identity, never a fabricated transport connection.
         public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;
         public bool IsClashBot => ClashParticipantId > 0;
+        internal bool IsExpeditionRaider => !IsClashBot && !TutorialActor;
         public Vector3 MissionGoal, MissionLookPoint, FailedGoal;
         public double FailedGoalUntil, NextMission, NextIntent, LastRadio = -100;
         public int PathFailures, RecoveryAttempts, SelectedExit = -1, RescueTargetId = -1;
@@ -641,6 +645,8 @@ namespace Unity.MP_FPS
         public ClashBotGoal Mission;
         public bool Interacting, MissionUrgent;
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;
+        public double LastConfirmedSight = -100;
+        public bool ReacquiredTarget;
         public double NextCover, NextAimError, BurstUntil, NextBurst, SearchUntil, LootUntil, SpawnTime, LastDamage = -100;
         public double NextNearMiss;
         public double LastHeardTime = -100;

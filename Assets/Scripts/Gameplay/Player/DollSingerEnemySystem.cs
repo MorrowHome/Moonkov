@@ -32,7 +32,7 @@ namespace Unity.MP_FPS
             public Vector3 Velocity;
             public Vector3 AimOffset;
             public Vector3 HeadOffset, HipOffset;
-            public bool Alien;
+            public bool Alien, PlayerControlled;
         }
 
         private sealed class SensorTrack
@@ -333,6 +333,7 @@ namespace Unity.MP_FPS
                 Vector3 center = capsule ? capsule.transform.TransformPoint(capsule.center) - position : Vector3.up * .9f;
                 float height = capsule ? capsule.height * capsule.transform.lossyScale.y : 1.8f;
                 m_Targets.Add(new Target { Entity = entity, Position = position, Velocity = velocity, Root = link.LinkedInstance.transform,
+                    PlayerControlled = owner.ValueRO.NetworkId > 0,
                     Alien = alien != null, AimOffset = alien ? alien.AimPoint - position : center + Vector3.up * (height * .14f),
                     HeadOffset = center + Vector3.up * (height * .36f), HipOffset = center - Vector3.up * (height * .08f) });
             }
