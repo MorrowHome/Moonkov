@@ -1,6 +1,8 @@
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 
 namespace Unity.MP_FPS
 {
@@ -53,6 +55,11 @@ namespace Unity.MP_FPS
         private uint m_RecoilWeapon;
         private float2 m_OwnedLook;
         private Client.HaloObstructionView m_ObstructionView;
+        private RuntimeAnimatorController m_AuthoredRuntimeAnimatorController;
+        private PlayableGraph m_ClassicDeathGraph;
+        private AnimationClipPlayable m_ClassicDeathClip;
+        private double m_ClassicDeathStartedAt;
+        private bool m_ClassicDeathStarted;
         public bool OwnedMuzzleObstructed { get; private set; }
         private const int CoverMask = (1 << (int)LayerIndex.Default) | (1 << (int)LayerIndex.Ground);
 
@@ -241,6 +248,7 @@ namespace Unity.MP_FPS
                         : m_AuthoredSpringDistance;
                 }
                 m_PresentationAnimator = m_Model.GetComponent<Animator>();
+                m_AuthoredRuntimeAnimatorController = m_PresentationAnimator.runtimeAnimatorController;
                 ConfigureClientAnimationBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
                 m_Melee = m_Model.GetComponent<DollSingerMeleePresentation>();
                 if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();
@@ -318,6 +326,9 @@ namespace Unity.MP_FPS
                 return;
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
+            if (!m_ClassicDeathStarted && Role != MultiplayerRole.Server && ghost.ClashEnabled && ghost.CurrentHealth <= 0 &&
+                GameSettings.Instance.RequestedMode == RaidGameMode.Classic)
+                BeginClassicDeath();
             var state = ghost.ControllerState;
             m_HaloOccupied = HaloTransferRules.Occupied(ghost);
             bool downed = ghost.ClashEnabled && ghost.ClashLife == ClashLife.Downed;
@@ -468,6 +479,36 @@ namespace Unity.MP_FPS
                 m_Model.Footstep += OnFootstep;
         }
 
+        private void BeginClassicDeath()
+        {
+            if (!m_PresentationAnimator || !m_PresentationAnimator.isHuman) return;
+            var settings = Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
+            if (!settings || !settings.Death) return;
+            m_ClassicDeathStarted = true;
+            m_ClassicDeathStartedAt = Time.timeAsDouble;
+            m_PresentationAnimator.runtimeAnimatorController = null;
+            m_PresentationAnimator.applyRootMotion = false;
+            m_PresentationAnimator.Rebind();
+            m_ClassicDeathGraph = PlayableGraph.Create("Moonkov classic death");
+            m_ClassicDeathGraph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
+            m_ClassicDeathClip = AnimationClipPlayable.Create(m_ClassicDeathGraph, settings.Death);
+            m_ClassicDeathClip.SetSpeed(0);
+            m_ClassicDeathClip.SetApplyFootIK(false);
+            m_ClassicDeathClip.SetApplyPlayableIK(false);
+            AnimationPlayableOutput.Create(m_ClassicDeathGraph, "Classic death", m_PresentationAnimator)
+                .SetSourcePlayable(m_ClassicDeathClip);
+            m_ClassicDeathGraph.Play();
+        }
+
+        private void LateUpdate()
+        {
+            if (!m_ClassicDeathGraph.IsValid() || !m_PresentationAnimator) return;
+            double age = Time.timeAsDouble - m_ClassicDeathStartedAt;
+            m_ClassicDeathClip.SetTime(System.Math.Min(age, m_ClassicDeathClip.GetAnimationClip().length));
+            m_ClassicDeathGraph.Evaluate(0);
+            if (age >= m_ClassicDeathClip.GetAnimationClip().length) m_PresentationAnimator.enabled = false;
+        }
+
         private void OnFootstep()
         {
             if (!m_Linked || !isActiveAndEnabled || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
@@ -484,6 +525,14 @@ namespace Unity.MP_FPS
 
         public override void OnGhostPreDestroy()
         {
+            if (m_ClassicDeathGraph.IsValid()) m_ClassicDeathGraph.Destroy();
+            if (m_ClassicDeathStarted && m_PresentationAnimator)
+            {
+                m_PresentationAnimator.enabled = true;
+                m_PresentationAnimator.runtimeAnimatorController = m_AuthoredRuntimeAnimatorController;
+                m_PresentationAnimator.Rebind();
+            }
+            m_ClassicDeathStarted = false;
             if (m_Model) m_Model.Footstep -= OnFootstep;
             m_LightPanel?.Dispose(); m_LightPanel = null;
             m_Audio?.Stop();

@@ -8,7 +8,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum ClassicPhase : byte { Waiting, Buy, Live, Planted, RoundOver, Finished }
-    public enum ClassicUse : byte { None, PickUp, PlantA, PlantB, Defuse }
+    public enum ClassicUse : byte { None, PickUp, PlantA, PlantB, Defuse, CacheA, CacheMid, CacheB }
 
     public struct ClassicSnapshotRpc : IRpcCommand
     {
@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         public int Round, Team, AttackTeam, ScoreA, ScoreB, AliveA, AliveB, Credits, Winner;
         public float Remaining, UseProgress;
         public bool HasBomb, Alive, BombVisible;
+        public byte AliveMaskA, AliveMaskB, CacheMask;
         public Unity.Mathematics.float3 BombPosition;
     }
 
@@ -34,7 +35,7 @@ namespace Unity.MP_FPS
 
     public sealed class ClassicMatch
     {
-        public const int Version = 1, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
+        public const int Version = 2, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
         public const double BuySeconds = 12, RoundSeconds = 115, FuseSeconds = 40, BreakSeconds = 5;
         public ClassicPhase Phase { get; private set; }
         public double Deadline { get; private set; }
@@ -51,6 +52,13 @@ namespace Unity.MP_FPS
         private Vector3 m_HoldPosition;
         private uint m_HoldDamage;
         private double m_HoldStarted, m_HoldUntil;
+        private readonly System.Collections.Generic.Dictionary<int, byte> m_ClaimedCaches = new();
+        private static readonly string[][] s_CacheContents =
+        {
+            new[] { "flash_grenade", "smoke_grenade", "frag_bomb", "fire_bomb", "choke_bomb" },
+            new[] { "smoke_grenade", "frag_bomb", "fire_bomb", "choke_bomb", "flash_grenade" },
+            new[] { "frag_bomb", "fire_bomb", "choke_bomb", "flash_grenade", "smoke_grenade" }
+        };
 
         public bool NeedsRound(double now) => Phase == ClassicPhase.Waiting || Phase == ClassicPhase.RoundOver && now >= Deadline;
 
@@ -63,6 +71,7 @@ namespace Unity.MP_FPS
             BombPosition = default;
             RoundWinner = -1;
             HoldActor = 0;
+            m_ClaimedCaches.Clear();
             Phase = ClassicPhase.Buy;
             Deadline = now + BuySeconds;
         }
@@ -106,6 +115,27 @@ namespace Unity.MP_FPS
 
         public float HoldProgress(int actor, double now) => HoldActor == actor && actor != 0
             ? Mathf.Clamp01((float)((now - m_HoldStarted) / UseSeconds(m_HoldUse))) : 0;
+
+        public byte CacheMask(int actor)
+        {
+            m_ClaimedCaches.TryGetValue(actor, out byte claimed);
+            return (byte)(7 & ~claimed);
+        }
+
+        public bool TakeCache(int actor, int team, int cache, InventoryGraph inventory, int version)
+        {
+            if (actor == 0 || cache < 0 || cache >= s_CacheContents.Length ||
+                Phase is not (ClassicPhase.Buy or ClassicPhase.Live) || inventory == null || inventory.Version != version)
+                return false;
+            byte bit = (byte)(1 << cache);
+            byte claimed = 0;
+            m_ClaimedCaches.TryGetValue(actor, out claimed);
+            if ((claimed & bit) != 0) return false;
+            string code = s_CacheContents[cache][(Round - 1) % s_CacheContents[cache].Length];
+            if (inventory.AddSupply(code, 1, InventoryCatalog.Pockets) != InventoryError.None) return false;
+            m_ClaimedCaches[actor] = (byte)(claimed | bit);
+            return true;
+        }
 
         // Position, visibility and alive state are sampled by the host every tick.
         public void Use(int actor, int team, ClassicUse use, Vector3 position, uint damage, double now)
@@ -159,15 +189,44 @@ namespace Unity.MP_FPS
             }
         }
 
-        public static int Price(ItemDefinition definition) => definition?.Kind switch
+        public static int Price(ItemDefinition definition)
         {
-            ItemKind.LongGun => 2700,
-            ItemKind.Pistol => 500,
-            ItemKind.Helmet or ItemKind.Shield => 650,
-            ItemKind.Throwable when definition.Code is "smoke_grenade" or "frag_bomb" or "fire_bomb" or "choke_bomb" => 300,
-            ItemKind.Cell => 100,
-            _ => 0
-        };
+            if (definition == null) return 0;
+            if (definition.Kind == ItemKind.LongGun) return 2700;
+            if (definition.Kind == ItemKind.Pistol) return 500;
+            if (definition.Kind is ItemKind.Helmet or ItemKind.Shield) return 650;
+            if (definition.Kind == ItemKind.Cell) return 100;
+            if (definition.Kind != ItemKind.Throwable || TacticalItemRules.Find(definition.Code) == null) return 0;
+            return definition.Code switch
+            {
+                "vitality_shot" => 400,
+                "stamina_shot" => 200,
+                "antidote_shot" => 200,
+                "regeneration_shot" => 500,
+                "flash_grenade" => 200,
+                "smoke_grenade" => 300,
+                "frag_bomb" => 300,
+                "fire_bomb" => 400,
+                "choke_bomb" => 100,
+                "poison_bomb" => 300,
+                "dynamite_bundle" => 400,
+                "alert_trip_mine" => 200,
+                "concertina_trip_mine" => 300,
+                "poison_trip_mine" => 250,
+                "ammo_box" => 600,
+                _ => 0
+            };
+        }
+
+        public static InventoryError Purchase(InventoryGraph graph, string code, int version)
+        {
+            if (Price(InventoryCatalog.Get(code)) <= 0) return InventoryError.Invalid;
+            if (graph == null || graph.Version != version) return graph == null ? InventoryError.Invalid : InventoryError.Stale;
+            var definition = InventoryCatalog.Get(code);
+            if (definition.Kind is ItemKind.Cell or ItemKind.Throwable)
+                return graph.AddSupply(code, 1, InventoryCatalog.Pockets);
+            return ArenaArmory.Issue(graph, code, version);
+        }
 
         public static InventoryGraph StartingKit()
         {

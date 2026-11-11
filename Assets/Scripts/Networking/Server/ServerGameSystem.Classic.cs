@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
             }
 
             int aliveA = 0, aliveB = 0;
+            byte aliveMaskA = 0, aliveMaskB = 0;
             bool live = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             var tactics = match.ClassicTactics;
             if (live) tactics.BeginTick();
@@ -41,18 +42,30 @@ namespace Unity.MP_FPS
                     if (live)
                     {
                         rules.DropBomb(seat.Id, seat.LastPosition);
-                        if (manager.HasComponent<PredictedPlayerGhost>(actor)) RemoveArenaActor(ref state, ecb, connection, actor);
+                        if (manager.HasComponent<PredictedPlayerGhost>(actor))
+                            SetClassicActorActive(manager, actor, active: false);
                     }
                     rules.CancelHold(seat.Id);
                     continue;
                 }
                 seat.LastPosition = position;
                 if (seat.Team == 0) aliveA++; else aliveB++;
+                if (seat.Team == 0) aliveMaskA |= (byte)(1 << seat.Slot); else aliveMaskB |= (byte)(1 << seat.Slot);
+                var use = ClassicOpportunity(map, rules, seat.Id, seat.Team, position);
+                if ((use is ClassicUse.CacheA or ClassicUse.CacheMid or ClassicUse.CacheB) && now < seat.UseUntil)
+                {
+                    int cache = use == ClassicUse.CacheA ? 0 : use == ClassicUse.CacheMid ? 1 : 2;
+                    var inventory = GetRaidInventory(ref state, connection);
+                    if (rules.TakeCache(seat.Id, seat.Team, cache, inventory.Graph, inventory.Graph.Version))
+                    {
+                        inventory.LastSentVersion = -1;
+                        UpdateInventoryProtection(ref state, connection, true);
+                    }
+                }
                 if (!live) continue;
                 var health = manager.GetComponentData<PredictedPlayerGhost>(actor);
                 tactics.Observe(actor, seat.Id, seat.Team, seat.Slot, false, position, health.LastShotTick, now);
                 if (now >= seat.UseUntil) { rules.CancelHold(seat.Id); continue; }
-                var use = ClassicOpportunity(map, rules, seat.Id, seat.Team, position);
                 rules.Use(seat.Id, seat.Team, use, position, health.LastHitTick, now);
             }
             foreach (var bot in match.Bots.Values)
@@ -65,6 +78,7 @@ namespace Unity.MP_FPS
                 }
                 bot.LastPosition = position;
                 if (bot.Team == 0) aliveA++; else aliveB++;
+                if (bot.Team == 0) aliveMaskA |= (byte)(1 << bot.Slot); else aliveMaskB |= (byte)(1 << bot.Slot);
                 if (live) tactics.Observe(bot.Actor, bot.Id, bot.Team, bot.Slot, true, position,
                     manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastShotTick, now);
             }
@@ -93,6 +107,8 @@ namespace Unity.MP_FPS
                 {
                     Phase = rules.Phase, Round = rules.Round, Team = seat.Team, AttackTeam = rules.AttackTeam,
                     ScoreA = rules.Score[0], ScoreB = rules.Score[1], AliveA = aliveA, AliveB = aliveB,
+                    AliveMaskA = aliveMaskA, AliveMaskB = aliveMaskB,
+                    CacheMask = rules.CacheMask(seat.Id),
                     Remaining = remaining, Credits = seat.Credits, Winner = rules.Phase == ClassicPhase.Finished ? rules.Winner : rules.RoundWinner,
                     HasBomb = rules.Carrier == seat.Id, Alive = alive,
                     Use = alive ? ClassicOpportunity(map, rules, seat.Id, seat.Team, position) : ClassicUse.None,
@@ -216,6 +232,16 @@ namespace Unity.MP_FPS
             }
             if (rules.Phase == ClassicPhase.Planted && team != rules.AttackTeam && CanReachBomb(position, rules.BombPosition))
                 return ClassicUse.Defuse;
+            if (rules.Phase is ClassicPhase.Buy or ClassicPhase.Live)
+            {
+                var available = rules.CacheMask(actor);
+                for (int cache = 0; cache < 3; cache++)
+                {
+                    var cachePosition = map.SupplyCachePosition(cache) - Vector3.up * .35f;
+                    if ((available & (1 << cache)) != 0 && CanReachBomb(position, cachePosition))
+                        return cache switch { 0 => ClassicUse.CacheA, 1 => ClassicUse.CacheMid, _ => ClassicUse.CacheB };
+                }
+            }
             return ClassicUse.None;
         }
 

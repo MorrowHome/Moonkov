@@ -142,3 +142,27 @@
     margin: 6px 10px;
 }
 .arena-armory DropdownField { flex-grow: 1; }
+.arena-armory.is-classic {
+    position: absolute;
+    align-self: center;
+    top: 24%;
+    width: 420px;
+    max-width: 90%;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(17, 24, 39, 0.96);
+    border-radius: 10px;
+}
+.arena-armory.is-classic DropdownField { margin-bottom: 8px; }
+.classic-status-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
+}
+.classic-status-team { width: 24px; color: #cbd5e1; font-size: 12px; -unity-font-style: bold; }
+.classic-status-attackers .classic-status-team { color: #e6b365; }
+.classic-status-defenders .classic-status-team { color: #77bce8; }
+.classic-status-player { width: 20px; color: #8ee3b8; font-size: 14px; -unity-text-align: middle-center; }
+.classic-status-player.is-dead { color: #f87171; }

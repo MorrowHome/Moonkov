@@ -182,7 +182,9 @@ namespace Unity.MP_FPS
                     match.Classic.Phase == ClassicPhase.Buy && price > 0 && seat.Credits >= price;
                 inventory.Error = !open || !TryGetLivingPosition(ref state, actor, out _) ||
                     inventory.InventoryMoveBlocked || manager.GetComponentData<PredictedPlayerGhost>(actor).ControllerState.IsReloadingState
-                    ? Inventory.InventoryError.Inaccessible : ArenaArmory.Issue(inventory.Graph, code, intent.ExpectedVersion);
+                    ? Inventory.InventoryError.Inaccessible : match.Classic == null
+                        ? ArenaArmory.Issue(inventory.Graph, code, intent.ExpectedVersion)
+                        : ClassicMatch.Purchase(inventory.Graph, code, intent.ExpectedVersion);
                 if (inventory.Error == Inventory.InventoryError.None)
                 {
                     seat.Credits -= price;

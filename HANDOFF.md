@@ -10,6 +10,8 @@
 - 沙2的几何、碰撞和原始颜色贴图来自 Thunderstore 的 CS2 Dust2 移植包。灯光和材质按 Unity 重配。出生区和包点按 CS2 雷达图对齐，再在碰撞上校验。[地图包](https://thunderstore.io/c/reskate/p/anton/CS2_Dust2/) [雷达图](https://github.com/MurkyYT/cs2-map-icons/blob/main/data/available.md)
 - 导入结果在 `Assets/LocalMaps/Dust2`，该目录由 Git 忽略。换电脑时复制整个目录，包含 `.meta`。好友房间的各客户端也需要该地图。没有本地资源时，菜单禁用经典爆破。下载包和中间文件在 `LocalData/ClassicDust2`。`Tools/Validation/ClassicDust2Install.cs` 可用该处的 `extracted` 和 `Tools/Validation/ClassicDust2Anchors.json` 重建预制体。
 - 单 Editor 编译通过。保存后的 10 个出生点到 A、B 点共 20 条导航路线通过。单人实机验证 1 名玩家加 9 名人机、开火、进入第二回合和退出卸载。测试存档在进出对局后内容一致。
+- 2026-11-11 补齐回合 HUD 与购买入口：两队各五个席位用存活标记显示，Tab 在购买阶段打开独立购买面板，其余阶段仍开背包。玩家死亡后保留角色到下回合，由网络表现层播放 `CorpsePresentation` 的死亡动画；不要在死亡帧立即销毁角色。
+- 爆破购买目录包含所有受支持的战术投掷物和补给。每次购买一件；服务器在扣款前检查回合、余额、角色存活、背包版本和容量。Dust II 每回合在 A、B 连线的四分之一、中点、四分之三位置生成三个补给箱，位置按 NavMesh 吸附。每名玩家每箱每回合可取一件，箱内投掷物随回合轮换；背包满时不消耗领取机会。联机客户端和房主需要使用同一版。
 
 ## 好友竞技场（2026-11-11）
 

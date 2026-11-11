@@ -10,9 +10,11 @@ namespace Unity.MP_FPS
     public sealed partial class RaidHUD
     {
         private VisualElement m_ArenaHud, m_ArenaArmory, m_ArenaResult;
+        private VisualElement m_ArenaInventoryWindow;
         private Label m_ArenaScore, m_ArenaStatus, m_ArenaResultText;
         private DropdownField m_ArenaItems;
         private Button m_ArenaTake;
+        private VisualElement m_ClassicStatusA, m_ClassicStatusB;
         private ItemDefinition[] m_ArenaDefinitions;
         private bool m_ArenaFinished;
 
@@ -25,6 +27,14 @@ namespace Unity.MP_FPS
             m_ArenaStatus = new Label { pickingMode = PickingMode.Ignore };
             m_ArenaHud.Add(m_ArenaScore);
             m_ArenaHud.Add(m_ArenaStatus);
+            m_ClassicHud = GameSettings.Instance.RequestedMode == RaidGameMode.Classic;
+            if (m_ClassicHud)
+            {
+                m_ClassicStatusA = CreateClassicTeamStatus("T");
+                m_ClassicStatusB = CreateClassicTeamStatus("CT");
+                m_ArenaHud.Add(m_ClassicStatusA);
+                m_ArenaHud.Add(m_ClassicStatusB);
+            }
             m_Root.Add(m_ArenaHud);
 
             m_ArenaResult = new VisualElement();
@@ -38,7 +48,6 @@ namespace Unity.MP_FPS
             m_ArenaResult.style.display = DisplayStyle.None;
             m_Root.Add(m_ArenaResult);
 
-            m_ClassicHud = GameSettings.Instance.RequestedMode == RaidGameMode.Classic;
             m_ArenaDefinitions = InventoryCatalog.Definitions.Values.Where(item => m_ClassicHud ? ClassicMatch.Price(item) > 0 : ArenaArmory.Available(item))
                 .OrderBy(item => item.Kind).ThenBy(item => item.Name).ToArray();
             m_ArenaItems = new DropdownField(m_ArenaDefinitions.Select(item => m_ClassicHud
@@ -47,9 +56,37 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_ArenaTake, m_ClassicHud ? "购买" : "免费领取");
             m_ArenaArmory = new VisualElement();
             m_ArenaArmory.AddToClassList("arena-armory");
+            if (m_ClassicHud)
+            {
+                m_ArenaArmory.AddToClassList("is-classic");
+                var title = new Label { name = "classic-buy-title" };
+                title.AddToClassList("arena-score");
+                MoonkovLocalization.Set(title, "购买装备");
+                m_ArenaArmory.Add(title);
+            }
             m_ArenaArmory.Add(m_ArenaItems);
             m_ArenaArmory.Add(m_ArenaTake);
-            m_Inventory.Q(className: "raid-inventory-window").Insert(1, m_ArenaArmory);
+            m_ArenaArmory.style.display = DisplayStyle.None;
+            m_ArenaInventoryWindow = m_Inventory.Q(className: "raid-inventory-window");
+            if (m_ClassicHud) m_Root.Add(m_ArenaArmory);
+            else m_ArenaInventoryWindow.Insert(1, m_ArenaArmory);
+        }
+
+        private static VisualElement CreateClassicTeamStatus(string team)
+        {
+            var row = new VisualElement { name = "classic-status-" + team.ToLowerInvariant(), pickingMode = PickingMode.Ignore };
+            row.AddToClassList("classic-status-row");
+            row.AddToClassList(team == "T" ? "classic-status-attackers" : "classic-status-defenders");
+            var label = new Label(team) { pickingMode = PickingMode.Ignore };
+            label.AddToClassList("classic-status-team");
+            row.Add(label);
+            for (int i = 0; i < ClassicMatch.TeamSize; i++)
+            {
+                var player = new Label("●") { name = "player-" + i, pickingMode = PickingMode.Ignore };
+                player.AddToClassList("classic-status-player");
+                row.Add(player);
+            }
+            return row;
         }
 
         private void TakeArenaSupply()
@@ -79,7 +116,7 @@ namespace Unity.MP_FPS
             if (!m_ArenaFinished && alive && m_Snapshot.RaidId > 0 && !ChatInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
                 (RaidKeyBindings.Pressed(RaidKey.Inventory) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)))
                 SetInventory(!m_InventoryVisible);
-            m_ArenaArmory.style.display = m_HealthSelected ? DisplayStyle.None : DisplayStyle.Flex;
+            m_ArenaArmory.style.display = m_InventoryVisible && !m_HealthSelected ? DisplayStyle.Flex : DisplayStyle.None;
             m_ArenaTake.SetEnabled(!m_InventoryRequestPending && !TimedActionActive);
             UpdateInventoryBackdrop();
             UpdateChat();
