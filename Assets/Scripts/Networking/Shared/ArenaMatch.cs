@@ -51,6 +51,7 @@ namespace Unity.MP_FPS
         public readonly ClassicMatch Classic;
         internal readonly Dictionary<int, ClassicBot> Bots = new();
         internal readonly ClassicBotTactics ClassicTactics;
+        internal readonly HashSet<Entity> ClassicDeaths = new();
         public readonly Dictionary<Entity, Player> Players = new();
         public bool FirstRoundReady(double now, int expected) =>
             Players.Count > 0 && (Players.Count >= expected || now >= m_LoadDeadline);

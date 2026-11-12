@@ -1,4 +1,5 @@
 using Unity.MP_FPS.DollSinger;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -37,8 +38,11 @@ namespace Unity.MP_FPS
                 SetInventory(!m_InventoryVisible);
             bool scoreboard = !ChatInputBlocked && !typing && !paused && RaidKeyBindings.Held(RaidKey.Scoreboard);
             bool inventoryPressed = RaidKeyBindings.Pressed(RaidKey.Inventory);
-            if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed)
+            if (match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed)
+            {
+                if (m_ClassicBuyOpen) SetClassicBuyMenu(false);
                 SetInventory(!m_InventoryVisible);
+            }
             PresentClassicScoreboard(data, scoreboard);
             if (data.Received && match.Round > 0 && !paused && !m_ArenaFinished && !m_ClassicBuyOpen && !m_InventoryVisible && !scoreboard)
                 m_ClassicMinimap.Present(ClassicDust2Map.Active, m_World, match.Team, match.Team == match.AttackTeam, match.Alive);
@@ -70,9 +74,10 @@ namespace Unity.MP_FPS
             m_ArenaResult.style.display = m_ArenaFinished && !paused ? DisplayStyle.Flex : DisplayStyle.None;
             if (m_ArenaFinished) Utils.SetCursorVisible(true);
 
-            bool canUse = (fighting || buy && (match.Use is ClassicUse.CacheA or ClassicUse.CacheMid or ClassicUse.CacheB)) &&
-                match.Alive && match.Use != ClassicUse.None && !paused &&
+            bool canUse = fighting && match.Alive && match.Use != ClassicUse.None && !paused &&
                 !m_InventoryVisible && !ChatInputBlocked && Application.isFocused;
+            PresentClassicLoot(data.Received && match.Alive && (buy || fighting) && !paused && !scoreboard &&
+                !m_ClassicBuyOpen && !ChatInputBlocked && !typing && !canUse);
             bool held = canUse && m_InteractionBindings.Operate.IsPressed();
             double now = Time.unscaledTimeAsDouble;
             if (held != m_ClassicHeld || held && now >= m_NextClassicUse)
@@ -132,14 +137,35 @@ namespace Unity.MP_FPS
             if (canUse)
             {
                 var key = m_InteractionBindings.Label(m_InteractionBindings.Operate);
-                bool cache = match.Use is ClassicUse.CacheA or ClassicUse.CacheMid or ClassicUse.CacheB;
-                string action = MoonkovLocalization.Text(cache ? "开启补给箱" :
-                    match.Use == ClassicUse.Defuse ? "拆弹" : match.Use == ClassicUse.PickUp ? "拾取炸弹" : "安放炸弹");
+                string action = MoonkovLocalization.Text(match.Use == ClassicUse.Defuse ? "拆弹" :
+                    match.Use == ClassicUse.PickUp ? "拾取炸弹" : "安放炸弹");
                 phase = match.UseProgress > 0 ? $"{action}   {Mathf.FloorToInt(match.UseProgress * 100)}%" : $"{key}  {action}";
             }
             m_ArenaStatus.text = phase;
             if (m_ArenaFinished)
                 MoonkovLocalization.Set(m_ArenaResultText, match.Winner < 0 ? "平局" : match.Winner == match.Team ? "获胜" : "对局结束");
+        }
+
+        private void PresentClassicLoot(bool available)
+        {
+            var map = MoonRaidMap.Active;
+            if (!map) return;
+            var bags = m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            map.ShowDeathBags(bags);
+            CloseLootWhenIdle();
+            available = available && !m_InventoryVisible && !m_InventoryRequestPending && Application.isFocused &&
+                UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            available &= m_PlayerQuery.CalculateEntityCount() == 1;
+            var position = available ? m_PlayerQuery.GetSingleton<LocalTransform>().Position : default;
+            SelectWorldInteraction(available, false, position, bags, out int nearest, out float distance);
+            if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame())
+            {
+                OpenLootContainer(nearest);
+                available = false;
+            }
+            bool hasBag = bags.Bags.TryGetValue(nearest, out var bag);
+            RefreshInteraction(nearest, distance, hasBag, hasBag && bag.Empty, available,
+                dropped: hasBag && bag.CharacterIndex == RaidLootContainers.DroppedItemCharacterIndex);
         }
 
         private void SetClassicBuyMenu(bool visible)

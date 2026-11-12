@@ -9,7 +9,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum ClassicPhase : byte { Waiting, Buy, Live, Planted, RoundOver, Finished }
-    public enum ClassicUse : byte { None, PickUp, PlantA, PlantB, Defuse, CacheA, CacheMid, CacheB }
+    public enum ClassicUse : byte { None, PickUp, PlantA, PlantB, Defuse }
 
     public struct ClassicScoreboardEntry
     {
@@ -56,6 +56,7 @@ namespace Unity.MP_FPS
         public const int Version = 4, TeamSize = 5, Capacity = TeamSize * 2, Half = 12, ToWin = 13;
         public const double BuySeconds = 12, RoundSeconds = 115, FuseSeconds = 40, BreakSeconds = 5;
         public ClassicPhase Phase { get; private set; }
+        internal bool LootOpen => Phase is ClassicPhase.Buy or ClassicPhase.Live or ClassicPhase.Planted;
         public double Deadline { get; private set; }
         public int Round { get; private set; }
         public int AttackTeam => Round <= Half ? 0 : 1;
@@ -70,7 +71,6 @@ namespace Unity.MP_FPS
         private Vector3 m_HoldPosition;
         private uint m_HoldDamage;
         private double m_HoldStarted, m_HoldUntil;
-        private readonly Dictionary<int, byte> m_ClaimedCaches = new();
         private readonly Dictionary<int, CombatStats> m_CombatStats = new(Capacity);
 
         private struct CombatStats
@@ -133,7 +133,6 @@ namespace Unity.MP_FPS
             BombPosition = default;
             RoundWinner = -1;
             HoldActor = 0;
-            m_ClaimedCaches.Clear();
             Phase = ClassicPhase.Buy;
             Deadline = now + BuySeconds;
         }
@@ -178,25 +177,13 @@ namespace Unity.MP_FPS
         public float HoldProgress(int actor, double now) => HoldActor == actor && actor != 0
             ? Mathf.Clamp01((float)((now - m_HoldStarted) / UseSeconds(m_HoldUse))) : 0;
 
-        public byte CacheMask(int actor)
+        internal bool RestockCache(int id, InventoryGraph cache)
         {
-            m_ClaimedCaches.TryGetValue(actor, out byte claimed);
-            return (byte)(7 & ~claimed);
-        }
-
-        public bool TakeCache(int actor, int team, int cache, InventoryGraph inventory, int version)
-        {
-            if (actor == 0 || cache < 0 || cache >= s_CacheContents.Length ||
-                Phase is not (ClassicPhase.Buy or ClassicPhase.Live) || inventory == null || inventory.Version != version)
-                return false;
-            byte bit = (byte)(1 << cache);
-            byte claimed = 0;
-            m_ClaimedCaches.TryGetValue(actor, out claimed);
-            if ((claimed & bit) != 0) return false;
-            string code = s_CacheContents[cache][(Round - 1) % s_CacheContents[cache].Length];
-            if (inventory.AddSupply(code, 1, InventoryCatalog.Pockets) != InventoryError.None) return false;
-            m_ClaimedCaches[actor] = (byte)(claimed | bit);
-            return true;
+            var rotation = s_CacheContents[id];
+            string code = rotation[(Round - 1) % rotation.Length];
+            foreach (var item in cache.Children(LootInventoryExchange.Root))
+                if (item.Code == code) return false;
+            return cache.AddSupply(code, 1, LootInventoryExchange.Root) == InventoryError.None;
         }
 
         // Position, visibility and alive state are sampled by the host every tick.

@@ -125,13 +125,24 @@ namespace Unity.MP_FPS
             UpdateSurvival(ref state);
             UpdateTacticalItems(ref state, ecb);
             HandleArenaSupplies(ref state, ecb, match);
-            HandleInventoryRequests(ref state, ecb, discard: true);
+            var classic = match.Classic;
+            if (classic != null) HandleLootRequests(ref state, ecb, classic);
+            HandleInventoryRequests(ref state, ecb, discard: classic == null);
+            if (classic != null) RefreshLootContainers(ref state);
             bool send = now >= match.NextSnapshot;
             if (send) match.NextSnapshot = now + .25;
             foreach (var connection in match.Players.Keys)
             {
                 if (!state.EntityManager.HasComponent<RaidSession>(connection)) continue;
-                if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) SendInventory(ref state, ecb, connection, 1);
+                if (state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                {
+                    if (classic != null && state.EntityManager.HasComponent<JoinedClient>(connection))
+                    {
+                        RefreshLootAccess(ref state, connection, SystemAPI.GetComponent<RaidSession>(connection), classic);
+                        if (send) SendDeathBags(ref state, ecb, connection);
+                    }
+                    SendInventory(ref state, ecb, connection, 1);
+                }
                 if (!send) continue;
                 var raid = ecb.CreateEntity();
                 ecb.AddComponent(raid, new RaidSnapshotV2Rpc { RaidId = 1, Sequence = (uint)(now * 1000 + 1),

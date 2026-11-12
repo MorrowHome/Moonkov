@@ -17,7 +17,7 @@ namespace Unity.MP_FPS
         private RaidSupplyCacheVisuals m_SupplyCaches;
         private GameObject[] m_SupplyCacheObjects;
         private Vector3[] m_SupplyCachePositions;
-        private const int SupplyCacheCount = 3;
+        internal const int SupplyCacheCount = 3;
 
         public static ClassicDust2Map Active { get; private set; }
         public bool Configured => ValidSpawns(m_AttackSpawns) && ValidSpawns(m_DefenseSpawns) &&

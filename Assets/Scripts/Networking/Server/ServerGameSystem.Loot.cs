@@ -83,14 +83,20 @@ namespace Unity.MP_FPS
                 refill.Value.TryRefill(cache,now,map.LootRespawnSeconds,map.LootRefillLimit,blocked,caches.LootRandom);
             }
         }
-        private void DropDeathInventory(ref SystemState state,Entity connection)
+        private void DropDeathInventory(ref SystemState state,Entity connection,bool initialize=true)
         {
             if(MoonRaidMap.Active==null || !state.EntityManager.HasComponent<RaidInventoryState>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection))return;
-            InitializeLootContainers(ref state);
+            if (initialize) InitializeLootContainers(ref state);
             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
             if(!SystemAPI.Exists(player) || !SystemAPI.HasComponent<LocalTransform>(player))return;
             var inventory=GetRaidInventory(ref state,connection);
-            var pose=SystemAPI.GetComponent<LocalTransform>(player);
+            UpdateInventoryProtection(ref state,connection);
+            StoreDeathLoot(LootContainers(ref state),inventory.Graph,SystemAPI.GetComponent<LocalTransform>(player),
+                SystemAPI.GetComponent<JoinedClient>(connection).CharacterIndex,SystemAPI.Time.ElapsedTime);
+            inventory.CloseLoot();
+        }
+        private static void StoreDeathLoot(RaidLootContainers loot, InventoryGraph graph, LocalTransform pose, int character, double now)
+        {
             var position=pose.Position;
             var rotation=pose.Rotation;
             if(UnityEngine.Physics.Raycast((Vector3)position+Vector3.up,Vector3.down,out var ground,4,
@@ -99,18 +105,23 @@ namespace Unity.MP_FPS
                 position=ground.point;
                 rotation=Quaternion.FromToRotation(Vector3.up,ground.normal)*(Quaternion)pose.Rotation;
             }
-            UpdateInventoryProtection(ref state,connection);
-            LootContainers(ref state).Drop(inventory.Graph,position,rotation,SystemAPI.GetComponent<JoinedClient>(connection).CharacterIndex,SystemAPI.Time.ElapsedTime);
-            inventory.OpenedLootId=-1;inventory.LastSentVersion=-1;
+            loot.Drop(graph,position,rotation,character,now);
         }
-        private bool CanAccessLoot(ref SystemState state,Entity connection,int lootId,RaidSession session)
+        private bool CanAccessLoot(ref SystemState state,Entity connection,int lootId,RaidSession session,ClassicMatch classic=null)
         {
             var map=MoonRaidMap.Active;
             if(map==null || session.Phase!=RaidPhase.Active || !TryGetLootPosition(ref state,lootId,out var target) ||
                 SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection)) return false;
             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-            if(!BountyClashRuntime.CanAct(state.EntityManager,player) || !TryGetLivingPosition(ref state,player,out var position) ||
-                !BountyClashRuntime.InArena(state.EntityManager,position) || !BountyClashRuntime.InArena(state.EntityManager,target) || math.distancesq(position,target)>RaidRules.PickupRange*RaidRules.PickupRange) return false;
+            if(!TryGetLivingPosition(ref state,player,out var position) ||
+                math.distancesq(position,target)>RaidRules.PickupRange*RaidRules.PickupRange) return false;
+            if (classic != null)
+            {
+                if (!classic.LootOpen || !SystemAPI.HasComponent<ClashPlayer>(player) ||
+                    SystemAPI.GetComponent<ClashPlayer>(player).Epoch != classic.Round) return false;
+            }
+            else if(!BountyClashRuntime.CanAct(state.EntityManager,player) || !BountyClashRuntime.InArena(state.EntityManager,position) ||
+                !BountyClashRuntime.InArena(state.EntityManager,target)) return false;
             return !UnityEngine.Physics.Linecast((Vector3)position+Vector3.up*1.4f,(Vector3)target,
                 LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore);
         }
@@ -170,7 +181,7 @@ namespace Unity.MP_FPS
             }
         }
 
-        private void HandleLootRequests(ref SystemState state,EntityCommandBuffer ecb)
+        private void HandleLootRequests(ref SystemState state,EntityCommandBuffer ecb,ClassicMatch classic=null)
         {
             var caches=LootContainers(ref state);
             foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidLootOpenRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
@@ -184,7 +195,7 @@ namespace Unity.MP_FPS
                         inventory.RequestId=r.RequestId;
                         bool eligible=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && session.Phase==RaidPhase.Active &&
                             !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) && (r.LootId==-1 ||
-                            !caches.IsEmptyDrop(r.LootId) && CanAccessLoot(ref state,connection,r.LootId,session));
+                            !caches.IsEmptyDrop(r.LootId) && CanAccessLoot(ref state,connection,r.LootId,session,classic));
                         bool weaponBusy=eligible && r.LootId>=0 && RaidHealth.SearchHandsBusy(SystemAPI.GetComponent<PredictedPlayerGhost>(
                             SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity));
                         bool accepted=eligible && !weaponBusy;
@@ -193,6 +204,9 @@ namespace Unity.MP_FPS
                             if(r.LootId<0)inventory.CloseLoot();
                             else
                             {
+                                if (classic != null && r.LootId < ClassicDust2Map.SupplyCacheCount &&
+                                    classic.RestockCache(r.LootId, caches.Containers[r.LootId]))
+                                    inventory.SearchedLoot.Remove(r.LootId);
                                 inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
                                 CancelManualMission(ref state,connection,"任务操作中断：开始搜索。");
                                 inventory.OpenedLootId=r.LootId;
@@ -236,7 +250,7 @@ namespace Unity.MP_FPS
                         UpdateInventoryProtection(ref state,connection);
                         bool chargeBlocked=ReloadWeaponMoveBlocked(ref state,connection,r.Operation,r.ItemId.ToString(),r.Parent.ToString(),r.Region.ToString());
                         inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || chargeBlocked ||
-                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO)
+                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO,classic)
                             ? InventoryError.Inaccessible
                             : inventory.TryLootMove(caches,r.LootId,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
@@ -254,7 +268,7 @@ namespace Unity.MP_FPS
                 ecb.DestroyEntity(entity);
             }
         }
-        private void RefreshLootAccess(ref SystemState state,Entity connection,RaidSession session)
+        private void RefreshLootAccess(ref SystemState state,Entity connection,RaidSession session,ClassicMatch classic=null)
         {
             var inventory=GetRaidInventory(ref state,connection);
             if(inventory.MedicalItemId!=null)
@@ -277,7 +291,7 @@ namespace Unity.MP_FPS
             if(inventory.DissectingLootId>=0)
             {
                 int id=inventory.DissectingLootId;
-                bool accessible=CanAccessLoot(ref state,connection,id,session) && inventory.RaidId==session.RaidId;
+                bool accessible=CanAccessLoot(ref state,connection,id,session,classic) && inventory.RaidId==session.RaidId;
                 var position=inventory.DissectionOrigin;var health=default(PredictedPlayerGhost);
                 if(accessible)
                 {
@@ -296,8 +310,8 @@ namespace Unity.MP_FPS
                 RaidLootAcoustics.RefreshSearch(ref audioState.ValueRW,inventory.DissectingLootId>=0,
                     SystemAPI.Time.ElapsedTime,ref inventory.NextLootNoiseAt);
             }
-            if(inventory.OpenedLootId<0 || session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
-            if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session)) return;
+            if(inventory.OpenedLootId<0 || classic==null && session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
+            if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session,classic)) return;
             inventory.OpenedLootId=-1;inventory.Error=InventoryError.Inaccessible;inventory.LastSentVersion=-1;
         }
 

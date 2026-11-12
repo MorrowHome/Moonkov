@@ -703,7 +703,7 @@ namespace Unity.MP_FPS
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[F]  SEARCH FALLEN EXPEDITION")
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text(m_ClassicHud ? "SEARCH" : "[F]  SEARCH FALLEN EXPEDITION")
                 : MoonkovLocalization.Format($"[F]  OPEN SUPPLY CACHE / {nearest + 1:00}");
             if (prompt.StartsWith("[F]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
@@ -788,7 +788,7 @@ namespace Unity.MP_FPS
             m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_DissectingLootId=id;
             m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
             m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
-            string opening=dissect ? "SEARCHING" :
+            string opening=dissect || m_ClassicHud ? "SEARCHING" :
                 RaidFurnitureLoot.IsSupplyCache(id) ? "正在搜索补给箱…" : RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             var carried=inventory.Graph?.Clone();

@@ -123,6 +123,12 @@ namespace Unity.MP_FPS
             map.m_EnemyCount = 0;
             map.m_TimeRunning = false;
             map.m_PanelSettings = panel;
+            if (ClassicDust2Map.Active && ClassicDust2Map.Active.gameObject.scene == scene)
+            {
+                map.m_LootPositions = new Vector3[ClassicDust2Map.SupplyCacheCount];
+                for (int i = 0; i < map.m_LootPositions.Length; i++)
+                    map.m_LootPositions[i] = ClassicDust2Map.Active.SupplyCachePosition(i) + Vector3.up * RaidSupplyCacheVisuals.TopTrayHeight;
+            }
             root.SetActive(true);
         }
 
@@ -238,7 +244,7 @@ namespace Unity.MP_FPS
         }
         public void ShowDeathBags(RaidDeathBagClientState state)
         {
-            if(m_CorpseSettings==null || state==null)return;
+            if(state==null)return;
             m_HiddenBags.Clear();
             foreach(var pair in m_DeathBags)
                 if(!state.Bags.ContainsKey(pair.Key)) {Destroy(pair.Value);m_HiddenBags.Add(pair.Key);}
@@ -280,6 +286,8 @@ namespace Unity.MP_FPS
                     m_DeathBags.Add(bag.LootId, AlienLootVisual.Create(transform, bag));
                     continue;
                 }
+                // Classic keeps the original dead ghost through the round.
+                if (m_CorpseSettings == null) continue;
                 var corpse=CorpseVisual.Spawn(transform,m_CorpseSettings,bag);
                 m_DeathBags.Add(bag.LootId,corpse.gameObject);
             }
