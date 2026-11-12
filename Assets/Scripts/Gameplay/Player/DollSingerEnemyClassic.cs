@@ -10,11 +10,12 @@ namespace Unity.MP_FPS
 {
     public partial class DollSingerEnemySystem
     {
-        internal ClassicBot SpawnClassicBot(LocalTransform pose, int team, int slot, int id, int round, double now)
+        internal ClassicBot SpawnClassicBot(LocalTransform pose, int team, int slot, int id, int round, double now, int character)
         {
             if (!SystemAPI.TryGetSingleton<PlayerEntityPrefabs>(out var prefabs) || WeaponManager.Instance?.WeaponRegistry == null) return null;
+            var prefab = PmcCharacterRoster.Prefab(prefabs, character);
+            if (prefab == Entity.Null) return null;
             if (m_SpawnRandom.state == 0) m_SpawnRandom = new Unity.Mathematics.Random(1789);
-            if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out var character)) return null;
             var request = new ClashBotSpawnRequest { ParticipantId = id, TeamId = team, Slot = slot, Epoch = round, OwnerNetworkId = id,
                 Name = "Bot " + (-id).ToString("00"), Position = pose.Position };
             var actor = SpawnActor(MoonRaidMap.Active, prefab, pose.Position, now, character, request);

@@ -199,6 +199,10 @@ namespace Unity.MP_FPS
             var assigned = match.Players.Values.FirstOrDefault(player => player.Team == attackTeam && player.Slot == carrierSlot);
             int carrier = assigned?.Id ?? BotId(attackTeam, carrierSlot);
             rules.BeginRound(now, carrier);
+            var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
+            int attackCharacter = prefabs.HatsuneMikuEntityPrefab != Entity.Null
+                ? GameSettings.HatsuneMikuCharacterIndex : GameSettings.DollSingerCharacterIndex;
+            int CharacterForTeam(int team) => team == attackTeam ? attackCharacter : GameSettings.DollSingerCharacterIndex;
             match.ClassicTactics.BeginRound(rules.Round, carrierSlot);
             foreach (var bot in match.Bots.Values)
             {
@@ -226,7 +230,7 @@ namespace Unity.MP_FPS
                     SetRaidInventory(ref state, connection, kit, 1);
                 }
                 if (!seat.Spawned) AddPlayerToLeaderboard(manager.GetComponentData<NetworkId>(connection).Value, seat.Name);
-                SpawnPlayerCharacter(ref state, ecb, connection, seat.Name, seat.Character, seat, spawn);
+                SpawnPlayerCharacter(ref state, ecb, connection, seat.Name, CharacterForTeam(seat.Team), seat, spawn);
                 seat.Spawned = true;
             }
             for (int team = 0; team < 2; team++)
@@ -234,7 +238,8 @@ namespace Unity.MP_FPS
                 {
                     if (occupied[team * ClassicMatch.TeamSize + slot]) continue;
                     int id = BotId(team, slot);
-                    var bot = ai.SpawnClassicBot(map.Spawn(team == attackTeam, slot), team, slot, id, rules.Round, now);
+                    var bot = ai.SpawnClassicBot(map.Spawn(team == attackTeam, slot), team, slot, id, rules.Round, now,
+                        CharacterForTeam(team));
                     if (bot != null) match.Bots.Add(id, bot);
                 }
         }
