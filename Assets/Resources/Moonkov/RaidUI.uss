@@ -171,6 +171,33 @@
 .classic-score-center { min-width: 245px; align-items: center; margin: 0 14px; }
 .classic-score-line { -unity-text-align: middle-center; white-space: nowrap; }
 .classic-score-status { -unity-text-align: middle-center; white-space: nowrap; font-size: 14px; }
+.classic-minimap {
+    position: absolute;
+    top: 90px;
+    right: 24px;
+    width: 216px;
+    height: 216px;
+    background-color: #111113;
+    border-width: 1px;
+    border-color: #43484e;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.classic-minimap-site {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    padding: 0;
+    background-color: #302008;
+    border-width: 1px;
+    border-color: #ffc53d;
+    border-radius: 4px;
+    color: #ffe7b3;
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
 .classic-scoreboard {
     --classic-ink: #edeef0;
     --classic-muted: #b0b4ba;

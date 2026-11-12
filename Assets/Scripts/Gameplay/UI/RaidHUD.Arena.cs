@@ -56,6 +56,7 @@ namespace Unity.MP_FPS
             m_Root.Add(m_ArenaHud);
             if (m_ClassicHud)
             {
+                m_ClassicMinimap = new ClassicMinimapView(m_Root);
                 m_ClassicScoreboard = CreateClassicScoreboard();
                 m_ClassicScoreboard.style.display = DisplayStyle.None;
                 m_Root.Add(m_ClassicScoreboard);

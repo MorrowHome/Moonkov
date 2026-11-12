@@ -195,7 +195,7 @@ namespace Unity.MP_FPS
             painter.BeginPath(); painter.MoveTo(a); painter.LineTo(b); painter.Stroke();
         }
 
-        private static void Triangle(Painter2D painter, Vector2 center, Vector2 direction, float radius, Color color)
+        internal static void Triangle(Painter2D painter, Vector2 center, Vector2 direction, float radius, Color color)
         {
             Vector2 right = new Vector2(-direction.y, direction.x);
             painter.fillColor = color; painter.strokeColor = new Color(.035f, .045f, .06f); painter.lineWidth = 2;

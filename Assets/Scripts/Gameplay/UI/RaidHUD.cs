@@ -1079,6 +1079,7 @@ namespace Unity.MP_FPS
             CancelMissionHold();
             RaidMissionSite.Active?.StopPresentation();
             m_Minimap?.Dispose(); m_Minimap = null;
+            m_ClassicMinimap?.Dispose(); m_ClassicMinimap = null;
             m_AirlockPrompt?.RefreshSelection(null, default, false);
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
             m_InventoryView?.Dispose(); m_InventoryView=null;

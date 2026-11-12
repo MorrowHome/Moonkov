@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
         private float m_ClassicPurchaseMessageUntil;
         private double m_NextClassicUse;
         private GameObject m_ClassicBomb;
+        private ClassicMinimapView m_ClassicMinimap;
 
         private void PresentClassicHud()
         {
@@ -39,6 +40,9 @@ namespace Unity.MP_FPS
             if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed)
                 SetInventory(!m_InventoryVisible);
             PresentClassicScoreboard(data, scoreboard);
+            if (data.Received && match.Round > 0 && !paused && !m_ArenaFinished && !m_ClassicBuyOpen && !m_InventoryVisible && !scoreboard)
+                m_ClassicMinimap.Present(ClassicDust2Map.Active, m_World, match.Team, match.Team == match.AttackTeam, match.Alive);
+            else m_ClassicMinimap.Hide();
 
             m_ArenaArmory.style.display = buy && m_ClassicBuyOpen ? DisplayStyle.Flex : DisplayStyle.None;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
