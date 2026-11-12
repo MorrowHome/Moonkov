@@ -25,7 +25,7 @@ namespace Unity.MP_FPS
             }
 
             bool local = match.Classic != null && SystemAPI.HasSingleton<OfflineRaidMode>();
-            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<ClientJoinRequestRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<ClientJoinRequestV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
                 var connection = received.ValueRO.SourceConnection;
@@ -191,10 +191,9 @@ namespace Unity.MP_FPS
                 var definition = match.Classic == null ? null : Inventory.InventoryCatalog.Get(code);
                 int price = match.Classic == null ? 0 : ClassicMatch.Price(definition);
                 int quantity = match.Classic == null ? 1 : intent.Quantity;
-                bool validQuantity = match.Classic == null || definition != null && quantity >= 1 && quantity <= definition.MaxStack;
                 bool open = match.Classic == null ? match.Phase != ArenaPhase.Finished :
-                    match.Classic.Phase == ClassicPhase.Buy && price > 0 && validQuantity &&
-                    (long)seat.Credits >= (long)price * quantity;
+                    match.Classic.Phase == ClassicPhase.Buy && quantity >= 1 &&
+                    quantity <= ClassicMatch.PurchaseLimit(definition, seat.Credits);
                 inventory.Error = !open || !TryGetLivingPosition(ref state, actor, out _) ||
                     inventory.InventoryMoveBlocked || manager.GetComponentData<PredictedPlayerGhost>(actor).ControllerState.IsReloadingState
                     ? Inventory.InventoryError.Inaccessible : match.Classic == null

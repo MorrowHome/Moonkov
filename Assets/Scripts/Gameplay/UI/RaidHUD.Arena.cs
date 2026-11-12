@@ -90,7 +90,7 @@ namespace Unity.MP_FPS
                 {
                     Code = item.Code, Name = item.Name, BuyDust = ClassicMatch.Price(item), SellDust = 0
                 }).ToArray();
-                m_ClassicShop = new MoonkovShopPurchaseView(TakeClassicSupply);
+                m_ClassicShop = new MoonkovShopPurchaseView(TakeClassicSupply, quantityLimit: ClassicMatch.PurchaseLimit);
                 m_ArenaArmory.Add(m_ClassicShop.Element);
             }
             else

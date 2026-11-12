@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Client
     {
         public VisualElement Element { get; }
         private readonly Action<ShopOffer, int> m_Buy;
+        private readonly Func<ItemDefinition, int, int> m_QuantityLimit;
         private readonly string m_InitialCode;
         private readonly TextField m_Search;
         private readonly ScrollView m_Products, m_Details;
@@ -35,9 +36,11 @@ namespace Unity.MP_FPS.Client
         private string m_HoverCode;
         private Vector2 m_HoverPosition;
 
-        public MoonkovShopPurchaseView(Action<ShopOffer, int> buy, string initialCode = null)
+        public MoonkovShopPurchaseView(Action<ShopOffer, int> buy, string initialCode = null,
+            Func<ItemDefinition, int, int> quantityLimit = null)
         {
             m_Buy = buy; m_InitialCode = initialCode;
+            m_QuantityLimit = quantityLimit;
             Element = TerminalLayout.Clone("Components/ShopPurchase", "shopPurchase");
             Element.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/ShopPurchase"));
             m_Search = Element.Q<TextField>("purchaseSearch");
@@ -144,10 +147,12 @@ namespace Unity.MP_FPS.Client
             foreach (var pair in m_Tiles) pair.Value.EnableInClassList("is-selected", pair.Key == m_SelectedCode);
             var offer = Selected; bool selected = offer != null && m_Tiles.ContainsKey(offer.Code);
             m_Details.style.display = selected ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Quantity.style.display = selected && InventoryCatalog.Get(offer.Code).MaxStack > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+            var definition = selected ? InventoryCatalog.Get(offer.Code) : null;
+            int maximum = selected ? Math.Max(1, m_QuantityLimit?.Invoke(definition, m_BalanceOverride) ?? definition.MaxStack) : 1;
+            m_Quantity.style.display = maximum > 1 ? DisplayStyle.Flex : DisplayStyle.None;
             if (selected)
             {
-                var definition = InventoryCatalog.Get(offer.Code); m_QuantityValue = Math.Max(1, Math.Min(definition.MaxStack, m_QuantityValue));
+                m_QuantityValue = Math.Clamp(m_QuantityValue, 1, maximum);
                 if (m_ArtCode != offer.Code)
                 {
                     MoonkovItemPresentation.ApplyCategory(m_Art, offer.Code); m_ArtCode = offer.Code; m_Art.Clear();
@@ -155,7 +160,7 @@ namespace Unity.MP_FPS.Client
                 }
                 m_Information.Present(NewItem(offer.Code, m_QuantityValue), m_Graph);
                 MoonkovLocalization.Set(m_Amount, "× {0}", m_QuantityValue);
-                m_Minus.SetEnabled(m_CanTrade && m_QuantityValue > 1); m_Plus.SetEnabled(m_CanTrade && m_QuantityValue < definition.MaxStack);
+                m_Minus.SetEnabled(m_CanTrade && m_QuantityValue > 1); m_Plus.SetEnabled(m_CanTrade && m_QuantityValue < maximum);
                 MoonkovLocalization.Set(m_Purchase, offer.BuyDust == 0 ? "CLAIM FREE SUPPLY" : "BUY / {0} {1}", offer.BuyDust * m_QuantityValue, m_CurrencyLabel);
             }
             else MoonkovLocalization.Set(m_Purchase, "SELECT AN ITEM");

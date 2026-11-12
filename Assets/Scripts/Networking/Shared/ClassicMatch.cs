@@ -276,17 +276,24 @@ namespace Unity.MP_FPS
             };
         }
 
+        private static bool IsBulkSupply(ItemDefinition definition) =>
+            definition.Kind is ItemKind.Cell or ItemKind.Throwable or ItemKind.Medical or ItemKind.Food or ItemKind.Drink or ItemKind.Oxygen;
+
+        public static int PurchaseLimit(ItemDefinition definition, int credits)
+        {
+            int price = Price(definition);
+            if (price <= 0) return 0;
+            int affordable = credits / price;
+            return IsBulkSupply(definition) ? affordable : Math.Min(1, affordable);
+        }
+
         public static InventoryError Purchase(InventoryGraph graph, string code, int version, int quantity = 1)
         {
-            if (Price(InventoryCatalog.Get(code)) <= 0) return InventoryError.Invalid;
-            if (graph == null || graph.Version != version) return graph == null ? InventoryError.Invalid : InventoryError.Stale;
             var definition = InventoryCatalog.Get(code);
-            bool stackableSupply = definition.Kind is ItemKind.Cell or ItemKind.Throwable or ItemKind.Medical or
-                ItemKind.Food or ItemKind.Drink or ItemKind.Oxygen;
-            if (quantity < 1 || quantity > definition.MaxStack || !stackableSupply && quantity != 1) return InventoryError.Invalid;
-            if (stackableSupply)
-                return graph.AddSupply(code, quantity, InventoryCatalog.Pockets);
-            return ArenaArmory.Issue(graph, code, version);
+            if (Price(definition) <= 0 || quantity < 1) return InventoryError.Invalid;
+            if (graph == null || graph.Version != version) return graph == null ? InventoryError.Invalid : InventoryError.Stale;
+            if (IsBulkSupply(definition)) return graph.AddSupply(code, quantity);
+            return quantity == 1 ? ArenaArmory.Issue(graph, code, version) : InventoryError.Invalid;
         }
 
         public static InventoryGraph StartingKit()
