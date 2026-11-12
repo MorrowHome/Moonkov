@@ -190,7 +190,7 @@ namespace Unity.MP_FPS
 
         private bool CanObserveOpponent(DollSingerEnemyBrain brain, Entity candidate)
         {
-            if (!brain.IsClashBot) return true;
+            if (!brain.IsClashBot) return !ExpeditionSquadMember.BelongsTo(EntityManager, candidate, brain.ExpeditionSquadId);
             if (!EntityManager.Exists(candidate) || !EntityManager.HasComponent<ClashPlayer>(candidate) ||
                 !EntityManager.HasComponent<PredictedPlayerGhost>(candidate)) return false;
             var identity = EntityManager.GetComponentData<ClashPlayer>(candidate);
@@ -209,26 +209,32 @@ namespace Unity.MP_FPS
                 {
                     if (sender.Entity == receiver.Entity || sender.View.Life != ClashLife.Alive || sender.View.TeamId != receiver.View.TeamId ||
                         Vector3.Distance(sender.Position, receiver.Position) > 60) continue;
-                    foreach (var observation in sender.Brain.Contacts)
-                    {
-                        var source = observation.Value;
-                        // Never relay a report of a report, or refresh stale evidence with the radio clock.
-                        double observed = Math.Max(source.LastSeen, source.LastHeard);
-                        if (now - observed > 1.5 || !CanObserveOpponent(receiver.Brain, observation.Key)) continue;
-                        if (!receiver.Brain.Contacts.TryGetValue(observation.Key, out var contact))
-                        { contact = new PmcContact();receiver.Brain.Contacts.Add(observation.Key, contact); }
-                        if (contact.Visible || observed <= Math.Max(contact.LastReported, Math.Max(contact.LastSeen, contact.LastHeard))) continue;
-                        float angle = receiver.Brain.Random.NextFloat(0, Mathf.PI * 2);
-                        contact.Position = source.Position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 2;
-                        contact.Velocity = source.Velocity;
-                        contact.PositionUncertainty = source.PositionUncertainty + 2;
-                        contact.AimOffset = source.AimOffset;
-                        contact.Confirmed |= source.Confirmed;
-                        contact.Confidence = Mathf.Max(contact.Confidence, Mathf.Min(.55f, source.Confidence));
-                        contact.LastReported = observed;
-                        receiver.Brain.NextSense = 0;
-                    }
+                    ShareSquadContacts(receiver.Brain, sender.Brain, now);
                 }
+            }
+        }
+
+        private void ShareSquadContacts(DollSingerEnemyBrain receiver, DollSingerEnemyBrain sender, double now)
+        {
+            foreach (var observation in sender.Contacts)
+            {
+                var source = observation.Value;
+                // A report is a clue. Only a new observation can refresh it or grant sight.
+                double observed = Math.Max(source.LastSeen, source.LastHeard);
+                if (now - observed > 1.5 || source.LastReported > observed ||
+                    !CanObserveOpponent(receiver, observation.Key)) continue;
+                if (!receiver.Contacts.TryGetValue(observation.Key, out var contact))
+                { contact = new PmcContact(); receiver.Contacts.Add(observation.Key, contact); }
+                if (contact.Visible || observed <= Math.Max(contact.LastReported, Math.Max(contact.LastSeen, contact.LastHeard))) continue;
+                float angle = receiver.Random.NextFloat(0, Mathf.PI * 2);
+                contact.Position = source.Position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 2;
+                contact.Velocity = source.Velocity;
+                contact.PositionUncertainty = source.PositionUncertainty + 2;
+                contact.AimOffset = source.AimOffset;
+                contact.Confirmed |= source.Confirmed;
+                contact.Confidence = Mathf.Max(contact.Confidence, Mathf.Min(.55f, source.Confidence));
+                contact.LastReported = observed;
+                receiver.NextSense = 0;
             }
         }
 
@@ -239,16 +245,22 @@ namespace Unity.MP_FPS
             if (brain.ClashSlot == coveringSlot || now < brain.NextFlank) return false;
             foreach (var ally in m_ClashAgents)
             {
-                if (ally.Brain == brain || ally.View.TeamId != brain.ClashTeamId || ally.View.Life != ClashLife.Alive ||
-                    ally.Brain.ClashSlot != coveringSlot || !ally.Brain.Visible || ally.Brain.Target != brain.Target ||
-                    now - ally.Brain.LastSeenTime > .3 || now - ally.Brain.LastDamage < 1 || ally.Brain.HealUntil > 0) continue;
-                var health = EntityManager.GetComponentData<PredictedPlayerGhost>(ally.Entity);
-                bool shootingPosture = ally.Brain.Action == PmcAction.Engage || ally.Brain.Action == PmcAction.Cover &&
-                    ally.Brain.CoverPhase == PmcCoverPhase.Holding;
-                if (shootingPosture && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
-                    now - ally.Brain.VisibleSince >= m_Tuning.ReactionSeconds) return true;
+                if (ally.Brain != brain && ally.View.TeamId == brain.ClashTeamId && ally.View.Life == ClashLife.Alive &&
+                    ally.Brain.ClashSlot == coveringSlot && IsCoveringAlly(ally.Entity, ally.Brain, brain, now)) return true;
             }
             return false;
+        }
+
+        private bool IsCoveringAlly(Entity actor, DollSingerEnemyBrain ally, DollSingerEnemyBrain brain, double now)
+        {
+            if (!EntityManager.HasComponent<PredictedPlayerGhost>(actor) ||
+                !ally.Visible || ally.Target != brain.Target || now - ally.LastSeenTime > .3 ||
+                now - ally.LastDamage < 1 || ally.HealUntil > 0 || now - ally.VisibleSince < m_Tuning.ReactionSeconds)
+                return false;
+            var health = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
+            bool shootingPosture = ally.Action == PmcAction.Engage || ally.Action == PmcAction.Cover &&
+                ally.CoverPhase == PmcCoverPhase.Holding;
+            return shootingPosture && health.CurrentHealth > 0 && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
         }
 
         private bool ClashShotLaneClear(DollSingerEnemyBrain brain, Vector3 eye, Vector3 direction, float range)

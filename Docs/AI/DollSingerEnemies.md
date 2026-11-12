@@ -6,11 +6,9 @@
 
 单 Editor 编译与 105 项角色轮换检查通过。覆盖每组三种角色、打乱顺序、地图重置和全部缺失预制体组合。未进入 Play；实际生成、交火和尸体观感尚未试玩。
 
-The DollSinger actors are independent raiders with supplies, finite ammunition
-and an extraction objective. They use the same player ghost, movement controller,
-weapon cooldowns, reload cost, ballistics, health and death inventory as humans.
-Other PMCs are hostile competitors too; these actors are not a coordinated guard squad.
-They have no transport clients or persistent accounts.
+普通远征的敌方 PMC 以固定小队入场。队长选择补给路线和撤离点。队员保持间距，收到敌情后自行确认目标。一人可以留在枪线上掩护，另一人换角度。不同小队争夺同一批物资，可以互相交火。
+
+人机共用玩家的移动、武器、弹道和生命值规则。弹药和补给有限，敌方尸体保留实际携带的装备。人机由服务器控制，无需客户端或账号。
 
 2026-11-07。普通局不再套用玩家默认武器。`PmcWeaponLoadout` 从步枪、霰弹、狙击、蝉鸣、三律、天枢、望舒、星棘、回环和夜曲中打乱选择主武器，一轮内各用一次。副长枪随机补足近距或中远距用途，仍携带左轮。武器不绑定角色或性格。地图重置时重置轮换；资源缺失时只用可用武器。
 

@@ -39,6 +39,9 @@ namespace Unity.MP_FPS
                 case PmcAction.ClashObjective:
                     goal = brain.MissionGoal;
                     break;
+                case PmcAction.FollowSquad:
+                    goal = FollowSquadGoal(brain, position, now);
+                    break;
                 case PmcAction.Scavenge:
                     goal = SelectCache(brain, position, map);
                     break;
@@ -125,7 +128,7 @@ namespace Unity.MP_FPS
                 case PmcAction.Flank:
                     if (changed || brain.PathFailed && (!brain.IsExpeditionRaider || now >= brain.NextCover))
                     {
-                        goal = ChooseFlank(brain, position, health.EquippedWeaponID);
+                        goal = ChooseFlank(brain, position, health.EquippedWeaponID, now);
                         brain.NextCover = now + m_Tuning.CoverRescanSeconds;
                     }
                     if (HorizontalDistance(position, goal) < 2 && (brain.IsExpeditionRaider || now - brain.ActionStarted > 2))
@@ -336,7 +339,7 @@ namespace Unity.MP_FPS
             return bestPoint;
         }
 
-        private Vector3 ChooseFlank(DollSingerEnemyBrain brain, Vector3 position, uint weaponId)
+        private Vector3 ChooseFlank(DollSingerEnemyBrain brain, Vector3 position, uint weaponId, double now)
         {
             Vector3 away = position - brain.LastSeen; away.y = 0;
             float distance = away.magnitude;
@@ -344,6 +347,7 @@ namespace Unity.MP_FPS
             away /= distance;
             float best = float.MinValue;
             Vector3 goal = position;
+            bool supported = TryGetExpeditionCoveringAlly(brain, position, now, out var ally);
             int preferredSide = (brain.IsClashBot ? brain.ClashSlot : brain.Seed) % 2 == 0 ? 1 : -1;
             bool closeWeapon = brain.IsExpeditionRaider && PmcWeaponTactics.PrefersCloseRange(weaponId) && distance <= 14;
             for (int i = 0; i < 6; i++)
@@ -359,6 +363,7 @@ namespace Unity.MP_FPS
                     !CompletePath(brain, position, sample.position, out float length) || length > (closeWeapon ? 15 : 26)) continue;
                 float score = 20 - length * .5f - PathExposure(brain, brain.LastSeen) * .8f;
                 if (clearLane) score += 5;
+                if (supported) score += Mathf.Min(60, Vector3.Angle(sample.position - brain.LastSeen, ally - brain.LastSeen)) * .18f;
                 if (score <= best) continue;
                 best = score; goal = sample.position;
             }

@@ -8,7 +8,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeHazard }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeHazard, FollowSquad }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
     // A sound identifies a place, not an opponent or a firing solution.
@@ -636,6 +636,11 @@ namespace Unity.MP_FPS
         public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;
         public bool IsClashBot => ClashParticipantId > 0;
         internal bool IsExpeditionRaider => !IsClashBot && !TutorialActor;
+        internal int ExpeditionSquadId, SquadSlot, SquadSize;
+        internal Entity SquadLeader;
+        internal bool HasSquadLeader, SquadPartnerNearby;
+        internal Vector3 SquadLeaderPosition;
+        internal float SquadLeaderYaw;
         public Vector3 MissionGoal, MissionLookPoint, FailedGoal;
         public double FailedGoalUntil, NextMission, NextIntent, LastRadio = -100;
         public int PathFailures, RecoveryAttempts, SelectedExit = -1, RescueTargetId = -1;

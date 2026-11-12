@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
         private readonly List<RaidSpawnObserver> m_SpawnObservers = new List<RaidSpawnObserver>();
         private readonly List<Vector3> m_SpawnExitSamples = new List<Vector3>(RaidExtractionRules.MaxExits);
         private readonly NavMeshPath m_SpawnPath = new NavMeshPath();
+        private readonly Vector3[] m_SquadSpawnPoints = new Vector3[3];
+        private readonly Vector3[] m_SquadSpawnCorners = new Vector3[32];
         private Unity.Mathematics.Random m_SpawnRandom;
         private readonly PmcCharacterRoster m_Characters = new PmcCharacterRoster();
         private readonly PmcWeaponLoadout m_Weapons = new PmcWeaponLoadout();
@@ -37,6 +39,7 @@ namespace Unity.MP_FPS
             m_Events.Clear();
             m_CoverReservations.Clear();
             m_SpawnObservers.Clear();
+            m_ExpeditionAgents.Clear();
         }
 
         private void UpdatePopulation(MoonRaidMap map, double now)
@@ -81,7 +84,11 @@ namespace Unity.MP_FPS
             if (m_NextReinforcement == 0)
                 m_NextReinforcement = now + Mathf.Max(5, m_Tuning.ReinforcementDelay);
             if (now < m_NextReinforcement) return;
-            int count = Mathf.Min(Mathf.Min(maxAlive - alive, m_ReinforcementsRemaining), Mathf.Clamp(m_Tuning.ReinforcementWaveSize, 1, 4));
+            int available = Mathf.Min(maxAlive - alive, m_ReinforcementsRemaining);
+            // A reserve squad enters together. Keep a third seat when the remaining budget permits it.
+            if (maxAlive > 1 && available < 2) return;
+            int wave = Mathf.Clamp(m_Tuning.ReinforcementWaveSize, 2, 4);
+            int count = Mathf.Min(available, m_ReinforcementsRemaining - wave == 1 ? wave + 1 : wave);
             int added = SpawnBatch(map, count, now);
             // Failed placement consumes neither a life nor a reinforcement. Retry only at the configured cadence.
             m_ReinforcementsRemaining -= added;
@@ -129,18 +136,97 @@ namespace Unity.MP_FPS
             if (WeaponManager.Instance?.WeaponRegistry == null) return 0;
             UnityEngine.Physics.SyncTransforms();
             int spawned = 0;
-            for (int i = 0; i < count; i++)
+            bool tutorial = TutorialRuntime.Enabled(EntityManager);
+            while (spawned < count)
             {
-                if (!TryChooseSpawn(map, out var position)) break;
-                if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out int characterIndex)) break;
-                SpawnActor(map, prefab, position, now, characterIndex);
-                // Reserve immediately: the new ghost's GameObject does not exist until the bridge updates.
-                m_SpawnObservers.Add(new RaidSpawnObserver { Position = position, CheckVisibility = false });
-                spawned++;
+                int remaining = count - spawned;
+                int size = remaining == 3 ? 3 : Mathf.Min(remaining, 2);
+                if (!TryChooseSquadSpawns(map, size)) break;
+                int squad = tutorial ? 0 : ++m_NextExpeditionSquadId;
+                Entity leader = Entity.Null;
+                for (int slot = 0; slot < size; slot++)
+                {
+                    if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out int characterIndex)) return spawned;
+                    Vector3 position = m_SquadSpawnPoints[slot];
+                    var actor = SpawnActor(map, prefab, position, now, characterIndex);
+                    if (squad != 0) SetExpeditionSquad(actor, squad, slot, size, leader);
+                    if (slot == 0) leader = actor;
+                    // Reserve immediately: the new ghost's GameObject does not exist until the bridge updates.
+                    m_SpawnObservers.Add(new RaidSpawnObserver { Position = position });
+                    spawned++;
+                }
             }
             if (spawned > 0)
                 Debug.Log($"[DollSinger AI] Added {spawned} raid actor(s); {m_SpawnSerial} spawned this map session.");
             return spawned;
+        }
+
+        private bool TryChooseSquadSpawns(MoonRaidMap map, int size)
+        {
+            int observerCount = m_SpawnObservers.Count;
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                if (!TryChooseSpawn(map, out m_SquadSpawnPoints[0])) return false;
+                int slot = 1;
+                for (; slot < size; slot++)
+                {
+                    m_SpawnObservers.Add(new RaidSpawnObserver { Position = m_SquadSpawnPoints[slot - 1] });
+                    if (!TrySpawnNearSquadLeader(m_SquadSpawnPoints[0], map, out m_SquadSpawnPoints[slot])) break;
+                }
+                m_SpawnObservers.RemoveRange(observerCount, m_SpawnObservers.Count - observerCount);
+                if (slot == size) return true;
+            }
+            return false;
+        }
+
+        private bool TrySpawnNearSquadLeader(Vector3 leader, MoonRaidMap map, out Vector3 position)
+        {
+            float spacing = Mathf.Max(1, m_Tuning.SpawnActorSpacing);
+            float minDistance = Mathf.Max(8, m_Tuning.SpawnPlayerDistance);
+            float visibility = Mathf.Max(m_Tuning.SpawnVisibilityDistance, m_Tuning.ExpeditionPlayerSightRange);
+            float startAngle = m_SpawnRandom.NextFloat(0, Mathf.PI * 2);
+            for (int i = 0; i < 16; i++)
+            {
+                float angle = startAngle + (i % 8) * (Mathf.PI / 4);
+                float radius = spacing + (i < 8 ? 2 : 7);
+                Vector3 candidate = leader + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+                if (!TryGroundedSpawn(candidate, out var point) || NearExtraction(map, point) ||
+                    !RaidSpawnSafety.IsSafeFromObservers(point, m_SpawnObservers, minDistance, visibility, spacing) ||
+                    !ShortSpawnRoute(leader, point, radius + 12)) continue;
+                position = point;
+                return true;
+            }
+            position = default;
+            return false;
+        }
+
+        private bool TryGroundedSpawn(Vector3 candidate, out Vector3 position)
+        {
+            position = default;
+            if (!NavMesh.SamplePosition(candidate, out var sample, 3, m_Filter) ||
+                Mathf.Abs(sample.position.y - candidate.y) > 2.5f ||
+                !RaidSpawnSafety.TryGroundPosition(sample.position, .35f, 1.8f, 45, out var ground, out _) ||
+                Mathf.Abs(ground.y - sample.position.y) > .6f) return false;
+            position = sample.position;
+            return true;
+        }
+
+        private bool ShortSpawnRoute(Vector3 start, Vector3 end, float maximum)
+        {
+            if (!NavMesh.CalculatePath(start, end, m_Filter, m_SpawnPath) ||
+                m_SpawnPath.status != NavMeshPathStatus.PathComplete) return false;
+            int count = m_SpawnPath.GetCornersNonAlloc(m_SquadSpawnCorners);
+            float length = 0;
+            for (int i = 1; i < count; i++) length += Vector3.Distance(m_SquadSpawnCorners[i - 1], m_SquadSpawnCorners[i]);
+            return count > 0 && count < m_SquadSpawnCorners.Length && length <= maximum;
+        }
+
+        private static bool NearExtraction(MoonRaidMap map, Vector3 point)
+        {
+            for (int i = 0; i < map.ExtractionCount; i++)
+                if (map.TryExtractionPosition(i, out var exit) && HorizontalDistance(point, exit) < map.ExtractionRadius + 8)
+                    return true;
+            return false;
         }
 
         private bool TryChooseSpawn(MoonRaidMap map, out Vector3 position)
@@ -185,11 +271,7 @@ namespace Unity.MP_FPS
                 if (!NavMesh.SamplePosition(candidate, out var sample, 3, m_Filter) ||
                     Mathf.Abs(sample.position.y - candidate.y) > 2.5f) continue;
                 var point = sample.position;
-                bool nearExit = false;
-                for (int i = 0; i < map.ExtractionCount; i++)
-                    if (map.TryExtractionPosition(i, out var exit) && HorizontalDistance(point, exit) < map.ExtractionRadius + 8)
-                    { nearExit = true; break; }
-                if (nearExit) continue;
+                if (NearExtraction(map, point)) continue;
                 if (!RaidSpawnSafety.IsSafeFromObservers(point, m_SpawnObservers,
                     Mathf.Max(8, m_Tuning.SpawnPlayerDistance), visibilityDistance,
                     Mathf.Max(1, m_Tuning.SpawnActorSpacing))) continue;

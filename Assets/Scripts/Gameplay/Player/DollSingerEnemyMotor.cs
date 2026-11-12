@@ -74,11 +74,14 @@ namespace Unity.MP_FPS
             Vector3 facing = hasContact ? aim - eye : move;
             bool looting = brain.Action == PmcAction.Scavenge && brain.LootUntil > 0;
             bool preaimCorner = brain.IsExpeditionRaider && atCorner && !brain.Visible && !blinded && brain.MovementRequested &&
-                (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract) && !RaidHealth.HandsBusy(health);
+                (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract || brain.Action == PmcAction.FollowSquad) &&
+                !RaidHealth.HandsBusy(health);
             if (looting) facing = brain.LootLookPoint - eye;
             else if (preaimCorner) facing = brain.Corners[brain.Corner + 1] + Vector3.up * 1.15f - eye;
             if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f)
                 facing = brain.MissionLookPoint - eye;
+            if (brain.Action == PmcAction.FollowSquad && brain.HasSquadLeader && !brain.Visible)
+                facing = move.sqrMagnitude < .01f ? Quaternion.Euler(0, SquadWatchYaw(brain), 0) * Vector3.forward : facing;
             if (searching && brain.SearchFocusValid)
             {
                 Vector3 lookPoint = brain.SearchLookPoint;
@@ -129,6 +132,7 @@ namespace Unity.MP_FPS
             input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
                 brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
+                    brain.Action == PmcAction.FollowSquad && (position - brain.SquadLeaderPosition).sqrMagnitude > 15 * 15 ||
                     pursuing && !checkingCorner && distance > 18 ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
@@ -180,7 +184,8 @@ namespace Unity.MP_FPS
                 now - brain.VisibleSince >= ReactionTime(brain) && distance < firingRange &&
                 Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
                 (!brain.IsExpeditionRaider || !DollSingerBotCombat.Obscured(ghost.gameObject.scene.GetPhysicsScene(), m_TacticalWorld, eye, input.AimPoint)) &&
-                (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));
+                (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange)) &&
+                (brain.ExpeditionSquadId == 0 || ExpeditionShotLaneClear(brain, ghost.transform, eye, direction, distance + .2f));
             // Do not spend a short peek's entire burst while still reacting or
             // turning toward the contact. The burst starts when the shot is possible.
             if (now >= brain.NextBurst && firingSolution)

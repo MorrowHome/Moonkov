@@ -40,7 +40,7 @@ namespace Unity.MP_FPS
                 var victim = ghost.LinkedEntity;
                 if (victim == shooter || !manager.Exists(victim) || !manager.HasComponent<DollSingerEnemy>(victim) ||
                     !manager.HasComponent<DollSingerEnemyBrain>(victim) || !manager.HasComponent<PredictedPlayerGhost>(victim) ||
-                    BountyClashDamage.IsSelf(world, victim, source)) continue;
+                    BountyClashDamage.IsSelf(world, victim, source) || BountyClashDamage.TeamProtected(manager, victim, source)) continue;
                 var health = manager.GetComponentData<PredictedPlayerGhost>(victim);
                 if (health.CurrentHealth <= 0 || health.ClashEnabled) continue;
                 var brain = manager.GetComponentObject<DollSingerEnemyBrain>(victim);

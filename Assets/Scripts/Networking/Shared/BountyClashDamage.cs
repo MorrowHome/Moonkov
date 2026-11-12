@@ -15,6 +15,8 @@ namespace Unity.MP_FPS
         // Server-world identity captured at release; unlike NetworkId it is not
         // reassigned to a different entity after a disconnect.
         public Entity OnlineActor;
+        public int ExpeditionSquadId;
+        public Entity ExpeditionActor;
         public Entity ResearchShooter;
         public bool ResearchSentry;
     }
@@ -28,6 +30,12 @@ namespace Unity.MP_FPS
             var source=new ClashDamageSource{NetworkId=manager.HasComponent<GhostOwner>(actor)?manager.GetComponentData<GhostOwner>(actor).NetworkId:0};
             if (manager.HasComponent<OnlineRaidMember>(actor))
             { source.OnlineHuman = true; source.OnlineTeam = manager.GetComponentData<OnlineRaidMember>(actor).Team; source.OnlineActor = actor; }
+            if (manager.HasComponent<ExpeditionSquadMember>(actor))
+            {
+                var membership = manager.GetComponentData<ExpeditionSquadMember>(actor);
+                source.ExpeditionSquadId = membership.SquadId;
+                source.ExpeditionActor = actor;
+            }
             if(manager.HasComponent<ClashPlayer>(actor))
             {
                 var player = manager.GetComponentData<ClashPlayer>(actor);
@@ -47,6 +55,16 @@ namespace Unity.MP_FPS
                 foreach (var entity in entities)
                     if (world.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId == networkId)
                     { source.OnlineHuman = true; source.OnlineTeam = world.EntityManager.GetComponentData<OnlineRaidMember>(entity).Team; source.OnlineActor = entity; break; }
+            using (var squadmates = world.EntityManager.CreateEntityQuery(typeof(ExpeditionSquadMember), typeof(GhostOwner)))
+            using (var entities = squadmates.ToEntityArray(Unity.Collections.Allocator.Temp))
+                foreach (var entity in entities)
+                    if (world.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId == networkId)
+                    {
+                        var membership = world.EntityManager.GetComponentData<ExpeditionSquadMember>(entity);
+                        source.ExpeditionSquadId = membership.SquadId;
+                        source.ExpeditionActor = entity;
+                        break;
+                    }
             using var arena = world.EntityManager.CreateEntityQuery(typeof(ArenaMatch));
             if (!arena.IsEmptyIgnoreFilter)
             {
@@ -69,6 +87,7 @@ namespace Unity.MP_FPS
             if(source.ParticipantId>0&&manager.HasComponent<ClashPlayer>(victim))
             {var p=manager.GetComponentData<ClashPlayer>(victim);return p.ParticipantId==source.ParticipantId&&p.Epoch==source.Epoch;}
             if(HasCapturedOnlineActor(source))return CapturedOnlineActorIsSelf(source,victim);
+            if (source.ExpeditionActor != Entity.Null) return source.ExpeditionActor == victim;
             return source.NetworkId!=0&&manager.HasComponent<GhostOwner>(victim)&&manager.GetComponentData<GhostOwner>(victim).NetworkId==source.NetworkId;
         }
         public static bool HasCapturedOnlineActor(ClashDamageSource source) => source.OnlineHuman && source.OnlineActor!=Entity.Null;
@@ -77,6 +96,7 @@ namespace Unity.MP_FPS
         public static bool TeamProtected(ClashDamageSource source, Entity victim, int victimTeam) =>
             source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
         public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) =>
+            source.ExpeditionActor != victim && ExpeditionSquadMember.BelongsTo(manager, victim, source.ExpeditionSquadId) ||
             source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) &&
             TeamProtected(source,victim,manager.GetComponentData<OnlineRaidMember>(victim).Team);
         // Compatibility for immediate damage. Delayed attacks must capture at release.

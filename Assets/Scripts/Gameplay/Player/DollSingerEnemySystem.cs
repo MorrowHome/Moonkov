@@ -101,6 +101,7 @@ namespace Unity.MP_FPS
             m_Events.Clear();
             m_CoverReservations.Clear();
             m_SpawnObservers.Clear();
+            m_ExpeditionAgents.Clear();
             m_NextBuild = m_NextTargets = 0;
             m_ClashRegistry = null;m_ClashArena = null;m_ClashAgents.Clear();m_ClashSquads.Clear();
             m_ClashNavChecked = m_ClashNavReady = false;
@@ -150,6 +151,7 @@ namespace Unity.MP_FPS
             if (now >= m_NextTargets)
             {
                 CollectTargets(now);
+                UpdateExpeditionSquads(now);
                 m_NextTargets = now + .1;
             }
 

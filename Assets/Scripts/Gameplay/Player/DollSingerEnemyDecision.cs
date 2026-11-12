@@ -54,9 +54,14 @@ namespace Unity.MP_FPS
                 map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
 
-            PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract : PmcAction.Scavenge;
+            bool follow = brain.HasSquadLeader && !brain.Leaving;
+            PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract :
+                follow ? PmcAction.FollowSquad : PmcAction.Scavenge;
             float utility = brain.IsClashBot && brain.Mission == ClashBotGoal.Rescue ? 99 : brain.Leaving ? 45 : 12;
-            string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission : brain.Leaving ? "bank loot / leave before raid timeout" : "search supplies";
+            string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission : brain.Leaving ? "bank loot / leave before raid timeout" :
+                follow ? "advance with squad and watch the other approach" : "search supplies";
+            if (follow && !brain.Visible && (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
+                utility = 62;
             void Consider(PmcAction action, float value, string why)
             {
                 if (brain.Action == action) value += 8;
@@ -71,16 +76,17 @@ namespace Unity.MP_FPS
                     bool betweenBursts = now >= brain.BurstUntil && now < brain.NextBurst;
                     bool flanking = brain.Action == PmcAction.Flank && now - brain.ActionStarted < 6 &&
                         HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
-                    bool coveringAlly = brain.IsClashBot && HasClashCoveringAlly(brain, now);
+                    bool coveringAlly = brain.IsClashBot ? HasClashCoveringAlly(brain, now) :
+                        now >= brain.NextFlank && TryGetExpeditionCoveringAlly(brain, position, now, out _);
                     bool calm = !brain.Leaving && brain.Suppression < .3f && now - brain.LastDamage >= 3;
                     bool readyToFight = health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
                         !energyLow && brain.Suppression <= .7f;
                     // Fire first. Reposition in a later burst pause, or finish an
                     // already chosen angle; fresh damage restores counterfire priority.
-                    bool squadFlank = calm && coveringAlly && betweenBursts;
                     float flankDelay = brain.IsExpeditionRaider ? Mathf.Lerp(2.5f, 1.65f, brain.Aggression) : 8;
                     bool enoughFireTime = !brain.IsExpeditionRaider || readyToFight && now - brain.VisibleSince >= 1;
-                    bool flankOpening = calm && (!brain.IsClashBot || flanking || coveringAlly) &&
+                    bool squadFlank = calm && coveringAlly && betweenBursts && enoughFireTime;
+                    bool flankOpening = calm && (!brain.IsClashBot && !brain.SquadPartnerNearby || flanking || coveringAlly) &&
                         (flanking || enoughFireTime && betweenBursts && brain.Action == PmcAction.Engage &&
                             now >= brain.NextFlank && now - brain.ActionStarted > flankDelay);
                     // An armed PMC should contest a visible opponent before minor
@@ -130,7 +136,8 @@ namespace Unity.MP_FPS
 
             // New confirmed danger must interrupt looting/search, regardless of their commitment.
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
-                brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal || brain.Action == PmcAction.ClashObjective;
+                brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal ||
+                brain.Action == PmcAction.ClashObjective || brain.Action == PmcAction.FollowSquad;
             emergency = grenadeDanger || hazardDanger || brain.Action == PmcAction.EvadeGrenade && !grenadeDanger ||
                 brain.Action == PmcAction.EvadeHazard && !hazardDanger ||
                 health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
