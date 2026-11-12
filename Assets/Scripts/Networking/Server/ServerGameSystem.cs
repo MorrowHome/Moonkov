@@ -271,6 +271,8 @@ namespace Unity.MP_FPS
             var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
+            if (arenaPlayer == null && SystemAPI.HasSingleton<LanRaidMode>() && !ClashEnabled(ref state))
+                ecb.AddComponent(playerEntity, new ExpeditionSquadMember { LanCoop = true });
             if (Persistence(ref state).Profiles.TryGetValue(connectionEntity, out var onlineProfile) && !string.IsNullOrEmpty(onlineProfile.OnlineInstanceId))
                 ecb.AddComponent(playerEntity, new OnlineRaidMember { Team = onlineProfile.OnlineTeam });
             ecb.AddComponent(playerEntity, new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
@@ -441,7 +443,7 @@ namespace Unity.MP_FPS
         {
             var handled = new System.Collections.Generic.HashSet<Entity>();
             foreach (var (request, rpcReceive, entity) in
-                     SystemAPI.Query<RefRO<ClientJoinRequestRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+                     SystemAPI.Query<RefRO<ClientJoinRequestV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 Entity source=rpcReceive.ValueRO.SourceConnection;
                 if(!SystemAPI.Exists(source)||!handled.Add(source)||SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(source)||
@@ -469,8 +471,12 @@ namespace Unity.MP_FPS
                         ecb.AddComponent(rpcReceive.ValueRW.SourceConnection, new NetworkStreamRequestDisconnect { Reason=NetworkStreamDisconnectReason.ConnectionClose });
                     else if (persistence.Enabled)
                     {
+                        byte companions = !clash && !SystemAPI.HasSingleton<TutorialRaidMode>() &&
+                            (SystemAPI.HasSingleton<OfflineRaidMode>() || SystemAPI.HasSingleton<LanRaidMode>())
+                            ? (byte)System.Math.Min((int)request.ValueRO.ExpeditionCompanions, RaidRules.MaxCompanions) : (byte)0;
                         persistence.BeginJoin(rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName,
-                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells, request.ValueRO.ResumeOnly);
+                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells,
+                            request.ValueRO.ResumeOnly, companions);
                     }
                     else
                     {

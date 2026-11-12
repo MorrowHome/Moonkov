@@ -40,6 +40,7 @@ namespace Unity.MP_FPS
             m_CoverReservations.Clear();
             m_SpawnObservers.Clear();
             m_ExpeditionAgents.Clear();
+            m_NextCompanionSpawn = 0;
         }
 
         private void UpdatePopulation(MoonRaidMap map, double now)
@@ -50,7 +51,7 @@ namespace Unity.MP_FPS
             bool tutorial = TutorialRuntime.Enabled(EntityManager);
             if (tutorial && (!RaidMissionSite.Active || !RaidMissionSite.Active.FirstChapter ||
                 !TutorialReported())) return;
-            int alive = CollectSpawnObservers(out bool hasHuman);
+            int alive = CollectSpawnObservers(out bool hasHuman, out _);
             // AI actors never keep the population spawning after the humans have left.
             if (!hasHuman) return;
 
@@ -105,16 +106,21 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        private int CollectSpawnObservers(out bool hasHuman)
+        private int CollectSpawnObservers(out bool hasHuman, out int companions)
         {
             m_SpawnObservers.Clear();
             hasHuman = false;
+            companions = 0;
             int alive = 0;
             foreach (var (pose, health, owner, entity) in SystemAPI.Query<RefRO<LocalTransform>,
                          RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithAll<Simulate>().WithEntityAccess())
             {
                 if (health.ValueRO.CurrentHealth <= 0 || owner.ValueRO.NetworkId == 0) continue;
-                if (EntityManager.HasComponent<DollSingerEnemy>(entity)) alive++;
+                if (EntityManager.HasComponent<DollSingerEnemy>(entity))
+                {
+                    if (health.ValueRO.CompanionSquadId != 0) companions++;
+                    else alive++;
+                }
                 bool human = owner.ValueRO.NetworkId > 0;
                 hasHuman |= human;
                 Vector3 forward = Vector3.zero;

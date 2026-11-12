@@ -161,7 +161,7 @@ public static class BountyClashTransportChecks
                 Pump(()=>All<NetworkId>(w).Length==1);return w;
             }
             World Connect(string name,string token)
-            {var w=Open(name);Send(w,new ClientJoinRequestRpc{PlayerName=name,LoginToken=token,Mode=RaidGameMode.BountyClash,RulesVersion=1});return w;}
+            {var w=Open(name);Send(w,new ClientJoinRequestV2Rpc{PlayerName=name,LoginToken=token,Mode=RaidGameMode.BountyClash,RulesVersion=1});return w;}
             Pump(()=>persistence.ClashSupported);
             string tokenA=Register("a"),tokenC=Register("c"),tokenB=Register("b");
             var a=Connect("Clash UDP A",tokenA);var c=Connect("Clash UDP teammate",tokenC);var b=Connect("Clash UDP enemy",tokenB);

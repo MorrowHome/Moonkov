@@ -48,19 +48,19 @@ namespace Unity.MP_FPS
                 PmcLifeSupport.HasCarried(brain.Inventory);
             bool lowNutrition = !brain.IsClashBot && PmcNutrition.Low(health, PmcNutrition.DangerThreshold);
             bool nutritionDeparture = lowNutrition && PmcNutrition.NeedsDeparture(health, brain.Inventory);
-            if (!brain.IsClashBot && (exhausted || lowOxygen && !canRefillOxygen || nutritionDeparture ||
+            if (!brain.IsClashBot && !brain.IsCompanion && (exhausted || lowOxygen && !canRefillOxygen || nutritionDeparture ||
                 lowHealth && !bleeding && !burning && (!needsHealing || !potentialMedical) ||
                 brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
                 map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
 
-            bool follow = brain.HasSquadLeader && !brain.Leaving;
+            bool follow = (brain.HasSquadLeader || brain.IsCompanion) && !brain.Leaving;
             PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract :
                 follow ? PmcAction.FollowSquad : PmcAction.Scavenge;
             float utility = brain.IsClashBot && brain.Mission == ClashBotGoal.Rescue ? 99 : brain.Leaving ? 45 : 12;
             string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission : brain.Leaving ? "bank loot / leave before raid timeout" :
                 follow ? "advance with squad and watch the other approach" : "search supplies";
-            if (follow && !brain.Visible && (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
+            if (brain.HasSquadLeader && follow && !brain.Visible && (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
                 utility = 62;
             void Consider(PmcAction action, float value, string why)
             {

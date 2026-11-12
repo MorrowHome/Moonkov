@@ -58,6 +58,12 @@ namespace Unity.MP_FPS
         const string k_SessionNameKey = "SessionName";
         const string k_RaidModeKey = "Moonkov.RaidMode";
         const string k_PlayerCharacterKey = "Moonkov.PlayerCharacter";
+        const string k_ExpeditionCompanionKey = "Moonkov.ExpeditionCompanions";
+        public int ExpeditionCompanionCount
+        {
+            get => Mathf.Clamp(PlayerPrefs.GetInt(k_ExpeditionCompanionKey, 0), 0, RaidRules.MaxCompanions);
+            set => PlayerPrefs.SetInt(k_ExpeditionCompanionKey, Mathf.Clamp(value, 0, RaidRules.MaxCompanions));
+        }
         private RaidGameMode m_RequestedMode;
         public RaidGameMode RequestedMode
         {

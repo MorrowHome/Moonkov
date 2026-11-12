@@ -638,6 +638,9 @@ namespace Unity.MP_FPS
         internal bool IsExpeditionRaider => !IsClashBot && !TutorialActor;
         internal int ExpeditionSquadId, SquadSlot, SquadSize;
         internal Entity SquadLeader;
+        internal Entity CompanionConnection;
+        internal bool IsCompanion => CompanionConnection != Entity.Null;
+        internal bool LanCompanion;
         internal bool HasSquadLeader, SquadPartnerNearby;
         internal Vector3 SquadLeaderPosition;
         internal float SquadLeaderYaw;

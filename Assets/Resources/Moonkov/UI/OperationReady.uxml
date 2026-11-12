@@ -44,7 +44,8 @@
                         <ui:Label name="readyConnectionNote" text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-check-value">
-                        <ui:VisualElement class="op-photo op-terminal-photo" />
+                        <ui:VisualElement name="readyTerminalPhoto" class="op-photo op-terminal-photo" />
+                        <ui:DropdownField name="readyCompanions" label="AI TEAMMATES" choices="0,1,2,3" index="0" class="op-companions" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="op-check-row op-final-row">

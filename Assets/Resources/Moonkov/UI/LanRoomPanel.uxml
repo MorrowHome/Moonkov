@@ -114,6 +114,7 @@
                         <ui:VisualElement class="lan-launch-summary">
                             <ui:Label name="lanLaunchTitle" class="lan-launch-title" />
                             <ui:Label name="lanLaunchHint" class="lan-muted" />
+                            <ui:DropdownField name="lanCompanions" label="AI TEAMMATES" choices="0,1,2,3" index="0" class="lan-companions lan-hidden" />
                         </ui:VisualElement>
                         <ui:Button name="lanLeave" text="离开房间" class="lan-quiet" />
                         <ui:Button name="lanEquipment" text="整理装备" class="lan-secondary" />

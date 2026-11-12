@@ -172,6 +172,7 @@ namespace Unity.MP_FPS
                 bool continueClashSession = deploy.Payload.Mode=="BountyClash" && SystemAPI.HasComponent<RaidSession>(connection);
                 RaidSession session = continueClashSession || deploy.Join == null ? SystemAPI.GetComponent<RaidSession>(connection) : default;
                 RaidRules.BeginNext(ref session, deploy.Payload.Mode=="BountyClash" ? 0 : MoonRaidMap.Active.RaidDuration);
+                if (deploy.Join != null) session.RequestedCompanions = deploy.Join.ExpeditionCompanions;
                 session.SettlementId = deploy.Payload.DeploymentId;
                 session.PersistentDeployment = true;
                 session.SaveState = RaidSaveState.Saved;

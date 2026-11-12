@@ -37,6 +37,9 @@ namespace Unity.MP_FPS.Client
             host.Add(m_Container); m_Root = m_Container.Q(className: "lan-layer"); m_Modal = m_Root.Q("lanModal");
             var trackerTip = m_Root.Q<Label>("lanTrackerTip");
             MoonkovLocalization.Set(trackerTip, trackerTip.text);
+            var companions = m_Root.Q<DropdownField>("lanCompanions");
+            MoonkovLocalization.Set(companions.labelElement, companions.label);
+            companions.RegisterValueChangedCallback(_ => GameSettings.Instance.ExpeditionCompanionCount = companions.index);
             m_Squad = new LanSquadStage(m_Modal);
             m_Root.Q<TextField>("lanPlayerName").value = PlayerPrefs.GetString("Moonkov.LAN.Name", "Operator");
             m_Root.Q<TextField>("lanAddress").value = PlayerPrefs.GetString("Moonkov.LAN.Address", "192.168.1.100");
@@ -360,6 +363,10 @@ namespace Unity.MP_FPS.Client
             }
             var room = LanRoomClient.Room;
             var peerRoom = LanRoomClient.PeerRoom;
+            var companions = m_Root.Q<DropdownField>("lanCompanions");
+            companions.SetValueWithoutNotify(companions.choices[GameSettings.Instance.ExpeditionCompanionCount]);
+            companions.EnableInClassList("lan-hidden", room.Mode != RaidGameMode.Expedition);
+            companions.SetEnabled(!m_Busy && room.Phase == LanRoomPhase.Lobby);
             m_Entry.text = $"好友房间 {room.Members.Length}/{room.Capacity}";
             var roster = room.Phase + string.Join("|", room.Members.Select(m => $"{m.Id}/{m.Name}/{m.Host}/{m.Ready}/{m.InGame}/{m.Appearance?.CharacterIndex}"));
             LanRoomPresentation.Lobby(m_Root, room, LanRoomClient.MemberId, LanRoomClient.IsHost, LanRoomClient.Ready, m_Busy,

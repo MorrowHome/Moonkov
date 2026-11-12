@@ -88,6 +88,7 @@ namespace Unity.MP_FPS
 
         private bool HostileHaloTarget(Entity actor, in PredictedPlayerGhost state, Entity target, in PredictedPlayerGhost other) =>
             target != actor && HaloSupportRules.CanProtect(other) &&
+            !ExpeditionSquadMember.BelongsTo(EntityManager, target, state.CompanionSquadId, SystemAPI.HasSingleton<LanRaidMode>()) &&
             !HaloTransferRules.Teammates(state, other, IsHuman(actor), IsHuman(target));
 
         private float3 SentryLookPoint(in PredictedPlayerGhost state) => EntityManager.HasComponent<LocalTransform>(state.HaloSentryTarget)

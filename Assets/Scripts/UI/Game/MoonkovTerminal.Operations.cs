@@ -68,6 +68,12 @@ namespace Unity.MP_FPS.Client
                     var launch = m_Content.Q<Button>("launch");
                     launch.clicked += m_Prepare;
                     bool offline = PlayerProfileClient.IsOffline, lan = PlayerProfileClient.IsLan;
+                    var companions = m_Content.Q<DropdownField>("readyCompanions");
+                    MoonkovLocalization.Set(companions.labelElement, "AI TEAMMATES");
+                    PresentCompanionPicker(m_Content);
+                    companions.index = GameSettings.Instance.ExpeditionCompanionCount;
+                    companions.SetEnabled(!m_Busy);
+                    companions.RegisterValueChangedCallback(_ => GameSettings.Instance.ExpeditionCompanionCount = companions.index);
                     string departure = DepartureAction(offline, lan);
                     MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), departure);
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionTitle"), departure);
@@ -85,6 +91,16 @@ namespace Unity.MP_FPS.Client
 
         private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
             offline ? "DEPLOY SOLO" : "进入小队";
+
+        internal static void PresentCompanionPicker(VisualElement root)
+        {
+            var picker = root.Q<DropdownField>("readyCompanions");
+            if (picker == null) return;
+            bool show = PlayerProfileClient.IsOffline && GameSettings.Instance.RequestedMode == RaidGameMode.Expedition &&
+                PlayerProfileClient.Tutorial?.Status != Campaign.TutorialStatus.Active;
+            picker.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+            root.Q("readyTerminalPhoto").style.display = show ? DisplayStyle.None : DisplayStyle.Flex;
+        }
 
         private void PresentDepartureEquipment()
         {

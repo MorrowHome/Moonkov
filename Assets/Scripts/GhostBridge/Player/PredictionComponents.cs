@@ -55,6 +55,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float MaxHealth;
     [GhostField] public bool OnlineHuman;
     [GhostField] public int OnlineTeam;
+    [GhostField] public int CompanionSquadId;
     [GhostField] public bool ClashEnabled, ClashCanAct, ClashDarkSight;
     [GhostField] public Unity.MP_FPS.ClashLife ClashLife;
     [GhostField] public int ClashTeam;

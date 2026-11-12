@@ -169,6 +169,21 @@ namespace Unity.MP_FPS
                 if (visual.Root && CanInteract(visual))
                     outline.Add(visual.Root.transform, visual.Position + Vector3.up * .15f, TacticalItemRules.InteractionRange);
         }
+        internal static bool SmokeObscures(Vector3 from, Vector3 to)
+        {
+            if (!s_Active) return false;
+            float depth = 0;
+            foreach (var visual in s_Active.m_Visuals.Values)
+            {
+                if (visual.State.Phase != TacticalWorldPhase.Smoke) continue;
+                float remaining = visual.State.Remaining - (Time.time - visual.Received);
+                if (remaining <= 0) continue;
+                depth += SmokeVisibility.OpticalDepth(from, to, SmokeVisibility.Center(visual.Position),
+                    SmokeVisibility.Radii(visual.State.Radius, remaining), SmokeVisibility.Density(remaining));
+                if (depth >= 1.6f) return true;
+            }
+            return false;
+        }
         private void Update()
         {
             DrawAimPreview();

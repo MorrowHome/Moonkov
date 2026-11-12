@@ -14,6 +14,10 @@ namespace Unity.MP_FPS
         public static bool CanView(in PredictedPlayerGhost viewer) => EnergyShieldRules.Alive(viewer) &&
             (!viewer.ClashEnabled || viewer.ClashCanAct);
 
+        public static bool Companion(in PredictedPlayerGhost viewer, in PredictedPlayerGhost target, bool targetHuman) =>
+            !targetHuman && target.CurrentHealth > 0 && viewer.CompanionSquadId != 0 &&
+            viewer.CompanionSquadId == target.CompanionSquadId;
+
         public static bool Teammate(in PredictedPlayerGhost viewer, in PredictedPlayerGhost target,
             bool viewerHuman, bool targetHuman)
         {

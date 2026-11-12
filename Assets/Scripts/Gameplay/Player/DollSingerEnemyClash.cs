@@ -190,7 +190,8 @@ namespace Unity.MP_FPS
 
         private bool CanObserveOpponent(DollSingerEnemyBrain brain, Entity candidate)
         {
-            if (!brain.IsClashBot) return !ExpeditionSquadMember.BelongsTo(EntityManager, candidate, brain.ExpeditionSquadId);
+            if (!brain.IsClashBot)
+                return !ExpeditionSquadMember.BelongsTo(EntityManager, candidate, brain.ExpeditionSquadId, brain.LanCompanion);
             if (!EntityManager.Exists(candidate) || !EntityManager.HasComponent<ClashPlayer>(candidate) ||
                 !EntityManager.HasComponent<PredictedPlayerGhost>(candidate)) return false;
             var identity = EntityManager.GetComponentData<ClashPlayer>(candidate);

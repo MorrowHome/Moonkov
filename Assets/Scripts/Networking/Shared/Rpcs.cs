@@ -7,7 +7,8 @@ namespace Unity.MP_FPS
     /// <summary>
     /// Client to server to request joinning current session. 
     /// </summary>
-    public struct ClientJoinRequestRpc : IRpcCommand
+    // V2 adds the expedition companion count and invalidates the old Burst serializer.
+    public struct ClientJoinRequestV2Rpc : IRpcCommand
     {
         public FixedString64Bytes PlayerName;
         public FixedString128Bytes LoginToken;
@@ -16,6 +17,7 @@ namespace Unity.MP_FPS
         public RaidGameMode Mode;
         public int RulesVersion;
         public bool ResumeOnly;
+        public byte ExpeditionCompanions;
     }
 
     /// <summary>

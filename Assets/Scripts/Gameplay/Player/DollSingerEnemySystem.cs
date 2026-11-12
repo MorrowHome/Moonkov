@@ -172,6 +172,13 @@ namespace Unity.MP_FPS
                     deaths.DestroyEntity(entity);
                     continue;
                 }
+                if (brain.IsCompanion && !CompanionOwnerActive(brain))
+                {
+                    RetireEnemy(entity, brain);
+                    deaths.DestroyEntity(enemy.ValueRO.InputEntity);
+                    deaths.DestroyEntity(entity);
+                    continue;
+                }
                 if (!EntityManager.HasComponent<GhostGameObjectLink>(entity)) continue;
                 var link = EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
                 if (link.LinkedInstance == null) continue;
@@ -189,6 +196,7 @@ namespace Unity.MP_FPS
             }
             deaths.Playback(EntityManager);
             UpdatePopulation(map, now);
+            UpdateCompanionPopulation(map, now);
         }
 
         private void DestroyEnemies()
@@ -444,7 +452,8 @@ namespace Unity.MP_FPS
                 rotation = Quaternion.FromToRotation(Vector3.up, ground.normal) * rotation;
             }
             var loot = EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
-            loot.Drop(brain.Inventory, position, rotation, GameSettings.NormalizeCharacterIndex(characterIndex), now);
+            var carried = brain.IsCompanion ? Inventory.InventoryGraph.Create(stash: false, starter: false) : brain.Inventory;
+            loot.Drop(carried, position, rotation, GameSettings.NormalizeCharacterIndex(characterIndex), now);
         }
     }
 }

@@ -101,6 +101,8 @@
 .lan-launch-title { font-size: 19px; color: #f0f3fa; }
 .lan-launch-bar Button { margin-left: 14px; }
 .lan-launch-bar .lan-muted { margin-bottom: 0; }
+.lan-launch-bar .lan-companions { max-width: 184px; margin: 6px 0 0; font-size: 13px; }
+.lan-launch-bar .lan-companions .unity-base-field__label { color: #c0cce2; min-width: 0; padding-right: 12px; }
 .lan-footer { flex-direction: row; align-items: center; margin-top: 22px; flex-shrink: 0; min-height: 22px; }
 .lan-status-dot { width: 5px; height: 5px; border-radius: 3px; background-color: #7899d9; margin-right: 10px; }
 .lan-status { color: #b0c1df; font-size: 12px; flex-grow: 1; white-space: normal; }

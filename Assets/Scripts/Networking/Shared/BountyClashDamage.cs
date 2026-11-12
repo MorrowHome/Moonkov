@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         public Entity OnlineActor;
         public int ExpeditionSquadId;
         public Entity ExpeditionActor;
+        public bool ExpeditionLanCoop;
         public Entity ResearchShooter;
         public bool ResearchSentry;
     }
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS
             {
                 var membership = manager.GetComponentData<ExpeditionSquadMember>(actor);
                 source.ExpeditionSquadId = membership.SquadId;
+                source.ExpeditionLanCoop = membership.LanCoop;
                 source.ExpeditionActor = actor;
             }
             if(manager.HasComponent<ClashPlayer>(actor))
@@ -62,6 +64,7 @@ namespace Unity.MP_FPS
                     {
                         var membership = world.EntityManager.GetComponentData<ExpeditionSquadMember>(entity);
                         source.ExpeditionSquadId = membership.SquadId;
+                        source.ExpeditionLanCoop = membership.LanCoop;
                         source.ExpeditionActor = entity;
                         break;
                     }
@@ -95,10 +98,16 @@ namespace Unity.MP_FPS
             HasCapturedOnlineActor(source) && source.OnlineActor==victim;
         public static bool TeamProtected(ClashDamageSource source, Entity victim, int victimTeam) =>
             source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
-        public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) =>
-            source.ExpeditionActor != victim && ExpeditionSquadMember.BelongsTo(manager, victim, source.ExpeditionSquadId) ||
-            source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) &&
-            TeamProtected(source,victim,manager.GetComponentData<OnlineRaidMember>(victim).Team);
+        public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source)
+        {
+            if (source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) &&
+                TeamProtected(source, victim, manager.GetComponentData<OnlineRaidMember>(victim).Team)) return true;
+            if (source.ExpeditionActor == victim) return false;
+            // Keep existing human friendly-fire rules. Room protection applies to exchanges with companion bots.
+            bool lanCompanion = source.ExpeditionLanCoop && (source.NetworkId < 0 ||
+                manager.HasComponent<GhostOwner>(victim) && manager.GetComponentData<GhostOwner>(victim).NetworkId < 0);
+            return ExpeditionSquadMember.BelongsTo(manager, victim, source.ExpeditionSquadId, lanCompanion);
+        }
         // Compatibility for immediate damage. Delayed attacks must capture at release.
         public static float Apply(World world,Entity victim,int sourceNetworkId,BodyPart part,float amount,uint tick,RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
             =>Apply(world,victim,Capture(world,sourceNetworkId),part,amount,tick,kind,impactPoint);

@@ -22,6 +22,9 @@ namespace Unity.MP_FPS
         public int StashDust, StashAlloy, StashCells;
         public bool PersistentDeployment, DeployPending;
         public RaidLoadoutError LoadoutError;
+        public byte RequestedCompanions, SpawnedCompanions;
+        public int ExpeditionSquadId;
+        public double CompanionSpawnUntil;
         // Server-only index of the exit whose timer is currently advancing.
         public int ExtractionIndex;
         public float TimeLeft, ExtractionProgress, SnapshotTimer;
@@ -67,6 +70,7 @@ namespace Unity.MP_FPS
     {
         public const int BagCapacity = 12;
         public const float PickupRange = 3f;
+        public const int MaxCompanions = 3;
         public static bool ValidLoadout(int cells) => cells >= 0 && cells <= BagCapacity;
 
         public static bool TryConsumeCell(ref RaidSession session)
@@ -98,6 +102,9 @@ namespace Unity.MP_FPS
             session.RaidId++;
             session.SettlementId = System.Guid.NewGuid().ToString("D");
             session.Phase = RaidPhase.Active;
+            session.SpawnedCompanions = 0;
+            session.ExpeditionSquadId = 0;
+            session.CompanionSpawnUntil = 0;
             session.Dust = session.Alloy = session.Cells = 0;
             session.CellStackId = default;
             session.PersistentDeployment = session.DeployPending = false;

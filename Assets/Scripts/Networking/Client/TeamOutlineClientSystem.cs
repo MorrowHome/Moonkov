@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -47,13 +48,13 @@ namespace Unity.MP_FPS
                 m_Graph = inventory.Graph; m_Version = m_Graph.Version;
                 m_Equipped = TeamOutlineRules.Equipped(m_Graph);
             }
-            if (!m_Equipped) { ReleaseTargets(); return; }
             // GhostOwnerIsLocal is enableable: GetSingletonEntity is not valid for this query.
             using var owners = m_Owner.ToEntityArray(Allocator.Temp);
             if (owners.Length != 1) { ReleaseTargets(); return; }
             Entity owner = owners[0];
             if (m_LastOwner != owner) { ReleaseTargets(); m_LastOwner = owner; }
             var viewer = EntityManager.GetComponentData<PredictedPlayerGhost>(owner);
+            if (!m_Equipped && viewer.CompanionSquadId == 0) { ReleaseTargets(); return; }
             var link = EntityManager.GetComponentObject<GhostGameObjectLink>(owner);
             var camera = link.LinkedInstance && link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation)
                 ? presentation.OwnedCamera : null;
@@ -65,10 +66,14 @@ namespace Unity.MP_FPS
             foreach (var (health, identity, entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>()
                          .WithAll<GhostGameObjectLink>().WithEntityAccess())
             {
-                if (entity == owner || count >= TeamOutlineRules.MaxTeammates ||
-                    !TeamOutlineRules.Teammate(viewer, health.ValueRO, ownerId > 0, identity.ValueRO.NetworkId > 0)) continue;
+                if (entity == owner || count >= TeamOutlineRules.MaxTeammates) continue;
+                bool human = identity.ValueRO.NetworkId > 0;
+                bool companion = TeamOutlineRules.Companion(viewer, health.ValueRO, human);
+                if (!companion && !(m_Equipped && TeamOutlineRules.Teammate(viewer, health.ValueRO, ownerId > 0, human)))
+                    continue;
                 var other = EntityManager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
                 if (!other || !other.gameObject.activeInHierarchy) continue;
+                if (!m_Equipped && !CompanionVisible(camera, other.transform)) continue;
                 if (!m_Targets.TryGetValue(entity, out var target) || target.Root != other.gameObject)
                 {
                     target?.Dispose();
@@ -83,6 +88,15 @@ namespace Unity.MP_FPS
             foreach (var pair in m_Targets) if (!pair.Value.Seen) m_Removed.Add(pair.Key);
             foreach (var entity in m_Removed) { m_Targets[entity].Dispose(); m_Targets.Remove(entity); }
             m_Renderer.Publish(camera, m_Renderers, UnityEngine.Time.realtimeSinceStartupAsDouble);
+        }
+
+        private static bool CompanionVisible(Camera camera, Transform companion)
+        {
+            Vector3 eye = camera.transform.position;
+            Vector3 chest = companion.position + Vector3.up * 1.2f;
+            return (chest - eye).sqrMagnitude < 50 * 50 &&
+                EnergyGrenadePhysics.ClearSight(companion.gameObject.scene.GetPhysicsScene(), eye, chest, companion) &&
+                !TacticalItemsFeedback.SmokeObscures(eye, chest);
         }
 
         private void Clear()

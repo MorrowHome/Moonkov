@@ -7050,6 +7050,10 @@ MonoBehaviour:
     m_Localized: WAITING FOR PLAYERS
     m_Metadata:
       m_Items: []
+  - m_Id: 12800524108685319
+    m_Localized: AI teammates
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

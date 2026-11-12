@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Client
             {
                 if (PlayerProfileClient.IsLan) return;
                 GameSettings.Instance.RequestedMode = mode;
+                MoonkovTerminal.PresentCompanionPicker(m_MainMenu);
                 ConnectionSettings.Instance.ConnectionError = null;
                 RefreshModePicker();
             });

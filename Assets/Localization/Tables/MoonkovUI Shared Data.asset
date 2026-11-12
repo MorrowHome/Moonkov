@@ -7016,6 +7016,10 @@ MonoBehaviour:
     m_Key: WAITING FOR PLAYERS
     m_Metadata:
       m_Items: []
+  - m_Id: 12800524108685319
+    m_Key: AI TEAMMATES
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

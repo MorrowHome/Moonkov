@@ -64,6 +64,7 @@ namespace Unity.MP_FPS
             public string Token;
             public bool NeedsRefresh;
             public int CarryCells;
+            public byte ExpeditionCompanions;
             public bool ResumeOnly;
         }
 
@@ -210,12 +211,14 @@ namespace Unity.MP_FPS
             Debug.Log("[Raid] Persistent stash enabled. Pending receipts: " + Saves.Count);
         }
 
-        public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token, int carryCells = 0, bool resumeOnly = false)
+        public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token, int carryCells = 0,
+            bool resumeOnly = false, byte expeditionCompanions = 0)
         {
             if (Joins.ContainsKey(connection) || Profiles.ContainsKey(connection)) return;
             Joins.Add(connection, new Join
             {
-                Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells, ResumeOnly = resumeOnly,
+                Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells,
+                ResumeOnly = resumeOnly, ExpeditionCompanions = expeditionCompanions,
                 Task = ResolveJoinAsync(token)
             });
         }

@@ -49,7 +49,7 @@ namespace Unity.MP_FPS
                 return;
             }
 
-            var joinRequestEntity = state.EntityManager.CreateEntity(ComponentType.ReadOnly<ClientJoinRequestRpc>(),
+            var joinRequestEntity = state.EntityManager.CreateEntity(ComponentType.ReadOnly<ClientJoinRequestV2Rpc>(),
                 ComponentType.ReadWrite<SendRpcCommandRequest>());
             var playerName = GameSettings.Instance.PlayerName;
             if (state.WorldUnmanaged.IsThinClient()) // Random names for thin clients.
@@ -58,7 +58,7 @@ namespace Unity.MP_FPS
                 playerName = $"[Bot {random.Random.NextInt(1, 999):000}] {playerName}";
             }
 
-            var clientJoinRequestRpc = new ClientJoinRequestRpc();
+            var clientJoinRequestRpc = new ClientJoinRequestV2Rpc();
             clientJoinRequestRpc.PlayerName.CopyFromTruncated(playerName);
             clientJoinRequestRpc.CharacterIndex = GameSettings.Instance.PlayerCharacter;
             clientJoinRequestRpc.LoginToken = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
@@ -67,6 +67,9 @@ namespace Unity.MP_FPS
             clientJoinRequestRpc.Mode = GameSettings.Instance.RequestedMode;
             clientJoinRequestRpc.RulesVersion = GameSettings.Instance.RequestedRulesVersion;
             clientJoinRequestRpc.ResumeOnly = ConnectionSettings.Instance.ResumeOnly;
+            if (!state.WorldUnmanaged.IsThinClient() && clientJoinRequestRpc.Mode == RaidGameMode.Expedition &&
+                (PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan))
+                clientJoinRequestRpc.ExpeditionCompanions = (byte)GameSettings.Instance.ExpeditionCompanionCount;
             state.EntityManager.SetComponentData(joinRequestEntity, clientJoinRequestRpc);
             state.EntityManager.AddComponentData(clientEntity, new NetworkStreamInGame());
         }

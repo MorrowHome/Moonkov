@@ -25,7 +25,7 @@ namespace Unity.MP_FPS
             }
 
             bool local = match.Classic != null && SystemAPI.HasSingleton<OfflineRaidMode>();
-            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<ClientJoinRequestRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<ClientJoinRequestV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
                 var connection = received.ValueRO.SourceConnection;
