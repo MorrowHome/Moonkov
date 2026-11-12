@@ -52,6 +52,7 @@ namespace Unity.MP_FPS
         private PlayerGhost m_PlayerGhost;
         private bool m_OwnedAlive;
         private HaloRecoilResponse m_Recoil;
+        private PlayerHitFlinch m_HitFlinch;
         private uint m_RecoilWeapon;
         private float2 m_OwnedLook;
         private Client.HaloObstructionView m_ObstructionView;
@@ -216,6 +217,8 @@ namespace Unity.MP_FPS
             m_OwnedAiming = m_OwnedRaised = m_HasOwnedAimPoint = false;
             m_OwnedPendingFire = m_OwnedHipHoldSuppressed = false;
             m_Recoil.Reset(); m_RecoilWeapon = 0;
+            m_HitFlinch = default;
+            m_LastShotEffectTick = 0;
             m_LightPanel?.Dispose(); m_LightPanel = null;
             m_OwnedLightEnabled = true;
             m_AudioAiming = false; m_DryFireAt = 0;
@@ -423,6 +426,9 @@ namespace Unity.MP_FPS
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
                 m_View.SetAimBlend(m_Halo.AdsBlend);
                 m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
+                bool showFlinch = m_ViewActivated && !GameSettings.Instance.IsPauseMenuOpen &&
+                    !RaidHUD.GameplayActionsBlocked && !Client.HalosTerminalBackdrop.PrefersReducedMotion;
+                m_View.SetHitFlinch(m_HitFlinch.Step(ghost, Time.deltaTime, m_View.CurrentAimMagnification, showFlinch));
             }
         }
 
@@ -432,13 +438,13 @@ namespace Unity.MP_FPS
             {
                 // The shot RPC may precede the equipment snapshot on an observer.
                 var shotState = ReadGhostComponentData<PredictedPlayerGhost>();
-                if (shotState.EquippedWeaponID != weaponId) return;
+                bool equipped = shotState.EquippedWeaponID == weaponId;
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
-                m_Halo.GestureReleaseSeconds = profile?.GestureReleaseSeconds ?? 0;
-                if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive && !m_HaloOccupied && !haloDeployed &&
+                if (equipped) m_Halo.GestureReleaseSeconds = profile?.GestureReleaseSeconds ?? 0;
+                if (equipped && Role == MultiplayerRole.ClientOwned && m_OwnedAlive && !m_HaloOccupied && !haloDeployed &&
                     m_Input.CanReadPlayerInput && WeaponHandsAvailable && !m_Input.LightAdjusting)
                 {
                     float interval = weapon == null ? .35f :
@@ -455,10 +461,10 @@ namespace Unity.MP_FPS
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);
                     bool owned = Role == MultiplayerRole.ClientOwned && !m_HaloOccupied && !haloDeployed;
-                    Vector3 origin = haloDeployed ? shotOrigin : m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
+                    Vector3 origin = haloDeployed ? shotOrigin : equipped && m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
                     float bodyGain = Mathf.Lerp(1, profile?.SustainedBodyGain ?? .9f, m_ShotSoundPressure);
-                    m_RifleBodySound = MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weapon?.WeaponFireSfx,
-                        origin, bodyGain, owned ? .08f : 1f);
+                    m_RifleBodySound = MoonkovAudio.PlayWeaponReport(profile?.FireBody ?? weapon?.WeaponFireSfx,
+                        origin, owned, bodyGain);
                     m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(profile != null ? profile.FireSnap : weapon?.WeaponFireLayerSfx,
                         origin, .85f, owned ? 0f : 1f, m_ShotSoundPressure * (profile?.BurstPitchRise ?? 35f));
                     m_WeaponTailSound = MoonkovAudio.PlayWeaponLayer(profile?.FireTail, origin, .85f, owned ? .2f : 1f);
@@ -468,7 +474,8 @@ namespace Unity.MP_FPS
                     MoonkovAudio.Play(weapon?.WeaponFireSfx, haloDeployed ? shotOrigin : transform.position);
                     MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, haloDeployed ? shotOrigin : transform.position);
                 }
-                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick, haloDeployed ? shotOrigin : (Vector3?)null);
+                if (equipped)
+                    m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick, haloDeployed ? shotOrigin : (Vector3?)null);
             }
         }
 
@@ -522,6 +529,8 @@ namespace Unity.MP_FPS
         {
             if (m_Model) m_Model.Footstep -= OnFootstep;
             m_Audio?.Stop();
+            m_HitFlinch = default;
+            if (m_View) m_View.SetHitFlinch(Vector3.zero);
         }
 
         public override void OnGhostPreDestroy()
@@ -543,6 +552,8 @@ namespace Unity.MP_FPS
             m_RifleBodySound = m_RifleSnapSound = m_WeaponTailSound = null;
             m_Linked = false;
             m_Recoil.Reset();
+            m_HitFlinch = default;
+            if (m_View) m_View.SetHitFlinch(Vector3.zero);
             if (m_Melee) m_Melee.ResetPresentation();
             if (m_Action) m_Action.ResetPresentation();
             if (m_Grenade) m_Grenade.ResetPresentation();

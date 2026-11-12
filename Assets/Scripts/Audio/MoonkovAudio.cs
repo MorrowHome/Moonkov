@@ -59,6 +59,11 @@ namespace Unity.MP_FPS
             return game.SoundSystem != null && game.SoundSystem.PlayEmitter(info, volume) ? info : null;
         }
 
+        public const float WorldWeaponGain = .57f;
+
+        public static SoundSystem.SoundInfo PlayWeaponReport(SoundDef sound, Vector3 position, bool owned, float gain = 1f) =>
+            PlayWeaponLayer(sound, position, gain * (owned ? 1f : WorldWeaponGain), owned ? 0f : 1f);
+
         public static bool CanHearDetail(Vector3 position, float range)
         {
             var game = GameManager.Instance;

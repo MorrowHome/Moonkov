@@ -161,6 +161,7 @@ public class DollSingerView : MonoBehaviour
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
     private Vector3 lastRenderedLeanOffset;
+    private Vector3 hitFlinch;
     private DollSingerThirdPersonCamera thirdPersonRig;
 
     private const string HairMaterialName = "Hair";
@@ -227,6 +228,7 @@ public class DollSingerView : MonoBehaviour
         if (input) input.SetLeanEnabled(false);
         appliedFirstPerson = false;
         networkLookDriven = false;
+        hitFlinch = Vector3.zero;
         viewBlend = 0f;
         aimBlend = 0f;
         weaponAimMagnification = 0;
@@ -248,6 +250,7 @@ public class DollSingerView : MonoBehaviour
 
     public void SetAimBlend(float blend) => aimBlend = Mathf.Clamp01(blend);
     public void SetWeaponAimMagnification(float value) => weaponAimMagnification = value > 0 ? Mathf.Clamp(value, 1f, 12f) : 0;
+    public void SetHitFlinch(Vector3 angles) => hitFlinch = angles;
 
     /// <summary>Keep the owned view independent of network prediction rotating its character parent.</summary>
     public void SetNetworkLookRotation(Quaternion rotation)
@@ -396,6 +399,8 @@ public class DollSingerView : MonoBehaviour
         SyncShadowBlendShapes();
         ApplyLean();
         UpdateThirdPersonRig();
+        // Apply after positioning the camera so this rotation never moves the orbit or aim ray.
+        if (hitFlinch != Vector3.zero) camera.transform.localRotation = Quaternion.Euler(hitFlinch);
         lastRenderedLeanOffset = firstPerson ? movement.LeanOffset * viewBlend : Vector3.zero;
     }
 
@@ -805,6 +810,7 @@ public class DollSingerView : MonoBehaviour
         firstPerson = false;
         appliedFirstPerson = false;
         networkLookDriven = false;
+        hitFlinch = Vector3.zero;
         viewBlend = 0f;
         aimBlend = 0f;
         lastRenderedLeanOffset = Vector3.zero;

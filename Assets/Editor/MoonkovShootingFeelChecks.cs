@@ -6,6 +6,7 @@ using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 using UnityEditor;
 using UnityEngine;
+using BodyPart = Unity.MP_FPS.BodyPart;
 
 public static class MoonkovShootingFeelChecks
 {
@@ -24,8 +25,58 @@ public static class MoonkovShootingFeelChecks
         CheckReleaseContinuity();
         CheckRecoil();
         CheckSustainedRecoil();
+        CheckHitFlinch();
         Debug.Log("Shooting feel checks passed: buffered press/expiry/cancellation, reload handoff, burst rearm, " +
-            "independent draw time, slot recovery, 30/60/144 Hz and jitter cadence, hitch cap, zoom sensitivity, micro-aim, recoil compensation/settling/aim alignment and release continuity.");
+            "independent draw time, slot recovery, 30/60/144 Hz and jitter cadence, hitch cap, zoom sensitivity, micro-aim, recoil compensation/settling/aim alignment, release continuity and hit flinch.");
+    }
+
+    public static void CheckHitFlinch()
+    {
+        const float dt = 1f / 60f;
+        foreach (bool clash in new[] { false, true })
+        {
+            var state = new PredictedPlayerGhost
+            {
+                ClashEnabled = clash, ClashLife = ClashLife.Alive, ClashCanAct = true, ClashMaxHealthFraction = 1
+            };
+            RaidHealth.Initialize(ref state);
+            RaidHealth.CombatDamage(ref state, BodyPart.LeftArm, 10, 20, RaidDamageKind.Bullet);
+            var response = new PlayerHitFlinch();
+            Require(response.Step(state, dt, 1, true) == Vector3.zero, "A historical hit moved a newly bound camera.");
+            RaidHealth.CombatDamage(ref state, BodyPart.Chest, 30, 21, RaidDamageKind.Bullet);
+            Vector3 body = response.Step(state, dt, 1, true);
+            Require(body.x < -1.5f && Mathf.Abs(body.z) > .5f, "A bullet did not move the camera.");
+            Vector3 next = response.Step(state, dt, 1, true);
+            Require(next.magnitude < body.magnitude, "A repeated snapshot restarted the flinch.");
+            var stale = state;
+            stale.LastImpactTick--;
+            Require(response.Step(stale, dt, 1, true).magnitude < next.magnitude, "A stale impact restarted the flinch.");
+            for (int i = 0; i < 20; i++) response.Step(state, dt, 1, true);
+            Require(response.Step(state, dt, 1, true) == Vector3.zero, "Camera did not settle.");
+            RaidHealth.Damage(ref state, BodyPart.Chest, 1, 22, physiological: true);
+            Require(response.Step(state, dt, 1, true) == Vector3.zero, "A physiological tick shook the camera.");
+
+            state.HaloEquipped = state.HaloEnergyInitialized = true;
+            state.HaloEnergy = 100;
+            HaloEnergyRules.SetDefense(ref state, true);
+            RaidHealth.CombatDamage(ref state, BodyPart.Chest, 10, 23, RaidDamageKind.Bullet);
+            Vector3 shield = response.Step(state, dt, 1, true);
+            Require(shield.x < -.6f && shield.magnitude < body.magnitude && state.LastImpactTick == 21, "A shield-only hit lacked a softer flinch.");
+            RaidHealth.CombatDamage(ref state, BodyPart.Chest, 10, 24, RaidDamageKind.Bullet);
+            Require(response.Step(state, dt, 1, false) == Vector3.zero &&
+                response.Step(state, dt, 1, true) == Vector3.zero, "A hidden hit replayed when the view returned.");
+
+            HaloEnergyRules.SetDefense(ref state, false);
+            var scoped = response;
+            RaidHealth.CombatDamage(ref state, BodyPart.LeftLeg, 20, 25, RaidDamageKind.Melee);
+            body = response.Step(state, dt, 1, true);
+            Vector3 zoomed = scoped.Step(state, dt, 6, true);
+            Require(Mathf.Abs(zoomed.x * 6 - body.x) < .0001f && zoomed.z == body.z, "Zoom amplified the flinch.");
+            RaidHealth.CombatDamage(ref state, BodyPart.Head, 500, 26, RaidDamageKind.Bullet);
+            Require(response.Step(state, dt, 1, true) == Vector3.zero, "Flinch spilled into the death view.");
+            RaidHealth.Initialize(ref state);
+            Require(response.Step(state, dt, 1, true) == Vector3.zero, "Flinch spilled into the next life.");
+        }
     }
 
     public static void CheckRecoil()

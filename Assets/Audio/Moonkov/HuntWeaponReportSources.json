@@ -1,0 +1,436 @@
+{
+  "game": "Hunt: Showdown",
+  "copyright": "Crytek GmbH",
+  "license": "All rights reserved; no Creative Commons license asserted",
+  "processing": "Gameplay recordings. Mono 48 kHz PCM16, onset trim, 38 Hz high pass, low-mid EQ, mild peak shaping and edge fades. Original pitch and cadence within each recording.",
+  "sources": {
+    "showcase": {
+      "cache_file": "allweapons.m4a",
+      "page": "https://www.bilibili.com/video/BV1XG411W7vZ/?p=1",
+      "uploader": "勤劳的小六",
+      "sha256": "777711fa9f7d114ef0d6d738392e01098487e27fd57c0b2534f3937609d37b76"
+    },
+    "release": {
+      "cache_file": "BV1CJ411w7Cw.m4a",
+      "page": "https://www.bilibili.com/video/BV1CJ411w7Cw/",
+      "uploader": "勤劳的小六",
+      "sha256": "bfc68f88a15e443a62caf8d66251ad9e281f77ca865b5b57666a7d6653f2d20f"
+    },
+    "v19": {
+      "cache_file": "BV1p34y1J7dG.m4a",
+      "page": "https://www.bilibili.com/video/BV1p34y1J7dG/",
+      "uploader": "linmumumumumumu",
+      "sha256": "da3f2b0149b73473c5a7e36333bad7947aad89678a6a3c615b315ee0c6012cc4"
+    },
+    "basic": {
+      "cache_file": "BV1eW411E7UG.m4a",
+      "page": "https://www.bilibili.com/video/BV1eW411E7UG/",
+      "uploader": "勤劳的小六",
+      "sha256": "dbc2c4a86a8831aa7c171db0e2a0a4f51a5a35bf1736bcc852a26c69a6145b84"
+    },
+    "demo1": {
+      "cache_file": "BV1Tt411t7sy_p1.m4a",
+      "page": "https://www.bilibili.com/video/BV1Tt411t7sy/?p=1",
+      "uploader": "噬魂の魅影",
+      "sha256": "5584db4f328e2ad309aef048105df6a5c838d7391c34e38d94c9f7fd4d59968b"
+    },
+    "demo2": {
+      "cache_file": "BV1Tt411t7sy_p2.m4a",
+      "page": "https://www.bilibili.com/video/BV1Tt411t7sy/?p=2",
+      "uploader": "噬魂の魅影",
+      "sha256": "d23cc266688a560e930bf939b39557ddd4e9996970ec9785b326826c461bd28a"
+    }
+  },
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/HaloReport1.wav",
+      "source": "showcase",
+      "sha256": "6339802a9595dd31e5fa4e5a479f55a7a27b7bb1e5d3efdf8f53606bce88aeac",
+      "start_seconds": 72.441,
+      "seconds": 0.85,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.1,
+      "body_rms_dbfs": -13.8
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/HaloReport2.wav",
+      "source": "showcase",
+      "sha256": "b973081f68ddfebb20a5d55e47dc0ada1c722a493c51a714e5ae1d3a4336da39",
+      "start_seconds": 128.794,
+      "seconds": 0.85,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.51,
+      "body_rms_dbfs": -12.59
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/HaloReport3.wav",
+      "source": "release",
+      "sha256": "4c83a34361b854e02b411c5e6500f431a920f27747c55df9f93d69f1b31c03d6",
+      "start_seconds": 9.778,
+      "seconds": 0.85,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.79,
+      "body_rms_dbfs": -15.63
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RevolverReport1.wav",
+      "source": "v19",
+      "sha256": "187eab330fa3a69c6c6d576ef4487bdc28fd578a7beb736f74c860010894cb38",
+      "start_seconds": 3440.74,
+      "seconds": 0.9,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -13.62,
+      "body_rms_dbfs": -14.58
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RevolverReport2.wav",
+      "source": "v19",
+      "sha256": "c95f02e9ebf5cd29995ccb5b383afe9507b8ba4650050c5a1429243b45fe613b",
+      "start_seconds": 3460.42,
+      "seconds": 0.9,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -12.26,
+      "body_rms_dbfs": -14.29
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RevolverReport3.wav",
+      "source": "basic",
+      "sha256": "c64053770a5db950aad00db20dc9721c17eaa8def00a77d0bb4be764502c2596",
+      "start_seconds": 130.312,
+      "seconds": 0.9,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -12.11,
+      "body_rms_dbfs": -16.33
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ShotgunReport1.wav",
+      "source": "showcase",
+      "sha256": "9e63f032fbe9309c099c0604dd8fea4b7fb11f6a78a342528e4306b7a4373ed3",
+      "start_seconds": 255.822,
+      "seconds": 1.15,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -7.12,
+      "body_rms_dbfs": -12.25
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ShotgunReport2.wav",
+      "source": "showcase",
+      "sha256": "8e639e50f078b8e3ef87723c02d44aac978774178821ac9406a7d2fd560d017d",
+      "start_seconds": 625.273,
+      "seconds": 1.15,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -8.04,
+      "body_rms_dbfs": -13.1
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ShotgunReport3.wav",
+      "source": "showcase",
+      "sha256": "c87e66688d56088ec1ac00c731b800a7730e570a5c0cec17fe935b47bc73b60f",
+      "start_seconds": 682.399,
+      "seconds": 1.15,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -6.96,
+      "body_rms_dbfs": -10.78
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SniperReport1.wav",
+      "source": "showcase",
+      "sha256": "18697037daeedec47071c3f5368c426a8d48ea424e553c76c391686750b695d4",
+      "start_seconds": 189.363,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.21,
+      "body_rms_dbfs": -10.6
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SniperReport2.wav",
+      "source": "showcase",
+      "sha256": "e8919140e185cb36c61357d902578ba6ae5be4fef139301f1a6a2879fe53d71d",
+      "start_seconds": 191.432,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.62,
+      "body_rms_dbfs": -11.41
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SniperReport3.wav",
+      "source": "demo1",
+      "sha256": "b5c3a44428b6810f92f7c5865e97be8eaf161c38480af15826d94c0b518b45d7",
+      "start_seconds": 512.018,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.18,
+      "body_rms_dbfs": -11.63
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/CicadaReport1.wav",
+      "source": "showcase",
+      "sha256": "edc6b26362b581aefb027900e69658d2ff832aae678a9e1f35fcc5a4f8a19b56",
+      "start_seconds": 322.043,
+      "seconds": 0.53,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.66,
+      "body_rms_dbfs": -14.97
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/CicadaReport2.wav",
+      "source": "release",
+      "sha256": "56344d7130eff1356e53693e1679b79b8e60057dab02e5ace6781a76ea04ea09",
+      "start_seconds": 163.111,
+      "seconds": 0.53,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.99,
+      "body_rms_dbfs": -14.85
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/CicadaReport3.wav",
+      "source": "release",
+      "sha256": "7ca61b5dde98cb66efd5930f923f5cdd6a44f52f86432a3af47d4e75dadc74c2",
+      "start_seconds": 834.003,
+      "seconds": 0.53,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -9.5,
+      "body_rms_dbfs": -18.34
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TrineReport1.wav",
+      "source": "showcase",
+      "sha256": "05b4422fda3ee7a4f39fae9ccc267099ef90f3cdf140aebf09892d321414ea35",
+      "start_seconds": 975.868,
+      "seconds": 0.74,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.19,
+      "body_rms_dbfs": -14.17
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TrineReport2.wav",
+      "source": "v19",
+      "sha256": "01dab7c1022e0ed90d354d85100b53266df334250aba7d232f94fe74fbb12664",
+      "start_seconds": 3524.682,
+      "seconds": 0.74,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -9.0,
+      "body_rms_dbfs": -13.06
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TrineReport3.wav",
+      "source": "basic",
+      "sha256": "45d12cf30dbbcf94575f291d47cd2ee75d8f27df4b61074d5beba30b306aedbc",
+      "start_seconds": 126.176,
+      "seconds": 0.74,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.67,
+      "body_rms_dbfs": -14.72
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/AegisReport1.wav",
+      "source": "demo1",
+      "sha256": "b12b19417ac7c2e4725d8fe7c420e8d9dbd6aa9d446d80cbe50bcffc7718125d",
+      "start_seconds": 388.547,
+      "seconds": 0.83,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.83,
+      "body_rms_dbfs": -16.61
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/AegisReport2.wav",
+      "source": "demo1",
+      "sha256": "93d5b1c069cc5e07285fc70c32a2cfdb7430e700f7221ac4649039c39d155223",
+      "start_seconds": 393.454,
+      "seconds": 0.83,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.17,
+      "body_rms_dbfs": -15.64
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/AegisReport3.wav",
+      "source": "release",
+      "sha256": "8e24c0b30f4c7f8c5ef4fecd6fad21dbd6ae9974a05db1235cb9bfa11bd15b7b",
+      "start_seconds": 597.302,
+      "seconds": 0.83,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -8.66,
+      "body_rms_dbfs": -17.22
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/VesperReport1.wav",
+      "source": "showcase",
+      "sha256": "69dc7b9b9314699eb0d85860b88b481aef38aa63c6fd2450cf504e054406f338",
+      "start_seconds": 302.243,
+      "seconds": 0.92,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -14.46,
+      "body_rms_dbfs": -14.81
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/VesperReport2.wav",
+      "source": "release",
+      "sha256": "ed4733dbe24f899db13d8254c2e37881333c55a61e125ba5df1e3aed8bdfe54d",
+      "start_seconds": 205.852,
+      "seconds": 0.92,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.48,
+      "body_rms_dbfs": -15.13
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/VesperReport3.wav",
+      "source": "release",
+      "sha256": "76d44cc75f86732561cf8a62e665b5d6164677cde96133e73555bc7b4dcb0851",
+      "start_seconds": 234.683,
+      "seconds": 0.92,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.77,
+      "body_rms_dbfs": -15.75
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ThornReport1.wav",
+      "source": "release",
+      "sha256": "72b6647132880583eacbf9e5bd09dcce361c6d1c7079fb67a885a7d6825f957b",
+      "start_seconds": 356.328,
+      "seconds": 0.88,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -8.57,
+      "body_rms_dbfs": -13.1
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ThornReport2.wav",
+      "source": "release",
+      "sha256": "5f26941160cd4ab933a24a7d3b4b8a250821626b690473153a042a5e500d0990",
+      "start_seconds": 409.344,
+      "seconds": 0.88,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -8.77,
+      "body_rms_dbfs": -13.81
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/ThornReport3.wav",
+      "source": "demo2",
+      "sha256": "978007dc33a60e8e633eff059813ced1b019224d54d52e1be0ad7aaecc56a40a",
+      "start_seconds": 11.549,
+      "seconds": 0.88,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -8.56,
+      "body_rms_dbfs": -16.47
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SundownReport1.wav",
+      "source": "showcase",
+      "sha256": "16920d336560e49865baae3497b8bfbf02908c6a9773d0d20045f2c5aabeb894",
+      "start_seconds": 738.612,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.35,
+      "body_rms_dbfs": -10.29
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SundownReport2.wav",
+      "source": "release",
+      "sha256": "4498a106a59a2935ec59c8f9136f79ab17887c9db04caa915929e565fde48d21",
+      "start_seconds": 717.816,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.01,
+      "body_rms_dbfs": -10.77
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/SundownReport3.wav",
+      "source": "release",
+      "sha256": "8fa5034e446aab5ebf94728a554f207bd57561c8cca6d15d97d3383e0842ead5",
+      "start_seconds": 750.833,
+      "seconds": 1.35,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.12,
+      "body_rms_dbfs": -10.09
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RondoReport1.wav",
+      "source": "showcase",
+      "sha256": "0a4c7a7b5151210d497ea0d6151fbb72e1392118db0fad58e6f8e40e0237e21a",
+      "start_seconds": 386.204,
+      "seconds": 0.57,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.77,
+      "body_rms_dbfs": -16.78
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RondoReport2.wav",
+      "source": "showcase",
+      "sha256": "93a1d39123e8ad709ae0835c1fff66da2167fdb34e2b4dcd49060de1d18e0643",
+      "start_seconds": 392.428,
+      "seconds": 0.57,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.32,
+      "body_rms_dbfs": -15.54
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/RondoReport3.wav",
+      "source": "showcase",
+      "sha256": "9f9e360eb5b11a3e000a720aca96c34971a03651e7853d53855b9e01bb47d3d9",
+      "start_seconds": 861.843,
+      "seconds": 0.57,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.35,
+      "body_rms_dbfs": -16.82
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TempestReport1.wav",
+      "source": "demo2",
+      "sha256": "a99917070bad5b9fd11f039067b8ca60b0e1da8837ffc78086963fd7d24c6298",
+      "start_seconds": 265.743,
+      "seconds": 1.05,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.91,
+      "body_rms_dbfs": -15.37
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TempestReport2.wav",
+      "source": "demo2",
+      "sha256": "f3eb9b57ca35604abc6fcb37b427f979916a36881832d134690ff315b9bbddea",
+      "start_seconds": 308.698,
+      "seconds": 1.05,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.4,
+      "body_rms_dbfs": -15.93
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/TempestReport3.wav",
+      "source": "demo1",
+      "sha256": "d4ba0bb762b64a124fe3d46cda8b81a7067cd03d12df589b8eaa94cd85924332",
+      "start_seconds": 406.458,
+      "seconds": 1.05,
+      "peak_dbfs": -3.61,
+      "attack_rms_dbfs": -9.43,
+      "body_rms_dbfs": -14.23
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/NocturneReport1.wav",
+      "source": "showcase",
+      "sha256": "061eefe8cce17eb8b21b0528d8f8a7ea2668c69f0b4135993b5434d9ae63e9eb",
+      "start_seconds": 588.832,
+      "seconds": 0.96,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -11.03,
+      "body_rms_dbfs": -14.54
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/NocturneReport2.wav",
+      "source": "release",
+      "sha256": "4325000a3f480cd34fb8ec6ec23b0a0ac7c54c4a3f73dfa2925a3e5f657f0665",
+      "start_seconds": 554.217,
+      "seconds": 0.96,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.07,
+      "body_rms_dbfs": -14.19
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/HuntWeaponReports/NocturneReport3.wav",
+      "source": "release",
+      "sha256": "c5f20d7bb86d0b4b7cc74885d87bc1e3eb8b68b2bd94465acfd43dae565a88e1",
+      "start_seconds": 562.153,
+      "seconds": 0.96,
+      "peak_dbfs": -1.51,
+      "attack_rms_dbfs": -10.65,
+      "body_rms_dbfs": -13.95
+    }
+  ]
+}

@@ -10,8 +10,8 @@ public static class MoonkovSoundMix
     public static float Gain(SoundDef.MixRole role)
     {
         float recovery = Mathf.Clamp01((Time.unscaledTime - s_WeaponUntil) / .35f);
-        if (role == SoundDef.MixRole.Ambience) return Mathf.Lerp(.38f, 1, recovery);
-        if (role == SoundDef.MixRole.Foley) return Mathf.Lerp(.78f, 1, recovery);
+        if (role == SoundDef.MixRole.Ambience) return Mathf.Lerp(.53f, 1, recovery);
+        if (role == SoundDef.MixRole.Foley) return Mathf.Lerp(.86f, 1, recovery);
         return 1; // Creature telegraphs and suit warnings remain readable during combat.
     }
 }

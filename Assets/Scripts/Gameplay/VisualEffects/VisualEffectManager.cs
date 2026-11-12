@@ -140,8 +140,8 @@ namespace Unity.MP_FPS
                 {
                     if (!m_WeaponAudio) m_WeaponAudio = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                     var profile = m_WeaponAudio?.ForWeapon(weaponId);
-                    MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weaponData.WeaponFireSfx,
-                        player.transform.position, 1, isFirstPerson ? .08f : 1);
+                    MoonkovAudio.PlayWeaponReport(profile?.FireBody ?? weaponData.WeaponFireSfx,
+                        haloDeployed ? shotOrigin : player.transform.position, isFirstPerson && !haloDeployed);
                     MoonkovAudio.PlayWeaponLayer(profile != null ? profile.FireSnap : weaponData.WeaponFireLayerSfx,
                         player.transform.position, .85f, isFirstPerson ? 0 : 1);
                     MoonkovAudio.PlayWeaponLayer(profile?.FireTail, player.transform.position, .85f, isFirstPerson ? .2f : 1);

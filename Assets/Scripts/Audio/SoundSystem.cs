@@ -101,7 +101,8 @@ public class SoundSystem : ISoundSystem
         m_LastStarted.Clear(); m_LastClip.Clear();
         SoundGameObjects = soundGameObjectPool; // 
 
-        m_ListenerTransform = listenerTransform;
+        m_ListenerTransform = null;
+        SetListenerTransform(listenerTransform);
         m_SoundMixer = new SoundMixer(mixer);   // Initialise mixer groups
         m_SequenceId = 0;
 
@@ -146,6 +147,9 @@ public class SoundSystem : ISoundSystem
             return false;
         }
         m_ListenerTransform = listenerTransform;
+        if (Application.isPlaying && listenerTransform.TryGetComponent<AudioListener>(out var listener) &&
+            !listener.TryGetComponent<MoonkovPeakLimiter>(out _))
+            listener.gameObject.AddComponent<MoonkovPeakLimiter>();
         return true;
     }
 

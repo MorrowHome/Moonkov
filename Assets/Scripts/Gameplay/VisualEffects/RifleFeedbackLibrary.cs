@@ -14,7 +14,7 @@ namespace Unity.MP_FPS
         [Min(0f)] public float RecoilHoldSeconds;
         [Min(.1f)] public float RecoilSettleSpeed = 13f;
         [Header("Shot mix")]
-        [Range(.01f, .15f)] public float BodyCrossfade = .045f;
+        [Range(.01f, .20f)] public float BodyCrossfade = .045f;
         [Range(.01f, .2f)] public float TailCrossfade = .09f;
         [Range(.6f, 1f)] public float SustainedBodyGain = .9f;
         [Range(0f, 100f)] public float BurstPitchRise = 35f;

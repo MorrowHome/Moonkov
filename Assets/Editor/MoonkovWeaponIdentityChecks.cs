@@ -16,32 +16,35 @@ public static class MoonkovWeaponIdentityChecks
         for (uint id = 2; id <= 14; id++)
         {
             var profile = library.ForWeapon(id);
-            Require(profile != null && profile.FireBody && profile.FireTail, "Missing weapon " + id);
-            Require(profile.FireSnap == null, "Generic snap masks recorded identity " + id);
-            Require(profile.FireBody.Clips.Count == 3, "Missing variants " + id);
-            float gain = Mathf.Pow(10, profile.FireBody.PitchAndVolumeInfo.VolumeMax / 20) +
-                .85f * Mathf.Pow(10, profile.FireTail.PitchAndVolumeInfo.VolumeMax / 20);
-            Require(gain < .8f, "Shot exhausts mix headroom " + id);
-            foreach (var bank in new[] { profile.FireBody, profile.FireTail })
+            Require(profile != null && profile.FireBody && !profile.FireSnap && !profile.FireTail, "Missing full report " + id);
+            var bank = profile.FireBody;
+            Require(bank.name == MoonkovWeaponIdentitySetup.Names[id - 2] + "HuntReport" && bank.Clips.Count == 3, "Missing variants " + id);
+            Require(bank.MaxVoices == 24 && bank.PlayCount == 1 && bank.Occlusion &&
+                bank.Role == SoundDef.MixRole.Weapon && bank.MixerGroup == SoundMixer.SoundMixerGroup.SFX, "Voice/mix route " + id);
+            Require(bank.PitchAndVolumeInfo.PitchMin == 0 && bank.PitchAndVolumeInfo.PitchMax == 0 &&
+                bank.BasePitchInCents == 0, "Original pitch was lost " + id);
+            foreach (var clip in bank.Clips)
             {
-                Require(bank.MaxVoices > 0 && bank.MixerGroup == SoundMixer.SoundMixerGroup.SFX, "Voice/mix route " + id);
-                foreach (var clip in bank.Clips)
-                {
-                    Require(clip && unique.Add(clip), "Shared recording across weapon identities " + id);
-                    Require(clip.channels == 1 && clip.frequency == 48000 && clip.loadType == AudioClipLoadType.DecompressOnLoad,
-                        "Invalid import " + clip.name);
-                    clip.LoadAudioData(); var samples = new float[clip.samples];
-                    Require(clip.GetData(samples, 0), "Unreadable PCM " + clip.name);
-                    float peak = 0;
-                    foreach (var sample in samples) { Require(float.IsFinite(sample), "Nonfinite PCM"); peak = Mathf.Max(peak, Mathf.Abs(sample)); }
-                    Require(peak > .5f && peak < .9f, "Silent/clipped report " + clip.name);
-                }
+                Require(clip && unique.Add(clip), "Shared recording across weapon identities " + id);
+                Require(clip.channels == 1 && clip.frequency == 48000 && clip.loadType == AudioClipLoadType.DecompressOnLoad,
+                    "Invalid import " + clip.name);
+                var importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(clip));
+                using (var serialized = new SerializedObject(importer))
+                    Require(serialized.FindProperty("m_Normalize")?.boolValue == false, "Importer normalizes " + clip.name);
+                clip.LoadAudioData();
+                var samples = new float[clip.samples];
+                Require(clip.GetData(samples, 0), "Unreadable PCM " + clip.name);
+                float peak = 0;
+                foreach (var sample in samples) { Require(float.IsFinite(sample), "Nonfinite PCM"); peak = Mathf.Max(peak, Mathf.Abs(sample)); }
+                Require(peak > .63f && peak < .85f, "Unexpected report peak " + clip.name);
+                Require(peak * Mathf.Pow(10, bank.PitchAndVolumeInfo.VolumeMax / 20) < .75f,
+                    "A single report exhausts headroom " + clip.name);
             }
             Require(profile.BodyImpact == library.BaseForWeapon(id).BodyImpact &&
                 profile.KillConfirm == library.BaseForWeapon(id).KillConfirm, "Impact feedback changed " + id);
         }
-        Require(unique.Count == 52, "Expected 52 distinct clips");
-        Debug.Log("Weapon audio: 13 mappings, 52 unique PCM clips, variants, headroom, mixer and original impact references passed.");
+        Require(unique.Count == 39, "Expected 39 distinct clips");
+        Debug.Log("Weapon audio: 13 mappings, 39 PCM reports, original pitch, mixer, headroom and impact references passed.");
     }
 
     // Isolated pool in the current Editor, without spawning a player or connecting a game.

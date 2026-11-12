@@ -12,58 +12,33 @@ public static class MoonkovWeaponCharacterChecks
     { s_Checks++; if (!value) throw new InvalidOperationException(message); }
     private static bool Near(float a, float b) => Mathf.Abs(a - b) < .00002f;
 
-    [MenuItem("Tools/Moonkov/Check weapon character and red rifle protection")]
+    [MenuItem("Tools/Moonkov/Check Weapon Recoil and Recovery")]
     public static string Run()
     {
         s_Checks = 0;
         var library = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
         var registry = AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
         var rifle = registry.GetWeaponData(DollSingerWeapons.Halo);
-        var accepted = library.ForWeapon(DollSingerWeapons.Halo);
         Check(rifle.Automatic && rifle.MagazineSize == 30 && Near(rifle.CooldownInMs, .16f) && rifle.Damage == 45,
-            "The accepted red rifle mechanics changed");
-        Check(accepted.RecoilPitch == 0 && accepted.GestureReleaseSeconds == 0 && accepted.FireBody.name == "HaloIdentityBody" &&
-            accepted.FireTail.name == "HaloIdentityTail", "The accepted red rifle presentation changed");
-        foreach (float dt in new[] { 1f / 30, 1f / 60, 1f / 144 })
-        {
-            var previous = new HaloRecoilResponse(); var current = new HaloRecoilResponse();
-            float oldPitch = 0; float2 look = float2.zero;
-            for (int frame = 0; frame < 400; frame++)
-            {
-                if (frame % 19 == 0)
-                { previous.Kick(2, 1, .16f); current.Kick(2, 1, .16f, true, accepted); }
-                float input = frame % 7 == 0 ? .03f : 0;
-                previous.Apply(ref oldPitch, input, dt); current.Apply(ref look, new float2(0, input), dt);
-                oldPitch += input; look.y += input;
-                Check(Near(oldPitch, look.y) && look.x == 0, "Red rifle aim response changed at " + dt);
-            }
-        }
+            "Red rifle mechanics changed");
+        Check(library.ForWeapon(DollSingerWeapons.Halo).RecoilPitch >= HaloRecoilResponse.KickDegrees(DollSingerWeapons.Halo) * 2,
+            "Red rifle did not get the stronger shot response");
 
         float priorKick = 0;
         foreach (uint id in new uint[] { 3, 4, 5 })
         {
             var profile = library.ForWeapon(id); var weapon = registry.GetWeaponData(id);
             Check(!weapon.Automatic && weapon.MagazineSize == (id == 3 ? 6 : id == 4 ? 4 : 5), "Existing weapon type/capacity changed " + id);
-            Check(profile.RecoilPitch > priorKick && profile.RecoilReturnFraction > 0 && profile.RecoilReturnFraction < 1,
-                "Revolver, shotgun and precision responses are not distinct"); priorKick = profile.RecoilPitch;
-            Check(profile.FireBody && profile.FireTail && profile.FireBody.Clips.Count == 3 && profile.FireTail.Clips.Count == 1,
-                "Missing reports/variants " + id);
-            foreach (var bank in new[] { profile.FireBody, profile.FireTail })
-            foreach (var clip in bank.Clips)
-            {
-                var importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(clip));
-                using (var serialized = new SerializedObject(importer))
-                    Check(serialized.FindProperty("m_Normalize")?.boolValue == false,
-                        "Import normalization would change the authored layer mix " + clip.name);
-                var samples = new float[clip.samples * clip.channels];
-                Check(clip.GetData(samples, 0), "Cannot read imported PCM " + clip.name);
-                float peak = 0; foreach (float sample in samples) peak = Mathf.Max(peak, Mathf.Abs(sample));
-                Check(Mathf.Abs(peak - (bank == profile.FireBody ? .86f : .62f)) < .002f,
-                    "Imported layer gain differs from the generated recording " + clip.name);
-            }
-            float headroom = Mathf.Pow(10, profile.FireBody.PitchAndVolumeInfo.VolumeMax / 20) +
-                .85f * Mathf.Pow(10, profile.FireTail.PitchAndVolumeInfo.VolumeMax / 20);
-            Check(headroom < .8f, "Shot layers exhaust mix headroom " + id);
+            Check(profile.RecoilPitch > priorKick, "Revolver, shotgun and precision responses are not distinct");
+            priorKick = profile.RecoilPitch;
+        }
+
+        for (uint id = 2; id <= 14; id++)
+        {
+            var profile = library.ForWeapon(id);
+            var weapon = registry.GetWeaponData(id);
+            Check(profile.RecoilPitch > HaloRecoilResponse.KickDegrees(id) &&
+                profile.RecoilReturnFraction > 0 && profile.RecoilReturnFraction < 1, "Missing recovery tuning " + id);
             foreach (float zoom in new[] { 1f, 6f })
             foreach (float dt in new[] { 1f / 30, 1f / 60, 1f / 144 })
             {
@@ -90,6 +65,6 @@ public static class MoonkovWeaponCharacterChecks
             Check(Near(DollSingerBakedGestures.ShotSampleTime(timing.y, timing.x, timing.y), timing.x), "Recovery did not reach the authored rest pose");
             Check(Near(DollSingerBakedGestures.ShotSampleTime(.13f, timing.x, 0), .13f), "Default gesture timing changed");
         }
-        return "PASS " + s_Checks + " weapon character, aim correction, gesture timing and red rifle protection checks";
+        return "PASS " + s_Checks + " checks for 13 recoil profiles, aim correction, gesture timing and weapon mechanics";
     }
 }
