@@ -16,127 +16,137 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: a69c9372e952ad04d9ed096ac2b369d7
   m_Entries:
   - m_Id: 1960680437654903865
-    m_Key: "WEAPONS"
+    m_Key: WEAPONS
     m_Metadata:
       m_Items: []
   - m_Id: 3651084985842741300
-    m_Key: "MODULES"
+    m_Key: MODULES
     m_Metadata:
       m_Items: []
   - m_Id: 8843005069518663594
-    m_Key: "FREE"
+    m_Key: FREE
     m_Metadata:
       m_Items: []
   - m_Id: 2697414463538498625
-    m_Key: "{0} DUST"
+    m_Key: '{0} DUST'
     m_Metadata:
       m_Items: []
   - m_Id: 6998400153559778892
-    m_Key: "CLAIM FREE SUPPLY"
+    m_Key: CLAIM FREE SUPPLY
     m_Metadata:
       m_Items: []
   - m_Id: 3400536231777273841
-    m_Key: "No matching supplies."
+    m_Key: No matching supplies.
     m_Metadata:
       m_Items: []
   - m_Id: 8455071727572875977
-    m_Key: "INSUFFICIENT MOON DUST"
+    m_Key: INSUFFICIENT MOON DUST
     m_Metadata:
       m_Items: []
   - m_Id: 8073912189698713078
-    m_Key: "\u00d7 {0}"
+    m_Key: "\xD7 {0}"
     m_Metadata:
       m_Items: []
   - m_Id: 4381285036482194973
-    m_Key: "Energy weapon for sustained fire. Uses shared halo energy, which recovers after firing stops."
+    m_Key: Energy weapon for sustained fire. Uses shared halo energy, which recovers
+      after firing stops.
     m_Metadata:
       m_Items: []
   - m_Id: 324546037687662782
-    m_Key: "Revolver halo with strong individual shots. Uses the same energy pool as your other halos."
+    m_Key: Revolver halo with strong individual shots. Uses the same energy pool
+      as your other halos.
     m_Metadata:
       m_Items: []
   - m_Id: 1786305602107089202
-    m_Key: "Fires several pellets per shot for close-range combat. Total damage depends on how many pellets hit."
+    m_Key: Fires several pellets per shot for close-range combat. Total damage depends
+      on how many pellets hit.
     m_Metadata:
       m_Items: []
   - m_Id: 1942762119095226963
-    m_Key: "Precision halo for aimed fire at distant targets. Uses shared halo energy."
+    m_Key: Precision halo for aimed fire at distant targets. Uses shared halo energy.
     m_Metadata:
       m_Items: []
   - m_Id: 2363673862440023973
-    m_Key: "Fires a short burst with each trigger press. Each round spends shared halo energy."
+    m_Key: Fires a short burst with each trigger press. Each round spends shared
+      halo energy.
     m_Metadata:
       m_Items: []
   - m_Id: 7035938950564307084
-    m_Key: "Launches explosive projectiles that damage targets around the impact. Uses shared halo energy."
+    m_Key: Launches explosive projectiles that damage targets around the impact.
+      Uses shared halo energy.
     m_Metadata:
       m_Items: []
   - m_Id: 4419882054697928228
-    m_Key: "Field food that restores energy and fullness. Keep drinking water nearby."
+    m_Key: Field food that restores energy and fullness. Keep drinking water nearby.
     m_Metadata:
       m_Items: []
   - m_Id: 404611389229118539
-    m_Key: "Refills the life-support collar. Use from pockets or an equipped rig; excess oxygen is lost."
+    m_Key: Refills the life-support collar. Use from pockets or an equipped rig;
+      excess oxygen is lost.
     m_Metadata:
       m_Items: []
   - m_Id: 3776034184766986014
-    m_Key: "Protects its contents after death or timeout when equipped. Supplies must be moved to pockets or a rig before use. Weapons, worn gear and mission outputs cannot be stored inside."
+    m_Key: Protects its contents after death or timeout when equipped. Supplies must
+      be moved to pockets or a rig before use. Weapons, worn gear and mission outputs
+      cannot be stored inside.
     m_Metadata:
       m_Items: []
   - m_Id: 8245630299633593916
-    m_Key: "Carries extra loot and supplies. Move medical items, food and cells into pockets or an equipped rig before using them."
+    m_Key: Carries extra loot and supplies. Move medical items, food and cells into
+      pockets or an equipped rig before using them.
     m_Metadata:
       m_Items: []
   - m_Id: 8537718928290244441
-    m_Key: "Chest-mounted storage. Medical supplies, food, grenades and cells inside remain directly accessible."
+    m_Key: Chest-mounted storage. Medical supplies, food, grenades and cells inside
+      remain directly accessible.
     m_Metadata:
       m_Items: []
   - m_Id: 443644616408898108
-    m_Key: "Used to buy supplies and fund halo research at the supplier."
+    m_Key: Used to buy supplies and fund halo research at the supplier.
     m_Metadata:
       m_Items: []
   - m_Id: 7021917314398656094
-    m_Key: "Material for halo research and fabrication. Can also be sold to the supplier."
+    m_Key: Material for halo research and fabrication. Can also be sold to the supplier.
     m_Metadata:
       m_Items: []
   - m_Id: 324593218587204434
-    m_Key: "DAMAGE PER SHOT"
+    m_Key: DAMAGE PER SHOT
     m_Metadata:
       m_Items: []
   - m_Id: 2599071591148609780
-    m_Key: "SHOT INTERVAL"
+    m_Key: SHOT INTERVAL
     m_Metadata:
       m_Items: []
   - m_Id: 7015755670951112884
-    m_Key: "PROJECTILE SPEED"
+    m_Key: PROJECTILE SPEED
     m_Metadata:
       m_Items: []
   - m_Id: 94825695614416
-    m_Key: "BLAST RADIUS"
+    m_Key: BLAST RADIUS
     m_Metadata:
       m_Items: []
   - m_Id: 8753459121695392509
-    m_Key: "DAMAGE FALLOFF"
+    m_Key: DAMAGE FALLOFF
     m_Metadata:
       m_Items: []
   - m_Id: 3009778842696292836
-    m_Key: "No falloff"
+    m_Key: No falloff
     m_Metadata:
       m_Items: []
   - m_Id: 4545135549698769734
-    m_Key: "AIMED SPREAD"
+    m_Key: AIMED SPREAD
     m_Metadata:
       m_Items: []
   - m_Id: 5354698553412171148
-    m_Key: "BURST PAUSE"
+    m_Key: BURST PAUSE
     m_Metadata:
       m_Items: []
   - m_Id: 8759711896313403206
-    m_Key: "SEMI-AUTOMATIC"
+    m_Key: SEMI-AUTOMATIC
     m_Metadata:
       m_Items: []
   - m_Id: 1163323848018666525
-    m_Key: "{0}-ROUND BURST"
+    m_Key: '{0}-ROUND BURST'
     m_Metadata:
       m_Items: []
   - m_Id: 2838245376
@@ -6468,7 +6478,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11007993465266180
-    m_Key: "Recharges up to 100 halo energy after a charging action. Keep batteries in pockets or an equipped badge. Unused charge is retained."
+    m_Key: Recharges up to 100 halo energy after a charging action. Keep batteries
+      in pockets or an equipped badge. Unused charge is retained.
     m_Metadata:
       m_Items: []
   - m_Id: 11303761623375872
@@ -6526,11 +6537,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2924982897995778044
-    m_Key: "Hold {0} to stop bleeding"
+    m_Key: Hold {0} to stop bleeding
     m_Metadata:
       m_Items: []
   - m_Id: 7811359011746168583
-    m_Key: "Hold T to defend. Press U to deploy halo."
+    m_Key: Hold T to defend. Press U to deploy halo.
     m_Metadata:
       m_Items: []
   - m_Id: 11362953679613952

@@ -1,12 +1,12 @@
+using System;
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
-public struct PlayerInput
-{
-    public enum InputFlag
-    {
+public struct PlayerInput {
+    [Flags]
+    public enum InputFlag {
         Jump = 1 << 0,
         Shoot = 1 << 1,
         Sprint = 1 << 2,
@@ -32,25 +32,27 @@ public struct PlayerInput
 
     public float2 MoveInput;
     public float2 LookYawPitchDegrees;
+
     // Head-only angles relative to the normal view; locomotion and weapons keep their base facing.
     public float2 FreeLookOffset;
     public float Lean;
     public bool FreeLooking;
+
     // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
     public float3 AimPoint;
+
     // Ghost identity includes its spawn tick so a recycled id cannot change the recipient.
     public int HaloTransferGhostId;
     public uint HaloTransferSpawnTick;
-
     public uint HaloLightingSettings;
     public uint InputFlags;
 
-    public DollSingerStance Stance => (InputFlags & (uint)InputFlag.Prone) != 0 ? DollSingerStance.Prone :
+    public DollSingerStance Stance =>
+        (InputFlags & (uint)InputFlag.Prone) != 0 ? DollSingerStance.Prone :
         (InputFlags & (uint)InputFlag.Crouch) != 0 ? DollSingerStance.Crouching :
         (InputFlags & (uint)InputFlag.Tiptoe) != 0 ? DollSingerStance.Tiptoe : DollSingerStance.Standing;
 
-    public void SetStance(DollSingerStance stance)
-    {
+    public void SetStance(DollSingerStance stance) {
         SetFlag(InputFlag.Crouch, stance == DollSingerStance.Crouching);
         SetFlag(InputFlag.Prone, stance == DollSingerStance.Prone);
         SetFlag(InputFlag.Tiptoe, stance == DollSingerStance.Tiptoe);
@@ -75,52 +77,43 @@ public struct PlayerInput
     public bool EquipPistol => (InputFlags & (uint)InputFlag.EquipPistol) != 0;
     public bool HaloLightEnabled => (InputFlags & (uint)InputFlag.HaloLightDisabled) == 0;
 
-    public void SetFlag(InputFlag flag, bool set)
-    {
-        if (set)
-        {
-            InputFlags |= (uint)flag;
-        }
-        else
-        {
-            InputFlags &= ~(uint)flag;
-        }
+    public void SetFlag(InputFlag flag, bool set) {
+        if (set) { InputFlags |= (uint)flag; } else { InputFlags &= ~(uint)flag; }
     }
 
     // Apply the same numeric contract to client prediction and server simulation.
     // Command payloads are player intent, never trusted movement or shot state.
-    public PlayerInput Sanitized()
-    {
+    public PlayerInput Sanitized() {
         var result = this;
-        const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
-            InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
-            InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe |
-            InputFlag.FireHeld | InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer | InputFlag.HaloGuard |
-            InputFlag.HaloAnchor | InputFlag.HaloMode | InputFlag.HaloScan);
-        result.InputFlags &= knownFlags;
+        const uint k_KnownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
+                                       InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo |
+                                       InputFlag.EquipRevolver | InputFlag.EquipPistol | InputFlag.HaloLightDisabled |
+                                       InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe | InputFlag.FireHeld |
+                                       InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer |
+                                       InputFlag.HaloGuard | InputFlag.HaloAnchor | InputFlag.HaloMode |
+                                       InputFlag.HaloScan);
+        result.InputFlags &= k_KnownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
         float moveLengthSq = math.lengthsq(result.MoveInput);
         if (moveLengthSq > 1f) result.MoveInput *= math.rsqrt(moveLengthSq);
-        if (math.all(math.isfinite(LookYawPitchDegrees)))
-        {
+        if (math.all(math.isfinite(LookYawPitchDegrees))) {
             result.LookYawPitchDegrees.x = math.fmod(LookYawPitchDegrees.x, 360f);
             result.LookYawPitchDegrees.y = math.clamp(LookYawPitchDegrees.y, -85f, 85f);
-        }
-        else
-        {
+        } else {
             result.LookYawPitchDegrees = float2.zero;
             result.MoveInput = float2.zero;
             result.SetFlag(InputFlag.Shoot, false);
             result.SetFlag(InputFlag.FireSuppressed, true);
         }
         result.FreeLookOffset = math.all(math.isfinite(FreeLookOffset))
-            ? math.clamp(FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f)) : float2.zero;
+            ? math.clamp(FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f))
+            : float2.zero;
         result.Lean = math.isfinite(Lean) ? math.clamp(Lean, -1f, 1f) : 0f;
         result.AimPoint = math.all(math.isfinite(AimPoint)) && math.isfinite(math.lengthsq(AimPoint))
-            ? AimPoint : float3.zero;
-        if (result.FireSuppressed)
-        {
+            ? AimPoint
+            : float3.zero;
+        if (result.FireSuppressed) {
             result.SetFlag(InputFlag.Shoot, false);
             result.SetFlag(InputFlag.FireHeld, false);
             result.SetFlag(InputFlag.HaloTransfer, false);
@@ -129,34 +122,35 @@ public struct PlayerInput
         return result;
     }
 
-    private void ApplyTransferIntent()
-    {
-        if (FreeLooking || FireSuppressed)
-        { SetFlag(InputFlag.HaloAnchor, false); SetFlag(InputFlag.HaloMode, false); SetFlag(InputFlag.HaloScan, false); }
+    private void ApplyTransferIntent() {
+        if (FreeLooking || FireSuppressed) {
+            SetFlag(InputFlag.HaloAnchor, false);
+            SetFlag(InputFlag.HaloMode, false);
+            SetFlag(InputFlag.HaloScan, false);
+        }
         if (HaloAnchor || HaloMode)
-            InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload | InputFlag.HaloDefense |
-                InputFlag.HaloTransfer | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
+            InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload |
+                                  InputFlag.HaloDefense | InputFlag.HaloTransfer | InputFlag.EquipHalo |
+                                  InputFlag.EquipRevolver | InputFlag.EquipPistol);
         if (FreeLooking || FireSuppressed) SetFlag(InputFlag.HaloTransfer, false);
-        if (!HaloTransfer)
-        {
+        if (!HaloTransfer) {
             SetFlag(InputFlag.HaloGuard, false);
             HaloTransferGhostId = 0;
             HaloTransferSpawnTick = 0;
             return;
         }
         InputFlags &= ~(uint)(InputFlag.Shoot | InputFlag.FireHeld | InputFlag.Aim | InputFlag.Reload |
-            InputFlag.HaloDefense | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
+                              InputFlag.HaloDefense | InputFlag.EquipHalo | InputFlag.EquipRevolver |
+                              InputFlag.EquipPistol);
     }
 
-    public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true)
-    {
+    public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true) {
         bool hadBufferedShot = Shoot;
         float3 bufferedAimPoint = AimPoint;
         float2 bufferedLook = LookYawPitchDegrees;
         float bufferedLean = Lean;
         bool bufferedThirdPerson = ThirdPerson;
-        if (updateContinuousState)
-        {
+        if (updateContinuousState) {
             HaloLightingSettings = input.HaloLightingSettings;
             MoveInput = input.MoveInput;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
@@ -166,27 +160,25 @@ public struct PlayerInput
             AimPoint = input.AimPoint;
             HaloTransferGhostId = input.HaloTransferGhostId;
             HaloTransferSpawnTick = input.HaloTransferSpawnTick;
-            const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
+            const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo |
+                                       InputFlag.EquipRevolver | InputFlag.EquipPistol);
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
         // Preserve the target belonging to a buffered single-shot press.
-        if (input.Shoot && !HaloTransfer)
-        {
+        if (input.Shoot && !HaloTransfer) {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
             Lean = input.Lean;
             SetFlag(InputFlag.ThirdPerson, input.ThirdPerson);
-        }
-        else if (hadBufferedShot && !HaloTransfer)
-        {
+        } else if (hadBufferedShot && !HaloTransfer) {
             AimPoint = bufferedAimPoint;
             LookYawPitchDegrees = bufferedLook;
             Lean = bufferedLean;
             SetFlag(InputFlag.ThirdPerson, bufferedThirdPerson);
         }
-        InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
-        if (FireSuppressed)
-        {
+        InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload |
+                                                InputFlag.EquipHalo | InputFlag.EquipRevolver | InputFlag.EquipPistol);
+        if (FireSuppressed) {
             SetFlag(InputFlag.Shoot, false);
             SetFlag(InputFlag.FireHeld, false);
         }
@@ -194,72 +186,47 @@ public struct PlayerInput
     }
 }
 
-public struct PlayerInputComponent : IComponentData
-{
+public struct PlayerInputComponent : IComponentData {
     public PlayerInput Input;
 }
 
-public struct PlayerClientCommandInputLookup : IComponentData
-{
+public struct PlayerClientCommandInputLookup : IComponentData {
     public Entity ClientCommandInputEntity;
 }
 
-public struct ClientInput : IComponentData
-{
+public struct ClientInput : IComponentData {
     public PlayerInput PlayerInput;
-
-    public void SetInput(int playerIndex, in PlayerInput playerInput)
-    {
-        PlayerInput = playerInput.Sanitized();
-    }
+    public void SetInput(int playerIndex, in PlayerInput playerInput) { PlayerInput = playerInput.Sanitized(); }
 }
 
-public struct ClientMovementInput : IComponentData
-{
+public struct ClientMovementInput : IComponentData {
     public PlayerInput PlayerInput;
+    public void SetInput(int playerIndex, in PlayerInput playerInput) { PlayerInput = playerInput.Sanitized(); }
 
-    public void SetInput(int playerIndex, in PlayerInput playerInput)
-    {
-        PlayerInput = playerInput.Sanitized();
-    }
-
-    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true)
-    {
+    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true) {
         PlayerInput.UpdateFrom(clientInput.PlayerInput, updateContinuousState);
     }
 }
 
-public struct ClientCommandInput : ICommandData
-{
+public struct ClientCommandInput : ICommandData {
     public NetworkTick Tick { get; set; }
-
     public NetworkTick ClientInterpolationTick;
-
     public PlayerInput PlayerInput;
 
-    public void SetPlayerMovementInput(int playerIndex, in PlayerInput playerInput)
-    {
+    public void SetPlayerMovementInput(int playerIndex, in PlayerInput playerInput) {
         PlayerInput = playerInput.Sanitized();
     }
 
-    public void UpdatePlayerInput(int playerIndex, in PlayerInput playerInput)
-    {
-        PlayerInput.UpdateFrom(playerInput);
-    }
+    public void UpdatePlayerInput(int playerIndex, in PlayerInput playerInput) { PlayerInput.UpdateFrom(playerInput); }
 
-    public bool TryGetPlayerMovementInput(int playerIndex, out PlayerInput playerInput)
-    {
+    public bool TryGetPlayerMovementInput(int playerIndex, out PlayerInput playerInput) {
         playerInput = PlayerInput.Sanitized();
         return true;
     }
 
-    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true)
-    {
+    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true) {
         PlayerInput.UpdateFrom(clientInput.PlayerInput, updateContinuousState);
     }
 
-    public void SetFrom(in ClientMovementInput clientInput)
-    {
-        PlayerInput = clientInput.PlayerInput.Sanitized();
-    }
+    public void SetFrom(in ClientMovementInput clientInput) { PlayerInput = clientInput.PlayerInput.Sanitized(); }
 }

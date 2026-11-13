@@ -80,6 +80,8 @@ Assets/Starter Assets/Sample/FirstPersonController/Playground/LightingData.asset
 Assets/Starter Assets/Sample/ThirdPersonController/Playground/LightingData.asset
 Assets/UnityTechnologies/ParticlePack/Scenes/Main Scene with Legacy Particles/LightingData.asset
 ProjectSettings/lilToonSetting.json
+Assets/Localization/Fonts/NotoSansCJKsc.asset
+Assets/Localization/Tables/MoonkovUI Shared Data.asset
 
 # Local imports of the CS2 Dust II map
 /Assets/LocalMaps/
