@@ -4,8 +4,8 @@
 
 - 旧客户端压缩包 `Moonkov20261024_2.zip`、`Moonkov20261024.tar.zst` 和旧服务端压缩包 `MoonServer.zip` 已从 `Build` 移到 `D:/MoonkovBuilds/Closeout-20261115`。移动前后逐个核对了 SHA-256。
 - 原始 Blender 文件已搬回 `LocalData/OriginalSources/Moonkov_WH01_HU01_LR06_SR01_L23_Removed_Components_CANDIDATE.blend`。该目录由 Git 忽略。
-- Git LFS 已搬回 E 盘的 `.git/lfs` 实体目录。当前提交通过对象校验。D 盘的旧副本和 `.git/lfs-previous-junction-20261115` 是迁移遗留。
-- `D:/MoonkovBakeArchive` 仍待清理。两套 V11/L14 烘焙目录的旧联接指向这里。
+- Git LFS 位于 E 盘的 `.git/lfs` 实体目录。已裁剪 1666 个在 `origin` 核实有副本的历史对象。余下 901 个待裁剪对象未在远端找到，保留本地副本。
+- 用户已清理 D 盘旧 LFS 副本、`D:/MoonkovBakeArchive` 和 Unity `Library`。两套 V11/L14 烘焙目录的旧联接已失效。GL125 原始交付包保留在 E 盘的下载目录。
 - `Assets/LocalMaps/Dust2` 是被 Git 忽略的本地地图。备份或迁移时带上整个目录和对应的 `.meta` 文件。保留分支、stash 和本地工作树，远程 `develop` 只包含已推送的提交。
 
 ## 标准远征 PMC 小队（2026-11-12）
