@@ -1,5 +1,12 @@
 # 项目交接
 
+## 结项归档（2026-11-15）
+
+- 旧客户端压缩包 `Moonkov20261024_2.zip`、`Moonkov20261024.tar.zst` 和旧服务端压缩包 `MoonServer.zip` 已从 `Build` 移到 `D:/MoonkovBuilds/Closeout-20261115`。移动前后逐个核对了 SHA-256。
+- 旧地图中间件在 `D:/MoonkovBakeArchive/LegacyWorld_20261030`。原路径继续用于查找归档。
+- `.git/lfs` 通过 NTFS Junction 指向 `D:/GitLfsStorage/FPS_Template/lfs`。整机迁移时保留该对象库，并重建 Junction。两套 V11/L14 烘焙目录也通过 Junction 指向 D 盘，见下文。
+- `Assets/LocalMaps/Dust2` 是被 Git 忽略的本地地图。备份或迁移时带上整个目录和对应的 `.meta` 文件。保留分支、stash 和本地工作树，远程 `develop` 只包含已推送的提交。
+
 ## 标准远征 PMC 小队（2026-11-12）
 
 - 敌方 PMC 在出生前固定编成 2–3 人小队。队长带队找补给和撤离点。队员走侧后方，距离过远时会归队。开火时有人压住枪线，队友才会换角度。
