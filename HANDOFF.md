@@ -3,8 +3,9 @@
 ## 结项归档（2026-11-15）
 
 - 旧客户端压缩包 `Moonkov20261024_2.zip`、`Moonkov20261024.tar.zst` 和旧服务端压缩包 `MoonServer.zip` 已从 `Build` 移到 `D:/MoonkovBuilds/Closeout-20261115`。移动前后逐个核对了 SHA-256。
-- 旧地图中间件在 `D:/MoonkovBakeArchive/LegacyWorld_20261030`。原路径继续用于查找归档。
-- `.git/lfs` 通过 NTFS Junction 指向 `D:/GitLfsStorage/FPS_Template/lfs`。整机迁移时保留该对象库，并重建 Junction。两套 V11/L14 烘焙目录也通过 Junction 指向 D 盘，见下文。
+- 原始 Blender 文件已搬回 `LocalData/OriginalSources/Moonkov_WH01_HU01_LR06_SR01_L23_Removed_Components_CANDIDATE.blend`。该目录由 Git 忽略。
+- Git LFS 已搬回 E 盘的 `.git/lfs` 实体目录。当前提交通过对象校验。D 盘的旧副本和 `.git/lfs-previous-junction-20261115` 是迁移遗留。
+- `D:/MoonkovBakeArchive` 仍待清理。两套 V11/L14 烘焙目录的旧联接指向这里。
 - `Assets/LocalMaps/Dust2` 是被 Git 忽略的本地地图。备份或迁移时带上整个目录和对应的 `.meta` 文件。保留分支、stash 和本地工作树，远程 `develop` 只包含已推送的提交。
 
 ## 标准远征 PMC 小队（2026-11-12）
@@ -615,7 +616,7 @@
 
 - 新版整图已装入正式 `TheophilusGameScene`。保存后重新打开场景，安装检查通过：3359 几何块、4454864 三角形、386 材质、30 光照图集、458 反射、7227 角色 SH 探针、16126 碰撞体。任务站五个锚点和五个设备引用完整。一次隔离离线局已用真实 KCC 输入走过出生点、入口、楼梯、两处配电站位、取样机，并沿楼梯返回室外。运行时 30 lightmaps 和 7227 SH 探针生效。返回途中计时结束，未验收完整撤离结算。四段到达站位后至下一行走指令的间隔合计 301.3 秒，本轮同时进行了诊断和文件操作，足以证明显著耗时，但不能证明是唯一原因。无迷路确证，本轮无 Movement stalled 记录；返回末段采样不完整，末段物理阻挡情况未知。不重跑同等路线。已有证据索引见 `LocalData/SourceFidelity20261028/World/MapHandoffReceipt.json`；本轮无新版整图运行截图，旧单面预览及 10 月 19 日战局图不能作为新版画面验收。
 - `AssetImport.state.json` 已为 phase6、running=false、error 空。不要重烘、重发布、复位或重导入。大光照子资源保存后可能替换托管对象，旧引用会显示空字段；正式安装器保存后重新打开已保存场景，再校验持久引用，避免把旧托管包装误判成丢失产物。
-- 用户已授权磁盘不足时自行清理。当前两个 Stage 已迁到 `D:/MoonkovBakeArchive/` 同名目录，E 原路径为 NTFS Junction。`.git/lfs` 已迁到 `D:/GitLfsStorage/FPS_Template/lfs`，E 原路径同样为 Junction，迁前迁后均为 41323321921 字节。Git LFS 配置、跟踪规则、源文件、产物和断点保留；不删 Library。E 盘恢复约 38.9 GiB。旧 World 缓存和传输 ZIP 的归档位置见 `LocalData/SourceFidelity20261028/DiskRecoveryArchive.json`。
+- 2026-10-30 为释放 E 盘空间，两个 Stage 和 LFS 对象库曾移到 D 盘。LFS 已在结项时搬回 E 盘。旧 World 缓存、传输包和 Stage 的迁移记录见 `LocalData/SourceFidelity20261028/DiskRecoveryArchive.json`。
 - Unity 原生磁盘警告或保存失败框会阻塞主线程，状态仍可能显示 running。先核磁盘及确切原生弹窗；空间恢复后，只确认对应的 OK 或 Try Again。不要无限重复 MCP/CLI，不用鼠标，不强杀共享 Editor。
 
 - 2026-10-30 用户明确继续。已恢复原 `run_full_lighting_integration.py`，自动唤醒为 ACTIVE。恢复起点为 atlas0–15 完成、atlas16 的 0–3 块完成，共 4/16。原 AO、材质解析、完整几何、`TileExecutionPolicy.json` 和 helper 均保留，按原哈希跳过完成项。新启动日志为 `V11L14IntegrationStage/FullLightingResume.log` 与 `.stderr.log`；实际状态仍看 `FullLightingQueue.json`。历史游戏暂停快照 `GamingPauseCheckpoint.json` 只供追溯，不代表当前仍暂停。该句为恢复时快照；当前安装状态见本节首条。
