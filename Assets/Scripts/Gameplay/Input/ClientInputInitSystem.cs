@@ -1,3 +1,4 @@
+// 客户端连接有 NetworkId 后，找到分配给自己的输入 Ghost，为它建指令缓冲并注册成 CommandTarget。输入对象销毁时重新找。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

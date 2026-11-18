@@ -1,3 +1,4 @@
+// Unity Multiplayer Services 通知 Session 网络配置后，由这个回调安装 EntityDriverConstructor。GameConnection 通过任务等它给出监听点和连接点，再创建 ECS World。
 using System.Threading.Tasks;
 using Unity.NetCode;
 using Unity.Networking.Transport;

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// 按武器编号查基础参数。附带配件掩码时生成运行时副本，把扩容、聚焦镜、研究和食物效果叠进去。
+// 编号和掩码相同的角色复用同一份副本，基础资产不会跟着某个角色的改装改变。
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
@@ -16,6 +18,7 @@ namespace Unity.MP_FPS
             // Attachments use the rifle/shotgun slots; biological research and
             // temporary organ buffs affect every halo. Cache runtime-only copies.
             if (original == null || modules == 0 || !DollSingerWeapons.IsHalo(weaponID)) return original;
+            // 缓存键的高位存武器编号，低 16 位存配件和效果。不同武器或不同配件组合对应各自的运行时参数。
             ulong key = ((ulong)weaponID << 16) | modules;
             if (m_ModuleVariants.TryGetValue(key, out var cached)) return cached;
             var variant = Instantiate(original);

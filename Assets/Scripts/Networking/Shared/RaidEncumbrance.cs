@@ -1,3 +1,4 @@
+// 把背包重量换成移动、冲刺消耗和恢复倍率。角色移动和体力计算都用这套规则，所以背包变重会反映到走跑节奏。
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 

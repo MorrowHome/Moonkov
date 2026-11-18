@@ -1,3 +1,4 @@
+// 每帧最先清掉上一帧留下的 IsHit。新的伤害仍可在这一帧立刻置位，让受击动画知道发生了新事件。
 using Unity.Entities;
 
 namespace Unity.MP_FPS

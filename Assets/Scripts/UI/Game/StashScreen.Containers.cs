@@ -1,3 +1,4 @@
+// 正式仓库的库存接线处。它从 PlayerProfileClient 读库存并接收改动通知，把格子操作发给同一客户端。战局未结束时，仓库显示为只读。
 using System;
 using System.Threading;
 using System.Linq;
@@ -108,6 +109,7 @@ namespace Unity.MP_FPS.Client
             if (m_Preview) { var error=m_PreviewInventory.TryApply(command); m_Containers.Present(m_PreviewInventory,error==InventoryError.None ? null : "Move blocked: "+error); return; }
             try
             {
+                // 菜单可以先显示排队操作的本地结果，让拖放立即有反馈。网络回执后来校正库存，期间可看待同步状态。
                 var confirmation = PlayerProfileClient.QueueMenuMoveAsync(command);
                 // Acknowledge the local gesture now; later receipts only reconcile state.
                 m_Containers.Present(PlayerProfileClient.MenuInventory);
@@ -134,6 +136,7 @@ namespace Unity.MP_FPS.Client
         {
             if(m_RecoveryBusy || PlayerProfileClient.MenuInventoryPending > 0 || m_Preview || PlayerProfileClient.RaidActive || PlayerProfileClient.Inventory==null || PlayerProfileClient.Recovery==null)return;
             m_RecoveryBusy=true;m_RecoveryPanel.SetEnabled(false);
+            // 领取撤离物资同时带上仓库和待领箱的版本。服务端以这两份状态检查还能装下多少。
             var request=new RecoveryClaim {RequestId=Guid.NewGuid().ToString("D"),ItemId=itemId,
                 ExpectedVersion=PlayerProfileClient.Inventory.Version,ExpectedRecoveryVersion=PlayerProfileClient.Recovery.Version};
             try

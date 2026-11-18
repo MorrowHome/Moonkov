@@ -1,3 +1,4 @@
+// 区分背包布局和背包数值。LayoutKey 看物品编号、父容器和落位。位置没变时沿用现有格子，直接刷新数量、电量、重量和悬浮信息。
 using System;
 using System.Linq;
 using System.Text;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿// 通用玩法的记分板。打开时从 LeaderboardManager 取名单，先按击杀数排，再以死亡数打破平分。经典爆破有自己的分队记分板。
+using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Entities;
 using Unity.NetCode;

@@ -1,3 +1,4 @@
+// 背包的健康页。从角色快照和可用物品数更新人体图、氧气与治疗按钮。点按钮把治疗部位或使用的补给交给 RaidHUD。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

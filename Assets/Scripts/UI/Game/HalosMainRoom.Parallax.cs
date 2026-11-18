@@ -1,3 +1,4 @@
+// 船舱背景随鼠标做轻微位移。这里跟随一个平滑的目标偏移，并给各图层不同位移量，形成前后层次。
 using UnityEngine;
 using UnityEngine.UIElements;
 

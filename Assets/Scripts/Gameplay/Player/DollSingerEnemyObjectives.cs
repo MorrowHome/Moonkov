@@ -1,3 +1,5 @@
+// 管理普通远征 AI 的搜刮和撤离目标。找能到、能看到的容器，完成搜索后按需求和容量挑物资，也会判断有无安全路线离场。
+// 拿取物品走与玩家相同的库存版本事务。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -226,6 +228,7 @@ namespace Unity.MP_FPS
             return PmcLocalExitRules.Observed(scene, position, m_LocalExitObservers);
         }
 
+        // 选定的物资箱走不通或操作中断时收掉这次搜索，让下一轮决策重新选目标。
         private static void AbandonCache(DollSingerEnemyBrain brain)
         {
             if (brain.Cache < 0) return;

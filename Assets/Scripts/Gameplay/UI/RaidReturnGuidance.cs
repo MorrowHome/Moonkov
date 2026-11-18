@@ -1,3 +1,4 @@
+// 按战局剩余时间提醒玩家回撤离点。错过早期提醒时，只显示当前更紧急的一条。能否撤离仍由服务器进度决定。
 namespace Unity.MP_FPS
 {
     // Presentation only. Server snapshots remain the authority for expiry and extraction.

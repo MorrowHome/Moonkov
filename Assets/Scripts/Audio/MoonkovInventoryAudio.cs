@@ -1,3 +1,4 @@
+// 背包在发出挪动命令之前先选好音效。用物品种类区分布料、金属等质感，进出装备槽还有专用声，成功时由回执处理方播放。
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS

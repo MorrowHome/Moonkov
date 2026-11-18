@@ -1,3 +1,4 @@
+// 给小队预览舞台搭观察舱。窗口轮廓、墙面、甲板和灯光在这边生成。预览关闭时集中释放生成的网格和材质。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;

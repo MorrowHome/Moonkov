@@ -1,3 +1,5 @@
+// 地图的异形刷新配置。每个槽位记录物种、预制体和候选位置，可设成贴顶伏击。
+// AlienEnemySpawnSystem 根据当前人数、时间和地图条件挑选槽位，遵守总数和单次刷新限制。
 using System;
 using UnityEngine;
 

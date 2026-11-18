@@ -1,3 +1,4 @@
+// 把效果、音乐和菜单等分组接到 Unity AudioMixer，并更新各分组的音量。业务层的音量设置从 MoonkovAudio 传进来。
 using UnityEngine;
 using UnityEngine.Audio;
 

@@ -1,3 +1,4 @@
+// 局内角落的 FPS、延迟、丢包与连接方式。FPS 用真实渲染帧数，网络读数来自正在使用的客户端连接。
 using System.Globalization;
 using Unity.Entities;
 using Unity.NetCode;
@@ -95,6 +96,7 @@ namespace Unity.MP_FPS
                 ResetTelemetryPackets();
                 return;
             }
+            // 重连会换连接实体。清掉上次的包计数和时间，再开始统计这条连接。
             if (entity != m_TelemetryConnectionEntity)
             {
                 ResetTelemetryPackets();
@@ -112,6 +114,7 @@ namespace Unity.MP_FPS
             }
             if (packets.NumPacketsReceived == 0) return;
             // A connected transport can stop delivering snapshots before its timeout expires.
+            // 连接可能还没超时，但已经收不到新快照。持续无数据就暂停展示旧延迟和丢包值。
             if (now - m_TelemetryLastPacket > 2)
             {
                 ping = loss = "Waiting for data";
@@ -123,6 +126,7 @@ namespace Unity.MP_FPS
             loss = (packets.NetworkPacketLossPercent * 100).ToString("0.0", CultureInfo.InvariantCulture) + "%";
         }
 
+        // 显示实际连接使用的路径。例如何时直连看当前 IceSession，是否中转看已进入的线上实例。
         private string TelemetryConnectionMethod()
         {
             if (m_TelemetryOffline) return "Single player";

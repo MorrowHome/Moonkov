@@ -1,3 +1,4 @@
+// 给 InputSystemManager 等场景组件提供一个共享实例。Awake 时登记，可选跨场景保留，也支持调用方等实例初始化。
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;

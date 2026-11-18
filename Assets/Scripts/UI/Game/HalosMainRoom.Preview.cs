@@ -1,3 +1,4 @@
+// 处理首页角色和月球的点击预览。普通首页展示和独立预览各用自己的对象，切换时释放暂停使用的预览资源。
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -71,6 +72,7 @@ namespace Unity.MP_FPS.Client
             m_HomeCharacter?.Dispose(); m_HomeCharacter = null;
         }
 
+        // 短暂延迟单击动作，给第二次点击留下判定时间。单击进详情，双击触发首页角色演出。
         private void CharacterClicked(EventBase evt)
         {
             if (evt is not IMouseEvent &&

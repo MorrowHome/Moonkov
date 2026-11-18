@@ -1,3 +1,4 @@
+// 根据防御是否开启、球心、能量和受击位置更新光环球盾的显示。角色自己撑盾和光环支援都可以复用这个表现。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;

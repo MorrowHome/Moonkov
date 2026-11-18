@@ -1,3 +1,4 @@
+// 存主菜单、加载、游戏内和暂停等状态，并通过属性变更通知 UI Toolkit。入局时选的模式和角色也由流程代码从这里读取。
 using System;
 using System.Runtime.CompilerServices;
 using Unity.Properties;

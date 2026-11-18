@@ -1,3 +1,4 @@
+// 客户端的 ECS 表现系统。读取带 MainCamera 组件的实体位姿并写给实际渲染的 GameObject 摄像机。
 using Unity.Entities;
 using Unity.Transforms;
 

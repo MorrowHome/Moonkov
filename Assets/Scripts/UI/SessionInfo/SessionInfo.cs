@@ -1,3 +1,4 @@
+// 会话调试面板。从客户端 World 取网络状态，用 ProfilerRecorder 采集帧时间、内存和绘制等数据。离开面板时释放采集器。
 using System;
 using System.Globalization;
 using System.Text;

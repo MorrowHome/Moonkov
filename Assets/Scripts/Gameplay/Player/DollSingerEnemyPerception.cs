@@ -1,3 +1,5 @@
+// 人形机器人的视线、听觉和危险感知。处理照明、视角、遮挡、暴露部位和声音，再更新每个联系对象的记忆与置信度。
+// AI 刚才看见过、只听过和现在能看到的目标，在后续决策里意义不同。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS
                 float visualGap = (float)(now - contact.LastSeen);
                 bool continuous = contact.HadVisualSample && visualGap > 0 && visualGap <= .25f &&
                     visualGap <= elapsed * 1.5f;
+                // 提前量来自同一个观察者的连续两次目击。视线断开后，估计的速度回到零。
                 // Estimate motion from our own consecutive sightings. The shared target track
                 // also updates behind walls and is not evidence this observer may use.
                 Vector3 observedVelocity = continuous ?

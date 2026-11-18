@@ -1,3 +1,4 @@
+// 决定 Boss 短距离换位时走哪段路。先验证新的侧移路线，再消耗冲刺时间，避免沿原路线误冲或卡进障碍物。
 using UnityEngine;
 
 namespace Unity.MP_FPS

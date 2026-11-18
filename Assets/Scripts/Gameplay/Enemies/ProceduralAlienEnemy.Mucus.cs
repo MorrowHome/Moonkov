@@ -1,3 +1,4 @@
+// 异形喷吐的服务端流程。出招前检查抛物线路径，发射后每步扫过移动区间，命中才写伤害、落点和对应反馈。
 using Unity.Entities;
 using UnityEngine;
 

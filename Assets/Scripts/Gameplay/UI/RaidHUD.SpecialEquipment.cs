@@ -1,3 +1,4 @@
+// 指南针和测距仪的 HUD 读数。先从随身特殊槽检查工具，再用本地角色相机读朝向和准星射线。
 using Unity.Entities;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS
                 for (int n = 0; n < hits; n++)
                     if ((!m_SurveyActor || !m_SurveyHits[n].transform.IsChildOf(m_SurveyActor)) && m_SurveyHits[n].distance < nearest) nearest = m_SurveyHits[n].distance;
                 // A full buffer may omit a closer surface; never present a false precise distance.
+                // 射线结果写进固定数组。数组满时可能还有更近物体没装进去，所以此时只显示遮挡复杂。
                 string distance = hits == m_SurveyHits.Length ? "测距遮挡复杂" : float.IsPositiveInfinity(nearest) ? "测距 >500 m／无实体表面" : "测距 " + nearest.ToString("0.0") + " m";
                 readout += (readout.Length == 0 ? "" : "  /  ") + distance;
             }

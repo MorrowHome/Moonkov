@@ -1,3 +1,4 @@
+// 线上小队页的房间目录和加入申请。它比较前后列表尽量沿用已有行，再把加入、批准和拒绝操作交给大厅流程。
 using System;
 using System.Linq;
 using Unity.MP_FPS.Online;

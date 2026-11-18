@@ -1,3 +1,5 @@
+// 将场景按钮接到 AirlockController。按下先检查距离，有网络世界时发请求等待回执，现场独立运行时直接交给门控。
+// 按钮文字、灯和操作音这里统一刷新。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -42,6 +44,7 @@ namespace Unity.MP_FPS
         {
             AirlockFeedback result;
             if (!InRange(actor)) result = AirlockFeedback.OutOfRange;
+            // 网络局先显示等待。客户端在服务器确认之前不会按照本地判断开门或播放成功音。
             else if (world != null || AirlockNetworkContext.HasNetworkWorlds)
                 result = AirlockNetworkContext.Send(world, this) ? AirlockFeedback.Pending : AirlockFeedback.Unavailable;
             else result = m_Owner.RequestAuthoritative(m_Command);

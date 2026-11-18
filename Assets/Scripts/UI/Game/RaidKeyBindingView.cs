@@ -1,3 +1,4 @@
+// 仓库和暂停设置共用的按键调整列表。进入录入时捕获下一次按键，由 RaidKeyBindings 检查并保存。可以取消录入和恢复默认。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;

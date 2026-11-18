@@ -1,3 +1,4 @@
+// DamageVisualsController 用这份短期记录算屏幕上的受击、血迹和生存提示。受击靠 tick 去重，低血量、饥渴等用平滑值持续表现。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS
             Impact=Mathf.MoveTowards(Impact,0,Mathf.Max(.1f,fadeSpeed)*dt);
             Blood=Mathf.MoveTowards(Blood,0,dt*.15f);
             bool alive=state.CurrentHealth>0 && (!state.ClashEnabled || state.ClashLife==ClashLife.Alive);
+            // 刚开始观察或复活时，以当前快照为起点。此前的掉血数和受击 tick 就不会被当成这条命的新伤。
             bool fresh=!m_Observed || alive&&!m_Alive;
             if(fresh)
             {

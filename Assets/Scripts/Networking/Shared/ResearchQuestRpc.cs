@@ -1,3 +1,4 @@
+// MOONRAT 局内任务的同步数据。客户端用 Hold 消息表达正在操作哪台设备，服务端发本局证据、进度与提示给任务界面。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

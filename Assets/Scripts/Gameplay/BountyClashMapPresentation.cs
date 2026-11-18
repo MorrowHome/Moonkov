@@ -1,3 +1,5 @@
+// 把悬赏场地画成玩家看得见的世界标记，包括区域边界、目标处模型和掉在地上的悬赏物。
+// PresentObjective 接收进度与悬赏物是否可见，点击、拾取和结算由对局逻辑处理。
 using System.Collections.Generic;
 using Unity.MP_FPS.SpiderLab;
 using Unity.MP_FPS.Moon;

@@ -1,3 +1,4 @@
+// 搜刮 HUD 用它给逐件出现的战利品配音。记住已经见过的物品 ID，只给确认快照中新显示的顶层物品排队。
 using System.Collections.Generic;
 using Unity.MP_FPS.Inventory;
 
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS
             if (!m_Listening) return;
             // A fully searched box opens directly. A missed progress snapshot can instead
             // arrive as the server's explicit search-complete receipt.
+            // 开已经搜完的箱子可能直接拿到完整库存。要看到搜索进行过或服务端明确通知搜索完成，才把快照里的新物品算成逐件揭示。
             bool reveal = searching || m_Started || state.ActionFeedback == "搜索完成。";
             if (reveal)
                 foreach (var item in state.Graph.Items)

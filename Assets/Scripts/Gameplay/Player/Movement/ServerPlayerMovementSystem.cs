@@ -1,3 +1,5 @@
+// 服务器处理一拍角色移动和射击的入口。真人输入来自命令缓冲，机器人产生同格式输入。移动由 FirstPersonController 算，开火先查时序和能量，再做服务端命中和伤害。
+// 回写位置和事件的 tick，客户端会收到这些确认值。
 using Gameplay.Leaderboard;
 using Unity.Collections;
 using Unity.Entities;
@@ -229,6 +231,7 @@ namespace Unity.MP_FPS
 
                     // we need to check we aren't missing data
                     // so let's check for any data from the ticks in between
+                    // 从上次处理的输入拍追到本拍。中间缺包时用当前能找到的指令近似补齐，客户端预测可能因此需要校正。
                     for (uint tick = predictedClient.ValueRO.LastProcessedServerTick + 1; tick <= serverTick; tick++)
                     {
                         if (buffer.GetDataAtTick(new NetworkTick(tick), out var commandInput)
@@ -333,6 +336,7 @@ namespace Unity.MP_FPS
 
             // Resolve every actor's defense before any hitscan shot. Entity iteration order
             // must not decide whether this tick's held defense protects the target.
+            // 先把所有角色这一拍的防御状态结算完，再检查射线命中。否则先跑到的角色可能绕过同拍举起的盾。
             foreach (var (defender, lookup) in SystemAPI.Query<RefRW<PredictedPlayerGhost>, RefRO<PlayerClientCommandInputLookup>>().WithAll<Simulate>())
             {
                 bool held = false;
@@ -407,6 +411,7 @@ namespace Unity.MP_FPS
                             }
                             HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, deltaTime);
                             if (sentryShot) predictedPlayer.ValueRW.WeaponCooldown = 0;
+                            // 确认能开火之后才扣能量并标记开火拍。接下来按武器类型直接查射线，或生成由服务器负责碰撞的弹体。
                             HaloEnergyRules.CommitShot(ref predictedPlayer.ValueRW, weaponData);
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
                             if (sentryShot) predictedPlayer.ValueRW.LastSentryShotTick = serverTick;
@@ -581,6 +586,7 @@ namespace Unity.MP_FPS
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
                 if (predictedClient.InputCount > 0)
                 {
+                    // 这一拍收到多段输入时，把固定模拟时间分给这些操作，再累加位移。命令多不等于人物能在这一拍多走一倍。
                     float movementDt = deltaTime / predictedClient.InputCount;
                     for (int i = 0; i < predictedClient.InputCount; i++)
                     {

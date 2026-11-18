@@ -1,3 +1,4 @@
+// 远征的提前断线钩子。等接收任务更新完断线状态，在 NetCode 删除连接和角色前让 ServerGameSystem 读取位置、库存与出战记录。
 using Unity.Entities;
 using Unity.NetCode;
 

@@ -1,3 +1,4 @@
+// 经典爆破的小地图。底图来自连接到出生点的导航网格，之后每次只更新玩家和包点标记，不用额外相机渲染。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -140,6 +141,7 @@ namespace Unity.MP_FPS
             }
 
             // NavMesh tiles repeat border vertices. Join them before finding the area connected to spawn.
+            // 导航网格会在相邻分块边缘重复顶点。按位置将它们视为同一个点，才能跨分块找出和出生点连通的区域。
             var shared = new Dictionary<Vector3, int>(mesh.vertices.Length);
             int nearest = 0;
             float nearestDistance = float.PositiveInfinity;

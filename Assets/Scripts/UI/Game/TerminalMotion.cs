@@ -1,3 +1,4 @@
+// 终端各页面共享的绘图和动画。提供切页遮罩、数字动画与曲线，也定义边框、光环示意图等 UI Toolkit 绘制元素。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

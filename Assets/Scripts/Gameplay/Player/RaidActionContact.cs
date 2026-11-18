@@ -1,3 +1,5 @@
+// 让使用道具的手势真的对上角色身体。算嘴、前臂等接触点，再调整进食和针剂动作中的道具接触姿势。
+// 不同角色的脸和手臂比例不同，位置从实际模型测量。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using System.Collections.Generic;

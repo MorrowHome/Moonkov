@@ -1,3 +1,4 @@
+// MOONRAT 的任务、剧情和结局规则同时给客户端与存档后端使用。接取、交付、回顾和最终选择都在这份进度模型上检查前置条件。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -242,6 +243,7 @@ namespace Unity.MP_FPS
             return true;
         }
 
+        // 接取或领取同一任务的请求可以因刷新或重试再发一次。这里先认已成功的状态，重复的接取或领取不会再改进度。
         public static bool ApplyCommand(ResearchQuestProgress progress, ResearchQuestCommand command)
         {
             if (command == null || progress == null) return false;

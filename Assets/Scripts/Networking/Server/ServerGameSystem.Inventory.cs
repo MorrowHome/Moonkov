@@ -1,3 +1,4 @@
+// 服务端处理局内背包的权威状态。拖格、丢弃、治疗和补给等请求都要查本局与库存，成功结果和失败原因会随库存快照回客户端。
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -187,6 +188,7 @@ namespace Unity.MP_FPS
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 移动请求从实际发包连接找背包，先核对这局和请求编号。InventoryGraph 再检查库存版本、格子和装备规则，客户端的预览不能直接改背包。
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidInventoryMoveRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var connection = received.ValueRO.SourceConnection;
@@ -241,6 +243,7 @@ namespace Unity.MP_FPS
             }
             position=ground.point;return true;
         }
+        // 包里有什么、现在看的是哪个箱子，以及请求是否成功，统一做成一份快照。包与箱的版本都没变时可跳过，较大的 JSON 要拆成多个 RPC。
         private void SendInventory(ref SystemState state, EntityCommandBuffer ecb, Entity connection, int raidId)
         {
             var inventory = GetRaidInventory(ref state, connection);

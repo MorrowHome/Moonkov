@@ -1,3 +1,5 @@
+// 远征局内界面的总入口。每帧从客户端 World 取战局和角色状态，然后更新背包、交互、任务、撤离提示和结算。
+// 想跟一遍按 F 搜刮的过程，从 LateUpdate 到 OpenLootContainer，再看 UpdateInventoryView 怎样处理服务器回执。
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -427,6 +429,7 @@ namespace Unity.MP_FPS
         private void ResultBack() { m_ResultStep = Mathf.Max(0, m_ResultStep - 1); RenderResult(); }
         private void ResultNext() { m_ResultStep = Mathf.Min(2, m_ResultStep + 1); RenderResult(); }
         private void ReturnToShip() { if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync(); }
+        // 界面只显示本局且结果状态一致的物资清单。结算页依次展示战局结果、带回或丢失的物品和仓库余额。
         private void RenderResult()
         {
             RaidResultManifest manifest = null;
@@ -460,6 +463,7 @@ namespace Unity.MP_FPS
             m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        // 客户端 World 放着服务器同步回来的数据。这个界面只连实际玩家的客户端，找到拥有的角色、已入场的连接和库存读数。
         private void InitializeWorld()
         {
             m_ReturnGuidance.Reset();
@@ -487,6 +491,7 @@ namespace Unity.MP_FPS
             if (!inGame) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
             if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            // 先更新不同玩法都用到的库存和会话信息。竞技场或经典爆破接管后直接走自己的 HUD，后面是远征和赏金冲突的流程。
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateTelemetry(m_Snapshot.RaidId > 0);
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
@@ -559,6 +564,7 @@ namespace Unity.MP_FPS
             CloseLootWhenIdle();
             UpdateMinimap(alive && ready && !settled && !clash);
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
+            // 只有角色还能行动、没有菜单接管、库存没有在等请求时，才允许按键操作世界里的目标。
             bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
                 !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
@@ -585,6 +591,7 @@ namespace Unity.MP_FPS
                     OpenLootContainer(nearest);
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
+            // 按键和瞄准可以逐帧响应，较重的界面文字按间隔更新。这里先处理选择与操作，再到后面刷文字。
             bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
             UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, researchInteraction, position, deathBags);
             if (!interactionVisible)
@@ -777,6 +784,7 @@ namespace Unity.MP_FPS
             int next=SelectNearbyDrop(bags,m_PlayerQuery.GetSingleton<LocalTransform>().Position,current);
             if(next>=0)OpenLootContainer(next);
         }
+        // 先向服务端发打开请求。客户端可以立即显示自己的背包和等待进度，搜刮目标里实际能拿的物品由后续快照带来。
         private void OpenLootContainer(int id)
         {
             if(!RequestLoot(id))return;
@@ -807,6 +815,7 @@ namespace Unity.MP_FPS
             m_LootRevealAudio.Begin(m_Snapshot.RaidId, m_InventoryRequestId, lootId, inventory.Graph);
             m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
         }
+        // Sequence 变化表示收到了新库存消息，RequestId 用来匹配正在等的请求。收到重复的内容时也能用这两个值判断该更新什么。
         private void UpdateInventoryView()
         {
             if (m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
@@ -860,6 +869,7 @@ namespace Unity.MP_FPS
                     m_DissectingLootId=inventory.DissectingLootId;
                     m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
                     m_ActionDuration=inventory.SearchItemSeconds>0 ? inventory.SearchItemSeconds : Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
+                    // 搜索揭示进度和搬运物品是两件并行的事。进度快照照常刷新右栏，确认了这次搬运才解除等待。
                     bool moveAcknowledged=!m_InventoryRequestPending || inventory.RequestId>=m_InventoryRequestId;
                     bool requestFinished=m_InventoryRequestPending && moveAcknowledged;
                     if(moveAcknowledged && !m_ActionCancelPending){m_InventoryRequestPending=false;m_InventoryRequestedAt=Time.unscaledTime;}
@@ -927,6 +937,7 @@ namespace Unity.MP_FPS
             {TrackInventoryAudio(MoonkovAudio.Library?.InventoryDrop);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
             else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots); }
         }
+        // 单纯整理随身物品带一份库存版本。有打开的搜刮容器时，额外带容器编号和它的版本，由房主校验两边的库存。
         private void SendInventoryMove(Inventory.InventoryCommand command)
         {
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
@@ -1021,6 +1032,7 @@ namespace Unity.MP_FPS
             m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
         }
 
+        // 结算保存结束后才可以再次出发。受大厅管理的对局要退回小队，下一局由大厅另起一张地图。
         private void Deploy()
         {
             // A managed raid always returns to its party; another deploy must get a fresh map.
@@ -1040,6 +1052,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // Netcode 通过一只临时 ECS 实体发 RPC。这里放进消息组件和目标连接，实际发送由网络系统完成。
         private bool Send<T>(T rpc) where T : unmanaged, IRpcCommand
         {
             if (m_World == null || !m_World.IsCreated || !m_ConnectionQuery.HasSingleton<NetworkId>()) return false;

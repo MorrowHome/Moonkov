@@ -1,3 +1,4 @@
+// UI 本地化的统一入口。Text 直接取当前可用的翻译，Set 和 Bind 让已显示的元素也能跟着翻译表和语言字体更新。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -50,6 +51,7 @@ namespace Unity.MP_FPS
             s_Strings.TableChanged += StringTableChanged;
         }
 
+        // 启动时译文资源可能还在加载。这里只取已经完成的结果，让首屏在表到达之前能显示原文。
         private static StringTable ReadyTable
         {
             get
@@ -130,6 +132,7 @@ namespace Unity.MP_FPS
         internal static async Task<bool> SelectAsync(string code)
         {
             Initialize();
+            // 连续选两次语言时，只有最后一次仍有效。等待初始化结束后用这个序号丢掉旧的选择。
             int request = ++s_LocaleRequest;
             try
             {
@@ -199,6 +202,7 @@ namespace Unity.MP_FPS
             });
         }
 
+        // 绑定保留原文和格式参数，切语言时能用原始数据重新翻译。元素离开面板就释放订阅。
         private sealed class Binding : IDisposable
         {
             public readonly TextElement Element;

@@ -1,3 +1,4 @@
+// 首页角色的短动作演出。接到双击后轮流播比心、猫猫手势和狙击表演，动作结束后把角色转回月球方向。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 

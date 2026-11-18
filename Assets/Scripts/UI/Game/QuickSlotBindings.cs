@@ -1,3 +1,4 @@
+// 记快捷栏选中了哪件物品。前四格跟随实际装备，后五格允许绑定当前能用的消耗品或道具。绑定记物品 ID，遇到新快照再按 ID 取最新物品。
 #nullable disable
 using System;
 using Unity.MP_FPS.Inventory;
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS.Client
             m_Saved = new QuickSlotSave();
             Selected = -1; Reason = null; m_Fists = false;
         }
+        // 每次库存变动从真实装备槽校正前四格。没有近战装备时，第四格仍可选徒手。
         public void InitializeWeapons(InventoryGraph graph)
         {
             if (string.IsNullOrEmpty(m_Scope) || graph == null) return;

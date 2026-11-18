@@ -1,3 +1,4 @@
+// 把同类 ECS 系统按 World 分别记下来。主机同时有服务端和客户端 World，两边能各取自己的实例，销毁 World 时只清自己的记录。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.NetCode;

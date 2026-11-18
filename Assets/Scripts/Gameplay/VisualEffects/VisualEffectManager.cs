@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// 射击表现的网络入口。服务器把枪口、弹着和标记消息按队列发出，客户端收到后生成特效，并让预测过的本机枪口特效免于重播。
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Unity.NetCode;
@@ -87,6 +88,7 @@ namespace Unity.MP_FPS
                     }
                 }
 
+                // 手持开火已在本机预测时显示。部署出去的光环自主开火由服务器驱动，所以连拥有者也需要收这条消息，才能在正确的世界位置看到特效。
                 // Handheld shots are predicted locally. Autonomous shots are server-only,
                 // so their owner also needs this event, including its original world position.
                 if (!rpc.HaloDeployed && localPlayerNetworkId != -1 && localPlayerNetworkId == rpc.OwnerNetworkId)

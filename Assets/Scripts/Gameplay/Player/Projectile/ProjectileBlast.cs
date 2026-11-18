@@ -1,3 +1,5 @@
+// 为范围爆炸挑受影响的实体。根据离最近身体点的距离衰减，先检查遮挡，再走统一伤害入口。
+// 每个角色实体只结算一次，身上有多个碰撞体也不会重复扣血。
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;

@@ -1,3 +1,4 @@
+// 给仓库外壳的汇总格子计算位置。管矩形能不能放、和谁重叠、旋转后还能不能摆下。正式物品的落位规则在 InventoryGraph。
 using System.Collections.Generic;
 using UnityEngine;
 

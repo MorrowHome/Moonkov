@@ -1,3 +1,4 @@
+// 把研究主线和单人战役接到终端任务页。用档案中的进度刷新已有视图，接任务、领取奖励和追踪目标等操作再交给对应的客户端。
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;

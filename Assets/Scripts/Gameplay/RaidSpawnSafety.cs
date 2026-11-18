@@ -1,3 +1,5 @@
+// 给出生和补给点做空间检查。先找脚下地面并测站立空间，再按需要检查附近观察者是否会直接看到这里。
+// 服务端挑增援位置和地图确认补给箱落点时共用这些几何规则。
 using System.Collections.Generic;
 using UnityEngine;
 

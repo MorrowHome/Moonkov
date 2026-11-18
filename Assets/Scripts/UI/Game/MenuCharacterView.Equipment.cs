@@ -1,3 +1,4 @@
+// 把装备库存或局内角色快照转成角色预览的光环、弹药和防护外观。仓库展示读物品，局内还显示快照中的当前弹量和动作。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;
@@ -49,6 +50,7 @@ namespace Unity.MP_FPS.Client
         private WeaponRegistry EquipmentRegistry => m_Settings && m_Settings.WeaponRegistry
             ? m_Settings.WeaponRegistry : WeaponManager.Instance ? WeaponManager.Instance.WeaponRegistry : null;
 
+        // 切回仓库视角时重新从物品开始算。空字符串代表显式空手，null 代表按默认装备顺序选一件。
         public void SetEquipmentInventory(InventoryGraph graph, string activeWeaponItemId = null)
         {
             if (m_Disposed) return;
@@ -100,6 +102,7 @@ namespace Unity.MP_FPS.Client
             m_ViewDirty = true;
         }
 
+        // 同一把武器的开火 tick 前进时，记一次待播的开火效果。其余外观值按最新快照更新。
         public void SetEquipmentSnapshot(in PredictedPlayerGhost snapshot)
         {
             if (m_Disposed) return;

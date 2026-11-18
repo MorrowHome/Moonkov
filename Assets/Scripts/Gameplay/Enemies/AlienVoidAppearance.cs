@@ -1,3 +1,4 @@
+// 给异形渲染器配黑色液态外观和物种配色。根据当前动作更新材质属性，供蓄力、恢复等状态在表面上显示。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

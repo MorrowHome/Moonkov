@@ -1,3 +1,4 @@
+// NetCode 的 World 启动入口。普通游戏按需启动客户端或房主的两个 World，专用服启动时就建服务端 World。这里也负责清理与它们对应的 GameObject 树。
 #if UNITY_EDITOR
 using Unity.Scenes.Editor;
 #endif
@@ -112,6 +113,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
         return true;
     }
 
+    // 进入战局后实体要归入真正的客户端或服务端 World。先释放启动时的普通 World，再给新 World 登记 Ghost 的更新系统。
     public void StartMultiplayerWorlds(bool asHost)
     {
         Debug.Log($"StartMultiplayerWorlds asHost {asHost}");

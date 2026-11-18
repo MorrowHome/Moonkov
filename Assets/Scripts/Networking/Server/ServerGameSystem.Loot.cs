@@ -1,3 +1,4 @@
+// 服务端管理箱子、敌人尸体和地面丢弃物。开箱与搬东西时从服务端角色的位置和动作判断可访问性，客户端收到的只是在当前搜索阶段能看到的内容。
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -29,6 +30,7 @@ namespace Unity.MP_FPS
                 inventory.NextDeathBagResync=0;
             }
         }
+        // 箱子的补货状态按服务器时间推。没人进行远征、有人在看这个箱子或空箱附近有人时，会挡住补货。
         private void RefreshLootContainers(ref SystemState state)
         {
             var map=MoonRaidMap.Active;
@@ -238,6 +240,7 @@ namespace Unity.MP_FPS
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 即使刚才已经开过箱，搬物品时仍要重新确认够不够近和是否合法。背包、箱子两个版本要一起匹配，防止多人同时拿到同一件东西。
             foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidLootMoveRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var connection=received.ValueRO.SourceConnection;var r=request.ValueRO;

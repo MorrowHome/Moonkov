@@ -1,3 +1,4 @@
+// 排仓库右上方的账号与退出等入口。按面板和屏幕换算按钮尺寸，在窗口变窄时把按钮换到下一行。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;

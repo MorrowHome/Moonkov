@@ -1,3 +1,4 @@
+// 局内手雷按键和 HUD 反馈。客户端从角色状态区分取出、准备、松手和收回等阶段，通过请求让服务器执行。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS
             FlushGrenadeRelease();
             return true;
         }
+        // 玩家可能在准备手雷的回执到达前就松手。这里记住这次松开，等状态允许发送时再补发。
         private void FlushGrenadeRelease()
         {
             var phase = (GrenadePhase)GrenadeState.GrenadePhase;

@@ -1,3 +1,4 @@
+// 房主端的临时装备玩法入口。核对房间票、登记和生成角色，管免费补给与重生。经典爆破从这里转入 Classic 分支，双方都用临时库存。
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;

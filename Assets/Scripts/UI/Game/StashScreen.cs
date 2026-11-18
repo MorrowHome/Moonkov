@@ -1,3 +1,5 @@
+// 账号通过验证后打开的仓库外壳。它刷新账号、资源与同步状态，也管理船舱平板和库存页。
+// 能真正搬运物品的是 StashScreen.Containers 装上的 ContainerInventoryView。读正式库存从那里开始。
 using System;
 using System.Collections.Generic;
 using System.Globalization;

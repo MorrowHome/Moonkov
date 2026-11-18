@@ -1,3 +1,4 @@
+// 特殊装备槽的共用条件。只有装备起来才使氧气循环器、防眩滤镜、罗盘和测距功能生效，同一类被动效果不会因多装一件而叠加。
 #nullable disable
 namespace Unity.MP_FPS.Inventory
 {

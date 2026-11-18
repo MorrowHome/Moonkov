@@ -1,3 +1,4 @@
+// 极速赏金客户端和服务端共用的模式状态、操作请求、比赛快照与个人感知消息。这里也给其他系统提供角色能否按本玩法行动的判断入口。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

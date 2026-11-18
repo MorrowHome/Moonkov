@@ -1,3 +1,4 @@
+// GhostInstance 被移除后，清理还留在 World 里的桥接对象和关联。服务端在关键更新前后回收，客户端回收前等待坐标更新作业完成。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

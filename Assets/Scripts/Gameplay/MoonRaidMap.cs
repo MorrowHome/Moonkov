@@ -1,3 +1,5 @@
+// 远征场景的总配置入口。服务端从这里拿出生点、撤离区域、物资位置、敌人数量和生存参数。
+// 这里存场景上的固定数据。撤离条件由 RaidExtractionRules 判断，物资生成由掉落逻辑负责。
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS
             RaidExtractionRules.NearestIndex(m_ExtractionPosition, m_AdditionalExtractionPositions, position);
         public Vector3 NearestExtraction(Vector3 position) =>
             RaidExtractionRules.Nearest(m_ExtractionPosition, m_AdditionalExtractionPositions, position);
+        // 地图只把一个或多个出口及其半径交给共用规则。撤离读条写入当前 RaidSession。
         public void AdvanceExtraction(ref RaidSession session, Vector3 position, float deltaTime) =>
             RaidExtractionRules.Advance(ref session, m_ExtractionPosition, m_AdditionalExtractionPositions, position, m_ExtractionRadius, deltaTime);
         public float MedicalSeconds => float.IsFinite(m_MedicalSeconds) && m_MedicalSeconds>0 ? Mathf.Max(.1f,m_MedicalSeconds) : 3;

@@ -1,3 +1,4 @@
+// 把收到的局内聊天和发送回执放进 RaidChatClientState，HUD 读这里来显示消息或错误提示。用序号避免旧回执盖住较新的发送结果。
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;

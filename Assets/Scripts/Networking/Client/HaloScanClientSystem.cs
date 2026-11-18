@@ -1,3 +1,4 @@
+// 接收光环扫描的脉冲和目标消息，按扫描编号和有效期决定哪些提示该显示，交给 HaloScanRenderer。服务端负责选择扫描结果。
 using System;
 using Unity.Collections;
 using Unity.Entities;
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS
             Clear(); Pulse = pulse; StartedAt = now; Active = true; return true;
         }
 
+        // 目标和脉冲用创建者的 Ghost ID、出生 tick 与扫描序号绑定。重新出生或下一次扫描后，旧目标不能混到这次提示里。
         public bool Receive(HaloScanContactRpc contact, double now)
         {
             int i = contact.Index;

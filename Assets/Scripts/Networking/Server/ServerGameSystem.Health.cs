@@ -1,3 +1,4 @@
+// 服务端每帧更新保护装备和远征生存数值。这里把人物位置与移动状态代入供氧、饥渴等共用规则，玩家与普通 PMC 均有各自更新。
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
@@ -23,6 +24,7 @@ namespace Unity.MP_FPS
                 EnergyShieldEquipment.Tick(ref health.ValueRW,inventory.Graph,SystemAPI.Time.DeltaTime,recover);
                 // Halo energy already travels in the Ghost. Inventory only needs
                 // another snapshot when the collar's displayed oxygen changes.
+                // 光环能量已经跟角色 Ghost 同步。这里只在项圈显示的氧气或装备身份有变化时让库存重发，避免把整包库存当作能量计时器。
                 if(send && inventory.ProtectionDisplayChanged)inventory.LastSentVersion=-1;
             }
             // NPCs have no connection/RaidSession. Their halos share the player

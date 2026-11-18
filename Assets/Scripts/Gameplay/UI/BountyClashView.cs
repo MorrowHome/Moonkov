@@ -1,3 +1,4 @@
+// 赏金冲突的大厅、局内目标和结果视图。它把 BountyClashClientState 画成队伍、暗视提示、目标地图和按钮。按钮把意图传回 RaidHUD。
 using Unity.MP_FPS.DollSinger;
 using System;
 using Unity.MP_FPS.Client;

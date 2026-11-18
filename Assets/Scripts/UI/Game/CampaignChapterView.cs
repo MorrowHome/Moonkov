@@ -1,3 +1,4 @@
+// 单人战役的章节和任务列表。它从传入的档案进度判断任务是否锁定、完成或被跟踪。点击跟踪后交给 PlayerProfileClient 保存。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

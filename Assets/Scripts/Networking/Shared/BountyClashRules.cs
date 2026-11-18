@@ -1,3 +1,4 @@
+// 极速赏金的比赛规则。维护队伍、报名队列、生命阶段、撤离和奖励，服务端用它推进比赛，再把判断结果同步给客户端。
 using System;
 using System.Collections.Generic;
 using System.Linq;

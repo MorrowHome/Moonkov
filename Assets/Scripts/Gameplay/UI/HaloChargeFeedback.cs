@@ -1,3 +1,4 @@
+// 把补充光环能量的操作转成界面提示。记录玩家何时请求补能，再根据角色和库存更新当前状态。
 using Unity.Collections;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS
             Context(player);
             if (!visible || player.CurrentHealth <= 0 || !player.InventoryWeapons || !DollSingerWeapons.IsHalo(player.EquippedWeaponID) || weapon == null)
             { Reset(); return default; }
+            // 有共用光环能量时按同步的补能序号和余额显示。后面的兼容路径仍能按传统弹匣和待装弹量显示。
             if (player.HaloEnergyInitialized)
             {
                 if (m_HasRechargeSequence && m_RechargeSequence != player.HaloRechargeSequence)

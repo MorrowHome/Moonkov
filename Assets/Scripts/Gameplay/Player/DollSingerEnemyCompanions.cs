@@ -1,3 +1,5 @@
+// 为玩家生成自己带进远征的 AI 队友。根据连接对应的战局请求和可用名额，在玩家附近找可达位置，登记队伍和关联玩家。
+// 战局会记已生成的数量，队友阵亡后不会把配额刷新出来。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.NetCode;

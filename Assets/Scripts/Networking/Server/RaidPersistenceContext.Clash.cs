@@ -1,3 +1,4 @@
+// 极速赏金在服务端持久化上下文里以一场比赛为单位登记名单和奖励，绑定每个成员的扣装结果，最后将撤离兑换与各自结算写入档案。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -151,6 +152,7 @@ namespace Unity.MP_FPS
 
         // Capture the whole extraction atomically before redeeming. A crash at any
         // later point can reconstruct every participant's immutable inventory receipt.
+        // 赏金兑换是整场共用的事件。先把兑换和需要落盘的结算留下记录，重启后可以接着送同一份结果。
         public void BeginBountyRedemption(Guid matchId, Guid tokenId, Guid extractionEventId, Guid carrierDeploymentId, Guid[] extractedDeploymentIds)
         {
             if(m_Offline!=null && !m_ClashSoloEnabled)throw new InvalidOperationException("New local Clash extraction requires its explicit server marker.");

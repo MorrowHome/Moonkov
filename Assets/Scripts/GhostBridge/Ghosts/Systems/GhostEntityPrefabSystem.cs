@@ -1,3 +1,4 @@
+// 按 GUID 同时登记实体模板和可寻址的 GameObject 资源。服务器用前者生成实体，GhostGameObjectLifetimeSystem 等后者加载完成再建表现体。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;

@@ -1,3 +1,5 @@
+// 把 AI 的选择整理成一拍玩家输入。按时间更新感知和决策，推进搜刮、治疗等事情，再计算路径移动、瞄准和开火意图。
+// ServerPlayerMovementSystem 接收这些输入，用跟真人共用的移动和射击逻辑执行。
 using Unity.Mathematics;
 using Unity.Entities;
 using Unity.Transforms;
@@ -24,6 +26,7 @@ namespace Unity.MP_FPS
             brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now && brain.SelfStatus.Fire <= now &&
                 (brain.SelfStatus.Poison <= now || brain.SelfStatus.Antidote > now);
             UpdateCombatPressure(brain, health, now, dt);
+            // 感知和选目标按自己的节奏更新，走路和已经开始的动作继续逐拍推进。可以省掉重复的视线、路径和目标判断。
             if (now >= brain.NextSense)
             {
                 Sense(brain, ghost.transform, eye, map.EnemySightRange, now);
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS
                 move = SidestepBetweenBursts(brain, position, health, now);
             brain.MovementRequested = move.sqrMagnitude > .01f;
             bool hasContact = brain.Target != Unity.Entities.Entity.Null;
+            // 瞄向自己记得的可见部位。清楚看见时才按连续观察到的速度给弹体做有限的提前量。
             Vector3 aim = brain.LastSeen + brain.AimOffset;
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);

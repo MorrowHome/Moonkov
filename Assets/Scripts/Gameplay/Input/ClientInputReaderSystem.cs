@@ -1,3 +1,4 @@
+// 每个客户端渲染帧采集键鼠、视角和角色按键，整理成 PlayerInput。ClientInputSenderSystem 再把它按网络 tick 组织。
 using Unity.Entities;
 using Unity.MP_FPS;
 using Unity.Mathematics;
@@ -35,6 +36,7 @@ public partial class ClientInputReaderSystem : SystemBase
         // 2. Check for Respawn (Entity ID changed)
         if (currentLocalPlayer != Entity.Null)
         {
+            // 重生换了角色实体，就从服务器给的新出生朝向开始积累视角。顺便清掉上个角色的输入与光环转移引用。
             if (currentLocalPlayer != _lastKnownPlayerEntity)
             {
                 // Each map owns spawn facing; the old arena's centre is not a universal look target.
@@ -77,6 +79,7 @@ public partial class ClientInputReaderSystem : SystemBase
             input.ValueRW = new ClientInput();
             movementInput.ValueRW = new ClientMovementInput();
 
+            // 打开背包或暂停时得让服务器知道这一帧的开火被屏蔽。可在界面内保留哪些能力由 HUD 和角色表现一起决定。
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
             if (blocked && _dollSingerInput == null)
             {
@@ -109,6 +112,7 @@ public partial class ClientInputReaderSystem : SystemBase
                     !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && !playerInput.FreeLooking;
                 playerInput.SetFlag(PlayerInput.InputFlag.FireSuppressed, !canFire);
                 playerInput.SetFlag(PlayerInput.InputFlag.FireHeld, canFire && _dollSingerInput.FireHeld);
+                // 单发看这一帧是否按下，连发和点射看是否按住。最后由武器规则按冷却、弹量和其他动作状态判断能否开火。
                 playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canFire &&
                     (weapon != null && !weapon.Automatic && weapon.BurstCount <= 1 ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);

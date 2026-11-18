@@ -1,3 +1,4 @@
+// 服务端管理能量手雷从拿出、拉环到投掷和爆炸的整个过程。背包扣除、实体碰撞、伤害和给客户端的表现消息都由这里发起。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Entities;

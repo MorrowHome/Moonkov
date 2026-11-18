@@ -1,3 +1,4 @@
+// 远征小地图。以人物为中心把世界坐标投到一小块范围，重用大地图的卫星图和边界信息，叠上路线、补氧与撤离标记。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

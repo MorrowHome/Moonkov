@@ -1,3 +1,4 @@
+// 离开战局、加载失败和退出程序都在这里收尾。先断开会话和 World，等存档处理完成，再退回大厅或关闭程序。
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -131,6 +132,7 @@ namespace Unity.MP_FPS
         {
             // This prevents the "Cannot dispose world while updating it" error,
             // allowing us to call this from anywhere.
+            // 等这一帧的 ECS 系统跑完再释放 World，避免从系统更新里拆掉正在被使用的对象。
             await Awaitable.EndOfFrameAsync();
 
             // Destroy netcode worlds:
@@ -148,6 +150,7 @@ namespace Unity.MP_FPS
                 }
             }
             // Do not expose the account equipment screen while its last raid still owns the kit.
+            // 每个 World 的存档上下文仍可能在结束战局。等它们真正交还出战装备，再让玩家看见可操作的账号页面。
             await Task.WhenAll(shutdowns);
         }
         

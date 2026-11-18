@@ -1,3 +1,5 @@
+// 主菜单的总入口。这里把界面和 GameSettings、ConnectionSettings 绑在一起，再装上账号、模式和房间页面。
+// 从选好模式到开始加载，接着看 MainMenu.Account 的 ShowRaidPreparation 和 GameManager.StartGameAsync。
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -164,6 +166,7 @@ namespace Unity.MP_FPS.Client
 
         }
 
+        // 这些按钮只告诉 GameManager 要用哪条连接流程。创建 World、等连接或者回到菜单由 GameManager 负责。
         static void OnCreateGamePressed() => GameManager.Instance.StartGameAsync(CreationType.CreateOrJoin);
         static void OnJoinRelayPressed() => GameManager.Instance.StartGameAsync(CreationType.JoinRelay);
 
@@ -173,6 +176,7 @@ namespace Unity.MP_FPS.Client
 
         static void OnQuitPressed() => GameManager.Instance.QuitAsync();
         static void ResumeRaid() => GameManager.Instance.ReconnectLastGameAsync();
+        // 重连入口定时看 SessionReconnect。剩余时间是客户端提示，恢复原角色还要等服务器确认。
         void RefreshReconnect()
         {
             bool available = SessionReconnect.Available && PlayerProfileClient.IsLoggedIn;

@@ -1,3 +1,4 @@
+// 把正式光环贴图按进度画成读条。它读取 HaloProgressArtwork，按当前填充比例裁剪几何并保留对应 UV，供局内不同动作复用。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;

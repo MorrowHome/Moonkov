@@ -1,3 +1,4 @@
+// 搜刮和交互的目标轮廓。HUD 交来附近目标，这里控频、裁到视野内，再用相机深度画可见部分的边缘。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -119,6 +120,7 @@ namespace Unity.MP_FPS
             descriptor.clearBuffer = true;
             descriptor.clearColor = Color.clear;
             descriptor.filterMode = FilterMode.Bilinear;
+            // 先画一张可见部分的遮罩，并借用相机深度排除墙后的像素。下一步沿遮罩的边上色，多个交互物共用这一张图。
             var mask = graph.CreateTexture(descriptor);
             using (var builder = graph.AddRasterRenderPass<MaskData>("Visible raid interactables", out var data))
             {

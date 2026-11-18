@@ -1,3 +1,4 @@
+// TeamOutlineClientSystem 交来可显示的队友网格，这里给本机相机画轮廓。控制每帧绘制数量，数据过期或没有目标时退出。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

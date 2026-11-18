@@ -1,3 +1,4 @@
+// 把能量手雷的服务器状态画成飞行轨迹、爆炸环和火花。一颗雷用同一个 ID 续接已有的表现对象，过期时回到池中。
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS
                 if (state.Exploded == 0 && state.Remaining > EnergyGrenadeRules.Fuse - .3f)
                     MoonkovAudio.Play(m_Style.ThrowSound, state.Position);
             }
+            // 一旦进入确认的爆炸阶段，就按爆炸的寿命和表现播完。后续飞行姿态不能把它送回飞行阶段。
             // Reliable ordered state means a confirmed explosion cannot be resurrected by an old pose.
             if (effect.Exploded) return;
             effect.Origin = state.Position; effect.Velocity = state.Velocity;

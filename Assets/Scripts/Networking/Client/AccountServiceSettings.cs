@@ -1,3 +1,4 @@
+// 把 ClientSettings 里的账号服务地址交给 AccountClient。公网地址要求 HTTPS。本机和明确允许的私有 IPv4 地址才接受 HTTP。
 using System;
 using System.Net;
 using System.Net.Sockets;

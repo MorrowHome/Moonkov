@@ -1,3 +1,4 @@
+// 打开容器、持续搜箱和使用补给会让服务端角色状态上的动作序号变化。客户端由此播声，AI 用同一事件做局内听觉判断。
 namespace Unity.MP_FPS
 {
     // Opening and searching use the same authoritative hearing and playback events.

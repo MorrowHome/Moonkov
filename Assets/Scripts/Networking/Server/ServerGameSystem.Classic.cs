@@ -1,3 +1,4 @@
+// 房主端的经典爆破回合。按 ClassicMatch 的阶段处理队伍、装拆包、换边、购买、复活和结算，同时驱动机器人和 HUD 快照。
 using System;
 using System.Linq;
 using Unity.Collections;
@@ -200,6 +201,7 @@ namespace Unity.MP_FPS
             manager.SetComponentData(actor, health);
         }
 
+        // 新回合开始先重置搜刮对象，选择携带炸弹的席位，再重新放置玩家和机器人。累计战绩留在比赛状态中。
         private void StartClassicRound(ref SystemState state, EntityCommandBuffer ecb, ArenaMatch match, ClassicDust2Map map,
             DollSingerEnemySystem ai, double now)
         {

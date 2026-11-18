@@ -1,3 +1,5 @@
+// 把战役任务的步骤翻译成当前地图上的目的地。CampaignRules 给任务节点，RaidMissionSite 和 MoonRaidMap 给它实际坐标。
+// HUD 和地图共用这套目标。探索阶段先指向研究站入口，返航阶段改指撤离点。
 using Unity.Entities;
 using UnityEngine;
 using Unity.MP_FPS.Campaign;

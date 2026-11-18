@@ -1,3 +1,4 @@
+// 把角色快照转换成生命监测仪的提示、颜色和波形速度。波形由状态推算，用于界面反馈，不作为健康判定。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

@@ -1,3 +1,4 @@
+// 研究任务界面用这段代码按当前语言选出电台语音，再把故事片段排队播放。任务切换或退出界面时可以停下整队语音。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

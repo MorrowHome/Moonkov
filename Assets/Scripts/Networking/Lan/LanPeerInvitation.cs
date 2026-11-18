@@ -1,3 +1,4 @@
+// 把一次跨网好友邀请中需要交换的房间身份、两条 ICE 路线和临时证书编成可复制文本。房主用临时证书启动加密连接，来宾用邀请里的证书验证对方。
 using System;
 using System.Collections.Generic;
 using System.Globalization;

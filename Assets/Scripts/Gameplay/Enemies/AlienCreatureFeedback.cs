@@ -1,3 +1,5 @@
+// 异形的基础声音表现。看到角色从休眠、移动、受伤或死亡进入新状态时安排相应声音，近处还有足部与地面的细节。
+// 攻击命中等按事件触发的声音在 Combat 部分。
 using System;
 using Unity.MP_FPS.SpiderLab;
 using UnityEngine;

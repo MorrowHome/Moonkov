@@ -1,3 +1,5 @@
+// 远征氧气配置资产。用于设置室外氧气能撑多久、有氧处恢复速度、缺氧后多久受伤、以及不同移动速度的耗氧倍率。
+// 运行时通过 OxygenParameters 读一整组参数，构造时把配置坏值换回可用值。
 using UnityEngine;
 
 namespace Unity.MP_FPS

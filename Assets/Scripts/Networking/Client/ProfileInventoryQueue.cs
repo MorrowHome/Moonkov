@@ -1,3 +1,4 @@
+// 主菜单的仓库操作队列。拖格、买卖和改装先在本地副本上算出要显示的样子，真正的写入仍逐条等待房主、本地档案或账号服务确认。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS
             Trade = Copy(command), Offers = offers?.Select(o => new ShopOffer
                 { Code = o.Code, Name = o.Name, BuyDust = o.BuyDust, SellDust = o.SellDust, FreeSupplyRestricted = o.FreeSupplyRestricted }).ToArray()
         });
+        // 先拿界面正在显示的版本验证操作，再在副本里立即预览。这样连续拖动时，后一条操作可以参照前一条已经预览的结果。
         private Task Enqueue(Pending pending)
         {
             if (m_Disposed) throw new ObjectDisposedException(nameof(ProfileInventoryQueue));
@@ -111,6 +113,7 @@ namespace Unity.MP_FPS
                     Rebuild();
                     if (Count == 0) { Changed?.Invoke(); break; }
                     pending = m_Pending[0];
+                    // 发送队首前，从最新的已确认库存计算预期结果。请求用这份库存的版本和真实物品 ID，界面刚拆堆产生的临时 ID 要先换回去。
                     pending.Expected = Predict(pending, Display(m_Read()));
                     int version = m_Read().Version;
                     if (pending.Move != null)
@@ -139,6 +142,7 @@ namespace Unity.MP_FPS
                     catch (Exception ex)
                     {
                         if (m_Disposed) return;
+                        // 明确拒绝就撤掉这条预览。超时之类的情况无法确认服务端有没有写入，先刷新并比对库存，再决定是否保留原请求重试。
                         bool rejected = m_Rejected(ex);
                         // A lost move response has no order receipt. Its unchanged version
                         // makes retry safe; only an exact resulting snapshot resolves it.
@@ -172,6 +176,7 @@ namespace Unity.MP_FPS
             if (pending.Uncertain) Error = null;
             Rebuild(); pending.Completion.TrySetResult(true); Changed?.Invoke();
         }
+        // 每次正式库存变化后，把还没确认的操作沿着队列顺序重放。依赖一条失败操作的后续动作，这里可能会被一起判无效。
         private void Rebuild()
         {
             var graph = Display(m_Read());
@@ -207,6 +212,7 @@ namespace Unity.MP_FPS
                 string error = ShopRules.Preview(graph, command, pending.Offers, out next);
                 if (error != null) throw new AccountClient.InventoryRequestException(error);
             }
+            // 拆堆、购买会新建物品。给预览里的新物品保留稳定的临时 ID，收到回执后再把它和正式 ID 对上，后面的拖放才能继续找到它。
             var previous = new HashSet<string>(graph.Items.Select(item => item.Id));
             var created = next.Items.Where(item => !previous.Contains(item.Id)).ToArray();
             var renamed = new Dictionary<string, string>();

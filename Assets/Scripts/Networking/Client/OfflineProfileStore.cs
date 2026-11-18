@@ -1,3 +1,5 @@
+// 单人档案的实际读写者。PlayerProfileClient 读仓库，RaidPersistenceContext 通过它锁定出战装备、提交结算和恢复未完成的保存。
+// 对同一份档案的修改放在锁里，先在副本上算完整结果，再按 Commit 的流程写盘。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS
         // A single-player loading attempt owns this checkpoint until the camera
         // and replicated world are ready. Refund only after server shutdown has
         // drained its settlement tasks, so a late abandon cannot erase the kit.
+        // 入场加载出错时需要有地方退回。这个检查点保存加载前的档案内容，加载走完就确认，没走完可以恢复。
         public sealed class LoadingCheckpoint
         {
             private readonly OfflineProfileStore m_Owner;
@@ -241,6 +244,7 @@ namespace Unity.MP_FPS
         private void CheckPlayer(string playerId)
         { if (playerId != m_Save.PlayerId) throw new InvalidDataException("Single-player profile mismatch."); }
 
+        // 出战会把带进本局的库存单独保存，并在档案里留下出战编号。接下来结束或恢复行动都凭这条记录认领同一批物品。
         public RaidPersistenceContext.Profile Deploy(RaidPersistenceContext.Deployment payload)
         {
             lock (m_Lock)
@@ -308,6 +312,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 先按结算编号核对回执，再根据撤离、死亡或超时决定物品如何处理。重复收到相同结算请求时，不能把战利品再存一遍。
         public RaidPersistenceContext.Profile Settle(RaidPersistenceContext.Settlement payload)
         {
             lock (m_Lock)

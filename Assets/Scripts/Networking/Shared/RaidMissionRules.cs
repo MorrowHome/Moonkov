@@ -1,3 +1,4 @@
+// 地图任务的规则模型。声明前置目标、处理时限和产物，追踪参与者的操作。ServerGameSystem.Missions 负责把地图、距离和角色状态接进来。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -169,6 +170,7 @@ namespace Unity.MP_FPS.Missions
             OfferedAt = m_LastTime = now; Deadline = now + m_Definition.OfferSeconds;
         }
 
+        // 这个任务模型只认服务器传来的角色、当前轮次和时间。距离、视线及人物能否操作，由 ServerGameSystem.Missions 在调用前确认。
         // The caller supplies server-validated actor/deployment identity and server time.
         // Distance, visibility, health and ownership remain the existing server adapter's responsibility.
         public MissionActionResult Begin(string actor, int epoch, int node, uint request, double now)
@@ -193,6 +195,7 @@ namespace Unity.MP_FPS.Missions
             return MissionActionResult.Started;
         }
 
+        // 客户端持续按住时会不断续租当前交互。服务端若收不到后续请求，Tick 会让旧操作到期，避免玩家离开后读条自己跑完。
         public MissionActionResult Renew(string actor, uint request, double now)
         {
             if (!ValidTime(now) || now < m_LastTime) return MissionActionResult.Invalid;

@@ -1,3 +1,5 @@
+// 充能动作的共用时间轴。开始时写入目标和总时长，网络状态可以用同一计时显示进度和播放动作。
+// 已有充能量由服务端提前预留，计时归零才交给 DollSingerWeapons 完成结算。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -13,6 +15,7 @@ namespace Unity.MP_FPS
             int added = Mathf.Clamp(targetAmmo - Mathf.Max(0, currentAmmo), 0, weapon.MagazineSize);
             // Opening/locking costs time even for one round. An empty reservoir
             // also needs priming. A complete empty reload remains ReloadTime.
+            // 装一点也要花打开和锁好的时间，空仓还要预热。实际装填量只影响中间的那一段。
             float fraction = .25f + .63f * added / weapon.MagazineSize + (currentAmmo <= 0 ? .12f : 0);
             return Mathf.Max(.01f, weapon.ReloadTime * fraction);
         }

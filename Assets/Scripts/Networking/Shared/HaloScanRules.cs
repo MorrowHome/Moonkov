@@ -1,3 +1,4 @@
+// 光环扫描的距离、能耗、冷却和扫描起点。光环贴身、外放或放在地上时起点不同，脉冲和发现目标各有自己的 RPC。
 using Unity.Mathematics;
 using Unity.NetCode;
 

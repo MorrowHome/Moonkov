@@ -1,3 +1,4 @@
+// 把 NetCode 的 Ghost 实体与场景里的 GameObject 连起来。实体存网络数据，角色、地图设备等脚本通过这个对象取数据、挂更新和收发消息。
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -232,6 +233,7 @@ public class GhostGameObject : MonoBehaviour
 #if WWISE_AUDIO_SUPPORTED
     private static List<AkGameObj> s_CollectedAkGameObjs = new();
 #endif
+    // 绑定时记住 World、实体和当前端的角色，再让子物体上的 GhostMonoBehaviour 拿到这个入口。
     public void LinkGhost(World world, Entity linkedGhostEntity, MultiplayerRole role)
     {
         m_World = world;
@@ -306,6 +308,7 @@ public class GhostGameObject : MonoBehaviour
         OnGhostLinked();
     }
 
+    // 根据客户端或服务器身份，登记实现了对应接口的脚本。之后 ECS 到指定阶段会回调它们。
     public void OnGhostLinked()
     {
         foreach (var ghostBehaviour in m_GhostMonoBehaviours)
@@ -679,6 +682,7 @@ public class GhostGameObject : MonoBehaviour
         }
     }
 
+    // 取到一条同类型消息后，先把它从本轮的共享收件列表拿走，再排队销毁 RPC 实体，防止后续脚本重复消费。
     public bool ConsumeRPC<T>(out T rpc)
         where T : unmanaged, IRpcCommand
     {
@@ -712,6 +716,7 @@ public class GhostGameObject : MonoBehaviour
         return false;
     }
 
+    // 由反射把当前 Ghost 的 Guid 填进约定字段。消息接收后用这个 Guid 分发到正确的物体，发送请求本身仍走 NetCode。
     public void SendDirectedRPC<T>(T rpcCommand)
         where T : unmanaged, IRpcCommand, IGhostGameObjectDirectedRPC
     {

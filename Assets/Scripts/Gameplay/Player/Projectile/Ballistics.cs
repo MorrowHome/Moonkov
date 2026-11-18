@@ -1,3 +1,5 @@
+// 枪弹共用的弹道计算。按初速度、重力和时间找位置，并沿经过的路径做碰撞检查。
+// 直接命中按距离衰减伤害，范围爆炸的衰减交给 ProjectileBlast。
 using System;
 using UnityEngine;
 

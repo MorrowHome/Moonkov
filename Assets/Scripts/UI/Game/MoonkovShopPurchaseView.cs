@@ -1,3 +1,4 @@
+// 商店和经典爆破复用的购买面板。这里负责搜索、挑物品、选数量和显示详情。确认时把商品和数量交给外面的购买回调。
 using System;
 using System.Collections.Generic;
 using System.Linq;

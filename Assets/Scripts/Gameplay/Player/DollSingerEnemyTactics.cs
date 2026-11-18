@@ -1,3 +1,5 @@
+// 将 AI 选中的行动转成实际走位，如找掩体、短探头、绕侧、循迹搜索和撤退。路线要检查能否走到，以及是否会暴露在目标枪线里。
+// 常规决策按节奏运行，已经开始的探头和回掩体会继续用短检查推进。
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -183,6 +185,7 @@ namespace Unity.MP_FPS
 
         // Cheap arrival/interrupt checks run with the motor. Geometry queries stay
         // in the staggered decision pass, and exposure has a hard deadline.
+        // 找到掩体后仍要推进停下、探看和退回等阶段。这样行为可以跨多帧完成，遇到新危险也能及时打断。
         private void AdvanceCover(DollSingerEnemyBrain brain, Vector3 position, double now)
         {
             bool usesCover = brain.Action == PmcAction.Cover || brain.Action == PmcAction.Reload ||

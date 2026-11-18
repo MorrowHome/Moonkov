@@ -1,3 +1,4 @@
+// 背包里的光环模块和异形战利品图标。模块按类型取对应的贴图，部分异形器官用即绘图形。
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;

@@ -1,3 +1,4 @@
+// 外放光环作为照明、范围护盾和哨戒时的规则。这里决定能保护谁、何时开火，以及吸收伤害后留下什么受击表现数据。
 using Unity.Mathematics;
 using UnityEngine;
 

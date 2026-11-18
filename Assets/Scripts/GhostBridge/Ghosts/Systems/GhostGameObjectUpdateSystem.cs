@@ -1,3 +1,4 @@
+// 把 ECS 的更新阶段转发到 Ghost 场景脚本。服务端有早期、普通和物理三个阶段，客户端分早期、模拟和画面表现三个阶段。
 #if UNITY_EDITOR || ENABLE_PROFILING
 #define USE_GHOST_GROUP_PROFILE_MARKERS
 #endif
@@ -58,6 +59,7 @@ public static class GhostGameObjectUpdateSystem
         s_GhostUpdateSystemByType.Clear();
     }
 
+    // World 启动时先记录每种更新接口该交给哪个 ECS 系统。之后新绑定的 Ghost 可以按接口注册。
     public static void GatherWorldSystems(World world)
     {
         if (world.IsServer())

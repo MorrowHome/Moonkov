@@ -1,3 +1,4 @@
+// 缓存网格的顶点、骨骼权重和皮肤或躯干上的采样点。各角色的装备拟合可以重用，GameManager 也可以提前准备它。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS
                 flags[i] = (char)((body || name.IndexOf("Skin", StringComparison.OrdinalIgnoreCase) >= 0 ? 1 : 0) |
                     (body || name.IndexOf("Dress", StringComparison.OrdinalIgnoreCase) >= 0 ? 2 : 0));
             }
+            // 同一个网格可以配不同的材质。缓存还按材质被识别为皮肤或服装的结果区分，护具才能贴到应当参考的表面上。
             var key = (mesh, new string(flags));
 #if UNITY_EDITOR
             // Meshes and material assignments can change in live authoring previews.

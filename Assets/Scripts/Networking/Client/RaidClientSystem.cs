@@ -1,3 +1,4 @@
+// 战局客户端接收服务器快照的总入口。模式、任务、结算、物品和遗体各走自己的 RPC，整理进同一实体上的客户端状态后供 RaidHUD 读取。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -61,6 +62,7 @@ namespace Unity.MP_FPS
             {
                 received.ValueRW.Consume();EntityManager.GetComponentObject<RaidDeathBagClientState>(m_State).Receive(bag.ValueRO);ecb.DestroyEntity(entity);
             }
+            // 库存 JSON 可能比一条 RPC 能装下的内容大。这里只转交分片，RaidInventoryClientState 收齐同一编号的整份数据后才替换库存。
             foreach (var (chunk, received, entity) in SystemAPI.Query<RefRO<RaidInventoryChunkV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS
                 if (rpc.ValueRO.Sequence > current.Sequence)
                 {
                     EntityManager.SetComponentData(m_State, new RaidClientState { Snapshot = rpc.ValueRO });
+                    // 薄客户端和临时装备玩法的库存属于该连接或该局。它们不应拿局内快照去刷新主玩家的仓库数值。
                     if (!World.IsThinClient() && (!SystemAPI.TryGetSingleton<RaidModeState>(out var mode) || !ArenaMatch.UsesTemporaryKit(mode.Mode)))
                         PlayerProfileClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
                 }

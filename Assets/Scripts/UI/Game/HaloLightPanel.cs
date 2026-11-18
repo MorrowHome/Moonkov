@@ -1,3 +1,4 @@
+// 局内调光时显示的面板。它在 DollSingerInput 的调光状态下打开，提供腰射与瞄准预览，再用 HaloLighting 将设置编码到输入持有的值。
 using System;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;

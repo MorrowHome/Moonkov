@@ -1,3 +1,4 @@
+// 根据战术物件回执，管理地图里的投掷物、陷阱、烟、火和它们的声音。本机选中道具时，手部道具和预览也从这里更新。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -117,6 +118,7 @@ namespace Unity.MP_FPS
         }
         public void Present(in TacticalWorldStateRpc state)
         {
+            // Epoch 用来分开不同批次的战术物件。每个物件还检查消息序号，已移除的道具不会被晚到的旧包重新建出来。
             if(state.Epoch<m_Epoch || state.Id==0 && state.Phase!=TacticalWorldPhase.Removed)return;
             if(state.Epoch>m_Epoch){Clear();m_Epoch=state.Epoch;}
             if(state.Id==0){Clear();return;}

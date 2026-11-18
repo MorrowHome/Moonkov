@@ -1,3 +1,4 @@
+// 按持续奔跑时间和负重计算体力。停跑一会后才恢复，耗尽之后要攒到恢复线才清掉疲劳，避免一节 tick 就在耗尽与正常间来回切换。
 using System;
 
 namespace Unity.MP_FPS

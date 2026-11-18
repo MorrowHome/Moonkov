@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// 短暂显示玩家加入和击杀消息。GameLeaderboard 把事件交到这里，提示按自己的时间显示并清掉。
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.UI

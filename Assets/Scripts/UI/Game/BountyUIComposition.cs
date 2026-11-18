@@ -1,3 +1,4 @@
+// 给玩法弹窗复用的组装方法。它从 UI Toolkit 模板克隆窗口和玩法卡片，调用方再接按钮和填内容。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;

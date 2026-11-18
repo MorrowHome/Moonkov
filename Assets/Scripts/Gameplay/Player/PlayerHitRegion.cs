@@ -1,3 +1,4 @@
+// 标记一个附加碰撞体对应哪个身体部位，例如超出主胶囊范围的胳膊。射线能识别部位，但血量在对应的 ECS 角色上。
 using UnityEngine;
 
 namespace Unity.MP_FPS

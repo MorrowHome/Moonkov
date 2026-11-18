@@ -1,3 +1,4 @@
+// 赏金对局 HUD 把服务端允许显示的感知数据交给这里。在本机角色相机上画暗视和目标提示，退出视图或失去授权时清掉画面。
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -96,6 +97,7 @@ namespace Unity.MP_FPS
                 if(blend<=0 && !wanted){Dispose();if(ReferenceEquals(s_Driver,this))s_Driver=null;return;}
                 if(material==null || pass==null || !(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset pipeline))return;
                 int count=0;
+                // 先确认仍在有效对局、角色存活且授权消息足够新，再把目标坐标交给渲染。关闭暗视或掉线后，上一次收到的目标也会随之失效。
                 bool authorizedPresence=wanted && presence && cache!=null && cache.Approved && cache.HasSnapshot &&
                     cache.Snapshot.IsCarrier && cache.Snapshot.Connected && cache.Snapshot.Life==ClashLife.Alive &&
                     cache.Snapshot.Phase==ClashPhase.Active && cache.Sense.Presence && now-cache.SenseReceivedAt<.7;

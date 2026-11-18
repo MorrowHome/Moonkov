@@ -1,3 +1,4 @@
+// 竞技场比分、补给和结果，以及经典爆破共用的记分板部件。显示依据房主快照，点击取补给或购买只发命令。
 using System.Linq;
 using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.DollSinger;
@@ -296,6 +297,7 @@ namespace Unity.MP_FPS
                     ? "对局人数不足" : match.Draw ? "平局" : match.Won ? "获胜" : "对局结束");
         }
 
+        // 同一份结束快照会显示多次。记录已经播过的结果音，只在本场首次结束时播放。
         private void PresentArenaResultSound(bool finished, bool won, bool draw)
         {
             if (!finished) { m_ArenaResultSoundPlayed = false; return; }
@@ -306,6 +308,7 @@ namespace Unity.MP_FPS
             else MoonkovAudio.Error();
         }
 
+        // 记分板打开且快照序号更新时才刷新成员数据。各席位的角色和统计来自房主发布的信息。
         private void PresentClassicScoreboard(in ClassicClientState data, bool visible)
         {
             visible &= data.Received;

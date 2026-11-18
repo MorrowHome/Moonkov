@@ -1,3 +1,4 @@
+// 把当前允许交互的世界物体交给 RaidInteractionOutline。根据玩法和当前操作状态收集箱子、尸体、机关等，最后统一处理描边的可见性。
 using Unity.MP_FPS.Missions;
 using Unity.MP_FPS.Moon;
 using UnityEngine;

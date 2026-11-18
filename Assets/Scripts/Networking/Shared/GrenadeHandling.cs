@@ -1,3 +1,4 @@
+// 手榴弹动作共用的阶段表。拿出、拉环、投出、收手的时长供服务器和手部动画共用，并把取物和引信规则分给对应物品。
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS

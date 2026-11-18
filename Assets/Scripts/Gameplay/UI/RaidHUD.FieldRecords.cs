@@ -1,3 +1,4 @@
+// 场内可阅读的日志平板。选中目标后把来源、标题和正文打开到 HUD 窗口，读完可关掉并回到正常输入。
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;

@@ -1,3 +1,4 @@
+// 好友房的菜单。玩家可以搜本地房间、找跨网房间、开房或直接连。LanRoomClient 和 LanRoomCode 处理连接，这里将连接、申请和准备状态显示到界面。
 using System;
 using System.Globalization;
 using System.Linq;
@@ -234,6 +235,7 @@ namespace Unity.MP_FPS.Client
         {
             GameSettings.Instance.PlayerCharacter = m_Root.Q<DropdownField>("lanCharacter").index + 2;
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(m_Stop.Token);
+            // 跨网加入过程保留单独的取消入口。停在浏览页时可以撤回申请，也可以随窗口一起取消。
             m_JoiningPeer = stop;
             Present();
             m_Root.Q<Button>(m_Page == LanRoomPage.Browse ? "lanCancelApplication" : "lanPeerCancelJoin").Focus();
@@ -261,6 +263,7 @@ namespace Unity.MP_FPS.Client
             m_SearchRooms = null;
             search?.Cancel();
         }
+        // 本地发现和跨网大厅用不同的数据源。每次搜索有自己的令牌，切页或换目录后，前一次结果不会又写回列表。
         private async void RefreshRooms()
         {
             if (m_Disposed || m_Busy || m_Page != LanRoomPage.Browse || m_SearchRooms != null || m_Modal.ClassListContains("lan-hidden")) return;

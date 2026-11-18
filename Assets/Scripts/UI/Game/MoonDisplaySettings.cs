@@ -1,3 +1,4 @@
+// 月球预览的资源配置。MenuMoonView 从这里取网格、材质、朝向、转速以及背景与观察模式的渲染分辨率。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

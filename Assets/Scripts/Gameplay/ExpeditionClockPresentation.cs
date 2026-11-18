@@ -1,3 +1,5 @@
+// 把战局里的月面时间同步到天空和光照。房主直接读服务端时间基准，远程客户端读收到的时间基准。
+// ExpeditionClock 用服务器 tick 推算当前时刻，MoonSceneLighting 用这个时刻更新画面。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -61,6 +63,7 @@ namespace Unity.MP_FPS
             var time = m_Time.GetSingleton<NetworkTime>();
             IsSynchronized = state.Ready && time.ServerTick.IsValid;
             if (!IsSynchronized) return;
+            // 网络包给的是可追溯的时间基准。客户端逐帧按服务器当前 tick 推算，光照就不用等每次收到包才跳一下。
             TotalHours = ExpeditionClock.HoursAt(state, time.ServerTick, time.ServerTickFraction);
             m_Lighting.ApplyTimeOfDay(TotalHours);
         }

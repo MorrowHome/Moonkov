@@ -1,3 +1,4 @@
+// 经典爆破的回合状态和算分规则。这里处理开战、装拆包、时间、换边、记分和购买规则，ServerGameSystem.Classic 把它接到实际地图和玩家。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

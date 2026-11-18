@@ -1,3 +1,4 @@
+// 赏金冲突和标准远征共用的大地图画布。按当前玩法取已知目标、队友和撤离点，支持移动视图、缩放和放定位点。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -95,6 +96,7 @@ namespace Unity.MP_FPS
         private static Vector2 XZ(Vector3 point) => new Vector2(point.x, point.z);
         private float Scale => Mathf.Max(1, Mathf.Min(contentRect.width, contentRect.height) - 48) / (2 * m_Radius) * Zoom;
         private Vector2 Project(Vector3 point) => ProjectXZ(XZ(point));
+        // 世界 X、Z 变成地图的左右、上下。UI 的纵轴向下，所以北向偏移取负。反过来点地图下定位也走同一套比例。
         private Vector2 ProjectXZ(Vector2 point)
         { var d = point - m_Center; return contentRect.center + new Vector2(d.x, -d.y) * Scale; }
         private Vector2 Unproject(Vector2 point)
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS
                 if (row.OwnTeam && row.TeamId == value.LocalTeamId && !row.IsLocal && (row.Life == ClashLife.Alive || row.Life == ClashLife.Downed)) m_Friends.Add(row);
             Changed();
         }
+        // 普通远征用场景里的出口和补给点。赏金模式则从对局快照拿标记，两者切换时重置上次选点和底图。
         public void PresentExpedition(MoonRaidMap map, Vector3 local, Vector3 forward, ulong takenMask)
         {
             bool reset = !m_Expedition || m_ExpeditionSource != map;

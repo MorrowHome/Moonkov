@@ -1,3 +1,4 @@
+// 把换弹输入和本地角色状态接到光环蓄能提示。HaloChargeFeedback 给出等确认、充能、已满等状态，这里把它显示成准星旁的读数。
 using Unity.Entities;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;

@@ -1,3 +1,5 @@
+// 悬赏模式下把机器人接入对局。在服务器接受生成请求、更新阵营状态，并让可行动的机器人使用共用的感知和输入流程。
+// 这一部分还负责队友线索共享、场地边界和射击通道检查。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

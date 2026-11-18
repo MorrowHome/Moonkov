@@ -1,3 +1,4 @@
+// Theophilus 场景里的远征环境声。跟随本机存活角色，根据室内可呼吸空气和附近异形距离调整底噪、结构响声和画面暗角。
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;

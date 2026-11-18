@@ -1,3 +1,4 @@
+// 背包物品的悬修信息卡。记录当前指向的物品编号，从最新库存取内容，交给 MoonkovItemInformation 渲染。
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,6 +24,7 @@ namespace Unity.MP_FPS.Client
 
         private void ShowItemTooltip(VisualElement target, InventoryItem item, Vector2 position)
         {
+            // 打开右键菜单时可能收到一次新的鼠标进入事件。这里依然挡住信息卡，避免它抢在菜单上面。
             if (m_Disposed || m_Drag != null || m_Windows.HasContext || item == null || target.panel == null) return;
             bool changed = m_TooltipTarget != target || m_TooltipItemId != item.Id;
             m_TooltipTarget = target;

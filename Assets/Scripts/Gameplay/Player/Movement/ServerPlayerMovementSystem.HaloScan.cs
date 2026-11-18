@@ -1,3 +1,5 @@
+// 服务器确认扫描按键、冷却和能量足够后，开启一次光环扫描。目标按距离排列，扫描波到达时才给发起者发送接触点。
+// 发送前重新检查目标，避免给已离场或失效的目标发标记。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -77,6 +79,7 @@ namespace Unity.MP_FPS
                     IsHuman(target) && !ActiveTransferActor(target, false)) continue;
                 float3 point = pose.ValueRO.Position + new float3(0, .9f, 0);
                 if (!HaloSupportRules.Within(origin, point, HaloScanRules.Range)) continue;
+                // 扫描波按距离除以速度计算到达时间。只保留最早到达的一批，消息按波前扩张顺序发送。
                 float arrival = math.distance(origin, point) / HaloScanRules.Speed;
                 int index = sweep.Count;
                 while (index > 0 && sweep.Arrival[index - 1] > arrival) index--;

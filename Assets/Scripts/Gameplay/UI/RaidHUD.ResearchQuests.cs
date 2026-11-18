@@ -1,3 +1,4 @@
+// 研究主线的局内追踪与设备操作。读取当前玩家的任务快照，在地图锚点显示提示和剧情素材。按住设备时定时给服务器发继续操作，松开则发停止。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -150,6 +151,7 @@ namespace Unity.MP_FPS
                 : notice;
             m_ResearchPrompt.style.display = canInteract && prompt != null ? DisplayStyle.Flex : DisplayStyle.None;
             if (prompt != null && m_ResearchPromptText.text != prompt) MoonkovLocalization.Set(m_ResearchPromptText, prompt);
+            // 瞄到研究设备或正在按住时占用这次交互，避免一枚共享按键再触发搜刮。
             return m_ResearchInputPriority = target.HasValue || m_ResearchHold.HasValue;
         }
 

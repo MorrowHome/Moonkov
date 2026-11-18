@@ -1,3 +1,4 @@
+// 把服务端发来的极速赏金状态、参赛者、感知脉冲和目标整理成客户端状态，给计时、排行榜和感知表现读取。镜头和感知按键的本地状态也在这里收口。
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS
         public ClashResult LastFailure;
         public double FailureAt;
 
+        // 比赛重开会换轮次。排行榜行和状态快照分别到达，所以只合并属于同一轮和同一序号的数据。
         public void Receive(ClashSnapshotRpc value, double now)
         {
             if (HasSnapshot && value.Epoch < Snapshot.Epoch) return;
@@ -77,6 +79,7 @@ namespace Unity.MP_FPS
             if (HasSnapshot && row.MatchId.Equals(Snapshot.MatchId) && row.Epoch == Snapshot.Epoch && row.Sequence == Snapshot.Sequence)
                 Participants[row.ParticipantId] = row;
         }
+        // 松开感知或失去资格后，先清本地显示，再用序号挡住迟到的旧感知消息，避免松手后闪回上一批目标。
         public void Receive(ClashSenseRpc value, double now)
         {
             if (!Approved || !HasSnapshot || !value.MatchId.Equals(Snapshot.MatchId) || value.Epoch != Snapshot.Epoch ||

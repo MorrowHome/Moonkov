@@ -1,3 +1,4 @@
+// MoonkovPlayerAudio 把当前的呼吸状态交给这里。它安排下一口气的时间，并在有咳嗽或受伤人声时给这些声音留位置。
 namespace Unity.MP_FPS
 {
     // Cadence is sampled once per breath. Changing stamina must not restart its timer every frame.

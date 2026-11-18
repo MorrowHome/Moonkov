@@ -1,3 +1,5 @@
+// 服务器每拍驱动人形 AI 的入口。地图换了就清理旧角色和导航，有可用路线后才维护人形敌人、队伍与玩家随从。
+// Think 给活着的角色生成 PlayerInput，死亡或撤离则按不同结局清理。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Collections;
@@ -165,6 +167,7 @@ namespace Unity.MP_FPS
                 {
                     // Lethal damage may arrive after the last protection update.
                     // The actual remaining charge must follow the item into the corpse.
+                    // 死亡可能刚发生在两次装备刷新之间。先把护盾真实剩余能量写回库存，再生成尸体容器。
                     EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);
                     DropCorpse(brain, pose.ValueRO, now, enemy.ValueRO.CharacterIndex);
                     RetireEnemy(entity, brain);
@@ -184,6 +187,7 @@ namespace Unity.MP_FPS
                 if (link.LinkedInstance == null) continue;
                 var ghost = link.LinkedInstance.GetComponent<PlayerGhost>();
                 if (ghost == null) continue;
+                // 机器人和玩家在角色系统里读的是同一种输入。这里给出这一拍想做什么，后面的系统执行它。
                 input.ValueRW.Input = Think(entity, brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
                     (float)SystemAPI.Time.DeltaTime);
                 if (brain.Extracted)

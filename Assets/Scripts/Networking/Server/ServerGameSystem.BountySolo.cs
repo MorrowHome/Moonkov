@@ -1,3 +1,4 @@
+// 单人极速赏金的机器人与重开流程。复用正常比赛的参赛者和意图，管理机器人出生、状态、装备回收和新一轮的名单。
 using System.Linq;
 using Gameplay.Leaderboard;
 using Unity.Collections;

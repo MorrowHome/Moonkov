@@ -1,4 +1,5 @@
-﻿using Unity.MP_FPS;
+﻿// 管设备和 InputUser 的配对。启动时键鼠放到同一个用户上，为这个用户启用控制动作。客户端输入系统可从这里取已配对的用户。
+using Unity.MP_FPS;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 using UnityEngine;

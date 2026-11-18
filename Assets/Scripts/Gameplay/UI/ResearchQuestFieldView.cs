@@ -1,3 +1,4 @@
+// 按研究任务快照在关卡锚点生成可见设备、发光提示和终端。它们是给本地玩家看的外观，不改变场景碰撞或服务端的任务交互。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;

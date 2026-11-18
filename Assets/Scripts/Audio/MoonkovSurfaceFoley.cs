@@ -1,3 +1,4 @@
+// 角色或异形的擦墙声从这里找接触面和位移。探测结果会短时复用，射线也有每帧共用的额度，避免许多角色一起擦墙时突然增加开销。
 using UnityEngine;
 
 namespace Unity.MP_FPS

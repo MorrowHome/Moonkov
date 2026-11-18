@@ -1,3 +1,5 @@
+// 给研究站的楼梯和内部区域补一块更细的导航网格。异步烘焙完后用连接把它和整张月面粗网格接起来。
+// 这样 AI 能走细楼梯，也不用把整张大图重烘得很细。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;

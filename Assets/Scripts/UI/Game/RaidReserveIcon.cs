@@ -1,3 +1,4 @@
+// 监测仪里的分格资源图标和武器图案。调用方给出点亮状态和颜色，图标只更新视觉表现。
 using UnityEngine;
 using UnityEngine.UIElements;
 

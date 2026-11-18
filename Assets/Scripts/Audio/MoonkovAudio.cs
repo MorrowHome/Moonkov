@@ -1,3 +1,4 @@
+// 玩法和界面通常从这里播音效。按需读取 AudioLibrary，再把声音交给 GameManager 的对象池。需要空间感、跟随或裁剪时用 PlayWeaponLayer。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -109,6 +110,7 @@ namespace Unity.MP_FPS
             var target = evt.target as VisualElement;
             return target as Button ?? target?.GetFirstAncestorOfType<Button>();
         }
+        // 先在按下或键盘确认时给按钮挂上声音，再等按钮实际激活。即使点击后页面马上被拆掉，这个按钮自己的回调也能响。
         private static void BindButton(Button button)
         {
             if (button == null || !button.enabledInHierarchy) return;

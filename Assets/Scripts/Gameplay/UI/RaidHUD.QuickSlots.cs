@@ -1,3 +1,4 @@
+// 把快捷栏和局内输入接起来。它会判断这次按键是切装备、用物品还是被菜单接管，再按需要交给近战、手雷和战术道具流程。
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
@@ -147,6 +148,7 @@ namespace Unity.MP_FPS
             m_QuickBindings.Bind(slot, item, QuickGraph);
             QuickNotice(m_QuickBindings.Reason);
         }
+        // 拖进快捷栏只尝试绑定。就算规则拒绝绑定，也到这里结束，免得松手又被当成普通移物。
         private bool DropOnQuickSlot(InventoryItem item, Vector2 point)
         {
             int slot = m_QuickView.Hit(point);
@@ -165,6 +167,7 @@ namespace Unity.MP_FPS
             int slot = m_QuickBindings.NextWeaponSlot(graph, direction, m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().EquippedWeaponSlot);
             return slot < 0 ? 0 : SelectQuickSlot(slot + 1);
         }
+        // 忙碌时先处理手雷收回或道具动作取消。手雷成功收回后，可以继续之前请求的切换。
         private int SelectQuickSlot(int number)
         {
             if (m_QuickBindings == null) return 0;

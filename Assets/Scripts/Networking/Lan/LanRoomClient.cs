@@ -1,3 +1,4 @@
+// 好友房的客户端入口。建房、加房、刷新和离开统一走这里。本机房主可直接调用 LanRoomServer，来宾按房间类型走 TCP 或 ICE。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -172,6 +173,7 @@ namespace Unity.MP_FPS
                 CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex,
                 Payload = payload == null ? null : JObject.FromObject(payload) };
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, s_Stop.Token);
+            // 将轮询、拖格和准备等请求排队处理。回包之后再看房间代数，已经切到新房间就丢掉旧房间的结果。
             await s_Requests.WaitAsync(linked.Token);
             try
             {
@@ -200,6 +202,7 @@ namespace Unity.MP_FPS
             {
                 await RequestAsync("poll"); s_Failures = 0; Error = null;
                 var state = GameSettings.Instance.GameState;
+                // 房主在准备阶段先把服务器启动起来。来宾看到房主已监听才启动客户端，每个房间轮次只触发一次加载。
                 if ((Room.Phase == LanRoomPhase.Playing || IsHost && Room.Phase == LanRoomPhase.Preparing) && Room.Round != s_LaunchedRound && !string.IsNullOrEmpty(Ticket) && state == GlobalGameState.MainMenu)
                 {
                     s_LaunchedRound = Room.Round;

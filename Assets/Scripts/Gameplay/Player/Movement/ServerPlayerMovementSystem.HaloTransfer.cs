@@ -1,3 +1,5 @@
+// 服务器推进光环给队友输送能量、协防和召回。每拍验证目标的身份、队伍、距离、视线和装备。
+// 伤害入口也会查协防光环，让供能者实际消耗自己的能量代为挡伤害。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -52,6 +54,7 @@ namespace Unity.MP_FPS
                     bool occupied = HaloTransferRules.Occupied(sender);
                     Entity target = occupied ? sender.HaloTransferTarget : Entity.Null;
                     if (!occupied && start)
+                        // 用 Ghost 编号加出生拍识别这次连接。角色销毁重生后，即使编号再用，也不应连到旧目标。
                         m_TransferGhosts.TryGetValue((input.HaloTransferGhostId, input.HaloTransferSpawnTick), out target);
                     bool valid = held && (occupied || start) && target != actor && target != Entity.Null &&
                         EntityManager.HasComponent<PredictedPlayerGhost>(target) && EntityManager.HasComponent<GhostInstance>(target) &&

@@ -1,3 +1,5 @@
+// 保存客户端当前主 Camera 和它的 AudioListener，方便画面和音频系统找到同一个视点。
+// 如果场景加载重复创建摄像机，Awake 会处理后来的那一个。
 using UnityEngine;
 
 namespace Unity.MP_FPS

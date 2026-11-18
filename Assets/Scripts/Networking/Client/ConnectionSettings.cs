@@ -1,3 +1,4 @@
+// 加载页、高级连接和 GameConnection 共用的连接状态。端口、会话码、最终连接端点以及握手报错放这里，界面通过属性通知得到更新。
 using System;
 using System.Runtime.CompilerServices;
 using Unity.NetCode;

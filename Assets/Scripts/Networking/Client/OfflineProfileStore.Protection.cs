@@ -1,3 +1,4 @@
+// 读取旧版离线档案后，用 ProtectionKitMigration 补齐新版防护装备。档案里留一条迁移回执，同一个存档以后打开时就不用重发装备。
 using System.IO;
 using Unity.MP_FPS.Inventory;
 

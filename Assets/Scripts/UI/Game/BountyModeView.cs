@@ -1,3 +1,4 @@
+// 远征、赏金冲突和经典爆破的选择弹窗。它根据档案模式和本机沙2地图是否可用来决定哪些卡片可选，再把选择交回 MainMenu。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 能量手雷的库存图标。StashItemArt 绘制这个物品时，把路径和颜色交给 UI Toolkit 的画笔。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

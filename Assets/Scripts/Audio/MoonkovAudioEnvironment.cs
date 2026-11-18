@@ -1,3 +1,4 @@
+// GameManager 在有画面的进程里加上这段脚本。回到主菜单时，它恢复主相机的听者，并根据登录画面是否已收起切换船舱底噪。
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

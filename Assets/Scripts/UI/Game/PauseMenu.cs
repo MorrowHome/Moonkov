@@ -1,3 +1,4 @@
+// 局内 Esc 菜单。暂停状态由 GameSettings 控制，设置页沿用船舱终端的 BindSettings。继续、主菜单和退出按钮各自发出对应操作。
 using Unity.MP_FPS.Client;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -83,6 +84,7 @@ namespace Unity.MP_FPS
                 if (m_SettingsVisible) CloseSettings(); else OnResumePressed();
                 return;
             }
+            // 先让局内界面关掉最上层的弹窗、背包或地图。本次 Esc 已有界面处理时就到此为止。
             if (RaidHUD.CloseInventory()) return;
             GameSettings.Instance.IsPauseMenuOpen = true;
             FitLayout();

@@ -1,3 +1,4 @@
+// 战后物资清单。根据 RaidResultManifest 展示带回、受保护和丢失的物品数量。界面按已经结算的清单绘制，切语言时会重新翻译。
 using UnityEngine.UIElements;
 using Unity.MP_FPS.Inventory;
 

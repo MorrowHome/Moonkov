@@ -1,3 +1,4 @@
+// 和 StashLayout 配套的模板装备逻辑。根据演示物品类别和目标槽判断穿脱，卸下时先找格子。正式库存规则在 InventoryGraph。
 using System.Collections.Generic;
 using UnityEngine;
 

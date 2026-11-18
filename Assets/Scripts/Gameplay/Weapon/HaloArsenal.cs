@@ -1,3 +1,5 @@
+// 光环武器的基础配置清单，含库存代码、手势索引、容量、能耗、射击间隔和弹道参数。
+// 需要读取实际局内数据时用 WeaponRegistry，它还会合并配件和临时增益。
 using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS

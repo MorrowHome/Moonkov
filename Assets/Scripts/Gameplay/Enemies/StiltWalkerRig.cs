@@ -1,3 +1,4 @@
+// 直立长脚异形的程序骨架。以身体的位置为基准规划脚步、找落脚点并摆放长腿和头部，供身体碰撞和外观跟随。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.SpiderLab;

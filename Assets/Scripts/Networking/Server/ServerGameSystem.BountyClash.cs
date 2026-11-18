@@ -1,3 +1,4 @@
+// 把极速赏金比赛规则接到真实服务端 World。入场、报名、观战、出战、掉线与结算在这里调度，成绩和感知等消息再分别发给客户端。
 using System;
 using Math = System.Math;
 using Gameplay.Leaderboard;
@@ -349,6 +350,7 @@ namespace Unity.MP_FPS
             {inventory.CancelActions();inventory.ClearSearchRecords();inventory.OpenedLootId=-1;inventory.LastSentVersion=inventory.LastSentLootVersion=-1;inventory.NextDeathBagResync=0;}
             loot.NextRefillCheck=0;world.NextSnapshot=0;
         }
+        // 比赛公共状态和个人感知是不同消息。感知目标按玩家的队伍、位置和当前感知状态算完，发给对应连接。
         private void SendClashSnapshots(ref SystemState state,EntityCommandBuffer ecb,BountyClashWorld world,double now)
         {
             var match=world.Match;uint sequence=++world.Sequence;

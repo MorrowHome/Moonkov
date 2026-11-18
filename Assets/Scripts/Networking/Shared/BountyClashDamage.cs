@@ -1,3 +1,4 @@
+// 战斗伤害跨玩法的入口。记录攻击者出手时的身份，按当前玩法区分队友、自伤和可受伤对象，再把实际伤害交给 RaidHealth 与战绩统计。
 using Unity.Entities;
 using Unity.NetCode;
 

@@ -1,3 +1,5 @@
+// 经典爆破的一名机器人如何执行队伍命令。依据视线、烟雾、闪光和交火状态决定走位、开火、换枪或操作炸弹。
+// 结果写成玩家同格式的 PlayerInput，枪是否打中和操作是否成功由服务器接着处理。
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS
             float pitch = m_Pitch + sway * .45f * Mathf.Cos((float)now * 6 + Id);
             Vector3 forward = Quaternion.Euler(pitch, yaw, 0) * Vector3.forward;
             Vector3 localMove = Quaternion.Euler(0, -yaw, 0) * move;
+            // 移动和视角都变成输入交给共用的角色模拟。机器人的战术代码决定按什么，真实位移和开火还要走角色规则。
             var input = new PlayerInput
             {
                 LookYawPitchDegrees = new float2(yaw, pitch),

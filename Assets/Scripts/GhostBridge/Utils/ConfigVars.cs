@@ -1,4 +1,5 @@
-﻿using System;
+﻿// 集中管理可调参数和功能开关。启动时通过特性找到静态字段，向字段注入值，供混音、预测诊断和功能切换等系统读取。
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;

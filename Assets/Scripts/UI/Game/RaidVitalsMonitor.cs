@@ -1,3 +1,4 @@
+// 生命监测仪的界面容器。组合人体图、心跳波形和氧气、能量等指示，输入来自角色快照。没有新的状态变化时尽量沿用已有元素。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

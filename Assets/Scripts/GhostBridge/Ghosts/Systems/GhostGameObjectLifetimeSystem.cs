@@ -1,3 +1,4 @@
+// 从 Ghost 实体生成并绑定场景物体，维护两者对应表。它负责区分服务端、自己控制的角色和远端角色，并按依赖顺序激活。
 #if !ENABLE_PROFILING && !NGS_SUBMISSION_BUILD
 #define TRY_CATCH_GHOSTOBJECT_EXCEPTIONS
 #endif
@@ -259,6 +260,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                     ecb.AddComponent(entity, new GhostGameObjectDeferredActivation());
                     m_NumDeferredGhosts++;
 
+                    // 先保留实例和链接，等依赖满足再激活。这样对象的玩法脚本开始运行时，能查到它需要的管理器和网络数据。
                     instance.SetActive(false);
                 }
                 else if (ghostGameObjectPrefab == null)
@@ -320,6 +322,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                     }
                 }
 
+                // 管理器先绑定，客户端再等服务端已绑定的标记。本地角色准备好之后，剩余物体才开始使用这个 World 的桥接对象。
                 bool allowedToActivate = false;
                 if (isServer) {
                     allowedToActivate = isManager || (m_NumManagersCreated >= numExpectedManagers);

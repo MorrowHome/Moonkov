@@ -1,3 +1,4 @@
+// GameManager 创建战局 World 前，从这里拿监听端点和连接端点。单人、房主、普通直连、跨网 ICE 和 Unity Relay 各有一个准备入口。
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS
         public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(false, ct);
         public static Task<GameConnection> JoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(true, ct);
 
+        // Relay 会话建立和底层网络回调是两件事。先等会话，再等回调提供两个端点。超时后如果 SDK 又迟到建好了房间，会补做清理。
         static async Task<GameConnection> OpenRelayAsync(bool joinByCode, CancellationToken ct)
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -158,6 +160,7 @@ namespace Unity.MP_FPS
 
         public void UseLocalServerEndpoint(NetworkEndpoint endpoint) => ConnectEndpoint = endpoint;
 
+        // 优先用已有好友房的战局路线，官方大厅分配到 P2P 时再新建 ICE 会话。普通直连走域名解析和公网端口。
         public static async Task<GameConnection> ConnectGameAsync(CancellationToken ct = default)
         {
             if (LanRoomClient.PeerRoom is { } room)

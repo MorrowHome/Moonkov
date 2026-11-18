@@ -1,3 +1,4 @@
+// 补给和医疗物品共用的数值表。食饮、补氧、治疗与止血读这里的适用条件、效果和耗时，让界面展示与写入角色的数值一致。
 #nullable disable
 namespace Unity.MP_FPS.Inventory
 {

@@ -1,3 +1,4 @@
+// 处理 Unity 编辑器跳过域重载的情况。进入 Play 时识别带 ResetOnPlayMode 的类型，调用它们指定的静态清理方法，防止上一轮状态留到下一轮。
 using System;
 using System.Collections.Generic;
 using System.Linq;

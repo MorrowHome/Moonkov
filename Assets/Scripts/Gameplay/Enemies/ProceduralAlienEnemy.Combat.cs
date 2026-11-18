@@ -1,3 +1,5 @@
+// 异形常规战斗的服务端时间轴。蓄力、出招、恢复各占一段时间，命中时按技能形状和场景遮挡处理伤害。
+// 覆面虫附脸后按计时继续扣血。客户端读取已确认的攻击编号和动作进度来显示。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Collections;
@@ -129,6 +131,7 @@ namespace Unity.MP_FPS
             float age = m_Clock - m_ActionStarted;
             bool moving = m_Pattern.Kind == AlienAttackKind.Bite || m_Pattern.Kind == AlienAttackKind.Charge || m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.SpiderRush;
             if (!moving && (m_Pulse >= m_Pattern.Pulses || age < m_Pattern.PulseTime(m_Pulse))) return;
+            // 移动型招式沿这一段位移检查碰撞，同一个目标在这次冲击中只记一次。固定技能分成多拍，每到下一拍才重置名单。
             if (!moving) { m_Pulse++; m_StrikeVictims.Clear(); }
             var manager = GhostGameObject.EntityManager;
             using var query = manager.CreateEntityQuery(typeof(PredictedPlayerGhost), typeof(LocalTransform), typeof(GhostGameObjectLink));
@@ -228,6 +231,7 @@ namespace Unity.MP_FPS
             return new Pose((Vector3)pose.Position + Vector3.up * height + rotation * Vector3.forward * .12f, rotation);
         }
 
+        // 附着身份使用可在客户端换算的 Ghost 实体。开始前检查有没有另一只异形已经占住这个目标。
         private void AttachFace(Entity target)
         {
             // One face parasite per victim; identity is a remapped Ghost Entity.

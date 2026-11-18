@@ -1,3 +1,4 @@
+// AI 从脚步、落地和咳嗽获得线索时的计算。姿势、速度和负重影响可听距离，障碍压低范围，异形只拿到带偏差的位置。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 

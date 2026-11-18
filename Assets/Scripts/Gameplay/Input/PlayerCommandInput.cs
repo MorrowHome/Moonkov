@@ -1,3 +1,4 @@
+// PlayerInput 表达玩家想做什么。网络命令加上输入 tick 和插值 tick，客户端预测与服务端移动系统都能按时间读取。
 using System;
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
@@ -83,6 +84,7 @@ public struct PlayerInput {
 
     // Apply the same numeric contract to client prediction and server simulation.
     // Command payloads are player intent, never trusted movement or shot state.
+    // 压住移速输入、视角和其他数据的范围，处理 NaN 等异常值，再按自由视角和光环动作的互斥规则去掉冲突的操作。
     public PlayerInput Sanitized() {
         var result = this;
         const uint k_KnownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
@@ -144,6 +146,7 @@ public struct PlayerInput {
                               InputFlag.EquipPistol);
     }
 
+    // 跨帧合并时，允许更新连续状态就用当前的移动和视角。短按触发的跳跃、开火和换装会累积下来。
     public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true) {
         bool hadBufferedShot = Shoot;
         float3 bufferedAimPoint = AimPoint;
@@ -164,6 +167,7 @@ public struct PlayerInput {
                                        InputFlag.EquipRevolver | InputFlag.EquipPistol);
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
+        // 短按开火合并到后面的帧时，应带上按下当时那次瞄准，避免之后移开鼠标让这枪换了方向。
         // Preserve the target belonging to a buffered single-shot press.
         if (input.Shoot && !HaloTransfer) {
             AimPoint = input.AimPoint;

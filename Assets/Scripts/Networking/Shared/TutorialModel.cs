@@ -1,3 +1,4 @@
+// 单人教学进度的数据和判断规则。记录看过的引导页与完成的动作位，检查准备步骤时直接从随身武器、可取用电池和医疗品读取。
 using System;
 using System.Linq;
 using Unity.MP_FPS.Inventory;

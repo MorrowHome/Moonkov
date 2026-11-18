@@ -1,3 +1,4 @@
+// 客户端按队友识别器的装备和输入判断是否显示标识，再从已同步角色里挑队友，处理距离、轮廓和跟踪对象的回收。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

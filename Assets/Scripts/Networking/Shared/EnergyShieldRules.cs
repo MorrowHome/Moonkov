@@ -1,3 +1,4 @@
+// 计算光环护盾能挡的游戏伤害。一次外部命中先扣共享光环能量，再把剩余伤害交给身体部位。全部挡下时也会留下护盾受击事件。
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Unity.MP_FPS
             (!state.ClashEnabled || state.ClashLife==ClashLife.Alive);
 
         // Returns remaining body damage. One external impact calls this once before any body split.
+        // 伤害发生时按共享光环能量结算。能量只够挡一部分就把余量交回调用者，一次命中不能对多个身体部位重复扣光环能量。
         public static float Absorb(ref PredictedPlayerGhost state,float incoming,uint tick,RaidDamageKind kind,float3 impact=default)
         {
             if(!float.IsFinite(incoming) || incoming<=0)return 0;

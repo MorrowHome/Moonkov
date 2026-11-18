@@ -1,3 +1,4 @@
+// 项圈供氧的规则。服务端根据环境、角色移动和补氧点更新剩余氧气。HUD 可读取消耗速度、补给速度与缺氧倒计时。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -79,6 +80,7 @@ namespace Unity.MP_FPS
             state.OxygenSupplyPerSecond = sealedReserve ? Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond)) : 0;
             if(!sealedReserve)state.Oxygen=0;
             float netDrain = state.OxygenDrainPerSecond - state.OxygenSupplyPerSecond;
+            // 这一帧里可能先用完存氧、后进入缺氧。只把氧气用完后的那段时间算进缺氧宽限与伤害。
             float exhaustedTime = netDrain > 0 ? Mathf.Max(0, dt - state.Oxygen / netDrain) : 0;
             state.Oxygen = Mathf.Clamp(state.Oxygen - netDrain * dt, 0, Capacity);
             if (atmosphere.Breathable || exhaustedTime <= 0)

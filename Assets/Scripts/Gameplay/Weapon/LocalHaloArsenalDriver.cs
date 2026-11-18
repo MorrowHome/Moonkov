@@ -1,3 +1,5 @@
+// 独立运行角色时的光环武器驱动。按手势为每种武器保留一份简化状态，让本地角色也能试射、连发和装填。
+// 用 HaloModuleFire 共用射速规则，网络战局则由角色预测和服务器驱动。
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;

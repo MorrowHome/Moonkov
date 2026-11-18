@@ -1,3 +1,4 @@
+// 好友房的成员展示。把 LanRoomClient 的房间成员整理成 OnlineSquadStage 能画的席位数据，再把名字卡对齐到预览角色。
 using System;
 using System.Linq;
 using Unity.MP_FPS.Online;

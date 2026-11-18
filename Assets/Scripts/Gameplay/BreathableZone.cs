@@ -1,3 +1,5 @@
+// 给定一个场景坐标，查出那里属于哪个空气区域以及是否能呼吸。氧气逻辑和气闸音效都可以查。
+// 普通房间使用固定气压，气闸舱则读取 AirlockController 的实时气压。
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,6 +46,7 @@ namespace Unity.MP_FPS
         public static bool Contains(Vector3 position) => TrySample(position, out var sample) && sample.Breathable;
         public static bool TrySample(Vector3 position, out AtmosphereSample sample)
         {
+            // 区域可能有重叠。先用本地坐标判断点是否真的在区域内，再从命中的区域取优先级最高的一个。
             BreathableZone selected = null;
             foreach (var zone in s_Zones)
             {
@@ -64,6 +67,7 @@ namespace Unity.MP_FPS
             bool valid = AirlockSettings.Finite(pressure) && AirlockSettings.Finite(fraction) &&
                 AirlockSettings.Finite(minimum) && AirlockSettings.Finite(oxygenMinimum) &&
                 pressure >= 0 && fraction >= 0 && fraction <= 1 && minimum >= 0 && oxygenMinimum >= 0;
+            // 能否呼吸同时看总气压和氧分压。含氧比例够，但总气压太低，仍然吸不到足量氧气。
             sample = new AtmosphereSample(selected.m_AirspaceId, valid ? pressure : 0, valid ? fraction : 0,
                 valid && pressure >= minimum && pressure * fraction >= oxygenMinimum, selected.m_AllowsSuitRefill);
             return true;

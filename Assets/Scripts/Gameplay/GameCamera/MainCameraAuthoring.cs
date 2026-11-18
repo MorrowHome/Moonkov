@@ -1,3 +1,4 @@
+// 把场景里的摄像机视野配置烘焙成 ECS 数据。MainCameraSystem 通过 MainCamera 组件找到要跟随的实体，并读取它的视野参数。
 using Unity.Entities;
 using UnityEngine;
 

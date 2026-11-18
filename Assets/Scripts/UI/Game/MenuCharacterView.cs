@@ -1,3 +1,4 @@
+// 可复用的 3D 角色预览。创建模型、光照和动画，由相机渲染成 UI 图片，供船舱、仓库、局内背包和小队页使用。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -181,6 +182,7 @@ namespace Unity.MP_FPS.Client
             StopInspect(); m_InspectionYaw = 0; m_Inspected = false; Zoom = 1; m_ViewDirty = true;
         }
 
+        // 预览可以独占一套舞台，也能挂到小队共用舞台。这里准备模型和动画，独立展示时还会配置自己的相机和灯。
         private void CreateStage()
         {
             m_Slot = 0; m_Motion = 0; m_Blend = 0; m_BaseTime = 0; m_Transition = false;
@@ -524,6 +526,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Render() => Render(Element.contentRect.size);
 
+        // 按 UI 上的实际尺寸分配渲染纹理，大小合适时继续复用。用放大的渲染尺寸提高预览清晰度，同时受配置上限约束。
         public void Render(Vector2 viewport)
         {
             if (m_Disposed || m_Camera == null) return;

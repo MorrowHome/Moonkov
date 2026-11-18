@@ -1,3 +1,4 @@
+// RaidActionPresentation 提供手部动作种类、这一轮的序号和播放进度。这里在进度越过标记时播开盖、吞咽、按针或接氧等声音。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS
                 (code == "trauma_kit" || code == "hemostatic_bandage" || code == "rescue_kit");
             SoundSystem.SoundInfo Play(SoundDef sound, float gain=1) =>
                 MoonkovAudio.PlayWeaponLayer(sound, position, gain, owner ? 0 : 1, follow: follow);
+            // 记住这一轮已经响过的标记。网络重复给同一段进度时可以接着播动作，声音仍只响一次。
             bool Crossed(int marker, float at)
             {
                 if ((played & marker) != 0 || phase < at || previous >= at) return false;

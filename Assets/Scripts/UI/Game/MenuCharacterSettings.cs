@@ -1,3 +1,4 @@
+// 角色预览用的资源配置。定义模型、动作、光环、武器数据和相机渲染规格，MenuCharacterView 及改装台都从这里取美术来源。
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 

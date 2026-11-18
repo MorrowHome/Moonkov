@@ -1,3 +1,4 @@
+// 通用光环读条从这里接上战术道具、机关、撤离和换弹。只选一个可见动作来画，完成条件由相应玩法状态决定。
 using Unity.Entities;
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;

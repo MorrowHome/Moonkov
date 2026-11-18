@@ -1,3 +1,5 @@
+// 场景气闸的总入口。AirlockRules 算气压和门状态，这里负责门板位姿、门口防夹检测、舱内空气区域和变化通知。
+// 本地独立运行可自行推进状态，联网时用权威状态同步。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -89,6 +91,7 @@ namespace Unity.MP_FPS
             if (!AirlockNetworkContext.HasNetworkWorlds) TickAuthoritative(Time.deltaTime);
             Present();
         }
+        // 能否移动还要看现场碰撞。把关门感应器和门板移动路径的检测结果交给规则一起计算。
         public void TickAuthoritative(float dt)
         {
             if (!Ready) return;

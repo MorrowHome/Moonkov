@@ -1,3 +1,4 @@
+// 战局加入的 RPC 字段定义。ClientGameSystem 写入角色选择、入场票与玩法参数，ServerGameSystem 从实际发送这条消息的连接开始验证。
 using Unity.Collections;
 using Unity.NetCode;
 

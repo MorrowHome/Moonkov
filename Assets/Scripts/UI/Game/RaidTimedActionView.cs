@@ -1,3 +1,4 @@
+// 背包和准星共用的读条显示。把请求中、已开始、等结果和取消中区分开，倒计时走完后继续等服务器回执。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

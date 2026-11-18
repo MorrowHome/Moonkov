@@ -1,3 +1,4 @@
+// GameManager 加上的界面声音入口。定时找出新出现的 UI Toolkit 文档，把共享点击声和本地化绑定到根节点，两个扫描间新建的按钮也能走根节点事件。
 using UnityEngine;
 using UnityEngine.UIElements;
 

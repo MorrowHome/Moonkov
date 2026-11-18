@@ -1,3 +1,4 @@
+// 烘焙时把表现体预制件的 GUID 写进 ECS 实体供运行时查找，还会给实体添加 Ghost 脚本声明的嵌套数据组件和缓冲。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -41,6 +42,7 @@ public class GhostGameObjectBaker : Baker<GhostGameObject>
 
         if (gameObjectPrefab != null)
         {
+            // 扫描预制件上的 GhostMonoBehaviour 及其基类，找到应当放进实体的数据类型。RPC 会作为临时消息创建。
             var ghostComponents = gameObjectPrefab.GetComponentsInChildren<GhostMonoBehaviour>();
             foreach (var component in ghostComponents)
             {

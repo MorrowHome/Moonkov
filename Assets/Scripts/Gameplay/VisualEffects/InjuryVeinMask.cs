@@ -1,3 +1,4 @@
+// 生成屏幕受伤材质用到的血管纹理。各相机效果可以共用一张，最后一个使用者释放时再回收。
 using UnityEngine;
 
 namespace Unity.MP_FPS

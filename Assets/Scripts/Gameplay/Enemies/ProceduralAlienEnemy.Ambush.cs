@@ -1,3 +1,5 @@
+// 贴顶蜘蛛的伏击循环。等目标、亮出预警、扑向选定位置、落地恢复，再找能重新挂住的地方。
+// 追踪和换位沿表面导航，没路就停在可达位置。
 using Unity.Entities;
 using UnityEngine;
 
@@ -66,6 +68,7 @@ namespace Unity.MP_FPS
                 {
                     // Commit to a point at the start of the visible windup. A player
                     // can evade it; flight never steers towards their new position.
+                    // 蓄力开始就记住扑击落点。之后玩家可以跑开，蜘蛛起跳时仍飞向原来的点。
                     m_StrikePoint = ContactPoint(m_Target);
                     m_Pattern = AlienCombatPattern.For(profile, 1, m_Attacks + 1);
                     m_CombatPoint = m_StrikePoint; m_CombatOrigin = transform.position;

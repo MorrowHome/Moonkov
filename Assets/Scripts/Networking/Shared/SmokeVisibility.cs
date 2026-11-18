@@ -1,3 +1,4 @@
+// 烟雾从展开到消散的尺寸与密度供画面和服务端感知共用。视线穿过一团或多团烟时累加遮挡，达到阈值会阻止 AI 等继续看见目标。
 using UnityEngine;
 
 namespace Unity.MP_FPS

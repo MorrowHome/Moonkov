@@ -1,3 +1,4 @@
+// AlienCreatureBody 给部分 Boss 加上的轮廓表现。程序画出冠部和甲壳，从攻击蓄力、威吓和死亡状态更新发光或收缩。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

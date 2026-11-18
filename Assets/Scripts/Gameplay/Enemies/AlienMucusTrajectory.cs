@@ -1,3 +1,4 @@
+// 按喷射起点、目标和飞行时间计算黏液在哪。服务端沿这条曲线扫过碰撞，客户端可用同一个函数画飞行过程。
 using UnityEngine;
 
 namespace Unity.MP_FPS

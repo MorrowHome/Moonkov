@@ -1,3 +1,5 @@
+// 把实际飞过的子弹路径变成附近人形 AI 感到的压制和大致来向。子弹必须已掠过身体附近且没有墙挡，才记为擦过。
+// AI 可以因此找掩护，感知里保存的是带误差的方向线索。
 using System;
 using Unity.Entities;
 using UnityEngine;

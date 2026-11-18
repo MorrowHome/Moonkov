@@ -1,3 +1,4 @@
+// 在角色预览里展示近战装备。仓库读装备槽，局内读角色快照，最后把对应武器外观交给预览模型。
 using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;

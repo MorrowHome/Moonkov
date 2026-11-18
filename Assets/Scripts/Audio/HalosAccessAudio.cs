@@ -1,3 +1,4 @@
+// Halos 登录界面把自己当前的画面阶段传给这里。这里用同一个声音池播放终端弹出、切黑、开合和登录舱室底噪。
 using System;
 using UnityEngine;
 
@@ -63,6 +64,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 用窗口序号补齐一帧内同时出现的终端响声。环形句柄数组限制叠加数量，也让短尾音自然重叠。
         public void TerminalOpened(int newest, float intensity)
         {
             if (newest <= m_LastTerminal) return;

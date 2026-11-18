@@ -1,3 +1,4 @@
+// 终端视图从资源中的 UXML 模板复制界面，或把模板内容填进已有节点。这里是多个页面共用的加载入口。
 using System;
 using System.Linq;
 using UnityEngine;

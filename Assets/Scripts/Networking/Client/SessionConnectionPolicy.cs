@@ -1,3 +1,4 @@
+// 连接阶段共用的等待规则。GameManager 用服务端 Ghost 总数和已同步数量算进度，连接系统把 NetCode 断线原因换成界面容易理解的提示。
 using Unity.NetCode;
 
 namespace Unity.MP_FPS

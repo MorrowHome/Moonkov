@@ -1,3 +1,4 @@
+// 把同步的护盾、项圈、面罩和穿戴状态套到角色骨骼上，处理受击闪烁和第一人称可见性。最终绘制由 EnergyShieldRendering 负责。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS
             m_BadgeStyle=(byte)Mathf.Clamp(snapshot.SubspaceBadge,0,3);
             m_Charge=HaloEnergyRules.Energy(snapshot)/HaloEnergyRules.Maximum(snapshot);m_Energy=m_Charge;
             m_Regenerating=snapshot.ShieldRegenerating && snapshot.CurrentHealth>0 && (!snapshot.ClashEnabled || snapshot.ClashLife==ClashLife.Alive);
+            // 首份角色快照只记录装备和事件序号。随后有新序号才播放受击、碎盾或恢复，避免玩家刚进图就看到之前的特效。
             if(!m_HasSequence)
             {m_HitSequence=snapshot.ShieldHitSequence;m_BreakSequence=snapshot.ShieldBreakSequence;m_RestoreSequence=snapshot.ShieldRestoreSequence;m_HasSequence=true;}
             else
@@ -163,6 +165,7 @@ namespace Unity.MP_FPS
             return Mathf.Max(hit*.12f,broken*.17f);
         }
         internal void RestoreCameraVisibility(){m_Cameras.Clear();SetHidden(false);}
+        // 同一件装备在第一人称和其他相机里有不同的可见状态。每台相机渲染前单独设置，渲染后恢复，避免影响下一台相机。
         internal void BeginCamera(Camera camera)
         {
             m_Cameras.Push(new CameraState{Camera=camera,Hidden=m_Hidden});SetHidden(m_Owned&&m_FirstPerson&&camera==m_OwnedCamera);

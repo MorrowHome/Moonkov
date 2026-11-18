@@ -1,3 +1,4 @@
+// 角色和设备的网络脚本继承这个基类后，可以通过已绑定的 Ghost 读写 ECS 数据、收发 RPC，并在物体绑定和销毁前收到通知。
 using System;
 using Unity.Entities;
 using Unity.NetCode;

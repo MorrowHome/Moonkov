@@ -1,3 +1,4 @@
+// 客户端收到位置与朝向后，批量把实体的位置应用到场景中的 Ghost 表现体。少量偏差可以用一段渐消的位移抵消，减少眼前的跳变。
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -59,6 +60,7 @@ public partial class ClientGhostTransformApplySystem : SingletonSystem<ClientGho
 
                 if (!transformSync.DisableTransformSync)
                 {
+                    // 修正刚开始时保留原先的画面位置，随着时间逐步靠近同步位置。过了这段时间直接采用新坐标。
                     var timeSinceErrorTriggered = CurrentTime - transformSync.ErrorTriggeredTime;
                     if (timeSinceErrorTriggered <= transformSync.ErrorBlendTime)
                     {

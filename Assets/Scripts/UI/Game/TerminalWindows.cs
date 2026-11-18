@@ -1,3 +1,4 @@
+// 管理终端浮窗、右键菜单和提示。新窗可以置顶，Esc 交给最上层窗口处理，拖动由窗口自己的指针捕获管理。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

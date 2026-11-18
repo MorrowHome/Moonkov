@@ -1,3 +1,4 @@
+// 地图里摆这个组件作为出生点。烘焙时把场景物件变成带 SpawnPoint 的 ECS 实体，服务器可按标记查询位置和朝向。
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;

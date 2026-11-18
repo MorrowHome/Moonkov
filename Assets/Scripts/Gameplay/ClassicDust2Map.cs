@@ -1,3 +1,5 @@
+// 经典爆破地图在运行时的配置入口。记录双方出生位、两个包点和补给箱位置，并提供出生姿势和包点范围查询。
+// 经典爆破规则读取这些位置，地图组件负责场景坐标和补给箱外观。
 using System.Linq;
 using Unity.Transforms;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 异形死亡时生成采集容器。只处理一次，使用本局战利品池挑物品，再向下找地面落点。
 using Unity.Entities;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;

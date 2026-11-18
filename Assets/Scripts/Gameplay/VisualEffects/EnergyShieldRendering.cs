@@ -1,3 +1,4 @@
+// 用一套 URP 渲染回调服务所有护盾表现。相机内有盾面、护目镜或受击闪烁时才排入渲染步骤。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -83,6 +84,7 @@ namespace Unity.MP_FPS
                 var target=resources.activeColorTexture;var snapshot=TextureHandle.nullHandle;
                 if(surfaces || visor)
                 {
+                    // 折射材质要读取描画护盾前的画面。先把相机颜色复制到单独纹理，绘制时读副本、写正式画面，避开读写同一目标。
                     // Refraction samples a separate graph-owned copy, never its write attachment.
                     var descriptor=graph.GetTextureDesc(target);descriptor.name="Energy seal / refraction scene";descriptor.clearBuffer=false;
                     snapshot=graph.CreateTexture(descriptor);

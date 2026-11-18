@@ -1,4 +1,5 @@
-﻿public interface IGhostMonoBehaviourUpdate {}
+﻿// 这些接口让普通场景脚本声明自己要在何时更新。GhostGameObject 收集它们，由对应 ECS 系统在客户端或服务端阶段调用。
+public interface IGhostMonoBehaviourUpdate {}
 
 public interface IEarlyUpdateServer : IGhostMonoBehaviourUpdate
 {

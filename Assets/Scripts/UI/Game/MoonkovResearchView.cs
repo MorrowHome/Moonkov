@@ -1,3 +1,4 @@
+// 供应商窗口内的研究和制造页。用库存、配方和规则计算缺哪些材料，按确认时交给商店组装订单。
 using System;
 using System.Collections.Generic;
 using System.Linq;

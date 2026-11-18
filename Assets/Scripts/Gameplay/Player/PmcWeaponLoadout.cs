@@ -1,3 +1,5 @@
+// 生成服务器人形敌人的初始装备。常规远征从可用武器中轮换主武器，副武器优先补不同距离的需求。
+// 教学或悬赏走各自的初始库存配置。
 using Unity.MP_FPS.Inventory;
 using Random = Unity.Mathematics.Random;
 

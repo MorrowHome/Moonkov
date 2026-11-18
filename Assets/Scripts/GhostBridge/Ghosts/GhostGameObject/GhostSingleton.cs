@@ -1,3 +1,4 @@
+// 按服务器、客户端分别保存一份 Ghost 管理器。调用方可以立即取，也可以登记回调等管理器绑定。退局时会清理静态引用。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;

@@ -1,3 +1,4 @@
+// 本地枪口受阻时摆在准星中央的提示。调用方给出遮挡结果，这里只切换图案显示，鼠标事件可以穿过它。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

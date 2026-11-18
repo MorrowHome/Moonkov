@@ -1,3 +1,5 @@
+// 本机控制的角色如何看向目标。把输入、自由观察和枪口抬升合成视角，并逐步恢复反冲。
+// 合成后的角度会经输入指令送出去，让镜头方向与随后的射击共用方向。
 using Unity.Mathematics;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;

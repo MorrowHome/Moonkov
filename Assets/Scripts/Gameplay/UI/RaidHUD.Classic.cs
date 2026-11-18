@@ -1,3 +1,4 @@
+// 经典爆破专用的局内交互。显示队伍、回合和买枪阶段，复用背包、快捷栏与商店。放包和拆包按住时向房主继续报告按键。
 using Unity.MP_FPS.DollSinger;
 using Unity.Transforms;
 using UnityEngine;
@@ -80,6 +81,7 @@ namespace Unity.MP_FPS
                 !m_ClassicBuyOpen && !ChatInputBlocked && !typing && !canUse);
             bool held = canUse && m_InteractionBindings.Operate.IsPressed();
             double now = Time.unscaledTimeAsDouble;
+            // 按住时隔一小段时间续一次操作，松手马上发停止。请求带回合号，防止旧回合的输入被用于新回合。
             if (held != m_ClassicHeld || held && now >= m_NextClassicUse)
             {
                 Send(new ClassicUseRpc { Round = match.Round, Held = held });

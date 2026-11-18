@@ -1,3 +1,4 @@
+// 入场请求在这里发出。网络连接已有 NetworkId 后，客户端把名字、角色、玩法和凭据发给 ServerGameSystem，由服务器决定是否生成角色。
 using System;
 using Unity.Burst;
 using Unity.CharacterController;
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS
             HandleSendJoinRequest(ref state);
         }
 
+        // 有 NetworkId 只表示网络接通，还需要发一次入场请求。NetworkStreamInGame 在这里也当作已发出请求的标记，真正领到角色还要等服务端。
         void HandleSendJoinRequest(ref SystemState state)
         {
             if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && string.IsNullOrEmpty(ConnectionSettings.Instance.GameJoinTicket)) return;
@@ -61,6 +63,7 @@ namespace Unity.MP_FPS
             var clientJoinRequestRpc = new ClientJoinRequestV2Rpc();
             clientJoinRequestRpc.PlayerName.CopyFromTruncated(playerName);
             clientJoinRequestRpc.CharacterIndex = GameSettings.Instance.PlayerCharacter;
+            // 好友房用房间票，单人用本机模式的标记，账号联机用后端签发的游戏票。三个入口都用这条入场 RPC。
             clientJoinRequestRpc.LoginToken = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
                 ? PlayerProfileClient.Token : ConnectionSettings.Instance.GameJoinTicket;
             clientJoinRequestRpc.CarryCells = state.WorldUnmanaged.IsThinClient() ? 0 : PlayerProfileClient.CarryCells;

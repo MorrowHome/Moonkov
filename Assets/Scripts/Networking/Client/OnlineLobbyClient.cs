@@ -1,3 +1,4 @@
+// 账号在线模式的大厅层。小队、房间列表、准备、排队和进场资格由后端返回，这里保存当前账号的快照并把能开的那场交给 GameManager。
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS
                 SessionReconnect.Dismiss();
             }
         }
+        // 大厅处于就绪时才取分配好的服务器地址。校验协议和本人席位后设置加载参数，这一步还没在战局中生成玩家。
         public static void Join(bool retry = false)
         {
             var s = Snapshot;
@@ -88,6 +90,7 @@ namespace Unity.MP_FPS
         }
         public static void PreserveFailedJoin()
         { if (InInstance) s_PreserveFailedJoin = true; }
+        // 加载失败时可以保留后端席位。真正返回大厅才上报 return，免得加载进不去却被记成已经打完回来了。
         public static async Task ReturnedAsync()
         {
             bool preserve = s_PreserveFailedJoin; s_PreserveFailedJoin = false;

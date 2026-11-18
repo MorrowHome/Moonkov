@@ -1,3 +1,4 @@
+// 研究主线的任务档案页。读取任务状态、简报和奖励。接受任务或领取奖励时交给创建页面时传入的回调，之后再根据结果播放简报或故事。
 using System;
 using System.Threading.Tasks;
 using Unity.MP_FPS.Inventory;

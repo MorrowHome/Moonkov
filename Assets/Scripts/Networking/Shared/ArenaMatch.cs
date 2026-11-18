@@ -1,3 +1,4 @@
+// 临时装备玩法的比赛状态与补给选择。记录加入的玩家、击杀和时间，给房主使用。经典爆破的细分回合由 ClassicMatch 负责。
 using System;
 using System.Collections.Generic;
 using System.Linq;

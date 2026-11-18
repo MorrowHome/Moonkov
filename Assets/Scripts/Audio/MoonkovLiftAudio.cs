@@ -1,3 +1,4 @@
+// RaidLift 把轿厢和门的实际进度传进来。这里根据进度是否还在变，给门和电机分别起停循环声，因此平滑过的远端动作也能对上声音。
 using UnityEngine;
 
 namespace Unity.MP_FPS

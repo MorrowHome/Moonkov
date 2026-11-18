@@ -1,3 +1,4 @@
+// 局内灯开关的网络入口。服务端按真实角色和开关位置处理按键，再同步灯状态和按键结果。没有战局 World 的单独场景可直接操作按钮。
 using System;
 using System.Collections.Generic;
 using System.Text;

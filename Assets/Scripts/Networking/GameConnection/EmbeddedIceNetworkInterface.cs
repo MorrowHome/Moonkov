@@ -1,3 +1,4 @@
+// 把原生 ICE 的收发接到 Unity Transport 接口。Unity 调用 Bind 时会校验逻辑端点，底层 UDP 套接字由 ICE 负责绑定。
 using System;
 using Unity.Jobs;
 using Unity.Networking.Transport;

@@ -1,3 +1,4 @@
+// 局内入场和死亡的临时镜头。先记住第一人称镜头状态，再用单独镜头按时间移动或转到倒地视角，结束后恢复原镜头。
 using System;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;

@@ -1,3 +1,4 @@
+// 终端卡片的边框和背景轨道线。ArchiveCardFrame 根据指针、焦点和按下状态重绘。实际按钮行为由放置它的页面决定。
 using UnityEngine;
 using UnityEngine.UIElements;
 

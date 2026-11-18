@@ -1,3 +1,4 @@
+// 独立战局服的 ICE 信令和连接管理。以服务器身份向后端轮询候选地址，给参与的客户端维护对应 peer，由 NetCode driver 使用建立好的传输。
 using System;
 using System.Collections.Generic;
 using System.IO;

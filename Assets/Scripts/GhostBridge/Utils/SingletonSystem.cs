@@ -1,3 +1,4 @@
+// 给同类 ECS 系统维护一个静态实例指针，创建时登记、销毁时清理。需要按 World 分开的系统使用 ClientServerSingletonSystem。
 using Unity.Entities;
 using UnityEngine;
 

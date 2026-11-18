@@ -1,3 +1,4 @@
+// 聊天的消息格式、接收范围和限频规则都在这里。服务器筛选频道听众，客户端状态按序号记录可展示的历史和当前发送反馈。
 using System;
 using System.Collections.Generic;
 using System.Text;

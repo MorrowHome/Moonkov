@@ -1,3 +1,4 @@
+// 行动准备页的装备提醒。它从库存树检查光环是否已装备、医疗物品能否够到，以及有没有资格领取应急补给。真正能否出战由后续流程检查。
 using System.Linq;
 using Unity.MP_FPS.Inventory;
 

@@ -1,3 +1,5 @@
+// 异形的追猎策略。失去目标时围绕记住的线索找。发现目标后，各物种按自己的规则追赶、绕侧、保持距离或停顿。
+// Boss 的第一次威吓和转阶段表现也在这里。
 using UnityEngine;
 
 namespace Unity.MP_FPS

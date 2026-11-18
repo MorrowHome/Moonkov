@@ -1,3 +1,4 @@
+// 供应商窗口的入口。它把购买、出售、应急补给和研究接到 PlayerProfileClient，并根据库存和回执刷新可操作状态。
 using System;
 using System.Linq;
 using System.Threading;
@@ -182,6 +183,7 @@ namespace Unity.MP_FPS.Client
             claim.SetEnabled(Ready && eligible);
             MoonkovTerminal.Text(m_List, "Available when no halo weapon remains, including weapons stored inside containers. The revolver equips into the pistol slot; cells go into carried storage when space allows. Emergency supplies cannot be sold.", "terminal-copy");
         }
+        // 每份订单带有独立请求编号和预期库存版本。收到回执前先显示同步状态，后续由 PlayerProfileClient 校正菜单库存。
         private void Order(ShopOperation operation, string code, string itemId, int quantity)
         {
             if (!Ready) return;

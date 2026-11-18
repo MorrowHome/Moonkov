@@ -1,3 +1,4 @@
+// 接收战术物品的个人状态与全场事件。每个客户端 World 都有自己的数据，屏幕上的 TacticalItemsFeedback 由实际显示 HUD 的 World 更新。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 从玩家同步过来的氧气、体力和身体状态算出告警等级和呼吸节奏，由 HUD 和角色声音使用。供氧和扣氧的规则在 RaidOxygen。
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
@@ -23,6 +24,7 @@ namespace Unity.MP_FPS
         public bool Observe(in PredictedPlayerGhost state, float now)
         {
             var next = Urgency(state);
+            // 供氧和消耗交替时，数值可能在阈值附近来回波动。回升要多出一点余量才降告警等级，防止提示不断重播。
             // Small refill/consumption fluctuations must not replay a threshold alert.
             if (next < m_Urgency && state.BodyHealthInitialized && state.CurrentHealth > 0 &&
                 RaidOxygen.NeedsSuitAir(state) && state.Oxygen > 0)

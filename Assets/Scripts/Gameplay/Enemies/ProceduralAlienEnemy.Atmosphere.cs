@@ -1,3 +1,4 @@
+// 给客户端气氛音效找附近的异形声源。只查这个 World 已经收到的异形，死亡和静伏时不发这一类声音。
 using Unity.Entities;
 using UnityEngine;
 

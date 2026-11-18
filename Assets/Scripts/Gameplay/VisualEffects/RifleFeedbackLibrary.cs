@@ -1,3 +1,4 @@
+// 按武器选择枪响音层、命中声和镜头后坐等表现参数。角色网络表现和 RifleImpactFeedback 从同一资源拿这些配置。
 using UnityEngine;
 
 namespace Unity.MP_FPS

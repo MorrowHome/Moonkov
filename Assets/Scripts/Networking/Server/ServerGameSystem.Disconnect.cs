@@ -1,3 +1,4 @@
+// 在线远征断线后保留原来的角色和背包一小段时间。新连接认证成同一人就接回原角色，角色死亡、超时或过期则对原战局结算。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -22,6 +23,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 把原连接上的战局状态转给临时实体，再从准备删除的连接上解绑角色。角色留在服务端地图上，原来的输入连接会被清掉。
         private bool RetainDisconnectedRaid(ref SystemState state, Entity connection)
         {
             var manager = state.EntityManager;
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS
             return true;
         }
 
+        // 先按已认证的玩家身份找记录，同时检查时间与角色存活。通过后才给原角色绑定新连接和输入实体，并要求库存重新同步。
         private bool TryResumeRetainedRaid(ref SystemState state, EntityCommandBuffer ecb, Entity connection,
             RaidPersistenceContext.Profile authenticated, RaidPersistenceContext.Join join, bool notifyLeaderboard = true)
         {
@@ -108,6 +111,7 @@ namespace Unity.MP_FPS
             return false;
         }
 
+        // 掉线期间本局时间照走，撤离进度清零。到期或角色已经死亡时，从这里保证同一套远征结算流程仍能走完。
         private void PollRetainedRaids(ref SystemState state, EntityCommandBuffer ecb)
         {
             foreach (var (detached, session, joined, holder) in SystemAPI.Query<RefRO<RaidDetached>, RefRW<RaidSession>, RefRO<JoinedClient>>().WithEntityAccess())

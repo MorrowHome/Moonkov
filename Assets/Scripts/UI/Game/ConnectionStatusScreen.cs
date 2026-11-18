@@ -1,3 +1,4 @@
+// 连接过程的等待界面。从 ConnectionSettings 绑定显隐。点取消后交给 GameManager 退回主菜单，由它收掉正在进行的连接流程。
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;

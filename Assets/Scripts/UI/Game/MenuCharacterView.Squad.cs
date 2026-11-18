@@ -1,3 +1,4 @@
+// 小队舞台的角色动作和交互。它更新成员摆出的姿势，并提供预览舞台选中、拖动某个模型需要的命中范围。
 using Unity.MP_FPS.Online;
 using UnityEngine;
 using UnityEngine.Playables;

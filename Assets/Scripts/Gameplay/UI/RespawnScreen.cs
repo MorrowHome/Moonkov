@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿// 本地角色消失时管理观战镜头，也显示支持自动复活的玩法的倒计时。远征交给结算页，经典爆破等待下回合。
+using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;

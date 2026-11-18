@@ -1,3 +1,5 @@
+// 每个人形 AI 的记忆和行动状态。记录它确实观察到的线索、正在干的事、库存和小队身份。
+// 文件前面是共用规则，比如枪声线索、手雷避险、补氧、装填和体力。主循环在 DollSingerEnemySystem。
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
@@ -570,6 +572,7 @@ namespace Unity.MP_FPS
 
     // Observations are the only way world knowledge enters a brain. Decision code uses
     // this snapshot, never a hidden opponent's current transform or inventory.
+    // 这是某个观察者对目标的记忆。这里的时间、估计位置和置信度决定 AI 下一步能依据哪些信息。
     public sealed class PmcContact
     {
         public Vector3 Position, Velocity;

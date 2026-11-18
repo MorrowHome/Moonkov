@@ -1,3 +1,4 @@
+// 人形远征 AI 的可调参数。地图可以选用自己的配置，控制刷怪预算、敌人视野、记忆、反应时间、装填和撤离倾向等。
 using UnityEngine;
 
 namespace Unity.MP_FPS

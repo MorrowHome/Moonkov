@@ -1,3 +1,4 @@
+// 把好友房界面接到主菜单。LanRoomClient 通知档案变化时，这里更新仓库和账号栏用哪份资料。
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
@@ -19,6 +20,7 @@ namespace Unity.MP_FPS.Client
         {
             bool active = PlayerProfileClient.IsLan;
             if (m_WasInLan == active && m_LastLanProfile == LanRoomClient.Profile) return;
+            // 进入房间档案时取消手上还在跑的账号请求，避免旧线上档案回调覆盖刚切过来的状态。
             if (active && !m_WasInLan)
             {
                 // An online restore request must not overwrite the newly selected LAN account view.

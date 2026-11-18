@@ -1,3 +1,4 @@
+// 根据已经确认的护盾撞击或身体受伤计算镜头的短暂偏移。只影响画面，不会反过来改角色的位置或命中。
 using UnityEngine;
 
 namespace Unity.MP_FPS

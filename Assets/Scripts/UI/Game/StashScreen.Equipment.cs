@@ -1,3 +1,4 @@
+// 仓库外壳自带的装备演示和角色连线。背景仓库模板会初始化这部分。当前玩家实际穿戴与物品命令走 StashScreen.Containers 和正式库存树。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

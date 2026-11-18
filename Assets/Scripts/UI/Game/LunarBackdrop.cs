@@ -1,3 +1,4 @@
+// 终端页面的背景元素。切页面时 MoonkovTerminal 设置模式。要看月球时再创建 MenuMoonView，关闭预览时随窗口释放。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

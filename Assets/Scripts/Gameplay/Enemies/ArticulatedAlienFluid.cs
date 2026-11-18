@@ -1,3 +1,5 @@
+// 给覆面虫和长脚异形换成液态外壳时，把程序骨架的各段位置和方向转成液体表面的输入。
+// 骨架仍提供每条肢体的姿势，这里把外观跟上。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.SpiderLab;

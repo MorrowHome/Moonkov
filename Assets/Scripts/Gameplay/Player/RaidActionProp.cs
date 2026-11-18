@@ -1,3 +1,4 @@
+// 动作专用道具上的挂点与可动零件。RaidActionPresentation 用这些点对齐手和嘴，也可驱动注射器等道具上的活动部件。
 using UnityEngine;
 
 namespace Unity.MP_FPS

@@ -1,3 +1,4 @@
+// 月球的独立 UI 预览。相机把 3D 月球渲染成图片，观察时可拖动旋转和滚轮缩放。离开面板后释放舞台和纹理。
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;

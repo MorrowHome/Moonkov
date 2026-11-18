@@ -1,3 +1,5 @@
+// 供直立异形和大体型 Boss 走地面路线。NavMesh 先找脚底路线，再用实际身体尺寸重查近处这一段。
+// 身体过不去就找安全的短目标，越过拐角后再算剩下的路。
 using UnityEngine;
 using UnityEngine.AI;
 

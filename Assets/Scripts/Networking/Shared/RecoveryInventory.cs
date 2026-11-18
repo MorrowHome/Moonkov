@@ -1,3 +1,4 @@
+// 撤离物品如何返回仓库的共同规则。能放下的直接存，没空间的留在回收箱，玩家清出空间后再领取。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS.Inventory
             account.Items=copy.Items;source.Items.RemoveAll(i=>ids.Contains(i.Id));return true;
         }
         // Returns fresh objects. Callers persist account/inbox/receipt/closed deployment together.
+        // 在副本里搬运物品并发首次任务奖励。返回新仓库和待领取清单，让存档层把两份结果和结算回执一起写入。
         public static InventoryError Settle(InventoryGraph account,RecoveryInbox inbox,InventoryGraph raid,
             out InventoryGraph stored,out RecoveryInbox pending, bool missionRewards = true, int bonusDust = 0)
         {
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS.Inventory
             if(result.Validate(next)!=InventoryError.None)return InventoryError.Invalid;
             stored=next;pending=result;return InventoryError.None;
         }
+        // 领取前同时核对仓库及回收箱版本。只移走确实放进去的物品，剩下的留给下次领取。
         public static InventoryError Claim(InventoryGraph account,RecoveryInbox inbox,RecoveryClaim request,
             out InventoryGraph stored,out RecoveryInbox pending)
         {

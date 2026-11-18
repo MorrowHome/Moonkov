@@ -1,3 +1,4 @@
+// 小队预览的导出动作数据。按角色缓存资源，把动画帧转成骨骼角度和表情，在角色已有动作上混合。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

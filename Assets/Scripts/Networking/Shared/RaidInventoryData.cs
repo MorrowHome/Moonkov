@@ -1,3 +1,4 @@
+// 局内库存快照、网络消息和每个玩家的操作状态都在这里。服务端记录搜刮、治疗和所打开的容器，客户端负责把库存分片拼回完整数据。
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -159,6 +160,7 @@ namespace Unity.MP_FPS
         private int m_SentOxygenPercent = -2;
         // Item details show whole percentages. The live HUD already reads the
         // precise Ghost oxygen, so sub-percent changes need no full inventory RPC.
+        // HUD 直接读角色同步来的精确氧气。背包物品详情只显示整数百分比，所以半秒检查到显示值或装备 ID 变化才安排库存重发。
         public bool ProtectionDisplayChanged
         {
             get
@@ -291,6 +293,7 @@ namespace Unity.MP_FPS
             EnsureSearchOrder(cache);
             return LootInventoryExchange.SearchPreview(cache,m_SearchKnown);
         }
+        // 正在搜箱时只允许操作已经揭开的物品。灰色占格只是让玩家知道还有内容，拿到那格的 ID 也不能跳过搜索。
         public InventoryError TryLootMove(RaidLootContainers caches,int id,InventoryCommand command,int expectedCacheVersion)
         {
             bool searching=DissectingLootId>=0 && DissectingLootId==id;
@@ -317,6 +320,7 @@ namespace Unity.MP_FPS
         public Unity.Mathematics.float3 DissectionOrigin;
         public int DissectionGeneration;
         public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
+        // 普通箱子搜索和异形解剖共用此计时。记录开始时的伤害、射击和换弹标记，后续能判断动作为什么中断。
         public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0,int searchItems=1,InventoryGraph searchCache=null)
         {
             if(RaidHealth.SearchHandsBusy(health))return false;
@@ -514,6 +518,7 @@ namespace Unity.MP_FPS
         private uint m_IncomingSequence;
         private int m_IncomingRaid, m_Received;
         private string[] m_Chunks;
+        // 同一个 RaidId 和快照序号的分片收齐才解码，更新背包、搜刮进度和请求结果。迟到的旧分片不能盖过新背包。
         public bool Receive(RaidInventoryChunkV2Rpc chunk, Func<string, InventoryGraph> decode)
         {
             if (chunk.Count < 1 || chunk.Count > RaidInventoryTransport.MaxChunks || chunk.Index < 0 || chunk.Index >= chunk.Count || chunk.Sequence <= Sequence) return false;

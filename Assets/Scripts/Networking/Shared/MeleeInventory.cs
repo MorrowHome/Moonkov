@@ -1,3 +1,4 @@
+// 近战装备槽的共用判断。把物品代码换成刀或剑等类型，核对是否真在近战槽。空手时给拳击这个默认动作。
 using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS.Inventory

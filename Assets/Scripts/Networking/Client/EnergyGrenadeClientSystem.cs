@@ -1,3 +1,4 @@
+// 接收能量手雷的服务端状态，按客户端插值 tick 估算消息已经过去多久，再让 EnergyGrenadeFeedback 从合适的时间点播放表现。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

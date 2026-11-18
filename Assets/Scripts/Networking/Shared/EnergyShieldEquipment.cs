@@ -1,3 +1,4 @@
+// 根据当前装备推导角色的光环、项圈和外观。项圈里的氧气跟着具体物品 ID 走。装备更换时，先保存旧物品余量，再读新装备。
 using UnityEngine;
 using Unity.Collections;
 using Unity.MP_FPS.Inventory;

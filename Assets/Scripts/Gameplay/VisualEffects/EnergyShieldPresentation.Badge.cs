@@ -1,3 +1,4 @@
+// 胸章的拟合和开关。先在模型导入时的绑定姿势里找胸口表面，再把贴合位置转成骨骼局部坐标，这样胸章会跟上动作。
 using UnityEngine;
 using UnityEngine.Rendering;
 

@@ -1,3 +1,5 @@
+// 任务设备的画面部件。RaidMissionSite 把设备的工作状态传进来，它在场景里切换灯、转子、扳手和产物模型。
+// 设备状态和产物数量由任务快照驱动。
 using UnityEngine;
 using UnityEngine.Rendering;
 

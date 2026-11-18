@@ -1,3 +1,5 @@
+// 仓库和战局背包共用的格子界面。它把 InventoryGraph 的容器、物品和槽位画出来，把玩家选中的落位作为 InventoryCommand 交给调用方。
+// 菜单操作走 StashScreen.Containers，局内操作走 RaidHUD。想看格子、重量和容器能不能放，从 InventoryGraph.TryApply 往下读。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -193,6 +195,7 @@ namespace Unity.MP_FPS.Client
                 case "halo_mooncore_recycler":return StashArtKind.HaloMooncoreRecycler;
                 case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
         }
+        // 收到新数据时，先区分是格子布局变了，还是电量、数量等值变了。后者原地更新，拖动中的按钮不会被删掉。
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false,
             int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null, int searchTotal=-1,IReadOnlyList<RaidSearchFootprint> searchFootprints=null)
         {
@@ -216,6 +219,7 @@ namespace Unity.MP_FPS.Client
             m_CorpseCharacterIndex = corpseCharacterIndex;
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
             if (operationCompleted) m_Busy = false;
+            // 搜刮揭示新物品时，手里那件还在原位就保持拖动。等松手再摆好剩下的格子。
             if(changed && m_Drag!=null && m_Drag.CanRetain(graph))
             {
                 m_DeferredLayout=layout;
@@ -241,6 +245,7 @@ namespace Unity.MP_FPS.Client
                 // Continue after the HUD has finished processing this receipt. It may
                 // present the same snapshot twice, or close access in the same update.
                 m_QuickTransferPump?.Pause();
+                // 每次回执过一轮界面更新再发下一件，避免同一份快照重绘两次时连着发两个请求。
                 m_QuickTransferPump = m_Root.schedule.Execute(ProcessQuickTransfers);
             }
         }
@@ -557,6 +562,7 @@ namespace Unity.MP_FPS.Client
             m_QuickTransfers.Clear();
             m_QuickTransferSpaceBlocked = false;
         }
+        // 快捷收纳一次处理一件，按最新库存先尝试合并，再找空格。放不下就继续处理队列里后面的物品。
         private void ProcessQuickTransfers()
         {
             if (m_Busy || m_Disposed) return;
@@ -606,6 +612,7 @@ namespace Unity.MP_FPS.Client
             if (m_Busy || m_Graph==null) return;
             if (!m_ProcessingQuickTransfer) ClearQuickTransfers();
             if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
+            // 命令带着玩家实际看到的库存版本。先在副本试放，成功只表示可以发请求，真实库存等处理结果更新。
             command.ExpectedVersion=m_Graph.Version;
             var error=m_Graph.Clone().TryApply(command);
             if (error!=InventoryError.None) { ClearQuickTransfers(); MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message,
@@ -703,6 +710,7 @@ namespace Unity.MP_FPS.Client
                 if (m_Pointer<0 || evt.pointerId!=m_Pointer) return;
                 // Input System can dispatch an unpressed move before the queued PointerUp.
                 // Let that event finish the drop before recovering a genuinely missed release.
+                // 同一批输入里，没按键的移动事件可能比松手先到。延后做兜底取消，给正常的松手事件机会提交落位。
                 if ((evt.pressedButtons & 1)==0)
                 {
                     m_ReleaseRecovery ??= target.schedule.Execute(Cancel);
@@ -721,6 +729,7 @@ namespace Unity.MP_FPS.Client
                 }
                 Preview(); evt.StopImmediatePropagation();
             }
+            // 从上往下找鼠标下可用的格子。预览同时记住请求版本和落位，变化时才重新用库存副本试放。
             private void Preview()
             {
                 m_View.QuickSlotDragPreview?.Invoke(m_Item, m_Last);

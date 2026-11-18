@@ -1,3 +1,4 @@
+// 光环读条使用的美术资源配置。HaloProgressRing 读取这里的花瓣、弧线、分格贴图和主颜色。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

@@ -1,3 +1,4 @@
+// 把赏金冲突玩法接进通用 HUD。读取当前对局快照决定是否允许操作，发送救援、目标和暗视等请求，并把状态交给 BountyClashView。
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Collections;
@@ -144,6 +145,7 @@ namespace Unity.MP_FPS
             entity = players.Length == 1 ? players[0] : Entity.Null;
             return entity != Entity.Null;
         }
+        // 请求带着当前对局的 MatchId 和 Epoch 来辨认属于哪一场。需要回执的动作还要等上一次结束，避免按钮连续提交。
         private bool SendClash(ClashIntent intent, int value = 0, string invite = null, int target = -1, bool track = true)
         {
             if (m_Clash == null || !m_Clash.Approved || !m_Clash.HasSnapshot || !m_Clash.Snapshot.Connected) return false;

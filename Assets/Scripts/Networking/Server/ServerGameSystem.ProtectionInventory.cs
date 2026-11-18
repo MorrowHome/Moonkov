@@ -1,3 +1,4 @@
+// 装备项圈或光环的数据在角色和物品上各有一份。背包移动、死亡或结算前先把实时余量写回物品，装备变化后再让角色载入新的那件。
 using Unity.Entities;
 
 namespace Unity.MP_FPS

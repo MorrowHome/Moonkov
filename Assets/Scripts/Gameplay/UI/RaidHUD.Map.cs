@@ -1,3 +1,4 @@
+// 负责局内大地图的开关、按键屏蔽和当前战局的地图数据。大图和远征小图共用同一份地图资源，退局或切玩法时重置显示。
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -25,6 +26,7 @@ namespace Unity.MP_FPS
             !Client.QuickSlotBindings.Typing(m_Root?.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement);
         // Input delegates run before this HUD's LateUpdate. Reserve the opening M frame,
         // and the closing frame, so wheel/click/look cannot slip through before UI toggles.
+        // 输入回调早于 LateUpdate。打开和关闭地图的那一帧都先挡住转身、开火和滚轮，避免一次按键穿过界面。
         private bool MapBlocksInput => m_MapOpen || Time.frameCount <= m_MapInputGuardFrame || MapKeyPressed && GameSettings.Instance.GameState == GlobalGameState.InGame && !GameSettings.Instance.IsPauseMenuOpen && !QuickManualBusy;
         private static bool MapInputBlocked => s_Active != null && s_Active.MapBlocksInput;
 
@@ -83,6 +85,7 @@ namespace Unity.MP_FPS
             { ResetRaidMap(); return; }
             int epoch = clash ? m_Clash.Snapshot.Epoch : 0;
             string match = clash ? m_Clash.Snapshot.MatchId.ToString() : null;
+            // 记录地图属于哪一个 World、战局和赏金阶段。任何一项切换就清掉旧图的缩放和上下文。
             if (!m_MapContextValid || m_MapWorld != m_World || m_MapRaid != m_Snapshot.RaidId || m_MapEpoch != epoch || m_MapMatch != match)
             {
                 SetRaidMapOpen(false); m_ClashView.Map.FullMap(); m_MapOpenedInContext = false;

@@ -1,3 +1,4 @@
+// 客户端根据异形血量降低做短促受击动作。每次先还原上一帧的偏移，再对外观根节点加新偏移，避免姿态越抖越歪。
 using System.Collections.Generic;
 using UnityEngine;
 

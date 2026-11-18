@@ -1,3 +1,4 @@
+// 气闸和电梯由客户端发操作请求，服务端依据实际角色和设备状态裁决。设备快照和操作回执送回客户端，让门、电梯与提示一起跟上。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

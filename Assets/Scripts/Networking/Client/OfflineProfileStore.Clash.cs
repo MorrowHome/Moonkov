@@ -1,3 +1,4 @@
+// 离线或好友房的极速赏金记录写在档案里。绑定参赛名单、出战编号、奖励兑换和结算回执，让重复提交同一次结果时可以核对。
 using System;
 using System.Collections.Generic;
 using System.IO;

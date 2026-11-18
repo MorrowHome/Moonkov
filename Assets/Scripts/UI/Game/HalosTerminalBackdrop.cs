@@ -1,3 +1,4 @@
+// 登录和进图时共用的屏幕背景演出。它推进开场、信号和终端窗口的动画阶段，并在快进或结束时通知外面的流程。
 using System;
 using System.Text;
 using UnityEngine;

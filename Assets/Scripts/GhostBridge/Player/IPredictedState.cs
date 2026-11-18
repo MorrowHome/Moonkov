@@ -1,3 +1,4 @@
+// 定义按 tick 标记的状态缓冲，以及覆盖同 tick、查指定 tick 之前最近一条等小工具。想看实际每拍怎样取输入和推进角色，从 PlayerPredictionSystem 开始。
 using Unity.Entities;
 
 public interface IPredictedState : IBufferElementData

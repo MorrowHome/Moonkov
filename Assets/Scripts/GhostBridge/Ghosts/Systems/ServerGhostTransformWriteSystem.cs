@@ -1,3 +1,4 @@
+// 服务器先在物理之后批量读取 GameObject 的位置和旋转，再写进对应 ECS 实体的 LocalTransform，让 NetCode 有最新坐标可以同步。
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;

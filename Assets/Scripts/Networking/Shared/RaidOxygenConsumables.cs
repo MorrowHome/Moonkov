@@ -1,3 +1,4 @@
+// 使用氧气罐时一起检查库存版本、物品是否拿得到以及装备能否补氧。先算好补氧结果，扣库存成功后才写入角色。
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS

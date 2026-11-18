@@ -1,3 +1,4 @@
+// 改装台的独立光环预览。把选中的武器和模块装进小场景，通过相机渲染到界面，还能演示蓄力和开火。预览释放时同时清掉场景和纹理。
 using System;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;

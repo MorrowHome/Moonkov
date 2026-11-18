@@ -1,3 +1,4 @@
+// 管理当前已经链接的角色列表。按服务器、自己控制的客户端、其他客户端角色分类，提供注册和注销通知，方便系统在合适的时间找角色。
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;

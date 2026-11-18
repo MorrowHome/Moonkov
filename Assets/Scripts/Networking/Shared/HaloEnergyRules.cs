@@ -1,3 +1,4 @@
+// 射击、主动护盾和补能用同一个光环能量池。根据已装模块更新容量和回充速度，并把能量换成当前可打的弹数。
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 

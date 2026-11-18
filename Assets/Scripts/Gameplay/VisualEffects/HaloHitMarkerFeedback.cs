@@ -1,3 +1,4 @@
+// 把服务端发送的光环弹命中位置显示成短时的世界标记。同一发射者的新命中替换他的旧标记，并朝当前相机显示。
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;

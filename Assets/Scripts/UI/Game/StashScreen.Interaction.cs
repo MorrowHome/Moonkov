@@ -1,3 +1,4 @@
+// 把仓库外壳接到终端页面，同时给旧的汇总格子接拖动和快捷键。实际库存视图初始化后，键盘操作优先交给 ContainerInventoryView。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

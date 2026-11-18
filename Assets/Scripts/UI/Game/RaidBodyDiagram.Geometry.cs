@@ -1,3 +1,4 @@
+// 人体扫描图的轮廓坐标。每块形状关联到一个伤害部位，让血量、颜色和点击热区能对应到同一身体位置。
 using UnityEngine;
 namespace Unity.MP_FPS.Client
 {

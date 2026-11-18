@@ -1,3 +1,4 @@
+// 服务端判断光环灯的直射眩光。结合发光方向、距离、遮挡与烟雾给受影响的角色写入状态，后续移动和表现系统可以读取。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.NetCode;

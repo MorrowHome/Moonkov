@@ -1,3 +1,4 @@
+// 任务领取后接入研究故事。按档案检查还有哪一章没看，从故事库找对应片段，播放到末尾后保存读完标记。
 using System;
 using System.Threading.Tasks;
 using UnityEngine.UIElements;
@@ -101,6 +102,7 @@ namespace Unity.MP_FPS.Client
             m_ChapterPlayer = new ResearchStoryPlayer(m_ChapterDeck, scene, m_Radio, () => FinishStory(chapter));
         }
 
+        // 故事播完先提交完成信息。任务页等到保存结果才能按新的进度继续。
         private async Task<bool> FinishStory(ResearchStoryChapter chapter)
         {
             if (!ResearchQuestRules.StoryReviewed(m_Read(), chapter) && !await m_ReviewStory(chapter)) return false;

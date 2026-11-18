@@ -1,3 +1,4 @@
+// 从服务器给的装填开始 tick、当前弹量和进度推断何时开播、停播或提示装满。同一次装填的进度只承认新到达的阶段。
 namespace Unity.MP_FPS
 {
     [System.Flags]
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS
             int index = !state.ControllerState.IsReloadingState || state.CurrentHealth <= 0 ? -1 :
                 progress < .18f ? 0 : progress >= .84f ? pulses + 1 :
                 1 + UnityEngine.Mathf.Min(pulses - 1, UnityEngine.Mathf.FloorToInt((progress - .18f) / .66f * pulses));
+            // 同一次装填要越过已播过的阶段才会响。快照回退后仍记最高进度，漏掉几帧时直接跟到新阶段。
             bool sameReload = state.LastReloadTick == m_PhaseTick && state.EquippedWeaponID == m_PhaseWeapon;
             bool changed = m_PhaseInitialized && index >= 0 &&
                 (sameReload ? index > m_PhaseIndex : state.LastReloadTick != 0 && state.LastReloadTick != m_PhaseTick);

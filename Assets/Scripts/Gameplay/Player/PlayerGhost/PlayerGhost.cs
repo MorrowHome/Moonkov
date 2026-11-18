@@ -1,3 +1,5 @@
+// 把角色的 ECS Ghost 接到场景中的模型、控制器和碰撞体。自己控制的客户端还会挂镜头和声音监听器。
+// GetShotRay 从角色的游戏坐标确定射线起点，也能在没有模型画面的服务端使用。
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using Unity.Collections;
@@ -79,6 +81,7 @@ namespace Unity.MP_FPS
             return m_PlayerCamera;
         }
 
+        // 从角色身上的稳定锚点发出射线，再根据镜头提供的瞄准点检查开火方向。
         public Ray GetShotRay(in PlayerInput input, float range, out Vector3 aimPoint)
         {
             var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) * Vector3.forward;
@@ -108,6 +111,7 @@ namespace Unity.MP_FPS
             return new Ray(origin, direction);
         }
 
+        // 服务器即使把角色藏起来也要判定头部命中，所以用独立的碰撞体跟随角色姿势。
         public void CreateHeadHitbox(int layer)
         {
             if(m_HeadHitbox!=null)return;

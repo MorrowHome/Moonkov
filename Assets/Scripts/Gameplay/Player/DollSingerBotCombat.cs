@@ -1,3 +1,4 @@
+// 给机器人共用的短横移和火线几何检查。用 NavMesh 确认可落脚的一侧，用场景射线和烟雾数据知道枪线或视线是否被挡。
 using UnityEngine;
 using UnityEngine.AI;
 

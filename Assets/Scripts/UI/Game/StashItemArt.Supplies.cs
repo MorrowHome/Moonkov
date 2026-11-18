@@ -1,3 +1,4 @@
+// 用 UI Toolkit 画常见物资的库存小图，包括医疗、食物、氧气、携行装备和零件。这些方法只画形状和配色。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

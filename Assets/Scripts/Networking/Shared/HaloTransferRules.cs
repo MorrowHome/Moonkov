@@ -1,3 +1,4 @@
+// 光环离开自己、交给队友、放到地面和召回的共用状态。决定角色是否符合操作条件，也按玩法判断两名角色是否队友。
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;

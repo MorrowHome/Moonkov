@@ -1,3 +1,4 @@
+// 光环灯是否造成眩光以及眩光多强的计算。检查瞄准、灯是否开启和动作状态，再按光束方向、对手朝向及距离衰减。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 

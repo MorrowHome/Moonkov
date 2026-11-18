@@ -1,3 +1,5 @@
+// 异形选招的地方。按可见目标、距离、种族、身位和独立冷却挑一个能落地的攻击。
+// CommitAttack 固定预警范围、方向与阶段，后面按 Combat 中的时间轴执行。
 using Unity.Entities;
 using UnityEngine;
 
@@ -118,6 +120,7 @@ namespace Unity.MP_FPS
             if (!head && UnityEngine.Physics.Raycast(target + Vector3.up * 2, Vector3.down,
                 out var floor, 6, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) target = floor.point + floor.normal * .04f;
             if (next.Kind == AlienAttackKind.SpiderRush && !TrySpiderRushLanding(origin, target, out target)) return false;
+            // 选定招式后同步阶段和新的攻击号。Boss 之后血量变化也不会改变已经提示给玩家的攻击。
             m_Pattern = next; m_BossPhase = phase; m_Attacks++;
             m_CombatOrigin = origin; m_CombatPoint = target;
             m_CombatDirection = Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized;

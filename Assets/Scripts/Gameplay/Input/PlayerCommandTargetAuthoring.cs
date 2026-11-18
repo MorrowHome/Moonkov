@@ -1,3 +1,4 @@
+// 把 PlayerCommandTarget 烘焙到输入实体上。服务器把连接编号写进去，客户端用同步到的编号找到专属于自己的输入缓冲。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

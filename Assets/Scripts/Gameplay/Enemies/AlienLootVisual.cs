@@ -1,3 +1,4 @@
+// 把服务器掉落的异形残骸表示成场景里的采集物模型。跟随掉落编号和落点创建外观，掉落内容由战局库存记录。
 using UnityEngine;
 
 namespace Unity.MP_FPS

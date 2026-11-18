@@ -1,3 +1,4 @@
+// 声明服务端用来找人的 ECS 组件。JoinedClient 留在连接上，ClientsMap 用 NetworkId 快速找到连接实体、玩家实体和角色控制实体。
 
 using Unity.Collections;
 using Unity.Entities;

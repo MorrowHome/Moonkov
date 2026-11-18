@@ -1,3 +1,4 @@
+// 把聊天窗口接到当前战局和 Netcode。这里控制焦点与输入屏蔽，并用会话、请求号和频道发送消息，显示服务端回执。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

@@ -1,3 +1,5 @@
+// 把角色状态里的手雷阶段变成手部动画、道具和操作声。负责取出、拔销、投掷、收起及中断时的衔接。
+// 实际手雷飞行和伤害由服务端战术物逻辑处理。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;

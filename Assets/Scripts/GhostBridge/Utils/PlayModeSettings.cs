@@ -1,3 +1,4 @@
+// 保存当前电脑的编辑器试玩设置。GhostSpawner 会读取是否保留编辑器预览物体，方便调试场景，配置写到 EditorPrefs。
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;

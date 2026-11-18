@@ -1,3 +1,4 @@
+// 把 MOONRAT 的研究任务进度锁在同一份单人档案事务里。仓库接取、交付和选择结局从这里入档，局内证据在结算时由这里合入。
 using System;
 using Unity.MP_FPS.Inventory;
 

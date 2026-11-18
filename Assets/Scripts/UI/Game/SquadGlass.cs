@@ -1,3 +1,4 @@
+// 用小队舞台的相机画面做面板磨砂玻璃。对同一帧做横向和纵向模糊，各面板裁对应区域，避免为每块玻璃单独渲染相机。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

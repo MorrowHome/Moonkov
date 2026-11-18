@@ -1,3 +1,4 @@
+// 创建游戏时提前准备一批带 AudioSource 和滤波器的对象，发声时借用，播完再还。声源的父物体跨场景保留。
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -1,3 +1,4 @@
+// 调用方用这个句柄调音量或停止播放。对象会被复用，所以每次操作前还要核对借用序号，防止旧句柄停掉别人的声音。
 
 /// <summary>
 /// Represents a handle to a sound emitter that allows validation and tracking.

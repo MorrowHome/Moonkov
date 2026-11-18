@@ -1,3 +1,4 @@
+// 场景里的出生标记和服务器生成工具。它用登记过的 Ghost 预制件创建实体，写入位置、旋转与 GUID，场景里的表现体随后由生命周期系统生成。
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -355,6 +356,7 @@ public class GhostSpawner : MonoBehaviour
         }
     }
 
+    // 场景标记可以用配置好的固定 GUID。没有固定值时生成一个新的，客户端通过同步到的标识认识这个物体。
     protected void AllocateGhostGUID()
     {
         if (TryGetComponent<GhostGuidSpawnerCustomiser>(out var guidCustomiser))

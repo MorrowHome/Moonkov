@@ -1,3 +1,4 @@
+// 服务端运转月核和档案点等地图任务。收到操作请求后核对锚点与角色状态，推进机器计时、产出任务物品，最后给每个玩家发自己的任务进度。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

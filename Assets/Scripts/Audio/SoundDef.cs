@@ -1,3 +1,4 @@
+// 这是可在 Unity 里配置的音效配方。它把音频片段、播放方式、距离衰减、混音分组和限频放在一起，交给 SoundSystem 使用。
 
 using System;
 using System.Collections.Generic;
@@ -122,6 +123,7 @@ public class SoundDef : ScriptableObject
     public AudioMixer UnityAudioMixer;
 
 #endif
+    // Role 决定开枪时哪些音效临时降音量，Priority 决定声音池满了先让谁腾位置。两者用于不同的调度环节。
     public enum MixRole { Default, Weapon, Foley, Creature, Ambience, Suit, Interaction }
     [Header("Playback budget / mix")]
     public MixRole Role;

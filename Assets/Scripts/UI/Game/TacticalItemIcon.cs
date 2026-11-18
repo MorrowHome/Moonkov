@@ -1,3 +1,4 @@
+// 战术道具的快捷栏图标。把道具类型对应的形状和颜色画出来，数量和能否使用由快捷栏另外更新。
 using UnityEngine;
 using UnityEngine.UIElements;
 

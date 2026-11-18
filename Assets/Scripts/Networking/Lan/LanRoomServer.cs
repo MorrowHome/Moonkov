@@ -1,3 +1,4 @@
+// 房主端的好友房规则。这里维护成员和准备状态，处理仓库请求，发本轮入场票，并用同一份快照告诉大家何时加载或退回房间。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -153,6 +154,7 @@ namespace Unity.MP_FPS
                         if (!ArenaMatch.UsesTemporaryKit(m_Room.Mode) && Persistence.Read(member.View.Id).RaidActive)
                             throw new InvalidOperationException("上一局装备结算尚未完成。");
                         member.View.Ready = request.Ready; break;
+                    // 房主决定开局时先在同一把锁里确认名单和就绪状态。随后给本轮成员各发一张新票，防止上一局的票被继续拿来入场。
                     case "start":
                         RequireLobby();
                         if (!member.View.Host) throw new InvalidOperationException("只有房主可以开始对局。");
@@ -167,6 +169,7 @@ namespace Unity.MP_FPS
                     case "listening":
                         if (!member.View.Host || m_Room.Phase != LanRoomPhase.Preparing) throw new InvalidOperationException("房间尚未进入地图加载阶段。");
                         m_Room.Phase = LanRoomPhase.Playing; break;
+                    // 成员返回或离开时标记其本局结束并收回票。房主要结束本轮时，其他成员会在轮询里看到返回状态。
                     case "returned":
                         member.View.InGame = member.View.Ready = false; member.Ticket = null; Persistence.RevokePlayer(member.View.Id);
                         if (member.View.Host && m_Room.Phase != LanRoomPhase.Lobby) m_Room.Phase = LanRoomPhase.Returning;

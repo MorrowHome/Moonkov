@@ -1,3 +1,5 @@
+// 在线账号的入口。它用登录凭证请求后端仓库、商店和未领回收物，再把后端返回的档案交给 PlayerProfileClient 和菜单。
+// 进战局时先另领一张入场票。公开账号服务和 Unity 战局服务器通过票据串起来。
 using System;
 using System.Net;
 using System.Net.Http;
@@ -182,6 +184,7 @@ namespace Unity.MP_FPS
                 (ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.RequestCanceled))
             { throw new TimeoutException(timeoutMessage, ex); }
         }
+        // 仓库、商店等请求可以同时发出。先按请求序号和库存版本挡掉晚到的旧结果，再用校验过的档案整份替换界面读到的数据。
         private static void ApplyProfile(Profile profile, long requestId)
         {
             if (profile == null || string.IsNullOrEmpty(profile.InventoryJson)) throw new InvalidOperationException("Account service returned no inventory. Update the persistence service.");
@@ -215,6 +218,7 @@ namespace Unity.MP_FPS
         public static Task AdvanceResearchQuestAsync(ResearchQuestCommand command, CancellationToken ct) =>
             PostInventoryAsync("auth/research/advance", command, ct);
         private sealed class GameTicket { public string Ticket; }
+        // 大厅已经分配了实例时，用实例号申请专用入场票。ClientGameSystem 把票放进入场 RPC，账号登录凭证留在 HTTP 流程里。
         public static async Task<string> CreateGameTicketAsync(CancellationToken ct)
         {
             string token = Token;
@@ -249,6 +253,7 @@ namespace Unity.MP_FPS
             ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
             ApplyProfile(snapshot.Profile, requestId); return snapshot.Offers;
         }
+        // 库存版本不符等冲突交给后端裁决。收到拒绝后先刷新仓库，最后仍把原来的拒绝原因交给操作界面。
         private static async Task PostInventoryAsync(string path, object command, CancellationToken ct)
         {
             if (!IsLoggedIn) throw new InventoryRequestException("login_expired");

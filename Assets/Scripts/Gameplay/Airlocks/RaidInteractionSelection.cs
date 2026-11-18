@@ -1,3 +1,5 @@
+// 统一选择准星附近的气闸、灯或电梯按钮。程序先选准星指向的一组，玩家可在这一组的按钮间切换。
+// 按下时再检查一次可见性和范围，避免沿用上一帧已经失效的选项。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -77,6 +79,7 @@ namespace Unity.MP_FPS
                 best = score; focus = target;
             }
             if (!focus.IsValid) { Clear(); return; }
+            // 视线还停在同一组时保留玩家手动切到的按钮。真正指到新的表面时再改默认选择。
             bool retain = focus.SameGroup(Selected);
             m_Choices.Clear();
             foreach (var target in m_Candidates)

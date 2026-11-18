@@ -1,3 +1,5 @@
+// 服务器负责光环锚定和切换模式。先确认位置能放置，再按照明、哨戒等模式更新。
+// 离锚点太远、换武器或主动取消时召回，哨戒射击也走服务器的开火流程。
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;

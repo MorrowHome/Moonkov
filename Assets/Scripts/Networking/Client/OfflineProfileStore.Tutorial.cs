@@ -1,3 +1,4 @@
+// 记录首次教学看到哪一步、补给是否领过以及练习是否成功。领补给前在仓库副本上尝试放置，东西放得下才一起存档。
 using System;
 using System.IO;
 using System.Linq;

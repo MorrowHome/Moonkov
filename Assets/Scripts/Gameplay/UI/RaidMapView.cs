@@ -1,3 +1,4 @@
+// 局内大地图的界面外壳，提供缩放、回到人物、钉点和标记筛选。实际底图和位置投影由 BountyClashMapView 绘制。
 using Unity.MP_FPS.DollSinger;
 using System;
 using Unity.MP_FPS.Client;

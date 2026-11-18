@@ -1,3 +1,4 @@
+// MOONRAT 跑图时的设备分支。由 ResearchQuestRuntime 触发光环共鸣、区域危险、采样设备产出和声响引起的异形警觉，并记录完成情况。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;

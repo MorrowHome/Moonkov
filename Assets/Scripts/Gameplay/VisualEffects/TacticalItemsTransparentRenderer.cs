@@ -1,3 +1,4 @@
+// 给战术烟雾和透明粒子安排专用 URP 渲染步骤。场上有这些效果且相机真的画世界时才加入，叠加 UI 和第一人称的相机无需重画。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

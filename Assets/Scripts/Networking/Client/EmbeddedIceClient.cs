@@ -1,3 +1,4 @@
+// 官方在线战局的 ICE 客户端。先经 AccountClient 向后端交换两端候选地址，再等原生传输找到可用路线，最后交给 GameConnection 建 NetCode 连接。
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;

@@ -1,3 +1,4 @@
+// 把库存里的物品代码转成对应的模型预制体或图标。需要显示实物的地方查这里，共用外观的物品通过 ArtCode 复用同一资源。
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 

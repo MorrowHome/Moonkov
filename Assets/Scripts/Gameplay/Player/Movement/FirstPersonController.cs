@@ -1,3 +1,5 @@
+// 玩家共用的移动计算。把输入和 ControllerState 算成位移请求，再交给 Unity CharacterController 落地、撞墙和移动。
+// 客户端预测与服务器都会用这套规则，远端角色用插值后的状态播放动画。
 //#define DEBUG_RENDER_MOVEMENT
 
 using System;
@@ -332,6 +334,7 @@ public class FirstPersonController : MonoBehaviour
 
     public bool NeedsLiftCarry(in ControllerState state) => LiftCarryOffset(state) != 0;
 
+    // 先前按输入累加的是位移请求。这里才通过碰撞实现实际移动，并更新网络状态要记录的位置。
     public void ApplyMovementUpdate(ref ControllerState state, in ControllerConsts consts,
         in float3 accumulatedMovement, float deltaTime)
     {
@@ -1085,6 +1088,7 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
+    // 自己按下开火时先生成本地弹体外观。服务器的同一发出现后，按 tick、武器和弹丸序号接管这个对象。
     public void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
         Quaternion spawnRotation, int pelletIndex = 0, ushort modules = 0)
     {

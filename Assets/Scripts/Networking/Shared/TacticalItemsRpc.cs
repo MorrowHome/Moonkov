@@ -1,3 +1,4 @@
+// 战术物品的消息格式。玩家发出使用、布置等意图。服务器给本人回复动作进度和结果，也把场景物品状态发给客户端画出来。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

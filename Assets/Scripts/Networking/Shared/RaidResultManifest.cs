@@ -1,3 +1,4 @@
+// 给战后界面显示的带回和遗失清单。它在死亡掉落前按物品类型数一遍，并标出保护栏留住的东西。正式落盘仍走档案结算。
 using System;
 using System.Collections.Generic;
 using System.Linq;

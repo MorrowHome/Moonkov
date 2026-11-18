@@ -1,3 +1,4 @@
+// 在角色预制件上填写移动和动画的参数，例如步行和冲刺速度、加速、平滑时间。烘焙成 ECS 数据后，服务端和本机预测共用这些参数。
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;

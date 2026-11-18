@@ -1,3 +1,4 @@
+// 近处武器开火后短时压低环境声和动作细声，让枪声更清楚。SoundGameObject 在更新音量时按音效类别取这里的倍率。
 using UnityEngine;
 
 // Shared gain envelope, applied by the existing pooled SoundGameObjects. No extra mixer graph or sources.

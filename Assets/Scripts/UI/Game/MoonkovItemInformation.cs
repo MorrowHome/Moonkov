@@ -1,3 +1,4 @@
+// 背包悬浮与商店详情共用的物品信息组件。物品用途和状态来自 MoonkovItemPresentation，武器数值读实际的 WeaponRegistry。
 using System.Text.RegularExpressions;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS.Client
         private void Stat(int index, string label, string value)
         { m_Rows[index].style.display = DisplayStyle.Flex; MoonkovLocalization.Set(m_Labels[index], label); m_Values[index].text = value; }
 
+        // 当前配件和永久研究一起决定查哪套武器数值。CooldownInMs 沿用旧字段名，这里展示的实际单位是秒。
         private void PresentWeapon(InventoryItem item, InventoryGraph graph)
         {
             m_Stats.style.display = DisplayStyle.None;

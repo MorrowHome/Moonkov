@@ -1,3 +1,5 @@
+// 客户端预测和服务端共用的开火节奏。用角色状态跟踪取武器、抬手、换弹、冷却和连发剩余几发。
+// TryFire 判断这一拍可不可以开火，真正扣能量、生成投射物和确认伤害由调用方负责。
 using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
@@ -94,6 +96,7 @@ namespace Unity.MP_FPS
                 state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
             else state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
 
+            // 抬手还没完成时，暂记一次点按。换弹仅在快结束时也允许缓存，防止玩家按早一点就完全丢键。
             bool reloadEnding = state.ControllerState.IsReloadingState && state.ReloadTimer <= InputBufferSeconds;
             if (!wasReady && input.Shoot && (!state.ControllerState.IsReloadingState || reloadEnding) &&
                 (state.CurrentAmmo > 0 || reloadEnding))
@@ -146,6 +149,7 @@ namespace Unity.MP_FPS
                 if (fire) state.FireBufferRemaining = 0;
                 return fire;
             }
+            // 连发只在缓存了新按键时开始。后面的几发由这一组的剩余发数继续驱动。
             if (state.BurstRemaining == 0)
             {
                 if (state.FireBufferRemaining <= 0) return false;
@@ -164,6 +168,7 @@ namespace Unity.MP_FPS
             bool pulse = IsPulse(state, weapon);
             float firedInterval = Interval(state, weapon, pulse && state.BurstSequence == 0);
             float remainder = state.WeaponCooldown - firedInterval;
+            // 连续开火允许保留不到一拍的时间余量，以免模拟步长改变射速。长时间卡顿不会攒出多发。
             bool preserveRemainder = (weapon.Automatic || pulse) && deltaTime <= firedInterval &&
                 remainder >= 0 && remainder <= deltaTime + .00001f;
             state.WeaponCooldown = preserveRemainder ? Mathf.Min(remainder, deltaTime) : 0;

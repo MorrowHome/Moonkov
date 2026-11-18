@@ -1,3 +1,4 @@
+// 战术物品在服务端的完整流程。由服务器检查使用条件，处理手上计时、背包扣除、投掷体和区域效果，再向客户端同步状态。
 using System;
 using Math = System.Math;
 using System.Collections.Generic;
@@ -296,6 +297,7 @@ namespace Unity.MP_FPS
             root=state.EntityManager.GetComponentObject<GhostGameObjectLink>(player).LinkedInstance;
             return health.CurrentHealth>0 && root;
         }
+        // 开始使用时记下当前人物、物品和版本，先做可用性检查并建立计时。这一步为之后真正生效保留核对依据。
         private void TacticalBegin(ref SystemState state,TacticalServerWorld world,RaidInventoryState inventory,Entity connection,
             Entity player,in PredictedPlayerGhost health,GhostGameObject root,in RaidTacticalItemActionRpc r,double now)
         {
@@ -349,6 +351,7 @@ namespace Unity.MP_FPS
             if(definition.Trap && world.Objects.FindAll(o=>o.OwnerPlayer==player && o.Definition.Trap && o.Phase==TacticalWorldPhase.Armed).Count>=TacticalItemRules.MaxOwnerTraps)return false;
             return !definition.Deployable || !world.Objects.Exists(o=>o.Phase!=TacticalWorldPhase.Flying && Vector3.Distance(o.Position,position)<.65f);
         }
+        // 动作读条结束后要重新检查角色、版本和目标。只有通过后才消耗物品并产生效果，防止状态已经变化还按旧条件执行。
         private InventoryError TacticalComplete(ref SystemState state,EntityCommandBuffer ecb,TacticalServerWorld world,RaidInventoryState inventory,
             TacticalServerWorld.Use use,in PredictedPlayerGhost health,GhostGameObject root,double now)
         {

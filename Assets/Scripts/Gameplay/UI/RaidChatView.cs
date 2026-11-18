@@ -1,3 +1,4 @@
+// 局内聊天的文本框、频道与历史消息。打开时接管输入法和焦点，关闭时恢复。按回车发送由外层 RaidHUD 处理。
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -107,6 +108,7 @@ namespace Unity.MP_FPS
             m_Revision = -1;
             if (m_State != null) RebuildHistory();
         }
+        // 输入法选字和提交聊天会碰到同一枚回车键。记录组词状态与帧号，先让输入法完成自己的动作。
         private void Composition(IMECompositionString composition) { m_Composing = composition.Count > 0; m_ImeFrame = Time.frameCount; }
         private void Edited(ChangeEvent<string> evt) { if (m_State != null) m_State.Draft = evt.newValue; }
         private void KeyDown(KeyDownEvent evt)

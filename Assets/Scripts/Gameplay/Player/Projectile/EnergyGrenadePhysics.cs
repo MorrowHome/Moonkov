@@ -1,3 +1,5 @@
+// 计算战术手雷的飞行、碰撞、反弹和停住。每次用短步长扫过实际路径，减少高速穿墙。
+// ClearSight 也给范围伤害检查爆炸点与目标之间有没有遮挡。
 using UnityEngine;
 
 namespace Unity.MP_FPS

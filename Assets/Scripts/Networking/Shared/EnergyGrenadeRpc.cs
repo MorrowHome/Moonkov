@@ -1,3 +1,4 @@
+// 能量手雷同步用的数据包。服务端用状态消息告诉客户端手雷的变化和对应 tick，客户端用它安排表现。
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.NetCode;

@@ -1,3 +1,4 @@
+// 把物品定义转成给玩家看的用途、数值和分类颜色。背包、商店与改装台共用这些方法，物品的使用效果仍按对应的玩法规则结算。
 using System;
 using System.Collections.Generic;
 using System.Linq;

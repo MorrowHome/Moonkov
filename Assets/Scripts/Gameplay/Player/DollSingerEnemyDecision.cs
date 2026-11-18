@@ -1,3 +1,5 @@
+// 给人形 AI 的候选行动打分。当前线索、弹药、身体状态和补给决定是交火、换位、装填、治疗、搜刮还是撤离。
+// 排好优先级之后由 Tactics 计算具体走法，危险逼近时可以打断手上的事。
 using Unity.Entities;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
@@ -62,6 +64,7 @@ namespace Unity.MP_FPS
                 follow ? "advance with squad and watch the other approach" : "search supplies";
             if (brain.HasSquadLeader && follow && !brain.Visible && (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
                 utility = 62;
+            // 当前行动小幅加分，防止两个分数接近时来回切。分数高出的紧急行为仍能胜出。
             void Consider(PmcAction action, float value, string why)
             {
                 if (brain.Action == action) value += 8;

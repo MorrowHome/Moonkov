@@ -1,3 +1,4 @@
+// 本机开服前填写端口的弹窗。端口是否合法由 ConnectionSettings 判断。确定后唤醒等待中的开服流程，取消则恢复原配置。
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.InputSystem;

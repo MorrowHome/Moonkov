@@ -1,3 +1,4 @@
+// 挂在 AudioListener 上，直接处理即将输出的一块音频样本。峰值过高就一起压低各声道，再慢慢回到正常音量，左右声道的相对响度仍能保住声源方向。
 using System;
 using UnityEngine;
 

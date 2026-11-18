@@ -1,3 +1,5 @@
+// 一只异形的网络玩法入口。服务器感知、选动作、移动、造成伤害和处理死亡，然后写入 Ghost 状态。
+// 客户端从快照还原身体、攻击特效和声音。文件名后缀是各块实现，近战看 Combat，伏击看 Ambush。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Collections;
@@ -187,6 +189,7 @@ namespace Unity.MP_FPS
             }
             return m_RoamGoal;
         }
+        // 感知同时看视线和声音。能看清时更新精确位置，听见脚步或枪声时使用可搜索的线索。
         private void Sense()
         {
             UnityEngine.Physics.SyncTransforms();
@@ -321,6 +324,7 @@ namespace Unity.MP_FPS
         }
         private float ActionPulse() => m_Action == AlienAction.Windup ? Mathf.Clamp01((m_Clock - m_ActionStarted) / profile.Windup) :
             m_Action == AlienAction.Strike ? 1 : m_Action == AlienAction.Recover ? Mathf.Clamp01(1 - (m_Clock - m_ActionStarted) / profile.Recovery) : 0;
+        // 把服务器已经确定的动作、攻击和身体状态写给客户端。客户端表现从这里拿数据。
         private void WriteState()
         {
             WriteGhostComponentData(new State { Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
@@ -378,6 +382,7 @@ namespace Unity.MP_FPS
                 state.Detached, state.Phase, presentationDt, pulse, m_Liquid);
         }
 
+        // 只有客户端肢体姿势更新按可见性和距离降频。服务器的碰撞、攻击和感知仍按原频率处理。
         private static float PresentationInterval(Camera viewer, Vector3 position, float fullRateDistance)
         {
             if (fullRateDistance <= 0 || !viewer || !viewer.isActiveAndEnabled || viewer.orthographic) return 0;

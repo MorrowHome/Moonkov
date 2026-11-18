@@ -1,3 +1,4 @@
+// 船舱首页的三屏背景和按钮入口。根据原美术布局摆放组件，按画面两侧感应区切舱，点图标后让 MoonkovTerminal 打开对应页面。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

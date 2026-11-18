@@ -1,3 +1,4 @@
+// 远征阶段推进与结果收口。每局追踪倒计时和撤离条件，角色撤离、死亡或超时后更新掉落、结果物品清单和存档。
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -101,6 +102,7 @@ namespace Unity.MP_FPS
                             profile.ResearchQuests, SystemAPI.GetComponent<PredictedPlayerGhost>(player), position, SystemAPI.Time.ElapsedTime, dt,
                             SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick);
                     }
+                    // 用服务器已确认的玩家位置累计撤离进度。同一帧既走完整个撤离读条又到时间时，按超时结算。
                     map.AdvanceExtraction(ref session.ValueRW, (Vector3)position, dt);
                     // Expiry takes precedence over extraction; death is handled before this method.
                     if (session.ValueRO.TimeLeft <= 0)
@@ -109,6 +111,7 @@ namespace Unity.MP_FPS
                         FinishRaid(ref state, ecb, connection, RaidPhase.Extracted);
                 }
 
+                // 每帧都算倒计时和撤离。定时发送给界面的快照可以低频更新，需要立刻显示结算或错误时再把定时器清零。
                 session.ValueRW.SnapshotTimer -= dt;
                 if (session.ValueRO.SnapshotTimer <= 0)
                 {
@@ -149,6 +152,7 @@ namespace Unity.MP_FPS
             return true;
         }
 
+        // 趁角色和背包还在，先保存结果清单及需要的现场数据。随后才做阶段结算、请求落盘和销毁角色。连接暂留给显示结果和后续操作。
         private void FinishRaid(ref SystemState state, EntityCommandBuffer ecb, Entity connection, RaidPhase outcome)
         {
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
@@ -180,6 +184,7 @@ namespace Unity.MP_FPS
             {
                 DropDeathInventory(ref state,connection);
             }
+            // 同一场远征只允许从进行中结算一次。服务端得到这次阶段变化后，才向持久化上下文提交保存。
             if (!RaidRules.TrySettle(ref session.ValueRW, outcome, !persistence.Enabled)) return;
             if (persistence.Enabled)
             {

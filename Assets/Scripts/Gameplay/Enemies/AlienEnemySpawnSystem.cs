@@ -1,3 +1,5 @@
+// 服务端管理本局异形的生成、死亡和补刷。地图配置提供候选点，系统按冷却、同屏可见性和体型空间检查选择位置。
+// 生成后每只异形的追猎与攻击由 ProceduralAlienEnemy 驱动。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Collections;
@@ -146,6 +148,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 场上的存活上限和本局剩余刷新次数是两回事。槽位还要等各自的补刷时间。
         private bool CanSpawnEncounter(AlienEncounterSettings settings, EncounterState state, double now)
         {
             return settings.Enabled && m_AliveCount < settings.MaximumAliens &&
@@ -260,6 +263,7 @@ namespace Unity.MP_FPS
             return false;
         }
 
+        // Boss 身体很高，要检查观察者能否看见它的身体，而不只检查脚底那个坐标。
         private bool BossHiddenFromObservers(AlienEncounterSettings settings, AlienCreatureProfile profile, Vector3 ground, float height, float scale)
         {
             if (!RaidSpawnSafety.IsSafeFromObservers(ground + Vector3.up * (height - 1.5f), m_Observers,

@@ -1,3 +1,4 @@
+// 用战局和本地角色状态触发进场、死亡镜头。把捕获的角色视角交给 RaidCameraTransition，并在过渡期间处理输入和遮罩。
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine.UIElements;
@@ -72,6 +73,7 @@ namespace Unity.MP_FPS
                 // Keep the prone/downed eye current without turning a rescue state into death.
                 m_Cinematic.Stop(); PresentCinematicCurtain(); return;
             }
+            // 进场镜头每个战局触发一次。开始前把专用相机接到角色表现，过渡结束再恢复玩家输入。
             if (m_CinematicRaid != m_Snapshot.RaidId)
             {
                 var link = m_World.EntityManager.GetComponentObject<GhostGameObjectLink>(owner);

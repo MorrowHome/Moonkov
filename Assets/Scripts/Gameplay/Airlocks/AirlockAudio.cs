@@ -1,3 +1,5 @@
+// 把气闸的压力变化和门状态变成阀门、泵、电机和锁的声音。每种声音再按空气、结构接触、头盔或无线电的传播方式算音量。
+// 门和气压由 AirlockController 提供。
 using System;
 using UnityEngine;
 

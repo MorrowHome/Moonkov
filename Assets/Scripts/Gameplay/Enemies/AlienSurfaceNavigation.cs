@@ -1,3 +1,5 @@
+// 让异形沿地面、墙和天花板移动的导航图。烘焙时记录表面点、法线和可通过的边，运行时根据体型与当前方向找路线。
+// 下一段定时验路，动态遮挡时记录阻塞并重新规划。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.SpiderLab;
@@ -239,12 +241,14 @@ namespace Unity.MP_FPS
             { route.Blocked.Clear(); route.ForgetBlockedAt = now + 4; }
             // The intermediate arc normal may match neither endpoint. Finish an already chosen
             // corner before selecting a new start node, otherwise replanning can stop mid-arc.
+            // 翻过墙角时身体的朝上方向处在两面之间。先走完这个转角，再选新的路线起点。
             if (!motor.Transitioning && (now >= route.ReplanAt || moved))
             {
                 route.Goal = goal; route.ReplanAt = now + (route.HasPath ? 1.5f : .65f);
                 if (!Plan(route, motor.Current, goal, motor.Size)) return false;
             }
             if (!route.HasPath) return false;
+            // 下一点要同时满足位置和贴墙方向才算到达，防止隔着墙就跳到另一面的导航点。
             float arrival = Mathf.Clamp(sampleSpacing * .32f, .12f, .32f);
             while (route.Cursor < route.Path.Count - 1 &&
                 Vector3.Distance(motor.Current.Position, nodes[route.Path[route.Cursor]].BodyPosition(motor.Size)) <= arrival &&

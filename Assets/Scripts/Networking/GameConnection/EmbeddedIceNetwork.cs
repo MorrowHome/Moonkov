@@ -1,3 +1,4 @@
+// 给 ICE 寻路准备地址信息。它选网卡、找 STUN 地址、过滤交换的候选地址，并比较房主标识以判断是否实际在同一台机器。
 using System;
 using System.Linq;
 using System.Net;

@@ -1,3 +1,4 @@
+// 房间请求和回包的数据格式。局域网用 TCP 发送 JSON，先写长度让接收方知道要读多少。跨网控制通道复用相同的对象和编码。
 using System;
 using System.IO;
 using System.Net;

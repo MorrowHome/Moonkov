@@ -1,3 +1,4 @@
+// 船舱终端与局内暂停菜单共用的设置绑定。这里把语言、键位、音量和视角等控件接到各自的配置入口。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;
@@ -26,6 +27,7 @@ namespace Unity.MP_FPS.Client
             BindLanguage(content.Q<DropdownField>("language"), languageChanged);
         }
 
+        // 下拉框里面的文字变化也会冒泡。只接收下拉框自身发出的有效选项，避免翻译刷新误改语言。
         private static void BindLanguage(DropdownField language, Action languageChanged)
         {
             const string chinese = "简体中文", english = "English";

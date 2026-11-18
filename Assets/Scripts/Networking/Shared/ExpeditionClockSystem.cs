@@ -1,3 +1,4 @@
+// 远征的地图时钟由服务端定起点。客户端拿到基准时间、基准 tick 和走时倍率后，在自己的插值时间上换算地图时刻。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

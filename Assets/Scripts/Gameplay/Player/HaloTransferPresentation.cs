@@ -1,3 +1,5 @@
+// 把佩戴的光环模型沿网络状态指定的路径移到队友或锚点，再接回来。
+// 根据当前模式更新传输线和护盾等画面，能量变化由服务器结算。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.Rendering;

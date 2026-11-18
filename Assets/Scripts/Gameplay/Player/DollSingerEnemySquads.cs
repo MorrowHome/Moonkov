@@ -1,3 +1,5 @@
+// 人形 AI 的远征小队身份、跟随和战术协作。队员获取同队队长方向，交换已观察到的敌情，并在同伴能压住枪线时换位。
+// 好友远征里玩家随行队友也用这套小队关系。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Transforms;
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS
                 if (brain == null) continue;
                 brain.HasSquadLeader = false;
                 brain.SquadPartnerNearby = false;
+                // 队友报告按节奏交换。收到的是队友已经观察到的线索，仍需要自己确认视线才能开火。
                 bool share = now - brain.LastRadio >= .5;
                 if (share) brain.LastRadio = now;
                 foreach (var ally in m_ExpeditionAgents)

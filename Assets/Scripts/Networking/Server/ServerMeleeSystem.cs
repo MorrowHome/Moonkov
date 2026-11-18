@@ -1,3 +1,4 @@
+// 服务端处理角色近战动作、时序与命中。输入或机器人提交攻击后，服务器在有效帧扫过判定区，通过 BountyClashDamage 按玩法规则结算并同步表现。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -227,6 +228,7 @@ namespace Unity.MP_FPS
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidMeleeActionRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             { m_Requests.Add(new Request { Connection = received.ValueRO.SourceConnection, Value = request.ValueRO }); ecb.DestroyEntity(entity); }
+            // 同一连接可能在这一帧送到多条操作。先按请求号整理，再推进武器的准备、有效和恢复阶段，避免先处理松手或切武器。
             m_Requests.Sort((a, b) => a.Connection.Index != b.Connection.Index ? a.Connection.Index.CompareTo(b.Connection.Index) :
                 unchecked((int)(a.Value.RequestId - b.Value.RequestId)));
             foreach (var request in m_Requests) Handle(request);
@@ -254,6 +256,7 @@ namespace Unity.MP_FPS
             var capsule = context.View.Controller ? context.View.Controller.CharacterController : null;
             return context.View.transform.position + Vector3.up * (capsule ? capsule.center.y + capsule.height * .5f - .2f : 1.6f);
         }
+        // 只在当前 tick 的有效挥砍区间取样。攻击方向跟随当前视角的幅度有限，服务端用每个取样位置判断遮挡与接触。
         private void Sweep(in Context context, Actor actor, in MeleeActiveWindow window, uint tick)
         {
             if (!MeleeRules.TryDefinition(actor.State.AttackWeapon, out var definition)) return;

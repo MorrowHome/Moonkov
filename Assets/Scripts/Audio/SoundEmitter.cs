@@ -1,3 +1,4 @@
+// 一个 SoundEmitter 代表一次发声任务，管理这一声用到的一个或多个 SoundGameObject。它负责重复次数、淡出以及把声源还回池子。
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -314,6 +315,7 @@ public class SoundEmitter
     /// <param name="parent">Parent transform to attach to (can be null)</param>
     /// <param name="position">Position or local offset depending on parent</param>
     /// <returns>True if SoundGameObjects were prepared successfully, false otherwise</returns>
+    // 开播前先取得足够的声源，再设定跟随物体或固定位置。准备失败时，SoundSystem 会负责收回这次借出的任务。
     public bool PrepareSoundGameObjects(Transform parent, Vector3 position)
     {
         if (ActiveSoundGameObjects.Count == 0 || Reserved != ReservedInfo.ReservedEmitterAndAudioSources)   // No SoundGameObjects yet allocated.

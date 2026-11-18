@@ -1,3 +1,4 @@
+// 极速赏金的服务端机器人接口。比赛端用登记表发出生请求，机器人读取参赛者视图并提交意图，赛局再决定能否执行。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;

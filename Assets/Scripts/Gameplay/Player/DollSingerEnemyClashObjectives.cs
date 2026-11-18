@@ -1,3 +1,5 @@
+// 给悬赏机器人的小队目标安排路线和分工，比如接近目标、响应求救、守位或撤离。
+// 走到合适位置后通过对局的正式入口提交动作，由规则验证能否完成。
 using System;
 using System.Collections.Generic;
 using Unity.Entities;

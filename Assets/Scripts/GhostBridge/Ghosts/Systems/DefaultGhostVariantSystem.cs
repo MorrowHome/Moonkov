@@ -1,3 +1,4 @@
+// 给 Ghost 根实体的 LocalTransform 指定默认网络格式。坐标、旋转和缩放按设定精度发送，客户端插值或短时外推。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;

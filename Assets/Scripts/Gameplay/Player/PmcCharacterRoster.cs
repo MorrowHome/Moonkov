@@ -1,3 +1,4 @@
+// 服务端为人形敌人挑外观角色。可用角色先打乱，每个轮到一次才重新洗牌，让同局外观不扎堆。
 using Unity.Entities;
 using Unity.Mathematics;
 

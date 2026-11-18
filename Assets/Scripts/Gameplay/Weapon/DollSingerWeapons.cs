@@ -1,3 +1,5 @@
+// 把背包里的武器和配件映射到角色的网络状态，供客户端预测和服务端结算射击。
+// SyncEquipment 同步物品编号、装备槽和配件。计时完成后，CompleteReload 应用待充能量或补足相应模式的弹药。
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
@@ -56,6 +58,7 @@ namespace Unity.MP_FPS
         // The authoritative item tree determines possession; backpack weapons cannot be selected.
         public static void SyncEquipment(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry)
         {
+            // 能量和装备来源以库存为准。只读已经装备的槽位，背包里的武器还不能直接切出来。
             HaloEnergyRules.Synchronize(ref state, graph);
             SaveActiveAmmo(ref state, graph);
             state.InventoryWeapons = true;
@@ -87,6 +90,7 @@ namespace Unity.MP_FPS
             ushort modules = (ushort)HaloModules.Mask(graph, active);
             modules|=activity;
             if(state.AlienSurgeSeconds>0)modules |= (ushort)HaloModule.AlienSurge;
+            // 仅食物增益开始或消失时保留当前装填和抬手进度。换了具体武器或实体配件才重新开始取武器。
             if (!RefreshTemporaryModules(ref state,id,WeaponId(active?.Code),modules))
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
@@ -125,6 +129,7 @@ namespace Unity.MP_FPS
             state.WeaponEquipRemaining = Mathf.Max(state.WeaponEquipRemaining, .25f);
             return true;
         }
+        // 待充能量只在角色仍有效时加入共用能量池，随后清零，防止重复结算。
         private static void CompleteReload(ref PredictedPlayerGhost state,int magazineSize)
         {
             if (state.HaloRechargeEnergy > 0 && state.HaloEquipped && EnergyShieldRules.Alive(state) &&

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// 用定长环形缓冲记录最近几拍的位置和旋转。移动系统在诊断预测时按 tick 找回记录，比对同一拍是否算出了同一结果。
+using UnityEngine;
 using System;
 
 namespace Unity.MP_FPS
@@ -104,6 +105,7 @@ namespace Unity.MP_FPS
             // Quaternion.Dot gives cos(angle/2) between the rotations.
             // For identical rotations (or q and -q), |DotProduct| is 1.
             // We check if 1 - |DotProduct| is less than our epsilon.
+            // 四元数的全部分量取反后仍代表同一个旋转。比较时取点积的绝对值，避免把同方向误报为回滚差异。
             float dotProduct = Quaternion.Dot(historyRot, currentRot);
 
             if ((1.0f - Math.Abs(dotProduct)) > k_MatchQuaternionEpsilon)

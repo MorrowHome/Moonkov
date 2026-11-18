@@ -1,3 +1,5 @@
+// 一枚网络弹体的生命周期。本地预测先显示飞行，收到服务器对象后可由它接管。
+// 双方根据起点、速度和时间算弹道。服务端负责结算实际命中、直接伤害或范围爆炸。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Entities;
@@ -231,6 +233,7 @@ namespace Unity.MP_FPS
             Vector3 threatFrom = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
             float threatAge = m_Age;
             // Sweep the entire travelled arc, including a stalled frame's path.
+            // 补算这一帧之间的整条曲线，每小段扫一次碰撞。只检查终点会漏掉途中穿过的薄墙。
             while (m_Age < targetAge)
             {
                 float nextAge = Mathf.Min(targetAge, m_Age + 1f / 120f);
@@ -285,6 +288,7 @@ namespace Unity.MP_FPS
             if (m_HaloVisual != null) m_HaloVisual.Stop();
         }
 
+        // 确认命中后在这里分流。直接命中按距离和身体部位算伤害，范围武器交给爆炸规则。
         private void Impact(RaycastHit hit)
         {
             var system = GhostGameObject.World.GetExistingSystemManaged<ServerPlayerMovementSystem>();

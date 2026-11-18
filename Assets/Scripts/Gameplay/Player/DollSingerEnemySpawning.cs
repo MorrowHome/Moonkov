@@ -1,3 +1,5 @@
+// 服务器维护人形敌人的初始人数和后续增援。候选点要满足距离、视线、站立和路线条件，普通远征尽量成队生成。
+// 生成时分配外观、真实库存、网络身份和输入实体，之后由 AI 主循环接管。
 using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Collections;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS
             m_NextCompanionSpawn = 0;
         }
 
+        // 这里管整场刷新预算和补刷时机。没找到合法点先等下一次尝试，不消耗一次增援。
         private void UpdatePopulation(MoonRaidMap map, double now)
         {
             if(BountyClashRuntime.Enabled(EntityManager))return;

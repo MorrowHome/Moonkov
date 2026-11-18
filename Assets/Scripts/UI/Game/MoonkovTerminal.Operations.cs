@@ -1,3 +1,4 @@
+// 终端的行动准备流程。把角色、随身物资和出发选项展示出来，最终按钮使用 MainMenu 传进来的回调。实际出战和库存结算可以从 GameManager 接着往下看。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -66,6 +67,7 @@ namespace Unity.MP_FPS.Client
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyOperatorName"), GameSettings.CharacterName(GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex));
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS", PlayerProfileClient.CarryCells);
                     var launch = m_Content.Q<Button>("launch");
+                    // 这个按钮只启动对应的准备路径。单人、好友房、线上小队的区别在 MainMenu.Account。
                     launch.clicked += m_Prepare;
                     bool offline = PlayerProfileClient.IsOffline, lan = PlayerProfileClient.IsLan;
                     var companions = m_Content.Q<DropdownField>("readyCompanions");
@@ -92,6 +94,7 @@ namespace Unity.MP_FPS.Client
         private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
             offline ? "DEPLOY SOLO" : "进入小队";
 
+        // 只有单人标准远征且教学未占用流程时，准备页才提供可选人机队友。
         internal static void PresentCompanionPicker(VisualElement root)
         {
             var picker = root.Q<DropdownField>("readyCompanions");
@@ -114,6 +117,7 @@ namespace Unity.MP_FPS.Client
             button.SetEnabled(!m_Busy && check.Issue != DepartureEquipmentIssue.Loading);
         }
 
+        // 缺光环但能领应急装备时，打开已有商店流程。其他情况切到仓库让玩家检查和整理装备。
         private void ReviewDepartureEquipment()
         {
             if (m_Busy || m_EquipmentInventory == null) return;

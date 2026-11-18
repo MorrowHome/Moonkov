@@ -1,3 +1,4 @@
+// 把材料指定的一步全屏效果排入某台摄像机的 URP 渲染流程。受伤、黏液和眩光等镜头反馈会通过这个入口叠到画面上。
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 

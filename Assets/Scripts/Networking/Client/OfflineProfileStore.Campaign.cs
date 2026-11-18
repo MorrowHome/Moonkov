@@ -1,3 +1,4 @@
+// 离线档案中单人战役进度的读写和校验。仓库里改追踪目标走这里，撤离时也在这里把本局的任务记录和实际带出的物品写进战役进度。
 using System;
 using System.Collections.Generic;
 using System.IO;

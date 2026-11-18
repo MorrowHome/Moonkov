@@ -1,3 +1,4 @@
+// 单人战役进度模型。每件事按任务、节点和来源记录，区分局内完成与撤离后才能入档的目标，菜单追踪和结算共用这些判断。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -175,6 +176,7 @@ namespace Unity.MP_FPS.Campaign
             return pendingExtraction;
         }
 
+        // 跑图时传进来的是一条可核对的事实。先检查任务与节点是否接受，再按事件标识去重，处理真正有效的进度。
         public static bool TryRecord(CampaignProgress p, CampaignFact fact, out string error)
         {
             error = Validate(p);

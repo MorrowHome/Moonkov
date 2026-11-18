@@ -1,3 +1,4 @@
+// 创建客户端和服务端 World 时，NetCode 会请它选好底层 driver。单人和房主本机可走进程内连接，其他情况按入口选 UDP、Relay 或已打通的 ICE。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -65,6 +66,7 @@ namespace Unity.MP_FPS
         internal EntityDriverConstructor(NetworkRole role, LanPeerRoom room) : this(role, secureDirect: false)
         { m_PeerRoom = room; }
 
+        // World 建立时把对应的传输装进去。好友房的来宾借用房间留好的战局 ICE 通道，房主自己的客户端走进程内连接。
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)
         {
             var networkSettings = GameNetworkSettings(

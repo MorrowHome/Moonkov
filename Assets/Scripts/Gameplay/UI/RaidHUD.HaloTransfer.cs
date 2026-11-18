@@ -1,3 +1,4 @@
+// 光环向队友传能、护卫或固定部署时的交互提示。用本地角色和当前目标展示按键、模式、距离与队友剩余能量。
 using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using UnityEngine;

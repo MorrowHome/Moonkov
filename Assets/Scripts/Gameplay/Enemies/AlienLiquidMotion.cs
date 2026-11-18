@@ -1,3 +1,4 @@
+// 把异形的动作和已经过的时间换成液体动画的参数。蓄力逐渐鼓起，出招按节拍喷涌，恢复和死亡时逐渐收敛。
 using Unity.MP_FPS.SpiderLab;
 using UnityEngine;
 

@@ -1,3 +1,4 @@
+// 定义单人战役的任务与节点表。把地图里具体操作的结果按任务和节点编号接到 CampaignRules，保证做了哪一步能在进度中找到。
 #nullable disable
 using System;
 using System.Collections.Generic;

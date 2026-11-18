@@ -1,3 +1,4 @@
+// 一次远征的阶段、倒计时、撤离进度、携带资源和存档结果。RaidRules 推进阶段，RaidSnapshotV2Rpc 将能展示的部分同步到 HUD。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

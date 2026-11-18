@@ -1,3 +1,4 @@
+// TacticalItemsFeedback 为收到的每件战术物件维护一条声音记录。扔出或引爆时播一次，烟雾、火区和警报等持续阶段维护循环声。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS
                 state.Phase == TacticalWorldPhase.Wire ? lib.TacticalWireRelease :
                 state.Phase == TacticalWorldPhase.Supply ? lib.TacticalSupplyDeploy :
                 state.Phase == TacticalWorldPhase.Flying ? lib.TacticalDeploy : null;
+            // 很晚才收到持续烟火的状态时可以接上循环底声。点火或落地的瞬间音效只在消息足够新、且听者在范围内时播放。
             // Late arrivals resume the area bed, without replaying its original ignition or deployment.
             if (cue && Fresh(state) && MoonkovAudio.CanHearDetail(m_Position, cue.DistanceInfo.VolumeDistMax))
                 m_Start = MoonkovAudio.Play(cue, m_Position);

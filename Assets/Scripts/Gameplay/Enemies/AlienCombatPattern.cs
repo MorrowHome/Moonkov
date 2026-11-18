@@ -1,3 +1,5 @@
+// 为各个物种和 Boss 阶段提供攻击距离、范围、预警、命中和恢复时间。一次攻击开始时就定下类型和阶段。
+// 服务端伤害、客户端预警和音效用同一套命中时刻，才不会各演各的。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -12,6 +14,7 @@ namespace Unity.MP_FPS
         public float Range, Radius, Windup, Active, Recovery, DamageScale, Speed;
         public int Pulses;
         // One shared clock for authoritative damage, warning flashes and impact audio.
+        // 某些技能有好几次伤害节拍。这里把每一拍换算成攻击开始后多少秒。
         public float PulseTime(int pulse) => .08f + pulse * Active / Mathf.Max(1, Pulses);
         public int PulseAt(float age) => age < PulseTime(0) ? -1 :
             Mathf.Clamp(Mathf.FloorToInt((age - .08f) / Mathf.Max(.01f, Active / Mathf.Max(1, Pulses))), 0, Mathf.Max(0, Pulses - 1));

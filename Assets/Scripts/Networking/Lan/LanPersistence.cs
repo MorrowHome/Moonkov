@@ -1,3 +1,4 @@
+// 好友房的长期档案存在房主电脑上。它把房间成员的凭据对应到各自的 OfflineProfileStore 并维护本轮的短期入场票。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,6 +100,7 @@ namespace Unity.MP_FPS
                 return Read(id);
             }
         }
+        // 战局服务器用同一套持久化请求进来。入场先把本轮票据还原成房间成员，之后出战和结算改的是这个成员的档案。
         public RaidPersistenceContext.Profile Request(string path, object payload)
         {
             lock (m_Lock)

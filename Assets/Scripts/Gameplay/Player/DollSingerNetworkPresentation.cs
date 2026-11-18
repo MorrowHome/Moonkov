@@ -1,3 +1,5 @@
+// 把角色网络状态接到 DollSinger 模型、第一人称镜头和手部动作。自身角色用本地输入保证瞄准反馈及时，其他角色从快照和射击事件播放动作。
+// 本文件还把声音、手雷、受击和光环等表现接到角色上。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using Unity.Mathematics;
@@ -210,6 +212,7 @@ namespace Unity.MP_FPS
             return fire || m_OwnedPendingFire || m_OwnedRaised && !m_OwnedHipHoldSuppressed;
         }
 
+        // 这里区分自己控制的角色和其他人的角色。只有自己这一个需要接本机镜头和操作反馈。
         public override void OnGhostLinked()
         {
             m_Linked = true;

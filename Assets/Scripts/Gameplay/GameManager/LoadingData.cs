@@ -1,3 +1,4 @@
+// 加载界面的数据源。连接、加载场景、同步角色等各占一段进度，UpdateLoading 把单步进度换算成总进度并通知绑定的界面。
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

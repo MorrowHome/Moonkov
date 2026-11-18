@@ -1,3 +1,4 @@
+// 在单人教学局观察走动、转向、瞄准和开火，并提示接下来的操作。新步骤通过 PlayerProfileClient 保存，章节通信字幕也在这里按顺序显示。
 using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;
 using Unity.Transforms;
@@ -110,6 +111,7 @@ namespace Unity.MP_FPS
             try
             {
                 await PlayerProfileClient.UpdateTutorialAsync(steps: observed);
+                // 保存请求可能跨过退局的时刻。用发请求时记录的局号检查结果，避免上一局回调改动本局教学状态。
                 if (raid == m_TutorialRaid) m_TutorialPersisted = observed;
             }
             catch (System.Exception e) { MissionNotice("教学记录暂未保存：" + e.Message); }

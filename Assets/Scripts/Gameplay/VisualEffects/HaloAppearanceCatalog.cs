@@ -1,3 +1,4 @@
+// 按光环武器 ID 查颜色和 HUD 图集位置。HUD 与护盾因此能用同一个光环身份，切到近战时仍会从装备槽找可用光环。
 using UnityEngine;
 
 namespace Unity.MP_FPS

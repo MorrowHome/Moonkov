@@ -1,3 +1,4 @@
+// 远征的饥渴、吃喝效果和随之变化的移动处理。用真实移动和时间计算消耗，归零后产生身体伤害，并把轻重状态提供给控制器。
 using System;
 using Unity.Mathematics;
 using UnityEngine;

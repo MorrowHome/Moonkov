@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// 场景启用时把 LightingProfile 写到 Unity 的 RenderSettings，并更新环境光。模板战场 GameScene 上有这个组件。
+using UnityEngine;
 
 namespace Unity.MP_FPS
 {

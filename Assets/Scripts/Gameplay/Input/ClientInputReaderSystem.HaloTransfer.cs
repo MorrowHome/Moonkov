@@ -1,3 +1,4 @@
+// 采集光环布置和支援操作。客户端用准星、距离和遮挡挑候选队友，提交 Ghost 身份后由服务器再次验证转移请求。
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.MP_FPS;
@@ -40,6 +41,7 @@ public partial class ClientInputReaderSystem
                 HaloTransferCandidate = entity;
             }
         }
+        // 按下时锁定这一轮的目标，继续按住保持原选择。Ghost 的编号配上出生 tick，避免编号被新实体复用时把光环交错人。
         if (held && !_transferGestureHeld) _transferTarget = HaloTransferCandidate;
         if (!held) _transferTarget = Entity.Null;
         _transferGestureHeld = held;

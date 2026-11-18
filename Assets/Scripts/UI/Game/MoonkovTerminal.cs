@@ -1,3 +1,4 @@
+// 船舱平板的页面切换入口。仓库、商人、行动和任务等页由这里装配。StashScreen 提供装备数据，准备出发时调用创建终端时传入的回调。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,6 +101,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Navigate(int page) => Navigate(page, null);
 
+        // 切页时关掉上一页的浮窗，通知背包清掉当前交互，再把背景和内容切到目标页面。
         private void Navigate(int page, int? operationStep)
         {
             Navigating?.Invoke(); DisposeCharacter();
@@ -162,6 +164,7 @@ namespace Unity.MP_FPS.Client
                 m_Indicator.style.left = Mathf.Lerp(x0, target.x, k) - stretch * .5f; m_Indicator.style.width = Mathf.Lerp(w0, target.width, k) + stretch;
             }, 0, null, "indicator");
         }
+        // 按当前页装配内容。任务页已打开且只需要更新研究状态时，可以刷新现有视图，保留用户正在看的任务。
         private void Render()
         {
             if (m_Page == 5 && m_ResearchTasks != null && PlayerProfileClient.ResearchQuests != null)

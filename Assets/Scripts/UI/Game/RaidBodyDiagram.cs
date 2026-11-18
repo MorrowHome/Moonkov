@@ -1,3 +1,4 @@
+// 把各部位生命值画成人体扫描图。区域既有暗色轮廓层，也有亮色剩余生命层，点部位可通知健康页切换治疗目标。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -131,6 +132,7 @@ namespace Unity.MP_FPS.Client
             for (int i = 0,j = count-1; i < count; j = i++) sum += polygon[j].x*polygon[i].y-polygon[i].x*polygon[j].y;
             return Mathf.Abs(sum)*.5f;
         }
+        // 手脚的填充按实际多边形面积算。部位上宽下窄时，血量一半依然应亮一半面积。
         private float FindFillCut(BodyPart part, float fraction)
         {
             if (fraction <= 0) return float.NegativeInfinity;

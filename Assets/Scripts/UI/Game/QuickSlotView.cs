@@ -1,3 +1,4 @@
+// 把快捷栏的物品、选中状态和冷却显示出来。打开背包后也可接收拖来的物品，把命中的格子交给绑定规则处理。
 using System;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;

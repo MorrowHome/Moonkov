@@ -1,3 +1,5 @@
+// 进食、医疗、针剂和搜索等远征动作的角色表现。读取服务器当前动作和进度，从中选姿势、道具和收起时机。
+// 玩法何时扣物品和给效果由服务端决定。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.DollSinger;

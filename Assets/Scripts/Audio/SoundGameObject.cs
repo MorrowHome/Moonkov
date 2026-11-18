@@ -1,3 +1,4 @@
+// 这是池里真正带 AudioSource 的对象。SoundEmitter 把播放任务交给它，它把音量、音高、距离曲线和滤波落实到声源。
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -531,6 +532,7 @@ public class SoundGameObject
         }
     }
 
+    // 把任务自己的音量和淡出、障碍物造成的衰减、短时混音压低合在一起。每个声源只需更新自己的最后一个音量值。
     private void UpdateAudioParameters(SoundEmitter soundEmitter)
     {
         if (m_CalculateDistance)
@@ -578,6 +580,7 @@ public class SoundGameObject
         return clipIndex;
     }
 
+    // 有距离感的声音会抽样检查到听者之间是否被挡住。滤波和音量逐步靠近目标，避免跨过遮挡边缘时声音突然跳变。
     private void UpdateOcclusion()
     {
         if (!m_SoundDef.Occlusion || m_SpatialBlendValue <= .5f || !m_ListenerTransform) return;

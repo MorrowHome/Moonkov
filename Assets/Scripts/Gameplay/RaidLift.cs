@@ -1,3 +1,5 @@
+// 将升降梯的呼叫、夹人保护、运行进度和画面动作连起来。TickAuthoritative 推动门和轿厢状态，联网时客户端用收到的状态做平滑显示。
+// CarryHeight 给移动系统查询脚下楼板升降量，让站在梯里的人跟着轿厢走。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -124,6 +126,7 @@ namespace Unity.MP_FPS
             var state = State;
             switch (state.Phase)
             {
+                // 门碰到人就中止本次出发，重新开门。等门完全关上后才进入移动阶段。
                 case RaidLiftPhase.Closing:
                     if (Obstructed(state.Dock))
                     {
@@ -155,6 +158,7 @@ namespace Unity.MP_FPS
             ApplyPose(state.Travel, state.Gate, state.Dock);
         }
 
+        // 版本号挡住旧包。换战局时允许从新快照开始，并把轿厢直接放到快照位置。
         public bool ApplyNetworkState(RaidLiftState state, bool fresh)
         {
             if (!Ready || !fresh && state.Revision <= State.Revision || state.Dock > 1 || state.Destination > 1 ||

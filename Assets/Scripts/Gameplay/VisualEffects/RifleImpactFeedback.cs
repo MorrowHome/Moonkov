@@ -1,3 +1,4 @@
+// 消费弹着点的画面和音效。预测可以让本机先看到弹痕，服务端回执确定实际落点，命中和击杀反馈只在确认后出现。
 using Unity.NetCode;
 using Unity.Mathematics;
 using UnityEngine;
@@ -142,6 +143,7 @@ namespace Unity.MP_FPS
             Warmup();
             var profile = m_Library?.ForWeapon(impact.WeaponId);
             int shot = FindShot(impact);
+            // 落点按发射者、射击 tick、武器和弹丸序号去重。同一发的确认如果改变了表面或位置，再在正确的位置补一个画面效果。
             int receipt = -1;
             for (int i = 0; i < m_Receipts.Length; i++)
                 if (m_Receipts[i].Until > Time.unscaledTime && m_Receipts[i].Owner == impact.OwnerNetworkId &&
@@ -165,6 +167,7 @@ namespace Unity.MP_FPS
             m_Receipts[receipt].Confirmed = true;
             if (!owned || (impact.DamageFlags & 1) == 0) return;
             bool killed = (impact.DamageFlags & 2) != 0;
+            // 霰弹的多颗弹丸共享一次扳机的确认。普通命中可升级为击杀，后续同级或更低的确认不会再响。
             byte confirmation = (byte)(killed ? 2 : 1);
             // Eight shotgun pellets are one trigger pull. A later lethal pellet may upgrade it once.
             if (confirmation <= m_Shots[shot].Confirmation) return;

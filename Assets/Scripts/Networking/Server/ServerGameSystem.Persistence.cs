@@ -1,3 +1,4 @@
+// 把异步档案结果接回服务端每帧更新。认证和出战装备确认后才生成玩家，结算成功或失败时把结果反映到本局状态。
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -109,6 +110,7 @@ namespace Unity.MP_FPS
             }
             foreach (var connection in removeJoins) context.Joins.Remove(connection);
 
+            // 出战请求发出后连接也可能断掉。即使没生成角色，已扣的装备也要按原出战记录走退款或放弃路线，不能把未完成的写入忘掉。
             var removeDeploys = new List<Entity>();
             foreach (var pair in context.Deployments)
             {
@@ -204,6 +206,7 @@ namespace Unity.MP_FPS
             }
             foreach (var connection in removeDeploys) context.Deployments.Remove(connection);
 
+            // 保存失败会留待发记录继续重试。只在回执上的结算编号仍属于当前战局时更新客户端状态，避免迟到结果写到下一场。
             var removeSaves = new List<string>();
             foreach (var pair in context.Saves)
             {

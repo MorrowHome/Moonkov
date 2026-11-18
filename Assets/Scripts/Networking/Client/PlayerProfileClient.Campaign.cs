@@ -1,3 +1,4 @@
+// 给战役和研究页面提供档案入口。研究命令按当前模式发到房主、账号后端或本机档案，单人战役的追踪选项由离线档案保存。
 using System;
 using System.Threading;
 using System.Threading.Tasks;

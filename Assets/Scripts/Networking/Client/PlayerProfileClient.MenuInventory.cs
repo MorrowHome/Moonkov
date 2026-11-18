@@ -1,3 +1,4 @@
+// 把菜单拖格、买卖和改装交给共用的 ProfileInventoryQueue。这份临时预览给菜单显示，真正出战和落盘取已确认的 Inventory。
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,6 +56,7 @@ namespace Unity.MP_FPS
         }
         public static Task QueueMenuMoveAsync(InventoryCommand command) => MenuQueue().MoveAsync(command);
         public static Task QueueMenuTradeAsync(ShopCommand command, ShopOffer[] offers) => MenuQueue().TradeAsync(command, offers);
+        // 点准备、出战或退出前等队列里的操作结清，这时从正式库存读取的装备才能包含刚完成的拖放和购买。
         public static Task FlushMenuInventoryAsync(CancellationToken ct)
         { CheckMenuScope(); return s_MenuInventory?.FlushAsync(ct) ?? Task.CompletedTask; }
     }

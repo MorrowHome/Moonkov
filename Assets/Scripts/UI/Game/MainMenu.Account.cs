@@ -1,3 +1,4 @@
+// 登录页和仓库之间的调度。在这里切换线上账号、本地单人档和好友房档案，具体鉴权或读档由 PlayerProfileClient 完成。
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,6 +84,7 @@ namespace Unity.MP_FPS.Client
             if (PlayerProfileClient.IsLoggedIn) RestoreLogin();
         }
 
+        // 线上登录恢复先经过验证，动画也要走到可以显示内容的阶段，仓库才会出现。帘幕还在动时暂时停用两边的输入。
         private void UpdateAccountPanel()
         {
             bool authenticated = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
@@ -171,6 +173,7 @@ namespace Unity.MP_FPS.Client
             });
         }
 
+        // 同一个出发按钮有三条路径。好友房先开房间页，单人直接启动本地战局，线上先打开小队页等大家准备。
         private void ShowRaidPreparation()
         {
             if (PlayerProfileClient.IsLan) m_LanRoom.Open();
@@ -183,6 +186,7 @@ namespace Unity.MP_FPS.Client
             if (GameSettings.Instance.GameState != GlobalGameState.MainMenu || PlayerProfileClient.IsLan || m_AccessTransition.IsRunning) return;
             if (m_AccountBusy && !PlayerProfileClient.IsOffline)
             {
+                // 切到单人档时取消仍在等待的线上请求，避免旧回调晚到后改写新界面。
                 var previous = m_AccountStop; previous.Cancel(); previous.Dispose();
                 m_AccountStop = new CancellationTokenSource(); m_AccountBusy = false;
             }
@@ -217,6 +221,7 @@ namespace Unity.MP_FPS.Client
                 m_AccessTransition?.Present(PlayerProfileClient.IsLoggedIn && m_AccountVerified,
                     !m_LoginAnimation.IntroPending, false, m_AccessReduceMotion.value);
             }
+            // 只在从战局回到菜单的那次状态变化重新验证档案。还在小队里的玩家会回到小队页。
             bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
             m_LastStashGameState = gameState;
             if (!returnedToMenu)
@@ -242,6 +247,7 @@ namespace Unity.MP_FPS.Client
         private async Task AccountAction(Func<CancellationToken, Task> action, bool allowOffline = false)
         {
             if (m_AccountBusy || m_AccessTransition.IsRunning || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && !allowOffline)) return;
+            // 请求记住开始时的取消令牌。离开页面或者切档后，旧回调不会再解除新页面的忙碌状态。
             var lifetime = m_AccountStop;
             m_AccountError = null;
             m_AccountBusy = true;

@@ -1,3 +1,4 @@
+// 把碰到的 Collider 归为岩石、金属或角色等表面。先识别角色，再读取手工设置的表面标记。其余情况按碰撞体和材质判断，命中和擦碰音效都会用到。
 using UnityEngine;
 
 namespace Unity.MP_FPS

@@ -1,3 +1,4 @@
+// GameManager 持有声音系统。业务传来 SoundDef 和播放位置，这里安排发声任务，再由 SoundGameObject 上的 AudioSource 真正播出。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -314,6 +315,7 @@ public class SoundSystem : ISoundSystem
         return new SoundEmitter(soundGameObjectPool);
     }
 
+    // 每次借用都换一个序号。旧的 SoundHandle 即使还握着同一个对象，也会因为序号不同而失效。
     private SoundEmitter GetSoundEmitterFromPool(SoundGameObjectPool soundGameObjectPool)
     {
         foreach (var emitter in m_SoundEmitterPool)
@@ -347,6 +349,7 @@ public class SoundSystem : ISoundSystem
         // Linear rolloff is silent at maxDistance; don't spend a pooled voice there.
         if (m_ListenerTransform && spatial >= .99f && definition.DistanceInfo.VolumeRolloffMode == AudioRolloffMode.Linear &&
             (origin - m_ListenerTransform.position).sqrMagnitude >= definition.DistanceInfo.VolumeDistMax * definition.DistanceInfo.VolumeDistMax) return null;
+        // 下面的间隔和并发上限只管新借出的发声任务。已经持有有效句柄的调用可以继续使用原任务。
         bool freshlyAllocated = soundInfo.Handle == null || !soundInfo.Handle.IsValid();
         if (freshlyAllocated)
         {
@@ -363,6 +366,7 @@ public class SoundSystem : ISoundSystem
         if (freshlyAllocated)
         {
             // A full source pool must not let ambience/foley swallow an incoming attack or shot.
+            // 每个声音可能占多个 AudioSource。空位不足时先腾出更低优先级、且允许自动回收的声音。
             while (SoundGameObjects.AvailableSoundObjectCount < definition.PlayCount)
             {
                 int victim = -1, lowestPriority = definition.Priority;
@@ -415,6 +419,7 @@ public class SoundSystem : ISoundSystem
             return soundInfo;
         }
 
+        // 申请到了发声任务但没能播出去时，当场退回池子。它还没进活跃列表，后续的每帧清理找不到它。
         // Playback never started, usually because the SoundGameObject pool had no free
         // source for this SoundDef's PlayCount. An emitter taken from the pool is already
         // marked Allocated and Active, and nothing else will ever call Update() on it, so

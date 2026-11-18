@@ -1,3 +1,4 @@
+// 资源子场景在这里列出客户端输入实体和各个可生成角色的 Ghost 模板。Baker 把这些模板变成 ECS 实体引用，供开局或重生配对使用。
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 战斗时的准星、命中反馈、弹药和生命状态。它从客户端 World 找代表本地角色的实体，RaidHUD 则负责背包、任务和结算。
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -145,6 +146,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 这里连到客户端 World 和本地玩家查询。换局后 World 会换，读取前要重新找到正确的实体。
         private void InitializeEcs()
         {
             ResetChargeFeedback();
@@ -262,6 +264,7 @@ namespace Unity.MP_FPS
             UpdateReticleVisual(playerData);
         }
 
+        // 用角色武器、准星散布和瞄准状态更新画面。准星偏转跟着自己角色的镜头侧倾，让画面和武器反馈对得上。
         private void UpdateReticleVisual(PredictedPlayerGhost playerData)
         {
             if (m_Reticle == null)

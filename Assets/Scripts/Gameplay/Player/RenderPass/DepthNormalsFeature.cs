@@ -1,3 +1,4 @@
+// URP 的深度和法线渲染步骤。按配置选场景物体，把深度和表面方向写到后续效果使用的纹理中。
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;

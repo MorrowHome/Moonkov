@@ -1,3 +1,4 @@
+// 给极速赏金预留断线处理时机。网络收包发现断线后、NetCode 清理实体前，把出战资料和仍在地图上的角色交给 ServerGameSystem 保存。
 using Unity.Entities;
 using Unity.NetCode;
 

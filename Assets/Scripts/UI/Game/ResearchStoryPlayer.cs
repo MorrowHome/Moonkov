@@ -1,3 +1,4 @@
+// 研究故事的小播放器。ResearchSceneLibrary 提供章节镜头和尾声，播放器负责换镜头、显示图文与切换语音。读完之后调用外部回调。
 using System;
 using System.Threading.Tasks;
 using UnityEngine;

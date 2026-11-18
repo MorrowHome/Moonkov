@@ -1,3 +1,4 @@
+// 进局的加载页。这个组件把 LoadingData 的进度、阶段说明接到界面，再让 HalosTerminalBackdrop 播放加载动画。
 using Unity.MP_FPS.DollSinger;
 using Unity.Properties;
 using UnityEngine;

@@ -1,3 +1,5 @@
+// 在远征地图摆放可以阅读的资料平板。记录内容、选点、模型和屏幕的生命周期在这里，跟随战局和轮次重新布置。
+// 同组资料支持中英文显示，这些平板负责可阅读的环境叙事。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 远征设施任务的 HUD 和交互。使用任务快照显示节点、设备进度与回收窗口，操作时发送开始、续按或取消，把设施产物交给同一套搜刮视图。
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -235,6 +236,7 @@ namespace Unity.MP_FPS
                 // The press captures an operation epoch and node. Assisted selection never transfers a live hold.
                 int captured = m_MissionHolding;
                 var anchor = site.Anchor(definition.Objectives[captured].Anchor);
+                // 按住后要持续满足同一局、同一设施阶段和选中目标等条件。任一条件失效就取消这次尚未完成的操作。
                 bool valid = !terminal && held && snapshot.RaidId == m_MissionHoldSnapshot.RaidId &&
                     snapshot.Epoch == m_MissionHoldSnapshot.Epoch && snapshot.OperationId.Equals(m_MissionHoldSnapshot.OperationId) &&
                     anchor != null && RaidInteractionAim.Score(view, local.Position, anchor.Position, 3,
@@ -318,6 +320,7 @@ namespace Unity.MP_FPS
         private void SendMission(MissionIntent intent, int node)
         {
             if (m_World == null || !m_World.IsCreated || m_MissionSnapshot.OperationId.Length == 0) return;
+            // 续按和取消要对准最初开始的那一笔任务。请求从按下时记住的快照取局号和阶段，防止刷新后误操作新任务。
             var captured = m_MissionHolding >= 0 ? m_MissionHoldSnapshot : m_MissionSnapshot;
             bool sent = Send(new RaidMissionActionRpc { RaidId = captured.RaidId, OperationId = captured.OperationId,
                 Epoch = captured.Epoch, Node = node, RequestId = m_MissionRequest, Intent = intent });

@@ -1,3 +1,4 @@
+// 背包打开时把本机相机的场景画面做两方向的模糊，UI 仍在后续步骤正常绘制。背包停止发布或相机变化时撤掉效果。
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;

@@ -1,3 +1,4 @@
+// 每个客户端或服务端 World 各自收集本帧收到的 RPC 实体。GhostGameObject 从这个列表按消息类型和目标取数据。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

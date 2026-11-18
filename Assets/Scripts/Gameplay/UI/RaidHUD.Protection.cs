@@ -1,3 +1,4 @@
+// 背包电池右键补能的前置提示。先用最新库存按 ID 找电池，再用 HaloEnergyInventory 判断是否能使用。
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS

@@ -1,3 +1,4 @@
+// 每个角色各自记住近战动作的进度，把新一轮挥击、发力和命中结果变成一次性的声音提示。由 MoonkovPlayerAudio 统一安排人声。
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 

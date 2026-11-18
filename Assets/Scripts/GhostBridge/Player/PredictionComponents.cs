@@ -1,3 +1,4 @@
+// 玩家在 ECS 中的网络状态表。服务端移动、战斗和生存逻辑写入数据，预测系统和 HUD、动作、声音等表现从这里读取。
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -31,6 +32,7 @@ public struct PredictedClientInput : IComponentData
     public int InputCount;
 }
 
+// GhostField 标记 NetCode 需要同步的字段。开头的位移累积和本地视角留在本端，角色的血量、装备和控制状态会随快照传输。
 public struct PredictedPlayerGhost : IComponentData
 {
     public float2 LocalLookYawPitchDegrees;
@@ -64,6 +66,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool TacticalBleeding;
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
+    // 持续变化的数据可以先按精度取整再同步。例如 Quantization 为 100 时，预期保留约两位小数。
     [GhostField(Quantization = 100)] public float CarriedWeight;
     [GhostField] public bool ConsumingSupply;
     [GhostField] public bool TimedActionActive;

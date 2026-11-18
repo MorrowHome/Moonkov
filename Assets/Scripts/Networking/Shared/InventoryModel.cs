@@ -1,3 +1,4 @@
+// 仓库、随身背包与装备槽的共同数据模型。物品用父 ID 表示放在哪个容器，格子描述位置，操作带上看到的库存版本，版本对得上才继续处理。
 #nullable disable
 using System;
 using System.Collections.Generic;
@@ -304,6 +305,7 @@ namespace Unity.MP_FPS.Inventory
         }
         private static void Position(InventoryItem item, string parent, string region, int x, int y, bool rotated)
         { item.Parent = parent; item.Region = region; item.X = x; item.Y = y; item.Rotated = rotated; }
+        // 拖动、拆堆和合并先改库存副本。结构、负重和版本全检查通过才替换正式物品并增加版本，失败时旧背包仍完整。
         public InventoryError TryApply(InventoryCommand request, bool enforceWeight = true)
         {
             if (request == null || request.ExpectedVersion != Version) return InventoryError.Stale;
@@ -328,6 +330,7 @@ namespace Unity.MP_FPS.Inventory
             if (error != InventoryError.None) return error;
             Items = copy.Items; Version++; return InventoryError.None;
         }
+        // 这里在副本里执行一次移动。换装备时先给新装备占位，再找地方放卸下来的那件。没有空位会使整次操作取消。
         private InventoryError Apply(InventoryCommand r)
         {
             var item = Find(r.ItemId); var def = InventoryCatalog.Get(item?.Code);
@@ -554,6 +557,7 @@ namespace Unity.MP_FPS.Inventory
             var error = copy.Validate(); if (error != InventoryError.None) return error;
             Items = copy.Items; Version++; return InventoryError.None;
         }
+        // 出战只取随身装备和其中的子物品。账户的仓库根仍留在档案里，局内服务器不需要拿到整个仓库。
         public InventoryGraph ExtractLoadout()
         {
             var raid = Clone(); raid.Items.RemoveAll(i => !Carried(i));

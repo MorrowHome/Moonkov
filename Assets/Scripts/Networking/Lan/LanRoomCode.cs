@@ -1,3 +1,4 @@
+// 通过短期信令服务发布好友房房间码、展示目录、审核申请，以及交换建立直连需要的邀请和回执。连好后实际房间操作和战局数据由房主与来宾直接传输。
 using System;
 using System.IO;
 using System.Linq;

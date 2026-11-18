@@ -1,3 +1,4 @@
+// 研究主线的结局选择界面。先预览分支，再用保存回调确认结果。保存期间避免重复提交，失败可以重试。
 using System;
 using System.Threading.Tasks;
 using UnityEngine;

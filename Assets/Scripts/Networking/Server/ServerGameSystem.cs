@@ -1,3 +1,4 @@
+// 战局服务端的总入口。连接、角色出生和每帧的玩法分流先经过这里，库存、结算、任务、断线等具体逻辑分在同名的其他文件中。
 using UnityEngine;
 using System;
 using Gameplay.Leaderboard;
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS
         [BurstDiscard]
         public void OnUpdate(ref SystemState state)
         {
+            // 先为本 World 选好档案通道。添加这份 ECS 数据会改变实体结构，所以要做完再拿本帧用的组件查询和缓冲。
             // Initialize before borrowing buffers/lookups: adding the managed context
             // is a structural change, and the World now has its session-mode marker.
             var persistence = Persistence(ref state);
@@ -83,6 +85,7 @@ namespace Unity.MP_FPS
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<DisableCharacterDynamicContacts>());
             }
 
+            // 有竞技场标记时走临时装备玩法分支。远征和极速赏金继续经过下面的档案、背包、生存与战局步骤。
             if (SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>())
             {
                 HandleArena(ref state, ecb);
@@ -165,6 +168,7 @@ namespace Unity.MP_FPS
             }
 
             // Entities created via ECB have temporary Entity IDs. Need to refresh this index lookup. So patch them.
+            // 通过命令缓冲排队新建实体时，先拿到的是临时编号。回放之后再把能长期使用的实体引用补回 NetworkId 索引。
             for (var i = clientsMap.Length - 1; i >= 0; --i)
             {
                 ref var map = ref clientsMap.ElementAt(i);
@@ -248,6 +252,7 @@ namespace Unity.MP_FPS
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
             
             // Instantiate the client input entity
+            // 一条连接同时关联两类实体。命令实体负责接玩家输入，角色实体负责移动和生命值。给两边标上同一个 NetworkId 才能配对。
             var clientInputEntity = ecb.Instantiate(playerEntityPrefabs.ClientInputEntityPrefab);
             ecb.SetComponent(clientInputEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
             ecb.SetComponent(connectionEntity, new CommandTarget { targetEntity = clientInputEntity });
@@ -439,6 +444,7 @@ namespace Unity.MP_FPS
             }
         }
 
+        // 用 NetCode 给的实际发包连接定位玩家，丢掉重复入场请求。玩法与请求版本先过关，之后才验证票据和锁定出战装备。
         void HandleJoinRequests(ref SystemState state, Entity gameplayMapsEntity, PlayerEntityPrefabs playerEntityPrefabs, EntityCommandBuffer ecb)
         {
             var handled = new System.Collections.Generic.HashSet<Entity>();

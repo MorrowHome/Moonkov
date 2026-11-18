@@ -1,3 +1,4 @@
+// 近战操作的网络协议。客户端只提出装备、轻击、重击或取消等意图，ServerMeleeSystem 用该连接真实角色做时序和命中计算。
 using Unity.Collections;
 using Unity.NetCode;
 

@@ -1,3 +1,4 @@
+// 配置在线战局的 DTLS。客户端用随包的 CA 和期望服务器名核对对端，服务端从本地配置读取证书与私钥。公网连接地址和证书名可以不同。
 using System;
 using System.IO;
 using Newtonsoft.Json;

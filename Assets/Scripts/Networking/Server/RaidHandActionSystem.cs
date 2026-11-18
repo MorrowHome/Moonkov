@@ -1,3 +1,4 @@
+// 把服务端正在计时的装填、治疗、搜索、使用道具和机器操作写成角色手部动作状态。HUD 和远端角色表现用同一套动作类型及持续时间。
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;

@@ -1,3 +1,4 @@
+// 单把武器的配置资产。开火逻辑从这里读取射速、容量和能耗，弹道系统读取伤害、速度、重力和散布，表现层读取镜头等参数。
 using UnityEngine;
 
 namespace Unity.MP_FPS

@@ -1,3 +1,5 @@
+// 给经典爆破机器人安排队伍层面的任务。根据这一轮的阵营、包的位置和队友报告，分配前往包点、守位、捡包或拆包。
+// 具体的角色移动和开火由 DollSingerEnemyClassic 处理。
 using System;
 using Unity.Entities;
 using UnityEngine;
@@ -131,6 +133,7 @@ namespace Unity.MP_FPS
                 if (m_Contacts[i].Until > now && Roster[i % Roster.Length].Alive)
                     m_Pressure[i / Roster.Length * 2 + m_Contacts[i].Site]++;
 
+            // 捡包人选会暂时保留，让被派去的机器人走完一段路。到期或人选阵亡才重选。
             if (rules.BombOnGround && (now >= m_RecoveryChoiceUntil || m_RecoveryBot != 0 && !IsAlive(m_RecoveryBot)))
             {
                 m_RecoveryBot = NearestBot(rules.AttackTeam, rules.BombPosition, m_RecoveryBot);

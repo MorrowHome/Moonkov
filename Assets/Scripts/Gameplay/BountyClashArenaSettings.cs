@@ -1,3 +1,5 @@
+// 悬赏玩法的场景配置，提供活动边界、出生点、目标、撤离区和补给点。Freeze 把场景坐标转成固定数据，供对局逻辑读取。
+// 场景标记的进度和悬赏物位置由外部传入，具体画法在 BountyClashMapPresentation。
 using System;
 using Unity.Entities;
 using Unity.NetCode;
@@ -54,6 +56,7 @@ namespace Unity.MP_FPS
             var settings=map.GetComponent<BountyClashArenaSettings>();
             return settings ? settings : map.gameObject.AddComponent<BountyClashArenaSettings>();
         }
+        // 场景物体方便摆放，冻结后的数据方便游戏规则计算和跨帧读取。
         private void Freeze()
         {
             if(m_Frozen!=null)return;

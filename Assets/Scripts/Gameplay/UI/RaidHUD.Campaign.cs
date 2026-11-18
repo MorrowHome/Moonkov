@@ -1,3 +1,4 @@
+// 单人战役在局内的任务日志、路线标记和简报。它从现有进度找正在追踪的目标，显示场内完成的步骤以及撤离后才保存的结果。
 using Unity.MP_FPS.DollSinger;
 using System;
 using System.Collections.Generic;
@@ -150,6 +151,7 @@ namespace Unity.MP_FPS
             return CampaignRules.Status(progress, tracked) == CampaignTaskStatus.Completed ? current : tracked;
         }
 
+        // 通信字幕跟当前真实主线节点走。翻动日志选中行不会换章节，每个节点的字幕在一局内只入队一次。
         private void PresentCampaignCommunication(CampaignProgress progress)
         {
             // Field confirmation is distinct from extraction/save. Read actual server facts once per raid.

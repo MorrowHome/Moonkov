@@ -1,3 +1,4 @@
+// 单人教学在主菜单的引导。观察当前仓库和出发准备状态，给出下一步或缺失补给的位置。教学进度由本地档案更新。
 using System;
 using System.Linq;
 using UnityEngine;

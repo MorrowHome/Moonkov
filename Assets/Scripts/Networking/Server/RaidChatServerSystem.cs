@@ -1,3 +1,4 @@
+// 服务端收到聊天请求时先核对角色、频道和发送频率，再按频道把能收到这条消息的玩家找出来。发送者还会得到单独的成功或失败回执。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;

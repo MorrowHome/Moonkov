@@ -1,3 +1,4 @@
+// 客户端为本机角色先按输入算移动和部分武器状态。NetCode 可以从服务器快照恢复后重跑若干 tick，这里会按每次预测所处的 tick 重新取操作。
 // #define PREDICTION_DEBUG_LOGGING
 
 using Unity.Collections;
@@ -57,6 +58,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
     protected override void OnUpdate()
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        // 这是本次预测正在算的 tick。发输入时则用 ClientInputSenderSystem 里的 InputTargetTick，延迟高时两者可能对不上。
         uint tick = networkTime.ServerTick.TickIndexForValidTick;
 
         var logPredictionWarnings = CheckForPredictionErrors.IsEnabled;
@@ -157,6 +159,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
             // else
             // {
+            // 按预测 tick 到缓冲找对应的指令。重跑过去的预测时也能读到当时留下的操作。
             if (inputCommands.GetDataAtTick(new NetworkTick(tick), out var inputCommand))
             {
                 ClientCommandInput input = inputCommand;
@@ -204,6 +207,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             predictedPlayer.ValueRW.AimPoint = aimPoint;
                             bool wantsToReload = input.Reload;
                             bool wantsToShoot = !switchedWeapon && input.Shoot && !input.FireSuppressed;
+                            // 普通武器可以先预测装填。光环装填需要服务器预留可用能量并同步目标弹量，看到同步状态后再推进它的装填计时。
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
@@ -236,6 +240,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 float3 aimDirection = shotRay.direction;
                                 Vector3 shotOriginPosition = shotRay.origin;
 
+                                // 重跑 tick 仍要计算弹量、冷却等预测数据。光环弹的可见特效只在该 tick 首次完整预测时生成，避免一发在屏幕上变成多发。
                                 // Replayed/partial predictions must not create another visible halo bolt.
                                 if (VisualEffectManager.ClientInstance != null &&
                                     (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || networkTime.IsFirstTimeFullyPredictingTick))
@@ -320,6 +325,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
             var controllerConsts = playerControllerConsts.ValueRO.ControllerConsts;
             var predictedPlayerGhostStates = predictedPlayerGhostStatesBufferLookup[entity];
 
+            // 是否允许把多个 tick 的位移攒起来，由开关控制。应用位移时复用角色控制器，最后一次预测再写动画，画面就能接上这一帧算出的姿势。
             if (isFinalPredictionTick || predictedPlayer.ValueRO.RequestApplyMovement)
             {
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f ||

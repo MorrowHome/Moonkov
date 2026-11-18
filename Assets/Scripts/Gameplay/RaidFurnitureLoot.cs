@@ -1,3 +1,5 @@
+// 把场景里的抽屉和路线补给箱接入战局搜刮。地图给出家具和交互点，Initialize 按类型生成容器内容。
+// 本地准星用 Select 找能打开的目标，后续物品交换由库存请求处理。
 using System;
 using Unity.NetCode;
 using UnityEngine;
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS
             {
                 var drawer = m_Drawers[i];
                 if (drawer == null || !drawer.Target) continue;
+                // 家具使用自己的编号段。序号和配置位置一一对应，后续交互可以用同一个编号找到容器。
                 int id = FirstId + i;
                 if (caches.Containers.ContainsKey(id)) continue;
                 caches.Containers.Add(id, drawer.SupplyCache ? RaidLootTable.Create(drawer.Profile, caches.LootRandom) :

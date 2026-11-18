@@ -1,3 +1,4 @@
+// ICE 战局定时写本地网络诊断。这里把 NetCode 的往返时间、输入滞后和 RPC 排队，与进程帧间隔和 ICE 收发量放在同一行，便于判断卡顿来自哪一段。
 using System;
 using System.Globalization;
 using Unity.Collections;

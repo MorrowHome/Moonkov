@@ -1,3 +1,4 @@
+// 小队页共享的 3D 展示舞台。把多个 MenuCharacterView 摆进一间观察舱，用一部相机渲染席位和角色。
 using System;
 using Unity.MP_FPS.Online;
 using UnityEngine;
@@ -165,6 +166,7 @@ namespace Unity.MP_FPS.Client
             if (m_Root != null) Reconcile();
         }
 
+        // 席位换人或换角色时才重建模型。成员只换装备或姿势时，继续沿用同一个模型并更新外观。
         private void Reconcile()
         {
             for (int i = 0; i < 4; i++)

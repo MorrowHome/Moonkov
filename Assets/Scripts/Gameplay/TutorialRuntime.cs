@@ -1,3 +1,5 @@
+// 局内教学的公共状态，包括本局有无教学标记、当前是否瞄准、以及最近使用键鼠还是手柄。
+// 教学提示从这里选合适的操作键说明。
 using Unity.Entities;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;

@@ -1,3 +1,4 @@
+// 背包和商店用的图标和格子背景。StashItemArt 按物品代码取资源，部分图标由 UI Toolkit 即时绘制，具体图形分到 StashItemArt 的其他文件。
 using UnityEngine;
 using UnityEngine.UIElements;
 

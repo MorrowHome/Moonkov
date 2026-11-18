@@ -1,3 +1,4 @@
+// 把模式选择器接到仓库和高级连接页。选择结果写进 GameSettings.RequestedMode，出发流程随后读取它。好友房内用房间自己的选模式入口。
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client

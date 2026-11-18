@@ -1,3 +1,4 @@
+// GameManager 在加载进度里提前等角色预制体到位，再为角色网格准备护盾所需的拟合数据。每处理一个网格让出一帧。
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;

@@ -1,3 +1,4 @@
+// 队友识别器的装备条件和目标关系。根据是否活着、所在队伍与同伴小组来决定能标谁，极速赏金里倒地队友仍可被识别。
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS

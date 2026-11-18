@@ -1,3 +1,4 @@
+// 计算武器每颗弹丸的方向。散布角受瞄准状态影响，多弹丸在锥形范围内分布，网络 tick 让同一次射击能复算出同样的方向。
 using UnityEngine;
 
 namespace Unity.MP_FPS

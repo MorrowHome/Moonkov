@@ -1,3 +1,4 @@
+// 能量手雷的库存和范围伤害规则。服务端通过这里判断能否从可访问的物品槽取出，并按距离算游戏中的伤害。
 using System;
 using Unity.MP_FPS.Inventory;
 

@@ -1,3 +1,4 @@
+// 账号注册会附带一个本机访客凭据。正式凭据存入 PlayerPrefs 供以后复用，临时调用则每次生成新值。
 using System;
 using System.Security.Cryptography;
 using UnityEngine;

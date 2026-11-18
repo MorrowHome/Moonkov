@@ -1,3 +1,5 @@
+// 菜单、物品栏和出战流程都通过这里读当前玩家档案。同一套界面可切到在线账号、单人档案或好友房，档案读写会交给对应的一端。
+// 服务端 World 另有自己的持久化上下文。界面当前显示哪个档案，由这里选择。
 using System;
 using System.IO;
 using System.Threading;
@@ -17,6 +19,7 @@ namespace Unity.MP_FPS
         private static int s_Dust, s_Alloy, s_Cells, s_Carry;
         private static Action s_OfflineChanged;
         public static bool IsOffline => s_Offline != null;
+        // 同一台机器可以切账号、单人档案和好友房。各自要用不同的本地标识，快捷栏和未完成操作才不会跟着账号串过去。
         public static string LocalPreferenceScope
         {
             get
@@ -71,6 +74,7 @@ namespace Unity.MP_FPS
             try
             {
                 // Replay acknowledged/unfinished writes before treating an open raid as lost.
+                // 先补写上次没发完的结算。完成后如果还有未结束的出战，才按遗留战局处理，避免本该撤离成功的装备被清掉。
                 var recovery = new RaidPersistenceContext(store); recovery.Dispose(); await recovery.ShutdownTask;
                 if (Directory.GetFiles(store.OutboxDirectory, "*.json").Length != 0 || Directory.GetFiles(store.OutboxDirectory, "*.deploy").Length != 0)
                     throw new IOException("Single-player settlement recovery is pending. Reopen single player to retry.");

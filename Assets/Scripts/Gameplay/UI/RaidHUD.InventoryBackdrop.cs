@@ -1,3 +1,4 @@
+// 打开背包时把正确的本地角色相机交给 RaidInventoryBlur。关包、死亡或切 World 时清掉效果，防止模糊留到下一局。
 using Unity.Entities;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;

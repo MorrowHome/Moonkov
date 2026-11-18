@@ -1,3 +1,4 @@
+// 线上小队页。把房间快照画成成员、队长、准备状态和出发按钮，操作经 MainMenu.OnlineLobby 交给线上客户端。
 using System;
 using System.Linq;
 using Unity.MP_FPS.Online;
@@ -194,6 +195,7 @@ namespace Unity.MP_FPS.Client
                 var ready = Element.Q<Button>("onlineReady"); MoonkovLocalization.Set(ready, me?.Ready == true ? "取消准备" : "准备");
                 ready.style.display = lobby ? DisplayStyle.Flex : DisplayStyle.None;
                 ready.SetEnabled(lobby && !busy && !pending);
+                // 私房对抗要求 A、B 两队都有人。出发按钮还会等队员都准备、在线，且出战配置同步完成。服务器另有自己的检查。
                 bool validTeams = snapshot.Mode != "Versus" || snapshot.PublicQueue || snapshot.Members.Select(m => m.Team).Distinct().Count() >= 2;
                 var start = Element.Q<Button>("onlineStart"); start.style.display = lobby && leader ? DisplayStyle.Flex : DisplayStyle.None;
                 MoonkovLocalization.Set(start, snapshot.PublicQueue && snapshot.Mode == "Versus" ? "寻找对手" : "出发");

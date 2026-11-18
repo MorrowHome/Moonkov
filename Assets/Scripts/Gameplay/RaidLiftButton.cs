@@ -1,3 +1,5 @@
+// 场景里的升降梯按钮。保存按下后要去的楼层，给准星交互提供范围检查，并把指令送给网络层或本地 RaidLift。
+// 收到操作回执后才给正确的声音反馈。
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;

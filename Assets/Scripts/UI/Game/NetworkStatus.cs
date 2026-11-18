@@ -1,3 +1,4 @@
+// 通用的连接状态栏。它从 ConnectionSettings 取连接阶段并更新显示。要看局内帧率和延迟的统计，去 RaidHUD.Telemetry。
 using System;
 using System.Collections;
 using Unity.NetCode;

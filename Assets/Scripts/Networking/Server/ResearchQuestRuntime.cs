@@ -1,3 +1,4 @@
+// MOONRAT 任务在本局的运行记录。服务端监听搜刮、击杀和设备交互，收集满足条件的证据，HUD 读取快照，结算时再决定哪些证据能写入档案。
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -245,6 +246,7 @@ namespace Unity.MP_FPS
             };
         }
 
+        // 按住和松手都只是向服务端表达意图。每帧的实际交互距离、准星以及角色状态由 Advance 重新检查。
         public static void Hold(World world, Entity connection, Entity player, int raidId, ResearchDevice device, bool pressed)
         {
             var run = Find(world, player);

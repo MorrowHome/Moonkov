@@ -1,3 +1,4 @@
+// 地图任务的网络数据。客户端提出开始、持续、取消或设置的请求，服务端用任务快照回传阶段、目标进度及操作结果。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

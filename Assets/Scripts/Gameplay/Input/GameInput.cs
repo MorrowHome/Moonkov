@@ -1,3 +1,4 @@
+// 场景里的组件用这份共享的 InputSystem 动作表订阅操作。每次运行初始化会重建动作表，Player 载入场景后再把它启用。
 using Unity.MP_FPS;
 using UnityEngine;
 

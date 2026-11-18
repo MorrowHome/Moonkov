@@ -1,3 +1,4 @@
+// 运行时生成远征补给箱的网格、材质和库存指示灯。RaidFurnitureLoot 等调用方把服务器的空箱状态传过来更新灯，箱内物品登记在库存层。
 using System;
 using System.Collections.Generic;
 using UnityEngine;

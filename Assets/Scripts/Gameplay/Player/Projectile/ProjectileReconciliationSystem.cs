@@ -1,4 +1,6 @@
-﻿using System;
+﻿// 防止自己开火时出现两枚一模一样的弹体。收到自己的服务端弹体后，用出手 tick、武器编号和弹丸序号找到对应的预测对象。
+// 匹配时把服务器实体链到已有 GameObject。等不到确认的临时预测对象会尽快清掉。
+using System;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS
                     }
 
                     // Call LinkGhost now that the component exists
+                    // 让生命周期系统接管预测时创建的 GameObject，后续它跟服务器实体一起更新和释放。
                     GhostGameObjectLifetimeSystem.Instance(World).AdoptPredictedGhost(entity, link.LinkedInstance);
                     link.LinkedInstance.LinkGhost(World, entity, MultiplayerRole.ClientOwned);
                 }

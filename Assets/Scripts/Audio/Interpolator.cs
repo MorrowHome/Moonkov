@@ -1,3 +1,4 @@
+// 给淡入淡出提供按时间计算的数值。MoveTo 会从此刻的实际值开始，因此中途改变目标时音量可以连续过渡。
 using UnityEngine;
 
 // Utility class for interpolating values. Usage

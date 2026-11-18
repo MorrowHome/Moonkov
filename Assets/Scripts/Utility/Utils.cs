@@ -1,3 +1,4 @@
+// 给多个模块使用的小工具。日常会从 HUD 或 GameManager 进到 SetCursorVisible，一起切换鼠标的显示和锁定状态，角色控制还有视角旋转计算可用。
 using System.Net;
 using System.Net.Sockets;
 using Unity.CharacterController;

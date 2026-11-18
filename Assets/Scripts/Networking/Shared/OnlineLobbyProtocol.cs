@@ -1,3 +1,4 @@
+// 账号后端、游戏客户端和独立服共用的大堂、申请、实例票与 ICE 信令字段。ConnectionPath 由后端分配，客户端据此选网络传输。
 #nullable disable
 using System;
 

@@ -1,3 +1,4 @@
+// 战局服务器的档案出口。在线发 HTTP，单人交本机档案，好友房交房主档案，这三种都能走相同的入场、锁定出装和提交结算流程。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -179,6 +180,7 @@ namespace Unity.MP_FPS
             ReplayOutbox();
         }
 
+        // 启动时从待发目录找上次未确认的写入。完整结算优先处理，只有找不到对应结算的出战记录才交给放弃或退款逻辑。
         private void ReplayOutbox()
         {
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
@@ -211,6 +213,7 @@ namespace Unity.MP_FPS
             Debug.Log("[Raid] Persistent stash enabled. Pending receipts: " + Saves.Count);
         }
 
+        // 把验证票和读取档案交给异步任务。ServerGameSystem.Persistence 每帧看任务有没有完成，验证结果出来后再处理角色和装备。
         public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token, int carryCells = 0,
             bool resumeOnly = false, byte expeditionCompanions = 0)
         {
@@ -271,6 +274,7 @@ namespace Unity.MP_FPS
 
         private string DeploymentFile(Deployment payload) => Path.Combine(m_Outbox, Guid.Parse(payload.DeploymentId).ToString("N") + ".deploy");
 
+        // 先把完整请求写到临时文件并刷盘，然后换成正式文件名。同一个编号重试只能使用同一份内容，避免拿旧编号提交不同结果。
         private static void WriteJournal(string file, object payload)
         {
             if (File.Exists(file))
@@ -289,6 +293,7 @@ namespace Unity.MP_FPS
             File.Move(temporary, file);
         }
 
+        // 本地先为这次出战留好恢复记录，再向档案请求划出装备。回包的玩家、出战编号和装备内容都要对得上，角色才允许带这套装备出生。
         public Task<Profile> DeployAsync(Deployment payload) => Task.Run(async () =>
         {
             await AwaitBountyRegistrationAsync(payload).ConfigureAwait(false);
@@ -323,6 +328,7 @@ namespace Unity.MP_FPS
             return profile;
         });
 
+        // 先存能重发的结算记录，再发给档案。确认成功后先删出战记录，最后删结算记录，这样中间崩溃时还可以恢复最终结果。
         public Task<Profile> SaveAsync(Settlement payload)
         {
             // One tiny local receipt per completed raid; the frame never waits for disk or HTTP.

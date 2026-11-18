@@ -1,3 +1,5 @@
+// 气闸的规则和状态机。用同一份气压、门开度和互锁条件来决定能否开关门、充气或泄压。
+// AirlockController 调规则，再把计算好的开度和气压应用到场景。
 using System;
 using UnityEngine;
 
@@ -125,6 +127,7 @@ namespace Unity.MP_FPS
             s.Revision++; State = s; return s.Feedback;
         }
 
+        // 自动过门的顺序是先等另一侧密封，再把舱压调成目标侧的气压，最后开目标侧的门。
         private void AdvanceCycle(ref AirlockState state)
         {
             if (!m_Cycle.HasValue || state.Equalizing) return;
@@ -155,6 +158,7 @@ namespace Unity.MP_FPS
             // Reverse a closing door if someone enters its fixed aperture sensor mid-motion.
             if (!s.OuterOpening && s.OuterFraction > 0 && outerObstructed) { s.OuterOpening = true; s.Feedback = AirlockFeedback.Obstructed; m_Cycle = null; }
             if (!s.InnerOpening && s.InnerFraction > 0 && innerObstructed) { s.InnerOpening = true; s.Feedback = AirlockFeedback.Obstructed; m_Cycle = null; }
+            // 关闭时遇人会反开。开启时路径受阻先停，等路径通畅再接着开。
             bool outerHeld = s.OuterOpening && outerOpeningBlocked, innerHeld = s.InnerOpening && innerOpeningBlocked;
             if (outerHeld || innerHeld) s.Feedback = AirlockFeedback.Obstructed;
             else if (s.Feedback == AirlockFeedback.Obstructed && !outerObstructed && !innerObstructed) s.Feedback = AirlockFeedback.Accepted;
@@ -182,6 +186,7 @@ namespace Unity.MP_FPS
             { s.Revision++; State = s; }
         }
 
+        // 客户端接收快照时检查开度、气压和互锁条件。同一局只接受比当前更新的版本。
         public bool ApplySnapshot(AirlockState state, bool freshSession)
         {
             if (!AirlockSettings.Finite(state.PressureKPa) || !AirlockSettings.Finite(state.OuterFraction) || !AirlockSettings.Finite(state.InnerFraction) ||

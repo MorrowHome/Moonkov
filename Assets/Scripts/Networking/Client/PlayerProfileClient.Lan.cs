@@ -1,3 +1,4 @@
+// 收下 LanRoomClient 发来的房主档案快照，解码成菜单可读的库存并通知界面。换到新玩家时初始化携带数量，同一玩家刷新时保留选择。
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.MP_FPS.Inventory;

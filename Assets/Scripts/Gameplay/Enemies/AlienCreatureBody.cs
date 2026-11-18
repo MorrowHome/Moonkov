@@ -1,3 +1,5 @@
+// 异形的身体和程序动画。服务器用 SurfaceMotor 驱动身体，更新真正可命中的碰撞体。客户端接收身体位姿，再计算腿、躯干、流体外观和声音。
+// ProceduralAlienEnemy 决定朝哪走和做什么动作，身体组件把意图变成运动与姿态。
 using System;
 using System.Collections.Generic;
 using Unity.MP_FPS.SpiderLab;
@@ -153,6 +155,7 @@ namespace Unity.MP_FPS
             UpdateVoidAppearance(liquid);
             m_HitReaction?.Present(dt, AimPoint, Motor.Current.Up, Motor.Current.Forward, m_Scale, m_Profile.Boss);
         }
+        // 客户端从已知位姿和速度还原肢体动作。服务器的移动逻辑走 Tick，客户端走 Observe。
         public void Observe(SurfaceMotor.Pose pose, Vector3 velocity, bool detached, float phase, float dt, float action, bool liquid)
         {
             m_HitReaction?.Restore();
@@ -329,6 +332,7 @@ namespace Unity.MP_FPS
             var go = new GameObject("Alien mantle hitbox"); go.layer = layer; go.transform.SetParent(m_HitRoot, false);
             m_Spheres.Add(go.AddComponent<SphereCollider>());
         }
+        // 碰撞体跟着骨架当前姿势移动，射击命中的是对应的身体部分。
         private void UpdateHitboxes()
         {
             if (m_Spheres.Count == 0) return;

@@ -1,3 +1,4 @@
+// 负责地图的叠加加载和卸载。普通场景加载后，再分别等服务端和客户端 World 把自己的 ECS 子场景读完。
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
@@ -51,6 +52,7 @@ namespace Unity.MP_FPS
 
         static async Task LoadGameplayScenesAsync()
         {
+            // 先按玩法挑外层场景。经典爆破再把本地沙2地图实例放进去，竞技场和爆破共用一部分临时战局布置。
             var mode = GameSettings.Instance.RequestedMode;
             string sceneName = mode switch
             {
@@ -89,6 +91,7 @@ namespace Unity.MP_FPS
 
             LoadingData.Instance.UpdateLoading(step);
 
+            // 同一个场景的 SubScene 在每个 World 都要就绪，因此这里查的是指定 World 里的 SceneReference。
             using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
             using var scenesLeftToLoad = scenesQuery.ToEntityListAsync(Allocator.Persistent, out var handle);
             handle.Complete();

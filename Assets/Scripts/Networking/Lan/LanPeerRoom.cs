@@ -1,3 +1,4 @@
+// 跨网好友房的常驻连接。一个来宾有两条 ICE 路线，房间操作走控制通道，进地图时 NetCode 借用战局通道。
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -207,6 +208,7 @@ namespace Unity.MP_FPS
             return await SendAsync(request, ct);
         }
 
+        // 控制和战局各自收集地址，邀请才同时带齐两份描述。中途失败时一起丢掉这个来宾的上下文。
         private async Task<Peer> GatherAsync(CancellationToken ct)
         {
             string address = EmbeddedIceNetwork.PhysicalAddress(ClientSettings.IceBindAddress);
@@ -266,6 +268,7 @@ namespace Unity.MP_FPS
                 if (!string.IsNullOrEmpty(reply.Error)) throw new InvalidOperationException(reply.Error);
                 return reply;
             }
+            // 请求超时时房主可能已经执行了操作。关掉这条通道，之后重新进房读真实档案，避免把上一条迟到的回执当成下一条的结果。
             catch (OperationCanceledException)
             {
                 // The server may have applied the write. Close this channel so a
@@ -307,6 +310,7 @@ namespace Unity.MP_FPS
                         (peer.Confirmed && !peer.Connected && (m_Control.GetState(peer.Control) == EmbeddedIceState.Failed ||
                             RaidTransport.GetState(peer.Raid) == EmbeddedIceState.Failed)))
                         throw new TimeoutException(ConnectFailed);
+                    // 等两条路线都选定才发起房间握手。否则房间看着已经连上，进入地图时战局那条线还没准备好。
                     if (peer == m_Guest && !peer.Connection.IsCreated && peer.Confirmed &&
                         IsReady(m_Control, peer.Control) && IsReady(RaidTransport, peer.Raid))
                     {

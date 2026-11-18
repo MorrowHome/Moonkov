@@ -1,3 +1,4 @@
+// 商店货架、购买、出售与研究奖励的共同规则。给定一份库存和操作先算出新版库存，账户处理或本地预览就用同一套数量、价格和放置检查。
 #nullable disable
 using System;
 using System.Collections.Generic;

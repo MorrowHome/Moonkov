@@ -1,3 +1,4 @@
+// 按头部和项圈尺寸拟合面罩，把佩戴后的过渡和密封颜色交给护盾渲染。角色装备变化时更新这部分外观。
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;

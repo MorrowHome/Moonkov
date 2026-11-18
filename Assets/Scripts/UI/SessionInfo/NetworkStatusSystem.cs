@@ -1,3 +1,4 @@
+// 从客户端的网络确认数据取延迟，计算当前模拟 tick 和最后收到的快照隔了多少 tick。把这些读数存进 NetworkStatusSingleton，给 SessionInfo 展示。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -72,6 +73,7 @@ public partial struct NetworkStatusSystem : ISystem
             sb.Append(deviationRTT);
             sb.Append("ms, ");
             // Presentation runs once per rendered frame. Do not use a prediction step's dt as FPS.
+            // 界面展示的是渲染帧的时间。预测系统可能一帧补算多个 tick，因此不能拿模拟步长换算帧率。
             m_FrameMs = math.lerp(m_FrameMs > 0f ? m_FrameMs : Time.unscaledDeltaTime * 1000f,
                 Time.unscaledDeltaTime * 1000f, .1f);
             sb.Append("Frame:");

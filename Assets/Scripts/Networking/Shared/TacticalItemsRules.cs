@@ -1,3 +1,4 @@
+// 战术道具的目录和共用规则。用来判断物品是否可取用，计算游戏中的伤害和闪光效果，也用来准备临时玩法的补给。
 #nullable disable
 using System;
 using Unity.MP_FPS.Inventory;

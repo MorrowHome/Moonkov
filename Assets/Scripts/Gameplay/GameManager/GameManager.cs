@@ -1,3 +1,4 @@
+// 主菜单的入局按钮最终会到 GameManager。它串起档案保存、建连接、建 ECS World、地图和角色资源加载，以及正式开始战局。离场流程在 GameFlowControl。
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -215,6 +216,7 @@ namespace Unity.MP_FPS
             }
             if (!IsHeadless && !arena)
             {
+                // 进入持久化战局前先把菜单里的装备变动交给档案。等待期间如果换了档案，就停下这次入场，避免混用两个档案的装备。
                 string scope = PlayerProfileClient.LocalPreferenceScope;
                 try
                 {
@@ -273,6 +275,7 @@ namespace Unity.MP_FPS
                 }
             }
 
+            // 离线远征加载中可能先锁定出战装备。这个检查点让加载失败时能恢复装备，真正进局后才提交。
             m_OfflineLoadingCheckpoint = creationType == CreationType.Offline && !arena
                 ? PlayerProfileClient.OfflineStore.BeginLoadingCheckpoint() : null;
             BeginEnteringGame();
@@ -393,6 +396,7 @@ namespace Unity.MP_FPS
                 if (creationType == CreationType.LanHost || creationType == CreationType.LanJoin) client.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.Offline)
                 {
+                    // 单人也有一套完整的服务端 World。客户端负责输入和画面，服务端继续判定搜刮、伤害、撤离与结算。
                     server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
                     if (PlayerProfileClient.Tutorial?.Status == Campaign.TutorialStatus.Active && GameSettings.Instance.RequestedMode == RaidGameMode.Expedition)
                     {
@@ -425,6 +429,7 @@ namespace Unity.MP_FPS
                     var clientDrivers = clientDriverQuery.GetSingleton<NetworkStreamDriver>().DriverStore;
                     var transport = clientDrivers.GetDriverType(clientDrivers.FirstDriver);
                     var serverDrivers = serverDriver.ValueRO.DriverStore;
+                    // 房主可以同时挂多种驱动。系统分配端口后，先选客户端所用的驱动，再取它实际监听的地址。
                     bool matched = false;
                     for (int id = serverDrivers.FirstDriver; id < serverDrivers.LastDriver; id++)
                         if (serverDrivers.GetDriverType(id) == transport)
@@ -449,10 +454,12 @@ namespace Unity.MP_FPS
                 // while loading, before preparing the new raid's resident resources.
                 await Resources.UnloadUnusedAssets();
                 cancellationToken.ThrowIfCancellationRequested();
+                // 地图加载完成后提前读角色素材、灯光和字体，让进入游戏时少碰到临时加载。
                 await PrepareCharacterResourcesAsync(client, cancellationToken);
                 foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>())
                     await lighting.PrepareResourcesAsync(cancellationToken);
                 await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
+                // 入局票有时效。地图加载可能花很久，所以靠近发送入局请求时再向账号服务取票。
                 // Large maps can take longer than the ticket's 60-second lifetime.
                 // Issue only after local scene loading, just before the join RPC.
                 if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)

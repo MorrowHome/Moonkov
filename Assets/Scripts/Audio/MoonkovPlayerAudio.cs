@@ -1,3 +1,4 @@
+// DollSingerNetworkPresentation 把角色当前的同步状态和位置交给这里。它统一安排脚步、装填、换装、呼吸和受击声，本人与旁人按不同的空间方式听。
 using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS
         private float m_HitAt;
         private readonly RaycastHit[] m_SurfaceHits = new RaycastHit[8];
 
+        // 网络 tick 会回绕。这处用差值判断新旧，既过滤同一事件的重复快照，也能认出编号回绕后的新事件。
         public static bool NewTick(uint tick, ref uint last)
         {
             if (tick == 0 || last != 0 && unchecked((int)(tick - last)) <= 0) return false;
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS
                 !cry && !cough && m_PainSound?.Handle?.IsValid() != true && m_CoughSound?.Handle?.IsValid() != true);
             if (cry || cough || effort)
             { GameManager.Instance?.SoundSystem?.Stop(m_JumpVoice, .06f); m_JumpVoice = null; }
+            // 同一时刻优先给受伤、咳嗽和近战发力留人声位置。普通跳跃仍有动作音，有空余时才加人声。
             bool jumpVoice = jumping && !cry && !cough && !effort && m_PainSound?.Handle?.IsValid() != true &&
                 m_CoughSound?.Handle?.IsValid() != true && !m_Melee.VoicePlaying && m_JumpVoice?.Handle?.IsValid() != true;
             var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
@@ -99,6 +102,7 @@ namespace Unity.MP_FPS
                 m_HeartAt = Time.unscaledTime + 1;
                 m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
+                // 首份快照用来记住已有进度。这样刚看见一个角色时，当前快照里保留的旧跳跃或旧换装不会突然响一遍。
                 return; // A late join must not replay historical events.
             }
             if (ghost.CurrentHealth <= 0) { Stop(); return; }
@@ -107,6 +111,7 @@ namespace Unity.MP_FPS
                 GameManager.Instance?.SoundSystem?.Stop(m_ReloadSound, .08f);
                 m_ReloadSound = null;
             }
+            // 光环装填按当前进度播开、装、锁几个片段。其他武器在装填开始时选一个完整的声音，并按剩余时间调整速度。
             if (stagedReload && reloadPhase != ReloadSoundPhase.None)
             {
                 var window = MoonkovReloadAudio.Window(reloadWeapon.WeaponReloadSfx, reloadPhase);

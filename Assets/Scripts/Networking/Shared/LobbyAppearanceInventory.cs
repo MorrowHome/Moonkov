@@ -1,3 +1,4 @@
+// 把完整背包提取成小队预览需要的外观。只带公开的装备类型和改装样子，接收方可以临时搭出预览角色。
 #nullable disable
 using System;
 using Unity.MP_FPS.Inventory;

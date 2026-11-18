@@ -1,3 +1,4 @@
+// 场景开局先等服务端开始监听，再生成管理器 Ghost。生命周期系统还用这份名单判断何时允许其他 Ghost 激活。
 using System.Collections.Generic;
 using Unity.GhostBridge;
 using Unity.NetCode;

@@ -1,3 +1,4 @@
+// 按 IP 和端口直连的弹窗。输入写入 ConnectionSettings，确认或取消用于结束 GameManager 正等待的弹窗任务。
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.InputSystem;

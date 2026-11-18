@@ -1,3 +1,4 @@
+// StashItemArt 的装备图案。用几何形状绘制胸章、氧气项圈、防护设备和近战武器的小图标，供背包等视图复用。
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client

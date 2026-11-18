@@ -1,3 +1,4 @@
+// HaloScanClientSystem 把已收到的扫描波和接触点交给这一层。只在对应游戏相机上叠画扫描特效，超时或切相机就清理。
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;

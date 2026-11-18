@@ -1,3 +1,4 @@
+// 原生 ICE 库的 C# 包装。对内用 peer 编号识别对端，对 Unity Transport 提供对应的逻辑端点，并负责缓冲区、收发和原生句柄寿命。
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -170,8 +171,10 @@ namespace Unity.MP_FPS.EmbeddedNetworking
         // Ownership passes to one driver; wrapping twice would double-release UTP storage.
         public NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> CreateNetworkInterface() => AttachDriver(ownsTransport: true);
 
+        // 好友房的战局连接只借用这层。回到房间时卸下本局 driver，房间仍能保留原来的 ICE 通道供下次开局。
         internal NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> BorrowNetworkInterface() => AttachDriver(ownsTransport: false);
 
+        // 一个 ICE 上下文同时只挂一个 Unity Transport driver。这样谁该释放包装和原生句柄就一直有明确归属。
         private NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> AttachDriver(bool ownsTransport)
         {
             lock (m_Gate)

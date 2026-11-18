@@ -1,3 +1,4 @@
+// 给护盾和穿戴表现共用的程序网格。多个角色可以复用同一批球壳、项圈或装饰几何，集中管理它们的创建和回收。
 using UnityEngine;
 
 namespace Unity.MP_FPS

@@ -1,3 +1,4 @@
+// 资源子场景在 Inspector 列出要烘焙的 Ghost 预制件。Baker 标记这些引用，让运行时能找到角色、管理器等所需的实体模板。
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;

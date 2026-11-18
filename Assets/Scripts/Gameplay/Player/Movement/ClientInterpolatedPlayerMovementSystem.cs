@@ -1,3 +1,5 @@
+// 在客户端驱动不做本地预测的角色。把接收到并插值后的实体位姿同步到 FirstPersonController，再更新动画和贴地状态。
+// 自己的预测角色走 PlayerPredictionSystem。
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

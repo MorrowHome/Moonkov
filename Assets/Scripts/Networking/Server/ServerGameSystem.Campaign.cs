@@ -1,3 +1,4 @@
+// 单人战役在地图里的那一段。按任务阶段准备场景补给和设备，观察真实的战利品及操作，再把进度放进任务快照与撤离记录。
 using System;
 using Newtonsoft.Json;
 using Unity.Entities;

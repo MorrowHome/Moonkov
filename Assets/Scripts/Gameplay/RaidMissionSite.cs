@@ -1,3 +1,5 @@
+// 研究站任务的场景接线。用节点 ID 找到设备和交互坐标，再把服务端任务快照翻译成设备动作、产物和循环音效。
+// 配置可以通过 Validate 检查锚点、设备和任务定义有没有接错。
 using System;
 using Unity.MP_FPS.Missions;
 using UnityEngine;
@@ -92,6 +94,7 @@ namespace Unity.MP_FPS
                         (snapshot.CompletedMask & (1u << i)) == 0 && snapshot.Phase == MissionPhase.Active)
                     { running = true; machineRunning = true; machineAnchor = n.Anchor; }
                 }
+                // 只在任务产出就绪时显示剩余产物。不同研究任务的取货设备由产物类型匹配。
                 int products = known && snapshot.Phase == MissionPhase.OutputReady &&
                     device.AnchorId == (definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive") ? snapshot.OutputRemaining : 0;
                 device.Present(active, hasObjective && complete && !running, running, known && snapshot.Phase == MissionPhase.Expired, products, definition?.ArtifactCode == "mooncore_fragment");

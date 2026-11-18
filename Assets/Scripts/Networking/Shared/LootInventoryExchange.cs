@@ -1,3 +1,4 @@
+// 拾取、遗体掉落和箱子之间的物品交接。背包和箱子是两份库存，先在临时合并的副本里处理，再把物品按归属拆回两边。
 #nullable disable
 using System;
 using System.Linq;
@@ -95,6 +96,7 @@ namespace Unity.MP_FPS.Inventory
             if (cache.Validate() != InventoryError.None || next.Validate() != InventoryError.None) return InventoryError.Invalid;
             remaining = next; dropped = cache; return InventoryError.None;
         }
+        // 先验玩家手上和箱子的版本，再对完整物品树做移动。两边新结果都通过检查才写回，别人先拿走物品时会返回过期。
         public static InventoryError TryApply(InventoryGraph carried,InventoryGraph cache,InventoryCommand command,int expectedCacheVersion)
         {
             if(carried==null || cache==null || command==null || carried.Find(Root)!=null || cache.Find(Root)==null)

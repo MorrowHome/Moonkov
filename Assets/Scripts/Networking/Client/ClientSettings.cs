@@ -1,3 +1,4 @@
+// 读客户端随包配置和本机覆盖配置，提供账号地址、战局地址、证书名及 ICE 网卡选项。建普通 IPv4 连接前，GameConnection 还会请它把域名解析成地址。
 using System;
 using System.IO;
 using System.Net;

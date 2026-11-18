@@ -1,3 +1,4 @@
+// 电池堆叠里最多留一节没满的电池，其余都是满电。拆堆、并堆和供电用同一套数量与余量计算，电量会跟着被移动的那一节走。
 #nullable disable
 using System;
 
@@ -13,6 +14,7 @@ namespace Unity.MP_FPS.Inventory
         public static int Stored(InventoryItem item) => IsCell(item) ? (item.Quantity - 1) * Capacity + Charge(item) : 0;
         public static bool Partial(InventoryItem item) => IsCell(item) && Charge(item) < Capacity;
         public static int PortionEnergy(InventoryItem item, int quantity) => quantity == item.Quantity ? Stored(item) : quantity * Capacity;
+        // 同一堆只能有一节电量不满的电池。若两堆各有一节，搬几节满电的可以，连最后一节一起搬就需要保留两堆。
         public static bool CanMerge(InventoryItem source, InventoryItem target, int quantity) =>
             !IsCell(source) || !Partial(target) || !Partial(source) || quantity < source.Quantity;
 

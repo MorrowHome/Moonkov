@@ -1,3 +1,5 @@
+// 客户端根据异形已同步的攻击快照画预警、喷吐轨迹和落点效果。
+// 攻击时钟跟 AlienCombatPattern 共用，命中结算仍在 ProceduralAlienEnemy 的服务端分支。
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -58,6 +60,7 @@ namespace Unity.MP_FPS
                 DrawImpact(patch, point, pattern, state.ActionTime - pattern.PulseTime(pattern.PulseAt(state.ActionTime)));
             }
         }
+        // 同一轮攻击使用服务器选定的起点、方向和目标。预警画出来之后不会跟着目标偷偷移位。
         private void DrawWarnings(ProceduralAlienEnemy.State state, AlienCombatPattern pattern)
         {
             foreach (var line in m_Warnings) if (line) line.enabled = false;

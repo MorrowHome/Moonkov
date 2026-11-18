@@ -1,3 +1,4 @@
+// MoonkovPlayerAudio 用这段逻辑处理长时间的不适。低血量、缺氧和身体异常可以触发低频呻吟，短促受击声结束后再给呻吟时机。
 namespace Unity.MP_FPS
 {
     // Sustained suffering is a slow state cue, never an audio event for every damage tick.

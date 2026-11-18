@@ -1,3 +1,4 @@
+// 把战术状态写进这一帧的移动参数。冲刺疲劳降低速度，触发绊线则进一步降低移动和跳跃，让预测与服务端能用同样的控制参数。
 namespace Unity.MP_FPS
 {
     public static class TacticalItemEffects

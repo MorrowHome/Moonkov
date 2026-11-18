@@ -1,3 +1,4 @@
+// 生成箱子、抽屉和路线补给的物品组合。补货记录跟着箱子，房主传入时间和可补货条件，再由这里生成下一份内容。
 using System;
 using Unity.MP_FPS.Inventory;
 

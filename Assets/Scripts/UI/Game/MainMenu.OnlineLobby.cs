@@ -1,3 +1,4 @@
+// 线上小队的界面控制器。OnlineSquadPanel 收按钮操作，OnlineLobbyClient 去请求房间数据。这里安排何时轮询、提交动作和进局。
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,7 @@ namespace Unity.MP_FPS.Client
             if (!OnlineAtMenu || m_AccountBusy || m_LobbyBusy || m_LobbyPolling) return;
             var lifetime = m_LobbyStop;
             // Keep party membership alive even while its members prepare inventory in the stash.
+            // 玩家切回仓库整理装备时也继续轮询，维持小队状态。只有小队页打开时才会根据 Ready 状态自动入场。
             m_LobbyPolling = true;
             try
             {
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS.Client
             try
             {
                 // A player click waits for the current poll instead of being discarded.
+                // 点击操作等正在跑的刷新结束再发请求。标记忙碌后，新的定时轮询会先让路，避免两边同时更新房间状态。
                 if (m_LobbyPolling)
                 {
                     try { await m_LobbyRefreshTask; }
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS.Client
                 else await OnlineLobbyClient.ActAsync(action, lifetime.Token, BrowseLobbyRooms);
                 if (action.Action == "retry")
                 {
+                    // 还有可用的旧局时走续接。否则用现有房间信息重新尝试加入。
                     if (SessionReconnect.Available) GameManager.Instance.ReconnectLastGameAsync();
                     else OnlineLobbyClient.Join(retry: true);
                 }

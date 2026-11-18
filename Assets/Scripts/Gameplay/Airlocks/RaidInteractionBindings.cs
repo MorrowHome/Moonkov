@@ -1,3 +1,5 @@
+// 局内设备交互用的输入绑定和瞄准计算。这里提供当前设备的按键提示，并按距离、摄像机方向和视线筛选可操作设备。
+// 具体选中哪一个由 RaidInteractionSelection 决定。
 using System;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;

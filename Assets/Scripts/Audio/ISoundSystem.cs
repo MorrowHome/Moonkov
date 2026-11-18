@@ -1,3 +1,4 @@
+// GameManager 通过这套接口管理播放和停止。普通客户端接 SoundSystem，专用服务器可以接静音实现，让调用方走同一套流程。
 using UnityEngine;
 using UnityEngine.Audio;
 

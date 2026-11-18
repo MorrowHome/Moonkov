@@ -1,3 +1,4 @@
+// 光环改装台。它查看当前武器装了哪些模块、仓库有哪些散件，再用 WeaponRegistry 比较安装前后的数值。安装和卸下继续走库存命令。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -294,6 +295,7 @@ namespace Unity.MP_FPS.Client
                 value.AddToClassList((after - before) * preferredDirection > 0 ? "workshop-stat-better" : "workshop-stat-worse");
         }
 
+        // 候选模块在库存副本上试装。这样按钮可以显示实际失败原因，预览也不会动到玩家物品。
         private InventoryItem WorkshopCandidate(out InventoryError error)
         {
             error = InventoryError.None;

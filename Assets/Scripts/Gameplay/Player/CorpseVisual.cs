@@ -1,3 +1,5 @@
+// 客户端看到的人形尸体。按服务器记录的角色和时间还原死亡姿势，再把尸体贴到地面，并提供准星搜刮的位置。
+// 尸体编号和库存由服务器保管，这里只负责同一个尸体长什么样、怎样被瞄准。
 using System;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -137,6 +139,7 @@ namespace Unity.MP_FPS
             if(m_PhysicsScene.Raycast(point+Vector3.up*2,Vector3.down,out var hit,5,s_GroundMask,QueryTriggerInteraction.Ignore))
                 m_GroundLift=Mathf.Max(m_GroundLift,hit.point.y+.012f-point.y);
         }
+        // 以死亡动画最后一帧的实际网格找接地位置。常规渲染包围盒可能远大于尸体本身。
         private void FitFinalMeshToGround()
         {
             using var profile=s_GroundProfile.Auto();

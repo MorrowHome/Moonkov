@@ -1,3 +1,4 @@
+// 角色动画片段上的事件入口。脚落地时先记一个标志，Update 用角色位置播放脚步声音。换弹动画也可在指定帧触发一段声音。
 using System;
 using UnityEngine;
 

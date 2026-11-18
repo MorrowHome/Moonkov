@@ -1,3 +1,4 @@
+// ServerScene 的独立服入口。它准备常驻资源、取出服务端 World、开始监听和加载地图，最后向战局管理服务报就绪。
 #if UNITY_SERVER || UNITY_EDITOR
 
 using System;
@@ -15,6 +16,7 @@ namespace Unity.MP_FPS
         private bool m_Stopping;
         private void Update()
         {
+            // 部署脚本可以用一个信号文件要求停服。这里只接收一次，进入 GameManager 的退出流程后会等尚未完成的结算落盘。
             if (m_Stopping || Time.unscaledTime < m_NextShutdownCheck) return;
             m_NextShutdownCheck = Time.unscaledTime + 1;
             string signal = Environment.GetEnvironmentVariable("MOON_SERVER_SHUTDOWN_FILE");

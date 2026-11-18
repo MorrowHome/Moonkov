@@ -1,3 +1,4 @@
+// 共享背包的局内部分。用本地角色状态和库存画装备，还能把尸体的装备或搜刮进度画到右栏。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -258,6 +259,7 @@ namespace Unity.MP_FPS.Client
             }
             m_CorpseCharacter.SetEquipmentInventory(CorpsePortraitInventory());
         }
+        // 为倒地角色展示装备时复制一份库存，把尸体物品放到预览需要的装备槽。原始物品位置仍由搜刮快照保留。
         private InventoryGraph CorpsePortraitInventory()
         {
             var graph = InventoryGraph.Create(false, false);

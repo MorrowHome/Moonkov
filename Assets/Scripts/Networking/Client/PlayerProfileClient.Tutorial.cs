@@ -1,3 +1,4 @@
+// 主菜单通过这里更新单人教学进度和领取补给。重复练习时会切进一个单独的临时档案，结束练习再切回原来的档案。
 using System;
 using System.IO;
 using System.Threading;

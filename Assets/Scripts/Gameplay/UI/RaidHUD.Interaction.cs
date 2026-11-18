@@ -1,3 +1,4 @@
+// 选出准星此刻指向的交互目标。箱子、掉落、尸体、抽屉、日志和控制按钮一起按视线、方向及距离评分，HUD 再按目标发对应操作。
 using UnityEngine;
 
 namespace Unity.MP_FPS
@@ -37,6 +38,7 @@ namespace Unity.MP_FPS
                     Vector3 anchor = (Vector3)bag.Position + Vector3.up * .25f;
                     if ((actor - anchor).sqrMagnitude > RaidRules.PickupRange * RaidRules.PickupRange) continue;
                     Vector3 point = anchor;
+                    // 人形尸体倒地后，镜头瞄身体的实际位置。距离仍按同步的尸体位置判断，动画改变姿势时也能选到。
                     if (bag.CharacterIndex >= 0 && map.TryGetCorpseAimPoint(bag.LootId, camera, out var bodyPoint)) point = bodyPoint;
                     Consider(bag.LootId, point, rangeAnchor: anchor);
                 }

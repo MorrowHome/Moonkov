@@ -1,3 +1,4 @@
+// 分部位血量、受伤、治疗和身体动作限制的共用规则。外部击中通过 CombatDamage 先算护盾，缺氧或饥渴等内部伤害直接走身体扣血。
 using System;
 using UnityEngine;
 
@@ -94,6 +95,7 @@ namespace Unity.MP_FPS
             state.HeadHealth + state.ChestHealth + state.AbdomenHealth + state.LeftArmHealth +
             state.RightArmHealth + state.LeftLegHealth + state.RightLegHealth;
 
+        // 先扣命中部位。当一个普通部位剩余血量吃不下本次伤害时，溢出的部分继续摊给其他部位。头或胸归零会把角色总血量标为零。
         public static float Damage(ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick, bool physiological=false)
         {
             if (state.CurrentHealth <= 0 || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Maximum(part) <= 0) return 0;
@@ -124,6 +126,7 @@ namespace Unity.MP_FPS
 
         // Server-only, after collision resolution. Holding sprint at rest, jumping,
         // teleports and prediction replays must not charge an injured runner.
+        // 受伤冲刺扣血依赖服务端碰撞处理后的实际位移。原地按住冲刺、空中移动或跳过来的位置都不按有效冲刺计。
         public static float ApplyInjuredSprintDamage(ref PredictedPlayerGhost state, Vector3 travel,
             bool wasGrounded, float dt, uint tick)
         {
@@ -170,6 +173,7 @@ namespace Unity.MP_FPS
         }
         // Combat calls once per physical impact, before anatomical distribution.
         // Hypoxia, nutrition and other physiological damage keep using Damage/Set directly.
+        // 如果附近有能保护该角色的外放光环，先用它吸收一部分，剩下的再走角色自己的护盾和部位伤害。
         public static float CombatDamage(Unity.Entities.EntityManager manager, Unity.Entities.Entity victim,
             ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick,
             RaidDamageKind kind, Unity.Mathematics.float3 impactPoint = default)

@@ -1,3 +1,4 @@
+// 把近战装备、轻重击和取消操作接到服务器。这里主要等角色快照回传请求号，再据此更新快捷栏与反馈。
 using Unity.Entities;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
@@ -41,6 +42,7 @@ namespace Unity.MP_FPS
             m_MeleeRequestedAt = 0;
         }
         private void MeleeNotice(string text) { m_MeleeNotice = text; m_MeleeNoticeUntil = Time.unscaledTime + 2.5f; }
+        // World、战局或近战阶段编号变化时，清空旧请求记录，避免把上一局的回执当作本局反馈。
         private bool EnsureMeleeContext(in PredictedPlayerGhost ghost)
         {
             if (m_MeleeWorld == m_World && m_MeleeRaid == m_Snapshot.RaidId && m_MeleeEpoch == ghost.MeleeEpoch) return false;

@@ -1,3 +1,4 @@
+// 这份资源像声音索引表。菜单、交互和角色表现通过字段拿到对应 SoundDef，资源替换或调参可以集中完成。
 using UnityEngine;
 
 namespace Unity.MP_FPS

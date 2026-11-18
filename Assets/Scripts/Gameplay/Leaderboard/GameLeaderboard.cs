@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// 实体同步的比赛分数和击杀播报入口。服务器写分数并排队发送播报，客户端读分数供记分板显示。
+// 远征角色离场也有清理入口，以免下一局继续显示离场角色。
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;

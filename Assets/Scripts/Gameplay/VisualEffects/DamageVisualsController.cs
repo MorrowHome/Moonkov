@@ -1,3 +1,4 @@
+// 把本机角色的血量、受击、黏液和眩光变成屏幕效果。只为这个角色正在使用的相机加渲染步骤。
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;

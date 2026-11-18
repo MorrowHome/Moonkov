@@ -1,3 +1,5 @@
+// 显示准星当前能用的气闸、灯或升降梯按钮，并呈现切换与操作提示。
+// RaidInteractionSelection 负责挑选，按键的一方也使用同一份选择结果。
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.MP_FPS.Moon;

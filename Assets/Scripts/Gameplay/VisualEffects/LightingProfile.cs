@@ -1,3 +1,4 @@
+// 把天幕、环境光、太阳和雾的设置存成资源。LightingProfileApplier 在加载配置时把这些值应用给场景。
 using UnityEngine;
 using UnityEngine.Rendering;
 

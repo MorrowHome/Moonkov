@@ -1,3 +1,4 @@
+// 独立服准备好地图和网络后向账号后端报就绪，带上实例协议和该机的 ICE 可用信息。在线同队玩家的出生位置也在同一份 World 数据里分配。
 using System;
 using System.IO;
 using System.Net.Http;

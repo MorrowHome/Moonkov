@@ -1,3 +1,4 @@
+// 登录到仓库的舱门过渡。MainMenu 提供是否通过验证及登录开场是否结束，这里控制什么时候展示新页面和开放输入。
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -87,6 +88,7 @@ namespace Unity.MP_FPS.Client
             // because its creation or an unfocused/hidden window stalled a tick.
             m_Age += double.IsNaN(m_LastTick) ? 0 : (float)Math.Max(0, Math.Min(.05, now - m_LastTick));
             m_LastTick = now;
+            // 遮罩合拢后才通知菜单换内容，随后开罩展示仓库。用户看到的是同一段连续过渡。
             if (m_Phase == Phase.Closing && m_Age >= ConfirmSeconds + CloseSeconds)
             {
                 m_Audio.StopShutter();
