@@ -115,7 +115,7 @@ namespace Unity.MP_FPS {
             LastAttempt = s.InstanceId;
             s_PreserveFailedJoin = false;
             Error = null;
-            // Always retain the public game entrance. P2P uses separate ICE endpoints.
+            // 保留对外游戏入口。P2P 通路使用独立的 ICE 端点。
             // 公网入口仍留在设置中。实际走 P2P 时，GameConnection 会另从快照准备 ICE 端点。
             ConnectionSettings.Instance.IPAddress = s.Address;
             ConnectionSettings.Instance.Port = s.Port.ToString();

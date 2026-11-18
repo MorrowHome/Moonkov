@@ -33,7 +33,7 @@ namespace Unity.MP_FPS {
             float range = HaloLighting.AimRange(source.ControllerState.HaloLightingSettings);
             if (distance >= range) return 0;
             var direction = offset / distance;
-            // Only the aimed beam dazzles, and only while the target faces its source.
+            // 只有瞄准产生的光束会让目标眩目，而且目标需要看向来光。
             // 眩光叠乘光束内角度、目标是否正看着来光、距离和抬枪进度。没在有效锥体内时强度降零。
             float cone = Mathf.InverseLerp(Mathf.Cos(24 * Mathf.Deg2Rad), Mathf.Cos(12 * Mathf.Deg2Rad),
                 Vector3.Dot(beamForward.normalized, direction));

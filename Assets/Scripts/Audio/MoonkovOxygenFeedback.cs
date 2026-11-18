@@ -10,7 +10,7 @@ namespace Unity.MP_FPS {
         Depleted
     }
 
-    // Client presentation only. Never grants air or infers a successful item request.
+    // 只负责客户端提示。氧气值和补给是否使用成功由玩法流程确认。
     public sealed class MoonkovOxygenFeedback {
         private OxygenUrgency m_Urgency;
         private float m_NextAlert;
@@ -27,7 +27,7 @@ namespace Unity.MP_FPS {
         public bool Observe(in PredictedPlayerGhost state, float now) {
             var next = Urgency(state);
             // 供氧和消耗交替时，数值可能在阈值附近来回波动。回升要多出一点余量才降告警等级，防止提示不断重播。
-            // Small refill/consumption fluctuations must not replay a threshold alert.
+            // 补氧和耗氧的小幅抖动不应让阈值告警反复响。
             if (next < m_Urgency && state.BodyHealthInitialized && state.CurrentHealth > 0 &&
                 RaidOxygen.NeedsSuitAir(state) && state.Oxygen > 0) {
                 if (m_Urgency == OxygenUrgency.Critical && state.Oxygen <= RaidOxygen.CriticalThreshold + 2)
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS {
             float fatigue = 1 - Mathf.Clamp01(stamina / TacticalSprintRules.Capacity);
             if (state.MeleeEpoch != 0 && float.IsFinite(state.MeleeStamina))
                 fatigue = Mathf.Max(fatigue, 1 - Mathf.Clamp01(state.MeleeStamina / MeleeRules.StaminaCapacity));
-            // Recovery follows the actual reserves, including after the player releases sprint.
+            // 玩家松开冲刺后仍能按实际剩余氧气判断何时恢复。
             float effort = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.12f, 1, fatigue));
             if (state.ControllerState.Sprinting && state.ControllerState.MovementSpeed > .1f)
                 effort = Mathf.Max(effort, .35f);

@@ -13,7 +13,7 @@ public class ManagerGhostsSpawner : Singleton<ManagerGhostsSpawner> {
     public override void Awake() {
         base.Awake();
 
-        // Don't attempt to spawn ghosts if there is no server world.
+        // 等本进程拥有服务端 World 后才生成 Ghost。
         // 纯客户端会收到服务端生成的管理器 Ghost，因此场景上的生成器只在有自己 ServerWorld 的进程中启用。
         if (!ClientServerBootstrap.HasServerWorld) gameObject.SetActive(false);
     }

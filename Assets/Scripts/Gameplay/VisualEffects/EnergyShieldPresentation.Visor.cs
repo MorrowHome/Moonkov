@@ -33,8 +33,8 @@ namespace Unity.MP_FPS {
         }
 
         private void FitHelmet(Quaternion frame) {
-            // Only skin and hair define the head envelope. Head clothing, jewels,
-            // glasses and floating ornaments may remain outside the projected shell.
+            // 头部外壳以皮肤和头发为准。头饰、珠宝、
+            // 眼镜与漂浮装饰可以在投影外壳以外。
             var points = new List<Vector3>(4096);
             var inverse = Quaternion.Inverse(frame);
             var facePoints = new List<Vector3>(2048);
@@ -83,8 +83,8 @@ namespace Unity.MP_FPS {
                     float head = (related[w.boneIndex0] ? w.weight0 : 0) + (related[w.boneIndex1] ? w.weight1 : 0) +
                                  (related[w.boneIndex2] ? w.weight2 : 0) + (related[w.boneIndex3] ? w.weight3 : 0);
                     if (head < .65f) continue;
-                    // Miku packs the face, scalp and long twin tails into one material.
-                    // Descendant hair bones must not enlarge the skull's pressure dome.
+                    // Miku 的脸、头皮和长双马尾共用同一个材质。
+                    // 计算头部压力罩时排除下层头发骨骼，避免把罩子扩大到整条马尾。
                     float skullWeight = (w.boneIndex0 == skull ? w.weight0 : 0) +
                                         (w.boneIndex1 == skull ? w.weight1 : 0) +
                                         (w.boneIndex2 == skull ? w.weight2 : 0) +
@@ -112,23 +112,23 @@ namespace Unity.MP_FPS {
                 maximum = new Vector3(.135f, .34f, .13f);
             }
             var anchor = m_Neck ? m_Neck : m_Head;
-            // The decorative choker sits high below the jaw. It must not set the
-            // bottom of the helmet: doing so pushes the entire globe over the crown.
+            // 下巴下面的装饰项圈位置偏高，不能拿它当头盔底边，
+            // 否则整颗球罩都会被推到头顶上方。
             float bottom = (inverse * (anchor.position - m_Head.position)).y;
             var center = (minimum + maximum) * .5f;
             // 如果能得到独立的脸部范围，就把面罩中心和脸对齐。否则从已知的头部几何和骨骼尺寸回退。
             if (!float.IsInfinity(faceMinimum.y)) center.y = (faceMinimum.y + faceMaximum.y) * .5f;
             float radius = Mathf.Max(.10f, Mathf.Sqrt(RadiusSquared(center.y)) + .012f);
-            // Main skull plus a small scalp clearance. Low side locks and tied
-            // hair must not turn the head into the envelope of the whole hairstyle.
+            // 从主要颅骨加上头皮的一小段间距开始定形。侧发和绑起的长发
+            // 无需纳入整个头部贴合范围。
             radius = Mathf.Max(radius, maximum.y - center.y + .010f);
-            // Locate the sphere by the face, then intersect it at the real neck root.
-            // A wider neck seat is preferable to moving the sphere up over ornaments.
+            // 球心先参考脸的位置，再从真正的颈根截取下边缘。
+            // 可以加宽颈口，不必为躲装饰把整个球体抬高。
             m_SealLatitude = Mathf.Clamp((center.y - bottom) / radius, .70f, .98f);
             m_VisorOffset = new Vector3(center.x, center.y - radius * m_SealLatitude, center.z);
             m_VisorSize = new Vector3(radius, radius * (1 + m_SealLatitude), radius);
-            // A wide hairstyle needs lateral clearance, not the same radius above
-            // the crown. Keep the neck seat and fit the vertical axis to the scalp.
+            // 蓬松发型需要更多左右空间，无需同步增加顶部半径。
+            // 保留颈口高度，竖向按头皮调整。
             m_VisorSize.y = Mathf.Min(m_VisorSize.y, maximum.y + .012f - m_VisorOffset.y);
             m_SealRadius = radius * Mathf.Sqrt(1 - m_SealLatitude * m_SealLatitude);
             m_SealOffset = anchor.InverseTransformPoint(m_Head.position + frame * m_VisorOffset);

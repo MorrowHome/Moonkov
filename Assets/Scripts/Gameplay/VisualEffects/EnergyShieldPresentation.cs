@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    /// <summary>Read-only client equipment appearance. Never changes health, inventory, oxygen or hitboxes.</summary>
+    /// <summary>读取客户端装备并绘制外观。生命、库存、氧气和命中区域由游戏系统维护。</summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(180)]
     public sealed partial class EnergyShieldPresentation : MonoBehaviour {
@@ -112,7 +112,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Optional inventory-portrait bridge; uses real item values, not a second loadout model.
+        // 可供库存人物预览接入。直接读真实物品数值，不另维护一份配装。
         public void PresentInventory(InventoryGraph graph) {
             // 仓库预览直接读实际装备栏，填成表现层能理解的几项角色字段。局内角色的同一套外观类就能画菜单里的预览。
             var head = graph?.Equipped("Helmet");
@@ -136,8 +136,8 @@ namespace Unity.MP_FPS {
         }
 
         private bool EnsureReady() {
-            // Unity-owned property blocks are initialized on the presentation path,
-            // including after Editor reload/creation where nonserialized fields can be empty.
+            // 沿渲染表现路径初始化 Unity 的材质属性块，
+            // 编辑器重新加载或新建组件后，原来未序列化的字段也能补齐。
             m_ShieldProperties ??= new MaterialPropertyBlock();
             if (m_Ready) {
                 EnergyShieldRendering.Register(this);
@@ -167,8 +167,8 @@ namespace Unity.MP_FPS {
             var defense = new GameObject("Halo / spherical defense") { layer = gameObject.layer };
             defense.transform.SetParent(m_Root, false);
             m_HaloDefense = defense.AddComponent<HaloDefenseSphere>();
-            // Remote performance avatars retain shield hit/break/recovery cues.
-            // Decorative collar, visor rails and backpack hardware are optional.
+            // 简化的远端角色仍显示护盾受击、破裂和恢复提示。
+            // 纯装饰的项圈、面罩支架和背包配件按需启用。
             if (m_OmitHardware) {
                 m_Ready = true;
                 EnergyShieldRendering.Register(this);

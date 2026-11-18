@@ -11,7 +11,7 @@ using Unity.MP_FPS;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSystem> {
-    // logging and diagnostics
+    // 日志与诊断。
     private static uint s_PlayerMovementTick;
     private static readonly int s_HitscanLayerMask = ~LayerMask.GetMask("ClientPlayer");
     private static readonly int s_ProjectileTargetLayerMask = ~LayerMask.GetMask("ClientPlayer", "ServerPlayer");
@@ -77,7 +77,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
             }
         }
 
-        // ensure controller has been initialised
+        // 先确保场景控制器已经接好。
         foreach (var (predictedPlayer, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithEntityAccess()
                      // 预测移动需要场景里的角色控制器。等桥接物体生成后把它的引用补到实体上，后面的查询就可以直接取。
                      .WithAll<Simulate, GhostGameObjectLink>().WithNone<PlayerControllerLink>()) {
@@ -87,9 +87,9 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 ecb.AddComponent(entity, new PlayerControllerLink { Controller = controller });
         }
 
-        // pull out the client input
-        // we process the input and create a list of commandInputs that need to be processed by the movement code
-        // the movement code processes the inputs in order
+        // 读取客户端输入。
+        // 先整理移动系统要处理的命令列表，
+        // 再由移动部分按顺序应用。
         // 先收集这一拍需要的输入，再统一推进角色。这样输入实体和实际的角色实体可以分别生成、分别查询。
         m_ProcessedClientInputCommands.Clear();
         var commands = m_ProcessedClientInputCommands;
@@ -105,8 +105,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 // 预测批次刚开始时，把本机处理起点设到当前拍之前。随后根据这次要模拟的 tick 从历史缓冲读指令。
                 predictedClient.ValueRW.LastProcessedServerTick = tick - 1;
 
-                // the server might have missed some input if the snapshot is running behind
-                // we need to re-process some of the input the server has missed in this snapshot
+                // 快照落后时可能还没包含一些输入的结果，
+                // 因此需要在本机重跑快照未包含的指令。
                 for (uint i = predictedClient.ValueRO.LastProcessedServerTick + 1; i < tick; i++)
                     if (inputCommands.GetDataAtTick(new NetworkTick(i), out var missedCommand)) {
                         if (logPredictionWarnings)
@@ -115,7 +115,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         commands.Add(missedCommand);
                     }
 
-                // and we need to get the latest tick to process
+                // 还需要找到当前要执行的 tick。
                 // if (inputCommands.GetDataAtTick(new NetworkTick(tick), out var inputCommand))
                 // {
                 //     ClientCommandInput input = inputCommand;
@@ -143,7 +143,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
             if (commands.Length > 0) {
                 float accumulateDT = dt;
 
-                // process input
+                // 开始按顺序处理输入。
                 for (int i = 0; i < commands.Length; i++) {
                     var commandInput = commands[i];
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRW.InputIndex, out var input)) {
@@ -167,8 +167,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) &&
                                               predictedPlayer.ValueRO.CurrentAmmo <= 0;
                             if ((wantsToReload || mustReload) && !GrenadeHandling.Occupied(predictedPlayer.ValueRO) &&
-                                // The server reserves accessible energy and synchronizes the target ammo.
-                                // Predicting one without that reservation causes empty/full ammo oscillation.
+                                // 服务端先为充能预留当前可用的能量，再同步目标弹量。
+                                // 等有预留记录再推进，可避免本机弹量在空与满之间反复跳。
                                 !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) &&
                                 !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                                 predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize) {
@@ -195,7 +195,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 var shotOriginPosition = shotRay.origin;
 
                                 // 重跑 tick 仍要计算弹量、冷却等预测数据。光环弹的可见特效只在该 tick 首次完整预测时生成，避免一发在屏幕上变成多发。
-                                // Replayed/partial predictions must not create another visible halo bolt.
+                                // 光环弹在第一次完整预测时生成可见效果，后续重跑继续计算状态。
                                 if (VisualEffectManager.ClientInstance != null &&
                                     (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) ||
                                      networkTime.IsFirstTimeFullyPredictingTick))
@@ -247,9 +247,9 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     }
                 }
 
-                // apply
-                // if tick batching is not allowed then we need to request an apply every tick
-                // otherwise it will happen on the last tick anyway
+                // 准备应用移动位移。
+                // 关闭 tick 批处理时，每一拍都提交一次移动。
+                // 开启时等到本帧的最后一次预测再提交。
                 // 默认每拍应用移动，因为位移请求还要过真实碰撞。开启批处理时可以攒几拍，在这一帧的最后一步应用。
                 predictedPlayer.ValueRW.RequestApplyMovement = !allowTickBatching;
             } else if (logPredictionWarnings) {
@@ -274,27 +274,27 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         controllerConsts, predictedPlayer.ValueRO.AccumulatedMovement, applyDT);
                     // 本机同时有服务器时，可用功能开关比对同一完整 tick 的位置。最后一步可能只模拟了部分时间，跳过它才能做同一时间的对照。
                     if (checkForPredictionErrors && !isFinalPredictionTick)
-                        // check for prediction accuracy
-                        // we avoid the final tick as it's almost certainly partial
-                        // we want to check we are reconstructing the server ticks correctly
+                        // 核对预测结果。
+                        // 最后一步预测通常只补一小段时间，先跳过。
+                        // 用完整的 tick 检查能否重算出和服务端一致的位置。
                         if (ServerPlayerMovementSystem.TryGetInstance(out var serverPlayerMovementSystem)) {
                             if (serverPlayerMovementSystem.MovementHistory.TryGetTick(tick, out var pos, out var rot))
-                                // compare our calculation with the recorded
+                                // 把刚算的坐标和已记录的结果比较。
                                 Debug.Assert(
                                     PlayerMovementHistory.HistoryMatches(pos, rot,
                                         predictedPlayer.ValueRO.ControllerState.CurrentPosition,
                                         predictedPlayer.ValueRO.ControllerState.CurrentRotation),
                                     $"[PlayerPredictionSystem] Mispredict detected at tick {tick} predicted pos {predictedPlayer.ValueRO.ControllerState.CurrentPosition} recorded {(float3)pos}");
                             else
-                                // this is the first time we've processed this tick
-                                // let's add our result
+                                // 如果这是首次算到这个 tick，
+                                // 就把结果存下来供之后对照。
                                 serverPlayerMovementSystem.MovementHistory.Add(tick,
                                     predictedPlayer.ValueRO.ControllerState.CurrentPosition,
                                     predictedPlayer.ValueRO.ControllerState.CurrentRotation);
                         }
                     predictedPlayer.ValueRW.AccumulatedMovement = float3.zero;
                 } else {
-                    // we should just apply our current state
+                    // 没有待执行的位移，直接应用已有位置和方向。
                     // 没有要执行的位移时也同步控制器的位置和方向，并重新检查着地，避免采用上一拍的过期接触状态。
                     controllerLink.Controller.ApplyPosRotImmediate(predictedPlayer.ValueRO.ControllerState);
                     controllerLink.Controller.GroundedCheck(ref predictedPlayer.ValueRW.ControllerState,
@@ -316,7 +316,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
     // private void DisablePrediction()
     // {
-    //     // Fetch the singleton as RW as we're modifying singleton collection data.
+    //     // 后续要改集合内容，先以可写方式取得单例。
     //     ref var ghostPredictionSwitchingQueues = ref SystemAPI.GetSingletonRW<GhostOwnerPredictedSwitchingQueue>().ValueRW;
     //
     //     if (PlayerGhostManager.TryGetClientInstance(out var playerGhostManager) && playerGhostManager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players))
@@ -330,7 +330,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
     //
     // private void EnablePrediction()
     // {
-    //     // Fetch the singleton as RW as we're modifying singleton collection data.
+    //     // 后续要改集合内容，先以可写方式取得单例。
     //     ref var ghostPredictionSwitchingQueues = ref SystemAPI.GetSingletonRW<GhostOwnerPredictedSwitchingQueue>().ValueRW;
     //
     //     if (PlayerGhostManager.TryGetClientInstance(out var playerGhostManager) && playerGhostManager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players))

@@ -70,7 +70,7 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
 [UpdateAfter(typeof(ServerGhostTransformRetrieveSystem))]
 public partial class ServerGhostTransformWriteSystem : SystemBase {
     protected override void OnUpdate() {
-        // update server ghosts with gameobject positions
+        // 用场景物体坐标更新服务端的 Ghost 实体。
         // 这个属性会等采集作业结束。随后按各 Ghost 的本地下标把对应结果写到 LocalTransform，其他字段沿用原值。
         var transforms = ServerGhostTransformRetrieveSystem.Instance.GhostTransformsArray;
         if (transforms.Length == 0) return;

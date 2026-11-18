@@ -3,7 +3,7 @@ using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Crossed presentation markers play once. Snapshot refreshes and late joins never replay old markers.</summary>
+    /// <summary>渲染动作跨过音效时间点时只播一次。刷新快照或中途加入不会补播旧声音。</summary>
     public sealed class RaidActionFoley {
         private uint sequence;
         private HandAction action;
@@ -35,7 +35,7 @@ namespace Unity.MP_FPS {
                 observed = true;
                 sequence = currentSequence;
                 action = kind;
-                // A snapshot arriving midway through an action must stay midway through its sound track.
+                // 刚收到已经进行到一半的动作时，声音也从对应时刻开始。
                 previous = phase < .12f ? -.001f : phase;
             }
             var library = MoonkovAudio.Library;
@@ -81,7 +81,7 @@ namespace Unity.MP_FPS {
                     kind == HandAction.Treat && !wrapping ? library.MedicalGel : null;
                 contactSound = Play(sound);
             }
-            // A second mouth movement belongs inside the authored contact hold, never the put-away segment.
+            // 第二次嘴部动作应处在接触保持段内，收起物品的阶段不用再出声。
             if ((kind == HandAction.Eat || kind == HandAction.Drink) &&
                 Crossed(8, Mathf.Lerp(contactAt, Mathf.Max(contactAt, contactOut), .65f)) && !firstContact &&
                 phase < contactOut) {

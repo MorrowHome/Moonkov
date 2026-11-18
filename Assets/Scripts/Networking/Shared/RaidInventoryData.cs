@@ -9,7 +9,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public static class RaidInventoryTransport {
-        // Keep each ASCII JSON fragment comfortably below the transport's 1378-byte packet.
+        // 每段 ASCII JSON 要明显小于传输层 1378 字节的包上限。
         public const int ChunkCharacters = 400;
         public const int MaxChunks = 2048;
         public const int MaxJsonCharacters = 800000;
@@ -99,8 +99,8 @@ namespace Unity.MP_FPS {
             return RefillStates.TryGetValue(id, out var refill) ? refill.RefillCount : 0;
         }
 
-        // A fresh alien bag starts at version 1. Dissection advances it before
-        // any inventory transfer is allowed; human corpses retain their old flow.
+        // 新异形遗体包从版本 1 开始。先通过解剖增加版本，
+        // 之后才允许移动物品。人形遗体沿用原来的搜刮步骤。
         // 异形遗体的初始状态要求解剖。完成后箱子版本会变化，之后按普通已打开容器访问。
         public bool RequiresDissection(int id) {
             return DeathBags.TryGetValue(id, out var corpse) && corpse.CharacterIndex == -1 &&
@@ -149,7 +149,7 @@ namespace Unity.MP_FPS {
             var error = LootInventoryExchange.PrepareDrop(carried, itemId, expectedVersion, out var remaining,
                 out var dropped);
             if (error != InventoryError.None) return error;
-            // All fallible validation precedes the two-owner commit; no item is removed on failure.
+            // 所有可能失败的校验都在提交两边结果前完成。失败不会移除任何物品。
             try {
                 id = RegisterDrop(dropped, position, Mathematics.quaternion.identity, DroppedItemCharacterIndex, now);
             } catch (ArgumentException) {
@@ -215,7 +215,7 @@ namespace Unity.MP_FPS {
             if (count < 1 || count > FirstDeathBagId) throw new ArgumentOutOfRangeException(nameof(count));
             int version = 1;
             if (Initialized) {
-                // Queued transfer requests from the previous map must never match its replacement.
+                // 上一张地图排队的转移请求不能意外匹配替换进来的地图。
                 foreach (var cache in Containers.Values) version = Math.Max(version, checked(cache.Version + 1));
                 Containers.Clear();
                 DeathBags.Clear();
@@ -249,8 +249,8 @@ namespace Unity.MP_FPS {
         private string m_SentHeadDomeItem;
         private int m_SentOxygenPercent = -2;
 
-        // Item details show whole percentages. The live HUD already reads the
-        // precise Ghost oxygen, so sub-percent changes need no full inventory RPC.
+        // 物品详情只显示整数百分比。实时 HUD 已读到
+        // Ghost 上的精确氧气，所以不到一个百分点的变化无需再发完整库存 RPC。
         // HUD 直接读角色同步来的精确氧气。背包物品详情只显示整数百分比，所以半秒检查到显示值或装备 ID 变化才安排库存重发。
         public bool ProtectionDisplayChanged {
             get {
@@ -307,7 +307,7 @@ namespace Unity.MP_FPS {
         public readonly List<int> RemovedSearches = new();
         public bool TacticalPending;
 
-        // Owned by the grenade system. Generic cancel requests cannot erase a live fuse.
+        // 该状态由手雷系统管理。通用取消请求不能抹掉已经开始的引信。
         public bool GrenadePending;
 
         public bool ActionPending =>
@@ -317,7 +317,7 @@ namespace Unity.MP_FPS {
 
         // 关闭容器视图时，也收掉其搜索状态并让服务器发新结果。单纯离开 UI 不能让角色继续持有箱子。
         public void CloseLoot() {
-            // Closing a view owns the search, not an unrelated self-use action.
+            // 关容器窗口只停止这次搜索，不影响无关的自用动作。
             if (DissectingLootId >= 0) {
                 DissectingLootId = -1;
                 ActionFeedback = "已取消搜索。";
@@ -346,7 +346,7 @@ namespace Unity.MP_FPS {
             double now,
             float seconds = 3) {
             if (RaidHealth.HandsBusy(health)) return InventoryError.Inaccessible;
-            // Validate on copies: neither item consumption nor healing occurs before the deadline.
+            // 在副本上验证。读条结束前不扣物品，也不实际治疗。
             var probe = health;
             var error = RaidHealth.UseMedical(ref probe, Graph.Clone(), id, version, part);
             if (error != InventoryError.None) return error;
@@ -366,7 +366,7 @@ namespace Unity.MP_FPS {
             double now) {
             if (Graph == null) return InventoryError.Invalid;
             if (ActionPending || RaidHealth.HandsBusy(health)) return InventoryError.Inaccessible;
-            // Validate without granting resources or consuming a stack before the deadline.
+            // 先做校验，读条结束前不增加资源或消耗这一堆。
             bool oxygen = ConsumableCatalog.Get(Graph.Find(id)?.Code)?.Oxygen > 0;
             var probe = health;
             var copy = Graph.Clone();
@@ -485,7 +485,7 @@ namespace Unity.MP_FPS {
             if (searching) {
                 var visible = SearchPreview(cache);
                 var joined = LootInventoryExchange.Snapshot(Graph, visible);
-                // Validate every referenced identity; knowing a grey footprint ID grants no item access.
+                // 逐一验证请求引用的身份。只知道灰色占格的 ID 还不能取这件东西。
                 if (joined.Find(command.ItemId) == null ||
                     (!string.IsNullOrEmpty(command.Parent) && joined.Find(command.Parent) == null) ||
                     (!string.IsNullOrEmpty(command.TargetId) && joined.Find(command.TargetId) == null))
@@ -653,8 +653,8 @@ namespace Unity.MP_FPS {
         public double EmptySince = -1;
     }
 
-    // Separate identity from the earlier bag marker RPC: generated/Burst layouts
-    // must never reuse the smaller component after adding corpse presentation data.
+    // 必须与较早的遗体标记 RPC 保持不同类型。增加尸体表现数据后，
+    // 生成的序列化和 Burst 代码不能继续用原来较小的布局。
     public struct RaidCorpseRpc : IRpcCommand {
         public int LootId, Version, CharacterIndex;
         public Mathematics.float3 Position;
@@ -664,7 +664,7 @@ namespace Unity.MP_FPS {
         public bool RequiresDissection => CharacterIndex == -1 && Version == 1;
     }
 
-    // Atomic visibility + metadata update, with a fresh generated serializer identity.
+    // 显示状态与元数据一起更新，用新的序列化类型标识。
     public struct RaidGroundItemMarkerRpc : IRpcCommand {
         public FixedString64Bytes ItemCode;
         public uint Sequence;
@@ -680,8 +680,8 @@ namespace Unity.MP_FPS {
         public readonly Dictionary<int, string> ItemCodes = new();
         private readonly Dictionary<int, uint> m_Sequences = new();
 
-        // Keep at most a window of per-ID sequence records. Updates older than
-        // the window are rejected globally, including for already removed bags.
+        // 每个物品 ID 的序号只保留最近一段。早于这段窗口的更新
+        // 统一拒绝，已经移走的遗体包也一样。
         private const uint SequenceWindow = 4096;
         private uint m_HighestSequence;
         private readonly List<int> m_ExpiredSequences = new();
@@ -738,8 +738,8 @@ namespace Unity.MP_FPS {
         public bool Rotated;
     }
 
-    // V2 has a 512-byte string. Keep a distinct identity from the old 4096-byte RPC:
-    // generated/Burst RPC executors must not reuse the old component layout.
+    // V2 使用 512 字节字符串，类型名称与旧 4096 字节 RPC 分开，
+    // 生成的 RPC 接收器和 Burst 不能重用旧布局。
     public struct RaidInventoryChunkV2Rpc : IRpcCommand {
         public int RaidId, Index, Count;
         public uint Sequence, RequestId;
@@ -747,7 +747,7 @@ namespace Unity.MP_FPS {
         public FixedString512Bytes Json;
     }
 
-    // Partial transport is never exposed to UI. A newer sequence supersedes old fragments.
+    // 未到齐的数据不交给 UI，更高序号一到便放弃旧分片。
     public sealed class RaidInventoryClientState : IComponentData {
         public RaidResultManifest Result;
         public InventoryGraph Graph;

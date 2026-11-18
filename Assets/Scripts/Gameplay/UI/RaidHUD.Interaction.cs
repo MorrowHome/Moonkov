@@ -38,7 +38,7 @@ namespace Unity.MP_FPS {
                 bestDistance = Vector3.Distance(actor, rangeAnchor ?? point);
             }
 
-            // All loot kinds use the same aim/visibility rule. Proximity alone cannot pick a cache behind the player.
+            // 所有战利品用相同的瞄准和可见规则。靠得近也需要朝向和视线能到。
             var map = MoonRaidMap.Active;
             for (int i = 0; i < map.LootPositions.Length; i++) Consider(i, map.LootPositions[i]);
             foreach (var bag in bags.Bags.Values)

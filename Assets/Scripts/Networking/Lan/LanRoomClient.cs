@@ -81,7 +81,7 @@ namespace Unity.MP_FPS {
                 throw new InvalidOperationException("开房需要 Client+Server 游戏版本。");
             string root = Path.Combine(Application.persistentDataPath, "LAN", "host-v1");
 #if UNITY_EDITOR
-            // Keep Editor project copies from leasing the same host save.
+            // 编辑器的项目克隆应各自使用独立房主档案，避免争用同一个存档锁。
             using (var hash = SHA256.Create()) {
                 root = Path.Combine(root,
                     BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath)))
@@ -308,13 +308,13 @@ namespace Unity.MP_FPS {
         public static async Task LeaveAsync(bool afterWorldShutdown = false) {
             if (s_Closing) return;
             if (!afterWorldShutdown) await PlayerProfileClient.FlushMenuInventoryAsync(CancellationToken.None);
-            // Worlds must have released their deployment receipts before the host store closes.
+            // 关闭房主档案前，服务端 World 必须先处理完握在手里的出战回执。
             // 手动关房需要先停战局，给存档上下文收尾机会。直接关掉房主档会中断正在写的结算。
             if (!afterWorldShutdown && Active && GameSettings.Instance.GameState != GlobalGameState.MainMenu)
                 throw new InvalidOperationException("请先返回主菜单，再关闭或离开房间。");
             if (Active && !IsHost)
                 try { await RequestAsync("leave"); } catch (Exception) {
-                    /* best effort; lease expires */
+                    /* 尽力通知对端，超时后成员租约也会自己到期。 */
                 }
             s_Closing = true;
             try {
@@ -338,8 +338,8 @@ namespace Unity.MP_FPS {
 
         internal static void StopAfterPumpDestroyed() {
             if (!Active && s_PeerRoom == null) return;
-            // Editor Stop/native quit can bypass the menu's orderly shutdown.
-            // Capture ECS ownership on this thread, then finish data-only writes before closing leases.
+            // 编辑器停止或进程退出可能绕过菜单里的正常清理。
+            // 在 Unity 线程取得 ECS 归属，之后只完成数据写入，再释放档案锁。
             var server = Server;
             server?.Dispose();
             s_Stop.Cancel();

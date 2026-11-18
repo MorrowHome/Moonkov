@@ -1,18 +1,18 @@
 // 给淡入淡出提供按时间计算的数值。MoveTo 会从此刻的实际值开始，因此中途改变目标时音量可以连续过渡。
 using UnityEngine;
 
-// Utility class for interpolating values. Usage
+// 用于数值插值。下方为使用示例。
 //
 //    var ival = new Interpolator(0.0f, Interpolator.CurveType.Linear)
-//    ival.MoveTo(10.0f, 0.5f); // interpolate from 0 to 10 in 0.5 secs
+//    ival.MoveTo(10.0f, 0.5f); // 在 0.5 秒内从 0 过渡到 10。
 //
-//    ival.GetValue();          // gets current value
+//    ival.GetValue();          // 读取当前值。
 //
-//    ival.SetValue(12.0f);     // force value and stop animation
+//    ival.SetValue(12.0f);     // 立即设成指定值，结束原插值。
 //
-//    ival.GetNormalizedCurveValue(CurveType, 0.5f // gets normalized curve value for the CurveType at normalized x position 0.5f
+//    ival.GetNormalizedCurveValue(CurveType, 0.5f // 取该曲线在归一化位置 0.5 处的值。
 //
-// Ideas for more curve types: http://sol.gfxile.net/interpolation/ 
+// 更多曲线的思路见 http://sol.gfxile.net/interpolation/
 
 public class Interpolator {
     public enum CurveType {

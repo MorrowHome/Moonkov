@@ -11,8 +11,8 @@ using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS {
-    // One isolated single-player profile. Every mutation commits a complete snapshot
-    // before publishing it, and deployment/settlement receipts survive a restart.
+    // 独立的单人档案。每次修改先提交完整快照，
+    // 随后才对外展示。出战和结算回执重启后仍可恢复。
     public sealed partial class OfflineProfileStore : IDisposable {
         private sealed class SaveData {
             public int Format = 4;
@@ -44,9 +44,9 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // A single-player loading attempt owns this checkpoint until the camera
-        // and replicated world are ready. Refund only after server shutdown has
-        // drained its settlement tasks, so a late abandon cannot erase the kit.
+        // 一次单人加载在相机
+        // 和同步后的地图就绪前一直持有这个检查点。退款要等服务器关停
+        // 并且待处理结算全都收尾，防止迟来的放弃请求删掉原有装备。
         // 入场加载出错时需要有地方退回。这个检查点保存加载前的档案内容，加载走完就确认，没走完可以恢复。
         public sealed class LoadingCheckpoint {
             private readonly OfflineProfileStore m_Owner;
@@ -75,14 +75,14 @@ namespace Unity.MP_FPS {
                         throw new InvalidOperationException("Wait for raid shutdown before refunding a failed load.");
                     var next = JsonConvert.DeserializeObject<SaveData>(m_Snapshot);
                     if (JsonConvert.SerializeObject(m_Owner.m_Save) != m_Snapshot) {
-                        // Keep terminal receipts so replaying an old journal cannot
-                        // debit or settle this refunded attempt a second time.
+                        // 保留已经结束的操作回执。这样重放旧日志时，
+                        // 这次已退款的尝试不会再次扣装或结算。
                         // 把失败期间已经写下的回执一并带回去。这样恢复旧写入记录时知道这趟加载已经退款，不能再次扣装。
                         foreach (var receipt in m_Owner.m_Save.Receipts)
                             if (!next.Receipts.ContainsKey(receipt.Key))
                                 next.Receipts.Add(receipt.Key, "loading_refunded");
-                        // Tracking may change while the loading screen is open.
-                        // Campaign facts cannot commit before loading completes.
+                        // 加载界面仍可更改任务追踪。
+                        // 游戏场景准备好之前，章节事实不能落盘。
                         // 加载页可以改变追踪偏好和引导状态。退款恢复的是原出装，把这些新偏好复制回来可避免界面白操作。
                         CopyCampaignTracking(m_Owner.m_Save.Campaign, next.Campaign);
                         next.Tutorial.Status = m_Owner.m_Save.Tutorial.Status;

@@ -29,7 +29,7 @@ namespace Unity.MP_FPS {
             in PredictedPlayerGhost target,
             bool viewerHuman,
             bool targetHuman) {
-            // Downed allies remain useful rescue targets. Finished participants and corpses do not.
+            // 倒地的队友仍需救援，可以显示。战局结束者与尸体不再显示。
             // 赏金模式允许看到需要救援的倒地队友。真正退出或阵亡后，目标不再通过玩法的友方识别。
             bool present = target.ClashEnabled
                 ? target.ClashLife == ClashLife.Downed || (target.ClashLife == ClashLife.Alive && target.ClashCanAct)

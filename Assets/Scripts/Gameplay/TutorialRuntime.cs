@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Unity.MP_FPS {
-    // Explicit per-world marker, captured on loading. Skipping prompts does not change encounter rules mid-raid.
+    // 加载时为每个 World 确定教学标记。跳过提示不会在对局中途改敌人规则。
     public struct TutorialRaidMode : IComponentData {
     }
 

@@ -55,14 +55,14 @@ public class InputSystemManager : Singleton<InputSystemManager> {
     private void OnDeviceChange(InputDevice device, InputDeviceChange change) {
         if (!Application.isPlaying) return;
         if (change == InputDeviceChange.Disconnected) {
-            // placeholder
+            // 占位
         } else if (change == InputDeviceChange.Reconnected) {
-            // placeholder
+            // 占位
         } else if (change == InputDeviceChange.Added) {
-            // placeholder
+            // 占位
             EnsureDevicePaired(device);
         } else if (change == InputDeviceChange.ConfigurationChanged) {
-            // placeholder
+            // 占位
             EnsureDevicePaired(device);
         }
     }

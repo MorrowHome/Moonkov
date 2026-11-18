@@ -5,8 +5,8 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // A server snapshot of actual horizontal travel, separate from the
-    // controller's requested animation speed. Discontinuities are not exertion.
+    // 服务器记录实际水平位移，与控制器请求的动画速度分别保存。
+    // 位置不连续的跳变不当作体力运动。
     public struct RaidSurvivalMotion {
         private float3 m_Position;
         private bool m_Known;
@@ -105,8 +105,8 @@ namespace Unity.MP_FPS {
             if (!graph.ConsumableAccessible(item)) return InventoryError.Inaccessible;
             var definition = ConsumableCatalog.Get(item.Code);
             if (!CanConsume(state, definition)) return InventoryError.Invalid;
-            // Validate everything before changing either resource or stack. Version
-            // and request ID guard replays; no client-specified recovery values.
+            // 改资源或物品堆前先全部校验。版本和请求号
+            // 挡重复提交，恢复量从道具定义取。
             // 先查版本、可访问性和是否用得上，再扣实际物品。更新的饥渴效果都从固定道具定义取，不听客户端自报数值。
             var error = graph.ConsumeOne(id, version);
             if (error != InventoryError.None) return error;
@@ -126,7 +126,7 @@ namespace Unity.MP_FPS {
 
         // 食物回复只作用在还没归零的部位。已经损坏的部位要走专用医疗流程。
         private static void RestoreLivingTissue(ref PredictedPlayerGhost state, float healing) {
-            // Food restores living tissue only; it cannot revive a destroyed body part.
+            // 食物只回复尚有生命的部位，不能修复已毁坏的部位。
             for (int i = 0; i < RaidHealth.PartCount && healing > 0; i++) {
                 var part = (BodyPart)i;
                 float current = RaidHealth.Get(state, part);
@@ -206,8 +206,8 @@ namespace Unity.MP_FPS {
             return Mathf.Max(0, depletedSeconds - grace) - before;
         }
 
-        // Metabolic damage affects remaining tissue proportionally, including
-        // players with a black abdomen, and uses the existing death/settlement path.
+        // 代谢伤害按剩余部位血量比例扣除，腹部归零的角色也适用，
+        // 死亡仍沿用既有战局结算。
         // 系统性损伤按剩余部位血量比例分摊，同时留下 HUD 受击状态。这个路径属于生存消耗，没有护盾挡伤。
         private static void DamageSystemic(ref PredictedPlayerGhost state, float amount, uint tick) {
             float scale = Mathf.Max(0, 1 - amount / state.CurrentHealth);

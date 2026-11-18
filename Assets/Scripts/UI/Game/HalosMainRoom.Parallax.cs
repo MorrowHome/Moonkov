@@ -36,12 +36,12 @@ namespace Unity.MP_FPS.Client {
         private void PaintParallax() {
             bool animate = Animate;
             var offset = animate ? m_Parallax : Vector2.zero;
-            // Overscan covers the outer movement, including diagonal pointer travel.
+            // 把背景略微放大，为横向和斜向的指针位移留下空间。
             // 底图略放大给边缘留出空间。近处的角色和窗外月球用不同方向与幅度，移动才有前后层次。
             float scale = animate ? 1.04f : 1;
             m_ParallaxLayer.style.scale = new Scale(new Vector3(scale, scale, 1));
             m_ParallaxLayer.style.translate = new Translate(offset.x * 20, offset.y * 12);
-            // The window masks the more distant Moon. The foreground actor travels farther.
+            // 窗框挡住远处一些月球画面。近景人物的移动幅度更大。
             m_Moon.style.translate = new Translate(-offset.x * 12, -offset.y * 7);
             m_CharacterHost.style.translate = new Translate(offset.x * 16, offset.y * 10);
         }

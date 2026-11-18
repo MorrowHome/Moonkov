@@ -210,7 +210,7 @@ namespace Unity.MP_FPS {
             return cache.AddSupply(code, 1, LootInventoryExchange.Root) == InventoryError.None;
         }
 
-        // Position, visibility and alive state are sampled by the host every tick.
+        // 房主每个 tick 检查角色位置、视线与是否存活。
         public void Use(int actor, int team, ClassicUse use, Vector3 position, uint damage, double now) {
             if (actor == 0 || now >= Deadline) return;
             // 进攻方正在本回合作战且地上确实有炸弹，才拿到携带权。人物距离和视野已经由服务器入口查过。

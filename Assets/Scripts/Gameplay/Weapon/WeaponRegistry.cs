@@ -12,8 +12,8 @@ namespace Unity.MP_FPS {
 
         public WeaponData GetWeaponData(uint weaponID, ushort modules) {
             var original = GetWeaponData(weaponID);
-            // Attachments use the rifle/shotgun slots; biological research and
-            // temporary organ buffs affect every halo. Cache runtime-only copies.
+            // 实体配件装在兼容步枪和霰弹枪的槽里。
+            // 生物研究与临时器官增益作用于所有光环，组合后的参数以运行时副本缓存。
             // 只有存在有效模块的光环才需要副本。基础设置和普通武器可直接使用资产。
             if (original == null || modules == 0 || !DollSingerWeapons.IsHalo(weaponID)) return original;
             // 缓存键的高位存武器编号，低 16 位存配件和效果。不同武器或不同配件组合对应各自的运行时参数。
@@ -82,7 +82,7 @@ namespace Unity.MP_FPS {
 
         public WeaponData GetWeaponData(uint weaponID) {
             if (weaponID < Weapons.Count) return Weapons[(int)weaponID];
-            return null; // or a default weapon
+            return null; // 找不到时也可由调用方提供默认武器。
         }
     }
 }

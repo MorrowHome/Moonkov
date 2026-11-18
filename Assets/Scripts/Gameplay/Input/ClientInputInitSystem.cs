@@ -15,20 +15,20 @@ public partial class ClientInputInitSystem : SystemBase {
         var commandTargetEntity = SystemAPI.GetSingleton<CommandTarget>().targetEntity;
         int connectionId = SystemAPI.GetSingleton<NetworkId>().Value;
 
-        // 1. Check if our current target entity has been destroyed (e.g., on player death)
+        // 第一步，检查指令目标实体是否已经销毁，例如玩家死亡后。
         // 角色退场或输入对象重建后，旧实体 ID 可能已经失效。先清空目标，后面的查找分支才会重新接线。
         if (commandTargetEntity != Entity.Null && !EntityManager.Exists(commandTargetEntity)) {
-            // The entity we were sending input to is gone. Reset the CommandTarget to null
-            // so we can search for a new one.
+            // 原来接收输入的实体已经没了。先将 CommandTarget 清空，
+            // 这样下一次更新就能找到新的目标。
             SystemAPI.SetSingleton(new CommandTarget { targetEntity = Entity.Null });
             commandTargetEntity = Entity.Null;
         }
 
-        // 2. If we don't have a valid target, search for one.
+        // 当前没有有效输入目标时，开始查找。
         if (commandTargetEntity == Entity.Null) {
             var localInputEntity = Entity.Null;
 
-            // Find the entity designated to receive this client's input that hasn't been set up yet.
+            // 找到分配给本客户端、还没配好输入的那个实体。
             foreach (var (playerCommandTarget, entity) in SystemAPI.Query<RefRO<PlayerCommandTarget>>()
                          .WithNone<ClientInput>().WithEntityAccess())
                 // 客户端可能看见不止一个带输入标记的实体。用服务器分配的连接号只选属于本连接的那一个。
@@ -38,7 +38,7 @@ public partial class ClientInputInitSystem : SystemBase {
                     break;
                 }
 
-            // 3. If we found a new entity, configure it for input.
+            // 找到新实体后，给它配置输入接收。
             if (localInputEntity != Entity.Null) {
                 Debug.Log(
                     $"[ClientInputInitSystem] New input target found. Linking client input for entity {localInputEntity.Index.ToString()}");
@@ -47,7 +47,7 @@ public partial class ClientInputInitSystem : SystemBase {
                 // 组件保存这一帧读到的状态，缓冲保存按 tick 排列的旧命令。设成 CommandTarget 后 NetCode 才会从这个实体读指令。
                 EntityManager.AddBuffer<ClientCommandInput>(localInputEntity);
 
-                // Update the singleton to point to our new target.
+                // 更新单例，让后续输入发给新目标。
                 SystemAPI.SetSingleton(new CommandTarget { targetEntity = localInputEntity });
             }
         }

@@ -27,7 +27,7 @@ public class GhostPrefabsBaker : Baker<GhostPrefabsAuthoring> {
                 var hash = prefab.gameObject.GetEntityId();
                 // 同一次烘焙里每份模板只登记一次。列表里配了重复资源会指出位置，便于回子场景核对。
                 if (!s_BakedPrefabs.Contains(hash)) {
-                    // required to get prefab to be baked
+                    // 请求烘焙器记录此预制件。
                     // 这里只需要把模板标记给烘焙器，并引用它的 Entity。实际生成位置由服务端生成器稍后写入。
                     GetEntity(prefab.gameObject, TransformUsageFlags.None);
                     s_BakedPrefabs.Add(hash);

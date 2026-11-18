@@ -37,8 +37,8 @@ namespace Unity.MP_FPS {
                 m_Visible = false;
             }
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
-            // The encounter has a physical navigation boundary; do not pursue through
-            // walls outside it, or acquire the precise position of an unseen target.
+            // 这类伏击有实际可走的导航边界。
+            // 不追到区域外的墙后，也不读取看不见的对象的精确位置。
             // 伏击有活动空间边界，线索跑出这一块可导航区域后不继续隔墙追精确坐标。
             if (remembered && m_Navigation && !m_Navigation.Contains(m_LastSeen)) remembered = false;
             float age = m_Clock - m_ActionStarted;
@@ -65,8 +65,8 @@ namespace Unity.MP_FPS {
                     if (m_Clock >= m_RepositionUntil) BeginReposition(remembered ? m_LastSeen : m_Spawn);
                 } else if (remembered && m_Visible && distance <= profile.SpiderAmbushRange &&
                            m_Clock >= m_NextAttack) {
-                    // Commit to a point at the start of the visible windup. A player
-                    // can evade it; flight never steers towards their new position.
+                    // 蓄力预警开始时固定扑击落点。
+                    // 玩家可以躲开，飞出去后不会转向玩家更新后的位置。
                     // 蓄力开始就记住扑击落点。之后玩家可以跑开，蜘蛛起跳时仍飞向原来的点。
                     m_StrikePoint = ContactPoint(m_Target);
                     m_Pattern = AlienCombatPattern.For(profile, 1, m_Attacks + 1);
@@ -98,7 +98,7 @@ namespace Unity.MP_FPS {
                         Vector3.SignedAngle(m_Body.Motor.Current.Forward, intent, m_Body.Motor.Current.Up) /
                         Mathf.Max(.001f, dt), -profile.TurnSpeed, profile.TurnSpeed);
                 }
-                // No straight-line fallback: an unreachable door/wall ends movement.
+                // 门或墙挡住必要的路线时停止移动，不沿目标方向硬闯。
             }
             UpdateCombatPresentation(health);
             m_Body.Tick(intent, speed, yaw, dt, ActionPulse(), false);

@@ -7,9 +7,9 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>Gameplay-owned rig adapter. Server uses solved poses and physical
-    /// hitboxes without GPU/renderer allocation; clients reconstruct cosmetic poses
-    /// from snapshots. Experimental camera/input components are never instantiated.</summary>
+    /// <summary>负责把玩法姿态接到角色骨架上。服务器解算姿势并摆命中体，
+    /// 无需创建 GPU 或渲染器资源。客户端按快照重建显示姿态，
+    /// 这里也无需实例化试验场的摄像机或输入组件。</summary>
     public sealed class AlienCreatureBody : IDisposable {
         private readonly AlienCreatureProfile m_Profile;
         private readonly Transform m_Owner;
@@ -142,8 +142,8 @@ namespace Unity.MP_FPS {
         }
 
         // 先缓存当前这招的类型、时间和生命变化，身体姿态、流体与音效随后共用这份输入。
-        /// <summary>Call before Tick/Observe with authoritative action age in seconds.
-        /// Both peers solve the same attack silhouette; audio observes client snapshots only.</summary>
+        /// <summary>调用 Tick 或 Observe 之前传入权威动作已经过的秒数。
+        /// 两端算同一攻击姿势，客户端独立按快照处理音效。</summary>
         public void SetCombatPresentation(
             AlienAction action,
             float actionTime,
@@ -164,7 +164,7 @@ namespace Unity.MP_FPS {
             m_Feedback?.Observe(action, m_ActionTime, attackSequence, health, AimPoint);
         }
 
-        // Called once per rendered snapshot, independently of the visual rig LOD.
+        // 每次处理显示用快照时调用一次，即使肢体外观已经降频。
         // 声音不跟着昂贵的骨架降频。屏幕外也能按已收到的事件听见异形攻击。
         public void ObserveAttackAudio(in ProceduralAlienEnemy.State state, in AlienCombatPattern pattern) {
             m_Feedback?.ObserveAttackDetails(state, pattern, AttackSocket);
@@ -192,7 +192,7 @@ namespace Unity.MP_FPS {
                 else
                     gaitSpeed *= .8f;
             }
-            // The giant's swept ground capsule controls travel even when a decorative foot loses contact.
+            // 即使某只用来显示的脚离开地面，巨型异形仍由真实地面胶囊扫掠来控制移动。
             if (m_Feet != null && !m_Profile.IsSpiderBoss) gaitSpeed *= m_Feet.SpeedScale;
             if (m_StiltRig != null)
                 Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt, m_StiltRig.Height, m_StiltRig.CollisionRadius);
@@ -365,14 +365,14 @@ namespace Unity.MP_FPS {
                 ? Mathf.Sin(Mathf.Clamp01(m_ActionTime / m_Profile.BossDisplaySeconds) * Mathf.PI)
                 : 0;
             bool rake = m_Profile.IsSpiderBoss && m_CombatKind == AlienAttackKind.SpiderRake;
-            // The rake lands on the shared damage/audio pulse, then withdraws.
+            // 扫击在共用的伤害和音效节拍落下，然后收回。
             float rakeStrike = rake && m_CombatAction == AlienAction.Strike
                 ? Ease(m_ActionTime / .08f) * (1 - Ease((m_ActionTime - .08f) / .3f))
                 : 0;
             m_SpiderPose = m_Feet.BodyPose;
             var surface = Motor.Current;
-            // The six supporting feet retain their real anchors during the warning.
-            // Move hips before IK so the shell, legs and damage volumes remain aligned.
+            // 预警期间其余六只脚保留实际支撑点。
+            // 先移动髋部，再做 IK，甲壳、关节和伤害空间就能对齐。
             m_SpiderPose.Position += surface.Up *
                                      ((rake ? .08f : -.17f) * windup + .14f * display - .07f * recover - .23f * dead) *
                                      m_Scale;
@@ -381,7 +381,7 @@ namespace Unity.MP_FPS {
             for (int leg = 0; leg < 8; leg++) {
                 var target = m_Feet[leg].Position;
                 var radial = m_SpiderPose.Rotation * PredictiveFeet.Radial(leg);
-                // The forward pair opens toward the target; the remaining legs brace.
+                // 朝目标打开前面的一对足，其它足撑住身体。
                 if (leg == 0 || leg == 7)
                     target += (surface.Up * (.40f * windup + .22f * strike + .65f * display - .25f * rakeStrike) +
                                surface.Forward * (-.18f * windup + .50f * strike + .25f * rakeStrike)) * m_Scale;
@@ -389,8 +389,8 @@ namespace Unity.MP_FPS {
                 bool solved = SpiderLegKinematics.Solve(m_SpiderPose, leg, target, m_Feet[leg].Normal, m_Mask,
                     out var knee, out var toe, m_Scale);
                 if (dead > 0) {
-                    // Curl in the support plane with fixed segment lengths. Raising the usual
-                    // live IK knee would leave a tall, apparently alert silhouette after death.
+                    // 让脚在支撑面内按固定节长蜷曲。
+                    // 继续抬平常行走时的 IK 膝盖会让死亡姿势仍然高高支着。
                     var foldedTip = m_SpiderPose.Position + (radial * .75f + m_SpiderPose.Up * .04f) * m_Scale;
                     var delta = foldedTip - hip;
                     float distance = Mathf.Clamp(delta.magnitude, .22f * m_Scale, PredictiveFeet.MaxReach * m_Scale);
@@ -451,7 +451,7 @@ namespace Unity.MP_FPS {
                 m_Chain != null ? m_ChainShape.radius :
                 m_Branch != null ? m_BranchShape.bodyRadii.x * .7f : .23f * m_Scale;
             if (m_Chain != null) {
-                // The separate visible head never belonged to the old mid-body sphere.
+                // 可见的独立头部不应由旧版躯干球体代替。
                 var head = m_Spheres[1];
                 head.transform.position = m_Chain.Centres[0] + m_Chain.Tangents[0] * .06f;
                 head.radius = Mathf.Max(m_ChainShape.headScale.x, m_ChainShape.headScale.y, m_ChainShape.headScale.z) *
@@ -482,8 +482,8 @@ namespace Unity.MP_FPS {
                     int first = i * 4, last = Mathf.Min(first + 4, CreatureChain.Rings - 1);
                     a = m_Chain.Centres[first];
                     b = m_Chain.Centres[last];
-                    // Cover the widest section in each curved span, including its horizontal
-                    // radius. Multiplying by verticalScale made broad flattened worms miss.
+                    // 沿每段弯曲身体盖住最宽处，包括水平半径。
+                    // 只乘竖向缩放 verticalScale 会漏掉又宽又扁的虫体。
                     radius = .015f;
                     for (int ring = first; ring <= last; ring++)
                         radius = Mathf.Max(radius, m_Chain.Radii[ring] * Mathf.Max(1, m_ChainShape.verticalScale));

@@ -56,7 +56,7 @@ namespace Unity.MP_FPS {
                 ClearFieldRecords();
                 return;
             }
-            // The clock already identifies the shared server map. Solo redeploys also vary the layout.
+            // 时钟标识共享的服务端地图。单人再次出发还会按局号变更日志摆放。
             // 日志物体按会话识别。单人再加局号，让重开一局的物体从当前进度重新布置。
             if (m_FieldRecords.Present(map, clock.SessionId, PlayerProfileClient.IsOffline ? m_Snapshot.RaidId : 0))
                 SetFieldRecordOpen(false);

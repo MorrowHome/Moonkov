@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    /// <summary>Owner-only muzzle obstruction cue. It never captures gameplay/UI input.</summary>
+    /// <summary>仅本地操作者可见的枪口遮挡提示。游戏与 UI 输入仍由原控件处理。</summary>
     public sealed class HaloObstructionView : IDisposable {
         public VisualElement Element { get; }
 

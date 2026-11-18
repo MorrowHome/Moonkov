@@ -120,7 +120,7 @@ namespace Unity.MP_FPS {
                          ((MeleeWeaponKind)ghost.MeleeWeapon != MeleeWeaponKind.None ||
                           ghost.EquippedWeaponID == DollSingerWeapons.None);
             if (!selectedMelee && !melee) return false;
-            // Both buttons are consumed for the entire melee mode, including blocked frames.
+            // 近战模式会消费两枚操作键，包括因忙碌而不能攻击的帧。
             if ((!light && !heavy) || !QuickAlive || QuickManualBusy || DarkSightRequested || PointerRequested ||
                 GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement))

@@ -6,8 +6,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>Upright, planted biped shared by render and authoritative hit volumes.
-    /// Long limbs and a narrow torso are separate proportions, not a stretched crawler.</summary>
+    /// <summary>有实际落脚点的直立双足姿态。渲染和权威碰撞都用它。
+    /// 细躯干与长肢体分别设比例，使轮廓区别于拉长的爬行怪。</summary>
     public sealed class StiltWalkerRig : IDisposable {
         public const int Segments = 24;
         public readonly Vector3[] A = new Vector3[Segments], B = new Vector3[Segments];
@@ -139,7 +139,7 @@ namespace Unity.MP_FPS {
                     Set(ref segment, hand, tip, Thickness * .22f);
                 }
             }
-            // Three pairs of exposed ribs give a recognisable chest above eye level.
+            // 三对露出的肋骨让高于人视线的胸部容易识别。
             for (int rib = 0; rib < 3; rib++) {
                 var spine = Vector3.Lerp(hip, Chest, .5f + rib * .18f);
                 Set(ref segment, spine - right * (.12f + rib * .025f) * m_Scale,

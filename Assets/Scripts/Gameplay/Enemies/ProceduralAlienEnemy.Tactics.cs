@@ -10,7 +10,7 @@ namespace Unity.MP_FPS {
         private float m_TargetSampleAt = -100;
         private float m_NextBossSweep, m_NextBossArea, m_NextBossSpit;
 
-        // Sample only the final visible perception result, never a hidden live transform.
+        // 只从确认可见的感知结果估算位移，不读藏起来的目标位置。
         private void ObserveTargetMotion() {
             float elapsed = m_Clock - m_TargetSampleAt;
             // 只用真正看见的连续采样估算目标速度，失去视线立即丢掉跟踪速度。
@@ -34,7 +34,7 @@ namespace Unity.MP_FPS {
             next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
             // 普通怪主要按物种轮换招法。当前距离让普通招式碰不到时，部分种类再挑喷吐。
             if (!profile.Boss) {
-                // A pulse outside its actual radius used to strand the slime in empty attacks.
+                // 脉冲超出实际半径时跳过，免得黏液怪一直往空处出招。
                 if (profile.Species == AlienSpecies.Slime && !CanBeginSpeciesAttack(next) &&
                     profile.MucusEveryAttacks > 0)
                     next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
@@ -48,8 +48,8 @@ namespace Unity.MP_FPS {
                 bool outsideMelee = distance > profile.AttackReach * m_Body.Scale;
                 if (outsideMelee && TryBossPattern(AlienAttackKind.SpiderRush, phase, m_NextBossArea, out next))
                     return true;
-                // One distant opener, then use the ground route to close. A blocked
-                // route or a target on another floor still permits a ranged attack.
+                // 先尝试一次远程起手，再沿地面路线接近。
+                // 路线堵住或目标在不同楼层时仍能选择远程攻击。
                 bool canSpit = !GroundStrikeLevel(target) || (outsideMelee && (m_Clock < m_BlockedGroundUntil ||
                                                                                (m_Attacks == 0 &&
                                                                                    distance > profile
@@ -69,7 +69,7 @@ namespace Unity.MP_FPS {
         private bool TryBossPattern(AlienAttackKind kind, byte phase, float readyAt, out AlienCombatPattern pattern) {
             pattern = AlienCombatPattern.For(profile, phase, m_Attacks + 1, kind);
             if (m_Clock < readyAt) return false;
-            // Ground strikes must not lock onto an unrelated floor below an elevated player.
+            // 地面攻击不能锁定站在高处玩家下方、实际打不到人的另一层地板。
             if (kind != AlienAttackKind.MucusSpit && !GroundStrikeLevel(ContactPoint(m_Target))) return false;
             return CanBeginSpeciesAttack(pattern) && (kind != AlienAttackKind.SpiderRush ||
                                                       TrySpiderRushLanding(transform.position, m_LastSeen - Vector3.up,
@@ -89,8 +89,8 @@ namespace Unity.MP_FPS {
             var foot = origin - Vector3.up * m_Body.Motor.BodyHeight;
             float radius = profile.GroundBodyRadius(m_Body.Scale), height = profile.GroundBodyHeight(m_Body.Scale);
             int mask = LayerMask.GetMask("Default", "Ground");
-            // Reject blocked lanes before selecting this attack, so another legal
-            // skill can be chosen. The grounded motor rechecks moving obstacles.
+            // 选择突进前排除被堵的线路，留机会换别的合法技能。
+            // 贴地运动真正走起来时还会检查移动的障碍物。
             if (UnityEngine.Physics.CapsuleCast(foot + Vector3.up * (radius + .04f),
                     foot + Vector3.up * (height - radius + .04f), radius, direction, distance, mask,
                     QueryTriggerInteraction.Ignore))
@@ -98,7 +98,7 @@ namespace Unity.MP_FPS {
             if (!RaidSpawnSafety.TryGroundPosition(target, radius, height, 35, out landing, out _) ||
                 Mathf.Abs(landing.y - foot.y) > .4f)
                 return false;
-            // Bounded samples avoid committing a rush across a hole in the floor.
+            // 用有限采样探地，避免答应跨过地面缺口做突进。
             for (int i = 1; i <= 4; i++)
                 if (!UnityEngine.Physics.Raycast(Vector3.Lerp(foot, landing, i / 5f) + Vector3.up * .45f, Vector3.down,
                         out var floor, .9f, mask, QueryTriggerInteraction.Ignore) || floor.normal.y < .75f)
@@ -123,7 +123,7 @@ namespace Unity.MP_FPS {
                 var proposed = target +
                                Vector3.ClampMagnitude(m_ObservedTargetVelocity * leadTime, profile.Boss ? 3 : 1.2f);
                 int mask = LayerMask.GetMask("Default", "Ground");
-                // Predictive aim cannot route through a wall the target has not crossed.
+                // 预判瞄准的路线要考虑墙，目标还没越过墙时不要把落点算到另一边。
                 if (!UnityEngine.Physics.Linecast(target + (head ? Vector3.zero : Vector3.up),
                         proposed + (head ? Vector3.zero : Vector3.up), mask, QueryTriggerInteraction.Ignore))
                     target = proposed;
@@ -149,8 +149,8 @@ namespace Unity.MP_FPS {
             float cycle = next.Windup + next.Active + next.Recovery + .3f;
             m_NextAttack = m_Clock + Mathf.Max(profile.AttackCooldown, cycle);
             if (profile.Boss) {
-                // Each tool has its own recovery budget. When it is unavailable, use a
-                // different legal tool or move; never bypass a cooldown by repeating a shot.
+                // 每个技能分别记恢复时间。无法出手时，
+                // 改用允许的另一招或走位，重复尝试不会跳过冷却。
                 float ready = m_Clock + cycle +
                               (next.Kind == AlienAttackKind.SpiderRake ? .45f : phase > 1 ? 1.2f : 2.5f);
                 if (next.Kind == AlienAttackKind.MucusSpit)

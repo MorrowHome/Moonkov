@@ -16,7 +16,7 @@ namespace Unity.MP_FPS.Client {
             // 准备流程先把请求步骤限制在合法区间。同一步无需重建整页，实际切换才刷新模板。
             if (m_OperationStep == step) return;
             m_OperationStep = step;
-            Render(); // Retain the terminal's existing reveal/transition implementation.
+            Render(); // 沿用终端原有的显示和页面过渡。
             m_Content.Q<Button>(m_OperationStep == 4 ? "launch" : "operationContinue")?.Focus();
         }
 
@@ -47,7 +47,7 @@ namespace Unity.MP_FPS.Client {
                 case 0:
                     m_Character = new MenuCharacterView(element: m_Content.Q<Image>("operatorPortrait"));
                     m_Character.SetEquipmentInventory(m_EquipmentInventory);
-                    // MenuCharacterView adds the shared home class; this exhibit owns its framing.
+                    // MenuCharacterView 会给展示加上首页共用的样式类。当前页面自管取景。
                     m_Character.Element.RemoveFromClassList("terminal-character-art");
                     BindOperationCharacters();
                     PopulateOperationEquipment();
@@ -126,7 +126,7 @@ namespace Unity.MP_FPS.Client {
         // 缺光环但能领应急装备时，打开已有商店流程。其他情况切到仓库让玩家检查和整理装备。
         private void ReviewDepartureEquipment() {
             if (m_Busy || m_EquipmentInventory == null) return;
-            // Reuse the shop's authoritative eligibility, order receipt and retry flow.
+            // 复用商店的资格判断、订单回执与重试流程。
             if (DepartureEquipmentCheck.Read(m_EquipmentInventory).EmergencyAvailable)
                 OpenShop("LUNAR EMERGENCY SUPPLY", true);
             else
@@ -213,8 +213,8 @@ namespace Unity.MP_FPS.Client {
                 plus.SetEnabled(!m_Busy && selected < Mathf.Min(m_Cells, RaidRules.BagCapacity));
             }
 
-            // Rendering never writes the profile. Only a deliberate control change uses
-            // the existing profile adapter, which owns clamping and offline/online routing.
+            // 画界面时只读取档案。只有玩家实际改控件才调用档案适配层，
+            // 由它限制取值范围，并交给线上或离线的处理路径。
             void Select(int value) {
                 PlayerProfileClient.SelectCarryCells(value);
                 carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);

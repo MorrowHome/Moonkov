@@ -3,8 +3,8 @@ using System;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Owned by the login presentation. Uses the existing pool and Menu mixer bus.
-    // There is no independent timeline: the visible backdrop supplies every cue.
+    // 由登录演出控制，沿用音源池和 Menu 混音总线。
+    // 每个音效都由当前可见的背景通知，声音与画面共用同一条时间线。
     public sealed class HalosAccessAudio : IDisposable {
         public enum Stage {
             Build,
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS {
         private bool m_Disposed;
         public HalosAccessAudio() { }
 
-        // Also supports an isolated Editor audition with its own pooled sound system.
+        // 也支持编辑器隔离试听。试听使用自己的一套音源池。
         public HalosAccessAudio(ISoundSystem system, MoonkovAudioLibrary library) {
             m_System = system;
             m_Library = library;
@@ -74,8 +74,8 @@ namespace Unity.MP_FPS {
             if (!Ready() || m_Stage != Stage.Build) return;
             var definition = m_Library.AccessTerminal;
             if (definition == null) return;
-            // Every newly visible window gets its own pop, including shared low-FPS ticks.
-            // Short tails overlap in a bounded set of handles instead of cutting one another off.
+            // 每个刚出现的窗口都播放一次弹出声。即使低帧率下一帧出现多个窗口，也分别播。
+            // 在有限数量的播放句柄中保留重叠的短尾音，避免一个新音效立刻切断另一个。
             for (int i = first; i <= newest; i++) {
                 Stop(ref m_Pops[m_PopSlot], 0);
                 m_Pops[m_PopSlot] = m_System.CreateEmitter(definition, Vector3.zero, .65f + .35f * intensity);
@@ -94,7 +94,7 @@ namespace Unity.MP_FPS {
         }
 
         public void LoginFlicker() {
-            // Only actual brightness changes can trigger a sound, at least 3.5 s apart.
+            // 只有亮度真的变化才播放声音，两次至少间隔 3.5 秒。
             // 登录故障声依附实际亮度闪动，并限制两次之间的时间。这样定时到了也要等画面有动作时才响。
             if (!Ready() || m_Stage != Stage.Login || m_LoginAge < m_NextGlitch) return;
             Replace(ref m_Glitch, m_Library.AccessGlitch);
@@ -135,7 +135,7 @@ namespace Unity.MP_FPS {
             Stop(ref m_Transition, 0);
             Stop(ref m_Glitch, 0);
             m_RoomGain = 0;
-            // Retain stage and terminal index: reattaching must not replay old impact cues.
+            // 记住当前阶段和终端编号。控件重新挂上面板时无需补播旧音效。
         }
 
         public void Dispose() {

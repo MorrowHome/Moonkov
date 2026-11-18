@@ -84,8 +84,8 @@ namespace Unity.MP_FPS.Client {
 
         private void OnKey(KeyDownEvent evt) {
             if (evt.keyCode != KeyCode.Escape) return;
-            // Descendant menus get first refusal. An empty inventory window manager
-            // must let Esc continue to the owning page's back handler.
+            // 内层菜单先试着按 Esc 关闭自己的窗。
+            // 背包没有浮窗可关时，把 Esc 交给所在页面的返回处理。
             // 先让子层自己的按键处理运行。当前管理器没有窗口时再尝试父页回退，避免同一按键连退两层。
             if (!CloseTop()) {
                 if (m_Back == null) return;

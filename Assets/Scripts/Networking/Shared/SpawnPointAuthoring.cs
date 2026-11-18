@@ -17,8 +17,8 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// Placed in the GameScene subscene, the SpawnPoint components are used by the <see cref="ServerGameSystem"/>
-    /// to spawn player characters during a game session.
+    /// SpawnPoint 组件摆在 GameScene 子场景中。<see cref="ServerGameSystem"/>
+    /// 在战局中用这些位置生成玩家角色。
     /// </summary>
     public struct SpawnPoint : IComponentData {
     }

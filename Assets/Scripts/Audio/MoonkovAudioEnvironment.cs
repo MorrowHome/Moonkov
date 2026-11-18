@@ -35,16 +35,16 @@ namespace Unity.MP_FPS {
             if (ship == m_OnShip) return;
             m_OnShip = ship;
             if (ship) {
-                // Back on the ship the player-owned listener is gone, so make sure the camera
-                // listener is enabled again before playing the interior bed.
+                // 回到船舱时，玩家角色的监听器已销毁。播放船舱环境底声前，
+                // 先确保主摄像机的监听器已重新启用。
                 EnsureListener();
                 m_Interior = MoonkovAudio.Play(MoonkovAudio.Library?.ShipInterior, Vector3.zero);
             } else { StopInterior(); }
         }
 
         /// <summary>
-        /// Unity is completely silent while no AudioListener in the scene is enabled, so the
-        /// ship always re-arms the persistent camera listener.
+        /// 场景中没有启用任何 AudioListener 时，Unity 不会输出声音。
+        /// 因此回到船舱一定要重新打开常驻相机的监听器。
         /// </summary>
         private void EnsureListener() {
             var camera = MainCameraSingleton.Instance;

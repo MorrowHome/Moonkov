@@ -76,7 +76,7 @@ namespace Unity.MP_FPS.Inventory {
         }
     }
 
-    // Shared source for Unity, offline saves and the online persistence service.
+    // Unity、离线档案和在线持久化服务使用同一个物品定义。
     public static class AlienBiology {
         public static readonly AlienOrganDefinition[] Organs = {
             new("Spider", "alien_silk_gland", "Spider silk gland",
@@ -134,8 +134,8 @@ namespace Unity.MP_FPS.Inventory {
 
         public static AlienOrganDefinition Organ(string code) { return Organs.FirstOrDefault(o => o.Code == code); }
 
-        // Upright variants share the contractile heart item and its existing food,
-        // Chinese text, icon and research integration; no new inventory code needed.
+        // 直立变体共用收缩心脏这一物品，以及已有的进食效果、
+        // 中文名、图标和研究用途，无需再加一个物品码。
         // 不同类型对应可以搜出的器官。部分同来源变体共享一项掉落定义。
         public static AlienOrganDefinition Species(string species) {
             return Organs.FirstOrDefault(o => o.Species == (species == "StiltWalker" ? "Tentacle" : species));

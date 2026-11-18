@@ -35,17 +35,17 @@ public struct PlayerInput {
     public float2 MoveInput;
     public float2 LookYawPitchDegrees;
 
-    // Head-only angles relative to the normal view; locomotion and weapons keep their base facing.
+    // 只改变头的相对角度。移动和武器仍沿用角色的主朝向。
     // 自由观察只给头或相机一个相对角度。身体正常转向仍在 LookYawPitchDegrees，后续模拟靠它判断移动方向。
     public float2 FreeLookOffset;
     public float Lean;
     public bool FreeLooking;
 
-    // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
+    // 将镜头中心瞄到的目标作为意图。射击起点、射线判定和伤害仍由服务器计算。
     // 这是按准星得到的预期目标点。服务器还会从它认可的起点重算射线，命中结算由服务端给出。
     public float3 AimPoint;
 
-    // Ghost identity includes its spawn tick so a recycled id cannot change the recipient.
+    // Ghost 身份同时含编号和出生 tick。旧编号被复用后，不能误将动作发给新角色。
     public int HaloTransferGhostId;
     public uint HaloTransferSpawnTick;
     public uint HaloLightingSettings;
@@ -88,8 +88,8 @@ public struct PlayerInput {
             InputFlags &= ~(uint)flag;
     }
 
-    // Apply the same numeric contract to client prediction and server simulation.
-    // Command payloads are player intent, never trusted movement or shot state.
+    // 客户端预测和服务端模拟使用相同的数值检查。
+    // 指令只描述玩家想做什么。位置和射击结果由模拟得出。
     // 压住移速输入、视角和其他数据的范围，处理 NaN 等异常值，再按自由视角和光环动作的互斥规则去掉冲突的操作。
     public PlayerInput Sanitized() {
         var result = this;
@@ -178,7 +178,7 @@ public struct PlayerInput {
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
         // 短按开火合并到后面的帧时，应带上按下当时那次瞄准，避免之后移开鼠标让这枪换了方向。
-        // Preserve the target belonging to a buffered single-shot press.
+        // 缓存单发按键时，把当时瞄到的目标一起保存。
         if (input.Shoot && !HaloTransfer) {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;

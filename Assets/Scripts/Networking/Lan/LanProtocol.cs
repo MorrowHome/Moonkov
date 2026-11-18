@@ -57,7 +57,7 @@ namespace Unity.MP_FPS {
         public LanProfileSnapshot Profile;
     }
 
-    // Length-prefixed, bounded UTF-8 JSON; no polymorphic deserialization.
+    // UTF-8 JSON 带长度和大小限制，反序列化使用固定消息类型。
     public static class LanProtocol {
         public const int Version = 3, ControlPort = 7978, GamePort = 7979, DiscoveryPort = 7980;
         public const string DiscoveryQuery = "Moonkov.LAN/2?";

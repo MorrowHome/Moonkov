@@ -44,8 +44,8 @@ namespace Unity.MP_FPS.Campaign {
         public NodeDefinition[] Nodes;
     }
 
-    // JSON-only profile data: Unity serialization cannot store these dictionaries and sets.
-    // A server run uses a clone until extraction.
+    // 这些字典与集合只能保存为 JSON，Unity 自带序列化无法保存。
+    // 服务端使用一份局内副本，直到撤离才合入档案。
     public sealed class CampaignProgress {
         public int SchemaVersion = 1, ContentVersion = 1, Revision, PreferenceRevision;
         public Dictionary<string, int> NodeMasks = new(StringComparer.Ordinal);
@@ -57,7 +57,7 @@ namespace Unity.MP_FPS.Campaign {
         public bool TrackingSuppressed;
     }
 
-    // Only an authoritative adapter creates facts. These are not client success requests.
+    // 只有权威状态适配层会生成事实。客户端只发送操作意图。
     [Serializable]
     public sealed class CampaignFact {
         public string TaskId, NodeId, SourceId, EventId, ItemId, ItemCode;
@@ -233,7 +233,7 @@ namespace Unity.MP_FPS.Campaign {
             // 一个节点对应掩码中的一位，也能绑回带出的实际物品 ID。全程结束且确认撤离后才将任务记在已完成集合。
             p.NodeMasks[task.Id] = mask | (1 << index);
             if (!string.IsNullOrEmpty(fact.ItemId)) p.NodeItemIds[task.Id + "/" + node.Id] = fact.ItemId;
-            // Node masks are the durable idempotency key. The bounded event set detects reuse among new nodes.
+            // 已完成的节点位可以跨重启去重。有限大小的事件集合用于防止在新节点复用旧事件。
             if (p.ProcessedEvents.Count < MaxProcessedEvents) p.ProcessedEvents.Add(fact.EventId);
             if (node.Kind == CampaignObjectiveKind.Extract && Mask(p, task.Id) == All(task))
                 p.CompletedTasks.Add(task.Id);
@@ -247,8 +247,8 @@ namespace Unity.MP_FPS.Campaign {
             return false;
         }
 
-        // Dropping a required artifact revokes only this run's possession fact, never a saved chapter.
-        // Reacquiring it must carry a fresh authoritative pickup event ID; prior receipts remain valid.
+        // 扔掉必须带回的任务物只取消本局的持有事实，以前保存的章节仍保留。
+        // 重新拿到要留下新的权威拾取事件 ID，之前的回执也继续有效。
         public static bool ForgetUncommittedItem(CampaignProgress p, string taskId, string nodeId, string itemId) {
             if (Validate(p) != null || p.CompletedTasks.Contains(taskId)) return false;
             var task = CampaignCatalog.Find(taskId);
@@ -311,8 +311,8 @@ namespace Unity.MP_FPS.Campaign {
             p.SecondaryTracked.RemoveAll(id => p.CompletedTasks.Contains(id));
         }
 
-        // The caller first validates item bindings against the actual frozen extracted inventory.
-        // UI preferences always come from the latest saved profile, never an older server-run clone.
+        // 调用者先从撤离时冻结的真实库存检查物品绑定。
+        // UI 偏好总是取最新的存档，避免退回较早的服务端副本。
         // 服务器带回局内事实时，从已保存进度合并合法节点，同时保留玩家更新的界面追踪选择。
         public static CampaignProgress MergeExtracted(CampaignProgress saved, CampaignProgress run) {
             string error = Validate(saved) ?? Validate(run);
@@ -329,7 +329,7 @@ namespace Unity.MP_FPS.Campaign {
                     string key = task.Id + "/" + node.Id;
                     if (run.NodeItemIds.TryGetValue(key, out string item)) next.NodeItemIds[key] = item;
                 }
-                // Do not write empty future tasks into an otherwise older save.
+                // 保留旧档结构，不给未出现的后续任务写入空项。
                 if (merged != 0 || next.NodeMasks.ContainsKey(task.Id)) next.NodeMasks[task.Id] = merged;
                 if (FieldComplete(next, task) && Available(next, task.Id)) {
                     int index = Array.FindIndex(task.Nodes, n => n.Kind == CampaignObjectiveKind.Extract);

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Client-only, bounded pool. No collision or damage is owned by presentation.
+    // 客户端使用有限的对象池。碰撞和伤害由玩法系统计算。
     public sealed class EnergyGrenadeFeedback : MonoBehaviour {
         private sealed class Effect {
             public uint Id;
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS {
                     MoonkovAudio.Play(m_Style.ThrowSound, state.Position);
             }
             // 一旦进入确认的爆炸阶段，就按爆炸的寿命和表现播完。后续飞行姿态不能把它送回飞行阶段。
-            // Reliable ordered state means a confirmed explosion cannot be resurrected by an old pose.
+            // 有序可靠的状态更新保证爆炸确认后，旧位置消息不会让道具重新出现。
             if (effect.Exploded) return;
             effect.Origin = state.Position;
             effect.Velocity = state.Velocity;
@@ -97,7 +97,7 @@ namespace Unity.MP_FPS {
                 }
                 if (effect.Exploded) { effect.Age += Time.deltaTime; } else {
                     float age = Mathf.Min(Time.time - effect.PoseTime, effect.Remaining);
-                    // Resting poses have zero velocity; authoritative snapshots keep them on the floor.
+                    // 静止时速度为零。服务端位置会继续让道具贴在地面。
                     effect.Root.position = effect.Velocity.sqrMagnitude < .0001f
                         ? effect.Origin
                         : Ballistics.Position(effect.Origin, effect.Velocity, EnergyGrenadeRules.Gravity, age);
@@ -238,7 +238,7 @@ namespace Unity.MP_FPS {
             renderer.lengthScale = 2;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             effect.Sparks = sparks;
-            // At most four additional unshadowed lights across the whole feedback pool.
+            // 整个反馈对象池最多额外开四盏无阴影灯。
             if (index < 4) {
                 effect.Light = root.gameObject.AddComponent<Light>();
                 effect.Light.type = LightType.Point;

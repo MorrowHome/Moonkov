@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Reuse the squad camera image. Every glass surface samples the same small blur.
+    // 沿用小队相机画面。所有磨砂玻璃从同一张低分辨率模糊图取样。
     internal sealed class SquadGlass : IDisposable {
         private const int MaxEdge = 512;
         private static readonly int BlurStep = Shader.PropertyToID("_BlurStep");

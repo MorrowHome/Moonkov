@@ -89,8 +89,8 @@ namespace Unity.MP_FPS {
                 case PmcAction.Retreat:
                 case PmcAction.Heal:
                     if (contact && now >= brain.NextCover) {
-                        // Keep a useful position. A rescan validates cover; it must not
-                        // pull the actor to a new rock in the middle of every peek.
+                        // 继续使用仍然有效的位置。重新扫描是为了确认旧掩体。
+                        // 别在每次探头的中间又把角色拉到另一块石头。
                         bool compromised = brain.HasCover && !CoverOccludes(brain.CoverPosition, brain.LastSeen);
                         if (!brain.HasCover || brain.PathFailed || compromised) {
                             if (compromised) AvoidCurrentCover(brain, now);
@@ -171,8 +171,8 @@ namespace Unity.MP_FPS {
             brain.AvoidCoverUntil = now + 12;
         }
 
-        // Cheap arrival/interrupt checks run with the motor. Geometry queries stay
-        // in the staggered decision pass, and exposure has a hard deadline.
+        // 到达和打断等简单判断随每拍运动执行。
+        // 场景几何留给分时决策查询，暴露在外的时间设硬上限。
         // 找到掩体后仍要推进停下、探看和退回等阶段。这样行为可以跨多帧完成，遇到新危险也能及时打断。
         private void AdvanceCover(DollSingerEnemyBrain brain, Vector3 position, double now) {
             bool usesCover = brain.Action == PmcAction.Cover || brain.Action == PmcAction.Reload ||
@@ -271,7 +271,7 @@ namespace Unity.MP_FPS {
                 brain.SearchStep++;
                 int budget = brain.Action == PmcAction.Investigate ? 3 : 6;
                 if (brain.SearchStep >= budget) {
-                    // Exhaust the remembered hypothesis instead of orbiting it forever.
+                    // 把这条记忆线索的可能位置查完，然后放弃，别永远围着它绕圈。
                     if (brain.Contacts.TryGetValue(brain.Target, out var memory)) {
                         memory.Confidence = 0;
                         memory.Suspicion = 0;
@@ -287,8 +287,8 @@ namespace Unity.MP_FPS {
                 return ChooseSearchPoint(brain, position, now);
             }
             if (Vector3.Distance(position, goal) < 1 || now >= brain.SearchUntil || brain.PathFailed) {
-                // Stop, check an exit, then advance. No constant spinning or blind
-                // three-second goal churn while still travelling to the first clue.
+                // 停下看一个出口，确认后再前进。
+                // 去第一个线索路上不反复转圈，也不每隔三秒盲目换目标。
                 brain.SearchPauseUntil = now + brain.Random.NextFloat(.65f, 1.2f);
                 var sector = Quaternion.Euler(0, brain.SearchStep % 2 == 0 ? 35 : -35, 0) * brain.SearchHeading;
                 brain.SearchLookPoint = position + sector * 8 + Vector3.up * 1.15f;
@@ -325,7 +325,7 @@ namespace Unity.MP_FPS {
                     continue;
                 if (length > maxTravel) continue;
                 float value = 15 - i * 1.5f - length * .35f;
-                // Search exits with a useful view of the clue, and prefer a sheltered approach.
+                // 搜索能看清线索的出口，优先选择可借掩体接近的路线。
                 if (!WorldBlocked(sample.position + Vector3.up * 1.4f, brain.SearchAnchor + Vector3.up * 1.15f))
                     value += 5;
                 value -= PathExposure(brain, brain.SearchAnchor) * .3f;
@@ -458,8 +458,8 @@ namespace Unity.MP_FPS {
                 away /= currentDistance;
             float best = float.MinValue;
             var goal = position;
-            // A blocked escape must never reverse its offset and send a wounded
-            // raider toward the opponent. Compare rear and lateral routes instead.
+            // 退路被堵时不能简单反向再走，那会把伤员送向敌人。
+            // 改为比较侧面和后方的候选路线。
             for (int i = 0; i < 5; i++) {
                 float angle = i == 0 ? 0 : (i % 2 == 0 ? 1 : -1) * ((i + 1) / 2) * 40;
                 var desired = position + Quaternion.Euler(0, angle, 0) * away * 10;
@@ -497,7 +497,7 @@ namespace Unity.MP_FPS {
             bool found = false;
             Vector3 cover = position, peek = position;
             float approachLength = 0;
-            // A bounded local geometry search, rather than treating every waypoint as cover.
+            // 在有限的附近区域查真实几何。并非导航上的每个点都能做人形掩体。
             for (int i = 0; i < 16; i++) {
                 var offset = Quaternion.Euler(0, i * 137.5f + brain.Seed * 43, 0) * Vector3.forward * (3 + i % 4 * 3);
                 if (!NavMesh.SamplePosition(position + offset, out var sample, 2, m_Filter)) continue;
@@ -517,8 +517,8 @@ namespace Unity.MP_FPS {
                         break;
                     }
                 if (occupied || !CompletePath(brain, position, candidate, out float length)) continue;
-                // ProbePath is reused for peek validation below. Score the actual
-                // approach now, before that second path query overwrites it.
+                // 后面检查探头路线时会复用 ProbePath。
+                // 趁它还没被第二次查询覆盖，先按现有接近路线算分。
                 float exposure = PathExposure(brain, threat);
                 var toward = threat - candidate;
                 toward.y = 0;

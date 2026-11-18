@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Port of Halos mainRoomControl. Coordinates, phases and rates use its 1920x1080 / 60 Hz space.
+    // 移植自 Halos 的 mainRoomControl。坐标、阶段和速度取原来的 1920×1080 与 60 Hz。
     public sealed partial class HalosMainRoom : IDisposable {
         [Serializable]
         private sealed class Layout {

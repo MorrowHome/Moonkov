@@ -28,8 +28,8 @@ namespace Unity.MP_FPS {
             !Client.QuickSlotBindings.Typing(
                 m_Root?.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement);
 
-        // Input delegates run before this HUD's LateUpdate. Reserve the opening M frame,
-        // and the closing frame, so wheel/click/look cannot slip through before UI toggles.
+        // 输入回调在 HUD 的 LateUpdate 之前执行。预先占用按 M 的打开帧，
+        // 并保留关闭帧，避免界面切换时滚轮、点击或转身穿过去。
         // 输入回调早于 LateUpdate。打开和关闭地图的那一帧都先挡住转身、开火和滚轮，避免一次按键穿过界面。
         private bool MapBlocksInput =>
             m_MapOpen || Time.frameCount <= m_MapInputGuardFrame || (MapKeyPressed &&

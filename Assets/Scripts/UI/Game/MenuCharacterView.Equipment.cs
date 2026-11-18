@@ -9,8 +9,8 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class MenuCharacterView {
-        // The inventory remains owned by its existing caller. The preview only
-        // reads it; in particular it must never invoke SyncEquipment/SaveActiveAmmo.
+        // 库存由原调用方持有，预览只读取。
+        // 不在这里调用 SyncEquipment 或 SaveActiveAmmo 写入武器状态。
         private GameObject m_EquipmentAssembly;
         private DollSingerHaloAim m_EquipmentSource;
         private RifleHaloVisual m_EquipmentRifle;
@@ -62,16 +62,16 @@ namespace Unity.MP_FPS.Client {
         public void SetEquipmentInventory(InventoryGraph graph, string activeWeaponItemId = null) {
             if (m_Disposed) return;
             m_ProtectionInventory = graph;
-            // Returning from a live snapshot to inventory data starts a fresh
-            // visual baseline. Network tick ordering must not reject that state.
+            // 从实时快照切回库存显示时，重新建立外观基准。
+            // 旧网络 tick 的排序不应挡住这一份库存数据。
             if (m_EquipmentHasSnapshot) m_EquipmentAppliedItem = null;
             m_EquipmentHasSnapshot = false;
             m_EquipmentLightingSettings = 0;
             m_EquipmentLightEnabled = true;
             m_EquipmentPendingDischarge = 0;
             InventoryItem item = null;
-            // An explicit empty ID represents empty hands, including the melee
-            // equipment mode. Null means the normal initial deployment choice.
+            // 显式传空字符串代表空手，也包括正在用近战的模式。
+            // 传 null 则按常规出战顺序挑初始装备。
             if (activeWeaponItemId != null) {
                 // 展示指定武器前确认它仍在真实装备槽。仓库里有同型号物品也不能顶替这件。
                 var requested = graph?.Find(activeWeaponItemId);
@@ -95,8 +95,8 @@ namespace Unity.MP_FPS.Client {
             var registry = EquipmentRegistry;
             var original = registry ? registry.GetWeaponData(weaponId) : null;
             var weapon = registry ? registry.GetWeaponData(weaponId, modules) : null;
-            // This mirrors the server's legacy -1 interpretation without writing
-            // a default back to the player's actual InventoryItem.LoadedAmmo.
+            // 预览按服务器对旧版 -1 的约定解释弹量，
+            // 不把默认值写回玩家的 InventoryItem.LoadedAmmo。
             // 旧物品的负弹量代表没有单独记录，展示时按基础弹匣容量解释。这里只算预览值，不回写库存。
             int ammo = item == null ? 0 :
                 item.LoadedAmmo < 0 ? original?.MagazineSize ?? 0 : Mathf.Max(0, item.LoadedAmmo);
@@ -175,7 +175,7 @@ namespace Unity.MP_FPS.Client {
             m_ActionBag = null;
             m_BagRemaining = 0;
             m_EquipmentNeedsSettle = true;
-            // A new weapon must not inherit the old weapon's showcase pose.
+            // 切换武器时清除上一个武器的展示姿势。
             if (m_Graph.IsValid()) {
                 m_Gestures?.RestoreBeforeAnimation();
                 m_Motion = 0;
@@ -191,8 +191,8 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
-        // Arsenal weapons have their own baked gestures, but share the rifle's
-        // aim/fire/reload entries in the existing menu action catalogue.
+        // 扩展武器有各自导出的手势，
+        // 仍复用原菜单动作目录中步枪的瞄准、开火和装填入口。
         private bool EquipmentMotionAllowed(int index) {
             var option = m_Settings.Motion(index);
             int weapon = (int)EquippedPreviewWeapon;
@@ -208,7 +208,7 @@ namespace Unity.MP_FPS.Client {
 
         private void InitializeEquipmentVisuals() {
             ReleaseEquipmentVisuals();
-            // Retire the baked menu halo even when the equipped inventory is empty.
+            // 即使当前没装备武器，也收掉预览模型旧的烘焙光环。
             foreach (var transform in m_Model.GetComponentsInChildren<Transform>(true))
                 if (transform.name == "HaloCrosshair")
                     transform.gameObject.SetActive(false);

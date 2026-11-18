@@ -18,25 +18,25 @@ public partial class ClientInputReaderSystem : SystemBase {
         var currentLocalPlayer = Entity.Null;
         var playerForward = new float3(0, 0, 1);
 
-        // 1. Find the local player entity and its server-authored spawn facing.
+        // 找到本地玩家实体，并读取服务器指定的出生朝向。
         // 用 GhostOwnerIsLocal 找这台机器控制的角色。开局或重生时，需要用它同步过来的朝向初始化鼠标累计角度。
         foreach (var (transform, ghost, owner, entity) in SystemAPI
                      .Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>, RefRO<GhostOwnerIsLocal>>()
                      .WithEntityAccess()) {
             currentLocalPlayer = entity;
             playerForward = math.mul(transform.ValueRO.Rotation, new float3(0, 0, 1));
-            break; // Found local player, stop searching
+            break; // 找到本地玩家即可结束查找。
         }
 
-        // 2. Check for Respawn (Entity ID changed)
+        // 第二步，通过实体 ID 变化判断角色是否重生。
         if (currentLocalPlayer != Entity.Null) {
             // 重生换了角色实体，就从服务器给的新出生朝向开始积累视角。顺便清掉上个角色的输入与光环转移引用。
             if (currentLocalPlayer != _lastKnownPlayerEntity) {
-                // Each map owns spawn facing; the old arena's centre is not a universal look target.
+                // 每张地图指定自己的出生朝向。旧竞技场中心只适用于原地图。
                 float yawRadians = math.atan2(playerForward.x, playerForward.z);
                 _accumulatedLook = new float2(math.degrees(yawRadians), 0f);
 
-                // Update tracker so we don't reset again while this character is alive
+                // 记录当前角色已初始化。它还活着时就不用再重设朝向。
                 _lastKnownPlayerEntity = currentLocalPlayer;
                 _dollSingerInput = null;
                 _dollSingerPresentation = null;
@@ -44,8 +44,8 @@ public partial class ClientInputReaderSystem : SystemBase {
                 _transferTarget = HaloTransferCandidate = Entity.Null;
             }
         } else {
-            // Player is dead or not yet spawned.
-            // Reset the tracker so the *next* spawn triggers the logic.
+            // 玩家已死亡或还没有出生。
+            // 清空追踪状态，让下一次出生时重新初始化。
             _lastKnownPlayerEntity = Entity.Null;
             _dollSingerInput = null;
             _dollSingerPresentation = null;
@@ -141,21 +141,21 @@ public partial class ClientInputReaderSystem : SystemBase {
                 var playerInput = new PlayerInput();
                 ProcessGameplayInput(controls, ref playerInput);
 
-                // movement
+                // 移动输入
                 float2 moveVector = controls.Player.Move.ReadValue<Vector2>();
                 playerInput.MoveInput = moveVector;
                 var addedDelta = (float2)controls.Player.LookDelta.ReadValue<Vector2>();
                 const float sensitivity = 3.7f;
                 var lookDelta = addedDelta * sensitivity;
 
-                // Accumulate the delta to our persistent rotation value
+                // 把本帧的视角增量累加到持续保存的转角上。
                 _accumulatedLook.x += lookDelta.x;
-                _accumulatedLook.y -= lookDelta.y; // Pitch is typically inverted
+                _accumulatedLook.y -= lookDelta.y; // 纵向输入通常要反转符号。
 
-                // Clamp the vertical angle to prevent looking straight up/down and flipping
+                // 限制上下视角，避免望向正上方或下方时翻转。
                 _accumulatedLook.y = math.clamp(_accumulatedLook.y, -85f, 85f);
 
-                // Assign the full, accumulated angle to the input struct
+                // 将累计得到的完整角度放入输入结构体。
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 TutorialRuntime.Observe(playerInput);
                 input.ValueRW.SetInput(0, playerInput);

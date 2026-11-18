@@ -12,7 +12,7 @@ namespace Unity.MP_FPS {
             if (save.Tutorial == null) {
                 if (save.Receipts.ContainsKey("tutorial/schema-v1"))
                     throw new InvalidDataException("Tutorial state is missing.");
-                // Older profiles remain opt-in. No old chapter facts imply tutorial completion.
+                // 旧档玩家可以自行选择参加教学。过去的章节事实不代表已经通关教学。
                 save.Tutorial = new TutorialProgress { Status = TutorialStatus.Available };
             }
             if (TutorialRules.Validate(save.Tutorial) != null)
@@ -90,7 +90,7 @@ namespace Unity.MP_FPS {
                 save.Tutorial.Status = TutorialStatus.Completed;
             } else {
                 save.Tutorial.SupplyCycle++;
-                // Preparation is re-evaluated from inventory; in-raid actions are learned again on retry.
+                // 重试时重新从库存检查出装，再重新练习要在局内完成的动作。
                 save.Tutorial.CompletedSteps &= TutorialRules.Equipped | TutorialRules.Cells | TutorialRules.Medicine;
             }
         }

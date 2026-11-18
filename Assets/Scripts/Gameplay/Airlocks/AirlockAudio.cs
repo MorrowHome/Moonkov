@@ -43,7 +43,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Uses the existing pooled SoundSystem and mixer; never modifies the global mute or AudioListener volume.
+    // 复用带对象池的 SoundSystem 和混音器，保留全局静音和 AudioListener 音量的原值。
     [DisallowMultipleComponent]
     [RequireComponent(typeof(AirlockController))]
     public sealed class AirlockAudio : MonoBehaviour {
@@ -67,7 +67,7 @@ namespace Unity.MP_FPS {
         public float ContactGain { get; private set; }
 
         public event Action<AirlockSoundEvent, bool>
-            EventRaised; // bool: a real clip is assigned, false: explicit pending cue.
+            EventRaised; // 布尔值为真时已有实际音源，为假时只报告待播的提示。
 
         public void Configure(
             AirlockController owner,
@@ -122,8 +122,8 @@ namespace Unity.MP_FPS {
                                                         ? m_Owner.Settings.InsidePressureKPa
                                                         : m_Owner.Settings.OutsidePressureKPa)) > .0001f;
             PumpActive = ValveActive && s.TargetInside;
-            // A requested direction can remain set while a panel is held by an actor.
-            // Drive each motor from its observed motion, independently of shared feedback.
+            // 有人挡住门板时，状态里仍可能保留原来请求的方向。
+            // 每台电机按自己门板的实际位移发声，不受共用反馈值影响。
             // 用两帧开度差判断门板真的在走。若门发了打开命令但被人卡住，电机声不该继续假装它在走。
             OuterMotorActive = m_HasPrevious && Mathf.Abs(s.OuterFraction - m_Previous.OuterFraction) > .000001f;
             InnerMotorActive = m_HasPrevious && Mathf.Abs(s.InnerFraction - m_Previous.InnerFraction) > .000001f;
@@ -135,7 +135,7 @@ namespace Unity.MP_FPS {
             bool contact = HasStructureContact();
             AirGain = AirlockAcoustics.Gain(AirlockSoundPath.Airborne, source, listener, contact);
             ContactGain = AirlockAcoustics.Gain(AirlockSoundPath.StructureContact, source, listener, contact);
-            // One localized emitter represents its two possible physical propagation paths; a contact path is low-passed.
+            // 同一个定位音源表示两种传声路径。经结构传声时用低通滤波。
             // 同一机械声选更强的一条传播路径，避免空气声和结构声叠成两份。
             float mechanismGain = Mathf.Max(AirGain, ContactGain);
             float delta =

@@ -79,7 +79,7 @@ namespace Unity.MP_FPS {
             m_Yaw = yaw;
         }
 
-        // Returns whether this bot is committing to the server's current interaction.
+        // 返回机器人是否决定执行服务器允许的当前交互。
         public bool Tick(
             EntityManager manager,
             ClassicBotTactics tactics,
@@ -163,8 +163,8 @@ namespace Unity.MP_FPS {
             if (reload) m_NextReload = now + Mathf.Max(.7f, weapon.ReloadTime);
             input.SetFlag(PlayerInput.InputFlag.Reload, reload);
 
-            // Burst timing starts once a shot is possible, with a pause to move
-            // or reacquire between bursts. Losing the lane also cancels pending fire.
+            // 能开火时才开始计算连发。两组之间留出时间走位或重新瞄准。
+            // 枪线一旦受阻，就清掉尚在排队的发射。
             bool clear = !use && !takeCover && shootLane && !switched && !reload && !wasReloading;
             // 看见人后还要等反应时间、抬枪和瞄准收敛。射出去的实际方向也要没有墙和友军。
             bool aimed = clear && weapon && health.CurrentAmmo > 0 && health.WeaponEquipRemaining <= 0 &&

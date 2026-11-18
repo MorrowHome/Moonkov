@@ -6,7 +6,7 @@ using Unity.Mathematics;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Local bootstrap must opt in explicitly. Never inferred from a client RPC.
+    // 启动本机模式时要明确开启此标记，不能按客户端 RPC 推断。
     public struct ClashSoloMode : IComponentData {
     }
 
@@ -33,8 +33,8 @@ namespace Unity.MP_FPS {
         public float Health, ReviveProgress;
     }
 
-    // Only self, own squad and the same public objective information humans receive.
-    // Combat perception must continue to use the brain's visual/hearing observations.
+    // 只提供自身、同队和真人玩家同样能得到的公开目标信息。
+    // 战斗感知仍要使用 AI 自己的视觉和听觉观察。
     public sealed class ClashBotView {
         public int ParticipantId, TeamId, Epoch;
         public ClashPhase Phase;
@@ -57,8 +57,8 @@ namespace Unity.MP_FPS {
         public uint LastIntent;
     }
 
-    // One server-owned registry per World. Nav creates the requested actors; ServerGameSystem
-    // alone settles them, drops a final-death bag once, and destroys actor+input on terminal life.
+    // 每个服务器 World 保有一份注册表。导航系统生成请求的角色，ServerGameSystem
+    // 才负责结算，终局死亡仅掉一次尸体包，并清理角色与输入实体。
     public sealed class ClashBotRegistry : IComponentData {
         public int Epoch { get; internal set; }
         public bool NavigationReady { get; private set; }

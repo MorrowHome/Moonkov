@@ -35,7 +35,7 @@ namespace Unity.MP_FPS.Client {
             m_Inspect = new Button(OpenObserver) { text = "OBSERVE MOON  ↗" };
             m_Inspect.AddToClassList("moon-observe-link");
             Add(m_Inspect);
-            // Register before the terminal's Esc/back handler so the observer closes first.
+            // 观察窗先于终端处理 Esc，先关观察窗再回退页面。
             m_Owner.RegisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
             RegisterCallback<DetachFromPanelEvent>(_ => Dispose());
             Mode = mode;

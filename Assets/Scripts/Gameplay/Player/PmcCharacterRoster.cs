@@ -3,8 +3,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 
 namespace Unity.MP_FPS {
-    // A shuffled bag gives each available character one turn before repeating.
-    // It is server-only and does not tie a character to a fixed AI personality.
+    // 把可用角色打乱后逐一使用，然后才重新开始一轮。
+    // 服务器负责选择。角色外观不会与固定 AI 性格绑定。
     public sealed class PmcCharacterRoster {
         private readonly int[] m_Order = new int[3];
         private int m_Count, m_Next;

@@ -6,8 +6,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>A palm-like parasite with eight articulated fingers and one tail.
-    /// The server solves the same gripping joints used by client meshes/hit volumes.</summary>
+    /// <summary>掌形的寄生虫，带八根多节手指和一条尾巴。
+    /// 服务器和客户端网格、碰撞体共用手指抓附的关节位置。</summary>
     public sealed class FaceHuggerRig : IDisposable {
         public const int Fingers = 8, FingerPoints = 4, TailPoints = 13;
         public readonly Vector3[] Joints = new Vector3[Fingers * FingerPoints];
@@ -44,7 +44,7 @@ namespace Unity.MP_FPS {
             m_Limbs = new Mesh { name = "Gripping fingers and tail", hideFlags = HideFlags.DontSave };
             m_Limbs.MarkDynamic();
             MeshObject("Eight jointed fingers and tapered tail", m_Limbs, m_Skin);
-            // Raised transverse plates preserve a legible dorsal silhouette.
+            // 隆起的横向背甲让俯视的轮廓也清晰。
             for (int i = 0; i < 6; i++) {
                 var plate = MeshObject("Abdominal scute " + i, m_Core, m_Dark).transform;
                 plate.SetParent(m_Palm, false);
@@ -71,8 +71,8 @@ namespace Unity.MP_FPS {
                 float along = -.15f + row * .10f;
                 int first = finger * FingerPoints;
                 if (gripping) {
-                    // Digits hook around the temples from the flat abdomen on the
-                    // front of the face. The tips reach behind the skull, not across it.
+                    // 扁平腹部贴在脸前面，手指从正面勾向两侧太阳穴。
+                    // 指尖伸向头骨后面，不穿过脑袋。
                     float breathe = Mathf.Sin(clock * 7 + row) * .008f;
                     var head = surface.Position - surface.Forward * .12f;
                     Joints[first] = Centre + surface.Right * (side * .105f) + surface.Up * along;
@@ -83,8 +83,8 @@ namespace Unity.MP_FPS {
                     Joints[first + 3] = head + surface.Right * (side * .16f) - surface.Forward * .17f +
                                         surface.Up * (along * .95f);
                 } else {
-                    // Reuse the actual contact anchors while giving each foot a
-                    // three-phalange, hand-like shape rather than a spider knee.
+                    // 继续使用真实脚部触点。
+                    // 每只脚用三节手指的关节形状，而非蜘蛛膝形。
                     int leg = finger < 4 ? finger : 11 - finger;
                     var foot = feet[leg].Position;
                     var hip = Centre + pose.Right * (side * .105f * size) + pose.Forward * (along * size);

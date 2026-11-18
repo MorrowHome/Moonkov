@@ -15,9 +15,9 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // A private rendering stage: no player input, networking, or gameplay controller.
+    // 独立的渲染舞台。预览角色只需要视觉组件。
     public sealed partial class MenuCharacterView : IDisposable {
-        // The project's PC renderer only draws layers 0–7. UI is within that mask.
+        // 项目的 PC 渲染器只画第 0 到 7 层。UI 层在这个掩码内。
         private const int ViewLayer = 5;
         private const float PortraitFieldOfView = 27;
         private EnergyShieldPresentation m_Protection;
@@ -132,8 +132,8 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void BeginInspect(PointerDownEvent evt) {
-            // Only a press on the portrait starts inspection. Buttons/items layered
-            // above it retain their own event target and pointer capture.
+            // 只有点到人物图本身才开始查看，
+            // 覆盖在上方的按钮和物品仍接收自己的事件和指针捕获。
             if (m_Disposed || m_HomePose || m_DragPointer >= 0 || evt.target != Element ||
                 evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0)
                 return;
@@ -233,7 +233,7 @@ namespace Unity.MP_FPS.Client {
             }
             m_Stage = new GameObject("Menu character render stage");
             SceneManager.MoveGameObjectToScene(m_Stage, m_Scene);
-            // Far from gameplay geometry and lights in a player build.
+            // Player 构建时把预览放远一些，避开实际场景的模型和灯光。
             if (m_SharedStage != null)
                 m_Stage.transform.SetParent(m_SharedStage, false);
             else
@@ -303,8 +303,8 @@ namespace Unity.MP_FPS.Client {
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in m_Renderers) {
                 renderer.updateWhenOffscreen = true;
-                // Squad renders are requested manually, sometimes more than once
-                // per Editor update. Skin the final authored pose for each render.
+                // 小队相机按要求绘制，编辑器一次更新可能请求多次。
+                // 每次都让蒙皮更新到最终的骨骼姿势。
                 if (m_SharedStage != null) renderer.forceMatrixRecalculationPerRender = true;
                 renderer.forceRenderingOff = false;
             }
@@ -328,7 +328,7 @@ namespace Unity.MP_FPS.Client {
             data.renderPostProcessing = false;
             data.volumeLayerMask = 0;
             data.renderShadows = true;
-            // Apply in both editor and player: a camera must never draw a second UI stage.
+            // 编辑器和 Player 都按同样的可见性限制处理。每部相机只画自己的 UI 舞台。
             m_Camera.scene = m_Scene;
             Light("Soft key", new Vector3(24, 145, 0), new Color(1f, .97f, .94f), m_HomePose ? .7f : 1.25f, true);
             Light("Cool fill", new Vector3(8, -135, 0), new Color(.82f, .89f, 1f), m_HomePose ? .3f : .5f, false);
@@ -372,7 +372,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void BeginNextMotion() {
-            // Shuffle without replacement: every configured action gets a turn before any repeat.
+            // 打乱动作后每个只拿一次。一轮都展示完才开始下一轮。
             int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? TakeAction() : 0;
             BeginMotion(next);
         }
@@ -459,7 +459,7 @@ namespace Unity.MP_FPS.Client {
             Render();
         }
 
-        // Also used by the editor's single targeted lifecycle/animation check.
+        // 编辑器的生命周期与动画定向检查也会调用这里。
         public void Advance(float dt) {
             if (m_Disposed || m_Settings == null) return;
             if (m_Model == null) CreateStage();
@@ -638,7 +638,7 @@ namespace Unity.MP_FPS.Client {
             m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
             var focus = m_Bounds.center;
             if (m_HomePose && m_Head != null) {
-                // Keep the foreground framing through the skirt and upper legs during the turn.
+                // 角色转身时保持近景构图，仍能看到裙摆和大腿上半部。
                 var hips = m_Animator.GetBoneTransform(HumanBodyBones.Hips);
                 float torso = m_Head.position.y - hips.position.y;
                 float top = Mathf.Max(m_Head.position.y + torso * .88f, m_Bounds.max.y) + torso * .07f;

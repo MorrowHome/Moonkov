@@ -136,7 +136,7 @@ namespace Unity.MP_FPS {
                 if (m_Members.TryGetValue(source, out var sender)) {
                     if (!m_Budgets.TryGetValue(source, out var budget))
                         m_Budgets.Add(source, budget = new RaidChatBudget());
-                    // A duplicate has already had its outcome sent on the reliable RPC stream.
+                    // 可靠 RPC 流此前已经发送过这条重复请求的结果。
                     if (r.Session == m_Session && budget.Begin(r.RequestId)) {
                         var result = budget.Spend(SystemAPI.Time.ElapsedTime)
                             ? RaidChatRules.Normalize(r.Text.ToString(), out _)

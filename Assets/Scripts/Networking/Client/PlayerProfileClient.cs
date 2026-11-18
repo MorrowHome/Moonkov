@@ -8,8 +8,8 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // The UI and owned client read their selected profile here. Server Worlds choose
-    // persistence independently from their own OfflineRaidMode marker.
+    // UI 和本地拥有角色的客户端在这里读选择的档案。服务端 World
+    // 则按自己有没有 OfflineRaidMode 标记来选择持久化。
     public static partial class PlayerProfileClient {
         private static OfflineProfileStore s_Offline;
         private static InventoryGraph s_Inventory;
@@ -106,7 +106,7 @@ namespace Unity.MP_FPS {
                 throw new InvalidOperationException("Single player requires a Client+Server build.");
             string path = Path.Combine(Application.persistentDataPath, "SinglePlayer", "profile-v1.json");
 #if UNITY_EDITOR
-            // MPPM clones must not share a mutable local profile.
+            // MPPM 的编辑器克隆各自需要独立的可写本机档案。
             using (var hash = System.Security.Cryptography.SHA256.Create()) {
                 path = Path.Combine(Application.persistentDataPath, "SinglePlayer",
                     Convert.ToBase64String(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Application.dataPath)))
@@ -116,7 +116,7 @@ namespace Unity.MP_FPS {
             // 读档在后台进行。只有待保存记录都恢复好、而且请求未取消之后，才正式把菜单切进单人档。
             var store = await Task.Run(() => new OfflineProfileStore(path), ct);
             try {
-                // Replay acknowledged/unfinished writes before treating an open raid as lost.
+                // 先重放已确认或未写完的记录，再判断是否把仍开启的出战视作失败。
                 // 先补写上次没发完的结算。完成后如果还有未结束的出战，才按遗留战局处理，避免本该撤离成功的装备被清掉。
                 var recovery = new RaidPersistenceContext(store);
                 recovery.Dispose();

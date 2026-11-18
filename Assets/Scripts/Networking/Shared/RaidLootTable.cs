@@ -10,7 +10,7 @@ namespace Unity.MP_FPS {
         Equipment
     }
 
-    // Counts and relative weights are authored together; the match server alone rolls them.
+    // 物品数量范围和相对权重在一起配置。只有战局服务器抽取。
     public static class RaidLootTable {
         private readonly struct Entry {
             public readonly string Code;
@@ -94,9 +94,9 @@ namespace Unity.MP_FPS {
             }, 2, 4)
         };
 
-        // Every full cache gets one roll from this pool before its remaining themed rolls.
-        // Keep mission outputs, alien harvests, personal secure cases and the research-only
-        // mooncore recycler on their existing acquisition paths.
+        // 完整补给箱先从这个通用池抽一次，再执行各自主题的抽取。
+        // 任务产物、异形解剖、个人保险箱和仅限研究取得的
+        // 月核回收器仍由各自原有途径获得。
         private static readonly Entry[] SharedPool = {
             new("hemostatic_bandage", 10, 1, 2), new("rescue_kit", 5),
             new("hydration_gel", 10), new("compressed_ration", 7), new("emergency_oxygen", 10),
@@ -206,11 +206,11 @@ namespace Unity.MP_FPS {
 
         // 按物品权重选择当次抽取，成功放置受实际容器容量限制。试摆不下的物品不能堆在格子外。
         private static void AddRandom(InventoryGraph graph, Entry[] pool, int rolls, Random random) {
-            // Draw without replacement so one rare result cannot consume every roll.
-            // Oversized optional results are skipped and another entry is drawn. A cargo
-            // pack can therefore share a standard cache without overflowing its 6x5 grid.
+            // 不放回地依次抽取，防止一次稀有结果占完所有抽取机会。
+            // 选填的大件放不下时换抽别的，大件货包也可以出现在普通补给池，
+            // 实际上仍不能超出箱子的 6×5 格。
             bool[] used = new bool[pool.Length];
-            // Skip missing content packs and codes already placed by another pool or guarantee.
+            // 跳过缺失的资源包，以及另一个池或保底项已经放入的物品码。
             for (int i = 0; i < used.Length; i++)
                 used[i] = InventoryCatalog.Get(pool[i].Code) == null || graph.Count(pool[i].Code) > 0;
             int placed = 0;
@@ -262,7 +262,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Per-cache state, owned by one server World. Death bags never receive this state.
+    // 每个补给箱的回复状态归当前服务端 World。尸体包没有这份状态。
     public sealed class RaidLootRefillState {
         public RaidLootProfile Profile { get; }
         public int RefillCount { get; private set; }
@@ -281,7 +281,7 @@ namespace Unity.MP_FPS {
             int refillLimit,
             bool blocked,
             Random random) {
-            // Any remaining item, including a deposited bag and its descendants, protects the box.
+            // 只要箱里还有东西，连同玩家临时放进去的包与内部物品，都不会补货覆盖。
             if (HasContents(cache)) {
                 m_EmptySince = -1;
                 return false;

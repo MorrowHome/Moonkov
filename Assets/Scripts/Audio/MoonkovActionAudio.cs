@@ -1,6 +1,6 @@
 // 局内 HUD 发出请求时记下战局和请求编号，收到同一笔请求的回执后才决定播开始、成功或失败。同一阶段只提醒一次。
 namespace Unity.MP_FPS {
-    // Only locally submitted requests may produce feedback. Progress snapshots are silent.
+    // 只有本机实际发出的请求才有结果音。收到进度快照时保持安静。
     public sealed class MoonkovActionAudio {
         private int m_Raid;
         private uint m_Request;

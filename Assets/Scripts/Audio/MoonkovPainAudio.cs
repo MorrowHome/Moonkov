@@ -1,6 +1,6 @@
 // 角色受击音用命中的网络 tick 去重。快照重复或过旧时不再播，连着受击时也限制喊声频率。
 namespace Unity.MP_FPS {
-    // Per character: never queue cries suppressed during automatic fire.
+    // 每个角色单独处理。连发时被抑制的喊声不留到之后排队补播。
     public sealed class MoonkovPainAudio {
         public const float MinimumInterval = 1.1f;
         private bool m_Initialized;

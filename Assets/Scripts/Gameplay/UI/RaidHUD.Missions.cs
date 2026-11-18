@@ -139,7 +139,7 @@ namespace Unity.MP_FPS {
             if (visible) m_Root.Q<Button>("missionClose").Focus();
         }
 
-        // Returns ownership of the shared F/gamepad interaction for this frame.
+        // 返回这一帧是否已经占用 F 或手柄共用交互。
         private bool UpdateMissions(bool live) {
             if (m_MissionHud == null) return false;
             var journalKey = RaidKeyBindings.GetKey(RaidKey.Journal);
@@ -292,7 +292,7 @@ namespace Unity.MP_FPS {
                 }
             }
             if (m_MissionHolding >= 0) {
-                // The press captures an operation epoch and node. Assisted selection never transfers a live hold.
+                // 按下时固定这次操作的阶段编号与节点。辅助选择变化不能把按住状态转交给另一台设备。
                 int captured = m_MissionHolding;
                 var anchor = site.Anchor(definition.Objectives[captured].Anchor);
                 // 按住后要持续满足同一局、同一设施阶段和选中目标等条件。任一条件失效就取消这次尚未完成的操作。
@@ -469,7 +469,7 @@ namespace Unity.MP_FPS {
                 for (int i = 0; i < objective.Choices.Length; i++) {
                     int choice = i + 1;
                     var button = new Button(() => {
-                        // Revalidate after reading; no stale inspector may configure a later operation.
+                        // 阅读设备详情后重新检查快照，避免旧窗口对后来开启的任务发送配置。
                         var current = m_MissionSnapshot;
                         var site = RaidMissionSite.Active;
                         var currentAnchor = site ? site.Anchor(anchor.Id) : null;

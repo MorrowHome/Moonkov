@@ -3,8 +3,8 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Weight is server-derived from the actual carried inventory. The same value
-    // is replicated for owner prediction; storage and open loot are excluded.
+    // 服务器从实际随身背包算重量。同一个数值也同步给
+    // 本机预测，仓库和当前打开的地上物不计入负重。
     public static class RaidEncumbrance {
         public const float ComfortableWeight = 18;
 

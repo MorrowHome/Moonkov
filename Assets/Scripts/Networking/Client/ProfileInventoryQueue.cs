@@ -9,8 +9,8 @@ using Newtonsoft.Json;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Menu-only prediction. Authoritative profiles and request bodies remain separate.
-    // A single writer spans storage, suppliers and workshop, even when a window closes.
+    // 菜单临时库存可先预测。正式档案和真正发送的请求体各自保留。
+    // 仓库、供应商和改装共用一个写入队列，关闭其中某个窗口也照常继续。
     public sealed class ProfileInventoryQueue : IDisposable {
         private sealed class Pending {
             public InventoryCommand Move, WireMove;
@@ -96,7 +96,7 @@ namespace Unity.MP_FPS {
             return pending.Completion.Task;
         }
 
-        // A profile refresh during a POST must not replay that POST over its own receipt.
+        // POST 等回执时遇到档案刷新，不能建立在该回执上把同一个操作再预演一次。
         public void Refresh() {
             // 队列忙时，正式库存刷新可能正好是刚发送的请求回执。等 Drain 认领它，避免把同一拖放再预演一次。
             if (m_Disposed || Count > 0) return;
@@ -128,7 +128,7 @@ namespace Unity.MP_FPS {
         }
 
         private async Task Drain() {
-            // Publish local feedback before any synchronous offline completion.
+            // 先发本地反馈，再接收可能同步完成的离线操作。
             // 即使本机操作立刻能完成，也先让这次菜单预览被发布。这样本机和在线的操作顺序一样。
             await Task.Yield();
             while (!m_Disposed && Count > 0) {
@@ -172,8 +172,8 @@ namespace Unity.MP_FPS {
                         if (m_Disposed) return;
                         // 明确拒绝就撤掉这条预览。超时之类的情况无法确认服务端有没有写入，先刷新并比对库存，再决定是否保留原请求重试。
                         bool rejected = m_Rejected(ex);
-                        // A lost move response has no order receipt. Its unchanged version
-                        // makes retry safe; only an exact resulting snapshot resolves it.
+                        // 移动请求丢失响应时没有专门的订单回执。重试时保持原版本，
+                        // 由服务端拒绝已过时的重复操作，只有完全一致的结果快照能确认那次移动已成功。
                         if (pending.Uncertain && pending.Move != null && Matches(pending)) {
                             Accept(pending);
                             completed = true;
@@ -187,7 +187,7 @@ namespace Unity.MP_FPS {
                             Changed?.Invoke();
                             pending.Completion.TrySetException(ex);
                             try { await m_Refresh(m_Stop.Token); } catch (Exception) {
-                                /* rejection remains definitive */
+                                /* 初次明确的拒绝仍然有效。 */
                             }
                             if (m_Disposed) return;
                             Rebuild();
@@ -199,7 +199,7 @@ namespace Unity.MP_FPS {
                         pending.Uncertain = true;
                         Error = ex;
                         try { await m_Refresh(m_Stop.Token); } catch (Exception) {
-                            /* keep the identical request pending */
+                            /* 继续保留这条完全相同的待确认请求。 */
                         }
                         if (m_Disposed) return;
                         if (pending.Move != null && Matches(pending)) {
@@ -302,7 +302,7 @@ namespace Unity.MP_FPS {
         }
 
         private void BindCreated(Pending pending, InventoryGraph server) {
-            // Only the immediate receipt can unambiguously identify newly created items.
+            // 只有这笔操作直接返回的库存状态能唯一识别刚新建的物品。
             // 期望版本必须正好是操作后的那一个。更晚的仓库可能经过别的整理，无法确定哪件是这条请求新建的。
             if (server?.Version != pending.Expected?.Version) return;
             foreach (var pair in CreatedMap(pending, server)) {

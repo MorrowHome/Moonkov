@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Rendering only: real collision and the authority stay on the existing map/server.
+    // 这里只画场景标记。碰撞复用现有地图，玩法判断由服务端负责。
     internal sealed class BountyClashMapPresentation {
         private readonly GameObject m_Root;
         private readonly List<Material> m_Materials = new();
@@ -92,7 +92,7 @@ namespace Unity.MP_FPS {
             m_Corpse.Tick(motor, shape, 0, 0, 0, .016f);
             m_Corpse.SetVisible(true);
             m_Tissue = TissueTexture();
-            // BranchCreatureRig allocates its skin per instance; no live Boss asset is mutated.
+            // BranchCreatureRig 为每个实例分别创建皮肤材质，原有 Boss 资产不会被改动。
             var skin = corpse.GetComponentInChildren<Renderer>().sharedMaterial;
             skin.SetColor("_BaseColor", Color.white);
             skin.SetTexture("_BaseMap", m_Tissue);
@@ -124,8 +124,8 @@ namespace Unity.MP_FPS {
             m_BountySignal = Line("Ground bounty signal",
                 new[] { target + Vector3.up * .3f, target + Vector3.up * .75f }, m_ObjectiveMaterial, .025f);
             m_BountySignal.SetActive(false);
-            // The formal map intentionally maps saturated environment colors to cobalt.
-            // Preserve gameplay semantics through its existing actor/subject path.
+            // 正式地图有意把高饱和环境颜色映射成钴蓝色。
+            // 用现有角色材质通道保留这些玩法标记的颜色含义。
             MoonSilverPrintSubject.Protect(m_Root);
         }
 
@@ -174,7 +174,7 @@ namespace Unity.MP_FPS {
                         }
                     }
                 }
-                // Supply ellipse normals and orient this private collapsed mesh outward.
+                // 为椭圆表面计算法线，使这个倒伏模型的表面朝外。
                 mesh.vertices = vertices;
                 mesh.uv = uv;
                 mesh.normals = normals;

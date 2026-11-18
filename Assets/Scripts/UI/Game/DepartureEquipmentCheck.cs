@@ -10,7 +10,7 @@ namespace Unity.MP_FPS.Client {
         None
     }
 
-    // An advisory check. It neither moves supplies nor decides deployment eligibility.
+    // 只用来给玩家提示。物品还是由库存移动，是否能出战仍由出发流程判断。
     public readonly struct DepartureEquipmentCheck {
         public readonly DepartureEquipmentIssue Issue;
         public readonly bool EmergencyAvailable;

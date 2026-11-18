@@ -206,7 +206,7 @@ namespace Unity.MP_FPS {
                 foreach (var (id, connection) in SystemAPI.Query<RefRO<NetworkId>>().WithAll<NetworkStreamInGame>()
                              .WithEntityAccess()) {
                     if (!periodic && !changed && m_Synchronized.Contains(connection)) continue;
-                    // At most 10 Hz during motion; new connections receive the complete current state.
+                    // 设备运动时最多每秒同步 10 次。新连接立即得到完整的当前状态。
                     if (!periodic && m_Synchronized.Contains(connection)) continue;
                     var rpc = ecb.CreateEntity();
                     ecb.AddComponent(rpc, new AirlockStateRpc {
@@ -239,7 +239,7 @@ namespace Unity.MP_FPS {
                          .WithEntityAccess())
                 m_Synchronized.Add(connection);
             m_Synchronized.RemoveWhere(e => !EntityManager.Exists(e));
-            // Disconnects must not accumulate request state over a long server session.
+            // 服务器长时间运行时要回收断开连接的请求记录。
             m_DeadRequests.Clear();
             foreach (var e in m_Requests.Keys)
                 if (!EntityManager.Exists(e))

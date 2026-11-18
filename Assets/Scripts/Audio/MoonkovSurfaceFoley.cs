@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Cosmetic contact sampling shared by suit and creature foley. No collider or movement authority.
+    // 太空服与怪物共用的接触拟音采样，只用来播声音。碰撞与移动由各自的玩法系统处理。
     public sealed class MoonkovSurfaceFoley {
         private static readonly RaycastHit[] s_Hits = new RaycastHit[16];
         private static readonly int s_Mask = LayerMask.GetMask("Default", "Ground");
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS {
                 m_ContactAge = 0;
             }
             if (!m_Contact.collider) return false;
-            // A denied ray budget or movement beyond the sampled wall must not sustain phantom friction.
+            // 射线预算不足或角色已离开上次采样的墙面时，及时停掉擦碰声。
             if (m_ContactAge > .25f || !ContactWithinReach(center, reach + .025f) ||
                 Vector3.ProjectOnPlane(displacement, m_Contact.normal).sqrMagnitude <
                 displacement.sqrMagnitude * .16f) {
@@ -66,8 +66,8 @@ namespace Unity.MP_FPS {
             var collider = m_Contact.collider;
             if (collider is not MeshCollider { convex: false } && collider is not TerrainCollider)
                 return (collider.ClosestPoint(center) - center).sqrMagnitude <= reach * reach;
-            // ClosestPoint does not support concave geometry. Confirm the cached
-            // face directly; its bounds alone would keep scraping across openings.
+            // ClosestPoint 无法检查凹面网格，需要直接复核上次碰到的面。
+            // 仅靠整块包围盒会让开口处也错误发出擦碰声。
             return TakeRays(1) && collider.Raycast(new Ray(center, -m_Contact.normal), out _, reach);
         }
 
@@ -104,7 +104,7 @@ namespace Unity.MP_FPS {
             return contact.collider;
         }
 
-        // Excludes floors/ceilings, triggers, own children and motion directly into a wall.
+        // 跳过地面、天花板、触发器、自身的子物体和垂直撞向墙面的移动。
         public static bool TryFindWall(
             Transform owner,
             Vector3 center,

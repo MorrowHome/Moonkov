@@ -30,9 +30,9 @@ namespace Unity.MP_FPS {
         KeepDistance
     }
 
-    /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
-    /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
-    /// Runtime contact/AI state belongs to each spawned enemy, never this asset.</summary>
+    /// <summary>可共用的配置。Scale 是统一的权威尺寸倍率，
+    /// 供身体、触地、命中体、招式距离和流体范围使用。
+    /// 每只生成的怪分别保存自己的碰撞接触和 AI 状态。</summary>
     [CreateAssetMenu(menuName = "Moonkov/Alien Creature Profile")]
     public sealed class AlienCreatureProfile : ScriptableObject {
         public AlienSpecies Species;
@@ -197,8 +197,8 @@ namespace Unity.MP_FPS {
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() :
                 species == AlienSpecies.Centipede ? ProceduralMenagerieExperiment.CentipedeFluidDefaults() :
                 IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);
-            // Defaults retain the accepted lab's world speed at its authored size;
-            // later Scale edits still resize both stride geometry and travel speed.
+            // 默认尺寸下保持试验场已确认的场景移动速度。
+            // 之后再调 Scale 时，步幅和移动速度仍随之变化。
             Speed /= Mathf.Max(.1f, Scale);
         }
     }

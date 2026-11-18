@@ -48,7 +48,7 @@ namespace Unity.MP_FPS {
         public float HitscanRange = 100f;
 
         [Header("Ammo & Reloading")] public int MagazineSize = 30;
-        public float ReloadTime = 2.0f; // Time in seconds
+        public float ReloadTime = 2.0f; // 时间单位为秒。
 
         [Min(1)] [Tooltip("Battery energy spent per round added to this halo's magazine.")]
         // 发数是界面和武器容量的单位，电池和光环池里存能量，用这个数值来换算。

@@ -6,7 +6,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // The live world is softened before UI Toolkit draws its sharp text and item icons.
+    // 先模糊游戏画面，再让 UI Toolkit 叠上清晰的文字和物品图标。
     public static class RaidInventoryBlur {
         private static Driver s_Driver;
 
@@ -83,7 +83,7 @@ namespace Unity.MP_FPS {
             internal BlurPass(Material material, Camera owner) {
                 m_Material = material;
                 m_Owner = owner;
-                // After other world effects, before URP composites the overlay UI.
+                // 在其他世界特效之后、URP 合成叠加界面之前执行。
                 renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing + 1;
                 requiresIntermediateTexture = true;
             }
@@ -111,7 +111,7 @@ namespace Unity.MP_FPS {
                 descriptor.width = width;
                 descriptor.height = height;
                 var destination = graph.CreateTexture(descriptor);
-                // About four pixels of softening at 1080p. Silhouettes and motion remain readable.
+                // 1080p 时模糊半径约四个像素，人物轮廓和运动仍然可见。
                 float radius = 2.4f * height / 1080f;
                 Record(graph, source, intermediate, m_Horizontal, new Vector2(radius / width, 0),
                     "Inventory blur / horizontal");
@@ -136,7 +136,7 @@ namespace Unity.MP_FPS {
                 builder.UseTexture(source, AccessFlags.Read);
                 builder.SetRenderAttachment(destination, 0, AccessFlags.Write);
                 builder.SetRenderFunc(static (PassData d, RasterGraphContext context) => {
-                    // The material blit helper does not account for differing texture UV origins.
+                    // 材质拷贝辅助函数不会自动处理不同纹理的 UV 原点。
                     RTHandle handle = d.Source;
                     var scale = handle.useScaling ? (Vector2)handle.rtHandleProperties.rtHandleScale : Vector2.one;
                     bool flip = context.GetTextureUVOrigin(in d.Source) != context.GetTextureUVOrigin(in d.Destination);

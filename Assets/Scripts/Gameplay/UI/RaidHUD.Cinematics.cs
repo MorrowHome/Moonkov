@@ -76,7 +76,7 @@ namespace Unity.MP_FPS {
                 m_CinematicSource.gameObject.scene.GetPhysicsScene());
             m_HadLivingCamera |= ghost.CurrentHealth > 0;
             if (!playable) {
-                // Keep the prone/downed eye current without turning a rescue state into death.
+                // 倒地或趴下时继续记录当前镜头。被队友救援的状态要与死亡区分。
                 m_Cinematic.Stop();
                 PresentCinematicCurtain();
                 return;
@@ -115,7 +115,7 @@ namespace Unity.MP_FPS {
             if (hide)
                 m_CinematicFade.BringToFront();
             else
-                m_CinematicFade.SendToBack(); // Keep a black world behind the interactive failure page.
+                m_CinematicFade.SendToBack(); // 失败页可操作时，世界画面仍保持黑色。
         }
 
         private Bounds DeploymentBounds(Vector3 eye) {

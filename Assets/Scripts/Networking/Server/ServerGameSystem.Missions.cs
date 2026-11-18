@@ -73,7 +73,7 @@ namespace Unity.MP_FPS {
         public readonly Dictionary<Entity, int> CampaignRaidIds = new();
     }
 
-    // Gameplay hearing is deliberately local and attenuated by world geometry.
+    // 游戏里的声音只影响附近角色，并受地图障碍衰减。
     public static class MissionAlarm {
         public const float HearingRange = MissionMachineSounds.CutterRange;
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
@@ -177,7 +177,7 @@ namespace Unity.MP_FPS {
                                 actor.Node = -1;
                             }
                         } else if (!accessible) {
-                            // An invalid new target must not interrupt an existing legal action.
+                            // 新的目标无效时，保留原先仍合法的操作。
                             if (r.Intent == MissionIntent.Renew && actor.Node == r.Node &&
                                 actor.Request == r.RequestId) {
                                 operation.Cancel(actor.Key);

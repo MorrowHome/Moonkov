@@ -41,7 +41,7 @@ namespace Unity.MP_FPS.Client {
 
         // 这里把最小点击尺寸按面板缩放换成对应的值。离开这个页时清除这些临时样式。
         private static void SizeHeaderButton(Button button, float? scale) {
-            // Size in layout units so scaling never paints one button over another.
+            // 用布局单位设置尺寸，缩放时按钮仍有各自的空间。
             button.style.fontSize = scale.HasValue ? new StyleLength(12 * scale.Value) : StyleKeyword.Null;
             button.style.height = button.style.minHeight =
                 scale.HasValue ? new StyleLength(36 * scale.Value) : StyleKeyword.Null;

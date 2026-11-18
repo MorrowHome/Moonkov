@@ -24,7 +24,7 @@ namespace Unity.MP_FPS {
         public bool Pressed;
     }
 
-    // This snapshot is sent only to the player whose raid produced it.
+    // 此快照只发送给产生这些研究结果的玩家。
     public struct ResearchQuestSnapshotRpc : IRpcCommand {
         public int RaidId;
         public uint Sequence;

@@ -7,7 +7,7 @@ using UnityEngine.Animations;
 using UnityEngine.Playables;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation for the template's predicted player, with no independent movement simulation.</summary>
+    /// <summary>预测角色的客户端显示组件，无需额外模拟一遍人物移动。</summary>
     [DefaultExecutionOrder(-50)]
     public sealed class DollSingerNetworkPresentation : GhostMonoBehaviour {
         [SerializeField] private DollSingerMovement m_Model;
@@ -133,13 +133,13 @@ namespace Unity.MP_FPS {
                 Quaternion.Euler(0f, look.x, 0f), m_OwnedLean);
             var target = ray.GetPoint(range);
             UnityEngine.Physics.SyncTransforms();
-            // Host server colliders duplicate the client avatars; ignore that world here.
+            // 房主的服务器碰撞体与客户端外观重叠。这里做显示层查询时忽略服务器副本。
             int count;
             var physicsScene = gameObject.scene.GetPhysicsScene();
             while ((count = physicsScene.Raycast(ray.origin, ray.direction, m_AimHits, range, AimMask,
                        QueryTriggerInteraction.Ignore)) == m_AimHits.Length) {
-                // Unordered saturated queries can omit the closest wall or target.
-                // Grow only on saturation and reuse the buffer for subsequent frames.
+                // 查询结果不保证排序。缓冲满时可能刚好没返回最近的墙或目标。
+                // 只有结果装满才扩容，后面的帧复用同一块缓冲。
                 if (m_AimHits.Length >= 4096) return PresentOwnedAimPoint(ray.GetPoint(.05f));
                 System.Array.Resize(ref m_AimHits, m_AimHits.Length * 2);
             }
@@ -157,8 +157,8 @@ namespace Unity.MP_FPS {
         private Vector3 PresentOwnedAimPoint(Vector3 target) {
             m_HasOwnedAimPoint = true;
             m_OwnedAimPoint = target;
-            // The ECS input pass follows MonoBehaviour.Update. Forward its freshly
-            // sampled target before Halo.LateUpdate, without waiting another frame.
+            // ECS 读取输入发生在 MonoBehaviour.Update 之后。
+            // 在 Halo.LateUpdate 前就用新采到的瞄点，避免多等一帧。
             m_Halo.SetNetworkPresentation(!m_HaloOccupied && m_OwnedAiming, m_OwnedViewRotation * Vector3.forward,
                 target, m_OwnedLightEnabled, !m_HaloOccupied && ReadOwnedReadyIntent());
             PresentMuzzleObstruction(target);
@@ -173,8 +173,8 @@ namespace Unity.MP_FPS {
             command.SetFlag(PlayerInput.InputFlag.ThirdPerson, thirdPerson);
             var ray = m_PlayerGhost.GetShotRay(command, 10000, out var requested);
             float distance = Vector3.Distance(ray.origin, requested);
-            // A surface at the intended target is not an obstruction. Ignore player
-            // copies entirely here: this cue describes cover, never damage or a hit.
+            // 原本就想打中的表面无需显示遮挡。
+            // 也不在这判断玩家命中，这个反馈只说明掩体是否挡枪。
             return distance > .1f && m_PlayerGhost.RaycastShot(ray, distance - .08f, CoverMask, out _);
         }
 
@@ -217,8 +217,8 @@ namespace Unity.MP_FPS {
 
         // 松开瞄准本机立即退出对应手势。旧快照里暂时仍有腰射保持时，等新一次本机开火才重新进入。
         private bool ReadOwnedReadyState(bool fire) {
-            // RMB owns the local release. Late snapshots may still contain the
-            // previous hip-fire hold; only a new local hip-fire input rearms it.
+            // 松开右键时，由本地立即处理。
+            // 较晚快照里的腰射保持状态不会重新抬手，除非玩家又按下腰射。
             if (m_OwnedAiming)
                 m_OwnedHipHoldSuppressed = true;
             else if (fire) m_OwnedHipHoldSuppressed = false;
@@ -296,15 +296,15 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Also available to the owning prediction adapter; confirmation uses the same sequence and timeline.
+        // 自身角色的预测适配层也能访问这个入口。服务端确认按相同序号和时间轴处理。
         public void PresentMelee(in MeleeViewState state) {
             if (m_Linked && Role != MultiplayerRole.Server && m_Melee) m_Melee.SetPresentation(state);
         }
 
         // 较远的远端角色保留动画时间，但不可见时可少算蒙皮和脚部装饰。这只是画面设置。
         private void ConfigureClientAnimationBudget(bool budget) {
-            // Keep animation state advancing, but do not skin invisible remote
-            // avatars or write their cosmetic IK bones. Server simulation is separate.
+            // 动画状态继续随时间前进。
+            // 远端角色不在画面里时不更新蒙皮和装饰性 IK 骨骼。服务器模拟独立运行。
             if (m_PresentationAnimator) {
                 m_AuthoredAnimationCulling ??= m_PresentationAnimator.cullingMode;
                 m_PresentationAnimator.cullingMode =
@@ -472,7 +472,7 @@ namespace Unity.MP_FPS {
             bool haloDeployed = false,
             Vector3 shotOrigin = default) {
             if (m_Linked && Role != MultiplayerRole.Server) {
-                // The shot RPC may precede the equipment snapshot on an observer.
+                // 远端观察者可能先收到射击 RPC，再收到对应武器的装备快照。
                 var shotState = ReadGhostComponentData<PredictedPlayerGhost>();
                 // 射击事件可能比装备快照早到，先用事件自己的武器编号确定声音和效果。
                 bool equipped = shotState.EquippedWeaponID == weaponId;
@@ -497,7 +497,7 @@ namespace Unity.MP_FPS {
                     m_ShotSoundPressure = sustained ? Mathf.Min(1, m_ShotSoundPressure + .18f) : 0;
                     m_LastSoundWeapon = weaponId;
                     m_LastShotSoundTime = Time.unscaledTime;
-                    // The new attack remains crisp; only the preceding body and resonance crossfade.
+                    // 新一发保留清晰的起声，只淡化上一发留下的主体与共振。
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, profile?.BodyCrossfade ?? .045f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);

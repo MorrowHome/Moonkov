@@ -9,7 +9,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public enum ResearchQuest {
-        // These values are stored as bits. Presentation order is separate.
+        // 这些值按位存储。界面展示顺序独立设置。
         Exposure,
         HaloTrial,
         Biology,
@@ -77,7 +77,7 @@ namespace Unity.MP_FPS {
         public ResearchQuestProgress Copy() { return (ResearchQuestProgress)MemberwiseClone(); }
     }
 
-    // The raid server freezes this evidence in the existing settlement journal.
+    // 战局服务器把这份证据冻结到已有的结算日志中。
     [Serializable]
     public sealed class ResearchQuestResult {
         public int Active, ExposureSeconds, HaloKills, SentryKills;
@@ -158,7 +158,7 @@ namespace Unity.MP_FPS {
         public static ResearchQuest? MissingPrerequisite(ResearchQuestProgress progress, ResearchQuest quest) {
             var prerequisite = Prerequisite(quest);
             if (prerequisite.HasValue && !Has(progress.Completed, prerequisite.Value)) return prerequisite;
-            // A legacy profile may have delivered the database before equipment qualification.
+            // 部分旧档可能在取得装备资格前就已交付数据库。
             if (quest == ResearchQuest.NoWayBack && (progress.Completed & FirstEight) != FirstEight)
                 for (int i = 0; i < 8; i++)
                     if (!Has(progress.Completed, At(i)))
@@ -176,8 +176,8 @@ namespace Unity.MP_FPS {
                 : ResearchQuestStatus.Available;
         }
 
-        // Keep prior deliveries and pending contracts. Only the two contracts whose
-        // prerequisites changed can have legacy authorization.
+        // 保留已经交付和仍待完成的任务。只有那两个前置条件
+        // 变过的任务可以沿用旧资格。
         // 旧档第一次加载时转换版本和已知进度位，随后必须通过当前结构验证。
         public static void Migrate(ResearchQuestProgress progress) {
             if (progress == null || progress.SequenceVersion != 0 || (progress.Accepted & ~FirstEight) != 0 ||

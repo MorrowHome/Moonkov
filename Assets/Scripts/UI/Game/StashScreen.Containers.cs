@@ -180,7 +180,7 @@ namespace Unity.MP_FPS.Client {
             try {
                 // 菜单可以先显示排队操作的本地结果，让拖放立即有反馈。网络回执后来校正库存，期间可看待同步状态。
                 var confirmation = PlayerProfileClient.QueueMenuMoveAsync(command);
-                // Acknowledge the local gesture now; later receipts only reconcile state.
+                // 先让本地操作获得反馈。后续回执只校正实际状态。
                 m_Containers.Present(PlayerProfileClient.MenuInventory);
                 PresentContainers();
                 // 等待期间显示排队后的库存。回执到达后再刷新一次，把服务器确认或撤销的结果画出来。

@@ -7,7 +7,7 @@ using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
 
 namespace Unity.MP_FPS {
-    /// <summary>Publishes server action state for movement and animation. Presentation never completes or consumes an action.</summary>
+    /// <summary>同步服务端动作状态，供移动和动画使用。表现层无权完成动作或消耗物品。</summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(ServerGameSystem))]
     public partial class RaidHandActionSystem : SystemBase {

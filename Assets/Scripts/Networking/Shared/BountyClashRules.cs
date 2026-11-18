@@ -249,7 +249,7 @@ namespace Unity.MP_FPS {
             return p;
         }
 
-        // Bots have no account identity and can never reconnect through the human account table.
+        // 机器人没有账号身份，不能通过真人账号映射重连。
         public ClashParticipant JoinBot(string name) {
             if (!IsSolo || !Lobby() || Players.Count >= BountyClashRules.MaxPlayers) return null;
             var p = new ClashParticipant(m_NextPlayer++, null, name, true);
@@ -472,8 +472,8 @@ namespace Unity.MP_FPS {
             Revision++;
         }
 
-        // A local solo user may leave a completed personal raid after its receipt saves.
-        // Remaining bots time out without awarding or dropping another kit.
+        // 本机单人玩家的结算成功保存后，可以退出本人已结束的行动。
+        // 剩下的机器人按超时结束，不发额外奖励或再掉一套装备。
         public bool EndSoloRound() {
             if (!IsSolo || !Players.Values.Any(p => !p.IsBot) || Players.Values.Any(p => !p.IsBot && !p.IsFinished))
                 return false;

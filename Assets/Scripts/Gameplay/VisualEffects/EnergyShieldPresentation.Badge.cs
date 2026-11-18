@@ -17,8 +17,8 @@ namespace Unity.MP_FPS {
             if (!m_BadgeAnchor) m_BadgeAnchor = m_Chest ? m_Chest : m_Neck ? m_Neck : m_Hips;
             if (!m_BadgeAnchor) return;
             var frame = Quaternion.LookRotation(transform.forward, transform.up);
-            // Work in the imported bind pose. A menu/late spawn can already be
-            // leaning or gesturing; that pose must not become the fit reference.
+            // 在导入时的绑定姿势下计算贴合。菜单角色或较晚出生的角色可能已经侧倾或做手势，
+            // 当下姿势不适合当贴合基准。
             var renderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
             var anchorBind = m_BadgeAnchor.localToWorldMatrix;
             var neckBind = m_Neck ? m_Neck.position : m_BadgeAnchor.position;

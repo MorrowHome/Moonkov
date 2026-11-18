@@ -5,8 +5,8 @@ using Unity.MP_FPS.SpiderLab;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client ghost presentation. Shared recorded banks, actual gait contacts and snapshot edges;
-    /// no per-creature generated AudioClips and no gameplay authority.</summary>
+    /// <summary>客户端 Ghost 音频表现。复用录音音库、真实步态接触和快照变化。
+    /// 每只怪无需单独生成 AudioClip，玩法判断留在服务端。</summary>
     public sealed partial class AlienCreatureFeedback : IDisposable {
         private enum Cue {
             Step,
@@ -78,7 +78,7 @@ namespace Unity.MP_FPS {
                 m_AttackSequence = attackSequence;
                 m_Health = health;
                 if (action == AlienAction.Strike) m_PlayedStrikeSequence = attackSequence;
-                return; // Late snapshots never replay historical attacks/deaths.
+                return; // 晚到的快照不会重演之前的攻击和死亡声。
             }
             if (attackSequence != 0 && m_AttackSequence != 0 && unchecked((int)(attackSequence - m_AttackSequence)) < 0)
                 return;
@@ -155,7 +155,7 @@ namespace Unity.MP_FPS {
                 m_Travel = 0;
                 return;
             }
-            // Chain and branching species have no spider foot solver: displacement drives their contact shear.
+            // 链状和分支形态没有蜘蛛的找脚解法，用身体位移决定表面的摩擦声。
             if (feet == null && completedSteps < 0 && distance < 2 && distance > .001f) {
                 m_Travel += distance;
                 if (m_Travel >= m_ContactDistance) {
@@ -167,7 +167,7 @@ namespace Unity.MP_FPS {
                 PlayContact(footPosition ?? motor.Current.Position - motor.Current.Up * motor.BodyHeight, 1.1f);
                 m_StepCooldown = .2f;
             }
-            // A planted foot can finish its swing after the body has stopped for a warning.
+            // 身体为预警停住后，已有一只脚仍可以结束它还没走完的摆动。
             else if (step && m_StepCooldown <= 0 &&
                      (feet != null || completedSteps >= 0 || motor.Velocity.sqrMagnitude > .04f)) {
                 PlayContact(footPosition ?? motor.Current.Position - motor.Current.Up * motor.BodyHeight,
@@ -190,8 +190,8 @@ namespace Unity.MP_FPS {
             }
             bool attacking = action == AlienAction.Windup || action == AlienAction.Strike ||
                              action == AlienAction.Dominance;
-            // Small grounded creatures must remain audible when they reach the listener
-            // and stop moving. Ambush/attached/dead states returned above remain silent.
+            // 贴着地面的小怪接近监听者后，即使停止移动也应听得见。
+            // 前面已返回的静伏、附着与死亡状态仍保持安静。
             bool close = m_Tier != AlienThreatTier.Boss && m_Approach != AlienApproach.Stalk &&
                          CanHearDetail(position, 4);
             m_ProximityIn = Mathf.Max(0, m_ProximityIn - dt);

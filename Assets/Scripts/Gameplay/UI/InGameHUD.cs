@@ -13,7 +13,7 @@ namespace Unity.MP_FPS {
         [Header("Reticle Configuration")] [SerializeField]
         private float reticleBaseSize = 80f;
 
-        // UI Element references
+        // 界面控件引用
         private VisualElement m_RootElement;
         private RaidVitalsMonitor m_Vitals;
         private VisualElement m_VitalsPanel;
@@ -33,8 +33,8 @@ namespace Unity.MP_FPS {
         }
 
         private void PresentRifleHit(bool killed, HaloWeaponFeedbackProfile profile, float now) {
-            // Keep the kill readable, but never let subsequent body hits prolong a
-            // gold marker indefinitely and imply further kills.
+            // 击杀反馈要留足时间让玩家看清，
+            // 接下来的普通命中不能一直延长金色标记，以免看成连续击杀。
             if (!killed && m_RifleKill && now < m_RifleHitUntil) return;
             m_RifleKill = killed;
             m_HitProfile = profile;
@@ -44,17 +44,17 @@ namespace Unity.MP_FPS {
             m_RifleHit?.MarkDirtyRepaint();
         }
 
-        // UI-side timer to ensure shot feedback is visible for a minimum duration.
+        // 界面计时器保证开火反馈有最短可见时间。
         private float m_shotFeedbackTimer = 0f;
 
-        // The reticle will stay white for at least 100ms after a shot.
+        // 开火后准星至少保持白色 100 毫秒。
         private const float k_ShotFeedbackDuration = 0.1f;
         private const string k_CrossReticleClass = "kits-reticle-cross";
         private const string k_TCrossReticleClass = "kits-reticle-tcross";
         private const string k_CircularCrossClass = "kits-reticle-circularcross";
         private const string k_OpenCircularReticleClass = "kits-reticle-opencircular";
 
-        // ECS query fields
+        // ECS 查询字段
         private World m_ClientWorld;
         private EntityManager m_EntityManager;
         private EntityQuery m_LocalPlayerQuery;
@@ -65,7 +65,7 @@ namespace Unity.MP_FPS {
             m_RootElement = GetComponent<UIDocument>().rootVisualElement;
             m_ChargeWeaponPanel = m_RootElement.Q("weapon-info-container");
 
-            // Find the UI elements by name
+            // 根据控件名称找到对应的界面元素。
             var healthHost = m_RootElement.Q("health-body-host");
             healthHost.Clear();
             m_Vitals = new RaidVitalsMonitor();
@@ -108,7 +108,7 @@ namespace Unity.MP_FPS {
             bool compact = viewportWidth > 0 && viewportWidth < 1100;
             float scale = viewportWidth > 0 ? Mathf.Max(1, panelWidth / viewportWidth) : 1;
             m_VitalsPanel.style.width = compact ? 280 : 300;
-            // This absolute HUD has its own footprint; keep icons and text at readable screen sizes.
+            // HUD 使用绝对定位，独立计算占用范围。图标和文字要保持在屏幕上可读的大小。
             m_VitalsPanel.style.transformOrigin = new TransformOrigin(0, Length.Percent(100));
             m_VitalsPanel.style.scale = new Scale(new Vector3(scale, scale, 1));
             m_VitalsPanel.style.left = 24 * scale;
@@ -130,7 +130,7 @@ namespace Unity.MP_FPS {
                 painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer));
                 painter.Stroke();
                 if (m_RifleKill) {
-                    // Forked ends distinguish a kill by shape as well as color.
+                    // 用分叉形状区分击杀，除了颜色还能靠外形认出来。
                     painter.BeginPath();
                     painter.MoveTo(new Vector2(14 + x * (outer - 2.5f), 14 + y * outer));
                     painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer));
@@ -144,7 +144,7 @@ namespace Unity.MP_FPS {
         private void InitializeEcs() {
             ResetChargeFeedback();
             m_ClientWorld = null;
-            // Find the active client world
+            // 查找正在使用的客户端 World。
             foreach (var world in World.All)
                 if (world.IsCreated && world.IsClient()) {
                     m_ClientWorld = world;
@@ -152,14 +152,14 @@ namespace Unity.MP_FPS {
                     break;
                 }
             if (m_ClientWorld != null)
-                // This query finds the single entity that is both a predicted player ghost
-                // and is owned by the local client.
+                // 查询预测的玩家 Ghost，
+                // 且必须由本地客户端持有。
                 m_LocalPlayerQuery = m_EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PredictedPlayerGhost>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>());
         }
 
         private void LateUpdate() {
-            // Toggle HUD visibility based on the overall game state
+            // 根据游戏全局状态切换 HUD 显隐。
             bool isInGame = ClientServerBootstrap.HasClientWorlds &&
                             GameSettings.Instance.GameState == GlobalGameState.InGame && !RaidHUD.CinematicViewActive;
             bool hitVisible = isInGame && Time.unscaledTime < m_RifleHitUntil;
@@ -179,20 +179,20 @@ namespace Unity.MP_FPS {
                 return;
             }
 
-            // If the world was destroyed (e.g., returned to main menu), try to re-initialize
+            // World 已销毁时重新初始化，例如刚从主菜单再进局。
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated) InitializeEcs();
 
-            // Ensure the ECS systems are ready
+            // 先确认 ECS 相关系统已经就绪。
             // 客户端 World 可能已销毁或本地角色还在出生。找不到唯一拥有的角色时隐藏 HUD 并清理武器反馈。
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated ||
                 !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>()) {
-                // No local player entity found, hide the HUD. This occurs when the player is dead.
+                // 找不到本地玩家就隐藏 HUD。角色死亡时也会走这里。
                 m_ChargeFeedback.Reset();
                 m_RootElement.style.display = DisplayStyle.None;
                 return;
             }
 
-            // Get the player's data directly from the ECS component
+            // 直接从 ECS 组件读取玩家状态。
             var playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
             FitVitals(null);
             bool statusCheck = RaidKeyBindings.Held(RaidKey.Status);
@@ -203,7 +203,7 @@ namespace Unity.MP_FPS {
                 : DisplayStyle.Flex;
             m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 320 : 302;
 
-            // Update Ammo Label
+            // 更新弹药标签。
             if (m_AmmoLabel != null) {
                 var weaponData =
                     WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID,
@@ -213,7 +213,7 @@ namespace Unity.MP_FPS {
                 bool sharedHalo = playerData.HaloEquipped || DollSingerWeapons.IsHalo(playerData.EquippedWeaponID);
                 m_AmmoLabel.style.display = sharedHalo ? DisplayStyle.None : DisplayStyle.Flex;
 
-                // Update Ammo Text and Color
+                // 计算弹药文字与颜色。
                 float fraction = magazineSize > 0 ? (float)playerData.CurrentAmmo / magazineSize : 0;
                 m_AmmoLabel.text = playerData.EquippedWeaponID == DollSingerWeapons.Revolver
                     ?
@@ -252,7 +252,7 @@ namespace Unity.MP_FPS {
                     m_AmmoBar.style.display = DisplayStyle.None;
             }
 
-            // Update Reloading Indicator
+            // 刷新装填提示。
             if (m_ReloadingLabel != null &&
                 (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID))) {
                 m_ReloadingLabel.RemoveFromClassList("halo-charge-warning");
@@ -264,7 +264,7 @@ namespace Unity.MP_FPS {
             m_ChargeWeaponPanel.style.display = DisplayStyle.None;
             m_Vitals.Present(playerData, haloNotice: m_LastChargeNotice);
 
-            // Update Reticle
+            // 更新准星画面。
             UpdateReticleVisual(playerData);
         }
 
@@ -282,25 +282,25 @@ namespace Unity.MP_FPS {
             }
             // 瞄准时切成光环自己的准星。只在腰射时让通用准星接管，否则两套记号会重叠。
             if (DollSingerWeapons.IsHalo(playerData.EquippedWeaponID) && playerData.ControllerState.Aiming) {
-                // The halo and its small local dot own the aiming sight.
+                // 瞄准视图由光环和本地小圆点显示。
                 m_Reticle.style.display = DisplayStyle.None;
                 return;
             }
 
-            // Update Reticle Type
+            // 选出新武器的准星类型。
             // 武器注册表决定用十字、圆环等哪种准星。应用一种样式前移除旧类型，切武器时不会叠出两个形状。
             string desiredClass = GetReticleClassName(weaponData.ReticleType);
 
-            // Remove all reticle classes that are NOT the desired one.
+            // 去掉和当前武器不匹配的准星样式。
             if (desiredClass != k_CrossReticleClass) m_Reticle.RemoveFromClassList(k_CrossReticleClass);
             if (desiredClass != k_TCrossReticleClass) m_Reticle.RemoveFromClassList(k_TCrossReticleClass);
             if (desiredClass != k_OpenCircularReticleClass) m_Reticle.RemoveFromClassList(k_OpenCircularReticleClass);
             if (desiredClass != k_CircularCrossClass) m_Reticle.RemoveFromClassList(k_CircularCrossClass);
 
-            // Now, add the correct class if it's not already present.
+            // 当前样式还没有时再加进去。
             if (!m_Reticle.ClassListContains(desiredClass)) m_Reticle.AddToClassList(desiredClass);
 
-            // Update Reticle Visibility
+            // 更新准星是否可见。
             if (m_Reticle.style.display == DisplayStyle.None) {
                 if (m_Reticle.style.position != StyleKeyword.Initial) {
                     m_Reticle.style.position = StyleKeyword.Initial;
@@ -312,7 +312,7 @@ namespace Unity.MP_FPS {
             m_Reticle.style.width = reticleBaseSize;
             m_Reticle.style.height = reticleBaseSize;
 
-            // Determine if the player can shoot
+            // 根据装填和冷却判断玩家是否能继续开火。
             bool isReloading = playerData.ControllerState.IsReloadingState;
             bool justFired = playerData.ControllerState.Shoot;
             bool isWeaponOnCooldown = playerData.WeaponCooldown < weaponData.CooldownInMs;
@@ -320,16 +320,16 @@ namespace Unity.MP_FPS {
             if (justFired) m_shotFeedbackTimer = k_ShotFeedbackDuration;
             bool greyReticleVisual = false;
 
-            // Weapon reloading
+            // 武器正在装填。
             // 装填时不能继续射击，立即清掉之前的开火反馈并变灰。
             if (isReloading) {
                 greyReticleVisual = true;
                 m_shotFeedbackTimer = 0f;
             }
-            // Weapon is on cooldown AND we are not in the shot feedback window.
+            // 冷却中且开火反馈已结束，才显示冷却外观。
             else if (isWeaponOnCooldown && m_shotFeedbackTimer <= 0) { greyReticleVisual = true; }
 
-            // Update Reticle Color
+            // 更新准星颜色。
             m_Reticle.style.unityBackgroundImageTintColor = greyReticleVisual
                 ? new StyleColor(Color.grey)
                 : new StyleColor(Color.white);

@@ -5,7 +5,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    // Applies only to gameplay-owned generated meshes. Never changes their guides or hitboxes.
+    // 只修改玩法生成的外观网格。引导骨架与碰撞体继续由各自逻辑管理。
     public sealed class AlienVoidAppearance : IDisposable {
         private readonly Transform m_Owner;
         private readonly AlienVoidStyle m_Style;

@@ -108,7 +108,7 @@ namespace Unity.MP_FPS {
                     speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
                 if (pause)
                     speed = 0;
-                // The path cursor owns arrival. Keep moving into its tolerance without stepping past the waypoint.
+                // 路径进度决定是否到达。允许走进到点容差，步长不能跨过目标点。
                 else if (!motor.Transitioning) speed = Mathf.Min(speed, travel.magnitude / Mathf.Max(.001f, dt));
             }
             var facingIntent =
@@ -146,8 +146,8 @@ namespace Unity.MP_FPS {
                     Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized, next.Radius,
                     m_Body.Motor.BodyHeight))
                 return false;
-            // A heavy mantle cannot warn forward and then sweep behind itself.
-            // Roots erupt remotely and do not require a forward-facing melee arc.
+            // 重甲扫击的伤害方向要与往前给出的预警一致。
+            // 根须可以在别处破土，无需在面朝方向的近战扇区内。
             return !profile.Boss || profile.Species == AlienSpecies.Roots || Vector3.Angle(transform.forward,
                 Vector3.ProjectOnPlane(target - transform.position, Vector3.up)) <= 60;
         }
@@ -188,8 +188,8 @@ namespace Unity.MP_FPS {
                 switch (m_Pattern.Kind) {
                     // 巨蛛用本步真实位移扫过的线判断撞到了谁。角色躲开实际轨迹就不会因为站在预告终点附近而必中。
                     case AlienAttackKind.SpiderRush:
-                        // Swept damage follows the actual body, not the warned destination.
-                        // The warning includes the victim radius and the rounded end caps.
+                        // 扫掠伤害跟随身体的实际运动路径，预警终点只供玩家参考。
+                        // 预警轮廓计入受击者半径和两端半圆。
                         hit = DistanceToSegment(Vector3.ProjectOnPlane(point, Vector3.up),
                                   Vector3.ProjectOnPlane(previous, Vector3.up),
                                   Vector3.ProjectOnPlane(transform.position, Vector3.up)) <= m_Pattern.Radius &&
@@ -227,7 +227,7 @@ namespace Unity.MP_FPS {
                         break;
                     // 前后节拍可有三片分开的地刺范围。三片之间留出间隙，处在空隙中的角色可躲。
                     case AlienAttackKind.RootSpikes:
-                        // Three marked patches leave open lanes between the eruptions.
+                        // 地刺在三个分开的预警区冒出。它们之间留有可躲避的空隙。
                         var right = Vector3.Cross(Vector3.up, m_CombatDirection);
                         hit = GroundDistance(point, centre) <= m_Pattern.Radius ||
                               GroundDistance(point, centre + right * (m_Pattern.Radius * 2.7f)) <= m_Pattern.Radius ||
@@ -249,7 +249,7 @@ namespace Unity.MP_FPS {
                 var root = manager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
                 // 几何范围命中后再看场景遮挡，Boss 远程落点还要从出招处确认看得到。
                 if (!hit || !ClearSight(sightOrigin, point, root.transform)) continue;
-                // Remote patches cannot damage a player behind a wall or on a hidden floor.
+                // 远处的落点也不能打到隔墙或藏在其他楼层的玩家。
                 if (profile.Boss && !ClearSight(m_CombatOrigin, point, root.transform)) continue;
                 m_StrikeVictims.Add(entity);
                 if (m_Pattern.Kind == AlienAttackKind.FaceLeap) {
@@ -294,7 +294,7 @@ namespace Unity.MP_FPS {
 
         // 附着身份使用可在客户端换算的 Ghost 实体。开始前检查有没有另一只异形已经占住这个目标。
         private void AttachFace(Entity target) {
-            // One face parasite per victim; identity is a remapped Ghost Entity.
+            // 每个目标最多附着一只覆面虫。身份用能在不同 World 映射的 Ghost Entity。
             var manager = GhostGameObject.EntityManager;
             using var query = manager.CreateEntityQuery(typeof(State));
             using var states = query.ToComponentDataArray<State>(Allocator.Temp);

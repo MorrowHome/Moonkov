@@ -30,7 +30,7 @@ public partial class GhostEntityPrefabSystem : ClientServerSingletonSystem<Ghost
 
 #if !NGS_SUBMISSION_BUILD
     public bool TryFindPrefabByPartialName(string partialName, out Entity prefab) {
-        // any complete matches?
+        // 先找完全一致的名称。
         foreach (var entry in m_EntityPrefabsByName)
             if (string.Equals(entry.Key.ToString(), partialName, StringComparison.OrdinalIgnoreCase)) {
                 Debug.Log($"Found complete match for ghost {entry.Key} and string {partialName}");
@@ -38,7 +38,7 @@ public partial class GhostEntityPrefabSystem : ClientServerSingletonSystem<Ghost
                 return true;
             }
 
-        // any partial matches?
+        // 再找名称的一部分匹配的模板。
         foreach (var entry in m_EntityPrefabsByName)
             if (entry.Key.IndexOf(partialName, StringComparison.OrdinalIgnoreCase) >= 0) {
                 Debug.Log($"Found a partial match for ghost {entry.Key} and string {partialName}");

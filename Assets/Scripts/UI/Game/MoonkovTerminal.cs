@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Navigation and presentation; shop transactions go through the account inventory service.
+    // 处理终端导航和展示。商店交易通过账号库存服务执行。
     public sealed partial class MoonkovTerminal : IDisposable {
         private readonly VisualElement m_Root,
             m_Gear,
@@ -257,7 +257,7 @@ namespace Unity.MP_FPS.Client {
 
         private void ApplyPageTheme() {
             m_Root.EnableInClassList("archive-pages", m_Page != 0);
-            // All runtime terminal pages now share dark surface roles.
+            // 所有运行时终端页面共用深色界面配色。
             for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
             m_Root.RemoveFromClassList("archive-light");
             for (int i = 0; i < 5; i++)
@@ -362,7 +362,7 @@ namespace Unity.MP_FPS.Client {
             ApplyPageTheme();
         }
 
-        // Endless marquee; the copy is doubled so the loop has no seam.
+        // 把滚动文字重复拼接两遍，使循环衔接处不会突然断开。
         internal static VisualElement Ticker(VisualElement parent, string text) {
             var ticker = new VisualElement { pickingMode = PickingMode.Ignore };
             ticker.AddToClassList("terminal-ticker");

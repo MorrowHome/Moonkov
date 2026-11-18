@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Distinct small vector silhouettes share the existing equipment palette.
+    // 不同小图标用不同轮廓，颜色沿用装备界面的配色。
     public sealed class TacticalItemIcon : VisualElement {
         private readonly string m_Code;
 

@@ -40,7 +40,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Read-only progress. Reaching zero never confirms a treatment or unlocks loot.
+    // 只展示进度。读条到零后，等服务端确认治疗或开放战利品。
     public sealed class RaidTimedActionView : VisualElement {
         private readonly Label m_Title, m_Time;
         private readonly HaloProgressRing m_Ring;

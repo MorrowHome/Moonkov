@@ -3,8 +3,8 @@ using System;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory {
-    // A one-time account migration, not a per-deployment supply. Callers commit
-    // account/inbox/version together and defer while a raid owns the carried kit.
+    // 账号只迁移一次，不随每次出战发放。调用者将
+    // 账号库存、回收箱和版本一起提交。局内持有装备时延后处理。
     public static class ProtectionKitMigration {
         public static bool TryApply(
             InventoryGraph account,
@@ -54,8 +54,8 @@ namespace Unity.MP_FPS.Inventory {
                     return true;
                 }
             }
-            // Nothing was persisted: retry after space is made. No receipt is
-            // consumed and no existing item or resource is replaced or refilled.
+            // 这次没写入，腾地方之后可以重试。回执没有登记，
+            // 既有物品和可用资源也未被换掉或补满。
             return false;
         }
 

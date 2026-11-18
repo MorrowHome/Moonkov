@@ -6,7 +6,7 @@ using UnityEngine;
 using static Unity.MP_FPS.Client.ResearchQuestCopy;
 
 namespace Unity.MP_FPS {
-    // Read-only copies of station logs. The quest evidence and loot inventories have their own authority.
+    // 这是工作站记录的只读副本。任务证据和物资容器分别有自己的数据来源。
     internal sealed class RaidFieldRecords : IDisposable {
         internal const int MaxTablets = 6;
         private const float PreferredSpacing = 28f;
@@ -141,7 +141,7 @@ namespace Unity.MP_FPS {
                 selected.Add(index);
                 if (selected.Count == count) return selected;
             }
-            // Compact layouts can still present records even when no two crates are 28 m apart.
+            // 地图比较紧凑时，即使没有两个箱子相距 28 米，也照样可以摆资料。
             foreach (int index in shuffled) {
                 if (!selected.Contains(index)) selected.Add(index);
                 if (selected.Count == count) break;

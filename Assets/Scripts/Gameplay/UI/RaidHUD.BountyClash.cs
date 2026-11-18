@@ -41,7 +41,7 @@ namespace Unity.MP_FPS {
                 if (snapshot.Bounty != m_ClashAudioSnapshot.Bounty && !snapshot.IsCarrier)
                     MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
                 if (m_ClashAudioRequest != 0 && snapshot.AcknowledgedRequest >= m_ClashAudioRequest) {
-                    // A later lease acknowledgment cannot describe an earlier action's outcome.
+                    // 后续的续按确认无法说明前一个操作的结果，两份回执要分开看。
                     if (snapshot.AcknowledgedRequest == m_ClashAudioRequest) {
                         if (snapshot.Result != ClashResult.Ok)
                             MoonkovAudio.Error();
@@ -188,8 +188,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // GhostOwnerIsLocal is enableable: GetSingletonEntity rejects this query.
-        // Materialize its filtered entities so disabled ownership never keeps a camera/action target.
+        // GhostOwnerIsLocal 可以单独禁用，这类查询不能用 GetSingletonEntity。
+        // 读取经过过滤的实体列表，确保没有所有权的实体不会被当成镜头或操作目标。
         private bool TryGetLocalPlayerEntity(out Entity entity) {
             using var players = m_PlayerQuery.ToEntityArray(Allocator.Temp);
             entity = players.Length == 1 ? players[0] : Entity.Null;

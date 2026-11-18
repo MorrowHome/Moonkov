@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Shared authored asset lookup; presentation never owns loot or collision authority.
+    // 供显示层查复用的美术资源。掉落和碰撞由各自的玩法系统负责。
     public static class PhysicalItemVisuals {
         // 识别有独立实物素材的物品类别。上层可以在找不到对应模型时走自己的外观回退。
         public static bool IsPhysical(string code) {

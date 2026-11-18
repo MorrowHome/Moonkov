@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    // Installed only on the owned network character; the gesture lab keeps its original keys.
+    // 只给本地拥有的网络角色绑定。手势实验室继续沿用自己的按键。
     public static class RaidQuickSlotInput {
         private static DollSingerInput s_Input;
         private static DollSingerView s_View;
@@ -64,8 +64,8 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // The controller shares one button across mission, world control and
-    // tactical interactions. A single press must not start two hand actions.
+    // 手柄通过同一枚键操作任务、场景控件和道具。
+    // 一次按下最多启动一个手部动作。
     public static class RaidInteractionInput {
         public static bool TacticalPressed(
             bool keyboard,
@@ -214,7 +214,7 @@ namespace Unity.MP_FPS {
             int slot = m_QuickView.Hit(point);
             if (slot < 0) return false;
             BindQuickSlot(slot, item);
-            return true; // A rejected hotbar drop must never become an inventory move.
+            return true; // 放到快捷栏后即使绑定失败，也结束该次拖动，避免顺势移动库存物品。
         }
 
         private void QuickNotice(string message) {
@@ -489,8 +489,8 @@ namespace Unity.MP_FPS {
             if (!em.HasComponent<GhostGameObjectLink>(entity)) return false;
             var root = em.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
             if (!root) return false;
-            // Same capsule eye and controller direction as the server. Orbit camera
-            // offsets must not change reach, line of sight, or the usable floor.
+            // 使用与服务器相同的角色视点和控制朝向。
+            // 第三人称相机偏移不能改变操作距离、视线或判断落地的结果。
             var controller = root.GetComponent<PlayerGhost>()?.Controller?.CharacterController;
             var eye = root.transform.position +
                       Vector3.up * Mathf.Max(.3f, (controller ? controller.height : 1.8f) - .2f);

@@ -38,7 +38,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Observes input and synchronized facts only; never reserves energy or predicts a refill.
+    // 这部分读输入和已同步的状态。预留能量与补能确认由原规则处理。
     public sealed class HaloChargeFeedback {
         private MoonkovReloadAudio m_Transitions;
         private uint m_Weapon;

@@ -55,7 +55,7 @@ namespace Unity.MP_FPS {
                 !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked, Time.unscaledTime);
             // 共享能量模式让生命监视区处理提示。旧的装弹文案在兼容模式仍可继续用。
             if (player.HaloEnergyInitialized) {
-                // The shared energy belongs to the existing medical scanner HUD.
+                // 共用的光环能量由已有的医疗监测 HUD 显示。
                 m_LastChargeNotice = status.Notice;
                 m_ReloadingLabel.style.display = DisplayStyle.None;
                 m_ChargeWeaponPanel.style.display = DisplayStyle.None;
@@ -69,11 +69,11 @@ namespace Unity.MP_FPS {
                 m_LastChargeNotice = status.Notice;
                 m_NextChargeText = Time.unscaledTime + .1f;
             }
-            // Keep the existing ammo auto-hide from hiding a brief charge notice between text refreshes.
+            // 弹药栏可能自动隐藏。两次文字刷新之间仍应保留短暂的补能提示。
             if (status.Notice != HaloChargeNotice.None) m_ChargeWeaponPanel.style.display = DisplayStyle.Flex;
             if (m_AmmoBar != null) {
                 bool charging = status.Notice == HaloChargeNotice.Charging;
-                m_AmmoBar.style.display = DisplayStyle.None; // The common halo ring owns action progress.
+                m_AmmoBar.style.display = DisplayStyle.None; // 动作进度由共用的光环读条显示。
                 if (charging) {
                     m_AmmoBar.highValue = 1;
                     m_AmmoBar.value = status.Progress;
@@ -81,7 +81,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Shared with the native review; it renders facts, without interpreting gameplay input.
+        // 原生界面检查也复用此处。这里展示已得到的状态，不解析战斗输入。
         public static void PresentChargeStatus(VisualElement root, HaloChargeStatus status) {
             var label = root.Q<Label>("reloading-label");
             var bar = root.Q<ProgressBar>("player-ammo-bar");

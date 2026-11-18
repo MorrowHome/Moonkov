@@ -118,7 +118,7 @@ namespace Unity.MP_FPS {
                     InstanceId = m_Instance, AttemptId = m_Attempt, Action = "cancel"
                 }, timeout.Token);
             } catch (Exception) {
-                /* Expiring signaling and ICE consent also bound abandoned peers. */
+                /* 信令有过期时间，ICE 也会检查对方是否仍在连接，废弃对端不会永久留存。 */
             }
         }
     }

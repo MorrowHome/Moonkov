@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     internal static class BountyUIComposition {
-        // Reuse the terminal's actual window/header hierarchy and Archive control states.
+        // 复用终端原有窗口、标题栏结构和 Archive 控件状态。
         internal static void Window(VisualElement content) {
             var window = TerminalLayout.Clone("Window", "terminalWindow");
             window.name = content.name + "ArchiveWindow";

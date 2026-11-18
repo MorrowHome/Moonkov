@@ -9,9 +9,9 @@ using Unity.MP_FPS.Inventory;
 using PointerType = UnityEngine.UIElements.PointerType;
 
 namespace Unity.MP_FPS.Client {
-    // Presents authoritative snapshots. Dragging sends an intent; it never edits account quantities.
+    // 用已确认的库存快照显示。拖动物品只提交移动意图，库存数量由处理方更新。
     public sealed partial class ContainerInventoryView : IDisposable {
-        // One logical scale for every storage surface, independent of contents and layout passes.
+        // 仓储区域共用一个逻辑尺寸比例，不受内容与布局次数影响。
         private const float StorageCellSize = 64;
 
         private sealed class Grid {
@@ -353,8 +353,8 @@ namespace Unity.MP_FPS.Client {
             if (operationCompleted) m_WorkshopMessage = message;
             if (workshopChanged) RefreshWorkshop();
             if (operationCompleted && !m_Busy && m_QuickTransfers.Count > 0) {
-                // Continue after the HUD has finished processing this receipt. It may
-                // present the same snapshot twice, or close access in the same update.
+                // 等 HUD 处理完当前回执再继续，
+                // 因为同一轮更新可能重复展示快照，或关闭搜刮容器。
                 m_QuickTransferPump?.Pause();
                 // 每次回执过一轮界面更新再发下一件，避免同一份快照重绘两次时连着发两个请求。
                 m_QuickTransferPump = m_Root.schedule.Execute(ProcessQuickTransfers);
@@ -865,8 +865,8 @@ namespace Unity.MP_FPS.Client {
             while (m_QuickTransfers.Count > 0) {
                 var intent = m_QuickTransfers.Peek();
                 var item = m_Graph.Find(intent.ItemId);
-                // Keep the original direction. An item already taken must never be
-                // sent back on the next receipt, even after a partial stack merge.
+                // 保留原本移动的方向。已经取走的物品要跳过，
+                // 即使上一轮只合并了一部分堆叠，也不能又送回去。
                 // 重新读取这件东西目前在哪。它已被拿走或换边时，跳过旧意图，防止反方向把它搬回去。
                 if (item == null || m_Graph.Carried(item) != intent.FromCarried) {
                     m_QuickTransfers.Dequeue();
@@ -1071,7 +1071,7 @@ namespace Unity.MP_FPS.Client {
                     return;
                 }
                 if (evt.button == 0 && m_ReleaseRecovery != null) Cancel();
-                // Repeated down notifications must not restart a held gesture.
+                // 同一次按住收到多次按下通知时，保留正在处理的拖动。
                 if (evt.button == 0 && m_View.m_Drag == this && m_Pointer == evt.pointerId) {
                     evt.StopImmediatePropagation();
                     return;
@@ -1110,8 +1110,8 @@ namespace Unity.MP_FPS.Client {
                 if (m_Pointer < 0 && evt.pointerType == PointerType.mouse && evt.pressedButtons == 0)
                     m_View.ShowItemTooltip(target, m_Source(), evt.position);
                 if (m_Pointer < 0 || evt.pointerId != m_Pointer) return;
-                // Input System can dispatch an unpressed move before the queued PointerUp.
-                // Let that event finish the drop before recovering a genuinely missed release.
+                // Input System 可能先发未按住鼠标的移动，再发排队中的 PointerUp。
+                // 先让松手事件正常落下物品，再处理真正漏收的松手。
                 // 同一批输入里，没按键的移动事件可能比松手先到。延后做兜底取消，给正常的松手事件机会提交落位。
                 if ((evt.pressedButtons & 1) == 0) {
                     m_ReleaseRecovery ??= target.schedule.Execute(Cancel);
@@ -1154,7 +1154,7 @@ namespace Unity.MP_FPS.Client {
                     targetGrid.Element.RemoveFromClassList("inventory-drop-valid");
                     targetGrid.Element.RemoveFromClassList("inventory-drop-invalid");
                 }
-                // Later grids are open windows and visually above the underlying container.
+                // 较晚加入的格子来自浮窗，显示在原有容器上方。
                 // 后加入的格子一般是更上层的浮窗。先试它们，免得在浮窗里松手却命中背后的背包。
                 for (int n = m_View.m_Grids.Count - 1; n >= 0; n--) {
                     var grid = m_View.m_Grids[n];

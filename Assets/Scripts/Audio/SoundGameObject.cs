@@ -5,13 +5,13 @@ using UnityEngine.Audio;
 using Random = UnityEngine.Random;
 
 /// <summary> 
-/// Represents a single audio source GameObject with associated audio effects and spatial positioning.
-/// Handles detailed audio parameter management including filters, spatial audio, and distance-based effects.
+/// 一个带空间位置和处理效果的音源 GameObject。
+/// 管理滤波、空间音及随距离变化的细节。
 /// </summary>
 public class SoundGameObject {
     /// <summary>
     ///
-    /// Defines how the SoundGameObject's position is determined and updated.
+    /// 指定如何计算和更新 SoundGameObject 的位置。
     /// </summary>
     public enum PositionType {
         Position,
@@ -19,7 +19,7 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Contains references to all audio components attached to the GameObject.
+    /// 保存挂在该 GameObject 上的各个音频组件引用。
     /// </summary>
     public class AudioComponentData {
         public AudioSource ASource;
@@ -29,14 +29,14 @@ public class SoundGameObject {
     }
 
     public SoundGameObject
-        NextAvailable; // Linked list. Points to next available SoundGameObject (null = none available)
+        NextAvailable; // 链表中的下一个空闲 SoundGameObject，null 表示后面没有空闲对象。
 
     public AudioSource m_AudioSource;
     private const float SOUND_VOL_CUTOFF = -60.0f;
     private AudioLowPassFilter m_LowPassFilter;
     private AudioHighPassFilter m_HighPassFilter;
     private AudioDistortionFilter m_DistortionFilter;
-    private SoundEmitter m_Emitter; // Emitter that is controlling this SoundObject
+    private SoundEmitter m_Emitter; // 当前控制这个 SoundObject 的发声器。
     private bool m_Active;
     private int m_CurrentLoopCount;
     private int m_LastTimeSamples;
@@ -55,8 +55,8 @@ public class SoundGameObject {
     private float m_HPFRandomValue;
     private float m_SpatialBlendValue;
 
-    // dsp time at which a PlayDelayed/PlayScheduled source will actually start.
-    // 0 means "playback starts immediately or has already started".
+    // PlayDelayed 或 PlayScheduled 真正开始发声的 DSP 时间。
+    // 0 表示立即播放，或已经开始。
     private double m_PendingStartDsp;
     private float m_NextOcclusion, m_OcclusionGain = 1, m_OcclusionCutoff = 22000;
     private bool m_Occluded;
@@ -72,10 +72,10 @@ public class SoundGameObject {
 #endif
 
     /// <summary>
-    /// Initializes a new SoundGameObject with the specified parent and audio components.
+    /// 使用指定的父对象和音频组件初始化新的 SoundGameObject。
     /// </summary>
-    /// <param name="parent">Parent GameObject that will contain this sound object</param>
-    /// <param name="audioComponentData">Audio components to use for playback and effects</param>
+    /// <param name="parent">容纳这个声音对象的父 GameObject。</param>
+    /// <param name="audioComponentData">供播放和声音处理使用的音频组件。</param>
     public SoundGameObject(GameObject parent, AudioComponentData audioComponentData) {
 #if UNITY_EDITOR
         m_DebugName = audioComponentData.ASource.gameObject.name;
@@ -95,11 +95,11 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Enables audio filter components based on SoundDef settings to optimize CPU usage.
-    /// Only enables filters that are actually needed by the sound definition.
+    /// 根据 SoundDef 配置启用滤波。
+    /// 只打开实际会用到的处理组件，减少 CPU 开销。
     /// </summary>
-    /// <param name="soundDef">Sound definition containing filter settings</param>
-    /// <returns>True if distance calculations are needed for any enabled effects</returns>
+    /// <param name="soundDef">含滤波设置的声音定义。</param>
+    /// <returns>有已启用的效果需要计算距离时为 true。</returns>
     public bool EnableAudioFilterComponents(SoundDef soundDef) {
         bool calcDistance = false;
         if (m_LowPassFilter != null)
@@ -111,7 +111,7 @@ public class SoundGameObject {
         if (m_DistortionFilter) m_DistortionFilter.enabled = soundDef.DistortionFilter.EnableComponent;
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-            return calcDistance; // No spatial blending when playing from the Unity editors inspector window
+            return calcDistance; // 在 Unity 检视面板试听时关闭空间混合。
 #endif
         if (soundDef.DistanceInfo.SpatialBlendCurveType != Interpolator.CurveType.None &&
             soundDef.DistanceInfo.SpatialBlend_MaxDistance != 0)
@@ -120,9 +120,9 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Enables the SoundGameObject and associates it with the specified emitter.
+    /// 启用 SoundGameObject，并把它交给指定发声器。
     /// </summary>
-    /// <param name="soundEmitter">The emitter that will control this sound object</param>
+    /// <param name="soundEmitter">要控制这个声音对象的发声器。</param>
     public void Enable(SoundEmitter soundEmitter) {
         m_Active = true;
         m_Emitter = soundEmitter;
@@ -130,15 +130,15 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Kills the SoundGameObject if it belongs to the specified emitter, stopping playback and cleanup.
+    /// 若 SoundGameObject 仍归该发声器，结束播放并清理。
     /// </summary>
-    /// <param name="emitter">The emitter requesting the kill operation</param>
+    /// <param name="emitter">发出结束请求的发声器。</param>
     public void Kill(SoundEmitter emitter) {
         if (m_Emitter == emitter) {
             StopAudioSource();
-            // Scene/Play teardown can destroy the shared pool or the attached
-            // source before its owner releases the emitter. Unity objects then
-            // compare equal to null even though their managed wrappers remain.
+            // 退场或退出 Play 时，共用的池子或挂靠的音源可能先被销毁。
+            // 持有者随后才释放发声器。这时 Unity 对象和 null 比较会相等，
+            // 即使 C# 里的托管引用还在。
             if (m_PositionType == PositionType.ParentTransform && m_AudioSource && m_SoundGameObjectPool)
                 m_AudioSource.transform.parent = m_SoundGameObjectPool.transform;
             m_Active = false;
@@ -147,48 +147,48 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Stops the AudioSource component immediately.
+    /// 立即停止 AudioSource。
     /// </summary>
     public void StopAudioSource() {
         if (m_AudioSource != null) m_AudioSource.Stop();
     }
 
     /// <summary>
-    /// Checks if the AudioSource is currently playing audio.
+    /// 检查 AudioSource 当前是否在播。
     /// </summary>
-    /// <returns>True if playing, false otherwise</returns>
+    /// <returns>在播放时为 true，否则为 false。</returns>
     public bool IsPlaying() {
         if (m_AudioSource == null) return false;
         return m_AudioSource.isPlaying;
     }
 
     /// <summary>
-    /// Sets the active state of this SoundGameObject.
+    /// 设置这个 SoundGameObject 是否启用。
     /// </summary>
-    /// <param name="activeFlag">True to activate, false to deactivate</param>
+    /// <param name="activeFlag">true 为启用，false 为停用。</param>
     public void SetActive(bool activeFlag) { m_Active = activeFlag; }
 
     /// <summary>
-    /// Updates the SoundGameObject, handling audio parameters, looping, and lifecycle management.
+    /// 根据当前状态更新 SoundGameObject，处理音频参数、循环与回收。
     /// </summary>
-    /// <param name="soundEmitter">The controlling sound emitter</param>
-    /// <param name="repeatCount">Current repeat count</param>
-    /// <param name="count">Reference to active audio source counter</param>
-    /// <param name="fatal">Reference to fatal error flag</param>
-    /// <returns>True if still active and playing, false otherwise</returns>
+    /// <param name="soundEmitter">控制该对象的发声器。</param>
+    /// <param name="repeatCount">当前剩余重复次数。</param>
+    /// <param name="count">活动音源计数器的引用。</param>
+    /// <param name="fatal">不可恢复错误标记的引用。</param>
+    /// <returns>仍然活动且在播放时为 true，否则为 false。</returns>
     public bool Update(SoundEmitter soundEmitter, int repeatCount, ref int count, ref bool fatal) {
         fatal = false;
         if (m_Active == false) return false;
         // 播放任务可能还在，但跟随的物体已经被销毁。用 fatal 把这种情况告知上一层，它会检查池对象并归还任务。
-        if (m_AudioSource == null) // GameObject has been destroyed.
+        if (m_AudioSource == null) // 对应的 GameObject 已被销毁。
         {
             fatal = true;
             return false;
         }
 
-        // A delayed or scheduled source reports isPlaying == false until its start time.
-        // Treating that as "finished" used to kill the emitter before it ever made a sound,
-        // so any SoundDef using DelayMin/DelayMax or StopDelay was silently dropped.
+        // 预约或延迟播放的音源在开播时间前会报告 isPlaying == false。
+        // 若将其误认成已播完，声音还没响就会回收发声器，
+        // 使用 DelayMin、DelayMax 或 StopDelay 的 SoundDef 也会被静默丢掉。
         // 预约时间到之前，Unity 还会报告声源没有在播。把等待中的声源也算在使用中，才能等到声音真正开始。
         if (m_PendingStartDsp > 0.0) {
             if (AudioSettings.dspTime < m_PendingStartDsp) {
@@ -198,7 +198,7 @@ public class SoundGameObject {
             m_PendingStartDsp = 0.0;
         }
         if (m_AudioSource.isPlaying)
-            // AudioSource is still playing? Handle fade out if stopping and update looping audio clip counter.
+            // 检查 AudioSource 是否仍在播。正在停则处理淡出，并更新循环次数。
         {
             m_PendingStartDsp = 0.0;
             UpdateAudioParameters(soundEmitter);
@@ -207,22 +207,22 @@ public class SoundGameObject {
             return true;
         }
 
-        // Finished playing all AudioSources. We can free the SoundGameObject if it's not reserved and we've no more
-        // SoundEmitter repeats to do
+        // 所有 AudioSource 已播完。只要未预留，
+        // 且 SoundEmitter 也不需要重复播放，就可归还 SoundGameObject。
         if (soundEmitter.Reserved != SoundEmitter.ReservedInfo.ReservedEmitterAndAudioSources)
             if (repeatCount < 2)
-                Kill(soundEmitter); // Not reserved. Allow another emitter to use this SoundGameObject
-        return false; // No longer playing
+                Kill(soundEmitter); // 没有预留，可供另一个发声器再用。
+        return false; // 播放已结束。
     }
 
     /// <summary>
-    /// Checks if the audio has looped and updates loop counting accordingly.
+    /// 检查刚才是否完成一轮循环，并更新计数。
     /// </summary>
-    /// <returns>True if a loop was detected, false otherwise</returns>
+    /// <returns>观察到一次循环时为 true，否则为 false。</returns>
     public bool CheckForAudioSourceLoop() {
         bool looped = false;
         if (m_CurrentLoopCount > 1 && m_AudioSource.timeSamples < m_LastTimeSamples)
-            // have we looped? If so, decrease loop counter
+            // 如果音频刚好绕回开头，就把剩余循环次数减一。
         {
             m_CurrentLoopCount--;
             looped = true;
@@ -233,23 +233,23 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Validates that the SoundGameObject's GameObject still exists and is accessible.
+    /// 确认关联的 GameObject 仍存在且可访问。
     /// </summary>
-    /// <returns>True if valid, false if the GameObject has been destroyed</returns>
+    /// <returns>对象仍有效时为 true，对应 GameObject 已销毁时为 false。</returns>
     public bool IsValid() {
         return m_AudioSource != null ? true : false;
-        // SoundGameObject could have had its parent changed and its parent has since been destroyed.
+        // SoundGameObject 可能已换过父节点，而新父节点后来又被销毁。
     }
 
     /// <summary>
-    /// Triggers the AudioSource to start playing with all configured parameters from the SoundDef.
-    /// Sets up audio clips, pitch, volume, spatial settings, and all audio effects.
+    /// 按 SoundDef 提供的全部参数，让 AudioSource 开始播放。
+    /// 配好音频片段、音高、音量、空间位置及所需处理效果。
     /// </summary>
-    /// <param name="listenerTransform">Transform of the audio listener</param>
-    /// <param name="soundDef">Sound definition containing all audio settings</param>
-    /// <param name="soundEmitter">The controlling sound emitter</param>
-    /// <param name="spatialBlend">Spatial blend value (0=2D, 1=3D)</param>
-    /// <param name="mixerGroups">Array of audio mixer groups for routing</param>
+    /// <param name="listenerTransform">音频监听器的 Transform。</param>
+    /// <param name="soundDef">包含所有播放参数的声音定义。</param>
+    /// <param name="soundEmitter">控制该对象的发声器。</param>
+    /// <param name="spatialBlend">空间混合量，0 为 2D，1 为 3D。</param>
+    /// <param name="mixerGroups">提供输出路由的音频混音组列表。</param>
     public void TriggerAudioSource(
         Transform listenerTransform,
         SoundDef soundDef,
@@ -266,17 +266,17 @@ public class SoundGameObject {
         m_NextOcclusion = 0;
         m_AudioSource.priority = soundDef.Priority;
 
-        // Get clip from list based on index type (random, user, sequencial..)
+        // 按索引方式从列表选片段，例如随机、指定或顺序。
         // 播放开始前先固定这次用的片段和随机音高。音高从音分换成播放倍率，1200 音分对应翻倍。
         uint clipIndex = GetClipIndex(soundDef, soundEmitter);
         m_AudioSource.clip = soundDef.Clips[(int)clipIndex];
 
-        // Map from cent (100 = 1 semitone) space to linear playback multiplier
+        // 音高从音分换成线性倍率。100 音分等于一个半音。
         float cents = soundDefOverrideData.BasePitchInCents +
                       Random.Range(soundDef.PitchAndVolumeInfo.PitchMin, soundDef.PitchAndVolumeInfo.PitchMax);
         m_AudioSource.pitch = Mathf.Pow(2.0f, cents / 1200.0f);
 
-        // Set distance min / max attenuation
+        // 设置最小和最大距离衰减。
         m_AudioSource.minDistance = soundDef.DistanceInfo.VolumeDistMin;
         m_AudioSource.maxDistance = soundDef.DistanceInfo.VolumeDistMax;
         m_AudioSource.rolloffMode = soundDef.DistanceInfo.VolumeRolloffMode;
@@ -285,22 +285,22 @@ public class SoundGameObject {
         s_Counter++;
 #endif
 
-        // Set volume using SoundGameObject random value, and soundDef and SoundEmitter volume scale parameters
+        // 音量结合 SoundGameObject 的随机值、soundDef 与 SoundEmitter 的音量倍率。
         float vMin = AmplitudeFromDecibel(soundDef.PitchAndVolumeInfo.VolumeMin);
         float vMax = AmplitudeFromDecibel(soundDef.PitchAndVolumeInfo.VolumeMax);
         m_Volume = Random.Range(vMin, vMax);
 
-        // Set loop on / off (Update code will count down the number of loops required and stop when necessary)
+        // 设置是否循环。Update 按实际循环次数递减，到最后一轮时停播。
         // AudioSource 按循环方式播放，代码再用样本位置的回绕次数限制实际循环次数。配置为零时可以一直循环到调用方停止它。
-        m_AudioSource.loop = soundDef.RepeatInfo.LoopCount != 1; // True if loopcount!=1
-        // (0 = infinite. 1 = play once. 2 = play twice...)
+        m_AudioSource.loop = soundDef.RepeatInfo.LoopCount != 1; // loopcount!=1 时启用循环设置。
+        // 0 表示无限循环，1 表示播一次，2 表示播两次，以此类推。
         m_CurrentLoopCount = soundDef.RepeatInfo.LoopCount;
         m_LastTimeSamples = 0;
 
-        // Set mixergroup output
+        // 设置目标混音组。
         if (mixerGroups != null) m_AudioSource.outputAudioMixerGroup = mixerGroups[(int)soundDef.MixerGroup];
 
-        // Set start sample offset position
+        // 将播放起点设到指定采样位置。
         float startPercentOffset = Random.Range(soundDef.StartStopInfo.StartOffsetPercentMin,
             soundDef.StartStopInfo.StartOffsetPercentMax) / 100.0f;
         // 播放偏移以片段长度的比例给出，换成样本编号后能跳到想播放的位置。单次覆盖常用来截取装填动作的一小段。
@@ -315,14 +315,14 @@ public class SoundGameObject {
             m_DistortionFilter.distortionLevel = Random.Range(soundDef.DistortionFilter.DistortionMin,
                 soundDef.DistortionFilter.DistortionMax);
 
-        // Set stereo pan.
-        // This pan is applied before 3D panning calculations are considered.
-        // In other words, stereo panning affects the left right balance of the sound before it is spatialised in 3D.
+        // 设置左右声道的平衡。
+        // 在计算 3D 位置影响前应用这个声像。
+        // 因此实际空间化之前，先能单独规定左右的起始分配。
         m_AudioSource.panStereo = Random.Range(soundDef.DistanceInfo.PanMin, soundDef.DistanceInfo.PanMax);
         UpdateAudioParameters(soundEmitter);
 
-        // Start sample with delay if required
-        // If we also have a stopDelay time (stop the audioSource after n seconds), use PlayScheduled and SetScheduledEndTime
+        // 按需延迟开始播放。
+        // 配有 stopDelay（经过指定秒数后停止 audioSource）时，使用 PlayScheduled 和 SetScheduledEndTime。
         float delay = Random.Range(soundDef.StartStopInfo.DelayMin, soundDef.StartStopInfo.DelayMax);
         // 用音频系统自己的 DSP 时钟预约开播和停播。画面帧率抖动时，声音的开始和结束仍按自己的时刻处理。
         float stopAfter = soundDefOverrideData.StopAfterSeconds ?? soundDef.StartStopInfo.StopDelay;
@@ -345,9 +345,9 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Sets the world position of the SoundGameObject for spatial audio.
+    /// 设置 SoundGameObject 在世界中的位置，供空间音频使用。
     /// </summary>
-    /// <param name="position">World position coordinates</param>
+    /// <param name="position">世界坐标。</param>
     public void SetPosition(Vector3 position) {
         m_AudioSource.transform.position = position;
         m_PositionType = PositionType.Position;
@@ -355,10 +355,10 @@ public class SoundGameObject {
     }
 
     /// <summary>
-    /// Attaches the SoundGameObject to a parent transform with a local position offset.
+    /// 把 SoundGameObject 挂到父 Transform 下，再应用局部位置偏移。
     /// </summary>
-    /// <param name="parent">Parent transform to attach to</param>
-    /// <param name="localPosition">Local position offset from the parent</param>
+    /// <param name="parent">要挂靠的父 Transform。</param>
+    /// <param name="localPosition">相对于父节点的位置偏移。</param>
     public void SetParent(Transform parent, Vector3 localPosition) {
         m_AudioSource.transform.parent = parent;
         m_AudioSource.transform.localPosition = localPosition;
@@ -381,7 +381,7 @@ public class SoundGameObject {
         m_SpatialCurveNormalizedResult = 1;
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-            return false; // No listener distance calculation required when testing in inspector window
+            return false; // 从检视面板测试音频时，无需计算监听器距离。
 #endif
         calcDistance = EnableAudioFilterComponents(soundDef);
         return calcDistance;
@@ -429,7 +429,7 @@ public class SoundGameObject {
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
             m_AudioSource.spatialBlend = 0;
-        // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
+        // 在检视面板试听时关闭 SpatialBlend，让声音能从所有扬声器听见。
         else
 #endif
             m_AudioSource.spatialBlend = m_SpatialBlendValue * m_SpatialCurveNormalizedResult;
@@ -458,14 +458,14 @@ public class SoundGameObject {
             clipIndex = soundEmitter.UserClipIndex;
             clipIndex %= (uint)soundDef.Clips.Count;
         } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast) {
-            // Selected per SoundDef by SoundSystem, independent of emitter pool reuse.
+            // SoundSystem 按 SoundDef 选出片段。发声器对象复用不会改变这个选片段记录。
             clipIndex = soundEmitter.UserClipIndex % (uint)soundDef.Clips.Count;
         } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Random) {
             clipIndex = (uint)Random.Range(0, soundDef.Clips.Count);
         } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Sequential) {
             soundEmitter.SequentialClipIndex++;
             soundEmitter.SequentialClipIndex %= (uint)soundDef.Clips.Count;
-            // ensure it's in range (if swapping between user <> sequential)
+            // 从用户指定改成顺序选择，或反向切换时，先保证索引未越界。
             clipIndex = soundEmitter.SequentialClipIndex;
         }
         return clipIndex;

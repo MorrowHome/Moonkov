@@ -69,7 +69,7 @@ namespace Unity.MP_FPS {
 
         // 刚开始运行就建一份新的进度对象。使用关闭域重载的 Editor 试玩选项时，也会重新开始计进度。
         /// <summary>
-        /// This initialization is required in the Editor to avoid the instance from a previous Playmode to stay alive in the next session.
+        /// 编辑器重新进入 Play 时先初始化，免得继续使用上一轮的旧实例。
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeInitializeOnLoad() { Instance = new LoadingData(); }

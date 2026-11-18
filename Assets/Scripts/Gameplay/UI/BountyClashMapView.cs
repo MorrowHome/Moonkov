@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // North-up schematic. Every marker consumes approved snapshots or the owned player;
-    // this view never queries entities, cameras or scene geometry.
+    // 地图正北朝上。所有标记来自已获准的快照或本地拥有的角色，
+    // 绘图直接使用这些数据，无需搜索实体、相机或场景几何。
     public sealed class BountyClashMapView : VisualElement {
         public const float MinimumZoom = 1, MaximumZoom = 8;
         public float Zoom { get; private set; } = MinimumZoom;
@@ -229,7 +229,7 @@ namespace Unity.MP_FPS {
                     m_SupplyMax = Vector2.Max(m_SupplyMax, center + Vector2.one * m_SurfaceData.span * .5f);
                 }
             }
-            // Full-map bounds also include the current owner, even after walking far before opening M.
+            // 全图范围也要覆盖本地角色。哪怕玩家远离出生点后才按 M，地图仍能容纳他的位置。
             // 全图的范围还要覆盖当前角色位置。远征玩家移动到地图边沿时，仍能把自己拉进视图。
             var min = Vector2.Min(m_SupplyMin, XZ(local));
             var max = Vector2.Max(m_SupplyMax, XZ(local));
@@ -415,7 +415,7 @@ namespace Unity.MP_FPS {
         // 补给点是否空来自服务端位掩码。每个常规箱子对应一位，客户端按编号读这一位。
         private bool Available(int index) { return (m_TakenMask & (1UL << index)) == 0; }
 
-        // Readouts consume the same approved data as the markers. No scene/enemy scans.
+        // 读数与标记用同一份允许展示的数据。无需扫描场景或敌人。
         public void PresentReadouts(
             Label position,
             Label extraction,
@@ -679,9 +679,9 @@ namespace Unity.MP_FPS {
                                                                      (m_Snapshot.IsCarrier ||
                                                                       m_Snapshot.TeamHasBounty))) {
                     Diamond(p, Project(m_Snapshot.BountyPosition), 9,
-                        blue); // Already-authorized exact position: never round it.
+                        blue); // 服务器已授权准确位置，使用原值。
                 } else if (m_Snapshot.Bounty == ClashBountyState.Carried) {
-                    // The server supplies a 25m coarse position. Draw uncertainty, never a precise carrier icon.
+                    // 服务器给出约 25 米范围的粗略位置，用范围标记表现不确定性。
                     p.fillColor = new Color(.09f, .29f, 1, .12f);
                     p.strokeColor = blue;
                     p.lineWidth = 2;

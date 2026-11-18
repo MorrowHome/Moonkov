@@ -93,14 +93,14 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour {
     public LayerMask GroundLayers { get; private set; }
 
     // 把 Inspector 的各组速度、加速、转向和跳跃值汇总成一个结构。服务器移动和本地预测都可直接借用同一结构。
-    /// <summary>Shared movement tuning for entity baking and offline gameplay previews.</summary>
+    /// <summary>给实体烘焙与离线玩法预览共用的移动参数。</summary>
     public FirstPersonController.ControllerConsts BuildControllerConsts() {
         return new FirstPersonController.ControllerConsts {
             JumpHeight = JumpHeight,
             Gravity = Gravity,
             StandingFallSpeed = StandingFallSpeed,
             JumpTimeout =
-                math.max(JumpTimeout, math.EPSILON), //set a minimum delay to force the jump timeout to wait 1 frame
+                math.max(JumpTimeout, math.EPSILON), //给跳跃超时设一个最短延时，至少等一帧。
             FallTimeout = FallTimeout,
             LandingTimeout = LandingTimeout,
             LandingAnimTimeout = LandingAnimTimeout,

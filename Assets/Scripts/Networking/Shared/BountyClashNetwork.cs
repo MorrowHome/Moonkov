@@ -88,7 +88,7 @@ namespace Unity.MP_FPS {
         public uint Sequence;
         public ClashLife Life;
         public bool Ready, Connected, OwnTeam, IsLocal, IsBot;
-        public float3 Position; // Only own-team rows carry a position. Other rows are zeroed.
+        public float3 Position; // 只有同队的成员行传位置，其他行的位置归零。
         public float Health, MaxHealthFraction, ReviveProgress, ReconnectRemaining;
     }
 
@@ -100,7 +100,7 @@ namespace Unity.MP_FPS {
         public float Remaining;
         public bool Active, Presence;
         public int ContactCount;
-        public uint SectorMask; // Eight direction sectors, three distance bands; never exact enemy coordinates.
+        public uint SectorMask; // 八个方向扇区和三个距离范围，不含敌人精确坐标。
     }
 
     public struct ClashSenseContactRpc : IRpcCommand {

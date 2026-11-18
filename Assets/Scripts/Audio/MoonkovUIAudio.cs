@@ -4,18 +4,18 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Binds every UI Toolkit document in the project to the shared click / submit / hover
-    /// sounds, so a selectable control can never be silent just because its screen forgot
-    /// to opt in. Before this existed only the stash screen and the raid HUD were wired,
-    /// which left the main menu, the pause menu and the post-death result screen mute.
+    /// 给项目里所有 UI Toolkit 文档绑定共用的点击、确认和悬停声，
+    /// 每个可选控件都能得到声音，无需各页面单独接线。
+    /// 此前只有仓库和战局 HUD 配了这些声音，
+    /// 因此主菜单、暂停和战后结算页没有按钮音。
     ///
-    /// Roots observe input to bind each button's activation callback. Subtree bindings
-    /// are safe: MoonkovAudio installs the same sound callback only once per button.
+    /// 从根节点观察输入，为各按钮注册自己的激活回调。绑定子树也可以，
+    /// 因为 MoonkovAudio 对一个按钮只装一次相同回调。
     /// </summary>
     public sealed class MoonkovUIAudio : MonoBehaviour {
-        // Documents appear when scenes load and when screens are created at runtime, so the
-        // scan is periodic rather than per frame; delegated input also covers new buttons
-        // added to an already-bound document between scans.
+        // 场景加载或运行中创建页面时都可能出现新文档，
+        // 因此按间隔扫描即可。在两次扫描间，
+        // 已绑定文档新加的按钮也可以由输入事件接入。
         private const float ScanInterval = .25f;
         private float m_NextScan;
         private void Start() { Scan(); }

@@ -4,9 +4,9 @@ using Unity.MP_FPS.Inventory;
 using Random = Unity.Mathematics.Random;
 
 namespace Unity.MP_FPS {
-    // Server-owned shuffled bag. Characters and personalities do not determine weapons.
+    // 主武器按服务端洗牌顺序取。角色外观和个性不决定枪型。
     public sealed class PmcWeaponLoadout {
-        // Explosive weapons need a separate safe-fire policy before AI can carry them.
+        // AI 要用爆炸武器前，需要另有适合它的安全开火规则。
         private static readonly string[] s_Weapons =
             { "rifle", "shotgun", "sniper", "cicada", "trine", "aegis", "vesper", "thorn", "rondo", "nocturne" };
 

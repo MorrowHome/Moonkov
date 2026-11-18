@@ -16,8 +16,8 @@ namespace Unity.MP_FPS {
 
         public void OnUpdate(ref SystemState state) {
             if (MoonRaidMap.Active == null || BountyClashRuntime.Enabled(state.EntityManager)) return;
-            // The receive job updates CurrentState before its cleanup ECB destroys
-            // the connection and player. Read their inventory and pose in this gap.
+            // 接收 Job 会先更新 CurrentState，之后清理用的 ECB 才删除
+            // 连接和角色。趁这个间隔读取它们的库存和姿态。
             // 接收事件是上一批网络任务写的。先等写入，之后才能读连接的断开状态，NetCode 的清理缓冲还没回放。
             state.EntityManager.CompleteAllTrackedJobs();
             var handle = state.WorldUnmanaged.GetExistingUnmanagedSystem<ServerGameSystem>();

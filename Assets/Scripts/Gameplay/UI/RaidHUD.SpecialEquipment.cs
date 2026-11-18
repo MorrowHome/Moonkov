@@ -84,7 +84,7 @@ namespace Unity.MP_FPS {
                     if ((!m_SurveyActor || !m_SurveyHits[n].transform.IsChildOf(m_SurveyActor)) &&
                         m_SurveyHits[n].distance < nearest)
                         nearest = m_SurveyHits[n].distance;
-                // A full buffer may omit a closer surface; never present a false precise distance.
+                // 射线结果已满时可能漏掉更近表面，只报告无法精确测距。
                 // 射线结果写进固定数组。数组满时可能还有更近物体没装进去，所以此时只显示遮挡复杂。
                 string distance = hits == m_SurveyHits.Length ? "测距遮挡复杂" :
                     float.IsPositiveInfinity(nearest) ? "测距 >500 m／无实体表面" : "测距 " + nearest.ToString("0.0") + " m";

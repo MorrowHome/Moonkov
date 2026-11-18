@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Unity.MP_FPS {
     public partial class GameManager {
         private static async Task PrepareCharacterResourcesAsync(World world, CancellationToken cancellationToken) {
-            // Let the prefab registry process the subscene entities loaded this frame.
+            // 让预制体注册系统先处理这一帧已经载入的子场景实体。
             // 子场景刚加载时，实体模板登记系统还可能没运行过。先等一帧，再按 GUID 找得到对应的预制件。
             await Awaitable.NextFrameAsync(cancellationToken);
             var registry = world.GetExistingSystemManaged<GhostEntityPrefabSystem>();

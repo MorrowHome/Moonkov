@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS {
-    // Observes rendered client state, outside the prediction replay loop.
+    // 读取已渲染的客户端状态。预测重算不驱动声音。
     public sealed class MoonkovPlayerAudio {
         private bool m_Initialized, m_WasLootSearching;
         private SoundSystem.SoundInfo m_LootSound;
@@ -44,7 +44,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // Presentation gain only. Posture caps preserve quiet movement; AI hearing is separate.
+        // 这里只调播放增益。安静姿势对音量设上限，AI 听觉另有判断。
         public static float FootstepVolume(float speed, DollSingerStance stance) {
             if (!float.IsFinite(speed) || speed <= 0) return 0;
             if (stance != DollSingerStance.Standing) {
@@ -52,7 +52,7 @@ namespace Unity.MP_FPS {
                     stance == DollSingerStance.Crouching ? .38f : .65f;
                 return cap * Mathf.Clamp01(speed / (2 * DollSingerStances.SpeedScale(stance)));
             }
-            // Walk at 2 m/s; retain the full running mix at the production sprint speed.
+            // 用 2 m/s 作为步行参考速度，正式冲刺速度时保留完整跑步混音。
             return speed <= 2 ? .7f * speed / 2 : Mathf.Lerp(.7f, 1, Mathf.InverseLerp(2, 5.335f, speed));
         }
 
@@ -110,7 +110,7 @@ namespace Unity.MP_FPS {
                 m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 // 首份快照用来记住已有进度。这样刚看见一个角色时，当前快照里保留的旧跳跃或旧换装不会突然响一遍。
-                return; // A late join must not replay historical events.
+                return; // 较晚加入时，只消费加入后新发生的事件。
             }
             if (ghost.CurrentHealth <= 0) {
                 Stop();
@@ -201,11 +201,11 @@ namespace Unity.MP_FPS {
                     library.WeaponDraw, position, owned ? 1 : .8f, owned ? 0 : 1, follow: player);
             }
             if (owned || m_OxygenSupplySound != null) UpdateOxygenSupply(ghost, library, position, owned);
-            // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
+            // 使用物品音效来自已确认的库存动作。自然恢复不触发这段提示。
             if (owned && ghost.CurrentHealth > 0) {
                 // 面罩呼吸和低血量心跳只在本机听者上播。喘息突然加重可以提早换声音，角色正在说话或咳嗽时给它让位。
                 var breath = MoonkovOxygenFeedback.Breath(ghost);
-                // Exhaustion replaces the calm cycle promptly, while pain still takes priority.
+                // 耐力耗尽时立即切到急促呼吸。发生受伤时仍先播受伤声。
                 if (breath.Exerted && m_BreathSound != null && m_BreathSound.SoundDefinition == library.SuitBreath) {
                     GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .06f);
                     m_BreathSound = null;
@@ -258,14 +258,14 @@ namespace Unity.MP_FPS {
                 m_Wall.Reset();
                 return;
             }
-            // Sample rendered displacement, not requested sprint speed. Smooth across simulation snapshots.
+            // 观察渲染后的实际位移，然后在模拟快照之间平滑。按下冲刺键只是意图，不能当作当前速度。
             // 拿实际画面位移和转角算动作快慢，再做平滑。按住冲刺但被墙挡住时，就没有虚构的奔跑声。
             float response = 1 - Mathf.Exp(-deltaTime / .12f);
             m_MoveSpeed = Mathf.Lerp(m_MoveSpeed, travel.magnitude / deltaTime, response);
             m_TurnSpeed = Mathf.Lerp(m_TurnSpeed, float.IsFinite(turn) && turn < 90 ? turn / deltaTime : 0, response);
             if (travel.sqrMagnitude >= .000001f || (turn > .1f && turn < 45f)) m_LastMovementTime = Time.unscaledTime;
-            // Rendered animation can step between two simulation snapshots. Keep
-            // the motion gate briefly, without using displacement to schedule sound.
+            // 渲染动画可能在两份模拟快照之间跨步。短暂保留移动状态，
+            // 播放时刻仍跟动作，而非由这段位移决定。
             // 短暂保留步声资格，让动画脚落地的回调与下一份网络快照错开时还能响。每一步本身由动画事件触发。
             m_CanStep = Time.unscaledTime - m_LastMovementTime <= .1f;
             if (travel.sqrMagnitude < .000001f) {
@@ -361,7 +361,7 @@ namespace Unity.MP_FPS {
             MoonkovAudioLibrary library,
             Vector3 position,
             bool owned) {
-            // A loop represents current authoritative external flow, not a successful canister request.
+            // 循环声表示服务器当前确认的外部供氧，并不代表氧气罐使用成功。
             if (!owned || !RaidOxygen.ReceivingExternalSupply(ghost)) {
                 GameManager.Instance?.SoundSystem?.Stop(m_OxygenSupplySound, .12f);
                 m_OxygenSupplySound = null;

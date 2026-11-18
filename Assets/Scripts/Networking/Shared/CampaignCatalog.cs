@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using Unity.MP_FPS.Missions;
 
 namespace Unity.MP_FPS.Campaign {
-    // Semantic anchors survive a building replacement. The scene owns the coordinates.
-    // ExistingObjectiveId observes the authored facility; this does not duplicate its device rules.
+    // 更换建筑后仍可按锚点名称找到对应目标，坐标由当前场景提供。
+    // ExistingObjectiveId 观察已配置的设施，不另做一套设备操作规则。
     public static class CampaignCatalog {
         public const int Version = 1;
         public const int PlannedMainTaskCount = 24;
@@ -148,8 +148,8 @@ namespace Unity.MP_FPS.Campaign {
         }
     }
 
-    // Bridge only completed objectives from the currently selected live facility.
-    // Early scans remain in the facility mask until preceding story nodes are ready.
+    // 只从当前选中的运行设施读取已完成的目标。
+    // 先做完的扫描留在设施的掩码中，等剧情前置节点满足时再接入。
     public static class CampaignMissionAdapter {
         // 现场任务模型的多个小步骤要映射成章节事实。不直接用 HUD 上的百分比决定任务是否完成。
         public static void RecordCompleted(

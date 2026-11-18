@@ -106,9 +106,9 @@ namespace Unity.MP_FPS.Client {
             }
             var parent = m_PixelRoot.parent;
             if (parent == null || parent.contentRect.width < 1 || Screen.width < 1 || Screen.height < 1) return;
-            // Cancel only the panel's downscaling. Preserve the existing large-screen
-            // scale above its native reference width. All drawing and pointer bounds
-            // share the same local transform; no per-label font multipliers are used.
+            // 只抵消面板向下缩小的部分。超过原始参考宽度时，
+            // 沿用大屏已有的放大比例。图形和指针范围
+            // 共用同一个本地变换，文字无需单独放大。
             float width = Mathf.Min(Screen.width, parent.contentRect.width);
             var size = new Vector2(width, Screen.height * width / Screen.width);
             float scale = parent.contentRect.width / width;
@@ -119,7 +119,7 @@ namespace Unity.MP_FPS.Client {
             m_PixelRoot.style.height = size.y;
             m_PixelRoot.style.scale = new Scale(new Vector3(scale, scale, 1));
             m_PixelRoot.EnableInClassList("quick-slots-narrow", width < 1100);
-            // Keep the existing timed medical panel above this compact row.
+            // 医疗读条仍放在这排紧凑快捷栏的上方。
             var actionPanel = m_PixelRoot.Q("raidTimedAction");
             if (actionPanel != null) actionPanel.style.bottom = width < 1000 ? 210 : 145;
         }
@@ -187,7 +187,7 @@ namespace Unity.MP_FPS.Client {
                 : DisplayStyle.None;
             MoonkovLocalization.Set(m_Caption, status ?? "");
             m_Caption.style.display = showStatus ? DisplayStyle.Flex : DisplayStyle.None;
-            // Only player input renews this timer. Status refreshes must not keep the HUD open.
+            // 只有玩家操作才续快捷栏显示时间。状态刷新不需要把 HUD 一直展开。
             float fade = Mathf.Clamp01((Time.unscaledTime - m_RevealUntil) / FadeSeconds);
             float opacity = inventoryOpen ? 1 : 1 - fade * fade;
             Element.style.opacity = opacity;

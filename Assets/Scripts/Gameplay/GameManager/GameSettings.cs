@@ -25,7 +25,7 @@ namespace Unity.MP_FPS {
     }
 
     public class GameSettings : INotifyBindablePropertyChanged {
-        // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
+        // 保留原来的网络标识，使旧快照和尸体表现仍能读懂这些角色。
         // 角色编号也会存到档案和网络消息里。菜单用同一编号找预览资源，进入战局后服务端用它挑角色模板。
         public const int DollSingerCharacterIndex = 2;
         public const int HatsuneMikuCharacterIndex = 3;
@@ -56,7 +56,7 @@ namespace Unity.MP_FPS {
         public static GameSettings Instance { get; private set; } = null!;
 
         /// <summary>
-        /// This INitialOnloadMethod instantiate the singletone instance 
+        /// 运行初始化回调时创建全局设置实例。
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeInitializeOnLoad() { Instance = new GameSettings(); }
@@ -101,8 +101,8 @@ namespace Unity.MP_FPS {
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
             m_PlayerCharacter =
                 NormalizeCharacterIndex(PlayerPrefs.GetInt(k_PlayerCharacterKey, DollSingerCharacterIndex));
-            // The shipped settings file decides which connection mode a fresh install opens in, so
-            // players pointed at a dedicated server land straight on the host/join buttons.
+            // 初次安装时，连接模式由随包发布的设置文件确定。
+            // 指向专用服的客户端可直接看见创建主机和加入按钮。
             m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey,
                 ClientSettings.ConnectionMode >= 0 ? ClientSettings.ConnectionMode : 0);
             m_SessionName = PlayerPrefs.GetString(k_SessionNameKey, "default-session");
@@ -159,7 +159,7 @@ namespace Unity.MP_FPS {
             set {
                 if (m_PlayerState == value) return;
                 m_PlayerState = value;
-                //Notify(RespawnScreenStylePropertyName); //TODO: Define the respawn screen style
+                //Notify(RespawnScreenStylePropertyName); //TODO: 补上复活界面的样式。
             }
         }
 

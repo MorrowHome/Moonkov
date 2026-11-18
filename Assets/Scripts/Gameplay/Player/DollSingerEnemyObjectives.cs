@@ -18,8 +18,8 @@ namespace Unity.MP_FPS {
             return !RaidHealth.HandsBusy(health) && now - lastDamage >= 1;
         }
 
-        // Keep the same container stable until this real search completes or is
-        // interrupted, including the tick where its timer has just elapsed.
+        // 搜索过程中一直保持同一个容器，直到结束或被打断。
+        // 计时刚归零准备结算的这一拍也算在内。
         public static bool SearchingCache(DollSingerEnemyBrain brain) {
             return brain != null && !brain.IsClashBot && brain.Action == PmcAction.Scavenge && brain.Cache >= 0 &&
                    brain.LootUntil > 0;
@@ -67,7 +67,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // Only nearby, registered furniture is considered. Contents remain unknown until searched.
+        // 只看附近已登记的家具。没搜之前不读取家具里有什么。
         public static int[] NearbyDrawers(RaidLootContainers caches, Vector3 position, HashSet<int> visited) {
             if (caches == null) return Array.Empty<int>();
             return caches.FurnitureCaches.Where(pair => RaidFurnitureLoot.IsFurniture(pair.Key) &&
@@ -78,7 +78,7 @@ namespace Unity.MP_FPS {
                 .Select(pair => pair.Key).ToArray();
         }
 
-        // Examine at most four nearby bodies or nonempty ground drops for line of sight.
+        // 最多检查附近四具尸体或非空地面掉落的视线。
         public static int[] NearbyLoot(RaidLootContainers caches, Vector3 position, HashSet<int> visited) {
             if (caches == null) return Array.Empty<int>();
             return caches.DeathBags.Where(pair => IsNearbyLoot(caches, pair.Key) &&
@@ -128,8 +128,8 @@ namespace Unity.MP_FPS {
             return Math.Min(desired, (int)Math.Floor((free + .0001) / definition.Weight));
         }
 
-        // All moves use the same versioned transaction as a player. The candidate list
-        // holds IDs because a successful transaction replaces both inventory trees.
+        // 物品移动使用和玩家相同的带版本事务。候选列表存 ID，
+        // 因为成功后两边的库存树都会被替换。
         // 准备搜刮事务时先记物品实例 ID。成功交换可能换掉两边的库存树，继续遍历旧物品引用会读到过期数据。
         public static int TakeAvailable(
             InventoryGraph inventory,
@@ -324,20 +324,20 @@ namespace Unity.MP_FPS {
             }
             m_CachePaths.Sort();
             foreach (var candidate in m_CachePaths) {
-                // A route cannot be shorter than the straight line between its snapped
-                // endpoints. Visit promising caches first, then stop once even that lower
-                // bound loses. Keep padding for large-world floating-point roundoff.
+                // 路线不可能比吸附到导航面的两端之间的直线更短。
+                // 先检查有希望的箱子。连直线距离也没有优势时就停，
+                // 比较时为大地图的浮点舍入误差留点余量。
                 if (candidate.LowerBound > best + .05f) break;
                 int i = candidate.Index;
                 if (!CompletePath(brain, position, candidate.Position, out float length)) {
                     brain.VisitedCaches.Add(i);
                     continue;
                 }
-                // Different route preferences distribute independent raiders across the map.
+                // 不同路线偏好让独行 AI 散到地图各处。
                 float value = length + (i * 7 + brain.Seed * 11) % 13;
                 if (brain.Target != Entity.Null && HorizontalDistance(candidate.Position, brain.LastSeen) < 12)
                     value += 25;
-                // Sorting must retain the original index-order tie break.
+                // 距离相同的项排序后仍按原始下标打破平局。
                 if (value > best || (value == best && i > brain.Cache)) continue;
                 best = value;
                 brain.Cache = i;

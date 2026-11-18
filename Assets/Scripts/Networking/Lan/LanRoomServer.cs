@@ -12,7 +12,7 @@ using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.Online;
 
 namespace Unity.MP_FPS {
-    // Lightweight room control only; gameplay continues over Unity Transport/Netcode.
+    // 这里只处理房间控制。实际游戏继续用 Unity Transport 和 NetCode。
     public sealed class LanRoomServer : IDisposable {
         private sealed class Member {
             public string Credential, Ticket;
@@ -62,7 +62,7 @@ namespace Unity.MP_FPS {
             try {
                 if (discovery) m_Discovery = new UdpClient(LanProtocol.DiscoveryPort);
             } catch (SocketException) {
-                /* Manual IPv4 join is still available. */
+                /* 仍可手动填写 IPv4 地址加入。 */
             }
             _ = AcceptAsync();
             if (m_Discovery != null) _ = DiscoverAsync();
@@ -341,7 +341,7 @@ namespace Unity.MP_FPS {
                     var reply = ReplyTo(request);
                     await LanProtocol.WriteAsync(stream, reply, timeout.Token).ConfigureAwait(false);
                 } catch (Exception) {
-                    /* Invalid/incomplete peer messages do not stop the listener. */
+                    /* 来宾发来无效或不完整消息时，只结束这次连接，监听继续运行。 */
                 } finally {
                     lock (m_Lock) { m_Clients.Remove(client); }
                 }
@@ -359,7 +359,7 @@ namespace Unity.MP_FPS {
                         if (m_Room.Phase != LanRoomPhase.Lobby) continue;
                         var room = Snapshot();
                         room.Address =
-                            Port.ToString(); // response sender supplies IPv4, never trust an advertised address.
+                            Port.ToString(); // IPv4 从回复包的发送端取得，正文中自报的地址不作为依据。
                         bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(room));
                     }
                     await m_Discovery.SendAsync(bytes, bytes.Length, packet.RemoteEndPoint).ConfigureAwait(false);

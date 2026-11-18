@@ -16,7 +16,7 @@ namespace Unity.MP_FPS {
             ref RaycastHit[] hits) {
             // 手雷已经停止滚动就保留位置。尚在运动时，把本次时间切成多个小段检查碰撞。
             if (resting) return;
-            // Small swept steps prevent fast throws and stalled frames crossing thin walls.
+            // 用短的扫掠步长检查物理路径，速度很高或卡帧时也不易穿过薄墙。
             while (duration > .00001f) {
                 float dt = Mathf.Min(duration, 1f / 120f);
                 duration -= dt;

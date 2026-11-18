@@ -11,8 +11,8 @@ using Newtonsoft.Json.Linq;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Host-owned profiles. Client requests never submit an inventory snapshot or settlement.
-    // All game writes use the same durable deployment/outbox pipeline as other modes.
+    // 档案由房主掌管。来宾的请求只提交操作意图，不发送背包结果或结算。
+    // 游戏写入使用其他玩法共用的出战与待发记录流程。
     public sealed class LanPersistence : IDisposable {
         private readonly object m_Lock = new();
         private readonly Dictionary<string, OfflineProfileStore> m_Stores = new();
@@ -202,7 +202,7 @@ namespace Unity.MP_FPS {
             lock (m_Lock) {
                 string file = Path.Combine(Root, "matches", Guid.Parse(award.MatchId).ToString("N"));
                 var registration = JsonConvert.DeserializeObject<Registration>(File.ReadAllText(file + ".json"));
-                // Replay a partially written registration before distributing an extraction.
+                // 先补写上次只写了一部分的参赛登记，再发撤离奖励。
                 // 上次写完整场登记却没来得及登记到每位玩家时，先补个人档，再检查携带者和撤离队友都属于原名单。
                 foreach (var player in registration.Participants)
                     m_Stores[player.PlayerId].RegisterBountyMatch(registration.MatchId, registration.RulesVersion,

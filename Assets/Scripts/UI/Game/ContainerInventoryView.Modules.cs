@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class ContainerInventoryView {
-        // This is a presentation catalog, separate from HaloModules.Codes (the cache-loot pool).
+        // 这里是界面展示列表。箱子能掉哪些模块由 HaloModules.Codes 决定。
         private static readonly string[] WorkshopCodes = {
             "halo_capacitor", "halo_charge_bridge", "halo_mooncore_recycler",
             "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker"

@@ -117,7 +117,7 @@ namespace Unity.MP_FPS {
                     RecordChapterFact(run, "CM01", "arrive", session.ValueRO, inventory.Version);
                     context.Known.Add(connection);
                 }
-                // If an artifact is dropped, the live task follows real ownership again.
+                // 任务物丢掉后，局内任务按当前实际持有情况重新判断。
                 string taskId = context.CampaignChapter == 1 ? "CM03" : "CM04";
                 string code = context.CampaignChapter == 1 ? "mooncore_fragment" : "mc00_archive_drive";
                 if (run.NodeItemIds.TryGetValue(taskId + "/recover", out string prior) &&

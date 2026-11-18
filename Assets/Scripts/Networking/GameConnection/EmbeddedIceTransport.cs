@@ -27,11 +27,11 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
     }
 
     /// <summary>
-    /// Windows x64 and macOS ICE datagrams selected per raid. No service or adapter is installed.
-    /// Only one driver can attach to a context at a time. Friend rooms keep the
-    /// raid context between rounds; online sessions give ownership to the driver.
-    /// Signaling must authenticate peers before calling AddPeer / SetRemoteDescription.
-    /// ICE is not encryption: always put the existing DTLS layer above this interface.
+    /// Windows x64 与 macOS 按战局选择 ICE 数据报。无需另装服务或网卡适配器。
+    /// 一个上下文同时只让一个驱动接入。好友房在回合之间保存
+    /// 战局上下文，在线会话则把归属转给驱动。
+    /// 调用 AddPeer 或 SetRemoteDescription 前，信令层先认证对端。
+    /// ICE 负责寻路。此接口的上层要始终使用已有的 DTLS 加密。
     /// </summary>
     public sealed class EmbeddedIceTransport : IDisposable {
         public const int MaxDatagram = 1472;
@@ -53,8 +53,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         }
 
         public EmbeddedIceTransport(int receiveCapacity = 256) {
-            // An Editor's build target does not identify its host OS. Dedicated
-            // servers also have their own RuntimePlatform values on the same OS.
+            // 编辑器选择的构建目标不能用来判断实际运行系统。即使同一系统，
+            // 专用服务器也有自己的 RuntimePlatform 值。
             // 看实际运行平台，运行在 macOS 的编辑器即使选了 Windows 构建目标也要找 macOS 插件。独立服还有自己的平台枚举。
             var platform = Application.platform;
             if (platform != RuntimePlatform.WindowsEditor && platform != RuntimePlatform.WindowsPlayer &&
@@ -78,12 +78,12 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         }
 
         public int AddPeer(string bindAddress = null, string stunHost = null, ushort stunPort = 3478) {
-            // Explicit loopback binding is reserved for the isolated editor check.
-            // The game path supplies its selected physical interface and authenticated peer.
+            // 显式绑定回环只用于编辑器隔离检查。
+            // 正式游戏传实际选中的网卡和已经认证的对端。
             ValidateText(bindAddress, 255, nameof(bindAddress));
             ValidateText(stunHost, 255, nameof(stunHost));
-            // Resolve DNS in the signaling layer, with its own cancellation.
-            // libjuice destruction can wait for an outstanding native DNS resolver.
+            // 由信令层进行可取消的 DNS 解析。
+            // 销毁 libjuice 时会等待原生层尚未返回的 DNS 查询。
             if (!string.IsNullOrEmpty(bindAddress) && !IPAddress.TryParse(bindAddress, out _))
                 throw new ArgumentException("ICE bind address must be an IP literal.", nameof(bindAddress));
             // 地址解析放在外层的可超时流程。原生连接使用纯 IP，关闭句柄时不会卡在一个尚未返回的 DNS。
@@ -154,7 +154,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         public string GetLocalDescription(int peer) {
             lock (m_Gate) {
                 ThrowIfDisposed();
-                // One complete SDP exchange. Do not log it: it contains session credentials.
+                // 一次交换完整 SDP。里面有会话凭据，不能写入日志。
                 // 候选没有收齐前不要交换部分信息。这份连接描述还包含本次连接用的凭据，调用者只通过信令送给允许的对端。
                 if (!IsGatheringComplete(peer))
                     throw new InvalidOperationException("Wait for ICE candidate gathering to finish.");
@@ -183,8 +183,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             }
         }
 
-        // This wrapper must be a managed STRUCT on Windows (UTP issue 1412477).
-        // Ownership passes to one driver; wrapping twice would double-release UTP storage.
+        // Windows 的包装必须用托管 struct，相关 UTP 问题编号为 1412477。
+        // 归属交给一个驱动，同一个上下文包装两次会让 UTP 的存储被释放两遍。
         public NetworkInterfaceUnmanagedWrapper<EmbeddedIceNetworkInterface> CreateNetworkInterface() {
             return AttachDriver(true);
         }
@@ -267,7 +267,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
                     if (m_Peers.TryGetValue(packet.EndpointRef, out int peer)) {
                         int result = Native.mice_send(m_Handle, peer,
                             (IntPtr)((byte*)packet.GetUnsafePayloadPtr() + packet.Offset), packet.Length);
-                        // UDP send failure is loss, not a hidden retry/unbounded queue.
+                        // UDP 发送失败按丢包处理。这里不会暗中重试或积累无上限的发送队列。
                         if (result < 0) AdapterDrops++;
                     } else { AdapterDrops++; }
                     packet.Drop();

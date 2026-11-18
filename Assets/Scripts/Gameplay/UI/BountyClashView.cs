@@ -113,7 +113,7 @@ namespace Unity.MP_FPS {
             m_Map = new BountyClashMapView();
             Element.Q("clashMap").Add(m_Map);
             Element.Q("clashMap")
-                .AddToClassList("clash-hidden"); // Legacy name retained; the canvas belongs to the central M map.
+                .AddToClassList("clash-hidden"); // 保留旧字段名。地图画布现在归统一的 M 键地图界面。
             MoonkovLocalization.Bind(Element);
             Show(false);
             m_Capacity.choices = new System.Collections.Generic.List<string> {

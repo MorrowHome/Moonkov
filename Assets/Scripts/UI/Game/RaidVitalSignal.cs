@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
-    // Presentation only. No heart-rate field, medical simulation, network or save state is added.
+    // 只负责界面表现。波形由已有角色状态推算，无需新增心率、医疗、网络或存档字段。
     public readonly struct RaidVitalSignal {
         public readonly bool Ready, Alive, Critical;
         public readonly float Frequency;
@@ -49,7 +49,7 @@ namespace Unity.MP_FPS.Client {
             return Mathf.Clamp01(health / maximum);
         }
 
-        // Tint the lit scan mesh; a separate dim layer always preserves the full anatomy.
+        // 给亮色扫描区域着色。独立的暗色层始终保留完整人体轮廓。
         public static Color BodyTint(float health, float maximum, bool ready) {
             if (!ready || !float.IsFinite(health) || !float.IsFinite(maximum) || maximum <= 0)
                 return new Color(.4f, .45f, .5f, .22f);

@@ -49,7 +49,7 @@ namespace Unity.MP_FPS {
         // 这一组配合登录画面的各阶段，和进战局后的角色声或地图环境声单独配置。
         public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;
 
-        // Layered deployment confirmation (success gong + android voice).
+        // 多层的出战确认音，由成功锣声和仿生人语音组成。
         public SoundDef DeployConfirm;
     }
 }

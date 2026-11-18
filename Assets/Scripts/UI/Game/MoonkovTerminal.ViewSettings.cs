@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class MoonkovTerminal {
-        // The lobby and pause menu edit the same live settings and persistence path.
+        // 大厅和暂停菜单操作同一份实时设置，也使用同一套保存流程。
         // 仓库和暂停菜单共用这组绑定。每个控件把操作直接送给对应偏好，调用方不用重写保存逻辑。
         internal static void BindSettings(VisualElement content, Action languageChanged = null) {
             BindViewSettings(content);
@@ -38,7 +38,7 @@ namespace Unity.MP_FPS.Client {
             language.SetValueWithoutNotify(CurrentChoice());
             int revision = 0;
             language.RegisterValueChangedCallback(async evt => {
-                // Translated labels inside the field also send string change events.
+                // 下拉框内部标签的译文变化也会冒泡出字符串变更事件。
                 if (evt.target != language || !language.choices.Contains(evt.newValue)) return;
                 int request = ++revision;
                 bool selected = await MoonkovLocalization.SelectAsync(evt.newValue == chinese ? "zh-Hans" : "en");
@@ -114,8 +114,8 @@ namespace Unity.MP_FPS.Client {
                 DollSingerViewSettings.RestoreDefaults();
                 Present();
             };
-            // Leaving the page must persist a keyboard/drag edit even if it precedes
-            // the debounce. Rebuilding controls never resets the player's choices.
+            // 玩家离开页面时保存键盘或拖动修改，即使延迟保存尚未执行。
+            // 重建控件时继续使用玩家已经选择的值。
             reset.RegisterCallback<DetachFromPanelEvent>(_ => DollSingerViewSettings.Save());
             Present();
         }

@@ -76,12 +76,12 @@ namespace Unity.MP_FPS.Client {
                     bolt);
             }
 
-            // Keep the moon beyond the hull. The deep reveal masks it at every camera aspect.
+            // 月球放在舱壳外。不同相机宽高比下都由深窗框挡住外缘。
             var moon = Resources.Load<Texture2D>("Moonkov/UI/Halos/MainRoom/Moon");
             if (moon == null) return;
             var vista = FixtureMaterial("Lunar vista", new Color(.62f, .69f, .80f));
             vista.SetTexture("_BaseMap", moon);
-            // The source uses Clamp. Extend its dark sides past the aperture to hide the plane's edges.
+            // 源纹理使用 Clamp。把暗色两侧延伸到开口之外，遮住平面边缘。
             var plane = CabinMesh("Lunar vista",
                 new[] {
                     new Vector3(-1.5f, -.5f), new Vector3(1.5f, -.5f), new Vector3(1.5f, .5f), new Vector3(-1.5f, .5f)
@@ -109,7 +109,7 @@ namespace Unity.MP_FPS.Client {
             Vector2[] inner,
             float innerZ,
             Material material) {
-            // Separate vertices give each chamfer its own normal.
+            // 分开各斜角的顶点，让每个斜面有自己的法线。
             var vertices = new Vector3[outer.Length * 4];
             int[] triangles = new int[outer.Length * 6];
             for (int i = 0; i < outer.Length; i++) {

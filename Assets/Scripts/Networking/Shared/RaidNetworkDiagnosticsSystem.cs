@@ -9,8 +9,8 @@ using Unity.Networking.Transport;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One local sample every ten seconds. No probes, RPCs, addresses, account
-    // identities or SDP. Native counters describe this process, not one player.
+    // 每十秒取一次本机样本，不额外发探测或 RPC，也不记录地址、账号身份
+    // 或 SDP。原生计数指当前进程总体，不能算某个玩家独有。
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
-            // Server simulation can catch up several ticks in one Unity frame.
+            // 服务器可能在一次 Unity 帧内连续补几次模拟 tick。
             // Unity 一帧可能模拟多个 NetCode tick。记录真实渲染循环停顿时只按首个 tick 计一次，否则会抬高帧率。
             if (m_LastFrame == UnityEngine.Time.frameCount) return;
             m_LastFrame = UnityEngine.Time.frameCount;

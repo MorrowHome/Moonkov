@@ -9,25 +9,25 @@ using Unity.Services.Multiplayer;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This extension methods help with some specificities of the <see cref="ISession"/> interface.
+    /// 这些扩展方法补充 <see cref="ISession"/> 接口的会话判断。
     /// </summary>
     public static class SessionExtension {
         /// <summary>
-        /// This method is used to know if the current <see cref="ISession"/> is a pure server and not a client.
+        /// 判断当前 <see cref="ISession"/> 是否只有服务器进程，不带客户端。
         /// </summary>
-        /// <returns>True if the session is only a server and does not have a client, false otherwise.</returns>
+        /// <returns>会话是纯服务器时返回 true，其余情况返回 false。</returns>
         public static bool IsServer(this ISession session) {
             return session.IsHost && session.CurrentPlayer?.Id == null;
         }
     }
 
     /// <summary>
-    /// This class is a wrapper around <see cref="MultiplayerService.Instance"/> session API.
+    /// 包装 <see cref="MultiplayerService.Instance"/> 的会话 API。
     /// </summary>
     /// <remarks>
-    /// The purpose of this class is to encapsulate the need for a custom <see cref="INetworkHandler"/> that we are using
-    /// to retrieve the Listen and Connect <see cref="NetworkEndpoint"/> while connecting through the <see cref="ISession"/> API.
-    /// This is done in order to control the Worlds creation and Connection in <see cref="GameManager.StartGameAsync"/>.
+    /// 此类封装自定义 <see cref="INetworkHandler"/>，
+    /// 用来取得监听和连接的 <see cref="NetworkEndpoint"/>。这一步发生在使用 <see cref="ISession"/> API 时。
+    /// 这样可以在 <see cref="GameManager.StartGameAsync"/> 中控制何时创建各个 World 并发起连接。
     /// </remarks>
     public class GameConnection {
         // Relay 才会持有 Unity Session。直接 IP 或进程内游戏只需要端点，好友房和官方 ICE 还各带自己的连接对象。
@@ -91,8 +91,8 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // The SDK does not expose cancellation for every operation. Bound our wait,
-        // observe late failures, and remove late-created sessions rather than leaking rooms.
+        // SDK 不是每种操作都能取消。外部限制等待时长，
+        // 处理迟到的异常，并清掉超时后才创建的会话，避免遗留房间。
         private static async Task BoundedAsync(Task operation, CancellationToken ct) {
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct);
             // 给不支持取消的 SDK 任务套上外部等待期限。返回超时不会强夺 SDK 的内部任务，也要把迟到异常观察掉。
@@ -196,8 +196,8 @@ namespace Unity.MP_FPS {
                 }
             }
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
-            // A host name cannot be stored in a NetworkEndpoint, so resolve one here. This is what
-            // lets the shipped settings file name the server by domain instead of by address.
+            // NetworkEndpoint 只能保存具体地址，所以在这里解析域名。
+            // 这样随包设置可以直接写服务器域名。
             // 普通 IP 直连在加载时把域名变成具体地址。取消后不会把一条刚解析完的旧连接设为目标。
             string address = await ClientSettings.ResolveAsync(ConnectionSettings.Instance.IPAddress);
             ct.ThrowIfCancellationRequested();

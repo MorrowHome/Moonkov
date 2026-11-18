@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    /// <summary>One authored arm pose and the actual inventory prop, driven by server action time.</summary>
+    /// <summary>用服务端动作时间驱动已制作的手势和库存对应的实物道具。</summary>
     [DefaultExecutionOrder(120)]
     public sealed class RaidActionPresentation : MonoBehaviour {
         private sealed class Prop {
@@ -82,8 +82,8 @@ namespace Unity.MP_FPS {
             bool playing = alive && !suppressed && next != HandAction.None && animation != null && animation.Has(next);
             if (!playing) {
                 if (active) {
-                    // Keep using until the server ends the action, then play only
-                    // its authored put-away segment. This never grants an effect.
+                    // 持续演使用动作，直到服务器结束它。
+                    // 之后只播原动画的收起段。这段表现不会给玩家任何道具效果。
                     releasePhase = Phase;
                     releaseStartedAt = Time.time;
                     finishing = HasUseAndStow && Elapsed >= duration - .15f;
@@ -133,8 +133,8 @@ namespace Unity.MP_FPS {
             animation.Sample(action, phase, blend, code);
             if (action == HandAction.Search) contact.Search(searchTarget, phase, blend);
             if (prop != null) {
-                // Keep the held object attached while interrupted arms lower.
-                // Hiding it on the first inactive snapshot made it vanish mid-air.
+                // 中断后双臂落下时，道具仍跟着手。
+                // 一收到动作停止就隐藏会让道具半空消失。
                 prop.Root.SetActive(true);
                 var motion = animation.GetMotion(action, code);
                 bool authored = motion != null && motion.root?.positions?.Length == motion.frames * 3;
@@ -149,14 +149,14 @@ namespace Unity.MP_FPS {
             var soundPosition =
                 prop?.Model && prop.Model.Grip ? prop.Model.Grip.position : animation.RightHand.position;
             var soundMotion = animation.GetMotion(action, code);
-            // The injection track includes needle entry before the plunger stroke.
+            // 针剂片段先演针头进皮肤，再推进活塞。
             float soundContact = action == HandAction.Inject && soundMotion != null && soundMotion.contactIn > 0f
                 ? soundMotion.contactIn
                 : animation.Contact(action, code);
             foley.Observe(action, sequence, phase, soundContact, code, soundPosition, owner, active || finishing,
                 soundMotion?.openMarker ?? .08f, UseEnd, transform);
-            // The real prop and body always share world depth. Walls occlude
-            // them without a second copy, camera or per-action physics queries.
+            // 道具和角色身体始终使用同一份场景深度。
+            // 自然由墙体遮住，无需再建副本、摄像机或给每个动作另做物理查询。
         }
 
         public void SamplePreview(float phase) {
@@ -164,8 +164,8 @@ namespace Unity.MP_FPS {
             animation.RestoreBeforeAnimation();
             blend = active ? 1 : 0;
             if (action == HandAction.Search) searchStartedAt = Time.time - phase * animation.Seconds(action, code);
-            // The preview API addresses the authored source, independent of the
-            // server's use/put-away timing split.
+            // 预览接口直接选原始动作片段。
+            // 不受服务端实际使用段和收起段的计时划分限制。
             remaining = duration * (1 - Mathf.Clamp01(phase));
             receivedAt = Time.time;
             previewPhase = Mathf.Clamp01(phase);
@@ -192,8 +192,8 @@ namespace Unity.MP_FPS {
             var bounds = worldRenderers[0].bounds;
             foreach (var renderer in worldRenderers) bounds.Encapsulate(renderer.bounds);
             if (!world.GetComponent<RaidActionProp>()) {
-                // Unwrapped food keeps its actual inventory mesh. Its bite point is
-                // measured once in metre space, like the authored packet variants.
+                // 无包装食物仍用库存的实际模型。
+                // 和有包装的版本一样，以米为单位测一次接触到嘴的位置。
                 var model = world.AddComponent<RaidActionProp>();
 
                 Transform Anchor(string name, Vector3 point) {
@@ -206,8 +206,8 @@ namespace Unity.MP_FPS {
                 model.Grip = Anchor("Grip", bounds.center);
                 model.Contact = Anchor("Bite contact", bounds.center + Vector3.up * (bounds.extents.y - .005f));
             }
-            // The source prefab already converts its FBX centimetres and Z-up axis.
-            // Preserve it and move a metre-scale parent, never rescale skinned bones.
+            // 源预制体已完成 FBX 厘米单位和 Z 轴朝上的转换。
+            // 保留它，并移动按米配置的父物体，不额外缩放蒙皮骨骼。
             var result = new Prop { Root = root, Model = world.GetComponent<RaidActionProp>() };
             foreach (var renderer in worldRenderers) renderer.shadowCastingMode = ShadowCastingMode.Off;
             root.SetActive(false);

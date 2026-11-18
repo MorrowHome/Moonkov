@@ -8,7 +8,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
     public delegate void OnInitialiseCallback(T singleton);
 
 #pragma warning disable UDR0001
-    // Reset by ResetStaticState method
+    // ResetStaticState 负责清空这张表。
     private static T s_Instance;
     private static List<OnInitialiseCallback> s_InitialisationCallbacks = new();
 #pragma warning restore UDR0001
@@ -61,7 +61,7 @@ public abstract class AutoSingleton<T> : Singleton<T> where T : MonoBehaviour {
         get {
             if (!TryGetInstance(out var instance)
 #if UNITY_EDITOR
-                && EditorApplication.isPlayingOrWillChangePlaymode //don't allow instantiation in edit mode
+                && EditorApplication.isPlayingOrWillChangePlaymode //只在编辑器进入运行流程后允许自动创建实例。
 #endif
                ) {
                 Debug.Log($"Creating new instance of type {typeof(T).Name}");

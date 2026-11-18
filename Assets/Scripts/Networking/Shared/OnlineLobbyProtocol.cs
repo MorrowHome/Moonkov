@@ -10,7 +10,7 @@ namespace Unity.MP_FPS.Online {
         public static bool ValidPath(string path) { return path == P2P || path == Vps; }
     }
 
-    // Shared wire contract. Team/instance membership is assigned by the account service.
+    // 各端共用的消息格式。队伍和实例的成员资格由账号服务分配。
     [Serializable]
     public sealed class LobbyMember {
         // 大厅成员状态供准备、席位与重连判断。实际身份由后端认证的 PlayerId 识别，昵称用于显示。

@@ -4,9 +4,9 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Client to server to request joinning current session. 
+    /// 客户端请求加入当前会话。
     /// </summary>
-    // V2 adds the expedition companion count and invalidates the old Burst serializer.
+    // V2 加入远征同伴人数，也通过新类型让旧的 Burst 序列化器失效。
     public struct ClientJoinRequestV2Rpc : IRpcCommand {
         public FixedString64Bytes PlayerName;
         // 这里的 Token 字段装本次玩法需要的进场凭证。账号在线走游戏票，好友房走房主票，单人使用占位。
@@ -22,7 +22,7 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// Client request a death + respawn from the server. For testing purposes.
+    /// 测试用，客户端请服务器让角色死亡后重生。
     /// </summary>
     public struct ClientRequestRespawnRpc : IRpcCommand {
     }

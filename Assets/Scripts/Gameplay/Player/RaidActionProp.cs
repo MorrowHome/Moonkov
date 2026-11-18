@@ -2,8 +2,8 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Metre-space anchors on an action variant of the actual inventory model.
-    // The original loot/icon prefab stays sealed and is never modified.
+    // 动作模型是库存实物的变体，挂点坐标以米配置。
+    // 原掉落和图标用的预制体保持原状。
     public sealed class RaidActionProp : MonoBehaviour {
         public Transform Grip, Contact, Cap, Plunger;
         public GameObject Sealed, Opened;

@@ -25,7 +25,7 @@ namespace Unity.MP_FPS {
 
         // 房主同一进程有服务器和客户端两套世界，先从服务器取时钟。远程玩家才找客户端转发过来的基准。
         private void FindWorld() {
-            // Host renders its authoritative clock. Remote players render the server's replicated anchor.
+            // 房主显示自己的权威时钟。远程玩家用服务端同步来的时间基准。
             foreach (var world in World.All) {
                 if (!world.IsCreated || !world.IsServer()) continue;
                 if (Bind(world)) return;

@@ -11,8 +11,8 @@ namespace Unity.MP_FPS {
         public float3 Position;
     }
 
-    // All human players in the current cooperative raid share these marks.
-    // Fixed impact points, depth-tested in the world; no tracking or wall reveal.
+    // 当前合作远征里的真人玩家都会收到这些标记。
+    // 标记固定在撞击处，按世界深度遮挡。无需追踪目标或透墙显示。
     public sealed class HaloHitMarkerFeedback : MonoBehaviour {
         private sealed class Mark {
             public Transform Root;

@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // One transparent instrument shared by combat and the health page.
+    // 战斗 HUD 和背包健康页共用同一块透明监测仪。
     public sealed class RaidVitalsMonitor : VisualElement {
         public const string AnimatePreference = "Moonkov.AnimateVitalSignal";
         public static readonly Color SignalColor = new Color32(196, 225, 255, 255);
         private static readonly Color WarningColor = new Color32(235, 169, 93, 255);
         private static readonly Color DangerColor = new Color32(245, 121, 94, 255);
-        private static readonly Color ReserveWarningColor = new Color32(255, 197, 61, 255); // Radix amber 9.
-        private static readonly Color ReserveDangerColor = new Color32(229, 72, 77, 255); // Radix red 9.
+        private static readonly Color ReserveWarningColor = new Color32(255, 197, 61, 255); // Radix 琥珀色 9 号。
+        private static readonly Color ReserveDangerColor = new Color32(229, 72, 77, 255); // Radix 红色 9 号。
         private readonly RaidBodyDiagram m_Body;
         private readonly VitalWaveform m_Wave;
         private readonly Label m_Warning;
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS.Client {
                 var row = new VisualElement { name = "vitals-reserve-" + i, pickingMode = PickingMode.Ignore };
                 row.AddToClassList("vitals-reserve");
                 signals.Add(row);
-                // Keep existing resource IDs stable; put short-term stamina directly below oxygen.
+                // 保留资源编号。把短时耐力插到氧气下方显示。
                 if (i == StaminaReserve) signals.Insert(2, row);
                 if (i == 4) {
                     m_HaloRow = row;
@@ -144,7 +144,7 @@ namespace Unity.MP_FPS.Client {
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity &&
                 state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
                 warning = "OXYGEN REFILLING";
-            // Reuse the instrument's brief notice line; medical warnings always take priority.
+            // 复用监测仪的短提示行。医疗告警优先级最高。
             if (string.IsNullOrEmpty(warning) && haloVisible)
                 warning = haloNotice == HaloChargeNotice.LowEnergy ? "NO BATTERY READY" :
                     haloNotice == HaloChargeNotice.MoveCells ? "BATTERY OUT OF REACH" :
@@ -182,7 +182,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private static Color ReserveColor(float value, int index) {
-            // Whole-percent steps preserve the style cache while the server drains fractional reserves.
+            // 服务端按小数扣资源，界面按整数百分比更新，可以复用这一档样式。
             int percent = Mathf.RoundToInt(Mathf.Clamp(float.IsFinite(value) ? value : 0, 0, 100));
             var full = index == 2 ? (Color)new Color32(0, 162, 199, 255) :
                 index == 1 || index == 3 ? (Color)new Color32(255, 197, 61, 255) :
@@ -262,7 +262,7 @@ namespace Unity.MP_FPS.Client {
                 var painter = context.painter2D;
                 var color = !m_Signal.Ready ? new Color(.5f, .55f, .49f, .5f) :
                     m_Signal.Critical ? DangerColor : SignalColor;
-                // Constant scrolling phase keeps peaks continuous. The preference freezes a representative trace.
+                // 波形滚动使用连续相位，尖峰不会跳动。关闭动效时停在一帧清楚的波形上。
                 float phase = PlayerPrefs.GetInt(AnimatePreference, 1) == 0 ? 0 : m_Phase;
                 int steps = Mathf.Clamp(Mathf.CeilToInt(height * 1.5f), 128, 320);
                 for (int pass = 0; pass < 2; pass++) {

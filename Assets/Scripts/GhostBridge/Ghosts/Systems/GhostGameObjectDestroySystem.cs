@@ -4,17 +4,17 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-// This has to happen before any updates to ensure that partially deleted ghosts
-// are fully removed before they are to be updated by the GhostGameObjectUpdateSystem
-// otherwise they'll try to access ghost data that has already been removed
+// 开始更新前先结束上一次留下的部分删除，
+// 这样 GhostGameObjectUpdateSystem 只会碰到仍然完整的 Ghost，
+// 避免读取刚移除的数据。
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 [UpdateBefore(typeof(GhostGameObjectUpdateServerSystem))]
 public partial class ServerPreUpdateGhostGameObjectDestroySystem : BaseGhostGameObjectDestroySystem {
 }
 
-// on the server it's important this happens AFTER any update to ensure that
-// partially deleted ghosts are fully removed before the GhostSendSystem runs
+// 服务端还会在主要更新之后清理一次，
+// 确保 GhostSendSystem 发送快照前，对象的删除已处理完整。
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 [UpdateAfter(typeof(GhostGameObjectUpdateServerSystem))]
@@ -22,16 +22,16 @@ public partial class ServerPreUpdateGhostGameObjectDestroySystem : BaseGhostGame
 public partial class ServerPostUpdateGameObjectDestroySystem : BaseGhostGameObjectDestroySystem {
 }
 
-// on the client it's important this happens BEFORE any update to ensure that
-// partially deleted ghosts are fully removed before they are to be updated by the GhostGameObjectUpdateSystem
-// otherwise they'll try to access ghost data that has already been removed
+// 客户端在开始更新前清理，
+// 避免 GhostGameObjectUpdateSystem 更新数据已经移除的对象。
+// 避免读取刚移除的数据。
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(GhostGameObjectUpdateClientSystem))]
 public partial class ClientGhostGameObjectDestroySystem : BaseGhostGameObjectDestroySystem {
     protected override void OnUpdate() {
-        // it's possible we are trying to destroy items whilst transforms are still being updated
-        // so we should force that job to complete first
+        // 销毁时位置更新作业可能仍在用 Transform，
+        // 所以先等它完成。
         // 客户端只有在位置作业停下后才能销毁场景物体。作业可能还拿着这个 Transform 的访问句柄。
         ClientGhostTransformApplySystem.Instance.ApplyTransformsJobHandle.Complete();
         base.OnUpdate();
@@ -42,7 +42,7 @@ public abstract partial class BaseGhostGameObjectDestroySystem : SystemBase {
     protected override void OnUpdate() {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        // set the ecb for the ghostgameobject code to use
+        // 将本轮的实体命令缓冲提供给 Ghost 脚本。
         GhostGameObject.UpdateEntityCommandBuffer = ecb;
         var lifeTimeSystem = GhostGameObjectLifetimeSystem.Instance(World);
         // 这批实体在 Ghost 已消失时还只有待激活的链接。它们尚未完成 OnGhostLinked，可以直接销毁留下的表现体和清理组件。

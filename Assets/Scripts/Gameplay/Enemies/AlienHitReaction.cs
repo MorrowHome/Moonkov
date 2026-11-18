@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Snapshot-driven visual flinch. Never moves the motor or authoritative hitboxes.</summary>
+    /// <summary>根据快照做显示用的受击动作，不改移动解算和权威碰撞体。</summary>
     public sealed class AlienHitReaction {
         private struct RootPose {
             public Transform Root;
@@ -39,7 +39,7 @@ namespace Unity.MP_FPS {
             if (currentHealth <= 0 || suppressed) strength = 0;
         }
 
-        // Called after a form change, never per shot. Only generated visual roots belong here.
+        // 切换形态后更新一次。这里只收生成的显示根节点，无需每次命中都重收。
         // 角色切换外形后重新收集可偏移的渲染根。碰撞和玩法骨架不跟着改。
         public void Refresh() {
             Restore();

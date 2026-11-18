@@ -46,7 +46,7 @@ namespace Unity.MP_FPS {
         public int Energy;
     }
 
-    // A private server owner sends this component's snapshot only to its connection.
+    // 服务器将本人状态快照只发给对应连接。
     public sealed class TacticalItemClientState : IComponentData {
         public TacticalItemOwnerRpc Owner;
 

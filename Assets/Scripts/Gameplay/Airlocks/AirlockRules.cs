@@ -70,7 +70,7 @@ namespace Unity.MP_FPS {
         public AirlockFeedback Feedback;
     }
 
-    // Owns the pressure/interlock rules; transforms, sounds, transport and oxygen remain separate.
+    // 这里计算气压与双门互锁。门板位姿、声音、同步和氧气由各自系统处理。
     public sealed class AirlockRules {
         private AirlockCommand? m_Cycle;
         public AirlockSettings Settings { get; }
@@ -203,7 +203,7 @@ namespace Unity.MP_FPS {
             bool innerOpeningBlocked = false) {
             if (!AirlockSettings.Finite(dt) || dt <= 0 || !Settings.IsValid) return;
             var s = State;
-            // Reverse a closing door if someone enters its fixed aperture sensor mid-motion.
+            // 门正在关时，有人进入门框感应范围就改为反开。
             if (!s.OuterOpening && s.OuterFraction > 0 && outerObstructed) {
                 s.OuterOpening = true;
                 s.Feedback = AirlockFeedback.Obstructed;

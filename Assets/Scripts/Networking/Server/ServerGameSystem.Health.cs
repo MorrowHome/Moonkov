@@ -25,13 +25,13 @@ namespace Unity.MP_FPS {
                 bool recover = session.ValueRO.Phase == RaidPhase.Active &&
                                (!health.ValueRO.ClashEnabled || health.ValueRO.ClashCanAct);
                 EnergyShieldEquipment.Tick(ref health.ValueRW, inventory.Graph, SystemAPI.Time.DeltaTime, recover);
-                // Halo energy already travels in the Ghost. Inventory only needs
-                // another snapshot when the collar's displayed oxygen changes.
+                // 光环能量已经随 Ghost 同步。库存只在
+                // 项圈显示的氧气发生变化时需要再发快照。
                 // 光环能量已经跟角色 Ghost 同步。这里只在项圈显示的氧气或装备身份有变化时让库存重发，避免把整包库存当作能量计时器。
                 if (send && inventory.ProtectionDisplayChanged) inventory.LastSentVersion = -1;
             }
-            // NPCs have no connection/RaidSession. Their halos share the player
-            // recovery rule; ordinary PMC life support is updated separately below.
+            // NPC 没有连接或 RaidSession。它们的光环沿用玩家的
+            // 回复规则，普通 PMC 的生命维持则由下方更新。
             foreach (var (health, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<DollSingerEnemy, Simulate>().WithEntityAccess()) {
                 if (!state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
@@ -47,8 +47,8 @@ namespace Unity.MP_FPS {
             if (map == null) return;
             // 供氧、饥渴和缺氧伤害按服务器当前 tick 推进。客户端只读同步数值，预测重放不会再次扣氧。
             uint tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick;
-            // Once per authoritative simulation update, outside prediction replay.
-            // Settled players do not consume oxygen.
+            // 每次权威模拟只执行一次，不跟随客户端预测重放。
+            // 玩家结算完成后停止耗氧。
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>()
                          .WithEntityAccess()) {
                 var player = joined.ValueRO.PlayerEntity;
@@ -68,8 +68,8 @@ namespace Unity.MP_FPS {
                     moving = health.ValueRO.ControllerState.MovementSpeed > .1f && actualMove;
                 }
                 // 从身体位置采样气体。脚先跨过门槛不等于面罩已经进入有氧区。
-                // Check torso rather than the feet to avoid treating a doorway's
-                // floor contact as breathable before the character has entered.
+                // 在躯干处采样。只看脚的位置会在过门时
+                // 把地面接触误判成角色已经进入有氧处。
                 var samplePosition = position + Vector3.up;
                 BreathableZone.TrySample(samplePosition, out var atmosphere);
                 RaidOxygen.Tick(ref health.ValueRW, atmosphere, map.OxygenParameters, SystemAPI.Time.DeltaTime, tick,

@@ -387,7 +387,7 @@ namespace Unity.MP_FPS {
                     foodCode, waterCode, oxygenCode, medicalRestore, TimedActionBusyText());
             bool oxygenReady = player.BodyHealthInitialized && player.CurrentHealth > 0 && !m_WasSettled;
             bool needsSuitAir = RaidOxygen.NeedsSuitAir(player);
-            m_OxygenPanel.style.display = DisplayStyle.None; // Unified combat monitor owns the visual readout.
+            m_OxygenPanel.style.display = DisplayStyle.None; // 实际读数由统一的战斗监测仪显示。
             if (oxygenReady) {
                 MoonkovLocalization.Set(m_OxygenReserve, "O₂ / {0:0}%", player.Oxygen);
                 MoonkovLocalization.Set(m_OxygenTime, "EST. {0}", Client.RaidHealthView.OxygenTimeText(player));
@@ -401,7 +401,7 @@ namespace Unity.MP_FPS {
             var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
             bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
             m_OxygenWarning.style.display =
-                DisplayStyle.None; // Keep the existing alert cadence below, without a second overlay.
+                DisplayStyle.None; // 沿用后面已有的告警节奏，画面上只保留一层提示。
             if (!oxygenReady) m_OxygenFeedback.Reset();
             bool suitAlert = oxygenReady && m_OxygenFeedback.Observe(player, Time.unscaledTime);
             if (suitAlert) MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.SuitWarning, Vector3.zero, 1, 0);
@@ -619,7 +619,7 @@ namespace Unity.MP_FPS {
                 m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0);
             m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
-            // Keep one owner for result actions; tutorial raids must return through the ship.
+            // 结算操作由一个界面接管。教学局必须经作业船返回。
             // 结算的最后一页才提供再出发。教学局保留返回船舱的入口，避免越过教程的后续步骤。
             m_Deploy.style.display = m_ResultStep == 2 && !m_TutorialConfigured ? DisplayStyle.Flex : DisplayStyle.None;
             m_Return.style.display = DisplayStyle.Flex;
@@ -737,7 +737,7 @@ namespace Unity.MP_FPS {
             m_SwitchDrop.style.display = switchable ? DisplayStyle.Flex : DisplayStyle.None;
             m_SwitchDrop.SetEnabled(!m_InventoryRequestPending || TimedActionActive);
             if (settled) {
-                // LateUpdate runs after character teardown, which can restore the previous cursor state.
+                // LateUpdate 在角色清理后执行。清理过程可能恢复旧鼠标状态，所以此处再调整一次。
                 Utils.SetCursorVisible(true);
                 bool saving = m_Snapshot.SaveState == RaidSaveState.Saving ||
                               m_Snapshot.SaveState == RaidSaveState.Retrying;
@@ -751,7 +751,7 @@ namespace Unity.MP_FPS {
                 if (OnlineLobbyClient.InInstance) MoonkovLocalization.Set(m_Deploy, "返回小队 · 下一局使用全新地图");
                 m_Return.SetEnabled(!saving && !deploying && GameManager.CanUseMainMenu);
                 m_CarryCells.SetEnabled(!saving && !deploying);
-                // Do not replace text while the player is editing it.
+                // 玩家正在编辑时保留当下输入。
                 if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused ||
                     !m_CarryCells.Contains(focused))
                     m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
@@ -825,7 +825,7 @@ namespace Unity.MP_FPS {
                     !controlPressed && !m_WorldControlFocused)
                     OpenLootContainer(nearest);
             }
-            // Input is sampled every frame; presentation text refreshes at 10 Hz.
+            // 每个渲染帧采样输入，显示文字限在 10 Hz 更新。
             // 按键和瞄准可以逐帧响应，较重的界面文字按间隔更新。这里先处理选择与操作，再到后面刷文字。
             bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
             UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, researchInteraction,
@@ -987,7 +987,7 @@ namespace Unity.MP_FPS {
                         : "Cannot reach this container. Move closer with a clear line of sight.");
                 return;
             }
-            // Reuse the localized action wording; the physical key now has its own visual.
+            // 沿用已经翻译的动作文字。实体按键现有自己的视觉标记。
             string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) :
                 dropped ? "搜索地面丢弃物" :
                 alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") :
@@ -1009,12 +1009,12 @@ namespace Unity.MP_FPS {
                 m_ReceiptQueued = false;
                 m_ReceiptUntil = 0;
             } else {
-                // Only server snapshot increases earn a receipt. Opening or clicking a cache is not a pickup.
+                // 服务器快照确认随身资源增加时才弹拾取结果。点箱子只是尝试开始搜索。
                 // 打开箱子只是开始搜索。等服务器快照里随身资源确实增加，才做拾取提示。
                 var gained = math.max(supplies - m_PreviousSupplies, 0);
                 m_PreviousSupplies = supplies;
                 if (math.any(gained > 0)) {
-                    // Pickup sound is emitted by the acknowledged transfer, for every item type.
+                    // 拿到转移确认后播放拾取声，各种物品都用这一流程。
                     if (Time.unscaledTime >= m_ReceiptUntil && !m_ReceiptQueued) m_ReceiptSupplies = default;
                     m_ReceiptSupplies += gained;
                     m_ReceiptUntil = Time.unscaledTime + 3.2f;
@@ -1152,7 +1152,7 @@ namespace Unity.MP_FPS {
             if (!m_InventoryVisible || inventory.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase != RaidPhase.Active) {
                 m_LootRevealAudio.Cancel();
             } else {
-                // Process closure/cancellation before draining queued item sounds.
+                // 先处理关窗或取消，再播放排队中的物品揭示声。
                 if (inventory.Sequence != m_InventorySequence) m_LootRevealAudio.Observe(inventory);
                 if (m_LootRevealAudio.TryPlay(Time.unscaledTime))
                     MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
@@ -1278,7 +1278,7 @@ namespace Unity.MP_FPS {
                         ? "回收窗口已关闭 · 本批未撤出的产物失效，普通搜刮与撤离仍可继续。"
                         : inventoryMessage);
                 if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
-                // A self-use failure can be repeated by protection snapshots. It is not a close command.
+                // 防护装备快照也可能带着同一次使用失败。按操作回执处理，无需关掉背包。
                 // 只处理从打开容器变为没有容器的情况。普通随身库存快照也会用这个负编号，不能每收到一次就关闭整个背包。
                 if (inventory.LootId < 0 && wasOpen) {
                     if (inventory.Error == Inventory.InventoryError.Inaccessible)
@@ -1451,7 +1451,7 @@ namespace Unity.MP_FPS {
 
         // 结算保存结束后才可以再次出发。受大厅管理的对局要退回小队，下一局由大厅另起一张地图。
         private void Deploy() {
-            // A managed raid always returns to its party; another deploy must get a fresh map.
+            // 大厅管理的战局结束后回原小队。下次出发要创建新的地图会话。
             if (OnlineLobbyClient.InInstance) {
                 ReturnToShip();
                 return;

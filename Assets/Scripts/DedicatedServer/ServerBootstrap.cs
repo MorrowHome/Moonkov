@@ -44,7 +44,7 @@ namespace Unity.MP_FPS {
 
         private async void Start() {
             Debug.Log($"FPS2 server -> Starting.");
-            // Managed Coop/Versus allocations use expedition rules; teams are server-assigned.
+            // 大厅分配的合作与对抗战局使用远征规则，队伍由服务端分配。
             // 从大厅分配出来的合作或对抗实例都先用远征的基础规则。参与者和分队再由服务端根据入场资料安排。
             if (OnlineInstanceServer.Managed) GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
             GameSettings.Instance.GameState = GlobalGameState.Loading;

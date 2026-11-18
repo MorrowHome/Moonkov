@@ -2,7 +2,7 @@
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    /// <summary>Atomic server-side inventory and suit refill transaction.</summary>
+    /// <summary>服务器将物品扣除与防护装备补氧一起提交。</summary>
     public static class RaidOxygenConsumables {
         public const string CanisterCode = "oxygen_canister";
         public const float UseSeconds = 2;
@@ -26,8 +26,8 @@ namespace Unity.MP_FPS {
             var definition = ConsumableCatalog.Get(item.Code);
             if (!CanConsume(state, definition)) return InventoryError.Invalid;
 
-            // Prepare the state change before consuming. A full/dead/invalid suit,
-            // inaccessible stack or stale request leaves both owners untouched.
+            // 消费前准备好新状态。已经满氧、角色死亡、防护无效、
+            // 物品拿不到或版本过时时，库存和氧气都保持原样。
             // 先在角色状态副本算能补多少，不马上改本人。氧气满或角色不可补时不应扣掉这罐。
             var replenished = state;
             if (RaidOxygen.Refill(ref replenished, definition.Oxygen) <= 0) return InventoryError.Invalid;

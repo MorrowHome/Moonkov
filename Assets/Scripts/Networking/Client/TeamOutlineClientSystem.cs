@@ -42,7 +42,7 @@ namespace Unity.MP_FPS {
             var raid = m_Raid.GetSingletonEntity();
             var snapshot = EntityManager.GetComponentData<RaidClientState>(raid).Snapshot;
             var inventory = EntityManager.GetComponentObject<RaidInventoryClientState>(raid);
-            // Only a complete server inventory for this raid grants the effect. No optimistic UI state.
+            // 识别器效果依赖本局完整的服务器库存快照，菜单预览装备不会提前生效。
             if (snapshot.Sequence == 0 || snapshot.Phase != RaidPhase.Active || snapshot.DeployPending ||
                 inventory.Sequence == 0 || inventory.RaidId != snapshot.RaidId || inventory.Graph == null) {
                 Clear();
@@ -54,7 +54,7 @@ namespace Unity.MP_FPS {
                 m_Version = m_Graph.Version;
                 m_Equipped = TeamOutlineRules.Equipped(m_Graph);
             }
-            // GhostOwnerIsLocal is enableable: GetSingletonEntity is not valid for this query.
+            // GhostOwnerIsLocal 可以启用或禁用，这种查询不能直接用 GetSingletonEntity。
             // 只接受唯一的本地玩家实体。所有权切换或玩家暂时未出生时，把上一角色留下的轮廓释放掉。
             using var owners = m_Owner.ToEntityArray(Allocator.Temp);
             if (owners.Length != 1) {

@@ -23,7 +23,7 @@ namespace Unity.MP_FPS {
         Invalid
     }
 
-    // Intent only. The server resolves the owning actor, origin, facing, sweep and victims.
+    // 仅提交意图。服务器决定实际角色、起点、朝向、挥砍和命中目标。
     public struct RaidMeleeActionRpc : IRpcCommand {
         // 近战请求用本局与回合约束，RequestId 防重复。槽位和物品 ID 让服务端确认这真是刚想选的武器。
         public int RaidId, Epoch;

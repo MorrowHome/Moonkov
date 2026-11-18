@@ -9,10 +9,10 @@ using Random = Unity.Mathematics.Random;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This system handles the client side of the player connection and character spawning.
-    /// It creates the first player join request so the server knows it has to spawn a character.
-    /// It handles the Spectator prefab spawn if the player is a spectator.
-    /// It creates the NameTagProxy on any spawned character that is not the active player.
+    /// 这个系统处理客户端侧连接与角色生成。
+    /// 它发起第一条入场请求，通知服务器生成角色。
+    /// 玩家作为观战者时，由它处理 Spectator 预制体的生成。
+    /// 它给已生成的其他角色创建 NameTagProxy。
     /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     [BurstCompile]
@@ -47,7 +47,7 @@ namespace Unity.MP_FPS {
             var joinRequestEntity = state.EntityManager.CreateEntity(ComponentType.ReadOnly<ClientJoinRequestV2Rpc>(),
                 ComponentType.ReadWrite<SendRpcCommandRequest>());
             string playerName = GameSettings.Instance.PlayerName;
-            if (state.WorldUnmanaged.IsThinClient()) // Random names for thin clients.
+            if (state.WorldUnmanaged.IsThinClient()) // 为薄客户端生成随机名字。
             {
                 ref var random = ref SystemAPI.GetSingletonRW<FixedRandom>().ValueRW;
                 playerName = $"[Bot {random.Random.NextInt(1, 999):000}] {playerName}";

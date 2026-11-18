@@ -34,7 +34,7 @@ namespace Unity.MP_FPS {
 
         private bool CloseChatForEscape() {
             if (m_ChatView == null || (!m_ChatView.IsOpen && Time.frameCount > m_ChatGuardFrame)) return false;
-            // The text field handles IME cancellation first; the pause action must still be consumed.
+            // 文本框先处理输入法取消，同时还要消费本次暂停按键。
             // 输入法还在组词时由文本控件处理 Esc。这里返回已处理，防止同一键打开暂停菜单。
             if (!m_ChatView.Composing) CloseChat();
             return true;

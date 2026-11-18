@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace Unity.MP_FPS {
     public static class RaidGuestIdentity {
-        // Prototype guest authentication: possession of this credential owns the profile.
-        // PlayerName is display-only. Thin clients must not share the main player's stash.
+        // 原型访客认证。持有这个凭据的一方拥有对应档案。
+        // PlayerName 仅用于显示。薄客户端应与主玩家仓库隔离。
         public static string GetToken(bool temporary) {
             const string key = "MoonRaid.GuestCredential.v1";
             // 正式凭据优先复用本机存过的值。临时身份跳过这一步，避免用同一个访客标识访问原玩家的档案。

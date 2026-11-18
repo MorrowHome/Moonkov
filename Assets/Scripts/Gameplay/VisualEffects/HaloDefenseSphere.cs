@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Twelve copies of the formal halo artwork, projected onto one sphere.
-    // One shared mesh, atlas and material; changing weapons only updates a property block.
+    // 把十二份正式光环图案投到同一个球面上。
+    // 各武器共用网格、图集和材质。换武器只改属性块的数据。
     public sealed class HaloDefenseSphere : MonoBehaviour {
         private static Mesh s_Mesh;
         private static Material s_Material;
@@ -103,7 +103,7 @@ namespace Unity.MP_FPS {
                 var right = Vector3.Cross(Mathf.Abs(normal.y) > .9f ? Vector3.forward : Vector3.up, normal).normalized;
                 var up = Vector3.Cross(normal, right);
                 int first = vertices.Count;
-                // Curve the entire formal assembly around the sphere, preserving its silhouette.
+                // 将整套正式图案沿球面弯曲，并尽量保持原轮廓。
                 for (int y = 0; y <= divisions; y++)
                 for (int x = 0; x <= divisions; x++) {
                     var point = new Vector2(x / (float)divisions, y / (float)divisions);

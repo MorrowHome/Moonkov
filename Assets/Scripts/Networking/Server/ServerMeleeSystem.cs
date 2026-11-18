@@ -167,7 +167,7 @@ namespace Unity.MP_FPS {
 
         private void Publish(Entity player, Actor actor) {
             if (!EntityManager.Exists(player) || !EntityManager.HasComponent<PredictedPlayerGhost>(player)) return;
-            // Always re-read: another sweep can already have damaged this actor during the same tick.
+            // 每次重新读取，另一段扫击可能已在同一 tick 打伤这个角色。
             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(player);
             health.MeleeWeapon = (byte)actor.State.SelectedWeapon;
             health.MeleeAttackWeapon = (byte)actor.State.AttackWeapon;
@@ -377,7 +377,7 @@ namespace Unity.MP_FPS {
             if (context.Scene.OverlapSphere(eye, definition.SweepRadius, m_CoverOverlaps, CoverMask,
                     QueryTriggerInteraction.Ignore) > 0)
                 return;
-            // Facing may follow the player's current look only within the original committed arc.
+            // 挥砍方向只允许在起手时定下的角度范围内跟随当前视角。
             var look = Quaternion.Euler(context.Health.ControllerState.PitchDegrees,
                 context.Health.ControllerState.YawDegrees, 0);
             var facing = Quaternion.RotateTowards(actor.Facing, look, MeleeRules.MaximumTurnDegrees);
@@ -400,7 +400,7 @@ namespace Unity.MP_FPS {
                 while ((count = context.Scene.OverlapCapsule(eye, end, definition.SweepRadius, m_Overlaps, VictimMask,
                            QueryTriggerInteraction.Ignore)) == m_Overlaps.Length) {
                     // 命中结果缓冲满时先扩容重新查。达到上限则放弃当前段，不能根据截断的任意碰撞结果偏判。
-                    if (m_Overlaps.Length >= 4096) return; // Saturated unordered results never grant a partial hit set.
+                    if (m_Overlaps.Length >= 4096) return; // 无序查询填满缓冲时，不能拿截断的结果只判命中其中一部分人。
                     Array.Resize(ref m_Overlaps, m_Overlaps.Length * 2);
                 }
                 m_Contacts.Clear();

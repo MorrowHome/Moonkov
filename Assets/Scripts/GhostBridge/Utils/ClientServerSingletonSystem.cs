@@ -7,7 +7,7 @@ using UnityEngine;
 [ResetOnPlayMode("ResetStaticState")]
 public abstract partial class ClientServerSingletonSystem<T> : SystemBase where T : SystemBase {
 #pragma warning disable UDR0001
-    // Reset by ResetStaticState method
+    // ResetStaticState 负责清空这张表。
     // 即便系统类型一样，房主的客户端和服务器各有自己的状态。以 World 当键，避免查到另一端的实体管理器。
     private static Dictionary<World, T> s_InstanceLookup = new();
 #pragma warning restore UDR0001
@@ -33,7 +33,7 @@ public abstract partial class ClientServerSingletonSystem<T> : SystemBase where 
     }
 
     public static bool TryGetServerInstance(out T serverInstance) {
-        // invert this if
+        // 先处理服务端 World 已存在的情况。
         if (ClientServerBootstrap.ServerWorld != null)
             return s_InstanceLookup.TryGetValue(ClientServerBootstrap.ServerWorld, out serverInstance);
         serverInstance = null;

@@ -9,7 +9,7 @@ using UnityEngine;
 [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
 public sealed class ResetOnPlayModeAttribute : Attribute {
     /// <summary>
-    /// Method name to be called on Domain Reload, must be static
+    /// 进入 Play 时要调用的重置方法名，该方法需要是静态的。
     /// </summary>
     public string ResetMethodName { get; private set; }
 
@@ -50,7 +50,7 @@ public static class DomainReloadGuard {
 
     private static IEnumerable<Type> FindClassesNeedingReset() {
         return AppDomain.CurrentDomain.GetAssemblies()
-            // unfortunately this is the only "adequate" way to filter lots of out-of-project assemblies (that get loaded via references)
+            // 按程序集名称过滤，避免扫描从引用载入的大量项目外程序集。
             // 只从游戏和项目编辑器程序集找带该标记的类型。工具包和外部库的静态状态由它们自己管理。
             .Where(a => a.FullName.StartsWith("Assembly-CSharp")).SelectMany(a => a.GetTypes()).Where(t =>
                 !t.ContainsGenericParameters && (!t.IsAbstract || IsStaticClass(t)) &&

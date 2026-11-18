@@ -5,8 +5,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>One cosmetic mesh for each boss: a serrated mantle or a ribbed root crown.
-    /// Shares the existing carapace material; no colliders, lights or GPU solver.</summary>
+    /// <summary>每个 Boss 有一个显示用网格，比如带锯齿的甲片或有骨脊的根冠。
+    /// 它复用现有甲壳材质，无需碰撞、额外光源和 GPU 求解器。</summary>
     public sealed class AlienBossSilhouette : IDisposable {
         private readonly GameObject m_Root;
         private readonly Mesh m_Mesh;
@@ -58,7 +58,7 @@ namespace Unity.MP_FPS {
                 t.Add(start);
                 t.Add(start + 1);
                 t.Add(start + 2);
-                // Separate vertices preserve opposite normals on the inner face.
+                // 内面使用独立的顶点，保留与外面朝向相反的法线。
                 start = v.Count;
                 v.Add(tip);
                 v.Add(basePoints[(side + 1) % 4]);

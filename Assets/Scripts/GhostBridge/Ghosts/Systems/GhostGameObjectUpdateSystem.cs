@@ -16,14 +16,14 @@ public enum GhostGameObjectUpdateGroup {
     Managers,
     Players,
 
-    // ADD NEW GROUPS HERE TO AVOID INVALIDATING EXISTING GHOSTS
+    // 新增更新组请放在这里，避免改变旧 Ghost 已保存的组编号。
 
-    // not actually used by any ghosts
+    // 这是保留值，供边界检查用。
     Invalid
 };
 
 public class GhostGameObjectUpdateGroupHelpers {
-// Disable warning for static fields that won't change
+// 这些静态字段会保持固定，关闭对应警告。
 #if USE_GHOST_GROUP_PROFILE_MARKERS
     public static readonly ProfilerMarker[] s_UpdateGroupMarkers = {
         new("Default"),
@@ -32,19 +32,19 @@ public class GhostGameObjectUpdateGroupHelpers {
     };
 #endif
 
-    // specifies the update order of the update groups
-    // lower means "updated earlier in the frame"
+    // 定义各更新组的执行顺序。
+    // 数值越小，在这一帧越早更新。
     public static readonly int[] s_UpdateGroupOrder = {
-        3, //Default
-        1, //Managers
-        2 //Players
+        3, //默认组。
+        1, //管理器。
+        2 //玩家。
     };
 }
 
 [ResetOnPlayMode("Reset")]
 public static class GhostGameObjectUpdateSystem {
 #pragma warning disable UDR0001
-    private static Dictionary<Type, SystemBase> s_GhostUpdateSystemByType = new(); // This is cleared from Reset
+    private static Dictionary<Type, SystemBase> s_GhostUpdateSystemByType = new(); // Reset 会清空这张表。
 #pragma warning restore UDR0001
     // 开始新的一局先清对旧 World 的系统引用，再调用 GatherWorldSystems 登记各端的新实例。
     public static void Reset() { s_GhostUpdateSystemByType.Clear(); }
@@ -142,7 +142,7 @@ public partial class GhostGameObjectUpdateServerSystem : GhostGameObjectUpdateSy
     }
 
     protected override void OnBeforeGhostUpdates() {
-        // any pending objects to delete?
+        // 检查有没有等待销毁的对象。
         if (m_ObjectsPendingDestroy != null && m_ObjectsPendingDestroy.Count > 0) {
             // 开始更新前先处理待删对象。这样本轮其余 Ghost 脚本就不会继续操作这些已经准备退场的实体。
             int count = m_ObjectsPendingDestroy.Count;
@@ -212,9 +212,9 @@ public abstract partial class GhostGameObjectUpdateSystemBase<T> : SingletonSyst
         if (index >= 0) {
             m_UpdateObjects.RemoveAtSwapBack(index);
             if (index == m_UpdateObjectIndex)
-                // we've deleted the object we were updating
-                // which is fine, but lets reduce the index so we process
-                // the newly swapped in object
+                // 当前正在更新的对象被移除了。
+                // 把索引减一，让下一个循环处理
+                // 交换到空位上的另一个对象。
                 m_UpdateObjectIndex--;
             m_UpdateObjectsDirty = true;
         }
@@ -235,7 +235,7 @@ public abstract partial class GhostGameObjectUpdateSystemBase<T> : SingletonSyst
         s_OnUpdatePrepareMarker.Begin();
 #endif
         if (m_UpdateObjectsDirty) {
-            // we need to sort the update list into group order
+            // 按更新组的顺序重排列表。
             SortUpdateObjectsList();
             m_UpdateObjectsDirty = false;
         }
@@ -249,7 +249,7 @@ public abstract partial class GhostGameObjectUpdateSystemBase<T> : SingletonSyst
         GhostGameObject.UpdateEntityCommandBuffer = ecb;
         OnBeforeGhostUpdates();
 
-        //cache and clear the event before invoking to allow new callbacks to be requested
+        //先取出回调并清空原槽位，回调执行时才能再登记新请求。
         var delayedCalls = PreEvent;
         PreEvent = null;
         delayedCalls?.Invoke(dt);

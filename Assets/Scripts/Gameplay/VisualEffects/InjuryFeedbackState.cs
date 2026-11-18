@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Local presentation history only. Does not mutate replicated health or survival rules.
+    // 只记录本地表现历史。同步生命值与生存规则由原有系统管理。
     internal sealed class InjuryFeedbackState {
         internal float Critical, Hunger, Thirst, Impact, Blood, Time, Variation, Visibility;
         private bool m_Observed, m_Alive;
@@ -69,7 +69,7 @@ namespace Unity.MP_FPS {
                 Hunger = Mathf.Lerp(Hunger, hunger, blend);
                 Thirst = Mathf.Lerp(Thirst, thirst, blend);
             } else if (m_Alive || m_DeathAge > 0) {
-                // Briefly retain the last dying state, then release the result/spectator view.
+                // 死亡时短暂保留最后状态的画面，随后交给结果页或观战视角。
                 if (m_Alive) Critical = Mathf.Max(Critical, .85f);
                 // 死亡后短暂保留最后一刻的反馈，然后逐步淡出。结算画面或观战镜头才能自然接过来。
                 m_DeathAge += dt;

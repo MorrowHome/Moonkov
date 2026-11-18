@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This utility class is handling Unity Scenes and Subscenes loading/unloading for a gameplay session.
+    /// 为一次战局会话统一加载或卸载 Unity 主场景和子场景。
     /// </summary>
     internal static class ScenesLoader {
         public static async Task LoadMenuPreviewAsync(World client) {

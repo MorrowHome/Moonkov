@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Server-owned suit reserve and hypoxia. UI only reads replicated results.</summary>
+    /// <summary>防护装备的氧气余量和缺氧由服务端计算。UI 只读同步结果。</summary>
     public static class RaidOxygen {
         public const float Capacity = 100, LowThreshold = 25, CriticalThreshold = 10;
 
@@ -60,7 +60,7 @@ namespace Unity.MP_FPS {
                 : float.PositiveInfinity;
         }
 
-        // Empty and full must remain distinct from a tiny positive or almost-full reserve.
+        // 空和满要与刚过零或接近满区分，界面应能正确显示状态。
         public static int DisplayPercent(float oxygen) {
             return !float.IsFinite(oxygen) ? -1 :
                 oxygen <= 0 ? 0 :
@@ -78,7 +78,7 @@ namespace Unity.MP_FPS {
             bool? movingOverride = null,
             float equipmentDrainMultiplier = 1) {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(dt) || dt <= 0) return;
-            // C# default(struct) bypasses constructors; make that public API case safe too.
+            // C# 的 default(struct) 不调用构造器，这种公开参数也需安全处理。
             var parameters = settings.OutdoorSeconds > 0 ? settings : OxygenParameters.Default;
             state.Oxygen = float.IsFinite(state.Oxygen) ? Mathf.Clamp(state.Oxygen, 0, Capacity) : 0;
             state.HypoxiaSeconds = float.IsFinite(state.HypoxiaSeconds) ? Mathf.Max(0, state.HypoxiaSeconds) : 0;
@@ -99,7 +99,7 @@ namespace Unity.MP_FPS {
             float ambientRefill = sealedReserve && atmosphere.Breathable && atmosphere.AllowsSuitRefill
                 ? parameters.AirRefillPerSecond
                 : 0;
-            // Overlapping sources do not multiply supply. A station can also supply a sealed suit in vacuum.
+            // 多个来源重叠时不叠加供氧。真空环境里的补氧站仍能给封闭装备补氧。
             // 环境和站点重叠时取更强供给，避免同一人站在两个点旁异常快速补满。没佩戴储氧装备时没有项圈可以加。
             state.OxygenSupplyPerSecond =
                 sealedReserve ? Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond)) : 0;

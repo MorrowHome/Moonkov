@@ -1,6 +1,6 @@
 // 打开容器、持续搜箱和使用补给会让服务端角色状态上的动作序号变化。客户端由此播声，AI 用同一事件做局内听觉判断。
 namespace Unity.MP_FPS {
-    // Opening and searching use the same authoritative hearing and playback events.
+    // 开箱和继续搜索共用服务端的听觉和音效事件。
     public static class RaidLootAcoustics {
         public const float HearingRange = 10f;
         public const double MinimumInterval = .8;
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // A real timed consumable or self-treatment produces a short equipment sound.
+    // 真实开始消耗补给或自我治疗读条会有一段短装备声。
     public static class RaidConsumableAcoustics {
         public const float HearingRange = 8f;
 

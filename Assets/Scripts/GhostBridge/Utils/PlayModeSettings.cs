@@ -82,7 +82,7 @@ internal static class PlayModeSettingsProvider {
                 if (EditorGUI.EndChangeCheck()) PlayModeSettingsHandler.SetEditorSettings(settings);
             },
 
-            // Keywords for the search bar in the Unity Preferences menu
+            // Unity 偏好设置里供搜索栏匹配的关键词。
             keywords = new HashSet<string>(new[] { "PlayMode", "Settings" })
         };
         return provider;

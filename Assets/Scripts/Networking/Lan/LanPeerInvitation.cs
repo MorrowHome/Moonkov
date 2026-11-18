@@ -31,9 +31,9 @@ namespace Unity.MP_FPS {
             return $"-----BEGIN {type}-----\n{data}\n-----END {type}-----\n";
         }
 
-        // Unity's Mono profile does not implement CertificateRequest. Encode a
-        // short-lived self-signed X.509 certificate and sign it with the runtime's RSA.
-        // Only the public certificate leaves this process, in the private invitation.
+        // Unity 的 Mono 没有实现 CertificateRequest。这里手动编码一张
+        // 短期的自签名 X.509 证书，并用运行时生成的 RSA 密钥签名。
+        // 只有公开证书会随私密邀请发给客人。
         public static LanPeerIdentity Create() {
             // 临时证书在本机创建，私钥不落系统密钥存储。Unity 的 Mono 缺少常用证书创建 API，因此代码自己组装所需字段。
             using var rsa = new RSACryptoServiceProvider(2048) { PersistKeyInCsp = false };
@@ -44,7 +44,7 @@ namespace Unity.MP_FPS {
                 byte[] signatureAlgorithm = Sequence(Oid(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 1, 1, 11), Der(5));
                 byte[] publicKey = Sequence(Sequence(Oid(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 1, 1, 1), Der(5)),
                     Der(3, new byte[] { 0 }, Sequence(Integer(key.Modulus), Integer(key.Exponent))));
-                // The self-signed certificate is also the explicit trust anchor.
+                // 这张自签证书就是来宾明确使用的信任根。
                 byte[] constraints = Sequence(Oid(0x55, 0x1d, 0x13), Der(1, new byte[] { 0xff }),
                     Der(4, Sequence(Der(1, new byte[] { 0xff }), Integer(new byte[] { 0 }))));
                 var now = DateTime.UtcNow;

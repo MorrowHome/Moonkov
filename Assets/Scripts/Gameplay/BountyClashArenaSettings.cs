@@ -6,8 +6,8 @@ using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Mode-specific anchors on the existing, collidable MC00 compound.
-    /// Runtime-only attachment leaves the expedition scene's authored values intact.</summary>
+    /// <summary>悬赏模式在已有碰撞的 MC00 设施上单独配置锚点。
+    /// 运行时才挂这个组件，保留远征场景原有的配置。</summary>
     [DisallowMultipleComponent]
     public sealed class BountyClashArenaSettings : MonoBehaviour {
         public const string SceneName = "TheophilusGameScene";
@@ -37,7 +37,7 @@ namespace Unity.MP_FPS {
         private Vector3 m_BountyPosition;
         public bool ModeActive => m_ModeActive;
 
-        // Server consumers own their copy for the match; callers cannot move future spawns.
+        // 服务器按局使用自己的配置副本。调用方不能改动后续的出生点。
         // 每次把自己的出生点和出口数组副本交给对局，玩过一局后再开新局时不会继承调用方的修改。
         public ClashArenaDefinition Definition {
             get {
@@ -133,7 +133,7 @@ namespace Unity.MP_FPS {
             m_Presentation.PresentObjective(m_BanishProgress, m_BountyAvailable);
         }
 
-        // Presentation only. The HUD passes approved snapshot values; this never advances gameplay.
+        // 这里负责显示 HUD 传来的已确认快照，玩法进度由服务端推进。
         // 收到位置和进度快照时分开记。模型尚未创建也会留好数据，稍后可以用这一帧的状态初始化。
         public void PresentObjective(float progress, bool bountyAvailable, Vector3 bountyPosition) {
             if (float.IsFinite(bountyPosition.x) && float.IsFinite(bountyPosition.y) &&

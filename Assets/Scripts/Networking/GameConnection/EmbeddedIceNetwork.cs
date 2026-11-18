@@ -55,8 +55,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
 
         public static bool SameHost(LobbySnapshot snapshot) {
             string localId = HostId(snapshot.InstanceId);
-            // Equal private addresses can exist on unrelated networks. Prefer the
-            // per-instance device hash when both sides can provide one.
+            // 相同的私有地址可以同时出现在互不相干的网络。只要两端都有，
+            // 就优先用带实例号的设备哈希判断是否在同一台机器上。
             if (!string.IsNullOrEmpty(snapshot.IceHostId) && !string.IsNullOrEmpty(localId))
                 return snapshot.IceHostId == localId;
             // 两端拿不到设备标识时才退回比较本机地址。不同内网网段可能用相同 IP，因此优先上面更可靠的机器标识。
@@ -65,8 +65,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
                 .Any(n => n.GetIPProperties().UnicastAddresses.Any(a => a.Address.Equals(address)));
         }
 
-        // A host-PC client must attempt the public NAT path, even if both processes
-        // happen to be on the same machine. Never publish loopback candidates.
+        // 即使两个进程都在同一台电脑，房主电脑上的客户端也要
+        // 尝试公网 NAT 路线。候选中不发布回环地址。
         public static string Description(string sdp, bool publicOnly, bool udpDirectOnly = false) {
             if (string.IsNullOrEmpty(sdp) || sdp.Length > 4095) throw new InvalidOperationException("P2P 连接描述无效。");
             var result = new StringBuilder(sdp.Length);

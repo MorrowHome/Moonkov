@@ -9,7 +9,7 @@ namespace Unity.MP_FPS {
         private static ProfileInventoryQueue s_MenuInventory;
         private static string s_MenuInventoryScope;
 
-        // Only menus use this projection. Deployment and persistence still read Inventory.
+        // 只有菜单使用这个预览。出战和持久化继续读 Inventory。
         public static InventoryGraph MenuInventory {
             get {
                 CheckMenuScope();

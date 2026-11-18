@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Observes confirmed physical impacts. This offset is only used by the rendered camera.
+    // 观察已确认的物理撞击。计算出的偏移只加在用于渲染的摄像机上。
     public struct PlayerHitFlinch {
         private const float Duration = .24f;
         private uint m_ImpactTick, m_ShieldHit, m_ShieldBreak;
@@ -30,7 +30,7 @@ namespace Unity.MP_FPS {
             }
             m_Age += deltaTime;
             if (hit || shield) {
-                // A single snapshot may carry both shield absorption and tissue damage.
+                // 一包服务端快照可能同时报告护盾吸收和组织损伤。
                 // 同一帧既有身体伤害又有护盾吸收时选身体强度。只有盾响时才按破盾或撞击强度决定幅度。
                 float strength = hit
                     ?

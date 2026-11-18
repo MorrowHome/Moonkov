@@ -14,7 +14,7 @@ using UnityEngine;
 using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS {
-    // Owned by the server World. Worker tasks contain data only; ECS access stays on the main thread.
+    // 由服务端 World 管理。后台任务只处理数据，ECS 留在主线程访问。
     public sealed partial class RaidPersistenceContext : IComponentData, IDisposable {
         [Serializable]
         private sealed class Config {
@@ -139,7 +139,7 @@ namespace Unity.MP_FPS {
         public readonly Dictionary<Entity, RaidInventoryState> Inventories =
             new Dictionary<Entity, RaidInventoryState>();
 
-        // Only the local authoritative server writes transient chapter facts.
+        // 只有单人的本机权威服务器记录局内章节事实。
         public readonly Dictionary<Entity, CampaignProgress> CampaignRuns = new Dictionary<Entity, CampaignProgress>();
         public bool Enabled => m_Http != null || m_Offline != null || m_Lan != null;
 
@@ -183,7 +183,7 @@ namespace Unity.MP_FPS {
         }
 
         public RaidPersistenceContext(string configPath, HttpMessageHandler handler = null) {
-            // Secrets are outside Assets and are never read by client Worlds.
+            // 凭据存放在 Assets 外，客户端 World 不读取它们。
             string root = Path.GetDirectoryName(Application.dataPath);
             if (string.IsNullOrEmpty(configPath)) configPath = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
             if (string.IsNullOrEmpty(configPath)) configPath = Path.Combine(root, "moon-server.local.json");
@@ -211,7 +211,7 @@ namespace Unity.MP_FPS {
 
         // 启动时从待发目录找上次未确认的写入。完整结算优先处理，只有找不到对应结算的出战记录才交给放弃或退款逻辑。
         private void ReplayOutbox() {
-            // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
+            // 重放正常重启前留下或 HTTP 回执丢失的待发记录。
             // 一次扣装、普通结算和赏金整组兑换各自有记录。恢复先加载终局结果，再检查是否有未完成的退款或弃局。
             ReplayBountyFinalizations();
             foreach (string file in Directory.GetFiles(m_Outbox, "*.json")) {
@@ -239,7 +239,7 @@ namespace Unity.MP_FPS {
                 if (payload == null || !Guid.TryParse(payload.DeploymentId, out _) ||
                     !Guid.TryParse(payload.PlayerId, out _) || !RaidRules.ValidLoadout(payload.Cells))
                     throw new InvalidDataException("Invalid deployment journal: " + Path.GetFileName(file));
-                // A completed raid's exact settlement takes precedence over crash recovery.
+                // 已完成战局有确切结算时，以它为准，再考虑崩溃恢复。
                 // 已有完整结算时保持那份结果。只剩开局记录说明找不到最终结果，才请求放弃该局。
                 if (!Saves.ContainsKey(payload.DeploymentId)) Abandon(payload);
             }
@@ -405,7 +405,7 @@ namespace Unity.MP_FPS {
 
         // 先存能重发的结算记录，再发给档案。确认成功后先删出战记录，最后删结算记录，这样中间崩溃时还可以恢复最终结果。
         public Task<Profile> SaveAsync(Settlement payload) {
-            // One tiny local receipt per completed raid; the frame never waits for disk or HTTP.
+            // 每局结算只写一份小的本机回执，主线程不用等待磁盘或 HTTP。
             return Task.Run(async () => {
                 string file = Path.Combine(m_Outbox, Guid.Parse(payload.SettlementId).ToString("N") + ".json");
                 WriteJournal(file, payload);
@@ -414,7 +414,7 @@ namespace Unity.MP_FPS {
                 var profile = await PostAsync(ProfilePath("settlements", payload.Mode), payload).ConfigureAwait(false);
                 if (profile.PlayerId != payload.PlayerId)
                     throw new InvalidDataException("Settlement profile mismatch.");
-                // Delete the open-raid journal first. A crash between deletes then replays the exact receipt.
+                // 先删该出战的开局记录。删除之间崩溃时，重启会重发已有的确切结算。
                 File.Delete(Path.ChangeExtension(file, ".deploy"));
                 File.Delete(file);
                 return profile;
@@ -428,7 +428,7 @@ namespace Unity.MP_FPS {
             using (var content =
                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false)) {
-                // Do not log request bodies: guest tokens and server keys are credentials.
+                // 请求体可能含访客 token 或服务器密钥，不写入日志。
                 // 服务器明确拒绝出装时，提取空间不足、缺电池等错误，让调用者区分应提示玩家和应自动重试的失败。
                 if (path.EndsWith("/deployments", StringComparison.Ordinal) &&
                     (response.StatusCode == HttpStatusCode.Conflict ||
@@ -459,8 +459,8 @@ namespace Unity.MP_FPS {
                 m_Stop.Dispose();
                 return;
             }
-            // The World disappears before disconnect processing necessarily gets another tick.
-            // Capture data now; cleanup must not query ECS or await HTTP on the main thread.
+            // World 可能在下一帧断线逻辑处理前就销毁。
+            // 现在先取得数据。后续清理不访问 ECS，也不让主线程等 HTTP。
             foreach (var profile in Profiles.Values)
                 if (!string.IsNullOrEmpty(profile.DeploymentId))
                     Abandon(DeploymentOf(profile), false);
@@ -479,18 +479,18 @@ namespace Unity.MP_FPS {
 
         private async Task FlushShutdownAsync(List<Task<Profile>> deploying, List<Save> saves) {
             try {
-                // A pending debit must resolve before its cancellation is acknowledged locally.
+                // 待确认的扣装必须先收尾，本机才可以确认撤销。
                 // 关闭时先等已发的扣装收尾，再处理退款、放弃或实际结算。未确认动作保留原文件，下次启动继续。
                 foreach (var task in deploying) {
                     try { await task.ConfigureAwait(false); } catch (Exception) {
-                        /* journal retained */
+                        /* 继续保留待发日志。 */
                     }
                 }
                 foreach (var save in saves) {
                     try {
                         if (save.Task != null) {
                             try { await save.Task.ConfigureAwait(false); } catch (Exception) {
-                                /* retry exact payload */
+                                /* 重试时使用原请求内容。 */
                             }
                         }
                         if (save.Task == null || !save.Task.IsCompletedSuccessfully)

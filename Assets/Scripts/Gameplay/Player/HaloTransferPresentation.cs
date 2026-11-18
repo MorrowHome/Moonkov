@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Move the equipped art itself. No substitute ring, extra lights or cloned weapon materials.
+    // 移动原先装备的光环外观，就能直接复用它的灯、模型和材质。
     [DefaultExecutionOrder(190)]
     public sealed class HaloTransferPresentation : MonoBehaviour {
         private DollSingerHaloAim m_Halo, m_Recipient;

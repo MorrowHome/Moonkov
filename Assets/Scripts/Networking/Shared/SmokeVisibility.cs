@@ -2,8 +2,8 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // The same growing ellipsoid and fade drive client rendering and server perception.
-    // Smoke never participates in collision, damage, hearing or navigation queries.
+    // 客户端绘制和服务端感知用同样的椭球展开与淡出。
+    // 烟雾只影响视线，不参与碰撞、伤害、听觉或导航查询。
     public static class SmokeVisibility {
         public const float Duration = 20, BloomSeconds = 1.2f, FadeSeconds = 3;
 

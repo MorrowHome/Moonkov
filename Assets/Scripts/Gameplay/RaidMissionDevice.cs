@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Authored physical hardware. It presents server state and never decides completion.
+    // 场景设备按服务端状态做显示。是否完成由服务端任务规则决定。
     public sealed class RaidMissionDevice : MonoBehaviour {
         private static readonly System.Collections.Generic.List<RaidMissionDevice> s_Active = new();
         public static System.Collections.Generic.IReadOnlyList<RaidMissionDevice> Active => s_Active;

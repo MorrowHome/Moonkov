@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    // Owns only presentation and editing. The client World owns messages and pending sends.
+    // 界面负责显示和编辑。消息与待发送请求由客户端 World 保存。
     public sealed class RaidChatView : IDisposable {
         public readonly VisualElement Element;
         public readonly TextField Input;
@@ -159,7 +159,7 @@ namespace Unity.MP_FPS {
                 (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);
                 evt.StopImmediatePropagation();
             }
-            // Tab keeps editing focus. It must never open the inventory.
+            // Tab 将焦点留在输入框，避免同时触发背包。
             else if (evt.keyCode == KeyCode.Tab) {
                 Input.Focus();
                 (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);

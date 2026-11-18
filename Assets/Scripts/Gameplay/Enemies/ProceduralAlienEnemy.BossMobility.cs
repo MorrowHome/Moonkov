@@ -22,9 +22,9 @@ namespace Unity.MP_FPS {
                 }
                 var waypoint = UprightWaypoint(m_BossDestination);
                 var intent = Vector3.ProjectOnPlane(waypoint - transform.position, Vector3.up).normalized;
-                // A newly requested sidestep may arrive during the previous plan's
-                // .75s cache window. Wait for its own checked route, without bypassing
-                // the planner's rate/budget or spending the whole dash on a stale goal.
+                // 新触发的侧移可能撞上上一条路线的缓存有效期。
+                // 上一条路径最多缓存 .75 秒。新侧移要等自己的路线检查完成。
+                // 这样可以遵守寻路的频率和预算，也不把冲刺时间用在旧目的地上。
                 if (intent.sqrMagnitude < .01f || Vector3.Distance(m_UprightGoal, m_BossDestination) > .1f) {
                     UpdateCombatPresentation(health.CurrentHealth);
                     m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false);

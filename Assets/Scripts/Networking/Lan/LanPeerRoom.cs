@@ -11,8 +11,8 @@ using Unity.Networking.Transport.Utilities;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One reliable DTLS driver for the room and a separate ICE context for NetCode.
-    // Both candidates are exchanged up front. NetCode borrows its context per round.
+    // 房间操作用一个可靠的 DTLS 驱动，NetCode 则单独用战局的 ICE 上下文。
+    // 入房前交换两条通路的候选地址。每局 NetCode 借用自己的上下文。
     internal sealed class LanPeerRoom : IDisposable {
         private const int ChunkSize = 1024, ChunksPerPeerUpdate = 16;
         private const string StunHost = "stun.cloudflare.com";
@@ -261,8 +261,8 @@ namespace Unity.MP_FPS {
                 return reply;
             // 请求超时时房主可能已经执行了操作。关掉这条通道，之后重新进房读真实档案，避免把上一条迟到的回执当成下一条的结果。
             } catch (OperationCanceledException) {
-                // The server may have applied the write. Close this channel so a
-                // late reply can never be mistaken for the next request.
+                // 服务器可能已经写入这笔操作。关闭该通道才能保证
+                // 迟到的回执不会被当作下一次请求的回复。
                 Drop(peer);
                 ct.ThrowIfCancellationRequested();
                 m_Stop.Token.ThrowIfCancellationRequested();
@@ -309,8 +309,8 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Wait for the selected pair to be nominated. A provisional ICE check
-        // can succeed while the host is still waiting for the pasted reply.
+        // 等待 ICE 决定正式使用的候选地址对。临时连通性检查
+        // 可能在房主还没收到粘贴回的应答时就成功。
         private static bool IsReady(EmbeddedIceTransport transport, int peer) {
             return transport.GetState(peer) == EmbeddedIceState.Completed;
         }

@@ -5,7 +5,7 @@ using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    /// <summary>Standalone cosmetic character uses the same magazine/burst/energy rules as gameplay.</summary>
+    /// <summary>独立运行的演示角色也使用正式玩法的弹仓、连发和能量规则。</summary>
     public sealed class LocalHaloArsenalDriver : MonoBehaviour, ILocalArsenalDriver {
         public WeaponRegistry registry;
         private readonly PredictedPlayerGhost[] states = new PredictedPlayerGhost[HaloArsenal.Entries.Length];

@@ -24,8 +24,8 @@ namespace Unity.GhostBridge {
 
         public bool IsServerListening() {
             // 每次从当前服务端 World 查驱动。退局时 World 和它的原生驱动会一起释放，旧引用不能用来判断新战局是否准备好。
-            // DriverStore dereferences a native pointer. Never cache a driver across
-            // world lifetimes or read a default driver before the server is ready.
+            // DriverStore 持有原生指针，驱动引用只在当前 World 有效。
+            // 等服务端驱动就绪后再读取。
             if (!TryGetServerEntityManager(out var manager)) return false;
             using var query = manager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             if (query.IsEmptyIgnoreFilter) return false;

@@ -5,7 +5,7 @@ using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Prediction and server share timing, the one-shot input buffer and burst lifecycle.
+    // 客户端预测和服务器共用计时、单发输入缓存与连射阶段。
     public static class HaloModuleFire {
         public const float InputBufferSeconds = .12f;
 
@@ -66,8 +66,8 @@ namespace Unity.MP_FPS {
                 : 0;
         }
 
-        // R pressed during a draw waits for that draw, without spending a cell
-        // early. A later weapon switch discards the old weapon's queued intent.
+        // 取枪时按 R 会记下装填意图，等取枪结束再消耗电池。
+        // 之后若换武器，就不用这个旧请求了。
         // 如果还在取武器，能记录一次装填请求，等武器就绪后再消费；占手、已满弹等情况则直接清掉请求。
         public static bool ReadyToReload(ref PredictedPlayerGhost state, bool requested, int magazineSize) {
             if (GrenadeHandling.Occupied(state) || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState ||
@@ -84,8 +84,8 @@ namespace Unity.MP_FPS {
             return requested || queued;
         }
 
-        // Aim controls the lens. Hip fire and ADS must both raise the halo and hands.
-        // Store one click through that windup, separately from the short cooldown buffer.
+        // 瞄准键控制镜片。腰射与开镜射击都要抬起手和光环。
+        // 抬手期间单独记一发点按，与短冷却时的输入缓存分开。
         public static bool TryFire(
             ref PredictedPlayerGhost state,
             WeaponData weapon,
@@ -106,10 +106,10 @@ namespace Unity.MP_FPS {
             if (!halo) return TryFire(ref state, weapon, input.Shoot, input.Aim, switched);
             float step = Mathf.Max(0, deltaTime);
             bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
-            // Lowering can return before TryFire's trigger edge tracking runs.
+            // 光环放下时可能提前返回，还没走到 TryFire 里的扳机边沿检测。
             if (!input.Shoot) state.BurstTriggerHeld = false;
-            // Aiming consumes the hip-fire hold. An aimed shot must not leave a
-            // timed pose behind when RMB is released, even immediately after firing.
+            // 开始瞄准会消耗掉腰射姿势的保持时间。
+            // 即使刚刚瞄准开火，松开右键也不会继续摆腰射姿势。
             // 瞄准和腰射可共用抬手姿势，但保持方式不同。腰射短暂保持，按住瞄准则由瞄准键维持。
             if (input.Aim)
                 state.HipFireHoldRemaining = 0;
@@ -157,8 +157,8 @@ namespace Unity.MP_FPS {
                 return false;
             }
 
-            // Semi-auto input is already a press event; pulse rifles receive a held trigger.
-            // A single pending press expires quickly and follows the current aim when released.
+            // 半自动收到的是一次按下事件。脉冲连发武器收到的是扳机持续状态。
+            // 缓存的点按很快过期。实际开火时使用那一刻的瞄准方向。
             if (((!pulse && !weapon.Automatic && trigger) || (pulse && pressed)) &&
                 (!state.ControllerState.IsReloadingState || state.ReloadTimer <= InputBufferSeconds))
                 state.FireBufferRemaining = InputBufferSeconds;
@@ -195,8 +195,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // Retain at most one simulation step of overshoot for continuous fire. Idle time,
-        // a buffered semi-auto press, or a hitch never buys several accelerated shots.
+        // 连续射击最多保留一拍多算的冷却时间。
+        // 等待、半自动缓存或卡顿不会换来多发超速射击。
         public static void CommitShot(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime) {
             bool pulse = IsPulse(state, weapon);
             float firedInterval = Interval(state, weapon, pulse && state.BurstSequence == 0);

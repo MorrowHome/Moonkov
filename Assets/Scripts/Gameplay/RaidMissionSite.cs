@@ -13,7 +13,7 @@ namespace Unity.MP_FPS {
         public float Yaw;
     }
 
-    // Scene authoring only. All mutable operation/interaction state belongs to the server World.
+    // 这个组件配置场景。可变的任务与交互状态留在服务端 World。
     [DisallowMultipleComponent]
     public sealed class RaidMissionSite : MonoBehaviour {
         [SerializeField] private RaidMissionAnchor[] m_Anchors = Array.Empty<RaidMissionAnchor>();
@@ -68,8 +68,8 @@ namespace Unity.MP_FPS {
                 if (definition.Validate() != null || definition.Objectives.Length > 8)
                     throw new InvalidOperationException("第二章设施模板无效。");
             }
-            // Guaranteed chapter facilities stay available for the authored raid budget.
-            // Refresh cached copies too: a later deployment may use a different duration.
+            // 保证章节设施在这次配置的远征时限内可用。
+            // 缓存里的定义也要刷新。下一次入场可能设了别的时长。
             if (chapter != 0) {
                 var definitions = chapter == 1 ? m_FirstChapterDefinitions : m_SecondChapterDefinitions;
                 var definition = Array.Find(definitions,

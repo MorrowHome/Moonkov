@@ -26,7 +26,7 @@ namespace Unity.MP_FPS.Client {
         Melee
     }
 
-    // Local presentation only. Item IDs and equipment writes must eventually come from the server.
+    // 仅管理本地模板展示。正式物品编号和装备改动都要由服务器确认。
     public sealed class StashLoadout {
         private readonly StashLayout m_Storage;
         private readonly Dictionary<string, EquipmentKind> m_Kinds = new();

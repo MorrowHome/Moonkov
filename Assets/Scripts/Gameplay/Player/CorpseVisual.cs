@@ -7,7 +7,7 @@ using UnityEngine.Playables;
 using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS {
-    // Cosmetic client copy. Inventory and access remain owned by the server's corpse ID.
+    // 客户端的显示副本。库存内容和是否可搜由服务端尸体 ID 管理。
     public sealed class CorpseVisual : MonoBehaviour {
         private PlayableGraph m_Graph;
         private AnimationClipPlayable m_Clip;
@@ -129,8 +129,8 @@ namespace Unity.MP_FPS {
             }
             float targetAge = Mathf.Clamp(age, 0, FinishAge);
             if (m_HairSpring != null) {
-                // A late corpse can have several seconds of settling to reconstruct.
-                // Spread that cosmetic work across frames instead of blocking a game frame.
+                // 晚收到尸体时，可能要根据已过的几秒还原姿势。
+                // 把这段画面计算分到多个帧，避免一下卡住。
                 float remaining = Mathf.Max(0, targetAge - m_LastAge);
                 int steps = 0;
                 while (remaining > .00001f && steps++ < MaxSpringStepsPerSample) {
@@ -148,7 +148,7 @@ namespace Unity.MP_FPS {
                 m_Model.position += Vector3.up * m_GroundLift;
                 UpdateLootBounds();
             }
-            // Body stops at the death clip's end; hair gets three more seconds, then freezes too.
+            // 死亡片段结束后身体停住。头发继续三秒后也固定住。
             Settled = true;
             enabled = false;
         }
@@ -156,7 +156,7 @@ namespace Unity.MP_FPS {
         // 重算搜刮可对准的真实身体范围。用于渲染裁剪的超大包围盒不应用作交互位置。
         private void UpdateLootBounds() {
             if (m_Contacts == null || m_Contacts.Length == 0) return;
-            // Culling bounds are deliberately enlarged; only the posed body defines its loot target.
+            // 渲染裁剪范围刻意放大。准星可搜的范围只按身体实际摆法算。
             m_LootBounds = new Bounds(m_Contacts[0].position, Vector3.zero);
             for (int i = 1; i < m_Contacts.Length; i++) m_LootBounds.Encapsulate(m_Contacts[i].position);
             m_LootBounds.Expand(.2f);
@@ -172,8 +172,8 @@ namespace Unity.MP_FPS {
         // 以死亡动画最后一帧的实际网格找接地位置。常规渲染包围盒可能远大于尸体本身。
         private void FitFinalMeshToGround() {
             using var profile = s_GroundProfile.Auto();
-            // Bake once at the final pose. Renderer bounds include unused animation space,
-            // while bone centres do not account for the thickness of the visible body.
+            // 只对最终姿势烘焙一次。渲染器边界含无用的动画活动空间。
+            // 单用骨骼中心又算不出身体可见表面的厚度。
             var mesh = new Mesh();
             var vertices = new System.Collections.Generic.List<Vector3>();
             try {

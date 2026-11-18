@@ -20,7 +20,7 @@ namespace Unity.MP_FPS {
                 m_MucusLowArc = mode == 1;
                 return true;
             }
-            // A failed launch is reconsidered at most twice a second, not every server tick.
+            // 发射预检失败后最多每秒再试两次。
             m_NextAttack = m_Clock + .5f;
             return false;
         }
@@ -34,7 +34,7 @@ namespace Unity.MP_FPS {
             if (UnityEngine.Physics.CheckSphere(origin, .18f, mask, QueryTriggerInteraction.Ignore)) return false;
             float duration = AlienMucusTrajectory.FlightTime(origin, target, profile.MucusSpeed);
             var previous = origin;
-            // 24 bounded swept segments; the server motor still resolves every flight step.
+            // 预检限为 24 段扫掠。服务器仍在正式飞行的每一小步判断碰撞。
             for (int i = 1; i <= 24; i++) {
                 var point = AlienMucusTrajectory.Point(origin, target, profile.MucusSpeed, duration * i / 24, low);
                 var delta = point - previous;

@@ -19,8 +19,8 @@ namespace Unity.MP_FPS {
         public const string MainMenuSceneName = "MainMenu";
         public const string MenuPreviewSceneName = "GameScene";
 
-        // Shared by offline/Host, remote clients and the dedicated server.
-        // Apollo12 and MoonGameScene remain available as authored fallbacks.
+        // 单人、Host、远程客户端和专用服务器共用。
+        // Apollo12 与 MoonGameScene 仍可作为已有的备选场景。
         public const string GameSceneName = "TheophilusGameScene";
         public static GameConnection GameConnection { get; private set; }
         private Task m_LoadingGame;
@@ -66,12 +66,12 @@ namespace Unity.MP_FPS {
         private async void Start() {
             if (!m_IsHeadless && GetComponent<MoonkovAudioEnvironment>() == null)
                 gameObject.AddComponent<MoonkovAudioEnvironment>();
-            // Keeps every UI Toolkit screen audible, including ones that never opt in.
+            // 为所有 UI Toolkit 画面接入按钮音效，包括未主动绑定的页面。
             if (!m_IsHeadless && GetComponent<MoonkovUIAudio>() == null) gameObject.AddComponent<MoonkovUIAudio>();
-            Application.runInBackground = true; //Prevents dropped connections during multiplayer gameplay
+            Application.runInBackground = true; //多人模式把应用放到后台时，保持连接运行。
 
-            // The Editor's Server play type must use the same startup path as
-            // the dedicated server, rather than creating a main-menu client world.
+            // 编辑器选择 Server 模式时，沿用专用服务器的启动流程，
+            // 这样不会额外创建一个只用来显示主菜单的客户端 World。
 #if UNITY_SERVER || UNITY_EDITOR
             // 只运行服务端时，把启动交给 ServerBootstrap。普通客户端才需要继续打开菜单相机、等待菜单资源。
             if (GhostBridgeBootstrap.IsServerOnly) {
@@ -90,14 +90,14 @@ namespace Unity.MP_FPS {
                     m_LoadingMainMenu = StartMainMenuAsync(m_LoadingMainMenuCancel.Token);
                     await m_LoadingMainMenu;
                 } catch (OperationCanceledException) {
-                    // Nothing to do when the task is cancelled.
+                    // 取消任务后直接结束这一条流程。
                 } finally {
                     m_LoadingMainMenuCancel.Dispose();
                     m_LoadingMainMenuCancel = null;
                 }
             }
 
-            // Ensures it only ever loads once
+            // 保证这组资源只加载一次。
             if (!SceneManager.GetSceneByName("Persistents").isLoaded)
                 await SceneManager.LoadSceneAsync("Scenes/Persistents", LoadSceneMode.Additive);
         }
@@ -110,8 +110,8 @@ namespace Unity.MP_FPS {
             DestroyLocalSimulationWorld();
             // 回菜单时清掉上一局的角色网格拟合缓存。菜单用自己的角色预览，常驻场景到位后即可解除等待。
             EnergyShieldFittingData.Clear();
-            // The full-screen menu renders its own previews. Loading the old sample map
-            // and a NetCode client world here only delays the first usable menu frame.
+            // 全屏菜单有自己的角色和背景预览，
+            // 此时加载旧样例地图与 NetCode 客户端 World 会推迟菜单可用的时刻。
             if (!SceneManager.GetSceneByName("Persistents").isLoaded)
                 await SceneManager.LoadSceneAsync("Scenes/Persistents", LoadSceneMode.Additive);
             cancellationToken.ThrowIfCancellationRequested();
@@ -119,10 +119,10 @@ namespace Unity.MP_FPS {
         }
 
         /// <summary>
-        /// This method start the Gameplay session.
+        /// 从这里开始游戏会话。
         /// </summary>
         /// <remarks>
-        /// It is an asynchronous method because it is waiting on several API like <see cref="GameConnection"/> and <see cref="ScenesLoader"/>.
+        /// 这是异步方法，因为需要等待 <see cref="GameConnection"/> 和 <see cref="ScenesLoader"/> 等入口。
         /// </remarks>
         public void StartGameAsync(CreationType creationType) { RequestGameAsync(creationType, false); }
 
@@ -234,7 +234,7 @@ namespace Unity.MP_FPS {
                 ConnectionSettings.Instance.ConnectionError ??= e is TimeoutException || e is InvalidOperationException
                     ? e.Message
                     : "Unable to start this session. Please try again.";
-                // Disposing the token here because the error has been handled and ReturnToMainMenu should not check it.
+                // 异常已经处理过，先释放取消令牌。之后的 ReturnToMainMenu 无需再看这个令牌。
                 m_LoadingGameCancel.Dispose();
                 m_LoadingGameCancel = null;
                 ReturnToMainMenuAsync();
@@ -258,24 +258,24 @@ namespace Unity.MP_FPS {
                 OnlineTransportSecurity.RequireTrustedOnlineHost();
             // 新战局开始前先结束仍在加载的菜单，再把菜单可能留下的旧连接与 World 收掉。等这些操作结束后，才建立本次连接。
             if (m_LoadingMainMenuCancel != null || GameSettings.Instance.MainMenuSceneLoaded) {
-                // Unload already created MainMenu world 
+                // 卸载之前已经创建的 MainMenu World。
                 if (m_LoadingMainMenuCancel != null) {
                     m_LoadingMainMenuCancel.Cancel();
                     try { await m_LoadingMainMenu; } catch (OperationCanceledException) {
-                        // We are ignoring the cancelled exception as it is expected.
+                        // 这里的取消是流程主动触发的，直接继续后续步骤。
                     }
                 }
 
-                //Unload created client world by disconnecting and leaving the current session.
+                //断开连接并离开原会话，从而卸载旧客户端 World。
                 if (GameSettings.Instance.MainMenuSceneLoaded) await DisconnectAndUnloadWorlds();
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
-            // Connecting to a Multiplayer Session.
+            // 建立多人会话连接。
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.InitializeConnection);
             // 这里选的是连接路线。Relay 去创建或加入会话，直接连接使用地址，好友房沿用房间连接，单人给同一台机器选本机端点。
             switch (creationType) {
-                case CreationType.CreateOrJoin: //Relay
+                case CreationType.CreateOrJoin: //中继连接
                 {
                     GameConnection = await GameConnection.CreateorJoinGameAsync(cancellationToken);
                     break;
@@ -284,14 +284,14 @@ namespace Unity.MP_FPS {
                     GameConnection = await GameConnection.JoinGameAsync(cancellationToken);
                     break;
                 case CreationType.LanHost:
-                case CreationType.Host: //Direct connection - host
+                case CreationType.Host: //直连，由本机创建主机。
                 {
                     GameConnection = await GameConnection.HostGameAsync();
                     break;
                 }
                 case CreationType.Offline: GameConnection = await GameConnection.OfflineGameAsync(); break;
                 case CreationType.LanJoin:
-                case CreationType.ConnectAndJoin: //Direct connection - client
+                case CreationType.ConnectAndJoin: //直连，作为客户端加入主机。
                 {
                     GameConnection = await GameConnection.ConnectGameAsync(cancellationToken);
                     break;
@@ -328,7 +328,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // If the server was created successfully, start listening.
+            // 服务端创建成功后开始监听连接。
             if (server != null) {
                 using var drvQuery =
                     server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
@@ -338,9 +338,9 @@ namespace Unity.MP_FPS {
                 if (!serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint))
                     throw new InvalidOperationException("Cannot start server. The port may be in use.");
                 if (creationType == CreationType.Offline || GameConnection.PeerRoom != null) {
-                    // NetCode may choose IPC or UDP for the local client (e.g. the
-                    // Editor network simulator forces UDP). Port 0 gives each server
-                    // driver a different port, so select the matching transport.
+                    // 本地客户端可能通过 IPC 或 UDP 连接，取决于 NetCode 当时选择的传输方式，
+                    // 例如编辑器的网络模拟会强制用 UDP。填端口 0 时，驱动会分配不同端口，
+                    // 所以客户端要取实际使用的驱动端口。
                     using var clientDriverQuery =
                         client.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkStreamDriver>());
                     var clientDrivers = clientDriverQuery.GetSingleton<NetworkStreamDriver>().DriverStore;
@@ -361,15 +361,15 @@ namespace Unity.MP_FPS {
                     await LanRoomClient.RequestAsync("listening", ct: cancellationToken);
             }
 
-            //The the client world was created, connect to the server
+            //创建客户端 World 后向服务器发起连接。
             if (client != null) {
                 ConnectionSettings.Instance.GameJoinTicket = null;
                 ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
                 // 传输连通以后，客户端才能继续加载自己的 ECS 数据和表现资源。连通、收齐地图对象和服务端准许入场分别有各自的等待点。
                 await WaitForPlayerConnectionAsync(cancellationToken);
                 await ScenesLoader.LoadGameplayAsync(null, client);
-                // Scene unload does not release unused asset payloads. Reclaim them
-                // while loading, before preparing the new raid's resident resources.
+                // 卸载场景后仍可能有未使用的资源占着内存。
+                // 在新战局常用资源开始加载之前，先归还这些内存。
                 // 卸掉前一张图的场景只解开引用。这里额外释放不用的资源，再准备新一局会马上用到的资源，尽量把开销留在加载界面。
                 await Resources.UnloadUnusedAssets();
                 cancellationToken.ThrowIfCancellationRequested();
@@ -379,8 +379,8 @@ namespace Unity.MP_FPS {
                     await lighting.PrepareResourcesAsync(cancellationToken);
                 await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
                 // 入局票有时效。地图加载可能花很久，所以靠近发送入局请求时再向账号服务取票。
-                // Large maps can take longer than the ticket's 60-second lifetime.
-                // Issue only after local scene loading, just before the join RPC.
+                // 大地图加载时间可能超过入场票据允许的 60 秒。
+                // 因此等本地场景加载完、发送加入 RPC 前，再领取票据。
                 if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)
                     ConnectionSettings.Instance.GameJoinTicket =
                         await AccountClient.CreateGameTicketAsync(cancellationToken);
@@ -428,8 +428,8 @@ namespace Unity.MP_FPS {
         }
 
         /// <summary>
-        /// Wait until the vast majority of ghosts have been spawned.
-        /// If we don't do this, we'll see a bunch of ghosts pop in as the scene loads.
+        /// 等绝大多数 Ghost 实体已经创建后再进入场景。
+        /// 否则加载完成时，会看到很多对象在眼前陆续出现。
         /// </summary>
         /// <param name="world"></param>
         /// <param name="cancellationToken"></param>
@@ -468,7 +468,7 @@ namespace Unity.MP_FPS {
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
 
-            // Waiting an extra frame so that the player position is properly synced with the server.
+            // 再等一帧，让玩家位置有机会与服务端同步。
             await Awaitable.NextFrameAsync(cancellationToken);
         }
 
@@ -534,7 +534,7 @@ namespace Unity.MP_FPS {
 
         public static async Task WaitForPlayerConnectionAsync(CancellationToken cancellationToken = default) {
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WaitingConnection);
-            // The transport retries its handshake; the session owner bounds the wait.
+            // 传输层会重试握手。会话管理器负责限制总等待时间。
             ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Connecting;
             double started = Time.realtimeSinceStartupAsDouble;
             // 这里只等连接状态变化。握手由网络系统推进，外层用现实时间限制等待，错误信息会指向此次实际使用的路线。
@@ -571,7 +571,7 @@ namespace Unity.MP_FPS {
         }
 
         /// <summary>
-        /// Destroy all local game simulation worlds if any before creating new server/client worlds.
+        /// 建立新的服务端与客户端 World 前，先清掉本地旧的模拟 World。
         /// </summary>
         public static void DestroyLocalSimulationWorld() {
             foreach (var world in World.All)

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Layout assets own hierarchy and presentation; presenters only bind state and actions.
+    // 布局和外观由模板资源给出。界面逻辑负责读状态和接动作。
     internal static class TerminalLayout {
         // 统一从终端资源目录取模板。调用方只给资源相对名称和希望拿到的根元素。
         internal static VisualElement Clone(string assetName, string elementName) {

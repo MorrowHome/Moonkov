@@ -11,7 +11,7 @@ namespace Unity.MP_FPS {
         Returning
     }
 
-    // One-way, server-owned transfer between the actors' existing energy pools.
+    // 服务器在两个角色现有的能量池之间做单向转送。
     public static class HaloTransferRules {
         public const float Range = 6, CostPerSecond = 20, Efficiency = .75f;
         public const float ExtendSeconds = .25f, ReturnSeconds = .2f;
@@ -106,7 +106,7 @@ namespace Unity.MP_FPS {
             if (sender.HaloTransferRemaining <= 0) Clear(ref sender);
         }
 
-        // Caller validates ownership, team, target identity, distance and line of sight each tick.
+        // 每个 tick 都由调用者检查归属、队伍、目标、距离和视线。
         public static float Transfer(ref PredictedPlayerGhost sender, ref PredictedPlayerGhost receiver, float dt) {
             if (!float.IsFinite(dt) || dt <= 0 || !CanSend(sender) || !CanReceive(receiver)) return 0;
             if (sender.HaloTransferPhase == HaloTransferPhase.Extending) {

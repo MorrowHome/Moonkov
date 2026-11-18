@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // Only the owning client presents its research devices. These models have
-    // no colliders, so a LAN host's private props cannot block other players.
+    // 各客户端只显示属于自己的研究设备。生成的模型没有碰撞，
+    // 所以局域网房主的私有道具不会挡住其他玩家。
     internal sealed class ResearchQuestFieldView {
         private static readonly ResearchDevice[] s_LowerDevices =
             { ResearchDevice.LowerSeal, ResearchDevice.NadirTerminal, ResearchDevice.CredentialsLocker };

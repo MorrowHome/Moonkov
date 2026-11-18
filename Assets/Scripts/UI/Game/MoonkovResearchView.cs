@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Presentation only. Confirmation uses the supplier's versioned, receipted transaction.
+    // 这里只画研究页面。确认操作交给商店流程，按库存版本发请求并等待回执。
     public sealed class MoonkovResearchView {
         public VisualElement Root { get; }
         private static string s_Selected = "mooncore_stabilization";

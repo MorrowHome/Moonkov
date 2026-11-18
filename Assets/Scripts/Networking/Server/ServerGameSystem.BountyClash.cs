@@ -67,7 +67,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Called by the persistence adapter only after authenticated profile loading; never trusts a client team id.
+        // 持久化层完成认证并读取档案后才调用。客户端自报的队伍 ID 不参与判定。
         private void CompleteClashJoin(
             ref SystemState state,
             EntityCommandBuffer ecb,
@@ -144,7 +144,7 @@ namespace Unity.MP_FPS {
             world.NextSnapshot = 0;
         }
 
-        // Late successful HTTP deployment after a bounded lobby abort must be refunded by the persistence adapter.
+        // 大厅超时取消后仍可能收到迟来的 HTTP 扣装成功，持久化层必须退回这笔装备。
         private bool ClashDeploymentAllowed(ref SystemState state, Entity connection, string deploymentId) {
             if (!ClashEnabled(ref state)) return false;
             var world = ClashWorld(ref state);
@@ -154,14 +154,14 @@ namespace Unity.MP_FPS {
                 p.DeploymentId == deploymentId);
         }
 
-        // NetCode destroys the connection's LinkedEntityGroup at the end of
-        // NetworkReceiveSystemGroup. Retain the body before that ECB plays back.
+        // NetCode 在 NetworkReceiveSystemGroup 结束时删除连接的 LinkedEntityGroup。
+        // 需在这份 ECB 回放之前把角色留下来。
         public void ClashDisconnectBeforeCleanup(ref SystemState state) {
             if (!ClashEnabled(ref state)) return;
             var world = ClashWorld(ref state);
             using var commands = new EntityCommandBuffer(Allocator.Temp);
-            // ConnectionEventsForTick is only published after NetCode cleanup.
-            // The public connection state is already updated by the receive job.
+            // ConnectionEventsForTick 要等 NetCode 清理后才发布。
+            // 公开的连接状态此时已经被接收 Job 更新了。
             foreach (var pair in world.Connections.ToArray()) {
                 var connection = pair.Value;
                 if (SystemAPI.Exists(connection) && SystemAPI.HasComponent<NetworkStreamConnection>(connection) &&
@@ -401,7 +401,7 @@ namespace Unity.MP_FPS {
                         context.BeginBountyDeploy(c, Guid.Parse(match.MatchId), BountyClashRules.Version, p.TeamId,
                             Guid.Parse(p.DeploymentId), join.CarryCells, join);
                     }
-            // Persist the whole award event before any participant is destroyed or its inventory is transferred.
+            // 销毁任何参赛者或转移其库存之前，先为整组赏金事件落盘。
             // 规则确认赏金撤离后，先保存每个获奖者实际携带的装备与整组奖励事件。之后才允许销毁角色或移走背包。
             if (match.Award != null && !world.AwardQueued) {
                 var award = match.Award;
@@ -576,7 +576,7 @@ namespace Unity.MP_FPS {
                     Remaining = (float)Math.Max(0, match.Deadline - now),
                     PrepareRemaining = (float)Math.Max(0, match.PrepareDeadline - now),
                     BanishProgress = match.BanishProgress(now),
-                    // The HUD uses a negative value to hide the boundary countdown.
+                    // HUD 用负值表示无需显示出界倒计时。
                     BoundaryRemaining = match.Active(local) && local.OutsideSince >= 0
                         ? match.BoundaryRemaining(local, now)
                         : -1,

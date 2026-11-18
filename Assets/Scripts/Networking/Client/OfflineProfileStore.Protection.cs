@@ -4,8 +4,8 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public sealed partial class OfflineProfileStore {
-        // Existing readers preserve this receipt dictionary even if they cannot
-        // serialize a newly added InventoryGraph field. Never re-grant a lost kit.
+        // 旧版读档即使不认识 InventoryGraph 的新字段，也会
+        // 保留回执字典。该配发记录存在时不能再次发装备。
         private const string ProtectionReceipt = "migration/protection-kit-v1";
 
         private static bool ApplyProtectionMigration(SaveData save) {

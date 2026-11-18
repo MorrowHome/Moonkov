@@ -15,7 +15,7 @@ namespace Unity.MP_FPS {
         public bool Underhand;
     }
 
-    // Reliable, low-rate authoritative poses also make active grenades visible to late joiners.
+    // 可靠而低频的权威位置快照也让晚进场的玩家看见仍在活动的手雷。
     public struct EnergyGrenadeStateRpc : IRpcCommand {
         // 服务端给飞出去的雷唯一 ID 与状态 tick。客户端拿位置、速度、剩余引信和爆炸标记绘制，并根据收到时机补进度。
         public uint Id, Tick;

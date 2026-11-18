@@ -83,7 +83,7 @@ namespace Unity.MP_FPS {
             while (GhostGameObject.ConsumeRPC(out ClientSpawnVfxRpc rpc)) {
                 int localPlayerNetworkId = -1;
 
-                // Find the local player's network ID
+                // 找到本地玩家的网络 ID。
                 if (PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientOwned, out var playerManager) &&
                     playerManager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players) &&
                     players.Count > 0) {
@@ -93,19 +93,19 @@ namespace Unity.MP_FPS {
                 }
 
                 // 手持开火已在本机预测时显示。部署出去的光环自主开火由服务器驱动，所以连拥有者也需要收这条消息，才能在正确的世界位置看到特效。
-                // Handheld shots are predicted locally. Autonomous shots are server-only,
-                // so their owner also needs this event, including its original world position.
+                // 玩家手上的开火由本地预测。自动开火只在服务端发生，
+                // 连它的归属玩家也需要收到带原世界坐标的事件。
                 if (!rpc.HaloDeployed && localPlayerNetworkId != -1 && localPlayerNetworkId == rpc.OwnerNetworkId)
                     continue;
 
-                // This is for a remote player. Find them and spawn the effect.
+                // 这是远端玩家的事件。找到对应人物再生成特效。
                 // 根据网络编号找到那一个角色，再从它当前的武器点或服务器给的部署位置生成效果。
                 if (PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientAll, out var allPlayersManager) &&
                     allPlayersManager.TryGetPlayersByRole(MultiplayerRole.ClientAll, out var allPlayers) &&
                     allPlayers.Count > 0)
                     foreach (var player in allPlayers)
                         if (player.GhostGameObject.Owner == rpc.OwnerNetworkId) {
-                            // Found the remote player. Spawn the effect.
+                            // 找到了远端玩家，在对应位置生成特效。
                             SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint, rpc.ShotTick, rpc.HaloDeployed,
                                 rpc.ShotOrigin);
                             break;
@@ -157,7 +157,7 @@ namespace Unity.MP_FPS {
                     return;
                 }
                 var spawnPoint = isFirstPerson ? player.VisualShotOrigin1P : player.VisualShotOrigin3P;
-                if (spawnPoint == null) spawnPoint = player.transform; // Fallback
+                if (spawnPoint == null) spawnPoint = player.transform; // 回退路径。
                 try {
                     var vfxInstance = await weaponData.MuzzleFlashVfxPrefab.GhostPrefab.InstantiateAsync(
                         spawnPoint.position, spawnPoint.rotation, spawnPoint).Task;
@@ -174,8 +174,8 @@ namespace Unity.MP_FPS {
 
         private static void DrawGizmoAtPosition(Vector3 position) {
             var color = Color.red;
-            const float duration = 4.0f; // How long the gizmo will be visible in seconds
-            const float size = 0.5f; // The length of the lines for the cross marker
+            const float duration = 4.0f; // 辅助标记保持可见的秒数。
+            const float size = 0.5f; // 十字标记的线段长度。
             Debug.DrawRay(position - Vector3.up * size, Vector3.up * size * 2, color, duration);
             Debug.DrawRay(position - Vector3.right * size, Vector3.right * size * 2, color, duration);
             Debug.DrawRay(position - Vector3.forward * size, Vector3.forward * size * 2, color, duration);

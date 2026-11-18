@@ -4,8 +4,8 @@ using System;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Authored raid encounters. Slots select species and world-space spawn
-    /// candidates; the server owns their population, cooldowns and finite raid budget.</summary>
+    /// <summary>场景里配置的远征遭遇。每个槽位选物种和世界坐标候选点，
+    /// 服务器负责数量上限、冷却和单局生成预算。</summary>
     public sealed class AlienEncounterSettings : MonoBehaviour {
         [Serializable]
         public sealed class Spawn {
@@ -54,7 +54,7 @@ namespace Unity.MP_FPS {
         [SerializeField] private Spawn[] encounters = Array.Empty<Spawn>();
         public bool Enabled => enableAliens;
 
-        // A low population cap must not silently remove later species from selection.
+        // 同时存活上限低时，列表靠后的物种仍应有机会被选中。
         // 槽数量和允许同时活几只是独立概念。保持所有槽位可被轮询，才能有不同物种轮番出现。
         public int Count => encounters?.Length ?? 0;
         public int MaximumAliens => Mathf.Clamp(maximumAliens, 0, 16);

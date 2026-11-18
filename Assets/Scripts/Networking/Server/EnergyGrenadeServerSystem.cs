@@ -83,7 +83,7 @@ namespace Unity.MP_FPS {
             return InventoryError.None;
         }
 
-        // Read-only server perception. No trajectory or owner is exposed to NPCs.
+        // 供服务器 AI 读取的感知状态。不给 NPC 暴露轨迹或投掷者身份。
         public int ActiveThreatCount => m_Active.Count;
 
         public bool TryGetLiveThreat(
@@ -187,7 +187,7 @@ namespace Unity.MP_FPS {
                     m_Held.Remove(connection);
                     continue;
                 }
-                // A safe grenade stays in inventory. An external inventory replacement must never duplicate it.
+                // 未拉环的手雷仍留在库存。外部替换背包时不能因此生成第二颗。
                 // 安全状态的雷仍然依靠实际背包存在。装备被替换时不能继续持有失效的引用，否则有机会产生两份物品。
                 if (!held.Consumed && held.Phase != GrenadePhase.Recovering &&
                     !GrenadeHandling.Accessible(held.Inventory.Graph, held.Inventory.Graph?.Find(held.ItemId))) {
@@ -385,7 +385,7 @@ namespace Unity.MP_FPS {
                 ? Vector3.zero
                 : direction * (held.Underhand ? GrenadeHandling.LowSpeed : EnergyGrenadeRules.Speed) +
                   Vector3.up * (held.Underhand ? .8f : 2f);
-            // Sweep from inside the capsule to the hand. A live grenade can never be cancelled by a wall.
+            // 从角色胶囊内部扫到手部。已拉环的手雷必须实际释放，不能因碰墙被取消。
             if (held.Root) {
                 var origin = new Vector3(held.Root.position.x, position.y, held.Root.position.z);
                 if (Ballistics.Sweep(held.Scene, origin, position, EnergyGrenadeRules.BodyRadius,
@@ -421,7 +421,7 @@ namespace Unity.MP_FPS {
 
         // 服务端用实际爆炸位置、角色位置与遮挡结算伤害。客户端的爆炸画面只消费 Broadcast 的结果。
         private void Explode(Grenade grenade, uint tick) {
-            // One entity per victim, including aliens, PMCs and the thrower; colliders never multiply damage.
+            // 一次爆炸对每个角色实体只算一次，包括异形、PMC 和投掷者。有多个碰撞体也不能多受伤。
             foreach (var (health, link, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>, GhostGameObjectLink>()
                          .WithEntityAccess()) {
                 var root = link.LinkedInstance;
@@ -434,7 +434,7 @@ namespace Unity.MP_FPS {
                 if (damage <= 0 ||
                     !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform))
                     continue;
-                // Resolve shielding once, then distribute the residual over living tissue.
+                // 先一次性结算护盾，再把余下伤害分配给未归零的各部位。
                 BountyClashDamage.Apply(World, entity, grenade.Source, BodyPart.Auto, damage, tick,
                     RaidDamageKind.Explosion, (Mathematics.float3)grenade.Position);
             }

@@ -14,8 +14,8 @@ using UnityEngine.UIElements;
 using FontAsset = UnityEngine.TextCore.Text.FontAsset;
 
 namespace Unity.MP_FPS {
-    // UI Toolkit adapter for Unity Localization. Locale selection, persistence and
-    // string/font loading belong to the package; bindings only own their UI lifetime.
+    // 这是 Unity Localization 的 UI Toolkit 接口。语言选择、持久化、
+    // 译文与字体加载由本地化包处理，绑定随自己的控件生命周期释放。
     public static class MoonkovLocalization {
         public const string Strings = "MoonkovUI", Fonts = "MoonkovFonts";
         private static readonly Dictionary<TextElement, Binding> s_Bindings = new();
@@ -63,7 +63,7 @@ namespace Unity.MP_FPS {
 
         // 译文表到达后更新已绑定元素。已有字符串在初始资源慢时也能从原文补翻译。
         private static void StringTableChanged(StringTable table) {
-            // Initial UI renders source text; refresh it once the asynchronous table arrives.
+            // 首屏先画原文。异步翻译表到达后把现有界面补翻译。
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Refresh();
         }
 
@@ -95,8 +95,8 @@ namespace Unity.MP_FPS {
             if (table != null)
                 foreach (var entry in table.Values)
                     text.Append(entry.LocalizedValue);
-            // Populate the existing dynamic atlas while the loading screen is
-            // visible. Keep the asset's font features; unknown names use fallback.
+            // 在加载页可见时预先填充动态字体图集，
+            // 保留字体资源的现有特性。未知名字沿用回退字体。
             font.TryAddCharacters(text.ToString(), out _);
             await Awaitable.NextFrameAsync(cancellationToken);
             s_PreparedFont = font;
@@ -104,8 +104,8 @@ namespace Unity.MP_FPS {
 
         // 语言切换也会换字体。已明确使用美术字体或原样式的元素保持自身定义。
         private static void ApplyFont(TextElement element) {
-            // A surface can own its source-font rendering while keeping string bindings.
-            // In particular, LAN uses the source font to avoid shared SDF atlas edge artifacts.
+            // 某些界面可以自己使用源字体，并保留本地化字符串绑定。
+            // 好友房用源字体来避开共用 SDF 图集的边缘瑕疵。
             for (VisualElement scope = element; scope != null; scope = scope.parent)
                 if (scope.ClassListContains("moonkov-style-font")) {
                     element.style.unityFontDefinition = StyleKeyword.Null;
@@ -178,12 +178,12 @@ namespace Unity.MP_FPS {
             Initialize();
             root.Query<TextElement>().ForEach(element => {
                 ApplyFont(element);
-                // Input values are player content. Localize field labels and buttons,
-                // never usernames, passwords, chat or numeric editing buffers.
+                // 输入框里的值属于玩家。翻译字段标题和按钮，
+                // 玩家名、密码、聊天内容及数字编辑中的文字保持原样。
                 if (element.ClassListContains("unity-text-element--inner-input-field") ||
                     element.ClassListContains("unity-text-element--inner-input-field-component"))
                     return;
-                // The language dropdown supplies its own option names. Only apply locale fonts to its value.
+                // 语言下拉框自带选项名称。这里只为显示值设置当前语言的字体。
                 if (element.ClassListContains(DropdownField.textUssClassName) &&
                     element.GetFirstAncestorOfType<DropdownField>()?.ClassListContains("terminal-language") == true) {
                     if (!s_Bindings.ContainsKey(element)) s_Bindings.Add(element, new Binding(element));

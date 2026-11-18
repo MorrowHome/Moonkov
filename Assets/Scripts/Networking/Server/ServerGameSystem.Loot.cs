@@ -65,7 +65,7 @@ namespace Unity.MP_FPS {
             }
             // 过期空掉落可被回收。极速赏金虽然也回收空包，但不会沿用远征箱子的补货流程。
             caches.RecycleEmptyDrops(now, protectedLoot);
-            if (ClashEnabled(ref state)) return; // Keep empty-drop cleanup without replenishing Clash supplies.
+            if (ClashEnabled(ref state)) return; // 继续回收空掉落，但不为极速赏金补充物资。
             bool hasActivePlayer = false;
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>()
                          .WithEntityAccess())

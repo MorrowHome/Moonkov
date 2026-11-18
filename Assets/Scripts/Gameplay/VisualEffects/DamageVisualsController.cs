@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // Owning-camera presentation; independent of animation update and prediction replay.
+    // 只对本地视角展示。动画更新和预测重算各走自己的流程。
     public class DamageVisualsController : MonoBehaviour {
         [Header("References")] [Tooltip("Legacy damage material, retained as a fallback.")] [SerializeField]
         private Material screenDamageMaterial;
@@ -145,7 +145,7 @@ namespace Unity.MP_FPS {
                 new Vector4(m_GlareViewport.x, m_GlareViewport.y, camera.aspect, m_GlareStrength));
         }
 
-        // Preserve the existing trigger API for explicit presentation callers.
+        // 保留已经存在的触发入口，供主动播放表现的调用方继续使用。
         public void TriggerDamageEffect() { TriggerDamageEffect(minIntensity); }
 
         public void TriggerDamageEffect(float intensity) {

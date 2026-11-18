@@ -28,7 +28,7 @@ namespace Unity.MP_FPS {
                 uint serverInputTick = projectileData.ValueRO.SpawnTick;
                 Projectile.PredictedProjectileInfo bestMatchInfo = null;
 
-                // Find the closest predicted projectile within the window.
+                // 在当前匹配窗口找最合适的预测弹体。
                 foreach (var prediction in Projectile.PredictedProjectiles)
                     // 同时对拍、武器和弹丸序号。多弹丸同拍出手时，仍能找到每一颗对应的预测对象。
                     if (prediction.Instance != null && prediction.SpawnTick == serverInputTick &&
@@ -41,42 +41,42 @@ namespace Unity.MP_FPS {
                     var predictedGameObject = bestMatchInfo.Instance;
                     var ghostComponent = predictedGameObject.GetComponent<GhostGameObject>();
                     if (ghostComponent != null) {
-                        // 1. Schedule adding the link component via ECB
+                        // 先用 ECB 排队为实体写入场景对象链接。
                         ecb.AddComponent(entity, new GhostGameObjectLink { LinkedInstance = ghostComponent });
 
-                        // 2. Schedule adding a temporary component to signal LinkGhost call needed
-                        //    (We'll handle the actual LinkGhost call after ECB playback)
+                        // 再排队写临时标记，说明后面需要调用 LinkGhost。
+                        //    等 ECB 实际写完组件后再调用 LinkGhost。
                         // 先登记已有对象要被接管。等 EntityCommandBuffer 写进链接组件后，才调用正式的 Ghost 绑定。
-                        ecb.AddComponent<NeedsLinking>(entity); // NeedsLinking is a simple struct IComponentData {}
+                        ecb.AddComponent<NeedsLinking>(entity); // NeedsLinking 是空内容的 IComponentData 结构体，用作临时标志。
 
-                        // Remove from the prediction list (this uses the *static* list from Projectile)
+                        // 从 Projectile 的静态预测列表移除这条已经接管的记录。
                         Projectile.PredictedProjectiles.Remove(bestMatchInfo);
                     } else {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                         Debug.LogError(
                             $"Reconciliation match found for entity {entity.Index.ToString()}, but predicted GameObject {predictedGameObject.name} is missing GhostGameObject component!");
 #endif
-                        // Destroy the problematic predicted object immediately
+                        // 预测对象缺少必要的 Ghost 组件时立即释放。
                         Object.Destroy(predictedGameObject);
                         Projectile.PredictedProjectiles.Remove(bestMatchInfo);
                     }
                 }
             }
 
-            // IMPORTANT: Play back the ECB *before* attempting to call LinkGhost
+            // 先执行 ECB，再尝试 LinkGhost，确保链接用的组件已经存在。
             ecb.Playback(EntityManager);
             ecb.Dispose();
 
-            // Now, handle the LinkGhost calls for entities that were just linked
+            // 现在给刚写入链接的实体执行 LinkGhost。
             foreach (var (needsLinking, entity) in SystemAPI.Query<RefRO<NeedsLinking>>().WithAll<GhostGameObjectLink>()
                          .WithEntityAccess()) {
                 var link = SystemAPI.ManagedAPI.GetComponent<GhostGameObjectLink>(entity);
-                if (link.LinkedInstance != null && link.LinkedInstance.gameObject != null) // Check if instance is valid
+                if (link.LinkedInstance != null && link.LinkedInstance.gameObject != null) // 确认链接指向的实例仍然有效。
                 {
-                    // Ensure the GameObject is active if needed
+                    // 需要时先激活现有 GameObject。
                     if (!link.LinkedInstance.gameObject.activeSelf) link.LinkedInstance.gameObject.SetActive(true);
 
-                    // Call LinkGhost now that the component exists
+                    // 组件已经存在，可以调用 LinkGhost。
                     // 让生命周期系统接管预测时创建的 GameObject，后续它跟服务器实体一起更新和释放。
                     GhostGameObjectLifetimeSystem.Instance(World).AdoptPredictedGhost(entity, link.LinkedInstance);
                     link.LinkedInstance.LinkGhost(World, entity, MultiplayerRole.ClientOwned);
@@ -86,14 +86,14 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Clean up the temporary component (using another ECB or direct EntityManager)
-            // This could be combined with the above ForEach if using ECB there.
-            // For simplicity with direct EntityManager:
+            // 清理作为接管信号的临时组件，可另用 ECB 或直接调用 EntityManager。
+            // 若上面的循环使用 ECB，也可在那个循环里排队移除。
+            // 此处集中用 EntityManager 清理，少走一个缓冲。
             var cleanupQuery = SystemAPI.QueryBuilder().WithAll<NeedsLinking>().Build();
             EntityManager.RemoveComponent<NeedsLinking>(cleanupQuery);
             for (int i = Projectile.PredictedProjectiles.Count - 1; i >= 0; i--) {
                 var predictedProjectileInfo = Projectile.PredictedProjectiles[i];
-                // Time-based expiry also handles tick-rate changes and stalled prediction.
+                // 按实际时间过期也能处理 tick 频率变化和预测暂停。
                 // 等不到服务端确认的弹体通过时间超时释放，即使网络时钟停住也不会常驻。
                 if (UnityEngine.Time.time - predictedProjectileInfo.CreatedAt > 2f) {
                     if (predictedProjectileInfo.Instance != null) Object.Destroy(predictedProjectileInfo.Instance);

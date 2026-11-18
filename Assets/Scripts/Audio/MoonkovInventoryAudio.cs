@@ -2,8 +2,8 @@
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Choose before sending the transaction. The existing receipt tracker decides
-    // whether it succeeded; failed or repeated snapshots never play these cues.
+    // 先按操作类型选音效，再发库存请求。是否成功由已有的回执追踪器判断，
+    // 已失败或重复到达的快照都不会播放成功提示。
     public static class MoonkovInventoryAudio {
         public static SoundDef ForItem(string code, MoonkovAudioLibrary library) {
             if (!library) return null;

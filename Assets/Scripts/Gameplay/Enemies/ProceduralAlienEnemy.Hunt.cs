@@ -21,7 +21,7 @@ namespace Unity.MP_FPS {
             }
             if (Vector3.ProjectOnPlane(m_SearchGoal - transform.position, Vector3.up).sqrMagnitude < 1 ||
                 m_Clock >= m_NextSearchPoint) {
-                // Only remembered clues, never the target's hidden live transform.
+                // 搜索只能用已经记住的线索，不读取对方藏起来后的实时位姿。
                 // 到搜索点或等了一段时间没进展，就绕上次线索换一个方向，半径有上限。
                 float angle = (GhostGameObject.Owner * 137.5f + m_SearchStep++ * 110) * Mathf.Deg2Rad;
                 float radius = Mathf.Min(5, 1.5f + m_SearchStep * .6f);
@@ -46,7 +46,7 @@ namespace Unity.MP_FPS {
                                      Mathf.PI), false);
                 return true;
             }
-            // Never interrupt a committed warning or hit window. Each display happens once.
+            // 一次已经承诺的预警和出招不能被打断。每次展示只触发一次。
             if (!remembered || !m_Visible || m_Action == AlienAction.Windup || m_Action == AlienAction.Strike ||
                 m_Action == AlienAction.Recover || m_Action == AlienAction.Reposition)
                 return false;
@@ -122,7 +122,7 @@ namespace Unity.MP_FPS {
                 ? m_ApproachBlocked + dt
                 : 0;
             if (m_ApproachBlocked < 1.2f) return;
-            // Bounded fallback prevents a flanking goal pinning the creature to a wall.
+            // 有限时长的回退可以让侧绕路线遇墙时尽快换办法。
             m_DirectUntil = m_Clock + 2;
             m_ApproachBlocked = 0;
             m_BlockedGroundGoal = m_UprightGoal;

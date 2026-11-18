@@ -22,7 +22,7 @@ namespace Unity.MP_FPS {
         public int Choice;
     }
 
-    // Two bounded vectors cover all eight authored nodes. No unbounded list in an RPC.
+    // 八个预设节点使用两个定长向量表示。RPC 无需传不定长列表。
     public struct RaidMissionSnapshotRpc : IRpcCommand {
         public int RaidId, Epoch, DefinitionIndex, OutputLootId, OutputRemaining;
         public int MissionFirstsBefore, MissionFirstsSaved, RecoveredArtifacts;

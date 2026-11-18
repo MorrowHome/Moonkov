@@ -21,8 +21,8 @@ namespace Unity.MP_FPS {
         public string Id, Name;
     }
 
-    // Exchanges the same invitation and reply as the clipboard flow over HTTPS.
-    // Room state, profiles and game packets use the existing ICE connections.
+    // 与手动复制粘贴用同样的邀请和回执，经 HTTPS 交换。
+    // 房间状态、档案和战局包仍使用已经建立的 ICE 通道。
     internal sealed class LanRoomCode : IDisposable {
         private const string Alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
@@ -194,7 +194,7 @@ namespace Unity.MP_FPS {
                             async (reply, replyCt) => {
                                 await PostAsync(address, "guest", new { code, roomId, reply }, token, replyCt);
                             }, wait.Token);
-                        token = null; // The host finishes the exchange after taking the reply.
+                        token = null; // 房主拿到回执后会结束这次交换。
                         return;
                     }
                     await Task.Delay(1000, wait.Token);

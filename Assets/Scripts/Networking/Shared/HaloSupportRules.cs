@@ -43,7 +43,7 @@ namespace Unity.MP_FPS {
                        weapon.BurstCount > 1 ? weapon.BurstCooldown : weapon.CooldownInMs);
         }
 
-        // Deliberately broad aim error. Weapon pellet spread is applied afterwards as usual.
+        // 特意放大了哨戒的瞄准偏差。随后仍按原规则叠加武器弹丸散布。
         // 用当前网络 tick 导出这次哨戒的偏差方向，可重复得到同样的射击采样。武器自己的散布之后再加。
         public static Vector3 SentryDirection(Vector3 forward, uint tick) {
             uint hash = unchecked(tick * 747796405u + 2891336453u);

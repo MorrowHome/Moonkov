@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The account service owns the party. This view only presents snapshots and
-    // emits player intent; it can also be reviewed with isolated sample data.
+    // 小队由账号服务管理。界面读取快照并报告玩家操作，
+    // 也可以用独立样例检查显示效果。
     public sealed partial class OnlineSquadPanel : IDisposable {
         public VisualElement Element { get; }
         public OnlineSquadStage Stage { get; }
@@ -29,8 +29,8 @@ namespace Unity.MP_FPS.Client {
             Action browseRooms = null) {
             m_Action = action;
             Element = TerminalLayout.Clone("OnlineLobby", "onlineLobby");
-            // Clone detaches this root from its UXML TemplateContainer.
-            // Keep the screen's stylesheets on the root that actually gets mounted.
+            // Clone 将页面的根节点从 UXML 的 TemplateContainer 中取出。
+            // 样式表要放到真正挂上面板的节点上，选择器才生效。
             foreach (string path in new[] { "Moonkov/UI/SquadGlassStyles", "Moonkov/UI/OnlineSquadStyles" }) {
                 var styles = Resources.Load<StyleSheet>(path);
                 if (styles != null && !Element.styleSheets.Contains(styles)) Element.styleSheets.Add(styles);
@@ -123,8 +123,8 @@ namespace Unity.MP_FPS.Client {
                 SetReducedMotion(e.newValue);
                 PlayerPrefs.SetInt("Moonkov.SquadReducedMotion", e.newValue ? 1 : 0);
             });
-            // Clone already bound the static UXML. Member names are player data;
-            // leave those newly created labels out of the translation bindings.
+            // Clone 已绑定 UXML 里的固定文案。成员名字是玩家数据，
+            // 新建的姓名标签应按原文显示。
         }
 
         private void Emit(string action) { m_Action?.Invoke(new LobbyAction { Action = action }); }

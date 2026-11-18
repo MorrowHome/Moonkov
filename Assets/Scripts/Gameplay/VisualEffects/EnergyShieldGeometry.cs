@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Original low-cost meshes, shared by client avatars. No model imports or colliders.
+    // 原创低开销网格可由客户端角色共享，无需额外导入模型，也不生成碰撞体。
     internal static class EnergyShieldGeometry {
         private static Mesh s_Housing,
             s_Aperture,
@@ -286,7 +286,7 @@ namespace Unity.MP_FPS {
 
         private static Mesh NeckBandMesh() {
             const int segments = 64;
-            // Closed, bevelled cross-section. The inner wall is the fitted neck ellipse.
+            // 截面封闭，边缘倒角。内壁是贴合了脖子形状的椭圆。
             var profile = new[] {
                 new Vector2(1, -.5f), new Vector2(1.045f, -.5f), new Vector2(1.085f, -.42f),
                 new Vector2(1.085f, .42f), new Vector2(1.045f, .5f), new Vector2(1, .5f)
@@ -356,7 +356,7 @@ namespace Unity.MP_FPS {
 
         // 用一套顶点与 UV 生成饰带。它用程序几何配合其他硬件网格，让动效能沿着同一形状挂接。
         private static Mesh RibbonMesh(string name, Vector3[] front, Vector2[] frontUV, int[] indices) {
-            // Duplicate the back surface with opposite normals; folded fabric is visible from both sides.
+            // 背面复制一层反向法线。布料折起来后两侧都能看见。
             int count = front.Length;
             var vertices = new Vector3[count * 2];
             var uv = new Vector2[count * 2];

@@ -3,8 +3,8 @@ using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One actor-owned pool. Weapons, defense and later halo abilities spend here.
-    // It is initialized once per spawn, never by switching or re-equipping a halo.
+    // 每个角色共用一份能量池。武器、防御和后续的光环能力都从中扣。
+    // 出生时只初始化一次。切换或重新装备光环继续使用原有能量。
     public static class HaloEnergyRules {
         public const float Capacity = 100, RecoveryDelay = 3, RecoveryPerSecond = 10;
 
@@ -93,7 +93,7 @@ namespace Unity.MP_FPS {
             state.HaloDefending = state.HaloDefenseHeld && !state.HaloDefenseBroken && Energy(state) > 0;
             if (state.HaloDefending && !wasDefending) state.ShieldRestoreSequence++;
             if (!state.HaloDefenseHeld) return;
-            // Holding the barrier is free. Only an actual energy spend restarts recovery.
+            // 持续举盾本身免费。发生实际扣能时才重启回复等待。
             // 举盾本身不耗能，但清当前射击准备。屏障挡到真实伤害才从共享池扣。
             HaloModuleFire.Reset(ref state);
             state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;

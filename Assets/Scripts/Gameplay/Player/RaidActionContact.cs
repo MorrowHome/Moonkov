@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Unity.MP_FPS {
-    /// <summary>Surface calibration and complete-chain alignment. Never solves a wrist at runtime.</summary>
+    /// <summary>根据模型表面校准接触点，并调整整条动作链。运行时无需另外求解手腕。</summary>
     public sealed class RaidActionContact {
         private struct Measurements {
             public Vector3 MouthOffset;
@@ -124,8 +124,8 @@ namespace Unity.MP_FPS {
                 var vertices = mesh.vertices;
                 int shape = source.sharedMesh.GetBlendShapeIndex("あ");
                 if (shape >= 0 && source.sharedMesh.GetBlendShapeFrameCount(shape) > 0) {
-                    // The actual mouth morph identifies each model's lip region.
-                    // Eye-to-mouth offsets vary substantially between these three faces.
+                    // 用角色实际的嘴部形状确定嘴唇区域。
+                    // 这三个模型的眼睛到嘴偏移有明显差异。
                     var deltas = new Vector3[vertices.Length];
                     source.sharedMesh.GetBlendShapeFrameVertices(shape, 0, deltas, null, null);
                     float maximum = 0;

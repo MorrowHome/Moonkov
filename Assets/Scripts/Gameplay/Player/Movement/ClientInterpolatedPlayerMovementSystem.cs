@@ -20,7 +20,7 @@ namespace Unity.MP_FPS {
                 // 网络实体可能先生成，外观稍后才链接。两者都到齐时缓存 FirstPersonController 供后续帧使用。
                 var gameObjectLink = SystemAPI.ManagedAPI.GetComponent<GhostGameObjectLink>(entity);
                 if (gameObjectLink.LinkedInstance != null)
-                    // get controller
+                    // 找这个代理角色的移动控制器。
                     if (gameObjectLink.LinkedInstance.TryGetComponent<FirstPersonController>(out var controller))
                         ecb.AddComponent(entity, new PlayerControllerLink { Controller = controller });
             }

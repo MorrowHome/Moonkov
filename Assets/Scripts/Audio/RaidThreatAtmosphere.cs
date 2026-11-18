@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation for the authored raid route. Never drives enemy AI or spawning.</summary>
+    /// <summary>根据已布置的战局路线播放客户端环境表现。敌人 AI 与刷新各由玩法系统负责。</summary>
     [DisallowMultipleComponent]
     public sealed class RaidThreatAtmosphere : MonoBehaviour {
         [SerializeField] private SoundDef environmentBed;
@@ -35,7 +35,7 @@ namespace Unity.MP_FPS {
             m_Map = GetComponent<MoonRaidMap>();
             m_System = game.SoundSystem;
             m_Random = new System.Random(System.Guid.NewGuid().GetHashCode());
-            // Runtime profile leaves authored sky, exposure, bloom and other maps untouched.
+            // 运行时配置沿用场景自带的天空、曝光和泛光，不影响其他地图。
             var root = new GameObject("Raid atmosphere volume");
             root.transform.SetParent(transform, false);
             m_Volume = root.AddComponent<Volume>();
@@ -95,7 +95,7 @@ namespace Unity.MP_FPS {
                 m_NextCreak = Time.time + Range(5, 9);
             }
             if (Valid(m_Bed)) m_Bed.Handle.Emitter.SetVolume(Mathf.Lerp(.45f, .8f, m_Pressure));
-            // Creature-local feedback owns idle vocals; the atmosphere layer only supplies the bed/structure.
+            // 怪物个体自己播待机叫声。环境层只提供背景声与场景氛围。
             if (Time.time < m_NextCreak) return;
             m_NextCreak = Time.time + Range(9, 16);
             var anchors = m_Map.LootPositions;
@@ -147,7 +147,7 @@ namespace Unity.MP_FPS {
             m_PreviousPostProcessing = data.renderPostProcessing;
             m_PreviousVolumeMask = data.volumeLayerMask;
             data.renderPostProcessing = true;
-            data.volumeLayerMask |= 1; // The runtime atmosphere volume uses Default.
+            data.volumeLayerMask |= 1; // 运行时的环境 Volume 使用 Default 层。
         }
 
         private void RestoreCamera() {

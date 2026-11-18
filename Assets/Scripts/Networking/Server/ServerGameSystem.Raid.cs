@@ -37,7 +37,7 @@ namespace Unity.MP_FPS {
             RefreshLootContainers(ref state);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
-            // Shells remain in the world; the server refills only safe, completely empty caches.
+            // 箱体仍保留在场景中。服务器只为确认安全且完全空掉的箱补货。
             loot.ValueRW.TakenMask = 0;
             foreach (var cache in caches.Containers)
                 if (cache.Key < RaidLootContainers.FirstDeathBagId &&
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS {
                     loot.ValueRW.TakenMask |= 1UL << cache.Key;
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidPickupRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
-                // Consume obsolete instant-pickup intents without generating new items.
+                // 直接消费旧版瞬时拾取请求，不据此生成新物品。
                 ecb.DestroyEntity(entity);
             // 旧局返回后想再开，需要确认出战号已结束、存档不再写入。官方调度的局还要走新的大厅分配。
             foreach (var (request, received, entity) in SystemAPI
@@ -67,7 +67,7 @@ namespace Unity.MP_FPS {
                             session.ValueRW.LoadoutError = RaidLoadoutError.InvalidCount;
                             session.ValueRW.SnapshotTimer = 0;
                         } else if (Persistence(ref state).Enabled) {
-                            // Mark immediately; repeated RPCs cannot enqueue a second debit.
+                            // 立即标记待处理，反复到达的 RPC 不能再排第二次扣装。
                             // 先锁定这次再部署，再启动异步扣装。相同 RPC 在任务还未完成时不能重复进入。
                             session.ValueRW.DeployPending = true;
                             session.ValueRW.LoadoutError = RaidLoadoutError.None;
@@ -112,7 +112,7 @@ namespace Unity.MP_FPS {
                     }
                     // 用服务器已确认的玩家位置累计撤离进度。同一帧既走完整个撤离读条又到时间时，按超时结算。
                     map.AdvanceExtraction(ref session.ValueRW, (Vector3)position, dt);
-                    // Expiry takes precedence over extraction; death is handled before this method.
+                    // 即使同一帧满足撤离，也优先判超时。死亡在进入本方法前已处理。
                     if (session.ValueRO.TimeLeft <= 0)
                         FinishRaid(ref state, ecb, connection, RaidPhase.TimedOut);
                     else if (session.ValueRO.ExtractionProgress >= map.ExtractionSeconds)
@@ -192,8 +192,8 @@ namespace Unity.MP_FPS {
                 inventory.Result = RaidResultManifest.Capture(inventory.Graph, session.ValueRO.RaidId, outcome);
                 inventory.LastSentVersion = -1;
             }
-            // Commit ownership transfer exactly once, while the dead entity still has a
-            // transform. Keep loss totals in RaidSession for the result screen only.
+            // 趁死亡实体还有位置时完成一次物品归属转移。
+            // 遗失数量仍记在 RaidSession 上给结算页展示。
             if (outcome == RaidPhase.Dead && session.ValueRO.Phase == RaidPhase.Active && MoonRaidMap.Active != null)
                 DropDeathInventory(ref state, connection);
             // 同一场远征只允许从进行中结算一次。服务端得到这次阶段变化后，才向持久化上下文提交保存。
@@ -213,7 +213,7 @@ namespace Unity.MP_FPS {
                     var input = SystemAPI.GetComponent<PlayerClientCommandInputLookup>(player).ClientCommandInputEntity;
                     if (SystemAPI.Exists(input)) ecb.DestroyEntity(input);
                 }
-                // Remove the stale link before despawn; the connection stays alive for settlement/redeploy.
+                // 销毁角色前解除旧关联，连接留下用于结算与下次出战。
                 // 结束角色和命令实体时保留连接，用它接结果页、档案回执与可能的下次出战。
                 if (state.EntityManager.HasBuffer<LinkedEntityGroup>(connection)) {
                     var linked = state.EntityManager.GetBuffer<LinkedEntityGroup>(connection);

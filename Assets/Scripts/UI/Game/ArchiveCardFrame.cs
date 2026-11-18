@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Static vector edges. Native Buttons retain their rectangular hit area and input behavior.
+    // 固定的矢量描边。原生 Button 仍用矩形命中区域处理输入。
     [UxmlElement]
     public partial class ArchiveCardFrame : VisualElement {
         [UxmlAttribute] public bool Orbital { get; set; }

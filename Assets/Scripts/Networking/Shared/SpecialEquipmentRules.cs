@@ -9,7 +9,7 @@ namespace Unity.MP_FPS.Inventory {
                                      graph.Equipped("Special3")?.Code == code);
         }
 
-        // Multiple copies never multiply a passive bonus. Stored items grant nothing.
+        // 同类被动效果只能生效一份。只放在库存中不会获得效果。
         // 多个氧气循环器也只用一个固定耗氧折减。防眩装备效力同理。
         public static float OxygenDrainMultiplier(InventoryGraph graph) {
             return Equipped(graph, "oxygen_recycler") ? .75f : 1;

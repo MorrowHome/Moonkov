@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Presentation follows actual cabin/gate motion, including interpolated remote poses.
+    // 客舱和门的声音跟着实际运动，包括远端插值后的姿态。
     public sealed class MoonkovLiftAudio {
         private bool m_Initialized, m_Travelling;
         private float m_Travel, m_Gate, m_TravelUntil, m_GateUntil, m_RetryAt;

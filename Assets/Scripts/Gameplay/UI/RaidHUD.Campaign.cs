@@ -135,7 +135,7 @@ namespace Unity.MP_FPS {
             bool show = id != null && !m_InventoryVisible && !m_CampaignJournalVisible && !m_MissionDetailsVisible &&
                         !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen;
             m_CampaignHud.EnableInClassList("campaign-hidden", !show);
-            // The old event remains interactive; only its duplicate tracking card is replaced.
+            // 保留原设施事件的交互。这里只替换重复的跟踪卡片。
             m_MissionHud.style.display = DisplayStyle.None;
             m_MissionMarker.style.display = DisplayStyle.None;
             if (!show) {
@@ -196,10 +196,10 @@ namespace Unity.MP_FPS {
 
         // 通信字幕跟当前真实主线节点走。翻动日志选中行不会换章节，每个节点的字幕在一局内只入队一次。
         private void PresentCampaignCommunication(CampaignProgress progress) {
-            // Field confirmation is distinct from extraction/save. Read actual server facts once per raid.
+            // 场内完成和撤离后保存是两个状态。以实际服务器状态为准，每局只确认一次。
             ConfirmCampaignFieldStage(progress, "CM01");
             ConfirmCampaignFieldStage(progress, "CM02");
-            // Follow actual chapter progress, not the currently selected journal row.
+            // 通信跟随真实章节进度，与日志当前点选的行无关。
             string current = CampaignRules.CurrentMain(progress);
             var node = current == null ? null : CampaignRules.CurrentNode(progress, current);
             if (node == null || string.IsNullOrEmpty(node.Briefing) ||

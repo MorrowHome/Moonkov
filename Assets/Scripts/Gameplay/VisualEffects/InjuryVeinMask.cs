@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Original deterministic vascular art, built once and shared. No per-frame texture work.
+    // 生成一次风格固定的血管图案并共享。每帧不重新算纹理。
     internal static class InjuryVeinMask {
         private static Texture2D s_Texture;
         private static int s_Users;

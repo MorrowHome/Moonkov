@@ -11,7 +11,7 @@ namespace Unity.MP_FPS {
         public int Returned, Lost;
     }
 
-    // Frozen before death transfers ownership. Never used to grant or save items.
+    // 在死亡导致装备转移前冻结清单。清单只展示，不能发放或保存物品。
     [Serializable]
     public sealed class RaidResultManifest {
         public int RaidId;

@@ -146,7 +146,7 @@ namespace Unity.MP_FPS.Client {
             m_Modal.RegisterCallback<KeyDownEvent>(Key);
             m_Host.RegisterCallback<GeometryChangedEvent>(GeometryChanged);
             LanRoomClient.Changed += Present;
-            // Only viewport sizing is sampled while visible; room state is event-driven.
+            // 页面可见期间只定时检查尺寸。房间状态变化通过事件通知。
             m_ViewportRefresh = m_Root.schedule.Execute(RefreshViewport).Every(500);
             m_ViewportRefresh.Pause();
             SelectMode(GameSettings.Instance.RequestedMode);
@@ -544,7 +544,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Shared by the live view and native Editor previews; preview data cannot enter the network service.
+    // 正式界面和原生编辑器预览共用布局。预览资料只在本地使用。
     public static class LanRoomPresentation {
         public static void Page(VisualElement root, LanRoomPage page) {
             root.Q("lanModal").EnableInClassList("lan-in-room", page == LanRoomPage.Lobby);

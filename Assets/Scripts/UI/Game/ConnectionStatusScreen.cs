@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    /// <summary>In-game connection state screen.</summary>
+    /// <summary>游戏中的连接状态画面。</summary>
     [RequireComponent(typeof(UIDocument))]
     public class ConnectionStatusScreen : MonoBehaviour {
         private static class UIElementNames {

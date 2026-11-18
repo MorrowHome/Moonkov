@@ -62,7 +62,7 @@ namespace Unity.MP_FPS {
         }
 
         private void EnsureRaidInventories(ref SystemState state) {
-            // Structural additions happen before SystemAPI enumerators acquire component references.
+            // 在 SystemAPI 开始持有组件引用并遍历之前，完成增添组件等结构改动。
             using var query = state.EntityManager.CreateEntityQuery(typeof(RaidSession));
             // 给缺库存状态的连接补组件前先留一份实体列表。直接在正在遍历的 ECS 查询里加组件会破坏已有引用。
             using var connections = query.ToEntityArray(Allocator.Temp);
@@ -164,8 +164,8 @@ namespace Unity.MP_FPS {
                     var session = SystemAPI.GetComponent<RaidSession>(connection);
                     var inventory = GetRaidInventory(ref state, connection);
                     var r = request.ValueRO;
-                    // The source connection owns the player. Consumption shares the
-                    // same monotonic request stream as medical use and item moves.
+                    // 玩家归属由实际发包连接确定。使用补给与
+                    // 治疗、移动物品共用只增不减的请求编号。
                     if (r.RequestId > inventory.RequestId) {
                         inventory.RequestId = r.RequestId;
                         inventory.ActionFeedback = null;
@@ -217,8 +217,8 @@ namespace Unity.MP_FPS {
                     var session = SystemAPI.GetComponent<RaidSession>(connection);
                     var inventory = GetRaidInventory(ref state, connection);
                     var r = request.ValueRO;
-                    // Request IDs share the inventory operation stream. Delayed/replayed
-                    // intents cannot heal again, including after respawn/deployment.
+                    // 各库存操作共用一套请求号。延迟或重复送达的
+                    // 请求不能再次治疗，重生或再次出战后也一样。
                     if (r.RequestId > inventory.RequestId) {
                         inventory.RequestId = r.RequestId;
                         inventory.ActionFeedback = null;
@@ -293,8 +293,8 @@ namespace Unity.MP_FPS {
             if (!Mathematics.math.all(Mathematics.math.isfinite(origin))) return false;
             var source = (UnityEngine.Vector3)origin;
             int mask = UnityEngine.LayerMask.GetMask("Default", "Ground");
-            // Only the nearby surface directly under the player is eligible. A lower
-            // floor reached through a gap, or a long jump, must not consume inventory.
+            // 只允许丢到角色正下方的邻近表面。跳跃很远，
+            // 或隔着缺口射线打到下一层时，不能先扣背包物品。
             if (!UnityEngine.Physics.Raycast(source + UnityEngine.Vector3.up * .3f, UnityEngine.Vector3.down,
                     out var ground, 1.55f, mask, UnityEngine.QueryTriggerInteraction.Ignore) ||
                 ground.normal.y < .65f || ground.point.y > source.y + .15f || ground.point.y < source.y - 1.25f)

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    /// <summary>One temporary rendering camera; the player camera continues updating its destination.</summary>
+    /// <summary>过场使用临时渲染相机，玩家自己的相机继续更新过场的移动目标。</summary>
     internal sealed class RaidCameraTransition : IDisposable {
         internal const float DeploymentSeconds = 4.5f;
         internal const float DeathSeconds = 4.6f;
@@ -27,7 +27,7 @@ namespace Unity.MP_FPS {
         public bool DeathComplete => DeathActive && m_Time >= DeathSeconds;
         public bool HidesHUD => Deploying || (DeathActive && !DeathComplete);
 
-        // The fall and a brief grounded hold remain fully visible before eyelids close.
+        // 倒地和落地后短暂停顿时保持画面可见，然后再淡黑。
         public float BlackAlpha => DeathActive ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((m_Time - 2f) / 2.2f)) : 0;
 
         public RaidCameraTransition(Transform owner) {
@@ -118,8 +118,8 @@ namespace Unity.MP_FPS {
             Deploying = false;
             DeathActive = true;
             m_Time = 0;
-            if (!m_HasPose) return; // Missing spawn/camera still receives a bounded fade and result.
-            // A third-person orbit must not make death tumble from several metres behind the body.
+            if (!m_HasPose) return; // 没找到出生位或摄像机时，仍采用有时限的淡出再显示结算。
+            // 第三人称环绕镜头离角色较远，倒地应该从身体附近演起。
             // 第三人称镜头离身体太远时，从身体的头高开始倒地切镜头，避免从几米外突然跌过来。
             m_DeathStart = Vector3.Distance(m_LastEye, m_LastFeet) > 2.5f ? m_LastFeet + Vector3.up * 1.45f : m_LastEye;
             var yaw = Quaternion.Euler(0, m_LastLook.eulerAngles.y, 0);

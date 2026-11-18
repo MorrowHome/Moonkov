@@ -11,11 +11,11 @@ namespace Unity.MP_FPS {
         public uint WeaponId;
         public int PelletIndex;
         public float3 Position, Normal;
-        public byte Kind, DamageFlags; // bit 0: body or shield hit; bit 1: lethal damage
+        public byte Kind, DamageFlags; // 第 0 位表示命中身体或护盾，第 1 位表示致命伤害。
     }
 
-    // A client-world child of its existing VFX manager. Each slot owns fragments and a brief
-    // surface response; their combined budget remains 16 particles, including a sniper flash.
+    // 挂在客户端 World 已有的特效管理器之下。每个槽管理碎片与短暂的表面反馈，
+    // 合计最多十六个粒子，狙击闪光也算在内。
     public sealed class RifleImpactFeedback : MonoBehaviour {
         private struct Receipt {
             public int Owner;
@@ -135,7 +135,7 @@ namespace Unity.MP_FPS {
             shape.radius = surface ? .035f : .012f;
             var size = particles.sizeOverLifetime;
             size.enabled = true;
-            // Chips keep a readable silhouette; the small ejecta cloud spreads without smoke-like drag.
+            // 较大的碎片保留清楚轮廓，小碎屑散开时不加烟雾那样的拖拽。
             size.size = new ParticleSystem.MinMaxCurve(1,
                 AnimationCurve.Linear(0, surface ? .65f : 1, 1, surface ? 1.25f : .55f));
             var color = particles.colorOverLifetime;
@@ -156,7 +156,7 @@ namespace Unity.MP_FPS {
             renderer.SetPropertyBlock(m_Properties);
         }
 
-        // Predicted collision gives immediate surface feedback. Confirmation never invents damage.
+        // 预测撞击可立即显示表面反馈。伤害和命中仍用服务端确认。
         public void Present(in ClientRifleImpactRpc impact, bool confirmed, bool owned) {
             Warmup();
             var profile = m_Library?.ForWeapon(impact.WeaponId);
@@ -183,7 +183,7 @@ namespace Unity.MP_FPS {
             } else if (confirmed && !m_Receipts[receipt].Confirmed && (m_Receipts[receipt].Kind != impact.Kind ||
                                                                        Vector3.Distance(m_Receipts[receipt].Position,
                                                                            impact.Position) > .25f)) {
-                // A corrected trajectory may hit a different surface. Show the actual server landing.
+                // 修正后的轨迹可能撞到另一种表面。用服务器给出的实际落点展示效果。
                 Emit((RifleImpactKind)impact.Kind, impact.Position, impact.Normal, profile, shot);
             }
             if (!confirmed || m_Receipts[receipt].Confirmed) return;
@@ -193,7 +193,7 @@ namespace Unity.MP_FPS {
             bool killed = (impact.DamageFlags & 2) != 0;
             // 霰弹的多颗弹丸共享一次扳机的确认。普通命中可升级为击杀，后续同级或更低的确认不会再响。
             byte confirmation = (byte)(killed ? 2 : 1);
-            // Eight shotgun pellets are one trigger pull. A later lethal pellet may upgrade it once.
+            // 霰弹枪八个弹丸合起来是一次扣扳机。后到的致命弹丸只可将提示升级一次。
             if (confirmation <= m_Shots[shot].Confirmation) return;
             m_Shots[shot].Confirmation = confirmation;
             InGameHUD.ConfirmRifleHit(killed, profile);
@@ -223,7 +223,7 @@ namespace Unity.MP_FPS {
             HaloWeaponFeedbackProfile profile,
             int shot) {
             if (m_Library == null) return;
-            // Surface particles remain per pellet; nearby simultaneous sounds share a short gate.
+            // 各弹丸仍分别有表面粒子，挨得近且同时发生的声音共用短时限频。
             if (Time.unscaledTime - m_Shots[shot].LastSurfaceSound >= (profile?.SurfaceSoundInterval ?? 0)) {
                 MoonkovAudio.Play(
                     kind == RifleImpactKind.Body ? profile?.BodyImpact ?? m_Library.BodyImpact :
@@ -272,8 +272,8 @@ namespace Unity.MP_FPS {
             particles.Emit(Mathf.Clamp(Mathf.RoundToInt((metal ? 10 : body ? 6 : 8) * (profile?.FragmentCount ?? 1)), 1,
                 12));
 
-            // This layer is reset on every reuse, so a rock hit cannot leave dust on the next metal hit.
-            // Lunar dust follows the same low-gravity ballistic path as the chips; no turbulence or loops.
+            // 对象复用时重置这一层效果，避免上次撞岩石的灰尘留到下一次金属碰撞上。
+            // 月尘和碎片共用低重力抛物线。没有额外湍流或循环。
             var surface = effect.Surface;
             var surfaceMain = surface.main;
             SetLayer(effect.SurfaceRenderer, metal ? 4 : 3);

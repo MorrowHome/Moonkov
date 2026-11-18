@@ -12,8 +12,8 @@ using Random = Unity.Mathematics.Random;
 namespace Unity.MP_FPS {
     // 服务端和客户端创建自己的 ECS 随机数单例。系统从所属 World 取这个随机源，生成位置等值时会推进随机状态。
     /// <summary>
-    /// This data structure wraps Unity.Mathematics.Random in a singleton,
-    /// so that ECS can use it to generate random numbers
+    /// 把 Unity.Mathematics.Random 包装成 ECS 单例，
+    /// 方便各系统在对应 World 里生成随机值。
     /// </summary>
     public struct FixedRandom : IComponentData {
         public Random Random;
@@ -80,11 +80,11 @@ namespace Unity.MP_FPS {
             float maxPitchDegrees,
             out quaternion characterRotation,
             out quaternion viewLocalRotation) {
-            // Yaw
+            // 水平转向。
             characterRotationYDegrees += yawPitchDeltaDegrees.x;
             ComputeRotationFromYAngleAndUp(characterRotationYDegrees, characterTransformUp, out characterRotation);
 
-            // Pitch
+            // 上下俯仰。
             viewPitchDegrees += yawPitchDeltaDegrees.y;
             viewPitchDegrees = math.clamp(viewPitchDegrees, minPitchDegrees, maxPitchDegrees);
             viewLocalRotation = CalculateLocalViewRotation(viewPitchDegrees, viewRollDegrees);
@@ -100,10 +100,10 @@ namespace Unity.MP_FPS {
         }
 
         public static quaternion CalculateLocalViewRotation(float viewPitchDegrees, float viewRollDegrees) {
-            // Pitch
+            // 上下俯仰。
             var viewLocalRotation = quaternion.AxisAngle(-math.right(), math.radians(viewPitchDegrees));
 
-            // Roll
+            // 左右侧倾。
             viewLocalRotation = math.mul(viewLocalRotation,
                 quaternion.AxisAngle(math.forward(), math.radians(viewRollDegrees)));
             return viewLocalRotation;

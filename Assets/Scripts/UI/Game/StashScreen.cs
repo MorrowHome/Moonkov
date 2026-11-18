@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Presentation of the existing aggregate stash. No equipment or inventory writes occur here.
+    // 展示账号已有的汇总仓储数据。装备和库存写入由其他流程负责。
     public sealed partial class StashScreen : IDisposable {
         private sealed class Stack {
             public string Name, ShortName, Category, Description, Class;
@@ -47,9 +47,9 @@ namespace Unity.MP_FPS.Client {
             m_Preview = preview;
             m_Host = host;
             m_Root = host.Q<VisualElement>("stashScreen");
-            // Bind the terminal/stash subtree explicitly so its cards are audible immediately,
-            // before MoonkovUIAudio's document scan runs. Button sound binding is idempotent,
-            // so observing both this subtree and the document cannot double up the sound.
+            // 主动绑定终端和仓库的子树，让卡片可以马上播放按钮音，
+            // 无需等 MoonkovUIAudio 扫描整个文档。重复绑定有防重处理，
+            // 所以同时扫描子树和文档也只会播一次。
             MoonkovAudio.BindUI(m_Root);
             m_OnPrepare = prepare;
             m_OnLogout = logout;

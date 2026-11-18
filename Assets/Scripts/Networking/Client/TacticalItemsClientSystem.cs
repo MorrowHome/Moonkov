@@ -10,15 +10,15 @@ namespace Unity.MP_FPS {
         private bool m_OwnsPresentation;
 
         protected override void OnCreate() {
-            // Managed components need an instance: the generic default singleton stores null.
+            // 托管组件必须显式建立实例，否则泛型默认单例只会保存 null。
             var owner = EntityManager.CreateEntity();
             // 用托管对象保存当前客户端的战术道具状态。每个 World 自己创建一份，局内 HUD 通过查询拿到它。
             EntityManager.AddComponentObject(owner, new TacticalItemClientState());
         }
 
         private bool OwnsPresentation() {
-            // Match RaidHUD's first full client World. Additional in-process transport
-            // peers retain their own owner component and cannot overwrite the viewed HUD.
+            // 和 RaidHUD 一样选择第一个完整的客户端 World。同进程的其他传输对端
+            // 仍使用它们各自的状态组件，不能改正在显示的 HUD。
             foreach (var world in World.All)
                 if (world.IsCreated && world.IsClient() && !world.IsThinClient())
                     return world == World;

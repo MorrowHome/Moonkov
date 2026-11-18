@@ -22,7 +22,7 @@ namespace Unity.MP_FPS.Client {
             m_HomePortrait = Root.Q<Image>("halosRoomPortrait");
             m_CharacterHit = Root.Q<Button>("halosRoomInspectCharacter");
             m_MoonHit = Root.Q<Button>("halosRoomInspectMoon");
-            // The window hit area and actor sit behind the original monitor controls.
+            // 观察窗的可点区域和人物都在原监视器控件后面。
             m_MoonHit.RemoveFromHierarchy();
             m_World.Add(m_MoonHit);
             m_CharacterHost.RemoveFromHierarchy();

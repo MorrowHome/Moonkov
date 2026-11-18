@@ -5,9 +5,9 @@ using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Scene-authored furniture targets; inventories belong to the server map session.</summary>
+    /// <summary>场景中配置的家具交互点，容器库存属于服务端的当前地图会话。</summary>
     public sealed class RaidFurnitureLoot : MonoBehaviour {
-        // Separate from ordinary cache masks, corpse IDs and mission output epochs.
+        // 家具使用独立编号，与普通箱标志、尸体 ID 和任务产出所处轮次分开。
         public const int FirstId = 1500000000;
         private int m_WorldMask;
         private RaidSupplyCacheVisuals m_SupplyVisuals;
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Drawers.Length; i++) {
                 var drawer = m_Drawers[i];
                 if (drawer == null || !drawer.SupplyCache || !drawer.Target) continue;
-                // These one-shot scene containers do not use the ordinary-cache stock bitmask.
+                // 这些场景容器各自登记库存，无需用普通箱的库存掩码。
                 var visual = m_SupplyVisuals.Create(drawer.Target, drawer.Position, i, false);
                 visual.transform.rotation = drawer.Target.rotation;
             }

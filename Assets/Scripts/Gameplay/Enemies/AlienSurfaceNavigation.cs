@@ -6,8 +6,8 @@ using Unity.MP_FPS.SpiderLab;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>A small, baked contact graph for one encounter. SurfaceMotor remains the only
-    /// movement owner; this component chooses which connected surface to approach next.</summary>
+    /// <summary>为一个遭遇烘焙的小型表面接触图。
+    /// SurfaceMotor 负责真实移动，这个组件只挑要接近的下一处连通表面。</summary>
     [DisallowMultipleComponent]
     public sealed class AlienSurfaceNavigation : MonoBehaviour {
         [Serializable]
@@ -24,7 +24,7 @@ namespace Unity.MP_FPS {
             public float Cost;
         }
 
-        /// <summary>Owned by one server enemy. No references or route indices are replicated.</summary>
+        /// <summary>每只服务端异形单独维护状态，路径引用和节点下标均不同步。</summary>
         public sealed class Route {
             internal AlienSurfaceNavigation Owner;
             internal readonly List<int> Path = new();
@@ -97,8 +97,8 @@ namespace Unity.MP_FPS {
 
         // 挑覆盖当前出生位置的导航图。初始化时兼顾对象已经加载但静态列表还没建的情况。
         public static AlienSurfaceNavigation Find(Vector3 position) {
-            // Covers Edit Mode fixtures and Enter Play with domain reload disabled.
-            // Discovery runs once, never once per enemy tick; later loads register normally.
+            // 也适用编辑模式的测试场景，以及禁用域重载后进 Play。
+            // 只搜集一次。之后加载的对象按通常的组件登记流程加入。
             if (!s_Discovered) {
                 s_Discovered = true;
                 foreach (var graph in FindObjectsByType<AlienSurfaceNavigation>())
@@ -112,8 +112,8 @@ namespace Unity.MP_FPS {
         }
 
         // 只在设置的区域里采样地面、墙与顶。碰到查询预算或节点限制时保留旧图，避免半张图遮掉可走路线。
-        /// <summary>Authoring only. Samples real colliders within a bounded region; failure leaves
-        /// the previous graph intact. Caller owns dirtying/saving its scene after success.</summary>
+        /// <summary>用于场景配置。在有限区域内采样实际碰撞体，失败时保留旧图。
+        /// 成功后由调用方标记并保存场景的变更。</summary>
         public bool Bake(
             Bounds bounds,
             float spacing = .75f,
@@ -174,7 +174,7 @@ namespace Unity.MP_FPS {
                     }
                 }
             }
-            // Spatial buckets bound candidate links to nearby contacts, including both sides of a corner.
+            // 用空间网格只找各点附近的候选连边，同时包括拐角两侧。
             var cells = new Dictionary<Vector3Int, List<int>>();
             for (int i = 0; i < found.Count; i++) {
                 var key = Cell(found[i].Point, spacing);
@@ -201,8 +201,8 @@ namespace Unity.MP_FPS {
                     foreach (int j in bucket) {
                         if (j == i) continue;
                         float dot = Vector3.Dot(found[i].Normal, found[j].Normal);
-                        // This indoor graph needs coplanar travel and right-angle
-                        // wall transitions, not every decorative bevel on furniture.
+                        // 室内导航图需要支持同平面行走和直角转墙。
+                        // 家具的每个小倒角不必都纳入路线。
                         if (dot <= .94f && Mathf.Abs(dot) > .12f) continue;
                         float distance = Vector3.Distance(found[i].Point, found[j].Point);
                         if (dot < -.7f || distance > (dot > .94f ? spacing * 1.6f : cornerReach)) continue;
@@ -276,8 +276,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        /// <summary>Returns false for missing/unreachable/invalid paths. The caller must not replace
-        /// failure with a direct vector through walls. 'now' is the enemy's server simulation clock.</summary>
+        /// <summary>路径缺失、无效或不可达时返回 false。调用方应等待新路线，
+        /// 避免直接指向目标导致穿墙。now 来自异形的服务器模拟时钟。</summary>
         public bool TryGetSteering(Route route, SurfaceMotor motor, Vector3 goal, float now, out Vector3 bodyGoal) {
             bodyGoal = motor != null ? motor.Current.Position : goal;
             if (route == null || motor == null || !isActiveAndEnabled || nodes.Length == 0 || !Finite(goal))
@@ -299,8 +299,8 @@ namespace Unity.MP_FPS {
                 route.Blocked.Clear();
                 route.ForgetBlockedAt = now + 4;
             }
-            // The intermediate arc normal may match neither endpoint. Finish an already chosen
-            // corner before selecting a new start node, otherwise replanning can stop mid-arc.
+            // 转弯弧线中间的法线可能和两端都不同。
+            // 先完成已经开始的转角再选新起点，避免重算时在拐弯途中停住。
             // 翻过墙角时身体的朝上方向处在两面之间。先走完这个转角，再选新的路线起点。
             if (!motor.Transitioning && (now >= route.ReplanAt || moved)) {
                 route.Goal = goal;
@@ -346,7 +346,7 @@ namespace Unity.MP_FPS {
             EnsureAdjacency();
             int start = Nearest(origin, Vector3.zero, scale, false);
             if (start < 0) return false;
-            // Topological reachability first; candidate contacts still need current support/visibility.
+            // 先沿导航图确认连得上，再验证候选点现在仍有支撑且可见。
             // 先找从当前位置在图上连通的面，再挑朝下的可挂点。隔一堵墙的近天花板不会因为直线近就入选。
             bool[] reachable = new bool[nodes.Length];
             var pending = new Queue<int>();

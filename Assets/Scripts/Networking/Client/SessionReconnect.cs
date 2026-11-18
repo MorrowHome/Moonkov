@@ -3,8 +3,8 @@ using System;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // A bounded UI offer, not permission to spawn a new raid. The server must find
-    // the same authenticated participant and transfer the retained deployment.
+    // UI 短时提供重连入口。服务端还必须找到
+    // 认证后的同一个参赛者，并把原有出战数据接到新连接。
     public static class SessionReconnect {
         private static string s_Address, s_Port, s_Code;
         private static RaidGameMode s_Mode;

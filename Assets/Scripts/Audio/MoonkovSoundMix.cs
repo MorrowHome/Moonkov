@@ -1,7 +1,7 @@
 // 近处武器开火后短时压低环境声和动作细声，让枪声更清楚。SoundGameObject 在更新音量时按音效类别取这里的倍率。
 using UnityEngine;
 
-// Shared gain envelope, applied by the existing pooled SoundGameObjects. No extra mixer graph or sources.
+// 共用的增益变化由原 SoundGameObjects 对象池应用，无需额外的混音图和音源。
 public static class MoonkovSoundMix {
     private static float s_WeaponUntil = -1;
 
@@ -15,6 +15,6 @@ public static class MoonkovSoundMix {
         float recovery = Mathf.Clamp01((Time.unscaledTime - s_WeaponUntil) / .35f);
         if (role == SoundDef.MixRole.Ambience) return Mathf.Lerp(.53f, 1, recovery);
         if (role == SoundDef.MixRole.Foley) return Mathf.Lerp(.86f, 1, recovery);
-        return 1; // Creature telegraphs and suit warnings remain readable during combat.
+        return 1; // 交战中也应能听清怪物的预兆与服装告警。
     }
 }

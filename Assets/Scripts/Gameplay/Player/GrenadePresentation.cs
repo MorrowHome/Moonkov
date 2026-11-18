@@ -172,8 +172,8 @@ namespace Unity.MP_FPS {
                 var cue = phase == GrenadePhase.Priming ? audio?.GrenadePin :
                     phase == GrenadePhase.Throwing ? audio?.GrenadeThrow :
                     phase == GrenadePhase.Stowing ? audio?.WeaponStow : audio?.GrenadeDraw;
-                // A queued throw can begin immediately after the pin clears. Let its
-                // short metallic tail finish; both handles are still owned and stopped.
+                // 拔销刚结束时，已排队的投掷可能马上开始。
+                // 让拔销的短金属尾音播完。两个声音句柄仍由这里管理，并可停止。
                 if (phase == GrenadePhase.Priming) {
                     GameManager.Instance?.SoundSystem?.Stop(pinSound, .025f);
                     pinSound = MoonkovAudio.PlayWeaponLayer(cue, hand.position, 1, owner ? 0 : 1, follow: hand);

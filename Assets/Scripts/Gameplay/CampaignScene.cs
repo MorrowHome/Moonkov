@@ -5,7 +5,7 @@ using UnityEngine;
 using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS {
-    // Presentation reads server facts. Coordinates always come from scene authoring.
+    // 显示层读取服务端确认的数据，坐标取自场景配置。
     public static class CampaignScene {
         public static CampaignProgress ReadProgress(World clientWorld = null) {
             // 先复制档案中的持久进度。局内当前任务只能补到这个显示副本里。

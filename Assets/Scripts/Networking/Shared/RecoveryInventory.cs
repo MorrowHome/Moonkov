@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory {
-    // Separate ownership from the capacity-limited account graph. A pending batch
-    // blocks the next deployment, so one raid plus its first rewards is the bound.
+    // 待回收物品的归属独立于受容量限制的账号图。还有待领批次时
+    // 不能再次出战，所以这里只需容纳一局的物品加首次奖励。
     [Serializable]
     public sealed class RecoveryInbox {
         public int Version = 1;
@@ -86,7 +86,7 @@ namespace Unity.MP_FPS.Inventory {
             return true;
         }
 
-        // Returns fresh objects. Callers persist account/inbox/receipt/closed deployment together.
+        // 返回新对象。调用者将账号库存、回收箱、回执与出战关闭一起写盘。
         // 在副本里搬运物品并发首次任务奖励。返回新仓库和待领取清单，让存档层把两份结果和结算回执一起写入。
         public static InventoryError Settle(
             InventoryGraph account,

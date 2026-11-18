@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    // Presentation facade over the template's pooled SoundSystem; never creates audio sources.
+    // 对外提供共用播放入口，底层沿用模板中带对象池的 SoundSystem。
     public static class MoonkovAudio {
         private static MoonkovAudioLibrary s_Library;
         private static bool s_Loaded;
@@ -37,7 +37,7 @@ namespace Unity.MP_FPS {
             return game.SoundSystem?.CreateEmitter(sound, position, volume);
         }
 
-        // Uses the same emitter/source pool and mixer, with per-playback ownership and pitch.
+        // 发声器、音源池和混音器都继续共用。一条声音可以单独设所有者和音高。
         public static SoundSystem.SoundInfo PlayWeaponLayer(
             SoundDef sound,
             Vector3 position,
@@ -85,9 +85,9 @@ namespace Unity.MP_FPS {
         public static void AirlockButtonPress() { Play(Library?.AirlockButtonPress, Vector3.zero); }
         public static void Error() { Play(Library?.Error, Vector3.zero); }
 
-        // Bind before activation, including buttons created dynamically between document scans.
-        // Clickable captures pointer-up, and navigation can detach the button before ClickEvent
-        // reaches an ancestor. The sound therefore belongs to Button.clicked, not a root event.
+        // 控件在启用前就要绑定声音。文档扫描之间动态建出的按钮也要处理。
+        // Clickable 会捕获松手事件。导航操作可能在 ClickEvent 传给父元素前就移除按钮，
+        // 因此声音挂到 Button.clicked 上，按钮自己负责播放。
         private static readonly HashSet<VisualElement> s_BoundRoots = new();
 
         public static void BindUI(VisualElement root) {
@@ -105,7 +105,7 @@ namespace Unity.MP_FPS {
             root.UnregisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
         }
 
-        /// <summary>Forget roots whose panel is gone so the bound set does not grow forever.</summary>
+        /// <summary>清理面板已离开的根节点，避免绑定记录持续增长。</summary>
         public static void PruneBoundRoots() {
             // 窗口切换后没有挂在 Panel 上的根节点要解除监听。遍历副本可以一边查看一边从原集合移除。
             foreach (var root in new List<VisualElement>(s_BoundRoots))
@@ -121,8 +121,8 @@ namespace Unity.MP_FPS {
         // 先在按下或键盘确认时给按钮挂上声音，再等按钮实际激活。即使点击后页面马上被拆掉，这个按钮自己的回调也能响。
         private static void BindButton(Button button) {
             if (button == null || !button.enabledInHierarchy) return;
-            // A subtree and its UIDocument may both observe the press. Rebinding the same
-            // delegate is idempotent, without retaining buttons after their page is discarded.
+            // 子树和所在 UIDocument 都可能观察到按下动作。重复绑定同一个委托应只生效一次，
+            // 页面移除后也无需继续持有原按钮。
             button.clicked -= Click;
             button.clicked += Click;
         }

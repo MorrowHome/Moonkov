@@ -1,6 +1,6 @@
 // MoonkovPlayerAudio 用这段逻辑处理长时间的不适。低血量、缺氧和身体异常可以触发低频呻吟，短促受击声结束后再给呻吟时机。
 namespace Unity.MP_FPS {
-    // Sustained suffering is a slow state cue, never an audio event for every damage tick.
+    // 持续负伤时低频提示痛苦状态。每个伤害 tick 无需单独发声。
     public sealed class MoonkovDistressAudio {
         public const float FirstDelay = 3.5f, RepeatDelay = 9f;
         public bool Active { get; private set; }
@@ -26,7 +26,7 @@ namespace Unity.MP_FPS {
                 Active = true;
                 m_Next = now + FirstDelay;
             }
-            // Let the short impact cry finish without silencing an entire short bleeding episode.
+            // 让短促的中弹喊声先播完。有出血痛声时稍后接上，不会整段都把它压住。
             // 短促受击声优先，持续的不适稍后再响。每次呻吟之后用更长的间隔安排下一声。
             if (hurtCry) m_Next = now + FirstDelay;
             if (now < m_Next) return false;

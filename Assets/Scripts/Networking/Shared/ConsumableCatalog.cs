@@ -1,8 +1,8 @@
 // 补给和医疗物品共用的数值表。食饮、补氧、治疗与止血读这里的适用条件、效果和耗时，让界面展示与写入角色的数值一致。
 #nullable disable
 namespace Unity.MP_FPS.Inventory {
-    // Shared by the game and persistence service. Values belong to the catalog,
-    // never to the use RPC; old item kinds and inventory saves keep their IDs.
+    // 游戏和持久化服务共用的补给数值取自目录，
+    // 使用 RPC 不携带效果数值，旧物品与存档继续沿用原 ID。
     public sealed class ConsumableDefinition {
         public readonly float Energy, Hydration, Satiety, Oxygen, Health, SurgeSeconds;
         public readonly AlienFoodEffect Effect;

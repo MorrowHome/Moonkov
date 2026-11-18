@@ -6,8 +6,8 @@ using UnityEngine.AI;
 
 namespace Unity.MP_FPS {
     public partial class DollSingerEnemySystem {
-        // The large terrain uses 75 cm voxels. MC00 stairs need a bounded 15 cm overlay.
-        // Area 30 distinguishes the two overlapping meshes so explicit links can join them.
+        // 大地形使用 75 厘米体素，MC00 楼梯附近另盖一块有限的 15 厘米导航。
+        // 重叠的两张网格用区域号 30 区分，之后用明确的连接让它们可互相到达。
         private const int MissionNavigationArea = 30;
         private NavMeshData m_MissionNavData;
         private NavMeshDataInstance m_MissionNavInstance;
@@ -50,7 +50,7 @@ namespace Unity.MP_FPS {
             // 用设备锚点框住任务区，并扩出楼梯与平台，不用覆盖整张远征地图。
             m_MissionNavBounds = new Bounds(site.Anchors[0].Approach, Vector3.one);
             foreach (var anchor in site.Anchors) m_MissionNavBounds.Encapsulate(anchor.Approach);
-            // Include both stair towers and their landings, beyond the equipment-room footprint.
+            // 范围覆盖两条楼梯井及平台。设备室外沿也一起考虑。
             m_MissionNavBounds.Expand(new Vector3(100, 40, 100));
             UnityEngine.Physics.SyncTransforms();
             NavMeshBuilder.CollectSources(m_MissionNavBounds, s_WorldMask, NavMeshCollectGeometry.PhysicsColliders,

@@ -39,7 +39,7 @@ namespace Unity.MP_FPS {
         // 同一局的模式状态来自注册表。对局或回合变化时清掉之前的导航、队友和任务状态。
         private void UpdateClashBots(MoonRaidMap map, ClashBotRegistry registry, double now) {
             if (!ReferenceEquals(m_Map, map) || !ReferenceEquals(m_ClashRegistry, registry)) {
-                DestroyEnemies(); // Excludes registered Clash actors: the server owns their lifetime.
+                DestroyEnemies(); // 跳过已登记的悬赏角色，生命周期由服务器的悬赏对局管理。
                 ReleaseNavigation();
                 ResetPopulation();
                 m_Map = map;
@@ -142,7 +142,7 @@ namespace Unity.MP_FPS {
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 var input = EntityManager.GetComponentData<DollSingerEnemy>(entity).InputEntity;
                 if (!registry.Register(request, entity, input, brain.Inventory)) {
-                    // The registry never took ownership of this rejected creation.
+                    // 这次创建被拒绝，注册表并未接管新实体。
                     RetireEnemy(entity, brain);
                     EntityManager.DestroyEntity(input);
                     EntityManager.DestroyEntity(entity);
@@ -194,8 +194,8 @@ namespace Unity.MP_FPS {
 
         // 检查路径拐点都留在圆形场地内。角色已经出界时只允许第一段朝圈里走。
         private bool SafeClashRoute(Vector3[] corners, int count) {
-            // A convex circle also contains each segment between its inside corners.
-            // If knocked outside, permit only a strictly inward first segment, never an excursion.
+            // 圆形场地是凸区域。拐点都在里面时，拐点之间沿直线也在里面。
+            // 被撞出圈时，第一段只允许朝圈内走。
             double previous = double.MaxValue;
             bool entered = false;
             for (int i = 0; i < count; i++) {
@@ -241,7 +241,7 @@ namespace Unity.MP_FPS {
         private void ShareSquadContacts(DollSingerEnemyBrain receiver, DollSingerEnemyBrain sender, double now) {
             foreach (var observation in sender.Contacts) {
                 var source = observation.Value;
-                // A report is a clue. Only a new observation can refresh it or grant sight.
+                // 队友报告属于线索。必须重新观察，才能更新报告时效或确认可见。
                 double observed = Math.Max(source.LastSeen, source.LastHeard);
                 if (now - observed > 1.5 || source.LastReported > observed ||
                     !CanObserveOpponent(receiver, observation.Key))
@@ -267,7 +267,7 @@ namespace Unity.MP_FPS {
 
         // 两名机器人在有限时段轮流掩护，避免同一时间一起放弃火线去绕侧。
         private bool HasClashCoveringAlly(DollSingerEnemyBrain brain, double now) {
-            // Alternate roles in bounded windows; both actors must not leave cover together.
+            // 在有限时间窗内轮流掩护。两名队友别同时离开掩体。
             int coveringSlot = ((int)(now / 6) + brain.ClashTeamId) % 2;
             if (brain.ClashSlot == coveringSlot || now < brain.NextFlank) return false;
             foreach (var ally in m_ClashAgents)
@@ -291,7 +291,7 @@ namespace Unity.MP_FPS {
 
         // 既检查理想目标点的线，也检查受瞄准误差影响的实际开火方向。目标看得见不代表枪口没被卡住。
         private bool ClashShotLaneClear(DollSingerEnemyBrain brain, Vector3 eye, Vector3 direction, float range) {
-            // Check the actual imperfect shot ray as well as the ideal target visibility ray.
+            // 除了理想目标的视线，也检查带偏差的真实开火射线。
             int count = UnityEngine.Physics.SphereCastNonAlloc(eye, .09f, direction, m_Hits, range, s_SightMask,
                 QueryTriggerInteraction.Ignore);
             if (count == m_Hits.Length) return false;

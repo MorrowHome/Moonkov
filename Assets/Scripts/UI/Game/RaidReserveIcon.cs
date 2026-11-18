@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Small vector silhouettes stay readable without depending on an emoji font.
+    // 小号矢量图标在缺少 Emoji 字体的系统上也能正常显示。
     public sealed class RaidReserveIcon : VisualElement {
         private readonly int m_Kind;
         private readonly Image m_Image;

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The same item facts serve inventory hover, shop hover and the selected product.
+    // 同一套物品详情用于背包悬停、商店悬停和已选商品。
     public sealed class MoonkovItemInformation {
         public VisualElement Element { get; }
         public WeaponRegistry WeaponRegistry { get; private set; }

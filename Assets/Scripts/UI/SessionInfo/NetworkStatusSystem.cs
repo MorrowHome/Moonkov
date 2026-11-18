@@ -57,7 +57,7 @@ public partial struct NetworkStatusSystem : ISystem {
             sb.Append('±');
             sb.Append(deviationRTT);
             sb.Append("ms, ");
-            // Presentation runs once per rendered frame. Do not use a prediction step's dt as FPS.
+            // 表现层每个渲染帧运行一次。帧率应从渲染帧计算，避免使用预测步的 dt。
             // 界面展示的是渲染帧的时间。预测系统可能一帧补算多个 tick，因此不能拿模拟步长换算帧率。
             m_FrameMs = math.lerp(m_FrameMs > 0f ? m_FrameMs : Time.unscaledDeltaTime * 1000f,
                 Time.unscaledDeltaTime * 1000f, .1f);
@@ -81,7 +81,7 @@ public partial struct NetworkStatusSystem : ISystem {
         sb.Append(driver.GetRemoteEndPoint(connection).ToFixedString());
         sb.Append("</color>");
 
-        // Write the final string to our singleton component.
+        // 将组好的文字写入单例组件。
         statusSingleton.Status = sb;
     }
 }

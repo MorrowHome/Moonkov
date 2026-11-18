@@ -17,7 +17,7 @@ namespace Unity.MP_FPS {
             public Dictionary<string, OfflineClashMatch> Matches = new();
         }
 
-        // Only the real human profile is persisted. Bots have no account records.
+        // 持久化的对象只有真人档案，机器人没有账号记录。
         private sealed class OfflineClashMatch {
             public string MatchId, TokenId, PlayerId, DeploymentId, RegistrationHash;
             public int RulesVersion, TeamId;

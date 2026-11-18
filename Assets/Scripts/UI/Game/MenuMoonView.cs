@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // One isolated render stage is shared by the background and its observer.
+    // 背景月球和观察窗共用同一个独立渲染场景。
     public sealed class MenuMoonView : IDisposable {
         public const double SiderealDays = 27.3217, YearDays = 365.256;
         public Image Element { get; } = new() { scaleMode = ScaleMode.StretchToFill };
@@ -173,7 +173,7 @@ namespace Unity.MP_FPS.Client {
             if (!m_Dirty) return;
             float orbit = (float)(Days / SiderealDays % 1) * 360;
             float year = (float)(Days / YearDays % 1) * 360;
-            // The spacecraft tracks 35% of the lunar orbit, allowing both faces and phase to change.
+            // 飞船跟随月球轨道的 35%，让可见表面和月相都能变化。
             var orbitPlane = Quaternion.Euler(0, 0, 5.145f);
             var observer = orbitPlane * Quaternion.AngleAxis(orbit * .35f, Vector3.up) *
                            Quaternion.Inverse(orbitPlane) * Quaternion.Euler(m_Pitch - 18, m_Yaw, 0);

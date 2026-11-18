@@ -61,7 +61,7 @@ public class SoundDef : ScriptableObject {
 
         [Space(5)] [Range(0.0f, 1.0f)]
         public float
-            DopplerScale = 0.0f; // 0 = no doppler effect applied to pitch. 1 = full doppler effect applied to pitch
+            DopplerScale = 0.0f; // 0 表示音高不受多普勒效应影响，1 表示完全应用。
 
         [Space(5)] public AudioRolloffMode VolumeRolloffMode = AudioRolloffMode.Linear;
         [Space(5)] public Interpolator.CurveType LPFRollOffCurveType;

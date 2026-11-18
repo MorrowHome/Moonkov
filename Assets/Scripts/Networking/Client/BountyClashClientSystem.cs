@@ -6,7 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Server snapshots only. No enemy positions are inferred from replicated ghosts.</summary>
+    /// <summary>只显示服务端快照。复制到客户端的 Ghost 不用来推断敌人的位置。</summary>
     public sealed class BountyClashClientState : IComponentData {
         public bool ApprovalReceived, Approved, HasSnapshot;
         public string ApprovalReason;
@@ -171,8 +171,8 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Repeated held-input frames do not move stop barriers. Only a stop transition
-        // invalidates output; headers arriving while stopped advance their own barrier.
+        // 连续按住时不改变截止序号。只有刚停止的那次切换会
+        // 清掉已有输出。已停止后收到的状态头会推进其各自的截止序号。
         public void SetSenseInput(bool view, bool boost) {
             // 加强感知必须依附在感知视图里。松开按键要清本轮结果，持续按住则不反复改允许通过的消息序号。
             boost &= view;
@@ -192,7 +192,7 @@ namespace Unity.MP_FPS {
             Sense.SectorMask = 0;
             Sense.ContactCount = 0;
             ClearContacts();
-            // Base-view Presence remains valid until its own header expires or view stops.
+            // 基础视图的 Presence 会一直有效，直到对应的头消息过期或关闭视图。
         }
 
         // 退出整个视图会连加强状态一起清掉。松开加强只清目标时，基础感知仍可继续到自己的有效期。
@@ -213,7 +213,7 @@ namespace Unity.MP_FPS {
             System.Array.Clear(m_IncomingContactTimes, 0, m_IncomingContactTimes.Length);
         }
 
-        // Packet-batch cleanup only. Never reset the sequence high-water mark here.
+        // 这里只清本批消息，保留已处理的最高序号。
         public void ClearContacts() {
             ClearVisibleContacts();
             ClearIncomingContacts();

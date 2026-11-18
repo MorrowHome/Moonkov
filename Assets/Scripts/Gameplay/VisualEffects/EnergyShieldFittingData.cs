@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Immutable source geometry shared by actors using the same skin. Bone matrices
-    // and the final fit remain per actor, so animation and imported scale still apply.
+    // 使用相同皮肤的角色共用固定的源几何数据。每个角色单独保存骨骼矩阵和之后的贴合结果，
+    // 因此仍能使用自己的动画与导入比例。
     internal sealed class EnergyShieldFittingData {
         private static readonly Dictionary<(Mesh, string), EnergyShieldFittingData> Cache = new();
         private readonly Dictionary<(int, int), int[]> neckSamples = new();
@@ -31,7 +31,7 @@ namespace Unity.MP_FPS {
             // 同一个网格可以配不同的材质。缓存还按材质被识别为皮肤或服装的结果区分，护具才能贴到应当参考的表面上。
             var key = (mesh, new string(flags));
 #if UNITY_EDITOR
-            // Meshes and material assignments can change in live authoring previews.
+            // 实时编辑预览可能会更换网格和材质。
             // 编辑器预览可能刚换网格或材料，所以试配时重新取数据。真正游戏才用跨实例缓存，避免玩家一多就反复读同一网格。
             if (!Application.isPlaying) return new EnergyShieldFittingData(mesh, flags);
 #endif

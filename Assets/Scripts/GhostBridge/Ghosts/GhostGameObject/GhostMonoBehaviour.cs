@@ -12,7 +12,7 @@ public abstract class GhostMonoBehaviour : MonoBehaviour {
     public World World => GhostGameObject.World;
     public void SetGhostGameObject(GhostGameObject ghostGameObject) { m_GhostGameObject = ghostGameObject; }
 
-    // internal accessors
+    // 访问 Ghost 数据的内部辅助方法。
     protected bool TryReadGhostComponentData<T>(out T data) where T : unmanaged, IComponentData {
         // 可选的 ECS 数据先检查是否存在再读。不同 Ghost 模板的组件集合可能不同，调用方可以用返回值决定是否继续。
         if (GhostHasComponent<T>()) {

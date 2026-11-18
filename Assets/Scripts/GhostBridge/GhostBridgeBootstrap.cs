@@ -11,7 +11,7 @@ using Hash128 = Unity.Entities.Hash128;
 [UnityEngine.Scripting.Preserve]
 public class GhostBridgeBootstrap : ClientServerBootstrap {
 #pragma warning disable UDR0001
-    public static GhostBridgeBootstrap Instance; // This is reset from ResetOnPlayMode attribute
+    public static GhostBridgeBootstrap Instance; // 由 ResetOnPlayMode 特性触发重置。
 #pragma warning restore UDR0001
     public new World ServerWorld { get; private set; }
     public new World ClientWorld { get; private set; }
@@ -34,7 +34,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
     public GameObject ClientGameObjectHierarchy {
         get {
             if (m_ClientGameObjectHierarchy != null) return m_ClientGameObjectHierarchy;
-            // create top level gameobject
+            // 创建场景层级的根物体。
             m_ClientGameObjectHierarchy = new GameObject {
                 name = "Client"
             };
@@ -47,7 +47,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
     public GameObject ServerGameObjectHierarchy {
         get {
             if (m_ServerGameObjectHierarchy != null) return m_ServerGameObjectHierarchy;
-            // create top level gameobject
+            // 创建场景层级的根物体。
             m_ServerGameObjectHierarchy = new GameObject {
                 name = "Server"
             };
@@ -64,9 +64,9 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
     }
 
     protected static void ResetStaticState() {
-        // we need to ensure the static driver constructor override
-        // is cleared, otherwise we might end up with a relay network driver
-        // when in Ip mode
+        // 退出时清空静态驱动构造器。
+        // 否则可能沿用中继驱动，
+        // 导致 IP 直连也用了上一局的驱动。
         // 驱动构造器是静态的，前一局使用的模式可能被带到下一局。重置时把覆盖配置清空，重连才能按新的传输选择建驱动。
         NetworkStreamReceiveSystem.DriverConstructor = null;
         if (Instance == null) return;
@@ -78,7 +78,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
     public override bool Initialize(string defaultWorldName) {
         Instance = this;
 #if UNITY_SERVER
-        // turn off stack trace for logs (it clutters the console window)
+        // 普通日志省略调用栈，减少控制台里的噪音。
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
 #endif
@@ -100,10 +100,10 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         Debug.Log($"StartMultiplayerWorlds asHost {asHost}");
         GhostGameObjectUpdateSystem.Reset();
 
-        // we no longer need the default world
-        // so we can dispose it now. This unclutters the editor world selection UI
-        // but also ensures we aren't loading our entities into the default world
-        // which occasionally triggers the sporadic-and-unrecoverable "Loading Entity Scene failed" error
+        // 当前已经有联机用的 World，
+        // 此处释放启动阶段的默认 World，也能精简编辑器的 World 列表。
+        // 这样实体只会读入目标 World，
+        // 避免落入默认 World 后偶发无法恢复的实体场景加载错误。
         if (World.DefaultGameObjectInjectionWorld != null) {
             World.DefaultGameObjectInjectionWorld.Dispose();
             World.DefaultGameObjectInjectionWorld = null;
@@ -159,7 +159,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
     private World CreateClientWorld() {
         ClientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
 
-        // create unique client guid
+        // 给这次创建的客户端生成唯一 GUID。
         var hash128 = new UnityEngine.Hash128();
         hash128.Append(System.Guid.NewGuid().ToString());
         m_ClientGuid = hash128;

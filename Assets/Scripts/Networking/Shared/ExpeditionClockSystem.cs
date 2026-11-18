@@ -24,7 +24,7 @@ namespace Unity.MP_FPS {
     }
 
     public static class ExpeditionClock {
-        // A fractional tick denotes progress toward that tick, not time after its end.
+        // 分数表示到达当前 tick 的进度，从这一 tick 开始前计算。
         public static double HoursAt(in ExpeditionClockState state, NetworkTick tick, float fraction = 1) {
             if (!state.Ready || !tick.IsValid || state.TickRate <= 0) return state.AnchorHours;
             // NetCode 的 tick 分数对应到达当前 tick 的进度。换算为秒后乘走时速度得到游戏内经过的小时数。

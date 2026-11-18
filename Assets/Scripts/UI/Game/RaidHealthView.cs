@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS.Client {
-    // Treatment still sends an intent through the existing inventory request/ack stream.
+    // 治疗沿用库存请求与确认链路，把玩家意图交给服务端。
     public sealed class RaidHealthView : IDisposable {
         private readonly VisualElement m_Root;
         private readonly RaidVitalsMonitor m_Monitor;

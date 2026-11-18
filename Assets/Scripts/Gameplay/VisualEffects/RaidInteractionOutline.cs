@@ -8,7 +8,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // Collect from the raid's existing targets. One visible-only mask serves every nearby object.
+    // 从战局已有的交互目标里收集对象。附近各目标共用一张仅画可见区域的遮罩。
     internal sealed class RaidInteractionOutline : ScriptableRenderPass, IDisposable {
         internal const float DiscoveryRange = 8f;
         private const int MaxDraws = 96;
@@ -99,7 +99,7 @@ namespace Unity.MP_FPS {
             if (m_Count == 0 || m_Subscribed) return;
             var shader = Resources.Load<Shader>("Moonkov/RaidInteractionOutline");
             if (!shader || !shader.isSupported) return;
-            // RaidHUD constructs this pass in a field initializer; native objects must wait until runtime.
+            // RaidHUD 在字段初始化期间创建这一遍渲染的对象。Unity 原生资源要等运行时再分配。
             m_Properties ??= new MaterialPropertyBlock();
             m_Material = new Material(shader)
                 { name = "Raid interaction outline", hideFlags = HideFlags.HideAndDontSave };
@@ -156,7 +156,7 @@ namespace Unity.MP_FPS {
                 data.Color = resources.activeColorTexture;
                 data.Material = m_Material;
                 data.Properties = m_Properties;
-                // At a reduced world scale, the contour still needs a full mask pixel.
+                // 场景渲染比例降低后，描边仍至少需要占遮罩一个像素。
                 float width = Mathf.Max(1, camera.cameraTargetDescriptor.width),
                     height = Mathf.Max(1, camera.cameraTargetDescriptor.height);
                 float pulse = m_Steady ? .68f : .64f + .24f * Mathf.Sin(Time.unscaledTime * 3.6f);

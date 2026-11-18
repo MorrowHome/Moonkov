@@ -11,8 +11,8 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // One small scene, one camera and one target for the entire squad. These
-    // actors reuse the menu's equipment/animation code, with no gameplay World.
+    // 整个小队共用一套小场景、相机和目标纹理。
+    // 角色沿用菜单的装备与动画代码，在独立预览场景里展示。
     public sealed partial class OnlineSquadStage : IDisposable {
         private const int StageLayer = 5;
         private const int MaxTargetEdge = 3072;
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS.Client {
             for (int i = 0; i < m_Actors.Length; i++) {
                 var actor = m_Actors[i];
                 if (actor == null || !actor.HitSquadModel(ray)) continue;
-                // Hair and costumes may extend into the neighboring stand.
+                // 头发和服装的边界有时会伸进相邻席位。
                 float offset = Mathf.Abs(ProjectSlot(i).x - point.x);
                 if (offset >= closest) continue;
                 selected = actor;
@@ -142,7 +142,7 @@ namespace Unity.MP_FPS.Client {
                 return;
             }
             float x = m_Image.WorldToLocal(evt.position).x;
-            // Both character cameras look along -Z, so negative yaw follows a rightward drag.
+            // 两个预览相机都朝 -Z 看。鼠标向右拖时，绕竖直轴的转角应减小。
             m_DragActor.SquadInspectionYaw =
                 Mathf.Repeat(
                     m_DragActor.SquadInspectionYaw -
@@ -270,7 +270,7 @@ namespace Unity.MP_FPS.Client {
                 float tangent = Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad);
                 float halfHeight = Mathf.Max(1.39f, 590f / viewport.y);
                 float distance = Mathf.Max(halfHeight, 2.45f / m_Camera.aspect) / tangent + .23f;
-                // The full-screen stage needs room beneath the boots for the badges and action dock.
+                // 全屏舞台在脚下留出一些空间，供席位标签和操作栏使用。
                 float floorSpace = (distance - SlotPositions[1].z) * tangent;
                 float focusY = Mathf.Clamp((1f - 2f * FullscreenBottomClearance / viewport.y) * floorSpace, .3f, .87f);
                 var focus = m_Root.transform.position + new Vector3(0, focusY, 0);

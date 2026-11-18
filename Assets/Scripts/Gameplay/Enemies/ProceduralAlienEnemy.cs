@@ -26,9 +26,9 @@ namespace Unity.MP_FPS {
         Dominance
     }
 
-    /// <summary>Server-only intent, perception and damage; interpolated clients derive
-    /// cosmetic rigs from snapshots. Target eligibility requires a real PlayerGhost:
-    /// humans and PMC bots are eligible, other aliens never are.</summary>
+    /// <summary>选择行动、感知和伤害只由服务端处理。
+    /// 客户端根据插值后的快照重建显示姿势。只有具备真实 PlayerGhost 的对象才可能成为攻击目标，
+    /// 包括真人和人形 PMC，排除其他异形。</summary>
     [DisallowMultipleComponent]
     public sealed partial class ProceduralAlienEnemy : GhostMonoBehaviour, IUpdateServer, IUpdateClient {
         // 发给客户端的是演出这一招需要的结果，例如动作时间、攻击位置和命中序号。选中谁、听到什么和搜索路线仍留在服务器。
@@ -132,13 +132,13 @@ namespace Unity.MP_FPS {
                 LayerMask.NameToLayer(Role == MultiplayerRole.Server ? "ServerPlayer" : "ClientPlayer"));
             if (Role != MultiplayerRole.Server) {
                 s_ClientAliens.Add(this);
-                // Spread far-away rigs across frames instead of solving every
-                // creature on the same frame after a snapshot/spawn batch.
+                // 把远处异形骨架更新摊到不同帧。
+                // 一批快照或新生成对象到达时不用同一帧就全部解算。
                 m_NextPresentation = Time.unscaledTime + unchecked((uint)GhostGameObject.Owner) % 16 * .004f;
             }
         }
 
-        // An operating machine attracts nearby creatures without revealing the player.
+        // 运转的设备会吸引附近异形，设备声不会透漏玩家位置。
         // 正在运转的设备也会吸引怪。用设备位置当线索，有更新的玩家目标时不会被旧警报覆盖。
         public bool HearMissionAlarm(string operationId, Vector3 position) {
             if (Role != MultiplayerRole.Server || m_Body == null || !profile || m_AmbushEnabled ||
@@ -167,8 +167,8 @@ namespace Unity.MP_FPS {
         }
 
         public void UpdateServer(float deltaTime) {
-            // Destruction can retain a cleanup entity for one frame. The callback
-            // registration is removed by GhostBridge cleanup; never read stripped data.
+            // 销毁时有可能还保留一帧清理实体。
+            // GhostBridge 清理时解除回调。此时不能读取实体上已移除的数据。
             if (m_Body == null || !GhostGameObject.GhostEntityExists() || !GhostHasComponent<PredictedPlayerGhost>())
                 return;
             // 限制怪物逻辑一次推进的时间。一次卡顿不应让步长和蓄力动作瞬间跳过很远。
@@ -340,7 +340,7 @@ namespace Unity.MP_FPS {
             var delta = position - track.Position;
             delta.y = 0;
             float distance = delta.magnitude;
-            // A teleport, stalled sample or airborne motion is not a footstep.
+            // 传送、采样停顿或空中位移不算脚步。
             if (landed || health.ControllerState.MovementType != FirstPersonController.MovementType.Standing ||
                 elapsed <= 0 || elapsed > 1 || distance > Mathf.Max(2, elapsed * 12))
                 track.Distance = 0;
@@ -461,7 +461,7 @@ namespace Unity.MP_FPS {
                 ? 0
                 : PresentationInterval(Camera.main, transform.position,
                     presentationDistance * Mathf.Max(1, m_Body.Scale));
-            // Turning back toward a distant rig must not wait for its old off-screen deadline.
+            // 转身重新看向远处异形时，立刻恢复姿态更新，不等待离屏状态的旧截止时间。
             immediate |= interval < m_LastPresentationInterval;
             m_LastPresentationInterval = interval;
             if (!immediate && interval > 0 && Time.unscaledTime < m_NextPresentation) return;
@@ -505,8 +505,8 @@ namespace Unity.MP_FPS {
                 s_PresentationFrame = Time.frameCount;
                 s_PresentationMatrix = matrix;
             }
-            // Generous bounds retain tall/long rigs at the image edge. This only budgets
-            // client posing; sensing, server hitboxes, attack events and sound still update.
+            // 用略大的裁剪范围保住画面边缘高或长的异形。
+            // 只对客户端姿态分配预算，感知、服务端碰撞、攻击事件和声音照常更新。
             float radius = Mathf.Max(8f, fullRateDistance * .25f);
             foreach (var plane in s_PresentationFrustum)
                 if (plane.GetDistanceToPoint(position) < -radius)
@@ -517,9 +517,9 @@ namespace Unity.MP_FPS {
 
         // 液体表现成本高，用硬件支持、地图画质和距离决定。多个符合条件时只让较近的少数使用。
         private bool WantsLiquid() {
-            // The baked world's performance budget uses the existing solid rig.
-            // Its hitboxes, attacks and animation remain the same without the
-            // particle solver, density volume or high-detail filament mesh.
+            // 烘焙世界的性能配置使用已有的实体骨架表现。
+            // 关闭粒子求解、密度体积或高精细丝网格后，
+            // 异形仍保留同样的碰撞体、攻击和动画。
             if (Moon.SourceWorldRuntimeQuality.Active) return false;
             if (!profile.Liquid || profile.MaximumLiquidEnemies <= 0 || !SystemInfo.supportsComputeShaders)
                 return false;
@@ -559,8 +559,8 @@ namespace Unity.MP_FPS {
                 MaxHealth = authoring.Profile.Health, CurrentHealth = authoring.Profile.Health,
                 EquippedWeaponID = DollSingerWeapons.None
             });
-            // State itself is added by the existing GhostGameObjectBaker's nested-component
-            // discovery. No PlayerInput or predicted movement components are added here.
+            // State 由现有 GhostGameObjectBaker 发现嵌套组件时添加。
+            // 这里无需 PlayerInput 或预测移动组件。
         }
     }
 }

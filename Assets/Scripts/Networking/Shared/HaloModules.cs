@@ -3,11 +3,11 @@ using System;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory {
-    // Modules remain independent items. Their parent is the exact weapon instance,
-    // so the existing item tree handles ownership, deployment, death and settlement.
+    // 模块仍是独立物品，父项就是装着它的那把武器，
+    // 所有权、出战、死亡和结算用原有物品树判断。
     public static class HaloModules {
-        // Detachable modules use bits 0..5 and 11. Persistent biology uses bits 6..10;
-        // the active species-organ effect is encoded in bits 12..15.
+        // 可拆模块使用第 0 至 5 位和第 11 位，已保存的生物学研究用第 6 至 10 位。
+        // 当前的物种器官效果编码在第 12 至 15 位。
         public static readonly string[] Codes = {
             "halo_capacitor", "halo_charge_bridge", "halo_focus_lens",
             "halo_fan_array", "halo_pulse_controller", "halo_hit_marker"
@@ -21,7 +21,7 @@ namespace Unity.MP_FPS.Inventory {
 
         // 物品码换为内部模块标记。改装接口不能拿不认识的道具直接影响武器参数。
         public static HaloModule FromCode(string code) {
-            // Keep Codes as the original cache-loot pool; this module requires fabrication.
+            // Codes 仍代表原有箱子随机池。这个模块需要通过制作取得。
             if (code == "halo_mooncore_recycler") return HaloModule.MooncoreRecycler;
             int index = Array.IndexOf(Codes, code);
             return index < 0 ? HaloModule.None : (HaloModule)(1 << index);

@@ -7,7 +7,7 @@ using Unity.Networking.Transport.TLS;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // PEM private keys stay outside Assets and are never copied into a client build.
+    // PEM 私钥放在 Assets 外，不打到客户端包里。
     public static class OnlineTransportSecurity {
         private sealed class ServerOptions {
             public string BackendUrl, ServerKey;

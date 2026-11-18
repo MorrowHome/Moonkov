@@ -7,8 +7,8 @@ using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One server-owned run per deployed player. The player entity survives a
-    // retained connection, so reconnects resume evidence without sharing it.
+    // 每个已出战的玩家由服务端维护一份研究进度。连接断开并保留时
+    // 角色实体仍在，重连可继续收集原来的证据，各玩家进度独立。
     public sealed partial class ResearchQuestRuntime {
         // 进度同时按 World 和实际角色实体划开。玩家断线、同进程开新局或角色换人时，不会拿到其他局的证据。
         private static readonly Dictionary<World, Dictionary<Entity, ResearchQuestRuntime>> s_Runs = new();

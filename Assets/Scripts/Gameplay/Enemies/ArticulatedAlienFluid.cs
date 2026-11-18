@@ -7,8 +7,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>Filled articulated volumes for the existing Umbra particle/volume/
-    /// filament solver. Gameplay bones remain authoritative; GPU work is client-only.</summary>
+    /// <summary>用现有的 Umbra 粒子、体积和细丝求解器填充关节形体。
+    /// 玩法仍按实际骨骼判定，GPU 计算只在客户端做。</summary>
     public sealed class ArticulatedAlienFluid {
         private readonly Transform m_Owner, m_Pivot;
         private readonly StiltWalkerRig m_Stilt;
@@ -94,8 +94,8 @@ namespace Unity.MP_FPS {
                     }
                 }
             }
-            // Same normalized volume resolution as the other filled creature rigs;
-            // scaling a creature never deletes its particle/filament detail.
+            // 与其它填充式异形骨架使用一致的归一化体积精度。
+            // 体型缩放后也保留对应的粒子与细丝细节。
             Fluid = new SkeletonFluidPresentation(m_Pivot, mask, seeds.ToArray(), bones, 2.8f, 128, true, true);
         }
 
@@ -162,9 +162,9 @@ namespace Unity.MP_FPS {
                 m_Matrices[1 + i * 2] = local * Frame(m_A[i], rotation, radius) * m_Inverse[1 + i * 2];
                 m_Matrices[2 + i * 2] = local * Frame(m_B[i], rotation, radius) * m_Inverse[2 + i * 2];
             }
-            // Attachment changes the parasite topology around the head abruptly.
-            // Re-initialize on the current guide rather than pulling stale liquid
-            // through the player's face on the transition frame.
+            // 附着时寄生虫围着头部的形状会一下改变。
+            // 按当前引导骨架重新初始化流体，
+            // 避免切换这帧把上个姿势遗留的液体拖过玩家面部。
             if (attached != m_Attached) {
                 Fluid.SetVisible(false);
                 m_Attached = attached;

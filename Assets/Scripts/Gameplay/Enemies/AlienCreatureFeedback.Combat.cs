@@ -11,7 +11,7 @@ namespace Unity.MP_FPS {
         private int m_DetailPulse = -1;
         private float m_GripAt;
 
-        // Committed client snapshots supply timing/positions; these sounds never infer a hit or deal damage.
+        // 音效用客户端已确认的快照时间和位置。是否命中和扣血由服务端决定。
         public void ObserveAttackDetails(
             in ProceduralAlienEnemy.State state,
             in AlienCombatPattern pattern,
@@ -27,7 +27,7 @@ namespace Unity.MP_FPS {
                 m_DetailSequence = state.AttackSequence;
                 m_DetailAction = state.Action;
                 m_DetailPulse = state.Action == AlienAction.Strike ? pulse : -1;
-                return; // Joining an active attack must not replay its launch or old pulses.
+                return; // 中途加入时跳过已播过的发射和命中节拍。
             }
             // 判断序号前后顺序，防止较旧的快照重新触发已经消费过的攻击。
             if (state.AttackSequence != 0 && m_DetailSequence != 0 &&
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS {
             // 只播放眼前这次节拍。丢了中间的包也不把错过的多声命中堆在同一帧。
             if (state.Action == AlienAction.Strike && state.AttackSequence != 0 && state.ActionTime <= pattern.Active &&
                 pulse > m_DetailPulse) {
-                m_DetailPulse = pulse; // Only the current pulse; never catch up a burst of missed snapshots.
+                m_DetailPulse = pulse; // 只播目前这一拍，漏掉的多个快照不用追着补播。
                 switch (pattern.Kind) {
                     case AlienAttackKind.AcidSpit:
                     case AlienAttackKind.RootSpikes:

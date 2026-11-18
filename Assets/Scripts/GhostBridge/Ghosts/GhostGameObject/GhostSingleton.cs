@@ -9,7 +9,7 @@ using UnityEngine;
 public abstract class GhostSingleton : GhostMonoBehaviour {
 #pragma warning disable UDR0001
     // 各类管理器用这一条静态入口集中接受退局清理通知。调用完清空委托，避免上一局的引用跟着进入下一局。
-    protected static Action OnResetStaticState; // This is cleared from InvokeAndClearStaticCallbacks
+    protected static Action OnResetStaticState; // InvokeAndClearStaticCallbacks 会清空它。
 #pragma warning restore UDR0001
 
     public static void InvokeAndClearStaticCallbacks() {
@@ -23,7 +23,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
     public delegate void OnInitialiseCallback(T singleton);
 
 #pragma warning disable UDR0001
-    // These are reset from ResetOnPlayMode attribute
+    // ResetOnPlayMode 特性负责触发重置。
     private static Dictionary<MultiplayerRole, T> s_InstanceLookup = new();
     private static Dictionary<MultiplayerRole, OnInitialiseCallback> s_InitialiseLookup = new();
 #pragma warning restore UDR0001
@@ -61,13 +61,13 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
 
     // 服务器有自己的管理器。客户端的本机对象和代理对象共享 ClientProxy 下同一个管理器，因为它们属于同一客户端 World。
     public static T GetInstanceByRole(MultiplayerRole role) {
-        //all clients should be obtaining the same client instance regardless of if they are local or remote
+        //本机角色与远端代理共享同一个客户端实例。
         if (role != MultiplayerRole.Server) role = MultiplayerRole.ClientProxy;
         return s_InstanceLookup.ContainsKey(role) ? s_InstanceLookup[role] : null;
     }
 
     public static bool TryGetInstanceByRole(MultiplayerRole role, out T instance) {
-        //all clients should be obtaining the same client instance regardless of if they are local or remote
+        //本机角色与远端代理共享同一个客户端实例。
         if (role != MultiplayerRole.Server) role = MultiplayerRole.ClientProxy;
         if (s_InstanceLookup.ContainsKey(role)) {
             instance = s_InstanceLookup[role];
@@ -93,7 +93,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
             if (s_InitialiseLookup.TryGetValue(role, out var existingCallback)) callback = existingCallback + callback;
             s_InitialiseLookup[role] = callback;
 #pragma warning disable UDR0001
-            OnResetStaticState += ResetStaticState; // This is reset from InvokeAndClearStaticCallbacks
+            OnResetStaticState += ResetStaticState; // InvokeAndClearStaticCallbacks 会清空这个回调。
 #pragma warning restore UDR0001
         }
     }
@@ -112,23 +112,23 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
     }
 
     public override void OnGhostPreDestroy() {
-        // Determine the correct key for the dictionary. All client types (Owned, Proxy)
-        // should use the same key to represent the single client-side instance.
+        // 按角色选登记键。客户端上的 Owned 和 Proxy
+        // 都按同一个键查客户端实例。
         var roleToUnregister = Role;
         if (roleToUnregister != MultiplayerRole.Server) roleToUnregister = MultiplayerRole.ClientProxy;
 
-        // This is the instance-specific cleanup. It only removes itself.
+        // 退出时仅清理当前实例自己的登记。
         // 晚到的销毁事件只移走这个旧实例自己的登记。原键上若已经是新实例，它会继续可用。
         if (s_InstanceLookup.ContainsKey(roleToUnregister) && s_InstanceLookup[roleToUnregister] == this)
             s_InstanceLookup.Remove(roleToUnregister);
 
-        // Mark as called to prevent OnDestroy from running this logic a second time.
+        // 标记已经执行过销毁清理，避免 OnDestroy 再执行一遍。
         if (GhostGameObject != null) GhostGameObject.GhostPreDestroyCalled = true;
     }
 
     protected virtual void OnDestroy() {
-        // This ensures that if the object is destroyed abruptly (like during world teardown),
-        // it still cleans up its own entry from the static dictionary.
+        // World 突然释放时也可能直接销毁这个物体，
+        // 这时仍要从静态表中清掉自己的登记。
         // 场景可能直接卸载而没走正常的桥接销毁。OnDestroy 会兜底清理，已清过的对象跳过。
         if (GhostGameObject == null || !GhostGameObject.GhostPreDestroyCalled) OnGhostPreDestroy();
     }

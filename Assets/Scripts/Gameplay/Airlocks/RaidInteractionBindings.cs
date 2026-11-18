@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Unity.MP_FPS {
-    // One action owner for the raid HUD. Prompts read the same bindings that consume input.
-    // Separate actions share F / the west face button; target selection owns each press.
+    // 远征 HUD 的输入只有这一个入口。界面显示的按键来自实际处理输入的绑定。
+    // 两个动作共用 F 或手柄左侧面键。哪项消费按键由当前选中的目标决定。
     public sealed class RaidInteractionBindings : IDisposable {
         private readonly InputActionMap m_Map = new("RaidInteraction");
         public InputAction Operate { get; }
@@ -85,9 +85,9 @@ namespace Unity.MP_FPS {
         private static RaycastHit s_RayHit;
         private static bool s_HasRayHit;
 
-        // A direct hit on the authored interaction surface beats every assisted candidate.
-        // The small cone is angular, so aspect ratio does not change target selection.
-        // Animated bodies can move their aim point without moving the server's access anchor.
+        // 准星直接打中配置好的交互表面时，优先于通过辅助范围选中的目标。
+        // 辅助范围按空间角度计算，宽屏或窄屏不会改变目标选择。
+        // 模型动画可以改变准星瞄点，服务端的交互距离仍以原锚点为准。
         public static float Score(
             Camera camera,
             Vector3 actor,

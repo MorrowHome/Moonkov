@@ -11,8 +11,8 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // A private stage containing only the actual halo prefab and its module geometry.
-    // Static views render on changes. Animation is an explicit, temporary visual example.
+    // 只包含实际光环预制体及模块模型的独立预览舞台。
+    // 静态预览在状态变化时出图。动作演示需要主动触发，完成后回静态。
     public sealed class HaloWorkshopPreview : IDisposable {
         private const int ViewLayer = 5, MaximumResolution = 512;
         private const float FrameRadius = .50f;
@@ -100,11 +100,11 @@ namespace Unity.MP_FPS.Client {
             m_Source = m_Settings == null ? null :
                 WeaponCode == "shotgun" ? m_Settings.ShotgunHaloPreviewPrefab :
                 WeaponCode == "rifle" || WeaponCode == "compact" ? m_Settings.RifleHaloPreviewPrefab : null;
-            // A failed renderer must not retry on every inventory refresh. A new
-            // source or a newly constructed preview can start a fresh attempt.
+            // 渲染已经失败时，每次库存更新都重试会重复报错。
+            // 更换素材或重建预览后才可以重新尝试。
             if (m_Source != previousSource) m_Failed = false;
             if (m_Source == null) return;
-            // Never instantiate a character prefab in place of a missing halo reference.
+            // 缺光环引用时直接报告不可预览，避免实例化无关的角色预制体。
             if (WeaponCode == "shotgun"
                     ? m_Source.GetComponent<ShotgunHaloVisual>() == null
                     : m_Source.GetComponent<RifleHaloVisual>() == null) {
@@ -113,8 +113,8 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
-        // Explicit calls also support an offscreen review without a UI panel.
-        // Normal UI use is scheduled only while the Image is visible and laid out.
+        // 也可显式调用这里，在没有 UI 面板时做离屏检查。
+        // 正常界面仅在 Image 已布局且可见时安排渲染更新。
         public void Step(float dt) {
             if (!Available) return;
             dt = float.IsFinite(dt) ? Mathf.Max(0, dt) : 0;
@@ -146,7 +146,7 @@ namespace Unity.MP_FPS.Client {
                 if (EnsureTarget(viewport)) m_Dirty = true;
                 // 模型、尺寸或视角没有变化就继续显示已有的纹理，省去多余的 URP 相机提交。
                 if (!m_Dirty) return;
-                // Same fixed front view for every mask: a shape change cannot alter framing.
+                // 每种模块组合使用同一个正面取景。外形变了也不会带着相机改变距离。
                 m_Camera.aspect = (float)m_Target.width / m_Target.height;
                 m_Camera.orthographicSize = FrameRadius / Mathf.Min(1f, m_Camera.aspect) / Zoom;
                 m_Camera.transform.localPosition = new Vector3(m_ViewOffset.x, m_ViewOffset.y, -3);
@@ -185,7 +185,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void StartDemo(Demo demo) {
-            // Rebuild once to start every example from the same static pose.
+            // 每次演示前重建一次，保证都从同一个静止姿势开始。
             m_Demo = Demo.None;
             Step(0);
             if (!Available || m_Stage == null) return;
@@ -277,7 +277,7 @@ namespace Unity.MP_FPS.Client {
             m_Model.transform.localPosition = Vector3.zero;
             m_Model.transform.localRotation = Quaternion.identity;
             m_Model.transform.localScale = Vector3.one;
-            // The original artwork/materials are shared; only the private clone is posed.
+            // 原美术与材质可共用。动作只作用在独立预览的模型副本上。
             foreach (var behaviour in m_Model.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
             foreach (var collider in m_Model.GetComponentsInChildren<Collider>(true)) collider.enabled = false;
             foreach (var renderer in m_Model.GetComponentsInChildren<Renderer>(true)) {
@@ -303,7 +303,7 @@ namespace Unity.MP_FPS.Client {
                 transform.gameObject.layer = ViewLayer;
             m_DemoRounds = m_ChargedRounds;
             m_ShotTick = 0;
-            // Settle the existing shotgun interpolation once; static time then stays frozen.
+            // 先将霰弹枪已有的插值推进到稳定状态，静态查看时再冻结时间。
             m_Rifle?.SetLocalState(m_ChargedRounds, false, 0, m_Capacity);
             m_Shotgun?.SetLocalState(m_ChargedRounds, false, 0);
             m_Rifle?.Step(0);
@@ -389,8 +389,8 @@ namespace Unity.MP_FPS.Client {
                 var frame = new Vector2(aspect, 1) * (FrameRadius / Mathf.Min(1f, aspect));
                 var pointer = new Vector2(evt.localMousePosition.x / size.x * 2 - 1,
                     1 - evt.localMousePosition.y / size.y * 2);
-                // Keep the decoration under the cursor in place while zooming.
-                // The same offset survives module and current/after changes.
+                // 缩放时保留指针下装饰物的位置。
+                // 切换模块或切换改装前后时沿用同一个观察偏移。
                 m_ViewOffset += Vector2.Scale(pointer, frame) * (1f / previous - 1f / Zoom);
                 var limit = frame * (1f - 1f / Zoom);
                 m_ViewOffset = new Vector2(Mathf.Clamp(m_ViewOffset.x, -limit.x, limit.x),

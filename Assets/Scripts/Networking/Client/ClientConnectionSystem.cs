@@ -4,8 +4,8 @@ using Unity.Entities;
 using Unity.NetCode;
 
 namespace Unity.MP_FPS {
-    // Transport owns handshake retries. A raid gets one connection attempt;
-    // loss of an established connection must settle the raid before another join.
+    // 传输层负责重试握手。一局只发起一次连接尝试。
+    // 已建立的连接丢失后，要先结算这局再加入另一局。
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
@@ -53,7 +53,7 @@ namespace Unity.MP_FPS {
         private static void Fail(string message) {
             ConnectionSettings.Instance.ConnectionError ??= message;
             ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
-            // Loading waits propagate failure to their owner; gameplay has no loading task.
+            // 加载中的等待会把失败传给调用方，局内则没有加载任务可接收失败。
             if (GameSettings.Instance.GameState == GlobalGameState.InGame && GameManager.Instance != null) {
                 SessionReconnect.Offer();
                 GameManager.Instance.ReturnToMainMenuAsync();

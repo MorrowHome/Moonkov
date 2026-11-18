@@ -42,7 +42,7 @@ public static class PredictedStateUtility {
             uint tick = stateArray[i].Tick;
             // 重复预测同一拍会替换旧记录。缓冲最多留固定数量，放不下时用这一拍盖掉最老的条目。
             if (tick == targetTick) {
-                // Already exists, replace it
+                // 找到同一 tick 时覆盖已有记录。
                 stateArray[i] = state;
                 return;
             }

@@ -44,8 +44,8 @@ namespace Unity.MP_FPS {
                 ? m_ClashSoloEnabled
                 : m_ClashCapability.Status == TaskStatus.RanToCompletion && m_ClashCapability.Result;
 
-        // The server World supplies the explicit OfflineRaidMode + ClashSoloMode
-        // + BountyClash gate. This is never deserialized from a client's request.
+        // 由服务器 World 明确提供 OfflineRaidMode、ClashSoloMode
+        // 和 BountyClash 开启条件。这些标记不能从客户端请求读取。
         public void SetClashSoloEnabled(bool enabled) {
             if (enabled && m_Offline == null)
                 throw new InvalidOperationException("Solo Clash requires an isolated offline profile.");
@@ -92,8 +92,8 @@ namespace Unity.MP_FPS {
                     await Task.Run(() => m_Offline.RegisterBountyMatch(registration.MatchId, registration.RulesVersion,
                         registration.TokenId, registration.Participants)).ConfigureAwait(false);
                 } else if (path == "redemptions") {
-                    // Recovery may run before a new mode is selected. The store
-                    // accepts only an already registered, owned deployment/event.
+                    // 恢复可能发生在选择新玩法之前。此时档案
+                    // 只接受已经登记且确属本人的出战或事件。
                     await Task.Run(() => m_Offline.RedeemBounty((BountyRedemption)payload)).ConfigureAwait(false);
                 } else { throw new InvalidOperationException("Unsupported local Clash operation."); }
                 return;
@@ -170,18 +170,18 @@ namespace Unity.MP_FPS {
             save.Task = Task.Run(async () => {
                 if (debitTask != null)
                     try { await debitTask.ConfigureAwait(false); } catch (Exception) {
-                        /* The journal distinguishes a possible debit from a failed registration. */
+                        /* 待发日志可区分可能已扣装和登记失败。 */
                     }
                 if (!File.Exists(DeploymentFile(payload)))
-                    return new Profile { PlayerId = payload.PlayerId }; // No debit was submitted.
+                    return new Profile { PlayerId = payload.PlayerId }; // 未发出扣装请求。
                 // 把已决定的退款记录单独留在本地，重启后也按原出战 ID 继续，可区分一般弃局。
                 WriteJournal(Path.ChangeExtension(DeploymentFile(payload), ".refund"), payload);
                 return await RetrySave(save).ConfigureAwait(false);
             });
         }
 
-        // Called only after server-side authentication (or when detaching the
-        // already authenticated owner). Never changes the immutable receipt/task.
+        // 通过服务端认证以后才调用，或在分离
+        // 已认证的拥有者时调用。既有回执和任务保持原样。
         public bool RebindBountyOwner(
             Entity oldOwner,
             Entity newOwner,
@@ -212,8 +212,8 @@ namespace Unity.MP_FPS {
             if (inventory != null && Inventories.TryGetValue(newOwner, out var existing) &&
                 !ReferenceEquals(inventory, existing))
                 return false;
-            // An open deployment needs its original raid binding. A completed one
-            // can use the freshly authenticated account graph instead of a cache.
+            // 正在进行的出战继续使用原战局绑定。已结束时
+            // 可以采用认证后新读到的账号库存，避免使用旧缓存。
             // 活动出战要保留原随身库存和绑定。只把连接上的引用转过来，既有请求体、编号和任务保持原样。
             Profiles[newOwner] = source.DeploymentId == null && destination != null ? destination : source;
             Profiles.Remove(oldOwner);
@@ -241,8 +241,8 @@ namespace Unity.MP_FPS {
             return Path.Combine(m_Outbox, Guid.Parse(redemption.MatchId).ToString("N") + ".bounty");
         }
 
-        // Capture the whole extraction atomically before redeeming. A crash at any
-        // later point can reconstruct every participant's immutable inventory receipt.
+        // 兑换前一次性保留整组撤离数据。即使之后崩溃，
+        // 也能恢复每位成员此前冻结的库存回执。
         // 赏金兑换是整场共用的事件。先把兑换和需要落盘的结算留下记录，重启后可以接着送同一份结果。
         public void BeginBountyRedemption(
             Guid matchId,
@@ -276,7 +276,7 @@ namespace Unity.MP_FPS {
             }
             // 整组记录要先确定，才能向后端逐个保存。关闭时这些成员都有结算中的标记，不会被当成普通弃局。
             var finalization = new BountyFinalization { Redemption = redemption, Settlements = snapshots.ToArray() };
-            // Queue all saves before any async request. Shutdown cannot abandon a member.
+            // 发异步请求前将所有结算登记到队列。关停时不能将其中一人当作弃局。
             var journal = Task.Run(() => WriteJournal(BountyFile(redemption), finalization));
             foreach (var payload in snapshots) {
                 if (Saves.ContainsKey(payload.SettlementId))
@@ -317,7 +317,7 @@ namespace Unity.MP_FPS {
         private async Task<Profile> SaveBountyAsync(Settlement payload, Task journal) {
             // 先等整组兑换日志写完，再做个人结算日志和请求。部分网络失败时仍留下完整可重放结果。
             await journal.ConfigureAwait(false);
-            // SaveAsync writes a personal receipt before any network operation too.
+            // SaveAsync 同样在任何网络操作前写好个人回执。
             return await SaveAsync(payload).ConfigureAwait(false);
         }
 

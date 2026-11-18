@@ -112,7 +112,7 @@ namespace Unity.MP_FPS {
                 }
                 m_GrenadeRequest = 0;
             }
-            // Do not automatically replay an uncertain network operation.
+            // 结果不明确的网络操作交给玩家决定如何继续，别自动重发。
             if (m_GrenadeRequest != 0 && Time.unscaledTime - m_GrenadeRequestedAt > 8) {
                 m_GrenadeRequest = 0;
                 m_GrenadeButtonHeld = false;
@@ -157,7 +157,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             if (!equip || QuickBusy || QuickGraph == null) return;
-            // Prefer the selected throwable; otherwise take the first accessible grenade.
+            // 优先用快捷栏当前的投掷物，否则从够得到的手雷里取第一件。
             var selected = m_QuickBindings?.SelectedItem(QuickGraph);
             // 先尝试快捷栏目前选中的可用手雷。没有时，再找随身库存第一件符合规则的手雷。
             if (!GrenadeHandling.Accessible(QuickGraph, selected))

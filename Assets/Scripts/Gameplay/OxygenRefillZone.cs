@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Automatic suit umbilical area. Only the authoritative survival tick applies its supply.</summary>
+    /// <summary>进入此区域可自动连接氧气接口，只有权威的生存模拟会应用供氧。</summary>
     [ExecuteAlways]
     [RequireComponent(typeof(BoxCollider))]
     [DisallowMultipleComponent]
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS {
 
         private void OnDisable() { s_Zones.Remove(this); }
 
-        // Rebuild once so Enter Play Mode with scene AND domain reload disabled also works.
+        // 在进入 Play 时同时禁用场景和域重载的情况下，重建一次注册表。
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetZones() { s_Zones.Clear(); }
 
@@ -67,7 +67,7 @@ namespace Unity.MP_FPS {
                 var local = zone.transform.InverseTransformPoint(position) - zone.m_Box.center;
                 var half = zone.m_Box.size * .5f;
                 if (Mathf.Abs(local.x) <= half.x && Mathf.Abs(local.y) <= half.y && Mathf.Abs(local.z) <= half.z) {
-                    // Only actors inside the small supply volume pay for a physical connection check.
+                    // 角色位于小范围供氧区内时，才做物理连接检查。
                     // 先确认人在触发范围内，再按需要查接头附近有没有墙。这样物理检测只花在可能连接的人身上。
                     if (zone.m_RequiresClearConnection && (!float.IsFinite(zone.m_ConnectionPoint.x) ||
                                                            !float.IsFinite(zone.m_ConnectionPoint.y) ||

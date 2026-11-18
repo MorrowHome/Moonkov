@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    /// <summary>Authored shared positions only. All loot, inventory and extraction rules run on the server.</summary>
+    /// <summary>这里保存场景里配置的共用坐标。掉落、库存和撤离规则由服务端运行。</summary>
     public sealed class MoonRaidMap : MonoBehaviour {
         public static MoonRaidMap Active { get; private set; }
         [SerializeField] private Vector3[] m_LootPositions = new Vector3[0];
@@ -215,7 +215,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Start() {
-            // No presentation objects or UI are created in a dedicated server.
+            // 专用服务器跳过画面对象和 UI 的创建。
             // 纯服务器只读地图规则数据，不创建物资模型、撤离灯和界面。
             if (!ClientServerBootstrap.HasClientWorlds) return;
             if (m_Arena) {
@@ -237,7 +237,7 @@ namespace Unity.MP_FPS {
                                                   Quaternion.Euler(0, GetLootYaw(i), 0);
                 m_Markers[i].name += " / " + GetLootProfile(i);
                 // 箱子画好也先藏着，等到第一包库存快照再显示，免得先出现一张全是可搜刮箱子的假画面。
-                m_Markers[i].SetActive(false); // Do not show stocked caches before the first server snapshot.
+                m_Markers[i].SetActive(false); // 收到服务端第一包快照再显示有库存的物资箱。
             }
             m_ExtractionVisuals = new GameObject("Expedition extraction presentation");
             m_ExtractionVisuals.transform.SetParent(transform, false);
@@ -272,7 +272,7 @@ namespace Unity.MP_FPS {
             marker.transform.localScale = scale;
             var collider = marker.GetComponent<Collider>();
             // 撤离圈和信标仅用于指路。移除自带碰撞，避免它们挡子弹、人物和视线。
-            collider.enabled = false; // Visual markers never change hitscan, LOS, or movement.
+            collider.enabled = false; // 这些标记没有玩法碰撞，不影响射线命中、视线和移动。
             Destroy(collider);
             marker.GetComponent<Renderer>().sharedMaterial = material;
             return marker;
@@ -334,7 +334,7 @@ namespace Unity.MP_FPS {
             foreach (var bag in state.Bags.Values) {
                 // 已有尸体模型不必再生成。可变化的地面物资只在编号对应的物品代码变了时重建外观。
                 if (m_DeathBags.TryGetValue(bag.LootId, out var existing)) {
-                    // Empty drops retain their authoritative grace-period record, but no visible item.
+                    // 空掉落在服务端还有一段保留时间，但画面上不再显示物品。
                     if (bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex) continue;
                     existing.SetActive(!bag.Empty);
                     state.ItemCodes.TryGetValue(bag.LootId, out string currentCode);
@@ -348,7 +348,7 @@ namespace Unity.MP_FPS {
                     var dropped = PhysicalItemVisuals.Create(code, transform);
                     bool fallback = !dropped;
                     if (!dropped) {
-                        // Halo art is intentionally outside this asset pass.
+                        // 这次资源处理不涉及光环的美术素材。
                         dropped = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         dropped.transform.SetParent(transform, false);
                         dropped.transform.localScale = new Vector3(.4f, .3f, .3f);
@@ -369,7 +369,7 @@ namespace Unity.MP_FPS {
                     m_DeathBags.Add(bag.LootId, AlienLootVisual.Create(transform, bag));
                     continue;
                 }
-                // Classic keeps the original dead ghost through the round.
+                // 经典爆破在本回合结束前保留原本的死亡 Ghost。
                 if (m_CorpseSettings == null) continue;
                 var corpse = CorpseVisual.Spawn(transform, m_CorpseSettings, bag);
                 m_DeathBags.Add(bag.LootId, corpse.gameObject);
@@ -383,8 +383,8 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Map-authored exits share the existing timer and radius. All configured
-    // exits are open; spawn-specific availability is a separate future rule.
+    // 场景里配置的撤离点共用现有读条时间和半径。
+    // 这些撤离点当前都开放。按出生点限制可用出口属于另一条规则。
     public static class RaidExtractionRules {
         public const int MaxExits = 8;
         public static int Count(Vector3[] extra) { return 1 + System.Math.Min(extra?.Length ?? 0, MaxExits - 1); }

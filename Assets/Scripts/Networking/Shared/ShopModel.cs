@@ -24,10 +24,10 @@ namespace Unity.MP_FPS.Inventory {
     public sealed class ShopOffer {
         public string Code, Name;
 
-        // -1 means sell-only loot; zero remains a free purchase for starter supplies.
+        // -1 表示物品只能卖，0 表示入门补给仍可免费购买。
         public int BuyDust, SellDust;
 
-        // An older server omits this field; its free purchases may still be sellable.
+        // 旧服务器会省略此字段。旧规则中的免费购买物可能仍能出售。
         public bool FreeSupplyRestricted;
         public ShopOffer() { }
 
@@ -97,9 +97,9 @@ namespace Unity.MP_FPS.Inventory {
             new ShopOffer("quantum_core", -1, 80), new ShopOffer("black_box", -1, 60)
         }.Concat(AlienBiology.Organs.Select(o => new ShopOffer(o.Code, -1, o.SellDust))).ToArray();
 
-        // A catalogue can contain at most one offer per known inventory code.
-        // Derive its bound from the shared definitions so new items cannot outgrow
-        // an unrelated client-only limit.
+        // 目录对每种已知物品码最多有一条报价。
+        // 报价条数上限根据共享物品定义得出，
+        // 添加新物品无需再修改无关的客户端上限。
         // 在线报价先验证物品码、价格和条目唯一性。坏目录不能交给预览去算一笔玩家看不到的收费。
         public static bool ValidOffers(ShopOffer[] offers) {
             if (offers == null || offers.Length > InventoryCatalog.Definitions.Count) return false;
@@ -134,13 +134,13 @@ namespace Unity.MP_FPS.Inventory {
         }
     }
 
-    // Prices and item mutations are shared for display/testing; only the backend commits trades.
+    // 报价和库存计算可供界面及测试共用，只有后端正式提交交易。
     public static class ShopRules {
         public static string Apply(InventoryGraph graph, ShopCommand command, out InventoryGraph updated) {
             return Apply(graph, command, ShopCatalog.Offers, out updated);
         }
 
-        // Preview uses the downloaded catalogue. Backend commits always use Apply above.
+        // 预览使用下载的目录，后端提交仍走上方的 Apply。
         // 预览用玩家当前看到的报价算下一步库存，不改正式图。服务端执行时用它认可的目录与同样校验。
         public static string Preview(
             InventoryGraph graph,
@@ -223,9 +223,9 @@ namespace Unity.MP_FPS.Inventory {
                     return "shop_invalid";
                 if (command.Operation == ShopOperation.Buy) {
                     if (!string.IsNullOrEmpty(command.ItemId) || offer.BuyDust < 0) return "shop_invalid";
-                    // Free test supplies must not become an unlimited source of dust.
-                    // Reuse the persisted emergency provenance so splitting, looting,
-                    // deployment and settlement preserve the sale restriction.
+                    // 免费测试补给不能变成无限换取月尘的来源。
+                    // 复用存档中的应急物品来源标记，于是拆堆、搜刮、
+                    // 出战和结算都能保留禁售条件。
                     // 免费允许拿的补给会带来源标记。以后拆堆、出战、拾取也保留这个标志，避免转卖刷资源。
                     bool freeSupply = offer.BuyDust == 0 && offer.FreeSupplyRestricted;
                     int cost = offer.BuyDust * command.Quantity;

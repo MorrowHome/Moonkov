@@ -119,7 +119,7 @@ namespace Unity.MP_FPS.Client {
                 m_CharacterStage.Insert(0, m_Character.Element);
             }
             bool hasSnapshot = TryOperatorPortraitSnapshot(out var snapshot);
-            // An empty ID is empty hands; null means the deployment slot priority.
+            // 空字符串表示徒手，null 表示按出战装备槽的默认优先级。
             m_PortraitWeaponItem = hasSnapshot ? snapshot.EquippedWeaponItem.ToString() : null;
             m_Character.SetEquipmentInventory(m_Graph, m_PortraitWeaponItem);
             if (hasSnapshot) m_Character.SetEquipmentSnapshot(in snapshot);
@@ -429,8 +429,8 @@ namespace Unity.MP_FPS.Client {
             });
         }
 
-        // Death caches pack gear as loot. Compact only loose-item drawing; drop
-        // intents still use real IDs and authoritative free positions.
+        // 尸体容器把装备也当物资存放。只压缩散件在画面上的排列，
+        // 拖放仍需使用物品的真实 ID 和已确认的空位。
         // 临时排列只改复制出的物品坐标。这样可以把所见掉落物放得更紧凑，同时保留服务端的真实位置。
         private static Dictionary<string, InventoryItem> CompactLoot(InventoryItem[] entries, int width) {
             var result = new Dictionary<string, InventoryItem>();

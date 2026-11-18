@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // A local preference picker. Connection approval belongs to the server handshake.
+    // 保存的是本地玩法偏好。是否允许连接由服务器握手判断。
     public sealed class BountyModeView : IDisposable {
         private readonly VisualElement m_Root, m_Container;
         private readonly StyleSheet m_Sheet;
@@ -19,8 +19,8 @@ namespace Unity.MP_FPS.Client {
 
         public BountyModeView(VisualElement host, Action<RaidGameMode> select) {
             m_Select = select;
-            // Keep the CloneTree stylesheet scope. Loading a StyleSheet by the shared
-            // UXML/USS resource basename can resolve the UXML's inlineStyle subasset.
+            // 保留 CloneTree 生成的样式作用域。直接按 UXML 和 USS 共用的资源名加载 StyleSheet，
+            // 可能反而拿到 UXML 内的 inlineStyle 子资源。
             m_Container = Resources.Load<VisualTreeAsset>("Moonkov/UI/BountyModePicker").CloneTree();
             m_Container.pickingMode = PickingMode.Ignore;
             m_Container.style.position = Position.Absolute;
@@ -102,7 +102,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void RefreshViewport() {
-            // UI uses the display viewport; menu preview cameras may render to a larger texture.
+            // 界面使用实际显示范围。菜单预览相机可以渲染到尺寸更大的纹理。
             var parent = m_Container.parent;
             float pixels = Screen.width;
             float height = Screen.height;

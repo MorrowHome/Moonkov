@@ -5,7 +5,7 @@ using Unity.Networking.Transport;
 using Unity.Networking.Transport.TLS;
 
 namespace Unity.MP_FPS.EmbeddedNetworking {
-    /// <summary>Managed struct required by UTP's Windows unmanaged wrapper.</summary>
+    /// <summary>UTP 在 Windows 上封装非托管网络接口时要求使用的托管 struct。</summary>
     public struct EmbeddedIceNetworkInterface : INetworkInterface {
         private readonly EmbeddedIceTransport m_Transport;
         private readonly bool m_OwnsTransport;
@@ -18,7 +18,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         public NetworkEndpoint LocalEndpoint => m_Transport.LocalEndpoint;
 
         public int Initialize(ref NetworkSettings settings, ref int packetPadding) {
-            // Refuse accidental plaintext use outside the explicit native datagram check.
+            // 除专门运行的原生数据报检查外，连接必须配置加密。
             // ICE 只负责找到网络路线。这个 UTP 适配器要求上层已经配置 DTLS，再确认 UDP 包不会超过原生缓冲区大小。
             settings.GetSecureParameters();
             if (settings.GetNetworkConfigParameters().maxMessageSize > EmbeddedIceTransport.MaxDatagram)
@@ -26,9 +26,9 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             return 0;
         }
 
-        // NetCode Listen binds AnyIpv4. UTP Connect auto-binds a Custom endpoint
-        // using the remote peer address, not LocalEndpoint. Both are logical binds:
-        // ICE sockets are already bound to the selected physical address.
+        // NetCode 的 Listen 绑定 AnyIpv4。UTP 的 Connect 则根据远端地址
+        // 自动绑定对应的 Custom 端点，和 LocalEndpoint 可能不同。这些都是逻辑绑定，
+        // 实际 ICE socket 已绑定到选好的物理地址。
         // UTP 会传本地端点、对端逻辑端点或通配监听端点。这里认可已分配的这几种，实际 UDP 已经由 ICE 打开。
         public int Bind(NetworkEndpoint endpoint) {
             return endpoint == LocalEndpoint || m_Transport.HasPeerEndpoint(endpoint) ||
@@ -41,8 +41,8 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
 
         // 等传输当前的数据任务结束，统一把原生已排队的数据搬到 UTP 接收队列。本地任务句柄不会交给原生回调操作。
         public JobHandle ScheduleReceive(ref ReceiveJobArguments arguments, JobHandle dependency) {
-            // Synchronize once per batch, never on native callbacks.
-            // A jobified bridge requires profiling and a separate ownership design.
+            // 每批收发只同步一次，原生回调不负责等待 Job。
+            // 改成通过 Job 收发需要性能测量，还要重新设计缓冲区归属。
             dependency.Complete();
             m_Transport.Receive(ref arguments);
             return default;

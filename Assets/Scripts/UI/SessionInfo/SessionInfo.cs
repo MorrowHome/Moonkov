@@ -161,7 +161,7 @@ namespace Unity.MP_FPS.Client {
             var sb = new StringBuilder();
             sb.Append("Args: ");
 
-            // Ignore the first, as it's just the full path.
+            // 第一项是程序自身的完整路径，显示参数时从下一项开始。
             for (int i = 1; i < commandLineArgs.Length; i++) {
                 sb.Append(commandLineArgs[i]);
                 if (i < commandLineArgs.Length - 1) sb.Append(' ');
@@ -215,7 +215,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private string GetCurrentParameters() {
-            // Clear the cached StringBuilder instead of creating a new one.
+            // 清空并复用已有 StringBuilder，省去重新创建。
             m_StringBuilder.Clear();
             bool needsSeparator = false;
 
@@ -247,7 +247,7 @@ namespace Unity.MP_FPS.Client {
             }
             if (m_GcMemoryRecorder.Valid) {
                 AppendSeparator();
-                // For integers/longs, ToString() is efficient and doesn't box.
+                // 整型或长整型可直接 ToString()，不会发生装箱。
                 m_StringBuilder.Append("Managed:").Append(m_GcMemoryRecorder.LastValue / (1024 * 1024)).Append("MB");
             }
             if (m_SystemMemoryRecorder.Valid) {
@@ -291,9 +291,9 @@ namespace Unity.MP_FPS.Client {
         }
 
         /// <summary>
-        /// Reads the cached network status from the NetworkStatusSystem.
+        /// 从 NetworkStatusSystem 读取已经缓存的网络状态。
         /// </summary>
-        /// <returns>A formatted string with network status, or a default message if not available.</returns>
+        /// <returns>格式化后的网络状态，或状态不可用时的默认提示。</returns>
         private string GetNetcodeInfoFromSystem() {
             var clientWorld = ClientServerBootstrap.ClientWorld;
             // World 未创建或已离开、系统未提供状态时直接返回等候文字。避免继续读无效的实体句柄。

@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// Manages audio mixer groups and volume levels for different sound categories.
-/// Converts amplitude values to decibel values for proper audio mixer integration.
+/// 管理不同声音分类的混音组和音量。
+/// 将振幅转换成分贝，然后传给 Unity 混音器。
 /// </summary>
 public class SoundMixer {
-    // Gameplay and music can be amplified independently without exceeding the mixer gain range.
+    // 游戏音效和音乐可分别放大，同时限制在混音器的增益范围内。
     public const float MaximumCategoryVolume = 3f;
 
     [ConfigVar(Name = "sound.mute", DefaultValue = "-1",
@@ -15,12 +15,12 @@ public class SoundMixer {
         Flags = ConfigVar.Flags.None)]
     public static ConfigVar soundMute;
 
-    // Debugging only
+    // 仅用于调试。
     [ConfigVar(Name = "sound.mastervol", DefaultValue = "1", Description = "Master volume",
         Flags = ConfigVar.Flags.None)]
     public static ConfigVar soundMasterVol;
 
-    // Exposed in options menu
+    // 供设置菜单修改。
     [ConfigVar(Name = "sound.menuvol", DefaultValue = "1", Description = "Menu volume", Flags = ConfigVar.Flags.None)]
     public static ConfigVar soundMenuVol;
 
@@ -31,7 +31,7 @@ public class SoundMixer {
     public static ConfigVar soundMusicVol;
 
     /// <summary>
-    /// Defines the different audio mixer groups available for sound categorization
+    /// 定义音效分类可用的混音组。
     /// </summary> 
     public enum SoundMixerGroup {
         Music,
@@ -46,20 +46,20 @@ public class SoundMixer {
     private AudioMixer m_AudioMixer;
 
     /// <summary>
-    /// Initializes a new SoundMixer with the specified audio mixer.
+    /// 用指定的 Unity 混音器初始化新的 SoundMixer。
     /// </summary>
     public SoundMixer(AudioMixer audioMixer) { Init(audioMixer); }
 
     /// <summary>
-    /// Initializes the sound mixer by setting up mixer groups and volume cutoff values.
-    /// Maps SoundMixerGroup enum values to actual AudioMixerGroup references.
+    /// 建立混音组映射，并准备音量下限等参数。
+    /// 把 SoundMixerGroup 枚举对应到真实的 AudioMixerGroup 对象。
     /// </summary>
-    /// <param name="audioMixer">The Unity AudioMixer to initialize with</param>
+    /// <param name="audioMixer">用于初始化的 Unity AudioMixer。</param>
     public void Init(AudioMixer audioMixer) {
         m_SoundAmplitudeCutoff = Mathf.Pow(2.0f, m_SoundVolumeCutoff / 6.0f);
         m_AudioMixer = audioMixer;
 
-        // Set up mixer groups
+        // 建立混音组映射。
         // 按枚举名在实际 AudioMixer 资源里找分组。声源用枚举下标去查，缺专用分组的声音会走默认输出。
         string[] subBussNames = SoundMixerGroup.GetNames(typeof(SoundMixerGroup));
         MixerGroups = new AudioMixerGroup[subBussNames.Length];
@@ -71,10 +71,10 @@ public class SoundMixer {
     }
 
     /// <summary>
-    /// Updates the audio mixer with current volume levels converted to decibel values.
-    /// Should be called every frame to maintain proper volume control.
+    /// 将当前音量转换为分贝，更新给混音器。
+    /// 每帧调用，使正在播放的声音及时响应音量变化。
     /// </summary>
-    /// <param name="masterVolume">Master volume multiplier (0-1)</param>
+    /// <param name="masterVolume">主音量倍率，范围为 0 到 1。</param>
     public void Update(float masterVolume) {
         // 这里把几个线性音量倍率乘好，再换成混音器参数接受的分贝。菜单、效果、音乐的上限按各自设置处理。
         m_AudioMixer.SetFloat("MasterVolume",
@@ -89,7 +89,7 @@ public class SoundMixer {
     private bool TryFindMatchingMixerGroup(AudioMixer audioMixer, string groupName, out AudioMixerGroup firstGroup) {
         var groups = audioMixer.FindMatchingGroups(groupName);
         if (groups.Length == 0) {
-            firstGroup = null; // Mixer definition is not found within the AudioMixerGroup. Set to default Master output
+            firstGroup = null; // AudioMixerGroup 里找不到所需的混音定义时，回到默认 Master 输出。
             return false;
         }
         firstGroup = groups[0];

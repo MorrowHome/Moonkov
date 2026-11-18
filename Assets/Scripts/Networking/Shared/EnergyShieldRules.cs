@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Server-owned combat resource. Internal physiological damage never calls Absorb.
+    // 服务端掌管战斗资源。身体内部损伤不经过 Absorb。
     public static class EnergyShieldRules {
         public const float Capacity = 100,
             EnergyCapacity = 100,
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS {
             return state.CurrentHealth > 0 && (!state.ClashEnabled || state.ClashLife == ClashLife.Alive);
         }
 
-        // Returns remaining body damage. One external impact calls this once before any body split.
+        // 返回需要由身体承受的剩余伤害。一次外部命中先调用一次，再分到各部位。
         // 伤害发生时按共享光环能量结算。能量只够挡一部分就把余量交回调用者，一次命中不能对多个身体部位重复扣光环能量。
         public static float Absorb(
             ref PredictedPlayerGhost state,
@@ -46,7 +46,7 @@ namespace Unity.MP_FPS {
                 ? impact
                 : state.ControllerState.CurrentPosition + new float3(0, 1, 0) +
                   math.mul(state.ControllerState.CurrentRotation, new float3(0, 0, .4f));
-            // Full absorption still interrupts actions and raises a shield event, without fake tissue loss.
+            // 全挡也会打断动作并发出护盾受击事件，身体血量保持原值。
             state.LastHitTick = tick;
             state.ControllerState.IsHit = true;
             if (absorbed >= incoming) {

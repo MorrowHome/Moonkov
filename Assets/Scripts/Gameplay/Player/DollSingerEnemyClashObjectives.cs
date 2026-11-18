@@ -37,7 +37,7 @@ namespace Unity.MP_FPS {
                 if (ally.View.TeamId == brain.ClashTeamId && ally.View.Life == ClashLife.Alive &&
                     ally.Brain.ClashParticipantId < brain.ClashParticipantId && ally.Brain.PathFailures < 3)
                     runner = false;
-            // Teammate positions are legitimate squad information; opponent positions are not read here.
+            // 队友位置可以作为小队信息，这里不读对手位置。
             bool canRescue = SafeToTreat(brain, position, now) && RaidHealth.DangerFraction(health) > .25f &&
                              view.Deadline - view.ServerNow > 8 &&
                              (!view.IsCarrier || view.Deadline - view.ServerNow > 45);
@@ -87,13 +87,13 @@ namespace Unity.MP_FPS {
             float radius = distanceToObjective > 22 ? 14 :
                 runner && view.Bounty != ClashBountyState.Banishing ? 1.4f : 6;
             if (view.Bounty == ClashBountyState.Carried)
-                radius = 9; // Public coarse clue, not the hidden carrier transform.
+                radius = 9; // 这是公开的粗略线索，无法定位隐蔽的持有者。
             if (!TryClashApproach(brain, position, objective, radius, now, out var goal)) {
                 brain.Mission = ClashBotGoal.Hold;
                 goal = RecoverClashRoute(brain, position, now);
             }
             brain.MissionGoal = goal;
-            // A rear guard watches a separate sector instead of staring into its partner's back.
+            // 后卫看另一个扇区，别和前面队友盯同一个方向。
             var outward = goal - objective;
             outward.y = 0;
             brain.MissionLookPoint = brain.Target != Entity.Null
@@ -131,7 +131,7 @@ namespace Unity.MP_FPS {
                     continue;
                 float score = length + i * 2;
                 if (brain.Target != Entity.Null) score += PathExposure(brain, brain.LastSeen) * .7f;
-                // Avoid competing for the same lane, not just the same endpoint.
+                // 要避开队友已经占用的通道，不能只分配不同终点。
                 foreach (var ally in m_ClashAgents)
                     if (ally.Brain != brain && ally.View.TeamId == brain.ClashTeamId &&
                         ally.View.Life == ClashLife.Alive &&
@@ -222,8 +222,8 @@ namespace Unity.MP_FPS {
                 foreach (var ally in view.Teammates)
                     if (ally.ParticipantId == brain.RescueTargetId)
                         point = ally.Position;
-            // The motor stops up to .75 m before a 1.4 m access point. Keep a margin
-            // within the server's 3 m validator rather than stranding a rescuer at 2.15 m.
+            // 移动马达可能在 1.4 米接近点前 .75 米就停下。
+            // 在服务器 3 米限制内保留余量，避免救援 AI 停在距目标 2.15 米却不能操作。
             bool accessible = Vector3.Distance(position, point) <= 2.6f && Mathf.Abs(position.y - point.y) < 1.5f &&
                               !WorldBlocked(eye, point + Vector3.up * .4f);
             if (rescue && accessible) {

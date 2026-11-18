@@ -27,8 +27,8 @@ namespace Unity.MP_FPS {
         // 老档未保存氧气时使用负一占位，首次装备按满氧读。普通数值再限制到资源的合法范围。
         private static float Load(float value) { return value == -1 ? 100 : EnergyShieldRules.Resource(value); }
 
-        // Like SaveActiveAmmo: server resource changes do not invalidate structural inventory actions.
-        // Call before every move/drop/death/settlement/checkpoint, before a subtree leaves this graph.
+        // 与 SaveActiveAmmo 一样，服务器更新资源不会让结构版本被当成过期。
+        // 移动、丢弃、死亡、结算或存检查点时，在整棵物品树离开背包前调用。
         public static void Flush(ref PredictedPlayerGhost state, InventoryGraph graph) {
             if (!state.ProtectionInitialized || graph == null) return;
             // 余量按角色上记住的旧物品 ID 写回。不能只从当前装备槽找，否则换装备时旧氧气会误写给新项圈。
@@ -59,7 +59,7 @@ namespace Unity.MP_FPS {
             Flush(ref state, graph);
         }
 
-        // AI and real players share this exact rule; caller owns alive/active/connected eligibility.
+        // AI 与真人共用这套规则。调用者先确认活着、可行动和连接等资格。
         // 一次更新先同步装备，再让能量按时推进，最后把保护资源写回物品。真人和人机复用这条顺序。
         public static void Tick(
             ref PredictedPlayerGhost state,
@@ -72,7 +72,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Kept as a source-compatible entry point for old callers. No generator resource remains.
+    // 保留旧源码的兼容入口，已经没有原先独立的发生器资源。
     public static class EnergyShieldInventory {
         public static bool CanRecharge(in PredictedPlayerGhost state, InventoryGraph graph, InventoryItem cell) {
             return HaloEnergyInventory.CanRecharge(state, graph, cell);

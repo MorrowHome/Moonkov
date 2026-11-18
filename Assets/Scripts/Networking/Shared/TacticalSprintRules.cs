@@ -7,8 +7,8 @@ namespace Unity.MP_FPS {
         public float Value, RestDelay;
     }
 
-    // Moonkov v1 adaptation. This is separate from hunger, thirst, oxygen and
-    // the unimplemented Hunt melee/combat stamina pool.
+    // Moonkov 第一版的冲刺耐力独立于饥饿、口渴、氧气，
+    // 也和未实现的 Hunt 近战或战斗耐力各自分开。
     public static class TacticalSprintRules {
         public const float Capacity = 100,
             DrainPerSecond = 2,

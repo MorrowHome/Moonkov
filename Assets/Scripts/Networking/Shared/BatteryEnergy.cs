@@ -3,8 +3,8 @@
 using System;
 
 namespace Unity.MP_FPS.Inventory {
-    // A stack holds full cells plus at most one partially discharged cell.
-    // Keeping that cell distinct avoids turning two partial casings into one full cell.
+    // 一堆电池可以有若干节满电电池，以及最多一节未满的。
+    // 单独记下那节余量，避免两节没满的电池合并成一节凭空满电的。
     public static class BatteryEnergy {
         public const int Capacity = 100;
         public static bool IsCell(InventoryItem item) { return item?.Code == "cells"; }
@@ -26,7 +26,7 @@ namespace Unity.MP_FPS.Inventory {
             return !IsCell(source) || !Partial(target) || !Partial(source) || quantity < source.Quantity;
         }
 
-        // Splits prefer full cells; moving the whole stack preserves its partial cell and identity.
+        // 拆堆优先拿满电电池，整堆移动才保留那节余量和原 ID。
         public static InventoryItem Take(InventoryItem source, int quantity) {
             if (source == null || quantity < 1 || quantity > source.Quantity)
                 throw new ArgumentOutOfRangeException(nameof(quantity));

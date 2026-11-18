@@ -8,7 +8,7 @@ namespace Unity.MP_FPS {
         Body
     }
 
-    // Optional explicit surface override for authored structures and props.
+    // 场景中手工制作的结构与道具可显式指定表面类型。
     public sealed class RifleImpactSurface : MonoBehaviour {
         public RifleImpactKind Kind = RifleImpactKind.Rock;
 
@@ -33,7 +33,7 @@ namespace Unity.MP_FPS {
         private static bool IsMetal(string name) {
             return name.IndexOf("metal", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                    name.IndexOf("steel", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                   // Matches both aluminium and aluminum in the authored MC00 material names.
+                   // 兼容 MC00 原材质名里的 aluminium 和 aluminum 两种拼写。
                    name.IndexOf("alumin", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                    name.IndexOf("alloy", System.StringComparison.OrdinalIgnoreCase) >= 0;
         }

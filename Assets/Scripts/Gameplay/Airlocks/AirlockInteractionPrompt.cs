@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    // Retain component/resource names so existing prototype and raid wiring stays valid.
+    // 保留组件和资源名，让已有的原型及远征场景绑定继续有效。
     public sealed class AirlockInteractionPrompt : MonoBehaviour {
         private static readonly List<AirlockInteractionPrompt> s_Active = new();
         private readonly RaidInteractionSelection m_Selection = new();
@@ -223,7 +223,7 @@ namespace Unity.MP_FPS {
                 Hide();
             else
                 Render();
-            // A focused unavailable control still owns this press; don't open nearby loot with X.
+            // 即使焦点设备暂时不能用，这次按键也归它处理，避免按 X 意外打开旁边的物资。
             return pressed || HasSelection;
         }
 

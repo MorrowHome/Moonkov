@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation only; consumes the same owned-player and raid snapshot as RaidHUD.</summary>
+    /// <summary>仅客户端展示，与 RaidHUD 读取同一份本地角色和战局快照。</summary>
     public sealed class RaidMinimapView : IDisposable {
         public const float HalfRange = 120f;
         private const float ReadoutInterval = .2f;
@@ -88,7 +88,7 @@ namespace Unity.MP_FPS {
         }
 
         // 以角色地面坐标为原点，按小图范围和实际尺寸换算。箭头和场景标记使用相同的比例。
-        /// <summary>North (+Z) is up; the same square projection is used for terrain and all markers.</summary>
+        /// <summary>地图上方为正北（+Z）。地形和所有标记使用同一套方形坐标投影。</summary>
         public static Vector2 Project(Vector3 world, Vector3 origin, Vector2 size) {
             return new Vector2((.5f + (world.x - origin.x) / (HalfRange * 2)) * size.x,
                 (.5f - (world.z - origin.z) / (HalfRange * 2)) * size.y);
@@ -141,7 +141,7 @@ namespace Unity.MP_FPS {
                 var exit = Project(point, origin, size);
                 // 最近撤离点在小地图画面之外时还能在边缘指一个方向。其他不在范围内的撤离点先跳过。
                 if (!Inside(exit, size, 12)) {
-                    // One edge arrow keeps distant alternatives from crowding the map.
+                    // 边缘只保留一个指向最近撤离点的箭头，远处的其他选择不会挤满小图。
                     if (i != nearest) continue;
                     var delta = exit - size * .5f;
                     float factor = Mathf.Min((size.x * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.x)),

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The anatomy is raster artwork from the approved monitor, never a procedural mannequin.
+    // 人体轮廓使用确认过的扫描图素材。代码负责显示和裁剪。
     public sealed partial class RaidBodyDiagram : VisualElement {
         public const float DesignWidth = 770, DesignHeight = 1370;
         private static readonly Vector2 ImageOrigin = new(153, 60);
@@ -129,7 +129,7 @@ namespace Unity.MP_FPS.Client {
             for (int index = 0; index < Pieces.Length; index++) {
                 var piece = Pieces[index];
                 int part = (int)piece.Part;
-                // Keep the entire source silhouette visible, then light only the true remaining area.
+                // 保留完整暗色轮廓，只点亮代表实际剩余生命的区域。
                 DrawPiece(context, piece.Points, float.PositiveInfinity,
                     new Color(.55f, .55f, .55f, m_Ready ? .6f : .18f));
                 DrawPiece(context, piece.Points, m_FillCuts[part],
@@ -186,7 +186,7 @@ namespace Unity.MP_FPS.Client {
                 }
             }
             float target = totalArea * fraction;
-            // One shared cut across the entire anatomical part, including every visual plate.
+            // 同一部位的所有图形片段共用一条截线。
             for (int step = 0; step < 12; step++) {
                 float middle = (low + high) * .5f;
                 float filledArea = 0;
@@ -209,7 +209,7 @@ namespace Unity.MP_FPS.Client {
         private void SetShrinkScales(BodyPart part, float fraction) {
             for (int i = 0; i < Pieces.Length; i++) {
                 if (Pieces[i].Part != part) continue;
-                // Scale area in proportion to health while keeping the original silhouette underneath.
+                // 亮色面积按生命值比例缩放，暗色底层继续展示原来的轮廓。
                 m_PieceScales[i] = Mathf.Sqrt(fraction);
             }
         }

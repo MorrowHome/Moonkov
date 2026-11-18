@@ -4,7 +4,7 @@ using Unity.Transforms;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Updates the <see cref="MainGameObjectCamera"/> postion to match the current player <see cref="MainCamera"/> component position if it exists.
+    /// 让 <see cref="MainGameObjectCamera"/> 跟随带有 <see cref="MainCamera"/> 组件的实体。该组件存在时才更新。
     /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(PresentationSystemGroup))]

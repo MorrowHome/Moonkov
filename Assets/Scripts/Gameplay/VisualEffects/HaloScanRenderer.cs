@@ -6,7 +6,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // One transient owner-camera pass. No pipeline asset edits, extra camera or world-wide renderer searches.
+    // 只为本地相机临时执行一遍渲染。无需改管线资源、另建相机或查遍整个场景。
     public static class HaloScanRenderer {
         private static Driver s_Driver;
 

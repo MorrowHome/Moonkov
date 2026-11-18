@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// The optional <c>moon-client.local.json</c> that ships next to the executable. It points a
-    /// build at an account service and a game server without recompiling, so a player only has to
-    /// unzip the folder and run. Every field is optional and falls back to the built-in default.
+    /// 可选的 <c>moon-client.local.json</c> 放在可执行文件旁。
+    /// 它可以直接指定账号服务和战局服务器，无需重新编译，
+    /// 玩家解压就能启动。所有字段可省略，缺省时使用程序内默认值。
     ///
-    /// This is the only reader of that file: AccountServiceSettings, ConnectionSettings and
-    /// GameSettings all go through it, so they can never disagree about what the file said.
+    /// 只有这里读取该文件。AccountServiceSettings、ConnectionSettings
+    /// 和 GameSettings 都使用它提供的同一份配置。
     /// </summary>
     public static class ClientSettings {
         public const string FileName = "moon-client.local.json";
@@ -29,19 +29,19 @@ namespace Unity.MP_FPS {
             public string ServerAddress;
             public int ServerPort;
 
-            // -1 means "leave whatever the player chose alone".
+            // -1 表示沿用玩家原先的选择。
             public int ConnectionMode = -1;
         }
 
         private static Values s_Values;
 
-        // Not named Values: a member cannot share a name with the nested type above (CS0102).
+        // 成员不能和前面那个嵌套类型都叫 Values，否则报 CS0102。
         private static Values Configuration {
             get {
                 // 几个菜单和网络入口会反复取配置。同一次运行缓存第一次读到的值，避免每次打开页面都读磁盘。
                 if (s_Values != null) return s_Values;
                 try {
-                    // Windows: next to the executable. macOS: next to the .app, outside its bundle.
+                    // Windows 放在可执行文件旁。macOS 放在 .app 旁、应用包外。
                     // 配置和可执行文件一起发。macOS Player 的数据路径在应用包里，所以还要上一层找应用包旁的文件。
                     string directory = Path.GetDirectoryName(Application.dataPath);
                     if (Application.platform == RuntimePlatform.OSXPlayer) directory = Path.GetDirectoryName(directory);
@@ -60,7 +60,7 @@ namespace Unity.MP_FPS {
                     s_Values = new Values();
                 }
 #if UNITY_EDITOR
-                // Local development must not replace the settings shipped to players.
+                // 本地开发应使用独立覆盖配置，随包设置继续提供给玩家。
                 try {
                     // 编辑器开发配置只覆盖明确填写过的字段。空字段继续用随包值，因此本机测试不用改发给玩家的那份配置。
                     string editorPath = Path.Combine(Path.GetDirectoryName(Application.dataPath), EditorFileName);
@@ -86,7 +86,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        /// <summary>Editor play mode keeps statics alive between sessions, so re-read the file each run.</summary>
+        /// <summary>编辑器退出 Play 后可能保留静态字段，所以每次启动都重新读取文件。</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset() { s_Values = null; }
 
@@ -99,20 +99,20 @@ namespace Unity.MP_FPS {
         public static string IceBindAddress => Configuration.IceBindAddress?.Trim();
         public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;
 
-        /// <summary>The game server a fresh install should point at, or null for the built-in default.</summary>
+        /// <summary>首次安装时默认使用的游戏服务器。返回 null 时采用程序内默认值。</summary>
         public static string ServerAddress =>
             string.IsNullOrWhiteSpace(Configuration.ServerAddress) ? null : Configuration.ServerAddress.Trim();
 
-        /// <summary>The game server port, or 0 for the built-in default.</summary>
+        /// <summary>游戏服务器端口。0 表示使用程序内默认端口。</summary>
         public static int ServerPort => Configuration.ServerPort is > 0 and <= 65535 ? Configuration.ServerPort : 0;
 
-        /// <summary>The connection mode the main menu starts in, or -1 to keep the player's choice.</summary>
+        /// <summary>主菜单的初始连接模式。-1 表示沿用玩家选择。</summary>
         public static int ConnectionMode => Configuration.ConnectionMode is 0 or 1 ? Configuration.ConnectionMode : -1;
 
         /// <summary>
-        /// Unity Transport cannot hold a host name - NetworkEndpoint only stores an address - so a
-        /// configured name is resolved here. An address literal comes back unchanged, which is the
-        /// usual case and costs nothing.
+        /// Unity Transport 的 NetworkEndpoint 只存具体地址，所以配置域名时
+        /// 在这里做解析。常见的字面 IP 直接返回，
+        /// 无需等待 DNS。
         /// </summary>
         public static async Task<string> ResolveAsync(string address) {
             // 输入已经是 IP 时直接返回，连接不必等待 DNS。域名则在真正进场前查地址。
@@ -131,8 +131,8 @@ namespace Unity.MP_FPS {
         }
 
         /// <summary>
-        /// A connect field may hold an address or a name. Names are resolved at connect time, so they
-        /// have to pass validation here or the join button would stay disabled.
+        /// 连接输入栏可以填写 IP 或域名，域名在发起连接时才解析。
+        /// 这里先认可域名格式，否则加入按钮会一直禁用。
         /// </summary>
         public static bool IsValidAddress(string address) {
             return !string.IsNullOrWhiteSpace(address) && (NetworkEndpoint.TryParse(address, 0, out _) ||

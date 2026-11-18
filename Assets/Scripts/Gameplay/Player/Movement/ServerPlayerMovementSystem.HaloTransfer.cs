@@ -122,8 +122,8 @@ namespace Unity.MP_FPS {
                    EntityManager.GetComponentData<GhostOwner>(actor).NetworkId > 0;
         }
 
-        // Called by the authoritative damage boundary. Re-read each donor: several impacts
-        // in one tick must spend its current pool, including when the donor is the victim.
+        // 由权威伤害入口调用。每次都读捐助者当前的能量池，
+        // 同一拍可以挨多发，每次都要消耗当时的余额。捐助者就是受害者时也一样按当前值算。
         // 角色被击中时按当前状态重新查协防者。前一发已经用掉的能量不能再给下一发吸收。
         public float AbsorbHaloSupport(
             Entity victim,

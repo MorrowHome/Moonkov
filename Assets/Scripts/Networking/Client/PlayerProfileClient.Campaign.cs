@@ -10,8 +10,8 @@ namespace Unity.MP_FPS {
         private static CampaignProgress s_Campaign;
         private static ResearchQuestProgress s_ResearchQuests;
 
-        // UI treats this cache as read-only. All writes are intents handled by
-        // the selected store, and campaign facts come from the local server.
+        // UI 只读这份缓存。需要修改时发出意图，由
+        // 当前选定的档案处理。章节事实来自本机服务端。
         public static CampaignProgress Campaign => IsOffline ? s_Campaign : null;
 
         public static ResearchQuestProgress ResearchQuests {

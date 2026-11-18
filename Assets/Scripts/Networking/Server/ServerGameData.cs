@@ -5,7 +5,7 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Joined player's entity
+    /// 已进场玩家的角色实体。
     /// </summary>
     public struct JoinedClient : IComponentData {
         public Entity PlayerEntity;
@@ -15,7 +15,7 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// Stores the spawned entity
+    /// 保存已经生成的实体。
     /// </summary>
     public struct SpawnCharacter : IComponentData {
         public Entity ClientEntity;
@@ -23,21 +23,21 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// This buffer is used to map clients using their <see cref="NetworkId"/> index as a key and this struct as a value,
-    /// making it easy to find Entities relating to that specific client.
+    /// 此缓冲用 <see cref="NetworkId"/> 作下标，以该结构为内容，
+    /// 方便快速找到特定客户端的各个实体。
     /// </summary>
     public struct ClientsMap : IBufferElementData {
-        /// <summary>The <see cref="NetworkStreamConnection"/> entity for this <see cref="NetworkId"/> index.</summary>
+        /// <summary><see cref="NetworkStreamConnection"/> 实体，用 <see cref="NetworkId"/> 索引。</summary>
         public Entity ConnectionEntity;
 
-        /// <summary>The <see cref="FirstPersonPlayer"/> entity for this <see cref="NetworkId"/> index.</summary>
+        /// <summary><see cref="FirstPersonPlayer"/> 实体，用 <see cref="NetworkId"/> 索引。</summary>
         public Entity PlayerEntity;
 
-        /// <summary>The <see cref="FirstPersonCharacterControl"/> entity for this <see cref="NetworkId"/> index.</summary>
+        /// <summary><see cref="FirstPersonCharacterControl"/> 实体，用 <see cref="NetworkId"/> 索引。</summary>
         public Entity CharacterControllerEntity;
 
         // 命令缓冲刚登记的实体要等回放才有最终 ID。这个非零编号告诉更新函数该把回放后的引用补回哪一格。
-        /// <summary>If != default, need to remap this to the entity.</summary>
+        /// <summary>编号为非默认值时，需把实体引用补到对应的索引。</summary>
         public NetworkId OwnerNetworkId;
     }
 }

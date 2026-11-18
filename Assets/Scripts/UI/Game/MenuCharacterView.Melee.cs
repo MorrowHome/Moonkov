@@ -38,8 +38,8 @@ namespace Unity.MP_FPS.Client {
                     child.gameObject.layer = ViewLayer;
             }
             if (m_EquipmentMelee == null) return;
-            // Without an attack direction, the idle pose uses the model's current facing.
-            // A world-space direction captured here would stay fixed while the portrait turns.
+            // 没给攻击方向时，待机姿势沿用模型当前朝向。
+            // 如果这里先存世界方向，转动肖像时它就会卡在原地。
             m_EquipmentMelee.SetPresentation(new MeleeViewState {
                 Weapon = m_SharedStage == null && !m_HomePose ? PreviewMeleeWeapon : MeleeWeaponKind.None,
                 Alive = true

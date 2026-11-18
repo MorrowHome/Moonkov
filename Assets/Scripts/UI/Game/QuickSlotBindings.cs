@@ -4,7 +4,7 @@ using System;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS.Client {
-    // Exact item identities survive UI rebuilds; unavailable items never resolve by code.
+    // 重建界面后仍按原物品 ID 查找。原物品不可用时，不能用同代码的另一件代替。
     public sealed partial class QuickSlotBindings {
         public const int Count = 9;
         public const int EquipmentSlots = 4;
@@ -100,8 +100,8 @@ namespace Unity.MP_FPS.Client {
                 Reason = "1–4 跟随主武器、副武器、手枪和近战装备；物品请绑定到 5–9。";
                 return false;
             }
-            // A snapshot may be replaced between pointer-down and drop. Resolve the
-            // current authoritative item by ID, rather than requiring object identity.
+            // 按下到松开之间可能收到新快照，
+            // 因此按 ID 从最新确认的库存定位物品，不要求还是同一个 C# 对象。
             // 按下到松开间可能收到新快照。用物品编号重新拿当前对象，之后再核对代码和可用位置。
             var current = graph?.Find(item?.Id);
             if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || current == null || current.Code != item.Code ||
@@ -174,7 +174,7 @@ namespace Unity.MP_FPS.Client {
             // 滚轮从当前武器格出发，按方向循环看前四个装备格。跳过空格和自己，避免滚轮意外选中消耗品。
             int current = Selected >= 0 && Selected < EquipmentSlots ? Selected : equippedSlot - 1;
             if (current < 0 || current >= EquipmentSlots) current = step > 0 ? -1 : EquipmentSlots;
-            // Equipment already supplies every weapon in 1–4; 5–9 may repeat them or hold consumables.
+            // 前四格已经从装备得到所有武器。后五格可重复绑武器或绑定消耗品。
             for (int offset = 1; offset <= EquipmentSlots; offset++) {
                 int slot = (current + step * offset + EquipmentSlots) % EquipmentSlots;
                 if (slot != current && Available(slot, graph)) return slot;

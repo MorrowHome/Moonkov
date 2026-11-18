@@ -73,7 +73,7 @@ namespace Unity.MP_FPS {
             }
             // 没玩家连接时把角色暂交给服务器。移除旧连接的 RaidSession 后，随后那次常规断线回调不会又把同一局结算为死亡。
             manager.SetComponentData(player, new GhostOwner { NetworkId = 0 });
-            // Prevent the later disconnect event from settling the transferred raid again.
+            // 防止随后到来的断线事件再次结算已转移的行动。
             manager.RemoveComponent<RaidSession>(connection);
             return true;
         }
@@ -166,9 +166,9 @@ namespace Unity.MP_FPS {
             var session = manager.GetComponentData<RaidSession>(connection);
             if (session.Phase != RaidPhase.Active) return;
             var persistence = Persistence(ref state);
-            // Transfer the current carried inventory while JoinedClient and the
-            // player's transform still exist. BeginSave snapshots the remainder,
-            // including items moved into/out of the secure case during this raid.
+            // 趁 JoinedClient 和玩家的 Transform 仍存在时转移身上的物品。
+            // BeginSave 会对转移后的剩余装备拍快照，
+            // 包括这趟行动中新放入或移出保险箱的物品。
             // 无法保留时先用服务器此刻的背包和角色位置生成尸体物资。扣掉掉落后只将余下受保护的物品写回档案。
             DropDeathInventory(ref state, connection);
             if (manager.HasComponent<JoinedClient>(connection))

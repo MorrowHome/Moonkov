@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
-    // The squad and home reactions sample the same authored upper-body poses.
+    // 小队和首页的角色演出使用同一套上身姿势。
     internal sealed class SquadBakedMotions {
         [Serializable]
         private sealed class Motion {

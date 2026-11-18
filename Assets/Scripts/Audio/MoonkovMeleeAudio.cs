@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS {
-    // Consumes rendered snapshots once, never the prediction replay loop.
+    // 每份已渲染的快照只消费一次。预测重算不会重播声音。
     public sealed class MoonkovMeleeAudio {
         [System.Flags]
         public enum Cues {
@@ -49,7 +49,7 @@ namespace Unity.MP_FPS {
             if (m_PendingSwing && state.MeleeAttackSequence == m_Attack &&
                 MeleeRules.TryDefinition((MeleeWeaponKind)state.MeleeAttackWeapon, out var definition)) {
                 var timing = definition.Timing((MeleeAttackKind)state.MeleeAttack, state.MeleeCombo);
-                // Allow a slightly delayed snapshot, but never replay an already finished attack.
+                // 允许快照稍微迟到，但已结束的攻击不再播放。
                 // 过前摇才响，允许网络把消息稍晚带到。完整的有效时间都过去时就把那次声音略过。
                 if (state.MeleeElapsed >= timing.Windup) {
                     m_PendingSwing = false;

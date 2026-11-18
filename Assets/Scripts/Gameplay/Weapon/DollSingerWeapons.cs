@@ -73,8 +73,8 @@ namespace Unity.MP_FPS {
             StoreAmmo(ref state);
         }
 
-        // Food activity and surge change damage/spread/cadence, not the physical
-        // weapon or paid magazine. Their expiry must not restart a charge/equip.
+        // 食物增益和强化效果会改伤害、散布和射速。
+        // 实体武器和已支付的弹药不受影响。增益到期时继续现有的充能或取枪进度。
         public static bool RefreshTemporaryModules(
             ref PredictedPlayerGhost state,
             string itemId,
@@ -88,8 +88,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // Energy is reserved at the start of a timed charge. Do not let an
-        // inventory transaction replace its physical weapon before completion.
+        // 计时充能开始时先预留能量。
+        // 在动作完成之前禁止通过库存事务把武器实体换到别处或换成另一把。
         // 充能开始后已经预留资源。若库存能移走当前武器或把另一把塞进同槽，完成时资源就可能结给错的武器。
         public static bool BlocksReloadWeaponMove(
             in PredictedPlayerGhost state,
@@ -107,7 +107,7 @@ namespace Unity.MP_FPS {
                    parent == InventoryCatalog.Equipment && region == Slot(state.EquippedWeaponSlot);
         }
 
-        // The authoritative item tree determines possession; backpack weapons cannot be selected.
+        // 以服务端库存树为准。背包里的武器要先装备到槽位才能选中。
         public static void SyncEquipment(
             ref PredictedPlayerGhost state,
             InventoryGraph graph,
@@ -205,7 +205,7 @@ namespace Unity.MP_FPS {
                 HaloTransferRules.Occupied(state))
                 return false;
             var item = MeleeInventory.Equipped(graph);
-            // Empty hands are an equipment mode, never a fabricated inventory item.
+            // 空手是一种装备状态，无需在库存里造物品。
             // 近战请求也要和库存实际装备的实例对应。两边都空才代表空手模式。
             if ((item?.Id ?? "") != (itemId ?? "")) return false;
             SaveActiveAmmo(ref state, graph);
@@ -240,8 +240,8 @@ namespace Unity.MP_FPS {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
         }
 
-        // Successful extraction ends the playable raid immediately. Settle rounds
-        // already paid for before destroying the player and saving their loadout.
+        // 成功撤离即结束能操作的战局。
+        // 销毁角色和保存装备前，先结算已经付费的装填量。
         // 旧武器弹仓模式下，成功离场前可以把已支付的装填量结算到正确的物品。物品 ID、槽位或类型对不上就放弃。
         public static bool CompleteExtractedCharge(
             ref PredictedPlayerGhost state,

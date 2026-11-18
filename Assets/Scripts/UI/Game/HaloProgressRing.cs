@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The same four sprites and rest layout as RifleHaloVisual. No rotor animation.
+    // 复用 RifleHaloVisual 的四张贴图和静止布局。转子保持静止。
     public sealed class HaloProgressRing : VisualElement {
         private struct Point {
             public Vector2 Position, UV;
@@ -54,7 +54,7 @@ namespace Unity.MP_FPS.Client {
             var group = new Group { Texture = sprite.texture };
             m_Groups[index] = group;
             var rect = sprite.textureRect;
-            // Tight sprites trim transparent padding. Preserve their pivot and true pixel scale.
+            // 紧密打包的 Sprite 会裁掉透明边。画回去时保留原轴心和像素比例。
             // 图集会裁掉透明边。用裁切偏移和原始锚点恢复图案应在的位置，圆环才不会挤到一处。
             var low = (sprite.textureRectOffset - sprite.pivot) / sprite.pixelsPerUnit;
             var high = low + rect.size / sprite.pixelsPerUnit;
@@ -112,7 +112,7 @@ namespace Unity.MP_FPS.Client {
                 m_Vertices.Add(new Vertex
                     { position = new Vector3(p.x, p.y, Vertex.nearZ), tint = (Color32)color, uv = points[i].UV });
             }
-            // Source quads are clockwise in Unity's y-up coordinates; UI uses y-down.
+            // 源图的四边形在 Unity 纵轴向上的坐标中为顺时针，UI 纵轴则朝下。
             // 将裁出的多边形绕第一个顶点拆成多个三角形。UI 的纵轴方向和 sprite 坐标相反，索引顺序也随之反过来。
             for (int i = 1; i < count - 1; i++) {
                 m_Indices.Add(start);
@@ -137,7 +137,7 @@ namespace Unity.MP_FPS.Client {
                         continue;
                     }
                     float end = m_Progress * 360;
-                    // Intersect fixed quadrant wedges, so fill stays correct beyond a half-circle.
+                    // 按固定的四分之一圆区域裁剪。这样超过半圈时仍能正确填色。
                     // 每九十度分一道边界进行裁剪。大于半圈的进度也能用多个相交区域正确填上。
                     for (float from = 0; from < end; from += 90) {
                         float a = (from - 90) * Mathf.Deg2Rad, b = (Mathf.Min(end, from + 90) - 90) * Mathf.Deg2Rad;

@@ -131,7 +131,7 @@ namespace Unity.MP_FPS {
             if (s_PreferenceKey != null) return;
             s_PreferenceKey = "MoonRaid.Account.v1";
 #if UNITY_EDITOR
-            // Virtual editor clones keep independent logins even if their PlayerPrefs registry is shared.
+            // 即使编辑器克隆共享 PlayerPrefs，也要分别保留各自的登录状态。
             using (var hash = SHA256.Create()) {
                 s_PreferenceKey += BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath)))
                     .Replace("-", "");
@@ -243,7 +243,7 @@ namespace Unity.MP_FPS {
             PlayerPrefs.Save();
         }
 
-        // Covers the full inventory download, not just the much smaller login response.
+        // 超时设置要覆盖完整的仓库下载，登录响应本身小得多。
         private static HttpClient Http() {
             return s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
         }
@@ -258,7 +258,7 @@ namespace Unity.MP_FPS {
                 : "Account service timed out. Please retry.";
             try { return await Http().SendAsync(request, ct); } catch (OperationCanceledException ex) when
                 (!ct.IsCancellationRequested) { throw new TimeoutException(timeoutMessage, ex); }
-            // Unity's Mono transport can surface a timeout as WebException instead.
+            // Unity 的 Mono 传输层也可能用 WebException 报告超时。
             catch (WebException ex) when (!ct.IsCancellationRequested && (ex.Status == WebExceptionStatus.Timeout ||
                                                                           ex.Status == WebExceptionStatus
                                                                               .RequestCanceled)) {
@@ -286,11 +286,11 @@ namespace Unity.MP_FPS {
             var research = profile.ResearchQuests;
             if (research != null && !ResearchQuestRules.Valid(research))
                 throw new InvalidOperationException("Invalid account research quest snapshot.");
-            // Research progress and the inventory have separate revisions.
+            // 研究进度和库存使用各自的修订号。
             // 研究进度有自己的版本号。先按研究版本更新它，再看下方的库存版本和请求先后次序。
             if (research != null && (ResearchQuests == null || research.Revision > ResearchQuests.Revision))
                 ResearchQuests = research;
-            // A delayed background refresh cannot roll back a successful move or a newer raid state.
+            // 延迟返回的后台刷新不能撤销已成功的库存移动，也不能盖掉较新的战局状态。
             if (Inventory != null && (graph.Version < Inventory.Version ||
                                       (graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)))
                 return;
@@ -401,7 +401,7 @@ namespace Unity.MP_FPS {
                 string code =
                     JsonConvert.DeserializeObject<Failure>(await response.Content.ReadAsStringAsync())?.Error ??
                     "unknown";
-                // Refresh failure must not replace the original, actionable rejection.
+                // 即使刷新失败，也要保留最初可用于处理问题的拒绝原因。
                 try { await ValidateAsync(s_BaseUrl, ct); } catch (OperationCanceledException) { throw; } catch
                     (Exception ex) when (ex is HttpRequestException || ex is InvalidOperationException) { }
                 throw new InventoryRequestException(code);

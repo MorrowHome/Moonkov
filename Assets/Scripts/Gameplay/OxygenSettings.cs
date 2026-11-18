@@ -18,7 +18,7 @@ namespace Unity.MP_FPS {
                 m_WalkingMultiplier, m_SprintingMultiplier);
     }
 
-    // Immutable values can also be supplied by a local preview or a simulation test.
+    // 这些不可变的数值也能直接用于本地预览或模拟测试。
     public readonly struct OxygenParameters {
         // 地图没有额外配置时可以拿整组默认值。
         public static OxygenParameters Default => new(600, 5, 8, 3, 1.1f, 1.75f);

@@ -287,7 +287,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
-            // Host shares the scene with its server World: never replay a toggle there.
+            // 房主客户端与自己的服务器 World 共用场景，不在客户端重做切换。
             // 房主场景已经由服务器直接改过。来宾才需要把汇总后的灯状态应用到自己的显示对象。
             if (!AirlockNetworkContext.HasServer) {
                 foreach (var batch in m_Batches.Values) {
@@ -311,8 +311,8 @@ namespace Unity.MP_FPS {
                         m_Batches.Add(button.Controls, batch = new PowerBatch());
                     (pair.Value.Powered ? batch.On : batch.Off).Add((pair.Key, button));
                 }
-                // The baked owner composes room lighting: apply one on/off batch per
-                // owner, rather than rebuilding lightmaps once per received fixture.
+                // 烘焙后的灯路控制器组合出室内照明。按每个控制器批量开灯或关灯，
+                // 无需每收到一个灯具状态就单独重建光照。
                 foreach (var pair in m_Batches) {
                     ApplyBatch(pair.Key, pair.Value.On, true);
                     ApplyBatch(pair.Key, pair.Value.Off, false);

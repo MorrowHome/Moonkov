@@ -3,7 +3,7 @@ using System;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Shared inventory rules have no Unity dependency and also run in persistence checks.
+    // 共享库存规则无需引用 Unity，也会在持久化检查中运行。
     public static class EnergyGrenadeRules {
         public const string Code = "energy_grenade";
         public const float Fuse = 3f, Radius = 6f, InnerRadius = 1.5f, Damage = 480f;

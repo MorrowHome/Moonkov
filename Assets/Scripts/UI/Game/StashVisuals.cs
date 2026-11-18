@@ -95,7 +95,7 @@ namespace Unity.MP_FPS.Client {
         RegenerationShot
     }
 
-    // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
+    // 原有矢量小图在 PanelSettings 的共用缩放下仍能保持清晰。
     [UxmlElement]
     public sealed partial class StashItemArt : VisualElement {
         private StashArtKind m_Kind;
@@ -384,7 +384,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void OxygenCanister() {
-            // Distinct valve, pressure gauge and cyan shell read at one inventory cell.
+            // 用明显的阀门、压力表和青色外壳，在一个库存格里也能认出它。
             Box(0x25383b, 43, 10, 14, 12);
             Box(0xb1bcb9, 35, 7, 30, 6);
             Shape(0x296e77, new Vector2(37, 23), new Vector2(63, 23), new Vector2(72, 34), new Vector2(72, 82),

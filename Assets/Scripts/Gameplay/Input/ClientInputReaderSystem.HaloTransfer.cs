@@ -20,7 +20,7 @@ public partial class ClientInputReaderSystem {
         HaloTransferCandidate = Entity.Null;
         var camera = _dollSingerPresentation.OwnedCamera;
         if (allowed && camera && HaloTransferRules.CanSend(sender) && !HaloTransferRules.Occupied(sender)) {
-            float best = .978f; // A narrow camera-centre cone, with world distance checked separately.
+            float best = .978f; // 用镜头中心附近的窄锥选目标，另外检查真实距离。
             Vector3 from = HaloTransferRules.Anchor(sender);
             var physics = _dollSingerPresentation.gameObject.scene.GetPhysicsScene();
             foreach (var (candidate, identity, owner, entity) in SystemAPI

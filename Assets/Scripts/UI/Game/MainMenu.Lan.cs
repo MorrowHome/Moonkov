@@ -27,7 +27,7 @@ namespace Unity.MP_FPS.Client {
             if (m_WasInLan == active && m_LastLanProfile == LanRoomClient.Profile) return;
             // 进入房间档案时取消手上还在跑的账号请求，避免旧线上档案回调覆盖刚切过来的状态。
             if (active && !m_WasInLan) {
-                // An online restore request must not overwrite the newly selected LAN account view.
+                // 切进局域网档案后取消未完成的线上恢复请求，避免晚到的结果覆盖新档案。
                 m_AccountStop?.Cancel();
                 m_AccountStop?.Dispose();
                 m_AccountStop = new System.Threading.CancellationTokenSource();

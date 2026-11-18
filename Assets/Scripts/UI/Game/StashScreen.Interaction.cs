@@ -345,7 +345,7 @@ namespace Unity.MP_FPS.Client {
             private void Up(PointerUpEvent evt) {
                 if (m_Pointer != evt.pointerId) return;
                 if (!m_Dragging) {
-                    // Let Button's Clickable finish the click and release its capture.
+                    // 让 Button 自带的 Clickable 完成本次点击并释放指针。
                     m_Pointer = -1;
                     m_Owner.m_ActiveDrag = null;
                     return;

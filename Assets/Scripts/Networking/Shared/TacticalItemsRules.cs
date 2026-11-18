@@ -91,7 +91,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Explicit Moonkov adaptation; these are not claimed as Hunt's numerical balance.
+    // 这些数值是 Moonkov 自己做的适配，未照搬 Hunt 的平衡设定。
     public static class TacticalItemRules {
         public const int RulesVersion = 1, MaxWorldObjects = 64, MaxOwnerTraps = 8;
         public const float TrapVerticalTolerance = .65f, InteractionRange = 2.2f;
@@ -174,8 +174,8 @@ namespace Unity.MP_FPS {
             return Math.Clamp((facing + .2f) / 1.05f, 0, 1) * Math.Clamp((12 - distance) / 8, 0, 1);
         }
 
-        // Works on a copy so inventory capacity failures never spend the box or alter cells.
-        // Recharges an existing legal carried cell before adding one real cell to the rig/pockets.
+        // 用副本试算，背包放不下时不会消耗补给箱或改变电池。
+        // 优先给合规的随身电池补电，再尝试向胸挂或口袋放一节新电池。
         public static InventoryError PrepareResupply(
             InventoryGraph graph,
             int version,
@@ -203,7 +203,7 @@ namespace Unity.MP_FPS {
             }
             // 没有能补的电池才尝试装一节新电池。箱子余量不到一整节，或口袋与胸挂放不下，都不会改原箱。
             if (supplied == 0) {
-                // AddSupply enforces real grid capacity/weight; grant only whole lawful cells.
+                // AddSupply 用真实格子容量与负重校验，所以新增库存只发放合规的整节电池。
                 if (budget < BatteryEnergy.Capacity) return InventoryError.Full;
                 var error = copy.AddSupply("cells", 1, InventoryCatalog.Pockets);
                 if (error != InventoryError.None && copy.Equipped("ChestRig") != null) {

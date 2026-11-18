@@ -17,7 +17,7 @@ namespace Unity.MP_FPS {
 
         private void Sense(DollSingerEnemyBrain brain, Transform root, Vector3 eye, float range, double now) {
             float elapsed = brain.LastSenseTime < 0 ? .1f : Mathf.Max(.001f, (float)(now - brain.LastSenseTime));
-            // A server hitch must age memory, but must not count as uninterrupted visual exposure.
+            // 服务器卡顿期间记忆照常变旧，但这段时间不算持续看见对方。
             // 记忆衰减按真正经过的时间。确认目标只累加一小段，服务器卡顿不等于持续盯了一整秒。
             float observationStep = Mathf.Min(.2f, elapsed);
             brain.LastSenseTime = now;
@@ -90,8 +90,8 @@ namespace Unity.MP_FPS {
                 bool continuous = contact.HadVisualSample && visualGap > 0 && visualGap <= .25f &&
                                   visualGap <= elapsed * 1.5f;
                 // 提前量来自同一个观察者的连续两次目击。视线断开后，估计的速度回到零。
-                // Estimate motion from our own consecutive sightings. The shared target track
-                // also updates behind walls and is not evidence this observer may use.
+                // 用当前角色自己连续看到的结果估算目标移动。
+                // 共享目标资料隔着墙也会变化，不能当成这个观察者知道的证据。
                 var observedVelocity = continuous
                     ? Vector3.ClampMagnitude((candidate.Position - contact.LastVisualPosition) / visualGap, 8)
                     : Vector3.zero;
@@ -116,7 +116,7 @@ namespace Unity.MP_FPS {
                 contact.PlayerControlled = candidate.PlayerControlled;
                 contact.LastSeen = now;
                 if (contact.Suspicion >= .99f) contact.Confirmed = true;
-                // Remembering an identity does not grant instant recognition after a long absence.
+                // 记得以前见过某人，不代表隔了很久又见时能立即确认。
                 contact.Visible = contact.Confirmed && contact.Suspicion >= .65f;
                 contact.Confidence = contact.Visible ? 1 : contact.Suspicion * .6f;
             }
@@ -139,8 +139,8 @@ namespace Unity.MP_FPS {
                         contact = new PmcContact();
                         brain.Contacts.Add(sensor.Source, contact);
                     }
-                    // Keep an uncertain bearing for a short sound sequence. Independent random
-                    // offsets on every footstep cause jitter and can average into perfect tracking.
+                    // 短时间内连续的声音使用同一个带误差方向。
+                    // 每一步都随机偏移会让路线抖动，多次采样平均还可能意外定位过准。
                     if (!contact.Visible && now - contact.LastSeen > .2) {
                         if (now >= contact.HearingBiasUntil) {
                             float bearing = brain.Random.NextFloat(0, Mathf.PI * 2);
@@ -162,8 +162,8 @@ namespace Unity.MP_FPS {
                         contact.Confidence = Mathf.Max(Mathf.Min(contact.Confidence, .75f), sensor.Shot ? .65f : .4f);
                     }
                     contact.LastHeard = now;
-                    // Nearby shots create unease; distant shooting must not build the same
-                    // pressure as taking damage or a projectile passing this actor.
+                    // 近处枪声使角色紧张。远处枪响不应积出和本次中弹、
+                    // 或子弹从身旁掠过同等的压制。
                     if (sensor.Shot && distance < 18)
                         brain.Suppression = Mathf.Max(brain.Suppression, blocked ? .06f : .15f);
                 }
@@ -347,8 +347,8 @@ namespace Unity.MP_FPS {
         }
 
         private void ResetContactTactics(DollSingerEnemyBrain brain, double now) {
-            // Cover, flank routes and bursts were chosen relative to a particular opponent.
-            // A new contact must not inherit a safe angle or a settled trigger from that duel.
+            // 掩体、侧绕和连发时机都是针对某一个对手选的。
+            // 换目标时不能沿用上一场交火的安全角度和已准备好的射击。
             brain.HasCover = false;
             brain.IsPeeking = false;
             brain.CoverPhase = PmcCoverPhase.Approaching;

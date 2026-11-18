@@ -37,7 +37,7 @@ namespace Unity.MP_FPS.Client {
             if (ready && !m_SquadReady) m_SquadReadyPulse = 1.2f;
             m_SquadReady = ready;
             if (!ready) m_SquadReadyPulse = 0;
-            // A single shared lighting rig owns the stage. Halo emission remains visible.
+            // 小队舞台共用一组灯光。各自的光环发光仍可见。
             // 小队预览共享舱内灯光。保留武器本身的发光，取消每个角色单独投下的灯，避免重复照亮舞台。
             m_EquipmentLightEnabled = false;
             ApplyEquipmentVisualState();

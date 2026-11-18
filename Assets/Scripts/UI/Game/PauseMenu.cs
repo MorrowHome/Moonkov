@@ -71,7 +71,7 @@ namespace Unity.MP_FPS {
         private void TogglePauseMenuVisibility(InputAction.CallbackContext obj) {
             if (!Application.isFocused || GameSettings.Instance.GameState != GlobalGameState.InGame) return;
             if (GameSettings.Instance.IsPauseMenuOpen) {
-                // UI Toolkit receives this key after the input action; let its popup consume it first.
+                // Input Action 先看到按键，随后 UI Toolkit 也会收到。弹窗打开时先让它处理这次按键。
                 // 语言的下拉层当前可见时，留给 UI Toolkit 处理当次 Esc。下一次 Esc 才退出设置页。
                 if (m_SettingsVisible &&
                     m_Root.panel?.visualTree.Q(className: GenericDropdownMenu.ussClassName) != null)
@@ -94,7 +94,7 @@ namespace Unity.MP_FPS {
             // 设置页打开时克隆同一份设置模板。控件经共享绑定即时应用设置，所以退出面板不需要再确认。
             TerminalLayout.Populate(m_SettingsContent, "Settings");
             MoonkovTerminal.BindSettings(m_SettingsContent);
-            // The pause page shows live options; stash shortcuts and the retired HUD toggle do not belong here.
+            // 暂停页直接改正在使用的选项。仓库快捷操作和旧版 HUD 开关留在它们各自的入口。
             m_SettingsContent.Q("alwaysShowHUD").parent.style.display = DisplayStyle.None;
             m_SettingsVisible = true;
             m_Menu.style.display = DisplayStyle.None;

@@ -7,7 +7,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Exact contacts only arrive after the authoritative pulse reaches their sampled position.
+    // 服务端脉冲到达目标取样位置之后，客户端才收到该目标的精确信息。
     public sealed class HaloScanClientState {
         public HaloScanPulseRpc Pulse;
         public double StartedAt;

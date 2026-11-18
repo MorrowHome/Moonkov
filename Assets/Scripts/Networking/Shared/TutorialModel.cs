@@ -21,7 +21,7 @@ namespace Unity.MP_FPS.Campaign {
         public int SupplyCycle;
     }
 
-    // Presentation progress never grants chapter facts or inventory rewards.
+    // 引导页和操作提示的进度不授予章节事实或库存奖励。
     public static class TutorialRules {
         public const int Equipped = 1, Cells = 2, Medicine = 4, Moved = 8, Looked = 16, Aimed = 32, Fired = 64;
         public const int AllSteps = 127;

@@ -6,15 +6,15 @@ using Unity.Services.Multiplayer;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// The NetworkHandler is setting up the correct driver constructors for the entity worlds
-    /// and keep a copy of the NetworkEndpoints required to connect the clients and server.
+    /// NetworkHandler 为实体 World 安装合适的驱动构造器，
+    /// 同时留下连接客户端和服务端所需的 NetworkEndpoint。
     /// </summary>
     /// <remarks>
-    /// The <see cref="ConnectEndpoint"/> and <see cref="ListenEndpoint"/> APIs are using an async TaskCompletionSource
-    /// instead of a direct value because the <see cref="IMultiplayerService"/> APIs using the <see cref="INetworkHandler"/>
-    /// might return before the handler is being called.
-    /// Using a TaskCompletionSource to access the connection endpoint ensure that the Session is setup properly before
-    /// accessing any of these values.
+    /// <see cref="ConnectEndpoint"/> 和 <see cref="ListenEndpoint"/> 通过异步 TaskCompletionSource 提供端点。
+    /// 这是因为 <see cref="IMultiplayerService"/> 的 API 使用 <see cref="INetworkHandler"/> 时，
+    /// 可能比网络处理回调更早返回。
+    /// 用 TaskCompletionSource 取连接端点能确保会话已准备好，
+    /// 调用者再读所需的地址。
     /// </remarks>
     internal class EntityNetworkHandler : INetworkHandler {
         public Task<NetworkEndpoint> ConnectEndpoint => m_ConnectEndpoint.Task;

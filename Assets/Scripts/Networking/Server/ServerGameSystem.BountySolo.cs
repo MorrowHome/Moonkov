@@ -41,8 +41,8 @@ namespace Unity.MP_FPS {
                 match.JoinTeam(wing, match.Teams[leader.TeamId].Invite);
             }
             foreach (var bot in match.Players.Values.Where(p => p.IsBot)) {
-                // A bot owns no transport connection. Distinct nonzero owners also preserve
-                // the existing weapon/VFX self filters, while damage uses participant+epoch.
+                // 机器人没有传输连接。给它各自不同的非零拥有者编号也能保留
+                // 武器和特效原有的自身过滤。实际伤害归属用参赛者编号和轮次。
                 bot.NetworkId = world.NextBotOwner--;
                 match.Ready(bot, true, SystemAPI.Time.ElapsedTime);
             }

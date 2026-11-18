@@ -21,19 +21,19 @@ namespace Unity.MP_FPS {
     }
 
     internal sealed class ClassicBotTactics {
-        // Dust II coordinates on the imported NavMesh. The hold positions watch
-        // different entrances even when the round objective is on the same site.
+        // 这里的坐标取自 Dust II 导入的 NavMesh。
+        // 即使这一轮目标是同一个包点，防守位置也看住不同入口。
         private static readonly Vector3 s_Long = new(39.50f, 99.80f, 36.40f);
         private static readonly Vector3 s_Short = new(52.22f, 102.44f, 11.60f);
         private static readonly Vector3 s_Tunnels = new(30.60f, 100.85f, -46.80f);
         private static readonly Vector3 s_MidToB = new(58.00f, 98.25f, -23.40f);
 
         private static readonly ClassicBotOrder[] s_GuardPosts = {
-            new(new Vector3(61.00f, 102.51f, 30.50f), new Vector3(49, 99.80f, 36.50f), true), // A Long
-            new(new Vector3(65.50f, 100.82f, -47.90f), new Vector3(49, 100.00f, -47.90f), true), // B Tunnels
-            new(new Vector3(54.70f, 97.03f, -15.80f), new Vector3(43.70f, 96.83f, -12.20f), true), // Mid
-            new(new Vector3(64.20f, 102.51f, 22.80f), s_Short, true), // A Short
-            new(new Vector3(60.00f, 100.06f, -35.42f), new Vector3(56.70f, 98.80f, -29.60f), true) // B Doors
+            new(new Vector3(61.00f, 102.51f, 30.50f), new Vector3(49, 99.80f, 36.50f), true), // A 大道
+            new(new Vector3(65.50f, 100.82f, -47.90f), new Vector3(49, 100.00f, -47.90f), true), // B 通道
+            new(new Vector3(54.70f, 97.03f, -15.80f), new Vector3(43.70f, 96.83f, -12.20f), true), // 中路
+            new(new Vector3(64.20f, 102.51f, 22.80f), s_Short, true), // A 短道
+            new(new Vector3(60.00f, 100.06f, -35.42f), new Vector3(56.70f, 98.80f, -29.60f), true) // B 门
         };
 
         private static readonly ClassicBotOrder[] s_AfterPlantPosts = {
@@ -155,7 +155,7 @@ namespace Unity.MP_FPS {
             foreach (var entry in Roster) {
                 if (!entry.Alive || rules.Carrier != entry.Id) continue;
                 m_CarrierSlot = entry.Slot;
-                // Respect a human carrier who takes the bomb to the other site.
+                // 真人持包绕向另一个包点时，调整计划配合他。
                 if (!entry.Bot && map.InSite(1 - m_AttackSite, entry.Position)) m_AttackSite = 1 - m_AttackSite;
                 break;
             }
@@ -189,7 +189,7 @@ namespace Unity.MP_FPS {
                 float cost = 0;
                 for (int i = 1; i < count; i++)
                     cost += Vector3.Distance(m_ObjectiveCorners[i - 1], m_ObjectiveCorners[i]);
-                // Keep a runner moving when another route is only slightly shorter.
+                // 其他路线只短一点时仍保留已经派出的人，让当前任务继续。
                 if (entry.Id == current) cost *= .75f;
                 if (cost >= nearest) continue;
                 nearest = cost;

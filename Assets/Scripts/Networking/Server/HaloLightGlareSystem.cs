@@ -80,7 +80,7 @@ namespace Unity.MP_FPS {
                         if (!source.Emits || source.Entity == target.Entity || source.Physics != target.Physics ||
                             HaloTransferRules.Teammates(source.State, target.State, source.Human, target.Human))
                             continue;
-                        // The light follows weapon aim; free look changes the receiver's gaze only.
+                        // 灯束朝武器瞄准的方向发出，自由观察只改变受影响玩家的观察方向。
                         var control = source.State.ControllerState;
                         var direction = Quaternion.Euler(control.PitchDegrees, control.YawDegrees, 0) * Vector3.forward;
                         float strength = HaloLightGlareRules.Strength(source.State, source.Eye, direction, target.Eye,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Count newly visible top-level items in accepted snapshots, never search timer ticks.
+    // 以服务器确认快照中新揭示的物品为准，而且只数顶层物品。搜索计时不直接决定播放。
     public sealed class MoonkovLootRevealAudio {
         private readonly HashSet<string> m_Known = new();
         private int m_Raid, m_Loot, m_Pending;
@@ -35,8 +35,8 @@ namespace Unity.MP_FPS {
                 return;
             }
             if (!m_Listening) return;
-            // A fully searched box opens directly. A missed progress snapshot can instead
-            // arrive as the server's explicit search-complete receipt.
+            // 已搜完的箱子会直接打开。漏收中间的进度快照时，
+            // 还可能从服务端明确的搜索完成回执获知结果。
             // 开已经搜完的箱子可能直接拿到完整库存。要看到搜索进行过或服务端明确通知搜索完成，才把快照里的新物品算成逐件揭示。
             bool reveal = searching || m_Started || state.ActionFeedback == "搜索完成。";
             if (reveal)

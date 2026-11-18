@@ -13,8 +13,8 @@ using Unity.MP_FPS.Online;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // The account backend only exchanges SDP. All raid datagrams use the native
-    // ICE agents owned by this process's NetCode driver.
+    // 账号后端只负责交换 SDP。实际战局数据报都经过这个进程中
+    // 由 NetCode 驱动掌管的原生 ICE 对端。
     internal static class OnlineIceServer {
         private sealed class Config {
             public string BackendUrl, ServerKey;
@@ -152,7 +152,7 @@ namespace Unity.MP_FPS {
                             };
                             peer.Id = transport.AddPeer(BindAddress, stun, stunPort);
                             peers.Add(peer.Player, peer);
-                            // Both sides suppress private/local candidates for the host-PC client.
+                            // 房主电脑自己的客户端需要走公网，两边都过滤私有和本机候选。
                             // 把已经过信令鉴权的对端候选交给原生传输。筛选规则两端相同，之后原生层开始寻路和收集本机地址。
                             transport.SetRemoteDescription(peer.Id,
                                 EmbeddedIceNetwork.Description(offer.Description, offer.PublicOnly));

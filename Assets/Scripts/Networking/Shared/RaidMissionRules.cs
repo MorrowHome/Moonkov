@@ -79,7 +79,7 @@ namespace Unity.MP_FPS.Missions {
                                                                  Array.Exists(n.Choices, string.IsNullOrWhiteSpace)))
                     return "mission_configuration";
             }
-            // A topological pass rejects cycles without executing content-authored code.
+            // 按依赖顺序遍历来拒绝环形引用，无需执行内容中配置的代码。
             uint visited = 0;
             for (int pass = 0; pass < Objectives.Length; pass++)
             for (int i = 0; i < Objectives.Length; i++)
@@ -114,7 +114,7 @@ namespace Unity.MP_FPS.Missions {
             };
         }
 
-        // Authoring settings can replace these templates; the running instance freezes a copy.
+        // 场景配置可替换模板，开始运行时冻结一份副本。
         public static MissionDefinition Mooncore() {
             return new MissionDefinition {
                 Id = "mc00_mooncore", Name = "封存样本", ArtifactCode = "mooncore_fragment", Weight = 45, OutputCount = 2,
@@ -146,7 +146,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Running machinery is a location clue, never a player identity.
+    // 机器运行声只提供位置线索，不泄露操作者身份。
     public static class MissionMachineSounds {
         public const float CutterRange = 40, ArchiveRange = 25;
 
@@ -175,7 +175,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Owned by one server World. No acceptance, discovery or UI tracking state exists here.
+    // 由一个服务端 World 掌管。接取、发现与界面追踪状态由各自系统维护。
     public sealed class MissionOperation {
         private sealed class Interaction {
             public string Actor;
@@ -231,8 +231,8 @@ namespace Unity.MP_FPS.Missions {
         }
 
         // 这个任务模型只认服务器传来的角色、当前轮次和时间。距离、视线及人物能否操作，由 ServerGameSystem.Missions 在调用前确认。
-        // The caller supplies server-validated actor/deployment identity and server time.
-        // Distance, visibility, health and ownership remain the existing server adapter's responsibility.
+        // 调用者提供服务器已验证的玩家和出战身份及服务端时间。
+        // 距离、可见、生命和所有权仍由现有服务端适配层核对。
         public MissionActionResult Begin(string actor, int epoch, int node, uint request, double now) {
             if (!ValidTime(now) || now < m_LastTime || string.IsNullOrWhiteSpace(actor) || actor.Length > 128 ||
                 epoch != Epoch || node < 0 || node >= ObjectiveCount || request == 0)
@@ -361,8 +361,8 @@ namespace Unity.MP_FPS.Missions {
             return true;
         }
 
-        // Only the local chapter adapter restores already committed facility work.
-        // A restore is accepted once, before any live action, and cannot skip prerequisites.
+        // 已经落盘的设施进度只由本机章节适配层恢复。
+        // 只有在实际交互前允许恢复一次，而且不能跳过前置节点。
         // 保留地图内已经有可靠完成记录的步骤，同时检查依赖掩码，恢复并不会凭空产生新产物。
         public bool RestoreCompleted(uint mask, double now) {
             if (m_Restored || Phase != MissionPhase.Offered || CompletedMask != 0 || !ValidTime(now) ||
@@ -414,7 +414,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Stable across Unity/.NET runtimes. Selection never bypasses the adapter's location/safety predicate.
+    // Unity 和 .NET 运行时都能稳定得到同样抽取结果。选中任务仍须通过适配层的地点和安全判断。
     public sealed class MissionDirector {
         private uint m_Random;
         private readonly Dictionary<string, double> m_LastOffered = new(StringComparer.Ordinal);

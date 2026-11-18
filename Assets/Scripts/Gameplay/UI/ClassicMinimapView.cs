@@ -109,7 +109,7 @@ namespace Unity.MP_FPS {
             m_Markers.MarkDirtyRepaint();
         }
 
-        // The texture uses +Z up. UI coordinates start from the top left.
+        // 纹理以 +Z 为上，UI 坐标则从左上角开始。
         private Vector2 ToPixel(Vector3 position) {
             return new Vector2(position.x - m_Origin.x, position.z - m_Origin.y) * m_Scale +
                    Vector2.one * (Resolution * .5f);
@@ -138,7 +138,7 @@ namespace Unity.MP_FPS {
                 return index;
             }
 
-            // NavMesh tiles repeat border vertices. Join them before finding the area connected to spawn.
+            // NavMesh 分块边缘会重复顶点。先合并同位置的边，才能找出和出生点连通的区域。
             // 导航网格会在相邻分块边缘重复顶点。按位置将它们视为同一个点，才能跨分块找出和出生点连通的区域。
             var shared = new Dictionary<Vector3, int>(mesh.vertices.Length);
             int nearest = 0;
@@ -170,7 +170,7 @@ namespace Unity.MP_FPS {
             var vertices = new Vector2[mesh.vertices.Length];
             for (int i = 0; i < vertices.Length; i++) vertices[i] = ToPixel(mesh.vertices[i]);
 
-            // Collapse the walkable triangles onto X/Z once per map, without a second camera.
+            // 每张地图只把可走的三角面投到 X/Z 平面一次，无需另一台相机。
             bool[] walkable = new bool[Resolution * Resolution];
             for (int i = 0; i < mesh.indices.Length; i += 3)
                 if (Root(mesh.indices[i]) == island)

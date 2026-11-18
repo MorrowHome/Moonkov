@@ -8,7 +8,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // Owned by one client world. Bounded character-only mask; no scene scan or extra camera.
+    // 归当前一个客户端 World。仅在有限范围内处理角色遮罩，无需查全场景或另建相机。
     public sealed class TeamOutlineRenderer : IDisposable {
         public const int MaxDraws = 96;
         private Camera m_Camera;
@@ -141,7 +141,7 @@ namespace Unity.MP_FPS {
                     data.Destination = destination;
                     data.Material = m_Material;
                     data.Properties = m_Properties;
-                    // Keep the line near two output pixels even with the project's low world render scale.
+                    // 即使项目缩小了世界渲染比例，最终描边也尽量保持在两个输出像素。
                     data.Texel = new Vector4(1.8f / Mathf.Max(1, Owner.pixelWidth),
                         1.8f / Mathf.Max(1, Owner.pixelHeight), 0, 0);
                     builder.UseTexture(source, AccessFlags.Read);

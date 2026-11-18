@@ -39,7 +39,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void LifeSupportShroud() {
-            // Matches the fitted navy band, lilac bow and gold cat bell on the real character.
+            // 对照实际角色上的深蓝带、淡紫蝴蝶结和金色猫铃。
             Shape(0x202740, new Vector2(12, 33), new Vector2(29, 24), new Vector2(71, 24), new Vector2(88, 33),
                 new Vector2(88, 54), new Vector2(73, 64), new Vector2(27, 64), new Vector2(12, 54));
             Line(0xd4af70, 2, new Vector2(14, 34), new Vector2(30, 27), new Vector2(70, 27), new Vector2(86, 34));
@@ -63,7 +63,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void ShieldGenerator() {
-            // A carried projector with three emitter vanes, rather than plate armor.
+            // 外形画成带三片发射翼的随身投射器。
             Shape(0x344251, new Vector2(30, 13), new Vector2(70, 13), new Vector2(83, 32), new Vector2(77, 82),
                 new Vector2(62, 92), new Vector2(38, 92), new Vector2(23, 82), new Vector2(17, 32));
             Shape(0xb1bbc1, new Vector2(34, 19), new Vector2(66, 19), new Vector2(73, 34), new Vector2(67, 77),

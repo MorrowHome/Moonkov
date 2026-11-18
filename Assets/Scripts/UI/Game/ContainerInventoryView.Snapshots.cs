@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class ContainerInventoryView {
-        // Protection gear sends live resource snapshots every half second without
-        // changing placement. These must never destroy a pressed/captured button.
+        // 防护装备的资源值每半秒可以同步，但摆放位置没变。
+        // 这种更新应保留已经按下或抓住指针的按钮。
         private static string LayoutKey(InventoryGraph graph) {
             if (graph == null) return null;
             var key = new StringBuilder().Append(graph.StashRows).Append('/').Append(graph.LootRows);

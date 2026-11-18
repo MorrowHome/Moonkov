@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Original procedural Moonkov props. Audio sources are listed in MoonkovGameAudioSources.md.
-    // This component owns presentation only; server PhysicsScene checks own all gameplay.
+    // Moonkov 自制的程序道具。声音来源见 MoonkovGameAudioSources.md。
+    // 组件只负责画面。玩法判定使用服务器的 PhysicsScene 检查。
     [DefaultExecutionOrder(150)]
     public sealed class TacticalItemsFeedback : MonoBehaviour {
         private sealed class Visual {
@@ -78,7 +78,7 @@ namespace Unity.MP_FPS {
         public static void SetSelectedItem(string code) {
             var definition = TacticalItemRules.Find(code);
             bool medical = Inventory.ConsumableCatalog.MedicalRestore(code) > 0;
-            // Grenades are rendered by the replicated hand animation, including safe holding.
+            // 手雷外观跟随网络同步的手部动画。安全持握阶段也照常显示。
             if (GrenadeHandling.Throwable(code) || (definition == null && !medical)) {
                 if (s_Active) {
                     s_Active.m_Selected = null;
@@ -145,7 +145,7 @@ namespace Unity.MP_FPS {
                                                                      visual.State.Phase == TacticalWorldPhase.Choke ||
                                                                      visual.State.Phase == TacticalWorldPhase.Poison))
                     return true;
-            // Cough emitters are audio only; they do not need a transparent render pass.
+            // 咳嗽发声对象只需要声音，无需走透明特效通道。
             return false;
         }
 
@@ -219,7 +219,7 @@ namespace Unity.MP_FPS {
             visual.Expire = Time.time + Mathf.Max(.3f, state.Remaining + .5f);
             visual.Root.transform.position = state.Position;
             visual.Audio.Present(state);
-            // Sequence records are bounded by the world's monotonic id range. No stale resurrection.
+            // 序号只保留在当前 World 的递增编号范围内，迟到的旧状态不会复活已清理效果。
             if (m_Sequences.Count > 512) {
                 m_Expired.Clear();
                 foreach (var pair in m_Sequences)
@@ -333,7 +333,7 @@ namespace Unity.MP_FPS {
                     UnityEngine.Physics.Raycast(eye, direction, out var hit, 3, mask, QueryTriggerInteraction.Ignore) &&
                     hit.normal.y > .7f;
                 var point = valid ? hit.point + Vector3.up * .04f : eye + direction * 2;
-                // A preview is advisory. The server rechecks its capsule eye, level, support and occupancy.
+                // 预览只提示可能位置。服务器还会从角色胶囊体视点检查层高、支撑与占用。
                 m_PreviewRing.sharedMaterial = valid ? m_Green : m_Red;
                 float radius = m_Selected.Trap ? .65f : .35f;
                 for (int i = 0; i < 48; i++) {
@@ -342,7 +342,7 @@ namespace Unity.MP_FPS {
                 }
             }
             if (m_Selected.Throwable) {
-                // Aim line uses camera direction, while actual release always comes from the server capsule.
+                // 瞄准线随相机方向计算。真正放出道具的位置由服务端的角色胶囊体决定。
                 Vector3 position = eye + direction * .55f, velocity = direction * 14 + Vector3.up * 2;
                 int count = 1;
                 m_Trajectory.positionCount = 49;
@@ -523,8 +523,8 @@ namespace Unity.MP_FPS {
             if (!m_Held) {
                 m_Held = new GameObject("Held " + m_SelectedCode);
                 m_Held.transform.SetParent(transform, false);
-                // Medical supplies use the same authored models as loot and inventory.
-                // Selecting only draws the model; LMB still sends the authoritative use request.
+                // 医疗用品沿用仓库和地面战利品已经有的模型。
+                // 选中时只显示持握外观，左键使用仍走服务器确认。
                 if (!PhysicalItemVisuals.Create(m_SelectedCode, m_Held.transform, true)) {
                     if (m_Selected == null && m_SelectedCode != "energy_grenade") {
                         Release(m_Held);

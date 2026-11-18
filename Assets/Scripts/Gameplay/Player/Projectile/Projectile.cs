@@ -11,12 +11,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // One ghost per shot. Clients evaluate the trajectory; only the server applies damage.
+    // 每发生成对应的 Ghost 弹体。客户端计算飞行轨迹，实际伤害由服务器结算。
     public class Projectile : GhostMonoBehaviour, IUpdateServer, IPhysicsUpdateServer, IUpdateClient {
         // 快照保留弹道起点和初速度，以及用于匹配的武器、发射拍和弹丸序号。服务器另外保存这发的伤害归属。
         public struct ProjectileData : IComponentData {
             [GhostField] public int OwnerNetworkId;
-            public ClashDamageSource DamageSource; // Server-only release-time attribution.
+            public ClashDamageSource DamageSource; // 只在服务器保存发射时的伤害归属。
             [GhostField] public uint SpawnTick;
             [GhostField] public uint WeaponID;
             [GhostField] public uint FireTick;
@@ -52,8 +52,8 @@ namespace Unity.MP_FPS {
         private bool m_Stopped;
         private RaycastHit[] m_Hits = new RaycastHit[16];
 
-        // Ghost physics callbacks are serial on Unity's main thread. Share bounded scratch
-        // storage so a burst does not allocate an array for every projectile.
+        // Ghost 的物理回调在 Unity 主线程依次运行。
+        // 共用有限的查询缓冲，连发时不必给每发另外分配数组。
         private static Collider[] s_NearMissHits;
         private int m_HitMask;
         private int m_NearMissPlayerMask, m_NearMissWorldMask;
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS {
             if (m_HaloVisual != null || !m_Initialized || m_Stopped || !m_Weapon.ShowProjectileBody ||
                 !DollSingerWeapons.IsHalo(m_Data.WeaponID))
                 return;
-            // The projectile can arrive before its shooter ghost on an observer.
+            // 远端观察者可能先收到这颗弹体，再收到开枪的人。
             if (m_Shooter == null) ResolveShooter(false);
             if (m_Shooter == null) return;
             var source = m_Shooter.GetComponentInChildren<DollSingerHaloAim>(true);
@@ -146,12 +146,12 @@ namespace Unity.MP_FPS {
 
         private void UpdateHaloVisual() {
             if (m_HaloVisual == null || m_Stopped) return;
-            // Keep the luminous trail outside the hands/eye; collision still starts at the real origin.
+            // 让发光尾迹别贴着手或眼睛，碰撞仍从真实开火位置开始。
             float emergence = .55f / Mathf.Max(1, ((Vector3)m_Data.InitialVelocity).magnitude);
             float tailAge = Mathf.Min(m_Age, Mathf.Max(emergence, m_Age - m_HaloTrailSeconds));
             var tail = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, tailAge);
-            // Spawn/reconciliation may temporarily supply a transform on another tick.
-            // Derive both visual endpoints from the same age to avoid an origin-to-snapshot streak.
+            // 生成或合并预测对象时，场景上的 Transform 可能暂时属于另一拍。
+            // 用同一个经过时间算尾迹两端，避免拉出一条从射出点到快照位置的长线。
             var head = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
             m_HaloVisual.SetFlight(tail, head);
         }
@@ -212,7 +212,7 @@ namespace Unity.MP_FPS {
         }
 
         public void UpdateServer(float deltaTime) {
-            // GhostBridge destroys entities during its UpdateServer lifecycle phase.
+            // GhostBridge 在它的 UpdateServer 生命周期阶段销毁实体。
             if (m_Stopped) GhostGameObject.DestroyEntity();
         }
 
@@ -240,7 +240,7 @@ namespace Unity.MP_FPS {
             var threatFrom =
                 Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
             float threatAge = m_Age;
-            // Sweep the entire travelled arc, including a stalled frame's path.
+            // 扫过这段时间的整条已飞曲线，卡顿期间经过的路径也要算。
             // 补算这一帧之间的整条曲线，每小段扫一次碰撞。只检查终点会漏掉途中穿过的薄墙。
             while (m_Age < targetAge) {
                 float nextAge = Mathf.Min(targetAge, m_Age + 1f / 120f);
@@ -255,7 +255,7 @@ namespace Unity.MP_FPS {
                     Stop();
                     // 两边都能让弹体飞到碰撞点。只有服务器结算命中，拥有者的本机碰撞仅能先播视觉反馈。
                     if (server) { Impact(hit); } else if (DollSingerWeapons.IsHalo(m_Data.WeaponID)) {
-                        // Only the owner predicts impacts; observers consume the server's impact event.
+                        // 只有发射者自己的客户端先预测碰撞表现，观察者用服务端确认的命中事件。
                         bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() ||
                                      Role == MultiplayerRole.ClientOwned;
                         if (owned && VisualEffectManager.ClientInstance != null)

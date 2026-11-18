@@ -18,8 +18,8 @@ namespace Unity.MP_FPS {
             var forward = Vector3.ProjectOnPlane(transform.forward, axis);
             if (forward.sqrMagnitude < .001f) forward = Vector3.ProjectOnPlane(transform.up, axis);
             var frame = Quaternion.LookRotation(forward, axis);
-            // The DollSinger's high shirt collar covers the lower neck. Fit the exposed
-            // upper neck below the jaw, rather than enlarging a band hidden inside the shirt.
+            // DollSinger 的高衣领遮住下半段脖子。贴合应取下巴下方露出的部分，
+            // 不用扩大藏在衣服里的那一圈。
             var center = m_Neck
                 ? Vector3.Lerp(m_Neck.position, m_Head.position, .68f)
                 : m_Head.position - transform.up * .025f;
@@ -69,7 +69,7 @@ namespace Unity.MP_FPS {
                 center += frame * new Vector3(midpoint.x, 0, midpoint.y);
                 m_CollarRadii = (maximum - minimum) * .5f + Vector2.one * .0012f;
             }
-            // Store the fit in the real neck's space, including the imported FBX scale.
+            // 将贴合结果保存在真实脖子坐标中，保留导入的 FBX 比例。
             m_CollarOffset = anchor.InverseTransformPoint(center);
             m_CollarLocalFrame = Quaternion.Inverse(anchor.rotation) * frame;
         }

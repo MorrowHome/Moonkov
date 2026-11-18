@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS.Client {
-    // The journal reads confirmed/run state. Its only mutation is the display preference.
+    // 日志读取已确认进度与本局进度。界面操作只修改跟踪偏好。
     internal sealed class CampaignChapterView : IDisposable {
         private readonly Func<CampaignProgress> m_Read;
         private readonly Label m_ChapterTitle, m_Saved, m_Title, m_Status, m_Briefing, m_Feedback;

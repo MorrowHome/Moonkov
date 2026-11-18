@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    // One lightweight UI scope; no capture camera, render texture or simulation pause.
+    // 用一个轻量的 UI 区域装载地图。界面打开时继续模拟，也无需捕获相机或纹理。
     public sealed class RaidMapView : IDisposable {
         private readonly VisualElement m_Scope, m_Overlay;
         private readonly BountyClashMapView m_Map;

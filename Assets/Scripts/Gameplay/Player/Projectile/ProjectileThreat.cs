@@ -5,8 +5,8 @@ using Unity.Entities;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // A real travelled projectile segment may pressure a nearby PMC, but it
-    // never grants sight or the hidden shooter's actual position.
+    // 实际飞过的弹道能使附近的 PMC 感到压制。
+    // 这不会让角色看穿遮挡或知道发射者的精确位置。
     public static class ProjectileThreat {
         public const float Radius = 1.4f;
         public const double Interval = .2;
@@ -61,8 +61,8 @@ namespace Unity.MP_FPS {
                 if (brain == null || now < brain.NextNearMiss) continue;
                 var centre = collider.bounds.center;
                 float t = Vector3.Dot(centre - from, travel) / travel.sqrMagnitude;
-                // Wait until the shot has actually passed the body. Otherwise a
-                // shot that hits it on the next update would count as a near miss.
+                // 等弹体确实掠过身体才发信号。
+                // 否则下一帧本就会打中的一发会被提前当成擦弹。
                 // 把身体位置投影到弹道线上，只有已经飞过身体时才算擦过。下一小段要打中的弹体不用提前制造擦弹。
                 if (t < 0 || t >= 1) continue;
                 var closest = from + travel * t;
@@ -83,9 +83,9 @@ namespace Unity.MP_FPS {
                 }
                 if (!contact.Visible && now - contact.LastSeen > .3 &&
                     (!contact.HadVisualSample || now - contact.LastSeen > 4)) {
-                    // An incoming bearing is useful; the distance to an unseen shooter is not known.
-                    // Reuse one error for a short burst; changing it on every round
-                    // makes cover routes jitter and lets observations average to certainty.
+                    // 从来弹很难知道隐蔽射手离多远，只能提供来向线索。
+                    // 短连射用同一个误差。如果每发都改变偏移，
+                    // 掩体路线会抖，反复观察还可能把随机偏差平均成精确位置。
                     if (now >= contact.HearingBiasUntil) {
                         float angle = brain.Random.NextFloat(0, Mathf.PI * 2);
                         float magnitude = brain.Random.NextFloat(.65f, 1);

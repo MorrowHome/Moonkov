@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Relay or Direct connection type, set by <see cref="ServicesSettings"/>.
+    /// Relay 或 Direct 连接方式由 <see cref="ServicesSettings"/> 设置。
     /// </summary>
     public enum ConnectionType {
         Relay = 0,
@@ -17,7 +17,7 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// P2P (peer to peer) or Dgs (dedicated game server) matchmaker type, set by <see cref="ServicesSettings"/>.
+    /// P2P（点对点）或 Dgs（专用游戏服务器）匹配方式由 <see cref="ServicesSettings"/> 设置。
     /// </summary>
     public enum MatchmakerType {
         P2P = 0,
@@ -39,7 +39,7 @@ namespace Unity.MP_FPS {
         public static ConnectionSettings Instance { get; private set; } = null!;
 
         /// <summary>
-        /// This initialization is required in the Editor to avoid the instance from a previous Playmode to stay alive in the next session.
+        /// 编辑器需要在这里重新建实例，避免上次 Play 的状态留到新会话。
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeInitializeOnLoad() { Instance = new ConnectionSettings(); }
@@ -48,21 +48,21 @@ namespace Unity.MP_FPS {
         public const ushort DefaultServerPort = 7979;
 
         /// <summary>
-        /// The address a fresh install should use: what the shipped settings file asked for, or the
-        /// built-in default. Cancelling a popup restores this rather than the built-in default, so
-        /// a player cannot accidentally replace the server they were given.
+        /// 首次安装使用随包设置提供的地址，缺省时用程序内默认值。
+        /// 取消弹窗时恢复首次安装应使用的地址，
+        /// 以免把随包附带的服务器地址无意改掉。
         /// </summary>
         public static string ConfiguredAddress => ClientSettings.ServerAddress ?? DefaultServerAddress;
 
-        /// <summary>The port a fresh install should use, on the same terms as <see cref="ConfiguredAddress"/>.</summary>
+        /// <summary>首次安装使用的端口，优先规则同 <see cref="ConfiguredAddress"/>。</summary>
         public static string ConfiguredPort =>
             ClientSettings.ServerPort > 0 ? ClientSettings.ServerPort.ToString() : DefaultServerPort.ToString();
 
         private const string k_IPAddressKey = "IPAddress";
         private const string k_PortKey = "Port";
 
-        // Remember what the shipped settings file asked for, so changing that file moves existing
-        // installs to the new server while a player's own edit still wins in between.
+        // 记住已使用过的随包配置，随包文件修改服务器时才能让已有安装切换。
+        // 两次发布之间继续保留玩家自己填写的地址。
         private const string k_SeededAddressKey = "SeededServerAddress";
         private const string k_SeededPortKey = "SeededServerPort";
         // 页面输入可以是地址文本或会话码。真正交给 NetCode 的是已解析端点，领票和重连标记也只用于当次加载。
@@ -84,8 +84,8 @@ namespace Unity.MP_FPS {
         }
 
         /// <summary>
-        /// A value the shipped settings file supplies is re-applied whenever that value changes, so
-        /// a new server address reaches existing installs; otherwise the player's own choice is kept.
+        /// 随包设置提供的值一旦变化，就再套用一次。
+        /// 这样已有安装能收到新地址，平时仍保留玩家自己的选择。
         /// </summary>
         private static string Seeded(string valueKey, string seedKey, string configured, string fallback) {
             if (string.IsNullOrWhiteSpace(configured)) return PlayerPrefs.GetString(valueKey, fallback);

@@ -7,36 +7,36 @@ using UnityEngine.Scripting;
 using Unity.NetCode;
 
 /// <summary>
-/// The default serialization strategy for the <see cref="Unity.Transforms.LocalTransform"/> components provided by the NetCode package.
+/// NetCode 用于 <see cref="Unity.Transforms.LocalTransform"/> 的默认序列化方式。
 /// </summary>
 [Preserve]
 [GhostComponentVariation(typeof(LocalTransform), "Ghost Transform 3D")]
 [GhostComponent(PrefabType = GhostPrefabType.All, SendTypeOptimization = GhostSendType.AllClients)]
 public struct TransformDefaultVariant {
     /// <summary>
-    /// The position value is replicated with a default quantization unit of 1000 (so roughly 1mm precision per component).
-    /// The replicated position value support both interpolation and extrapolation
+    /// 位置的量化系数为 1000，每个分量约精确到 1 毫米。
+    /// 同步后的位置支持插值与外推。
     /// </summary>
     [GhostField(Quantization = 1000, Smoothing = SmoothingAction.InterpolateAndExtrapolate, MaxSmoothingDistance = 2)]
     // 这里的 1000 代表坐标按约千分之一单位编码。插值和外推用于平滑相邻快照，距离超过阈值时避免把大跳变拖成长动画。
     public float3 Position;
 
     /// <summary>
-    /// The scale value is replicated with a default quantization unit of 1000.
-    /// The replicated scale value support both interpolation and extrapolation
+    /// 缩放数值的量化系数为 1000。
+    /// 同步后的缩放支持插值与外推。
     /// </summary>
     [GhostField(Quantization = 1000, Smoothing = SmoothingAction.InterpolateAndExtrapolate)]
     public float Scale;
 
     /// <summary>
-    /// The rotation quaternion is replicated and the resulting floating point data use for replication the rotation is quantized with good precision (10 or more bits per component)
+    /// 用四元数同步旋转。各分量量化后的精度约为 10 位或更高。
     /// </summary>
     [GhostField(Quantization = 1000, Smoothing = SmoothingAction.InterpolateAndExtrapolate)]
     public quaternion Rotation;
 }
 
-/// <summary>Registers the default variants for all samples. Since multiple user-defined variants are present for the
-/// Transform components, we must explicitly define a default, and how it applies to components on child entities.</summary>
+/// <summary>为示例注册采用的默认序列化版本。Transform 组件
+/// 有多种自定义版本，这里选择默认版本，并定义子实体怎么处理。</summary>
 [CreateBefore(typeof(TransformDefaultVariantSystem))]
 internal sealed partial class DefaultGhostVariantSystem : DefaultVariantSystemBase {
     protected override void RegisterDefaultVariants(Dictionary<ComponentType, Rule> defaultVariants) {

@@ -66,7 +66,7 @@ namespace Unity.MP_FPS {
                         new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
                     continue;
                 }
-                // A reconnect must wait for an earlier outbox receipt, then reload the committed stash.
+                // 重连前等待之前的待发回执确认，然后重读已提交的仓库。
                 // 同一账号还有未结算回执时暂缓接收资格。等结算成功再刷新账号仓库，否则会拿到扣出战装前后的旧库存。
                 bool pendingReceipt = false;
                 foreach (var save in context.Saves.Values)
@@ -81,7 +81,7 @@ namespace Unity.MP_FPS {
                     continue;
                 }
                 removeJoins.Add(connection);
-                // A copied guest credential cannot enter two simultaneous sessions in this World.
+                // 即使复制了相同访客凭据，也不能同时以同一身份进这个 World 两次。
                 // 同一个档案不能同时被两个活连接使用。掉线保留用的替身实体可重绑，不算第二个在线玩家。
                 bool alreadyPlaying = false;
                 foreach (var existing in context.Profiles)
@@ -143,7 +143,7 @@ namespace Unity.MP_FPS {
                 if (MoonRaidMap.Active == null || !SystemAPI.Exists(connection) ||
                     !SystemAPI.HasComponent<NetworkId>(connection) ||
                     SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) {
-                    // Retain the debit result even when the connection disappeared.
+                    // 连接已经消失时，也要接住可能已扣装的结果。
                     if (deploy.Payload.Mode == "BountyClash") {
                         if (deploy.Task != null && !deploy.Task.IsCompleted) continue;
                         context.RefundBountyDeployment(deploy.Payload);
@@ -202,8 +202,8 @@ namespace Unity.MP_FPS {
                     profile.OnlineTeam = admission.OnlineTeam;
                 }
                 context.Profiles[connection] = profile;
-                // A new shared match must keep this connection's personal raid epoch
-                // and snapshot sequence, so old inventory RPCs cannot target the next kit.
+                // 下一场共用比赛仍需保留此连接的个人出战代数
+                // 和快照序号，防止旧库存 RPC 改到新的出战装备。
                 // 新一轮赏金还沿用该连接的出战计数。旧局延迟送达的背包 RPC 要靠个人出战号和快照序号挡在外面。
                 bool continueClashSession = deploy.Payload.Mode == "BountyClash" &&
                                             SystemAPI.HasComponent<RaidSession>(connection);
@@ -222,7 +222,7 @@ namespace Unity.MP_FPS {
                 session.StashDust = profile.Dust;
                 session.StashAlloy = profile.Alloy;
                 session.StashCells = profile.Cells;
-                // DeployAsync has validated the complete authoritative kit; never substitute test gear.
+                // DeployAsync 已验证完整的权威出装，不可用测试装备代替。
                 var graph = RaidInventoryTransport.Decode(profile.RaidInventoryJson);
                 SetRaidInventory(ref state, connection, graph, session.RaidId);
                 RaidInventoryState.UpdateTotals(graph, ref session);

@@ -43,7 +43,7 @@ namespace Unity.MP_FPS {
         public FixedString512Bytes Text;
     }
 
-    // RequestId=0 announces availability, including a new match and team changes.
+    // RequestId 为 0 时通知聊天可用性，也涵盖新一局和队伍权限变化。
     public struct RaidChatResultRpc : IRpcCommand {
         public ulong Session;
         public uint AnnouncementSequence;

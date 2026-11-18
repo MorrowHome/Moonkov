@@ -21,7 +21,7 @@ namespace Unity.MP_FPS {
         Drop
     }
 
-    // One timeline for authoritative release and the baked hand animation.
+    // 权威投掷释放与烘焙手部动画共用同一套时间。
     public static class GrenadeHandling {
         public const float DrawSeconds = .35f, PrimeSeconds = .55f, ReleaseSeconds = .32f;
         public const float RecoverySeconds = .42f, StowSeconds = .3f, LowSpeed = 6f;

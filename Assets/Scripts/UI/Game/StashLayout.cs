@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
-    // Client presentation coordinates only. This model never changes account quantities.
+    // 记录客户端的摆放坐标。账号物资数量由库存系统维护。
     public sealed class StashLayout {
         public sealed class Placement {
             public int X, Y, BaseWidth, BaseHeight;

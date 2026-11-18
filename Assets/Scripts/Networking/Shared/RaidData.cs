@@ -26,7 +26,7 @@ namespace Unity.MP_FPS {
         ResearchSuppliesNoSpace
     }
 
-    // This component lives on the connection, so settlement survives character despawning.
+    // 此组件挂在连接上，角色销毁后仍可用来结算。
     public struct RaidSession : IComponentData {
         public int RaidId;
         public uint SnapshotSequence;
@@ -45,7 +45,7 @@ namespace Unity.MP_FPS {
         public int ExpeditionSquadId;
         public double CompanionSpawnUntil;
 
-        // Server-only index of the exit whose timer is currently advancing.
+        // 只供服务端记录正在推进撤离计时的出口索引。
         public int ExtractionIndex;
         public float TimeLeft, ExtractionProgress, SnapshotTimer;
         public int BagCount => Dust + Alloy + Cells;
@@ -67,9 +67,9 @@ namespace Unity.MP_FPS {
         public uint RequestId;
     }
 
-    // Reliable, connection-targeted snapshots include shared loot for observers and late joiners.
-    // V2 widens TakenMask from uint to ulong. A distinct RPC identity also
-    // invalidates cached Burst executors compiled against the 32-bit layout.
+    // 可靠快照定向发给连接，观察者和晚到玩家也能收到共用物资状态。
+    // V2 把 TakenMask 从 uint 扩成 ulong。换 RPC 类型名
+    // 可以令按旧 32 位布局编译的 Burst 缓存失效。
     public struct RaidSnapshotV2Rpc : IRpcCommand {
         public int RaidId;
         public uint Sequence;

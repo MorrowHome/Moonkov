@@ -21,7 +21,7 @@ namespace Unity.MP_FPS {
             var frame = Quaternion.LookRotation(transform.forward, transform.up);
             Vector3 hip = m_ShieldAnchor.position, center = Vector3.Lerp(hip, m_PackAnchor.position, .65f);
             float back = -.09f, front = .09f, right = .12f;
-            // Fit against torso skin/clothing only. Skin matrices preserve imported FBX scale.
+            // 贴合只参考上身皮肤及衣料。蒙皮矩阵保留 FBX 的原始缩放。
             foreach (var renderer in GetComponentsInChildren<SkinnedMeshRenderer>(true)) {
                 var mesh = renderer.sharedMesh;
                 if (!mesh || renderer.name.Contains("Runtime")) continue;

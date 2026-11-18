@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace Unity.MP_FPS {
     public static class Ballistics {
-        // Use the same release origin for players and AI. Range never increases damage,
-        // and old definitions without a falloff interval retain their original behavior.
+        // 玩家和 AI 共用发射起点规则。距离变远不会让伤害升高。
+        // 旧武器若没配有效的衰减区间，仍保留原有行为。
         public static float DamageAtDistance(WeaponData weapon, float distance) {
             if (!weapon) return 0;
             // 范围伤害由爆点到目标的距离计算。直击武器没配置有效衰减区间时则用固定伤害。
@@ -27,8 +27,8 @@ namespace Unity.MP_FPS {
             return initialVelocity + Vector3.down * (gravity * age);
         }
 
-        // Sweep the path we actually travelled, never the next frame's path.
-        // Query all candidates so the shooter's collider cannot hide a wall or another player.
+        // 扫描这一拍已经飞过的路径，下一拍的路径留到下一次更新。
+        // 检查所有命中候选，避免发射者自己的碰撞体遮掉实际的墙或其他玩家。
         public static bool Sweep(
             PhysicsScene scene,
             Vector3 from,
