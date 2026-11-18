@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    /// <summary>Authored shared positions only. All loot, inventory and extraction rules run on the server.</summary>
+    /// <summary>这里保存场景里配置的共用坐标。掉落、库存和撤离规则由服务端运行。</summary>
     public sealed class MoonRaidMap : MonoBehaviour {
         public static MoonRaidMap Active { get; private set; }
         [SerializeField] private Vector3[] m_LootPositions = new Vector3[0];
@@ -85,11 +85,13 @@ namespace Unity.MP_FPS {
         private CorpsePresentationSettings m_CorpseSettings;
         public Vector3[] LootPositions => m_LootPositions;
 
+        // 没有单独摆敌人出生点时回退到地图原有候选位置。正式选点还会做距离、可见性和导航检查。
         public Vector3[] EnemySpawnPositions =>
             m_EnemySpawnPositions != null && m_EnemySpawnPositions.Length > 0 ? m_EnemySpawnPositions : m_LootPositions;
 
         public float EnemyActivationDistance => Mathf.Max(0, m_EnemyActivationDistance);
 
+        // 同一个配置下标同时对应物资位置、类型、摆放方向和地面法线。配置漏填时有回退，避免取数组越界。
         public RaidLootProfile GetLootProfile(int index) {
             return m_LootProfiles != null && index >= 0 && index < m_LootProfiles.Length
                 ? m_LootProfiles[index]
@@ -149,6 +151,7 @@ namespace Unity.MP_FPS {
         public float DayLengthMinutes => Mathf.Max(1, m_DayLengthMinutes);
         public bool TimeRunning => m_TimeRunning;
 
+        // 新场景能引用单独的氧气配置资产。旧场景继续使用这里原先序列化的字段。
         public OxygenParameters OxygenParameters =>
             m_OxygenSettings
                 ? m_OxygenSettings.Parameters
@@ -167,6 +170,7 @@ namespace Unity.MP_FPS {
         public float DehydrationDamagePerSecond => m_DehydrationDamagePerSecond;
         private bool m_Arena;
 
+        // 让其他竞技地图也能使用统一的局内 HUD。临时组件沿用经典地图的补给位置，关掉常规远征敌人和时钟。
         internal static void AttachArena(UnityEngine.SceneManagement.Scene scene, PanelSettings panel) {
             var root = new GameObject("竞技场");
             root.SetActive(false);
@@ -190,6 +194,7 @@ namespace Unity.MP_FPS {
                 Active = this;
                 return;
             }
+            // 普通远征的箱子编号与快照位掩码对应，所以最多支持 64 个。无可用位置就不登记为当前战局地图。
             if (m_LootPositions == null || m_LootPositions.Length == 0 ||
                 m_LootPositions.Length > RaidLootContainers.FirstDeathBagId) {
                 Debug.LogError("Moon raid needs between 1 and 64 authored loot points.", this);
@@ -210,7 +215,8 @@ namespace Unity.MP_FPS {
         }
 
         private void Start() {
-            // No presentation objects or UI are created in a dedicated server.
+            // 专用服务器跳过画面对象和 UI 的创建。
+            // 纯服务器只读地图规则数据，不创建物资模型、撤离灯和界面。
             if (!ClientServerBootstrap.HasClientWorlds) return;
             if (m_Arena) {
                 CreateRaidHud();
@@ -230,7 +236,8 @@ namespace Unity.MP_FPS {
                 m_Markers[i].transform.rotation = Quaternion.FromToRotation(Vector3.up, GetLootGroundNormal(i)) *
                                                   Quaternion.Euler(0, GetLootYaw(i), 0);
                 m_Markers[i].name += " / " + GetLootProfile(i);
-                m_Markers[i].SetActive(false); // Do not show stocked caches before the first server snapshot.
+                // 箱子画好也先藏着，等到第一包库存快照再显示，免得先出现一张全是可搜刮箱子的假画面。
+                m_Markers[i].SetActive(false); // 收到服务端第一包快照再显示有库存的物资箱。
             }
             m_ExtractionVisuals = new GameObject("Expedition extraction presentation");
             m_ExtractionVisuals.transform.SetParent(transform, false);
@@ -264,7 +271,8 @@ namespace Unity.MP_FPS {
             marker.transform.position = position;
             marker.transform.localScale = scale;
             var collider = marker.GetComponent<Collider>();
-            collider.enabled = false; // Visual markers never change hitscan, LOS, or movement.
+            // 撤离圈和信标仅用于指路。移除自带碰撞，避免它们挡子弹、人物和视线。
+            collider.enabled = false; // 这些标记没有玩法碰撞，不影响射线命中、视线和移动。
             Destroy(collider);
             marker.GetComponent<Renderer>().sharedMaterial = material;
             return marker;
@@ -276,6 +284,7 @@ namespace Unity.MP_FPS {
                                                 BountyClashArenaSettings.Active.ModeActive));
         }
 
+        // 每个箱子用掩码中的一个二进制位表示空箱。悬赏模式下，场地圆外的箱子从画面隐藏。
         public void ShowLoot(ulong takenMask, bool hasSnapshot) {
             if (m_Markers == null) return;
             for (int i = 0; i < m_Markers.Length; i++) {
@@ -312,6 +321,7 @@ namespace Unity.MP_FPS {
         public void ShowDeathBags(RaidDeathBagClientState state) {
             if (state == null) return;
             m_HiddenBags.Clear();
+            // 服务端快照里没有的尸体或掉落要从画面撤下。先收集编号，枚举完再从字典删。
             foreach (var pair in m_DeathBags)
                 if (!state.Bags.ContainsKey(pair.Key)) {
                     Destroy(pair.Value);
@@ -322,8 +332,9 @@ namespace Unity.MP_FPS {
                 m_DropVisualCodes.Remove(id);
             }
             foreach (var bag in state.Bags.Values) {
+                // 已有尸体模型不必再生成。可变化的地面物资只在编号对应的物品代码变了时重建外观。
                 if (m_DeathBags.TryGetValue(bag.LootId, out var existing)) {
-                    // Empty drops retain their authoritative grace-period record, but no visible item.
+                    // 空掉落在服务端还有一段保留时间，但画面上不再显示物品。
                     if (bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex) continue;
                     existing.SetActive(!bag.Empty);
                     state.ItemCodes.TryGetValue(bag.LootId, out string currentCode);
@@ -337,7 +348,7 @@ namespace Unity.MP_FPS {
                     var dropped = PhysicalItemVisuals.Create(code, transform);
                     bool fallback = !dropped;
                     if (!dropped) {
-                        // Halo art is intentionally outside this asset pass.
+                        // 这次资源处理不涉及光环的美术素材。
                         dropped = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         dropped.transform.SetParent(transform, false);
                         dropped.transform.localScale = new Vector3(.4f, .3f, .3f);
@@ -353,11 +364,12 @@ namespace Unity.MP_FPS {
                     m_DropVisualCodes[bag.LootId] = code;
                     continue;
                 }
+                // 角色标记用于分出异形残骸、人形尸体和地面武器。三者的库存都来自服务端，画法分别走各自的组件。
                 if (bag.CharacterIndex == -1) {
                     m_DeathBags.Add(bag.LootId, AlienLootVisual.Create(transform, bag));
                     continue;
                 }
-                // Classic keeps the original dead ghost through the round.
+                // 经典爆破在本回合结束前保留原本的死亡 Ghost。
                 if (m_CorpseSettings == null) continue;
                 var corpse = CorpseVisual.Spawn(transform, m_CorpseSettings, bag);
                 m_DeathBags.Add(bag.LootId, corpse.gameObject);
@@ -371,8 +383,8 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Map-authored exits share the existing timer and radius. All configured
-    // exits are open; spawn-specific availability is a separate future rule.
+    // 场景里配置的撤离点共用现有读条时间和半径。
+    // 这些撤离点当前都开放。按出生点限制可用出口属于另一条规则。
     public static class RaidExtractionRules {
         public const int MaxExits = 8;
         public static int Count(Vector3[] extra) { return 1 + System.Math.Min(extra?.Length ?? 0, MaxExits - 1); }
@@ -393,6 +405,7 @@ namespace Unity.MP_FPS {
             return x * x + z * z;
         }
 
+        // 判定撤离圈时查平面半径，也限制脚下与出口的高度差。避免站在屋顶能撤离楼下的队伍。
         private static bool Inside(Vector3 position, Vector3 exit, float radius) {
             return Finite(position) && Finite(exit) && float.IsFinite(radius) && radius > 0 &&
                    System.Math.Abs((double)position.y - exit.y) <= 3 &&
@@ -420,6 +433,7 @@ namespace Unity.MP_FPS {
         }
 
         public static int AtPosition(Vector3 primary, Vector3[] extra, Vector3 position, float radius, int previous) {
+            // 两个撤离圈重叠时，优先沿用已经读条的出口。否则在重叠边缘移动就会不停切换读条。
             if (TryPosition(primary, extra, previous, out var prior) && Inside(position, prior, radius))
                 return previous;
             int best = -1;
@@ -444,6 +458,7 @@ namespace Unity.MP_FPS {
             float deltaTime) {
             int previous = session.ExtractionProgress > 0 ? session.ExtractionIndex : -1;
             int current = AtPosition(primary, extra, position, radius, previous);
+            // 走出所有可用圈就归零。切换到另一个出口也重新计时，不能把上一个位置的时间带过去。
             if (current < 0) {
                 session.ExtractionProgress = 0;
                 session.ExtractionIndex = -1;

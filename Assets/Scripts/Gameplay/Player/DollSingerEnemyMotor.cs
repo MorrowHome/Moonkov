@@ -24,8 +24,9 @@ namespace Unity.MP_FPS {
             var eye = ghost.ShotOrigin.position;
             brain.SelfStatus = null;
             brain.LightGlare = health.HaloLightGlare;
-            // The ECS actor exists before the spawned GameObject finishes linking.
-            // Use the query's identity rather than reading the not-yet-bound behaviour.
+            // ECS 角色早于场景 GameObject 完成链接。
+            // 使用查询取得的实体身份，不通过尚未绑定的组件找身份。
+            // 用 ECS 角色拿它自己的持续状态。角色外观可能还没接好，所以不从模型反向猜玩法身份。
             if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(self, out var status))
                 brain.SelfStatus = status;
             brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now &&
@@ -41,14 +42,16 @@ namespace Unity.MP_FPS {
                 Decide(brain, position, health, map, now);
                 brain.NextDecision = now + m_Tuning.DecisionInterval;
             }
+            // 本拍接着做跨帧的掩体、医疗和补给。需要走哪条新路线留给定期执行的决策。
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
             AdvanceNutrition(brain, ref health, position, now);
             UpdateOxygenSupply(brain, ref health, position, now);
             UpdateShieldSupply(brain, ref health, position, now);
             if (brain.NutritionUntil <= 0) AdvanceObjective(brain, ref health, position, eye, map, now, dt);
-            // A timed search is stationary; re-pathing to the actor's own position
-            // can fail and cancel an otherwise reachable corpse or drawer.
+            // 搜索读条时角色不走路。
+            // 重算一条到角色当前位置的路径可能失败，结果把本来能搜的尸体或抽屉取消了。
+            // 搜刮读条时人已经站好。再寻一条到自己当前位置的路反而可能失败，把正常搜刮取消掉。
             if (brain.Action != PmcAction.Scavenge || brain.LootUntil <= 0)
                 UpdatePath(brain, position, brain.TacticalGoal, now);
             var move = FollowPath(brain, position);
@@ -61,6 +64,7 @@ namespace Unity.MP_FPS {
             bool checkingCorner = searching && atCorner;
             if (searching) move *= pursuing ? checkingCorner ? .55f : 1 : checkingCorner ? .45f : .7f;
             if (brain.IsPeeking) move *= .65f;
+            // 在互动、治疗和撤离读条期间停住，让 计时动作 按服务端条件完成。
             if ((brain.Action == PmcAction.Scavenge && brain.LootUntil > 0) || brain.ExtractionProgress > 0 ||
                 brain.HealUntil > 0 || brain.NutritionUntil > 0 || brain.Interacting ||
                 (searching && now < brain.SearchPauseUntil) ||
@@ -77,6 +81,7 @@ namespace Unity.MP_FPS {
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;
             var weapon =
                 WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
+            // 弹体要飞一段时间，连续看见目标时可按有限的速度估计提前量并补下坠。
             if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile) {
                 float flight = Mathf.Min(.6f, distance / Mathf.Max(1, weapon.ProjectileSpeed));
                 aim += Vector3.ClampMagnitude(brain.ObservedVelocity * flight, brain.IsExpeditionRaider ? 4.5f : 3);
@@ -88,6 +93,7 @@ namespace Unity.MP_FPS {
                                 brain.MovementRequested &&
                                 (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
                                  brain.Action == PmcAction.FollowSquad) && !RaidHealth.HandsBusy(health);
+            // 搜刮者看实际物资位置。预瞄转角时先看下一段路，小队后卫或搜索又有自己的观察方向。
             if (looting)
                 facing = brain.LootLookPoint - eye;
             else if (preaimCorner) facing = brain.Corners[brain.Corner + 1] + Vector3.up * 1.15f - eye;
@@ -99,7 +105,7 @@ namespace Unity.MP_FPS {
             if (searching && brain.SearchFocusValid) {
                 var lookPoint = brain.SearchLookPoint;
                 if (now >= brain.SearchPauseUntil && brain.Corner < brain.CornerCount) {
-                    // Check the space beyond an upcoming turn before walking around it.
+                    // 转过下个拐角前，先检查拐角之后空间。
                     int corner = checkingCorner ? brain.Corner + 1 : brain.Corner;
                     lookPoint = brain.Corners[corner] + Vector3.up * 1.15f;
                 }
@@ -119,8 +125,9 @@ namespace Unity.MP_FPS {
                     Mathf.Clamp01((float)(now - brain.VisibleSince) / (brain.IsExpeditionRaider ? 1.1f : 2f));
                 float error = Mathf.Lerp(m_Tuning.FirstShotError, m_Tuning.SettledAimError, settled);
                 float movingError = 1.5f;
+                // 误差做成有空间上限的偏移。远距离固定角度会偏离很多米，视线仍很清楚时不该完全看不出目标形状。
                 if (brain.IsExpeditionRaider && brain.Visible) {
-                    // A fixed angular error would turn a small miss into several body widths at range.
+                    // 固定角度误差会让远处的一点偏差放大到几个身体宽。
                     float aimDistance = Mathf.Max(1, distance);
                     float offset = Mathf.Lerp(.55f, .27f, settled);
                     error = Mathf.Min(error, Mathf.Atan2(offset, aimDistance) * Mathf.Rad2Deg);
@@ -138,7 +145,8 @@ namespace Unity.MP_FPS {
             var localMove = Quaternion.Euler(0, -look.x, 0) * move;
             var input = new PlayerInput {
                 MoveInput = new float2(localMove.x, localMove.z), LookYawPitchDegrees = look,
-                // AimPoint must follow the imperfect, rate-limited look ray; exact target coordinates would bypass it.
+                // AimPoint 必须沿当前受误差和转身速度限制的视线。直接给目标精确坐标会绕开这些限制。
+                // 瞄准点跟随当前转到的角度，而不是直接填敌人的精确位置。射击规则因此仍会遵守转身速度与误差。
                 AimPoint = eye + direction * Mathf.Max(1, distance)
             };
             input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
@@ -181,6 +189,7 @@ namespace Unity.MP_FPS {
                     preferred == 1 ? PlayerInput.InputFlag.EquipHalo :
                     preferred == 2 ? PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
                 brain.NextTacticalSwitch = now + 3;
+                // 普通远征人形可先找有弹的备用武器和真实电池，结算充能还走武器系统。
                 if (brain.IsExpeditionRaider && brain.Action == PmcAction.Reload)
                     brain.CommitUntil = brain.NextDecision = 0;
             }
@@ -228,11 +237,11 @@ namespace Unity.MP_FPS {
                                    ClashShotLaneClear(brain, eye, direction, map.EnemySightRange)) &&
                                   (brain.ExpeditionSquadId == 0 || ExpeditionShotLaneClear(brain, ghost.transform, eye,
                                       direction, distance + .2f));
-            // Do not spend a short peek's entire burst while still reacting or
-            // turning toward the contact. The burst starts when the shot is possible.
+            // 别在角色还没反应过来或还在转身时，就开始消耗短暂探头的连发时间。
+            // 能实际开火时才开始计算这一组。
             if (now >= brain.NextBurst && firingSolution) {
-                // Releasing defense starts with a lowered halo. Leave time to raise
-                // it before counting the short burst, including injured-hand handling.
+                // 松开防御时光环还在低位。
+                // 开始统计短连射前留足抬手时间，也考虑手伤导致的变慢。
                 float raiseTime = DollSingerWeapons.IsHalo(health.EquippedWeaponID)
                     ? (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds *
                       RaidHealth.HandlingMultiplier(health)
@@ -244,11 +253,12 @@ namespace Unity.MP_FPS {
                     ? brain.Random.NextFloat(.18f, .38f)
                     : brain.Random.NextFloat(.5f, 1.1f));
             }
+            // 枪线失效时清走先前排队的一发，避免转进队友或掩体后发生迟到射击。
             if (brain.IsExpeditionRaider && !firingSolution && HaloModuleFire.HasPendingFire(health))
                 HaloModuleFire.Reset(ref health);
             bool shoot = firingSolution && now < brain.BurstUntil;
-            // A valid return-fire window releases defense; otherwise the barrier
-            // silently consumes every burst while the actor stands exposed.
+            // 有可反击的火线就解除防御。
+            // 否则护盾会无声吞掉每轮射击，让角色一直站在外面只挨打。
             bool defend = !shoot && !TutorialRuntime.Enabled(EntityManager) && brain.Visible &&
                           (brain.Action == PmcAction.Retreat ||
                            (brain.Action == PmcAction.Cover && !brain.IsPeeking)) && health.HaloEnergy > 15 &&
@@ -271,6 +281,7 @@ namespace Unity.MP_FPS {
                 return Vector3.zero;
             float distance = HorizontalDistance(position, brain.LastSeen);
             if (distance > PreferredCombatRange(brain, health.EquippedWeaponID) + 4) return Vector3.zero;
+            // 每次射击间歇只挑一段短横移。走到新位置之后才从那里重新开火。
             if (brain.SidestepBurst != brain.NextBurst) {
                 float side = ((brain.Seed + (int)(brain.NextBurst * 1.7)) & 1) == 0 ? 1 : -1;
                 brain.SidestepDirection =
@@ -278,7 +289,7 @@ namespace Unity.MP_FPS {
                 brain.SidestepBurst = brain.NextBurst;
             }
             if (brain.SidestepDirection.sqrMagnitude > .01f) {
-                // The new position is our firing position for the next burst.
+                // 短横移后的新位置就是下一组连射的出发点。
                 brain.TacticalGoal = position;
                 brain.Corner = brain.CornerCount;
             }
@@ -298,6 +309,7 @@ namespace Unity.MP_FPS {
                     brain.Action == PmcAction.Flank);
         }
 
+        // 原地安全且能访问库存时才给或穿护盾。用实际物品版本避免重复试同一件。
         private void UpdateShieldSupply(
             DollSingerEnemyBrain brain,
             ref PredictedPlayerGhost health,
@@ -317,6 +329,7 @@ namespace Unity.MP_FPS {
                 health.LastReloadTick = SystemAPI.GetSingleton<NetCode.NetworkTime>().ServerTick.TickIndexForValidTick;
         }
 
+        // 持续用玩家共用逻辑耗氧，并尝试按安全时机用携带补给。缺东西可触发后续撤离决策。
         private void UpdateOxygenSupply(
             DollSingerEnemyBrain brain,
             ref PredictedPlayerGhost health,
@@ -387,11 +400,11 @@ namespace Unity.MP_FPS {
             bool shieldHit = tracked ? allShieldHits > statusShieldHits : allShieldHits != 0;
             float externalLoss = tracked ? Mathf.Max(0, lost - (float)statusLoss) : brain.BleedOnlyDamage ? 0 : lost;
             bool impact = health.LastImpactTick != brain.LastImpactTick;
-            // The impact event is authoritative even when healing in the same
-            // update makes the net health change zero or positive.
+            // 伤害事件本身已由服务端确认，即便同一拍治疗后，
+            // 血量净变化为零或反而增加，也不能把那次撞击忽略。
             if (impact || shieldHit || externalLoss > .001f) {
-                // Pressure scales with actual injury. Grazes and periodic tissue loss
-                // must not count like repeated half-strength panic impulses.
+                // 压制随实际伤害调整。擦伤和周期性组织损伤轻一些，
+                // 不能把它们反复当成半强度的恐慌冲击来加。
                 float pressureLoss = !tracked && impact ? lost : externalLoss;
                 float pressure = Mathf.Clamp01(pressureLoss / RaidHealth.Maximum(BodyPart.Chest)) * .6f;
                 if (shieldHit) pressure += .08f + Mathf.Clamp01(health.ShieldHitStrength) * .12f;
@@ -409,6 +422,7 @@ namespace Unity.MP_FPS {
     }
 
     public static class PmcStatusDamage {
+        // 伤害入口额外记录确认的冲击。治疗恰好同一拍发生时，不能仅从前后血量差判断是否被打。
         public static void Record(
             TacticalServerWorld.Status status,
             in PredictedPlayerGhost before,

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Local presentation history only. Does not mutate replicated health or survival rules.
+    // 只记录本地表现历史。同步生命值与生存规则由原有系统管理。
     internal sealed class InjuryFeedbackState {
         internal float Critical, Hunger, Thirst, Impact, Blood, Time, Variation, Visibility;
         private bool m_Observed, m_Alive;
@@ -25,6 +25,7 @@ namespace Unity.MP_FPS {
         internal void Present(in PredictedPlayerGhost state, float dt, float fadeSpeed) {
             dt = Mathf.Clamp(dt, 0, .25f);
             Time += dt;
+            // 每帧先衰减临时的撞击和血迹，再用新收到的事件增加强度。这样一次击中能在几帧内退下去。
             Impact = Mathf.MoveTowards(Impact, 0, Mathf.Max(.1f, fadeSpeed) * dt);
             Blood = Mathf.MoveTowards(Blood, 0, dt * .15f);
             bool alive = state.CurrentHealth > 0 && (!state.ClashEnabled || state.ClashLife == ClashLife.Alive);
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS {
                 m_Health = state.CurrentHealth;
                 m_DeathAge = 0;
                 Visibility = alive ? 1 : 0;
+            // 只有看到新的受伤编号、确实扣了血且符合伤因时，才提升瞬时受击表现。饥渴缺氧有自己持续的屏幕提示。
             } else if ((alive || m_Alive) && unchecked((int)(state.LastHitTick - m_Hit)) > 0 &&
                        state.LastDamageAmount > 0 && state.CurrentHealth < m_Health - .001f && !Systemic(state)) {
                 float strength = Mathf.Clamp01(state.LastDamageAmount / RaidHealth.Maximum(BodyPart.Chest));
@@ -49,6 +51,7 @@ namespace Unity.MP_FPS {
             if (alive) {
                 Visibility = 1;
                 m_DeathAge = 0;
+                // 总生命和头胸部位取更危险的状态，决定急救提示强度。饥渴也各自平滑变化，因此小幅数值更新不会让屏幕闪一下。
                 float fraction = state.CurrentHealth / Mathf.Max(1, state.MaxHealth);
                 if (state.BodyHealthInitialized)
                     fraction = Mathf.Min(fraction,
@@ -66,8 +69,9 @@ namespace Unity.MP_FPS {
                 Hunger = Mathf.Lerp(Hunger, hunger, blend);
                 Thirst = Mathf.Lerp(Thirst, thirst, blend);
             } else if (m_Alive || m_DeathAge > 0) {
-                // Briefly retain the last dying state, then release the result/spectator view.
+                // 死亡时短暂保留最后状态的画面，随后交给结果页或观战视角。
                 if (m_Alive) Critical = Mathf.Max(Critical, .85f);
+                // 死亡后短暂保留最后一刻的反馈，然后逐步淡出。结算画面或观战镜头才能自然接过来。
                 m_DeathAge += dt;
                 Visibility = 1 - Mathf.SmoothStep(0, 1, m_DeathAge / 1.1f);
             }

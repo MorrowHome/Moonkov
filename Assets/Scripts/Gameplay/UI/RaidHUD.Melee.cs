@@ -76,8 +76,10 @@ namespace Unity.MP_FPS {
         }
 
         private bool SendMelee(MeleeAction action, string itemId = null, int equipmentSlot = 0) {
+            // 没有本地角色数据不能发近战操作。收到角色后根据本局和这次近战阶段重新建立请求跟踪。
             if (!m_MeleeInitialized || !ReadMelee(out var ghost)) return false;
             EnsureMeleeContext(ghost);
+            // 用编号差判断快照里的请求是否更靠后。编号回绕后也能按这个短差值继续比较。
             if (unchecked((int)(ghost.MeleeRequestId - m_MeleeNextRequest)) > 0)
                 m_MeleeNextRequest = ghost.MeleeRequestId;
             unchecked {
@@ -118,7 +120,7 @@ namespace Unity.MP_FPS {
                          ((MeleeWeaponKind)ghost.MeleeWeapon != MeleeWeaponKind.None ||
                           ghost.EquippedWeaponID == DollSingerWeapons.None);
             if (!selectedMelee && !melee) return false;
-            // Both buttons are consumed for the entire melee mode, including blocked frames.
+            // 近战模式会消费两枚操作键，包括因忙碌而不能攻击的帧。
             if ((!light && !heavy) || !QuickAlive || QuickManualBusy || DarkSightRequested || PointerRequested ||
                 GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement))
@@ -145,9 +147,11 @@ namespace Unity.MP_FPS {
                 return;
             }
             if (EnsureMeleeContext(ghost)) RaidQuickSlotInput.ReleasePrimary();
+            // 角色已经同步这个编号或更晚的编号时，解除本地等待。请求具体成败还要看随它一起同步的反馈值。
             if (m_MeleePendingRequest != 0 && (ghost.MeleeRequestId == m_MeleePendingRequest ||
                                                unchecked((int)(ghost.MeleeRequestId - m_MeleePendingRequest)) > 0))
                 m_MeleePendingRequest = 0;
+            // 只给自己发出的动作显示明确反馈。重复快照沿用之前的提示，不会一遍遍重新播放。
             if (m_MeleeTrackedRequest != 0 && ghost.MeleeRequestId == m_MeleeTrackedRequest &&
                 (ghost.MeleeRequestId != m_MeleeObservedRequest || ghost.MeleeFeedback != m_MeleeObservedFeedback)) {
                 m_MeleeObservedRequest = ghost.MeleeRequestId;
@@ -157,6 +161,7 @@ namespace Unity.MP_FPS {
                     feedback != MeleeFeedback.Equipped)
                     MeleeNotice(MeleeFeedbackText(feedback));
             }
+            // 超过本地等待期限可以释放按钮和提示。没有回执的动作不自动重发，避免连线恢复时多执行一次。
             if (m_MeleePendingRequest != 0 && Time.unscaledTime - m_MeleeRequestedAt > 8) {
                 m_MeleePendingRequest = 0;
                 MeleeNotice("Melee unavailable. Waiting for connection.");

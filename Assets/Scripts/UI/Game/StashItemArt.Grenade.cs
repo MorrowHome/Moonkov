@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class StashItemArt {
+        // 用多层几何形状组合外壳和能量芯。这里只画物品图标，传入的库存不会改变。
         private void EnergyGrenade() {
             Ring(0x16435c, 10, 50, 50, 28);
             Ring(0x28799c, 5, 50, 50, 25);

@@ -7,9 +7,10 @@ using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One server-owned run per deployed player. The player entity survives a
-    // retained connection, so reconnects resume evidence without sharing it.
+    // 每个已出战的玩家由服务端维护一份研究进度。连接断开并保留时
+    // 角色实体仍在，重连可继续收集原来的证据，各玩家进度独立。
     public sealed partial class ResearchQuestRuntime {
+        // 进度同时按 World 和实际角色实体划开。玩家断线、同进程开新局或角色换人时，不会拿到其他局的证据。
         private static readonly Dictionary<World, Dictionary<Entity, ResearchQuestRuntime>> s_Runs = new();
         private static readonly ResearchDevice[] s_Devices = (ResearchDevice[])Enum.GetValues(typeof(ResearchDevice));
         private readonly World m_World;
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS {
         private bool Active(ResearchQuest quest) { return ResearchQuestRules.Has(m_Result.Active, quest); }
         private InventoryGraph Inventory => m_Inventory.Graph;
 
+        // 每个活动玩家第一次推进研究时建立一份运行记录。后续只按本局标识继续，真正落盘仍等 Finish。
         public static void Tick(
             World world,
             Entity connection,
@@ -90,6 +92,7 @@ namespace Unity.MP_FPS {
 
         public static void Clear(World world) { s_Runs.Remove(world); }
 
+        // 结束本局把这份进度冻结交给结算，并从活动列表移除。只有符合撤离规则的证据能进一步合进正式档案。
         public static ResearchQuestResult Finish(World world, Entity player, int raidId, bool extracted) {
             var run = Find(world, player);
             if (run == null || run.m_RaidId != raidId) return null;
@@ -107,6 +110,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 采样要从本次出战、这个角色和实际能搜到的异形遗体来，同一个遗体也只能记一次。
         public static void CollectSample(
             World world,
             Entity connection,
@@ -134,6 +138,7 @@ namespace Unity.MP_FPS {
                     run.ObserveCargo();
         }
 
+        // 任务要求随身带走的证据必须仍在玩家背包，先捡起又遗失的结果不能用旧状态直接提交。
         private bool ObserveCargo() {
             if (m_PackageId == null) return false;
             bool loaded = ResearchQuestRules.StoredInHalo(Inventory, m_PackageId);
@@ -142,6 +147,7 @@ namespace Unity.MP_FPS {
             return loaded && !m_PackageRemoved;
         }
 
+        // 伤害归属附带开火时采用的光环与哨戒信息。等目标死亡再用这份来源核对，切换武器不会改变已经打出的攻击归属。
         public static ClashDamageSource TagShot(
             World world,
             Entity shooter,
@@ -156,6 +162,7 @@ namespace Unity.MP_FPS {
             return source;
         }
 
+        // 这里根据真实击杀对象和攻击来源更新进度。击杀消息本身不给玩家仓库直接加物品。
         public static void RecordKill(World world, Entity victim, ClashDamageSource source) {
             var run = Find(world, source.ResearchShooter);
             if (run == null || !world.EntityManager.HasComponent<ProceduralAlienEnemy.State>(victim)) return;
@@ -199,6 +206,7 @@ namespace Unity.MP_FPS {
             return anchor.Position + Vector3.up * .19f;
         }
 
+        // 将能操作哪些设备、当前读条和研究提示组装成 HUD 快照。不会把中间的运行对象直接交给客户端。
         public static bool TryRead(World world, Entity player, int raidId, out ResearchQuestSnapshotRpc view) {
             view = default;
             var run = Find(world, player);
@@ -322,6 +330,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 推进研究暴露与危险状态后才处理手动设备。必须在租期内持续对准设备，否则重置动作并等待松开后重开。
         private void Advance(in PredictedPlayerGhost health, Vector3 position, double now, float dt, uint tick) {
             if (Active(ResearchQuest.Exposure)) {
                 m_AliveSeconds = Mathf.Min(ResearchQuestRules.ExposureSeconds, m_AliveSeconds + dt);
@@ -357,6 +366,7 @@ namespace Unity.MP_FPS {
                 m_HoldStart = now;
                 if (m_Requested is ResearchDevice.Server or ResearchDevice.OriginalArchive) AlertAliens(m_Requested);
             }
+            // 按时间判定读条完成。按键可以先开始，但是只有读够这段设备所需的时间才执行真正结果。
             if (now - m_HoldStart < Duration(m_Requested)) return;
             m_Action.Node = -1;
             m_RequireRelease = true;
@@ -379,6 +389,7 @@ namespace Unity.MP_FPS {
             m_NoticeUntil = now + 3;
         }
 
+        // 从现场领取指定证据前先核对装备空间和身份。写到局内背包成功后，记录才认为已经拿到它。
         private bool Recover(string code, string id, double now) {
             if (Inventory.AddSupply(code, 1, foundInRaid: true, id: id) != InventoryError.None) {
                 Notice("space", now);

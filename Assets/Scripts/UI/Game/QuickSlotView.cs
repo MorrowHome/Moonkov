@@ -75,6 +75,7 @@ namespace Unity.MP_FPS.Client {
             Element.Add(m_Caption);
         }
 
+        // 拖放命中按控件变换后的实际屏幕范围算。还未加进面板的槽不能接收物品。
         public int Hit(Vector2 point) {
             for (int i = 0; i < m_Slots.Length; i++)
                 if (m_Slots[i].panel != null && m_Slots[i].worldBound.Contains(point))
@@ -94,6 +95,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void RefreshViewport() {
+            // 快栏停靠在背包里时随背包布局，不做战斗 HUD 的独立屏幕补偿。离开背包再重新按分辨率计算。
             if (m_InventoryOpen && m_InventoryHost != null) {
                 m_PixelRoot.RemoveFromClassList("quick-slots-narrow");
                 m_PixelRoot.style.width = StyleKeyword.Auto;
@@ -104,9 +106,9 @@ namespace Unity.MP_FPS.Client {
             }
             var parent = m_PixelRoot.parent;
             if (parent == null || parent.contentRect.width < 1 || Screen.width < 1 || Screen.height < 1) return;
-            // Cancel only the panel's downscaling. Preserve the existing large-screen
-            // scale above its native reference width. All drawing and pointer bounds
-            // share the same local transform; no per-label font multipliers are used.
+            // 只抵消面板向下缩小的部分。超过原始参考宽度时，
+            // 沿用大屏已有的放大比例。图形和指针范围
+            // 共用同一个本地变换，文字无需单独放大。
             float width = Mathf.Min(Screen.width, parent.contentRect.width);
             var size = new Vector2(width, Screen.height * width / Screen.width);
             float scale = parent.contentRect.width / width;
@@ -117,7 +119,7 @@ namespace Unity.MP_FPS.Client {
             m_PixelRoot.style.height = size.y;
             m_PixelRoot.style.scale = new Scale(new Vector3(scale, scale, 1));
             m_PixelRoot.EnableInClassList("quick-slots-narrow", width < 1100);
-            // Keep the existing timed medical panel above this compact row.
+            // 医疗读条仍放在这排紧凑快捷栏的上方。
             var actionPanel = m_PixelRoot.Q("raidTimedAction");
             if (actionPanel != null) actionPanel.style.bottom = width < 1000 ? 210 : 145;
         }
@@ -128,6 +130,7 @@ namespace Unity.MP_FPS.Client {
             bool busy,
             bool inventoryOpen,
             string status) {
+            // 打开或关背包后取消上一种场景的展开计时。只移动同一个视觉根节点，两边不会各留一份快捷栏。
             if (m_InventoryOpen != inventoryOpen) Hide();
             m_InventoryOpen = inventoryOpen;
             var parent = inventoryOpen && m_InventoryHost != null ? m_InventoryHost : m_HudHost;
@@ -142,6 +145,7 @@ namespace Unity.MP_FPS.Client {
                 string code = bindings.Code(i);
                 bool fists = bindings.Fists(i);
                 bool bound = fists || !string.IsNullOrEmpty(bindings[i]);
+                // 同一物品变化了数量时只改数字。物品代码变了才重新加载图标和需要的绘制组件。
                 if (code != m_Codes[i]) {
                     m_Codes[i] = code;
                     m_Icons[i].Clear();
@@ -152,6 +156,7 @@ namespace Unity.MP_FPS.Client {
                         m_Icons[i].Add(art);
                     }
                 }
+                // 战斗 HUD 上的快捷栏只显示，鼠标点不到它。背包打开后才能拖进格子或用右键移除绑定。
                 m_Slots[i].pickingMode = inventoryOpen ? PickingMode.Position : PickingMode.Ignore;
                 var itemDisplay = bound && !string.IsNullOrEmpty(code) ? DisplayStyle.Flex : DisplayStyle.None;
                 m_Icons[i].style.display = m_Names[i].style.display = m_Counts[i].style.display = itemDisplay;
@@ -174,6 +179,7 @@ namespace Unity.MP_FPS.Client {
             string selectedText = selected == null
                 ? ""
                 : MoonkovLocalization.Text(InventoryCatalog.Get(selected.Code).Name) + " ×" + selected.Quantity;
+            // 有读条、错误或道具提示时先显示该状态。普通选中物品说明暂时给它让位。
             bool showStatus = !string.IsNullOrEmpty(status);
             MoonkovLocalization.Set(m_Selected, selectedText);
             m_Selected.style.display = selected != null && !inventoryOpen && !showStatus
@@ -181,7 +187,7 @@ namespace Unity.MP_FPS.Client {
                 : DisplayStyle.None;
             MoonkovLocalization.Set(m_Caption, status ?? "");
             m_Caption.style.display = showStatus ? DisplayStyle.Flex : DisplayStyle.None;
-            // Only player input renews this timer. Status refreshes must not keep the HUD open.
+            // 只有玩家操作才续快捷栏显示时间。状态刷新不需要把 HUD 一直展开。
             float fade = Mathf.Clamp01((Time.unscaledTime - m_RevealUntil) / FadeSeconds);
             float opacity = inventoryOpen ? 1 : 1 - fade * fade;
             Element.style.opacity = opacity;

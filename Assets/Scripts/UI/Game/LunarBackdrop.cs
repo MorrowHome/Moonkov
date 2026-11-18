@@ -17,6 +17,7 @@ namespace Unity.MP_FPS.Client {
         public BackdropMode Mode {
             get => m_Mode;
             set {
+                // 进入普通终端页先退出观察模式，再隐藏背景月球。这样独立预览不会挡住目标页。
                 if (value == BackdropMode.Page) CloseObserver();
                 m_Mode = value;
                 EnableInClassList("lunar-backdrop-page", value == BackdropMode.Page);
@@ -34,7 +35,7 @@ namespace Unity.MP_FPS.Client {
             m_Inspect = new Button(OpenObserver) { text = "OBSERVE MOON  ↗" };
             m_Inspect.AddToClassList("moon-observe-link");
             Add(m_Inspect);
-            // Register before the terminal's Esc/back handler so the observer closes first.
+            // 观察窗先于终端处理 Esc，先关观察窗再回退页面。
             m_Owner.RegisterCallback<KeyDownEvent>(OnKey, TrickleDown.TrickleDown);
             RegisterCallback<DetachFromPanelEvent>(_ => Dispose());
             Mode = mode;
@@ -53,6 +54,7 @@ namespace Unity.MP_FPS.Client {
             var close = new Button(CloseObserver) { text = "BACK  /  ESC" };
             close.AddToClassList("moon-observer-button");
             header.Add(close);
+            // 背景与观察窗复用同一个月球视图。切换时移动元素并换样式，观察窗可以使用更大纹理和交互。
             Moon.Observing = true;
             Moon.Element.RemoveFromHierarchy();
             Moon.Element.RemoveFromClassList("moon-backdrop-view");
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS.Client {
             var telemetry = new Label();
             telemetry.AddToClassList("moon-observer-telemetry");
             m_Overlay.Add(telemetry);
+            // 观察读数定时从预览的日照方向和天数计算，不需要每帧改文字。
             m_Telemetry = telemetry.schedule.Execute(() => MoonkovLocalization.Set(telemetry,
                 "ORBITAL DAY " + Moon.Days.ToString("F2") + "  /  ACCELERATED TIME  /  SUNLIT " +
                 ((1 + Vector3.Dot(Moon.SunDirection, Vector3.back)) * 50).ToString("F0") + "%")).Every(500);
@@ -89,6 +92,7 @@ namespace Unity.MP_FPS.Client {
             if (m_Overlay == null) return;
             m_Telemetry?.Pause();
             m_Telemetry = null;
+            // 关窗时把月球放回背景，清掉暂停、旋转与缩放。下次打开会从统一状态开始。
             Moon.Element.RemoveFromHierarchy();
             Moon.Observing = false;
             Moon.Paused = false;

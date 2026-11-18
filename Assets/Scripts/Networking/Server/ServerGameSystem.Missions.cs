@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
             public float3 Origin;
             public MissionActionResult Result;
 
+            // 开始手动交互先记下人物位置、生命和攻击动作编号。续租时和这份起点对比，受击离开或换武器会打断读条。
             public void Capture(in PredictedPlayerGhost health, float3 position) {
                 Origin = position;
                 Health = health.CurrentHealth;
@@ -72,7 +73,7 @@ namespace Unity.MP_FPS {
         public readonly Dictionary<Entity, int> CampaignRaidIds = new();
     }
 
-    // Gameplay hearing is deliberately local and attenuated by world geometry.
+    // 游戏里的声音只影响附近角色，并受地图障碍衰减。
     public static class MissionAlarm {
         public const float HearingRange = MissionMachineSounds.CutterRange;
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
@@ -86,6 +87,7 @@ namespace Unity.MP_FPS {
     }
 
     public partial struct ServerGameSystem {
+        // 服用补给、搜刮等动作共用双手。切换它们时显式撤掉还在进行的任务交互，让进度和取消原因一起更新。
         private void CancelManualMission(ref SystemState state, Entity connection, string reason) {
             var context =
                 state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
@@ -102,6 +104,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 地图任务同时处理一份世界状态和每名玩家的局内进度。模式、站点资源或服务能力不符时，不会凭空开一个任务。
         private void HandleMissions(ref SystemState state, EntityCommandBuffer ecb) {
             var site = RaidMissionSite.Active;
             if (!site) return;
@@ -174,7 +177,7 @@ namespace Unity.MP_FPS {
                                 actor.Node = -1;
                             }
                         } else if (!accessible) {
-                            // An invalid new target must not interrupt an existing legal action.
+                            // 新的目标无效时，保留原先仍合法的操作。
                             if (r.Intent == MissionIntent.Renew && actor.Node == r.Node &&
                                 actor.Request == r.RequestId) {
                                 operation.Cancel(actor.Key);
@@ -327,6 +330,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 机器还在运行时按频率发布声音。现场的 AI 能像听见普通战局声响一样用它，任务 HUD 则另从快照读进度。
         private void EmitMachineSound(ref SystemState state, RaidMissionWorld context, double now) {
             var operation = context.Operation;
             if (!MissionMachineSounds.TryActiveSource(operation, out string anchorId, out float range)) {
@@ -360,6 +364,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 任务规则只知道节点编号。此处核对正式地图有没有全部实际挂点和可用设备，未摆齐就暂不启用该任务。
         private static bool MissionAnchorsReady(RaidMissionSite site, MissionDefinition definition) {
             var entrance = site.Anchor("entry");
             if (entrance == null || !NavMesh.SamplePosition(entrance.Approach, out var start, 3, NavMesh.AllAreas))
@@ -388,6 +393,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 有资格操作还得看人物在地图上的真实位置、方向与遮挡，这些条件不会由共享任务模型自己猜。
         private bool MissionAccessible(
             ref SystemState state,
             Entity player,
@@ -407,6 +413,7 @@ namespace Unity.MP_FPS {
                        anchor.Position, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore);
         }
 
+        // 加工或调查完成后，把产物放进这个操作的任务取物点，并记录出处。结算用编号检查真实来源。
         private void CreateMissionOutput(ref SystemState state, RaidMissionWorld context) {
             var definition = context.Operation.Definition;
             var cache = InventoryGraph.Create(false, false);
@@ -428,6 +435,7 @@ namespace Unity.MP_FPS {
             context.OutputProduced = true;
         }
 
+        // 先查世界容器与随身库存中这个操作的序号，决定是否仍有产物需要保留或回收，避免彼此重复。
         private bool MissionArtifactsRemain(ref SystemState state, RaidMissionWorld context, bool destroy) {
             bool remains = false;
 

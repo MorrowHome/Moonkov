@@ -4,8 +4,8 @@ using Unity.Entities;
 using Unity.NetCode;
 
 namespace Unity.MP_FPS {
-    // Transport owns handshake retries. A raid gets one connection attempt;
-    // loss of an established connection must settle the raid before another join.
+    // 传输层负责重试握手。一局只发起一次连接尝试。
+    // 已建立的连接丢失后，要先结算这局再加入另一局。
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
@@ -15,9 +15,11 @@ namespace Unity.MP_FPS {
 
         protected override void OnUpdate() {
             var settings = ConnectionSettings.Instance;
+            // 只有加载流程已经请求连接，或当前已经在维持连接时，这个系统才会操作网络驱动。
             if (settings.GameConnectionState != ConnectionState.State.Connecting &&
                 settings.GameConnectionState != ConnectionState.State.Connected)
                 return;
+            // 接收系统可能还在任务线程上写连接事件。等它写完再读取这一 tick 的事件，先处理能说明具体原因的断开事件。
             CompleteDependency();
             ref var driver = ref SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRW;
             foreach (var evt in driver.ConnectionEventsForTick) {
@@ -26,6 +28,7 @@ namespace Unity.MP_FPS {
                 Fail(SessionConnectionPolicy.DisconnectMessage(evt.DisconnectReason));
                 return;
             }
+            // 还找得到连接实体时，就以它的 NetCode 状态更新页面进度。实体存在本身并不表示握手完成。
             if (SystemAPI.TryGetSingleton(out NetworkStreamConnection connection)) {
                 if (connection.CurrentState == ConnectionState.State.Disconnected)
                     Fail("Connection lost. Return to the ship and reconnect.");
@@ -40,6 +43,7 @@ namespace Unity.MP_FPS {
                 Fail("Connection lost. Return to the ship and reconnect.");
                 return;
             }
+            // 先记下本局已经尝试连接，再调用 driver。网络底层处理握手重试，逐帧更新不用另发第二个 Connect。
             m_ConnectRequested = true;
             if (driver.Connect(EntityManager, settings.ConnectionEndpoint) == Entity.Null)
                 Fail("Invalid server address or port.");
@@ -49,7 +53,7 @@ namespace Unity.MP_FPS {
         private static void Fail(string message) {
             ConnectionSettings.Instance.ConnectionError ??= message;
             ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
-            // Loading waits propagate failure to their owner; gameplay has no loading task.
+            // 加载中的等待会把失败传给调用方，局内则没有加载任务可接收失败。
             if (GameSettings.Instance.GameState == GlobalGameState.InGame && GameManager.Instance != null) {
                 SessionReconnect.Offer();
                 GameManager.Instance.ReturnToMainMenuAsync();

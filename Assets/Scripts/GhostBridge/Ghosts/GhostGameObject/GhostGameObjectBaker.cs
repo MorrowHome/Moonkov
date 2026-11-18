@@ -16,9 +16,11 @@ public class GhostGameObjectBaker : Baker<GhostGameObject> {
     public override void Bake(GhostGameObject authoring) {
 #if UNITY_EDITOR
         var entity = GetEntity(TransformUsageFlags.None);
+        // 导入时从 AssetDatabase 取资源标识，运行时便能拿 ECS 数据里的 GUID 到 Addressables 找表现预制件。
         AssetDatabase.TryGetGUIDAndLocalFileIdentifier(authoring.gameObject, out string guid, out long localId);
-        // default to the objects' guid, if a prefab is at the root of a bunch of variants, we want to use this guid for comparisons
+        // 通常用物体自己的 GUID，比较同系列预制体时用基础模板的 GUID。
         var prefabRootGuid = new Hash128(guid);
+        // 预制件变体仍有自己独立的 GUID，同时记下它来自哪个基础模板。后面既能找到具体变体，也能按共同来源比较。
         if (PrefabUtility.IsPartOfVariantPrefab(authoring.gameObject)) {
             AssetDatabase.TryGetGUIDAndLocalFileIdentifier(
                 PrefabUtility.GetCorrespondingObjectFromSource(authoring.gameObject), out string rootGuid,
@@ -36,18 +38,19 @@ public class GhostGameObjectBaker : Baker<GhostGameObject> {
             // 扫描预制件上的 GhostMonoBehaviour 及其基类，找到应当放进实体的数据类型。RPC 会作为临时消息创建。
             var ghostComponents = gameObjectPrefab.GetComponentsInChildren<GhostMonoBehaviour>();
             foreach (var component in ghostComponents) {
-                // add any IComponentData
+                // 加入脚本定义的 IComponentData。
                 var componentType = component.GetType();
                 while (componentType != null && componentType.IsSubclassOf(typeof(GhostMonoBehaviour))) {
                     foreach (var type in componentType.GetNestedTypes()) {
                         if (type.GetInterface(nameof(IComponentData)) != null &&
                             type.GetInterface(nameof(IRpcCommand)) == null)
                             AddComponent(entity, type);
+                        // 实现 IBufferElementData 的类型表示一串条目。给实体加这一类型，ECS 会为它建动态缓冲。
                         if (type.GetInterface(nameof(IBufferElementData)) != null)
-                            // this is actually adding a dynamic buffer
-                            // as the type it adds is a buffer element
-                            // we have to do it this way as there is no equivalent of AddBuffer that takes
-                            // a ComponentType
+                            // 这里实际会给实体创建动态缓冲，
+                            // 因为加入的是缓冲元素类型。
+                            // AddBuffer 没有接受
+                            // ComponentType 的重载，所以用这种方式。
                             AddComponent(entity, type);
                     }
                     componentType = componentType.BaseType;

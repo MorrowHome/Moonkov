@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Shared colours of the dark lunar terminal. USS mirrors these values.
+    // 深色月面终端共用色值，USS 中也采用同一套定义。
     public static class TerminalPalette {
         public static readonly Color Ink = new(.027f, .031f, .039f),
             Panel = new(.07f, .075f, .09f),
@@ -24,7 +24,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Tweens driven by element schedulers. Each animation restores inline styles when it ends so layout checks see the resting state.
+    // 控件定时器推进补间。动画结束后清除临时样式，布局检查读到的就是静止状态。
     public static class TerminalMotion {
         private const string k_Glyphs = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789/#<>";
         private static readonly Dictionary<(VisualElement, string), IVisualElementScheduledItem> s_Channels = new();
@@ -68,15 +68,18 @@ namespace Unity.MP_FPS.Client {
             float delay = 0,
             Action done = null,
             string channel = null) {
+            // 同一控件的同类动画重启时先停掉前一次。这样新淡入的元素不会被旧回调把透明度写回去。
             if (channel != null && s_Channels.TryGetValue((owner, channel), out var previous)) {
                 previous.Pause();
                 s_Channels.Remove((owner, channel));
             }
+            // 静态预览仍应用最终帧并跑完成回调。调用方不会因为没有播放动画而卡在等待状态。
             if (!Animate(owner)) {
                 step(1);
                 done?.Invoke();
                 return null;
             }
+            // 用非缩放时间决定开始和结束。暂停游戏或帧率变化不要求动画像玩法模拟那样逐 tick 推进。
             double start = Now + delay;
             step(0);
             IVisualElementScheduledItem item = null;
@@ -109,7 +112,7 @@ namespace Unity.MP_FPS.Client {
             }, "reveal");
         }
 
-        // Opacity only: used where tests read worldBound.
+        // 只修改透明度，适合检查中需要读取 worldBound 的地方。
         public static void Fade(VisualElement e, float delay = 0, float duration = .35f) {
             Tween(e, duration, t => e.style.opacity = OutCubic(t), delay, () => e.style.opacity = StyleKeyword.Null,
                 "reveal");
@@ -122,6 +125,7 @@ namespace Unity.MP_FPS.Client {
             float dx = 0,
             float dy = 18) {
             foreach (var child in parent.Children()) {
+                // 逐项入场只覆盖看得见且不自带绘制动画的元素。跳过隐藏元素后不额外占用排队时间。
                 if (child is AnimatedPainter || child.resolvedStyle.display == DisplayStyle.None) continue;
                 Reveal(child, delay, dx, dy);
                 delay += stagger;
@@ -134,6 +138,7 @@ namespace Unity.MP_FPS.Client {
             char[] chars = new char[target.Length];
             int seed = 0;
             Tween(label, duration, t => {
+                // 文字逐步从占位字符变回原字符串。空格和分隔符先保留，结束时给本地化交回原文。
                 int solved = Mathf.FloorToInt(target.Length * OutCubic(t));
                 seed++;
                 for (int i = 0; i < target.Length; i++)
@@ -205,7 +210,8 @@ namespace Unity.MP_FPS.Client {
             p.fillGradient = default;
         }
 
-        // Colour overloads of FillGradient drop alpha, so gradients go through explicit alpha keys.
+        // FillGradient 的颜色重载会丢失透明度，所以另外明确写入透明度渐变点。
+        // 颜色和透明度要分别写进渐变。否则某些 UI 画笔只会插值颜色，丢掉透明端。
         internal static Gradient Keys(Color a, Color b) {
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(a, 0), new GradientColorKey(b, 1) },
@@ -292,7 +298,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Base for decorative vector layers. Repaints on its own scheduler while attached and while Animating is true.
+    // 矢量装饰的绘制基类。元素挂在面板且 Animating 为真时，由定时器触发重绘。
     public abstract class AnimatedPainter : VisualElement {
         private IVisualElementScheduledItem m_Tick;
         private double m_Born;
@@ -316,6 +322,7 @@ namespace Unity.MP_FPS.Client {
             RegisterCallback<DetachFromPanelEvent>(_ => m_Tick?.Pause());
         }
 
+        // 装饰只在自己需要继续动画且允许动效的环境里要求重绘。静态页面可以继续用最后画出的内容。
         private void Tick() {
             if (Animating && TerminalMotion.Animate(this)) MarkDirtyRepaint();
         }
@@ -328,7 +335,7 @@ namespace Unity.MP_FPS.Client {
         protected abstract void Draw(Painter2D p, float w, float h);
     }
 
-    // Chamfered panel frame that draws its border in, then rests.
+    // 带斜角的面板框。入场时逐步绘出边线，然后停在最终状态。
     [UxmlElement]
     public sealed partial class TechFrame : AnimatedPainter {
         private static readonly CustomStyleProperty<Color> s_Fill = new("--frame-fill"),
@@ -440,7 +447,7 @@ namespace Unity.MP_FPS.Client {
         Login
     }
 
-    // Diagonal yellow / ink bands that sweep across the screen on page change.
+    // 切页时用黄、墨色斜条横扫屏幕。
     public sealed class PageWipe : VisualElement {
         private readonly Label m_Caption;
         private float m_T;
@@ -501,7 +508,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Static screen furniture: corner brackets, edge rails and rulers.
+    // 固定屏幕装饰，由角括号、边轨和刻度组成。
     public sealed class TerminalChrome : AnimatedPainter {
         protected override bool Animating => Age < 1.6f;
 
@@ -550,7 +557,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Repeating diagonal warning stripes.
+    // 重复的斜向警示条。
     [UxmlElement]
     public sealed partial class HazardStripes : AnimatedPainter {
         private Color m_Color;
@@ -588,7 +595,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Animated exploded view of the halo weapon.
+    // 光环武器的动态分解图。
     [UxmlElement]
     public sealed partial class HaloSchematic : AnimatedPainter {
         private readonly List<Vector2> m_Nodes = new();
@@ -676,7 +683,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Animated tactical map of the lunar surface sector.
+    // 月面区域的动态战术地图。
     [UxmlElement]
     public sealed partial class LunarSchematic : AnimatedPainter {
         public LunarSchematic() {
@@ -775,7 +782,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Top-down blueprint of the orbital ship.
+    // 从上往下看的轨道船蓝图。
     [UxmlElement]
     public sealed partial class ShipBlueprint : AnimatedPainter {
         public ShipBlueprint() {
@@ -854,7 +861,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Idle carrier wave for the quiet comms channel.
+    // 空闲通信频道的载波线。
     [UxmlElement]
     public sealed partial class SignalWave : AnimatedPainter {
         public SignalWave() {
@@ -902,7 +909,7 @@ namespace Unity.MP_FPS.Client {
         }
     }
 
-    // Circular gauge for a single value.
+    // 用圆形表盘显示一个数值。
     [UxmlElement]
     public sealed partial class ArcMeter : AnimatedPainter {
         private float m_Value;

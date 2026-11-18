@@ -15,12 +15,14 @@ namespace Unity.MP_FPS {
 
         private readonly Dictionary<int, ClashSquadPlan> m_ClashSquads = new(3);
 
+        // 任务依赖对局本轮有效的机器人信息。注册表取不到时不继续提交旧动作。
         private bool TryClashView(DollSingerEnemyBrain brain, out ClashBotView view) {
             view = null;
             return brain.IsClashBot && m_ClashRegistry != null && brain.ClashEpoch == m_ClashRegistry.Epoch &&
                    m_ClashRegistry.TryGetView(brain.ClashParticipantId, out view) && view.Epoch == brain.ClashEpoch;
         }
 
+        // 根据队友、对局阶段和当前优先目标选择任务。队友位置是允许共享的，敌人的即时位置仍由感知提供。
         private void PlanClashMission(
             DollSingerEnemyBrain brain,
             Vector3 position,
@@ -35,7 +37,7 @@ namespace Unity.MP_FPS {
                 if (ally.View.TeamId == brain.ClashTeamId && ally.View.Life == ClashLife.Alive &&
                     ally.Brain.ClashParticipantId < brain.ClashParticipantId && ally.Brain.PathFailures < 3)
                     runner = false;
-            // Teammate positions are legitimate squad information; opponent positions are not read here.
+            // 队友位置可以作为小队信息，这里不读对手位置。
             bool canRescue = SafeToTreat(brain, position, now) && RaidHealth.DangerFraction(health) > .25f &&
                              view.Deadline - view.ServerNow > 8 &&
                              (!view.IsCarrier || view.Deadline - view.ServerNow > 45);
@@ -85,13 +87,13 @@ namespace Unity.MP_FPS {
             float radius = distanceToObjective > 22 ? 14 :
                 runner && view.Bounty != ClashBountyState.Banishing ? 1.4f : 6;
             if (view.Bounty == ClashBountyState.Carried)
-                radius = 9; // Public coarse clue, not the hidden carrier transform.
+                radius = 9; // 这是公开的粗略线索，无法定位隐蔽的持有者。
             if (!TryClashApproach(brain, position, objective, radius, now, out var goal)) {
                 brain.Mission = ClashBotGoal.Hold;
                 goal = RecoverClashRoute(brain, position, now);
             }
             brain.MissionGoal = goal;
-            // A rear guard watches a separate sector instead of staring into its partner's back.
+            // 后卫看另一个扇区，别和前面队友盯同一个方向。
             var outward = goal - objective;
             outward.y = 0;
             brain.MissionLookPoint = brain.Target != Entity.Null
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS {
                 brain.Mission = ClashBotGoal.Hold;
         }
 
+        // 围着任务锚点取多个可走的接近位置，还要避开另一队友已占用的整段通道。
         private bool TryClashApproach(
             DollSingerEnemyBrain brain,
             Vector3 position,
@@ -128,7 +131,7 @@ namespace Unity.MP_FPS {
                     continue;
                 float score = length + i * 2;
                 if (brain.Target != Entity.Null) score += PathExposure(brain, brain.LastSeen) * .7f;
-                // Avoid competing for the same lane, not just the same endpoint.
+                // 要避开队友已经占用的通道，不能只分配不同终点。
                 foreach (var ally in m_ClashAgents)
                     if (ally.Brain != brain && ally.View.TeamId == brain.ClashTeamId &&
                         ally.View.Life == ClashLife.Alive &&
@@ -141,6 +144,7 @@ namespace Unity.MP_FPS {
             return best < float.MaxValue;
         }
 
+        // 优先沿当前小队已经选好的出口协同撤离。环境变化或路不通时再重新选。
         private Vector3 SelectClashExit(DollSingerEnemyBrain brain, Vector3 position, ClashBotView view, double now) {
             if (!m_ClashSquads.TryGetValue(brain.ClashTeamId, out var squad)) {
                 squad = new ClashSquadPlan();
@@ -206,6 +210,7 @@ namespace Unity.MP_FPS {
             return position;
         }
 
+        // 站位、阶段、当前身体可操作等条件都通过后，才发送按下交互。离目标太远会继续调整路线。
         private void AdvanceClashObjective(DollSingerEnemyBrain brain, Vector3 position, Vector3 eye, double now) {
             brain.Interacting = false;
             if (!TryClashView(brain, out var view) || view.Phase != ClashPhase.Active || view.Life != ClashLife.Alive)
@@ -217,8 +222,8 @@ namespace Unity.MP_FPS {
                 foreach (var ally in view.Teammates)
                     if (ally.ParticipantId == brain.RescueTargetId)
                         point = ally.Position;
-            // The motor stops up to .75 m before a 1.4 m access point. Keep a margin
-            // within the server's 3 m validator rather than stranding a rescuer at 2.15 m.
+            // 移动马达可能在 1.4 米接近点前 .75 米就停下。
+            // 在服务器 3 米限制内保留余量，避免救援 AI 停在距目标 2.15 米却不能操作。
             bool accessible = Vector3.Distance(position, point) <= 2.6f && Mathf.Abs(position.y - point.y) < 1.5f &&
                               !WorldBlocked(eye, point + Vector3.up * .4f);
             if (rescue && accessible) {
@@ -236,6 +241,7 @@ namespace Unity.MP_FPS {
                 SubmitClashIntent(brain, ClashIntent.Pickup, -1, now);
         }
 
+        // 机器人能表达想操作什么，但目标是否真的完成由同一对局规则负责。
         private void SubmitClashIntent(DollSingerEnemyBrain brain, ClashIntent intent, int target, double now) {
             if (now < brain.NextIntent || m_ClashRegistry == null) return;
             brain.NextIntent = now + .2;

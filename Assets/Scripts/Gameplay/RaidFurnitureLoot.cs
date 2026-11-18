@@ -5,9 +5,9 @@ using Unity.NetCode;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Scene-authored furniture targets; inventories belong to the server map session.</summary>
+    /// <summary>场景中配置的家具交互点，容器库存属于服务端的当前地图会话。</summary>
     public sealed class RaidFurnitureLoot : MonoBehaviour {
-        // Separate from ordinary cache masks, corpse IDs and mission output epochs.
+        // 家具使用独立编号，与普通箱标志、尸体 ID 和任务产出所处轮次分开。
         public const int FirstId = 1500000000;
         private int m_WorldMask;
         private RaidSupplyCacheVisuals m_SupplyVisuals;
@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
         public Drawer[] Drawers => m_Drawers;
         public static bool IsFurniture(int id) { return id >= FirstId; }
 
+        // 把统一编号换回家具下标，区分补给箱与普通抽屉，HUD 可显示不同的名称。
         public static bool IsSupplyCache(int id) {
             int index = id - FirstId;
             return Active && index >= 0 && index < Active.m_Drawers.Length && Active.m_Drawers[index] != null &&
@@ -51,6 +52,7 @@ namespace Unity.MP_FPS {
             if (Active == this) Active = null;
         }
 
+        // 只在有客户端时生成路线补给箱的显示对象。服务器容器的初始化独立走 Initialize。
         private void Start() {
             if (!ClientServerBootstrap.HasClientWorlds || !Array.Exists(m_Drawers, d => d != null && d.SupplyCache))
                 return;
@@ -59,7 +61,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Drawers.Length; i++) {
                 var drawer = m_Drawers[i];
                 if (drawer == null || !drawer.SupplyCache || !drawer.Target) continue;
-                // These one-shot scene containers do not use the ordinary-cache stock bitmask.
+                // 这些场景容器各自登记库存，无需用普通箱的库存掩码。
                 var visual = m_SupplyVisuals.Create(drawer.Target, drawer.Position, i, false);
                 visual.transform.rotation = drawer.Target.rotation;
             }
@@ -73,6 +75,7 @@ namespace Unity.MP_FPS {
                 if (drawer == null || !drawer.Target) continue;
                 // 家具使用自己的编号段。序号和配置位置一一对应，后续交互可以用同一个编号找到容器。
                 int id = FirstId + i;
+                // 同一局再次初始化时保留已登记的容器和物品。否则刚被拿走的物资又会重刷一次。
                 if (caches.Containers.ContainsKey(id)) continue;
                 caches.Containers.Add(id,
                     drawer.SupplyCache
@@ -87,6 +90,7 @@ namespace Unity.MP_FPS {
             if (!camera) return -1;
             if (m_WorldMask == 0) m_WorldMask = LayerMask.GetMask("Default", "Ground");
             int selected = -1;
+            // 候选必须离角色够近、准星方向够接近并且没有被场景挡住。返回容器编号给后续操作。
             float bestAim = .97f;
             for (int i = 0; i < m_Drawers.Length; i++) {
                 var drawer = m_Drawers[i];

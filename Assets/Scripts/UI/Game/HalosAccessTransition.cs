@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Shared by online authentication and opening a single-player profile.
-    // Only presentation is gated; this never changes authentication or save data.
+    // 线上登录和打开单人档都使用同一套转场。
+    // 只控制内容何时显现。登录验证和存档仍由原有流程掌管。
     public sealed class HalosAccessTransition : IDisposable {
         private enum Phase {
             Waiting,
@@ -14,8 +14,8 @@ namespace Unity.MP_FPS.Client {
             Complete
         }
 
-        // loginControl holds 30 frames, closes for 15, then mainRoomControl opens
-        // at 50 design pixels per frame. Keep the same 60 Hz visual cadence.
+        // loginControl 停留 30 帧并用 15 帧合拢，然后 mainRoomControl 开启，
+        // 速度为每帧 50 个设计像素，画面保留原来 60 Hz 的节奏。
         private const float ConfirmSeconds = .5f, CloseSeconds = .25f;
         private const float CoveredSeconds = .1f, OpenSeconds = 13f / 60f, SettleSeconds = .18f;
         private readonly VisualElement m_Root, m_Shade, m_Top, m_Bottom, m_TopLight, m_BottomLight;
@@ -57,8 +57,8 @@ namespace Unity.MP_FPS.Client {
             return element;
         }
 
-        // The destination can be shown only after the shutters fully cover it.
-        // The opening intro and menu readiness remain independent prerequisites.
+        // 舱门完全盖住目标界面后，才把它切进来。
+        // 开场演出走完和菜单就绪是两个独立条件。
         public bool Present(bool authenticated, bool introFinished, bool visible, bool reducedMotion) {
             if (m_Disposed) return false;
             if (!authenticated) {
@@ -77,10 +77,12 @@ namespace Unity.MP_FPS.Client {
                 if (!visible) m_Audio.Suspend();
                 return true;
             }
+            // 验证已通过也可能还在播开场，或者菜单已经隐藏。等能看到过渡且开场完成后再推进状态。
             if (!introFinished || !visible) {
                 Hide();
                 return ContentVisible;
             }
+            // 从等待到关闭只进入一次，继续调用 Present 不会把同一段动画拉回开头。
             if (m_Phase == Phase.Waiting) {
                 m_Phase = Phase.Closing;
                 m_Age = 0;
@@ -108,8 +110,8 @@ namespace Unity.MP_FPS.Client {
                 return;
             }
             double now = TerminalMotion.Now;
-            // Preparing the home model can take a frame. Never skip the reveal
-            // because its creation or an unfocused/hidden window stalled a tick.
+            // 准备首页模型可能需要一帧。即使创建资源花了时间，
+            // 或窗口隐藏、失焦导致更新卡顿，仍要完整展示揭开的一段。
             m_Age += double.IsNaN(m_LastTick) ? 0 : (float)Math.Max(0, Math.Min(.05, now - m_LastTick));
             m_LastTick = now;
             // 遮罩合拢后才通知菜单换内容，随后开罩展示仓库。用户看到的是同一段连续过渡。
@@ -122,6 +124,7 @@ namespace Unity.MP_FPS.Client {
                 m_LastTick = double.NaN;
                 return;
             }
+            // 内容出现后等帘门打开完。到这一步才隐藏遮罩并通知外层恢复页面操作。
             if (m_Phase == Phase.Revealing && m_Age >= CoveredSeconds + OpenSeconds + SettleSeconds) {
                 m_Phase = Phase.Complete;
                 Hide(true);
@@ -129,7 +132,8 @@ namespace Unity.MP_FPS.Client {
                 return;
             }
             Paint();
-            // The rise begins with the dimming/confirmation and peaks at full closure.
+            // 亮度从调暗、确认阶段开始上升，关闭到位时最高。
+            // 每个声音只在进到对应阶段时发一次。动画每帧刷新不等于要每帧重播。
             if (m_Phase == Phase.Closing && !m_CloseSoundPlayed) {
                 m_CloseSoundPlayed = true;
                 m_Audio.Shutter(true);
@@ -157,6 +161,7 @@ namespace Unity.MP_FPS.Client {
                 : 1 - TerminalMotion.OutCubic((m_Age - CoveredSeconds) / (OpenSeconds + SettleSeconds)));
         }
 
+        // 只有元素仍挂在可见页面时才继续走时间。否则先暂停更新，避免未显示的过渡耗费帧预算。
         private bool OnScreen() {
             if (m_Root.panel == null || !(m_Root.layout.width > 0) || !(m_Root.layout.height > 0)) return false;
             for (var element = m_Root; element != null; element = element.parent)

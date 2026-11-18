@@ -18,6 +18,7 @@ namespace Unity.MP_FPS {
         public RaidLift Owner => m_Lift;
         public string ButtonId => m_ButtonId;
         public int Stop => m_Stop;
+        // 轿厢按键显示去另一层，层站按钮显示呼叫电梯，和 Request 里的 -1 约定一致。
         public string Label => m_Stop < 0 ? "SELECT OTHER FLOOR" : "CALL ELEVATOR";
         public Vector3 Center => m_Box ? m_Box.bounds.center : transform.position;
         public AirlockFeedback Feedback => Time.unscaledTime < m_FeedbackUntil ? m_Feedback : AirlockFeedback.Accepted;
@@ -40,12 +41,14 @@ namespace Unity.MP_FPS {
             m_Box = GetComponent<BoxCollider>();
         }
 
+        // 先确认所属电梯和碰撞体可用，再从角色位置查到按钮碰撞体的距离。
         public bool InRange(Vector3 actor) {
             var eye = actor + Vector3.up;
             return isActiveAndEnabled && m_Lift && m_Lift.Ready && m_Box && m_Box.enabled &&
                    (m_Box.ClosestPoint(eye) - eye).sqrMagnitude <= 9;
         }
 
+        // 有网络局时交请求，由服务器判断门口和楼层状态。独立现场才直接发给电梯。
         public bool Press(Vector3 actor, World world) {
             if (!InRange(actor)) return false;
             ReceiveFeedback(world != null || AirlockNetworkContext.HasNetworkWorlds
@@ -56,6 +59,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 记录短时回执给提示 UI。不同结果用按键声或错误音告诉玩家。
         public void ReceiveFeedback(AirlockFeedback feedback) {
             m_Feedback = feedback;
             m_FeedbackUntil = Time.unscaledTime + 1.5f;

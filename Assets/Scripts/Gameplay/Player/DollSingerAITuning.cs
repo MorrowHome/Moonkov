@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace Unity.MP_FPS {
     [CreateAssetMenu(menuName = "Moonkov/DollSinger PMC tuning")]
+    // 有地图专用资产就使用它。没有时由 DollSingerEnemySystem 取默认设置。
     public sealed class DollSingerAITuning : ScriptableObject {
         [Header("Server population and reinforcements")]
         [Tooltip("Zero uses MoonRaidMap.EnemyCount. Initial population is capped by this limit.")]
+        // 同时活着的上限和整局增援预算分开。零上限是回退到地图人数，零增援则真的停止补刷。
         [Range(0, 12)]
         public int MaxAlive = 0;
 
@@ -28,6 +30,7 @@ namespace Unity.MP_FPS {
         [Min(1)] public float SpawnOuterRadius = 16;
         [Range(4, 48)] public int SpawnAttempts = 24;
 
+        // 感知规则同时使用视角、可见距离、识别时间和记忆寿命。看到一点不一定马上能作为确定目标。
         [Header("Perception and memory")] [Range(30, 100)]
         public float HalfViewAngle = 70;
 
@@ -61,6 +64,7 @@ namespace Unity.MP_FPS {
         [Min(.5f)] public float LootSearchSeconds = 2.5f;
         [Range(.2f, .95f)] public float DepartureFraction = .65f;
 
+        // 决策可固定间隔重评。已经出发的任务会有继续执行的时间，掩体也按自己的间隔重查。
         [Header("Decision scheduling")] [Range(.1f, .5f)]
         public float DecisionInterval = .2f;
 

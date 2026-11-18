@@ -44,6 +44,7 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
+            // 悬赏状态与常规远征的异形刷新隔开。模式启用时清掉之前的遭遇，避免留一批先前地图的怪。
             if (BountyClashRuntime.Enabled(EntityManager)) {
                 if (!m_ClashSuppressed) {
                     ResetEncounters();
@@ -56,6 +57,7 @@ namespace Unity.MP_FPS {
             if (!m_TutorialModeQuery.IsEmptyIgnoreFilter) return;
             var settings = AlienEncounterSettings.Active;
             double now = SystemAPI.Time.ElapsedTime;
+            // 换地图场景后活动配置对象会变。重置本局槽位、预算与起始轮询位置。
             if (!ReferenceEquals(settings, m_Settings)) {
                 ResetEncounters();
                 m_Settings = settings;
@@ -63,6 +65,7 @@ namespace Unity.MP_FPS {
                 if (settings) m_NextEncounter = m_Random.Next(Mathf.Max(1, settings.Count));
             }
             if (!settings) return;
+            // 人口和候选点不用每帧查。按间隔检查一次，地图几何查询的开销更稳定。
             if (now < m_NextCheck) return;
             m_NextCheck = now + 1;
             SynchronizeEncounters(settings, now);
@@ -79,6 +82,7 @@ namespace Unity.MP_FPS {
             foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
                          .WithEntityAccess()) {
                 if (health.ValueRO.CurrentHealth <= 0) continue;
+                // 场上角色都参与占位判断，只有真实玩家的方向参与出生可见性判断。
                 bool player = EntityManager.HasComponent<GhostOwner>(entity) &&
                               EntityManager.GetComponentData<GhostOwner>(entity).NetworkId > 0 &&
                               !EntityManager.HasComponent<DollSingerEnemy>(entity) &&
@@ -94,6 +98,7 @@ namespace Unity.MP_FPS {
                     Position = pose.ValueRO.Position, Forward = forward, CheckVisibility = player
                 });
             }
+            // 没有真实玩家或预制体还未装入当前世界就暂停生成。预制体缺失的那一拍不耗费刷新次数。
             if (!hasPlayer || !GhostEntityPrefabSystem.TryGetServerInstance(out var prefabs) || !prefabs.PrefabsLoaded)
                 return;
             UnityEngine.Physics.SyncTransforms();
@@ -104,17 +109,20 @@ namespace Unity.MP_FPS {
                 var state = m_Encounters[index];
                 if (!CanSpawnEncounter(settings, state, now)) continue;
                 var spawn = settings[index];
+                // 这次槽位的位置找不到或资源没好，延后下次尝试。只有确实创建了实体才扣预算。
                 state.ReadyAt = now + settings.RetryDelay;
                 if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
                 if (spawn.Profile.Boss &&
                     (m_AliveBossCount >= settings.MaximumBosses || HasSpawnedBoss(settings, spawn.Profile)))
                     continue;
+                // 伏击与 Boss 槽一局只触发一次。普通怪死亡后仍可按槽位设置补刷。
                 if ((spawn.Ambush || spawn.Profile.Boss) && state.SpawnCount > 0) continue;
                 var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
                 if (prefab == Entity.Null ||
                     !TrySelectPosition(settings, spawn, state, out var position, out var rotation))
                     continue;
                 float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
+                // 候选通过检查后才复制网络实体，设置姿势、无客户端所有者的编号和首次同步状态。
                 var entity = EntityManager.Instantiate(prefab);
                 int id = m_NextId--;
                 EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotation(position, rotation));
@@ -135,7 +143,8 @@ namespace Unity.MP_FPS {
                 if (spawn.Profile.Boss) m_AliveBossCount++;
                 spawnedThisCheck++;
                 m_NextEncounter = (index + 1) % settings.Count;
-                // Ghost presentation is linked later; reserve this position immediately.
+                // Ghost 外观稍后才链接，先把这个位置标成已占用。
+                // 新怪的模型和碰撞体还没链接，先把它的位置占上，防同一次检查又选中同一个点。
                 m_Observers.Add(new RaidSpawnObserver { Position = position });
                 LeaderboardManager.AddPlayer(id, new FixedString64Bytes(spawn.Profile.CreatureName));
                 if (m_AliveCount >= settings.MaximumAliens || m_TotalSpawned >= settings.MaximumTotalSpawns ||
@@ -152,8 +161,8 @@ namespace Unity.MP_FPS {
         }
 
         private bool HasSpawnedBoss(AlienEncounterSettings settings, AlienCreatureProfile profile) {
-            // Multiple authored anchors for the same boss are alternatives, not
-            // extra lives. This survives death/retirement for the current raid.
+            // 同一个 Boss 的多个锚点是备选出生位置，
+            // 死亡或离场后也不能用备用锚点多获得一条命。
             for (int i = 0; i < m_Encounters.Count; i++)
                 if (m_Encounters[i].SpawnCount > 0 && settings[i].Profile == profile)
                     return true;
@@ -173,6 +182,7 @@ namespace Unity.MP_FPS {
                 });
         }
 
+        // 观察角色是否刚死亡，开始计算槽位补刷时间。已死的旧实体仍交给它自己的表现流程收尾。
         private void RefreshPopulation(AlienEncounterSettings settings, double now) {
             m_AliveCount = 0;
             m_AliveBossCount = 0;
@@ -186,19 +196,20 @@ namespace Unity.MP_FPS {
                     if (settings[index].Profile && settings[index].Profile.Boss) m_AliveBossCount++;
                     continue;
                 }
-                // Death owns its existing two-second animation/despawn. Begin the slot's
-                // cooldown once, even when GhostBridge retains a cleanup entity briefly.
+                // 死亡会沿用原有两秒的动画和销毁流程。
+                // GhostBridge 短暂保留清理实体时，槽位的冷却也只开始一次。
                 if (!state.DeathObserved) {
                     state.DeathObserved = true;
                     state.ReadyAt = now + settings.RespawnDelay + m_Random.NextDouble() * settings.RespawnDelayJitter;
                     if (state.OwnerId != 0) LeaderboardManager.RetireRaidActor(state.OwnerId);
                 }
-                // Keep ownership until the corpse exits, so unloading also cleans it.
-                // The cooldown is also a bound if an unlinked ghost cannot animate death.
+                // 保留槽位对尸体的所有权直到尸体退出，卸场景时仍能清理。
+                // Ghost 未链接无法播放死亡时，也可用冷却时间兜底。
                 if (!hasHealth || now >= state.ReadyAt) RetireActor(state);
             }
         }
 
+        // 优先尝试附近已配置的出生点。限制现场物理检查次数，并在候选之间旋转起点。
         private bool TrySelectPosition(
             AlienEncounterSettings settings,
             AlienEncounterSettings.Spawn spawn,
@@ -221,7 +232,7 @@ namespace Unity.MP_FPS {
                 : Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
             int anchors = 1 + (spawn.CandidatePositions?.Length ?? 0);
             int nearbyAttempts = 0;
-            // Scan distant anchors cheaply; only nearby physical checks consume the budget.
+            // 远处锚点先用便宜的距离检查跳过。只有近处才消耗物理查询预算。
             for (int attempt = 0;
                  attempt < anchors + settings.CandidateAttempts && nearbyAttempts < settings.CandidateAttempts;
                  attempt++) {
@@ -235,8 +246,8 @@ namespace Unity.MP_FPS {
                         return true;
                     continue;
                 }
-                // Rotate a bounded search over all authored anchors; a new raid randomizes
-                // its starting point without changing Unity's global random stream.
+                // 在所有已配置锚点中轮换时限制搜索范围与次数。
+                // 新战局独立随机起点，不改 Unity 的全局随机数序列。
                 int ringPoint = cursor / anchors % 9;
                 if (ringPoint > 0) {
                     float angle = (ringPoint - 1) * 45f * Mathf.Deg2Rad;
@@ -277,8 +288,8 @@ namespace Unity.MP_FPS {
             if (!RaidSpawnSafety.IsSafeFromObservers(ground + Vector3.up * (height - 1.5f), m_Observers,
                     settings.MinimumPlayerSpawnDistance, settings.VisibilityDistance, profile.Branch.reach * scale))
                 return false;
-            // Check the outer silhouette too: hiding the mantle behind a rock does
-            // not make twenty metres of visible appendages safe to spawn.
+            // 可见性要检查整个外轮廓。
+            // 甲壳藏在石头后，还有二十米肢体露出来时也不能在这生成。
             for (int side = 0; side < 4; side++) {
                 var tip = ground + Quaternion.Euler(0, side * 90, 0) * Vector3.forward * (profile.Branch.reach * scale);
                 if (!RaidSpawnSafety.IsSafeFromObservers(tip, m_Observers, settings.MinimumPlayerSpawnDistance,
@@ -288,6 +299,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 贴顶生成点要能挂住、站位附近有人且不会直接暴露。角色还要按表面法线摆正。
         private bool TryAmbushPosition(
             AlienEncounterSettings settings,
             AlienEncounterSettings.Spawn spawn,
@@ -329,11 +341,11 @@ namespace Unity.MP_FPS {
                 if (observer.Forward.sqrMagnitude > .01f &&
                     Vector3.Dot(observer.Forward.normalized, (position - eye).normalized) < .5f)
                     continue;
-                // Do not offset above a ceiling perch: that would hide the visibility
-                // ray inside the ceiling and allow a visible pop-in underneath it.
+                // 天花板挂点不应向上再偏移。
+                // 那会把视线射线埋进顶板，反而允许蜘蛛出现在玩家眼前。
                 if (!UnityEngine.Physics.Linecast(eye, position, mask, QueryTriggerInteraction.Ignore)) return false;
             }
-            // A perched spider needs real support underneath its initial leg footprint.
+            // 蜘蛛贴顶时，初始足点必须实际有表面支撑。
             var forward = Vector3.ProjectOnPlane(Quaternion.Euler(0, spawn.Yaw, 0) * Vector3.forward, normal);
             if (forward.sqrMagnitude < .01f) forward = Vector3.ProjectOnPlane(Vector3.up, normal);
             forward.Normalize();
@@ -356,6 +368,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 检查实际体型而非只查头部的小球。长身体还要沿将要出现的方向确认支撑和空间。
         private static bool HasBodyClearance(
             AlienCreatureProfile profile,
             float scale,
@@ -367,8 +380,8 @@ namespace Unity.MP_FPS {
                 return RaidSpawnSafety.TryGroundPosition(ground, profile.UprightRadius(scale),
                            profile.UprightHeight(scale), maxSlope, out var uprightFloor, out _) &&
                        Mathf.Abs(uprightFloor.y - ground.y) < .15f;
-            // A head-sized sphere alone admits long chains through walls or across the
-            // shaft. Sample support and clearance along the initial body footprint.
+            // 只查头那么大的球，链状身体可能穿墙或横跨竖井。
+            // 沿着初始体形检查各处的落脚支撑和可用空间。
             int samples = profile.IsChain ? 4 : 8;
             float extent = profile.IsChain ? profile.Chain.length * scale :
                 profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger ? 1.25f * scale :
@@ -387,7 +400,7 @@ namespace Unity.MP_FPS {
                 if (!RaidSpawnSafety.TryGroundPosition(expected, radius, height, maxSlope, out var support, out _) ||
                     Mathf.Abs(Vector3.Dot(support - expected, normal)) > .6f * scale)
                     return false;
-                // Check the tissue path above the support surface as well as each sample.
+                // 各个采样之外，也要验证支撑面上方整个身体路径。
                 if (UnityEngine.Physics.CheckCapsule(ground + normal * (height + radius) * .65f,
                         support + normal * (height + radius) * .65f, radius, LayerMask.GetMask("Default", "Ground"),
                         QueryTriggerInteraction.Ignore))
@@ -419,8 +432,8 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnStopRunning() {
-            // A temporarily empty dedicated server keeps the map's spent budget.
-            // Only changing the authored settings/map starts a fresh population.
+            // 专用服务器暂时无人时保留本地图已经花掉的生成预算。
+            // 只有地图或遭遇配置换了，才重新开始一组刷新预算。
             RetireActors();
             m_NextCheck = 0;
         }

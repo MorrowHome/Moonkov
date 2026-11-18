@@ -29,6 +29,7 @@ namespace Unity.MP_FPS.Client {
 
         private static Library s_Library;
 
+        // 各章节和尾声一共读一份资源。下次打开同一故事只取缓存中的镜头定义。
         private static Library Data =>
             s_Library ??= JsonUtility.FromJson<Library>(Resources.Load<TextAsset>("Moonkov/ResearchScenes").text);
 
@@ -84,6 +85,7 @@ namespace Unity.MP_FPS.Client {
         private ResearchSceneLibrary.Shot Current => m_Scene.frames[m_Index];
 
         private void Show(int index, bool play) {
+            // 镜头前进和后退都限制在本章范围内。随后根据新镜头更新图片、说话人、线索和需要播放的音频。
             if (index < 0 || index >= m_Scene.frames.Length) return;
             m_Index = index;
             m_Chinese = Chinese;
@@ -109,6 +111,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         internal void RefreshAudio() {
+            // 切换语言后从同一镜头取新语言的内容。无须把章节重播，也不自动播放新的语音。
             if (m_Chinese != Chinese) Show(m_Index, false);
             m_Play.style.display = Current.cues.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Play.text = m_Radio.Playing ? Text("停止语音", "Stop audio") : Text("重听", "Replay");
@@ -124,6 +127,7 @@ namespace Unity.MP_FPS.Client {
 
         private async void Next() {
             if (Saving) return;
+            // 还有下一幕就继续播放。走到结尾才进入完成回调，让章节从已读存档得到确认。
             if (m_Index + 1 < m_Scene.frames.Length) {
                 Show(m_Index + 1, true);
                 return;
@@ -133,6 +137,7 @@ namespace Unity.MP_FPS.Client {
             m_Next.text = Text("正在保存", "Saving");
             bool ok;
             try { ok = await m_Finish(); } catch (Exception) { ok = false; } finally { Saving = false; }
+            // 保存等待中页面可能已经关闭。回执到时先确认控件还显示，避免写已经离开面板的按钮。
             if (Element.panel == null) return;
             Element.SetEnabled(true);
             m_Next.text = Text(Current.actionZh, Current.actionEn);
@@ -163,6 +168,7 @@ namespace Unity.MP_FPS.Client {
             painter.Stroke();
             var accent = new Color32(105, 136, 245, 255);
             painter.lineWidth = 2;
+            // 每一幕可选择不同线索图。有的画通信波形，有的画路线示意，都只来自剧情资源定义。
             if (Current.visual is "wave" or "signal" or "offline") {
                 int traces = Current.visual == "wave" ? 2 : 1;
                 for (int trace = 0; trace < traces; trace++) {

@@ -28,6 +28,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Awake() {
+            // 只有装载成专用服务端才继续。普通带界面的客户端即使同场景看到这个组件，也会在这里把它停用。
             if (!GhostBridgeBootstrap.IsServerOnly) {
                 enabled = false;
                 return;
@@ -35,6 +36,7 @@ namespace Unity.MP_FPS {
             Debug.Log($"FPS2 server -> Awaking.");
             Application.runInBackground = true;
             Debug.Log($"FPS2 server -> Loading the Persistent scene ...");
+            // 服务器启动时先补载常驻场景，后面创建战局要用到已经初始化的管理器。同一个场景只载一次。
             if (!SceneManager.GetSceneByName("Persistents").isLoaded)
                 SceneManager.LoadScene("Scenes/Persistents", LoadSceneMode.Additive);
             Debug.Log($"FPS2 server -> Persistent is loaded.");
@@ -42,15 +44,18 @@ namespace Unity.MP_FPS {
 
         private async void Start() {
             Debug.Log($"FPS2 server -> Starting.");
-            // Managed Coop/Versus allocations use expedition rules; teams are server-assigned.
+            // 大厅分配的合作与对抗战局使用远征规则，队伍由服务端分配。
+            // 从大厅分配出来的合作或对抗实例都先用远征的基础规则。参与者和分队再由服务端根据入场资料安排。
             if (OnlineInstanceServer.Managed) GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
             GameSettings.Instance.GameState = GlobalGameState.Loading;
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.InitializeConnection);
+            // 部署给出的端口交给 GameConnection 生成监听配置。监听地址由 NetCode 驱动真正打开，端口占用会使启动失败。
             ushort port = GetPortFromArgument();
             var gameConnection = GameConnection.GetServerConnectionSettings(port);
             GameManager.SetGameConnection(gameConnection);
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
             GameManager.DestroyLocalSimulationWorld();
+            // 专用服的 World 在 GhostBridgeBootstrap 启动时已经建好。这里拿来装入比赛模式，再登记 Ghost 上的服务器更新回调。
             var serverWorld = GhostBridgeBootstrap.Instance.ServerWorld;
             GameManager.ConfigureRaidMode(serverWorld);
             GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
@@ -64,6 +69,7 @@ namespace Unity.MP_FPS {
             Debug.Log($"FPS2 server -> Listening on port {port}.");
             Debug.Log($"FPS2 server -> Loading the Game Scenes.");
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadGameScene);
+            // 服务端只需要自己的场景和子场景，所以第二个 World 参数留空。地图读完才会报就绪，分配器可以据此放玩家进来。
             await ScenesLoader.LoadGameplayAsync(serverWorld, null);
             Debug.Log($"FPS2 server -> The Game Scene is loaded.");
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadingDone);

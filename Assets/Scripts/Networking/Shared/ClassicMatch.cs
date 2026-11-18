@@ -107,6 +107,7 @@ namespace Unity.MP_FPS {
             return Phase == ClassicPhase.Waiting || Phase == ClassicPhase.RoundOver && now >= Deadline;
         }
 
+        // 只有实际进入这回合作战的席位才增加回合参与计数，用来算长期均伤。
         internal void EnterCombat(int actor) {
             m_CombatStats.TryGetValue(actor, out var stats);
             if (stats.LatestRound == Round) return;
@@ -115,6 +116,7 @@ namespace Unity.MP_FPS {
             m_CombatStats[actor] = stats;
         }
 
+        // 根据最终真实扣血记敌我伤害和死亡。不能把护盾挡住或已死后溢出的数值也加进分数。
         internal void RecordCombatDamage(int attacker, int victim, float damage, bool lethal) {
             if (Phase is not (ClassicPhase.Live or ClassicPhase.Planted) ||
                 !m_CombatStats.TryGetValue(victim, out var target) || target.LatestRound != Round)
@@ -131,6 +133,7 @@ namespace Unity.MP_FPS {
             m_CombatStats[attacker] = source;
         }
 
+        // 对局成绩按席位累计，换边不重置已经打过的回合和战绩。
         internal ClassicScoreboardEntry ScoreboardEntry(int actor, FixedString64Bytes name) {
             m_CombatStats.TryGetValue(actor, out var stats);
             return new ClassicScoreboardEntry {
@@ -143,6 +146,7 @@ namespace Unity.MP_FPS {
 
         public void BeginRound(double now, int carrier) {
             if (!NeedsRound(now)) return;
+            // 每回合重置炸弹持有、回合赢家和读条，先进入购买期。历史比分仍由比赛对象保留。
             Round++;
             Carrier = carrier;
             BombOnGround = false;
@@ -154,6 +158,7 @@ namespace Unity.MP_FPS {
         }
 
         public void Advance(double now, int attackersAlive, int defendersAlive) {
+            // 按房主时间从购买切换到开火阶段。没有安装时进攻方限时，安装后胜负条件另由引信和守方状态决定。
             if (Phase == ClassicPhase.Buy && now >= Deadline) {
                 Phase = ClassicPhase.Live;
                 Deadline = now + RoundSeconds;
@@ -168,6 +173,7 @@ namespace Unity.MP_FPS {
             if (HoldActor != 0 && now > m_HoldUntil) HoldActor = 0;
         }
 
+        // 只有此刻的携带者死亡或离手才在地图设掉落位置，别人重复报告不能把炸弹再放一份。
         public void DropBomb(int actor, Vector3 position) {
             if (Carrier != actor) return;
             Carrier = 0;
@@ -196,6 +202,7 @@ namespace Unity.MP_FPS {
 
         internal bool RestockCache(int id, InventoryGraph cache) {
             string[] rotation = s_CacheContents[id];
+            // 这回合的补给箱内容按固定轮换取一项。箱里仍有同款时不重复塞。
             string code = rotation[(Round - 1) % rotation.Length];
             foreach (var item in cache.Children(LootInventoryExchange.Root))
                 if (item.Code == code)
@@ -203,14 +210,16 @@ namespace Unity.MP_FPS {
             return cache.AddSupply(code, 1, LootInventoryExchange.Root) == InventoryError.None;
         }
 
-        // Position, visibility and alive state are sampled by the host every tick.
+        // 房主每个 tick 检查角色位置、视线与是否存活。
         public void Use(int actor, int team, ClassicUse use, Vector3 position, uint damage, double now) {
             if (actor == 0 || now >= Deadline) return;
+            // 进攻方正在本回合作战且地上确实有炸弹，才拿到携带权。人物距离和视野已经由服务器入口查过。
             if (Phase == ClassicPhase.Live && use == ClassicUse.PickUp && team == AttackTeam && BombOnGround) {
                 Carrier = actor;
                 BombOnGround = false;
                 return;
             }
+            // 安装和拆除需要不同的阶段和队伍。只有携带者能安装，反方等成功安装后才可拆除。
             bool plant = Phase == ClassicPhase.Live && team == AttackTeam && Carrier == actor &&
                          (use == ClassicUse.PlantA || use == ClassicUse.PlantB);
             bool defuse = Phase == ClassicPhase.Planted && team != AttackTeam && use == ClassicUse.Defuse;
@@ -218,6 +227,7 @@ namespace Unity.MP_FPS {
                 CancelHold(actor);
                 return;
             }
+            // 同一时刻只认一个有效操作人。受击、走动、换按钮或请求到期会以新动作重新进度。
             if (HoldActor != 0 && HoldActor != actor && now <= m_HoldUntil) return;
             if (HoldActor != actor || use != m_HoldUse || now > m_HoldUntil || damage != m_HoldDamage ||
                 (position - m_HoldPosition).sqrMagnitude > .35f * .35f) {
@@ -227,9 +237,11 @@ namespace Unity.MP_FPS {
                 m_HoldPosition = position;
                 m_HoldDamage = damage;
             }
+            // 按住期间持续用新请求续这段短租约。松手或请求断掉会清读条，不能留在后台自己完成。
             m_HoldUntil = now + .7;
             if (now - m_HoldStarted < UseSeconds(use)) return;
             HoldActor = 0;
+            // 拆完立即得出回合结果。安装成功则开始引信，进入守方仍可抢救的阶段。
             if (defuse) {
                 EndRound(team, now);
                 return;
@@ -240,6 +252,7 @@ namespace Unity.MP_FPS {
             Deadline = now + FuseSeconds;
         }
 
+        // 锁定本回合赢家、累计队伍比分，再按回合或总胜分决定开下一回合或完成比赛。
         private void EndRound(int team, double now) {
             RoundWinner = team;
             Score[team]++;
@@ -299,6 +312,7 @@ namespace Unity.MP_FPS {
                 or ItemKind.Drink or ItemKind.Oxygen;
         }
 
+        // 购买受钱包、单次限制和物品种类限制。电池等少数补给允许成批选择，非堆叠装备按件。
         public static int PurchaseLimit(ItemDefinition definition, int credits) {
             int price = Price(definition);
             if (price <= 0) return 0;
@@ -306,6 +320,7 @@ namespace Unity.MP_FPS {
             return IsBulkSupply(definition) ? affordable : Math.Min(1, affordable);
         }
 
+        // 在临时库存用版本检查和放置规则购买。成功回调后房主上层再扣席位的购买额度。
         public static InventoryError Purchase(InventoryGraph graph, string code, int version, int quantity = 1) {
             var definition = InventoryCatalog.Get(code);
             if (Price(definition) <= 0 || quantity < 1) return InventoryError.Invalid;

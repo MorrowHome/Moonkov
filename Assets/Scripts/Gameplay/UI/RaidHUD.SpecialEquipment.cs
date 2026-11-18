@@ -31,11 +31,13 @@ namespace Unity.MP_FPS {
                 m_SurveyLabel.style.display = DisplayStyle.None;
                 return;
             }
+            // 工具读数不是战斗输入。隔一小段时间更新即可，避免测距仪的射线每帧都打。
             if (Time.unscaledTime < m_NextSurvey) return;
             m_NextSurvey = Time.unscaledTime + .2f;
             var graph = QuickGraph;
             bool compass = false, rangefinder = false;
             if (graph != null)
+                // 只有确实装在特殊装备槽的工具才启用读数。装在普通背包里的同种物品还不能直接使用。
                 foreach (string slot in SurveySlots) {
                     string code = graph.Equipped(slot)?.Code;
                     compass |= Inventory.SpecialEquipmentRules.Compass(code);
@@ -45,6 +47,7 @@ namespace Unity.MP_FPS {
                 m_SurveyLabel.style.display = DisplayStyle.None;
                 return;
             }
+            // 本地角色改变时重新绑定镜头和角色模型。射线从当前视角出发，并排除打到自己的部位。
             if (owner != m_SurveyOwner || m_SurveyWorld != m_World || !m_SurveyCamera) {
                 m_SurveyOwner = owner;
                 m_SurveyWorld = m_World;
@@ -66,6 +69,7 @@ namespace Unity.MP_FPS {
             string readout = "";
             if (compass) {
                 var forward = m_SurveyCamera.transform.forward;
+                // 从相机朝向的地面分量算方位角，再从八个方向选近似名称。地图朝北时与这组读数一致。
                 float degrees = Mathf.Repeat(Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg, 360);
                 readout = "方位 " + SurveyBearings[Mathf.RoundToInt(degrees / 45) % 8] + " " +
                           (Mathf.RoundToInt(degrees) % 360).ToString("000") + "°";
@@ -80,7 +84,7 @@ namespace Unity.MP_FPS {
                     if ((!m_SurveyActor || !m_SurveyHits[n].transform.IsChildOf(m_SurveyActor)) &&
                         m_SurveyHits[n].distance < nearest)
                         nearest = m_SurveyHits[n].distance;
-                // A full buffer may omit a closer surface; never present a false precise distance.
+                // 射线结果已满时可能漏掉更近表面，只报告无法精确测距。
                 // 射线结果写进固定数组。数组满时可能还有更近物体没装进去，所以此时只显示遮挡复杂。
                 string distance = hits == m_SurveyHits.Length ? "测距遮挡复杂" :
                     float.IsPositiveInfinity(nearest) ? "测距 >500 m／无实体表面" : "测距 " + nearest.ToString("0.0") + " m";

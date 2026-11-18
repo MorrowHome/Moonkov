@@ -5,15 +5,16 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.UI {
     [RequireComponent(typeof(UIDocument))]
     public class ActionFeed : MonoBehaviour {
+        // 战绩系统经这个界面实例报告事件。消息队列维护短暂的展现，击杀统计仍由战绩系统掌握。
         public static ActionFeed Instance { get; private set; }
 
-        // Name of the container element in your UXML
+        // UXML 容器元素的名称。
         private const string KillFeedContainerName = "ActionFeedContainer";
 
-        // Name of the USS class for styling individual kill messages
+        // 单条击杀消息所用的 USS 样式类。
         private const string KillFeedEntryClassName = "action-feed-entry";
 
-        // Duration in milliseconds
+        // 每条消息保留的毫秒数。
         private const long MessageDurationMs = 4000;
         private VisualElement _rootElement;
         private VisualElement _actionFeedContainer;
@@ -46,16 +47,18 @@ namespace Unity.MP_FPS.UI {
                     : DisplayStyle.Flex;
         }
 
+        // 入场提示按独立的事件加入队列，与击杀共用原来的展示区域。
         public void AnnouncePlayerJoined(string playerName) {
             if (_actionFeedContainer == null) return;
             var killLabel = new Label($"{playerName} joined");
-            killLabel.AddToClassList(KillFeedEntryClassName); // Apply USS style
+            killLabel.AddToClassList(KillFeedEntryClassName); // 给元素应用 USS 样式。
             _actionFeedContainer.Add(killLabel);
             killLabel.schedule.Execute(() => {
                 if (killLabel.parent == _actionFeedContainer) killLabel.RemoveFromHierarchy();
             }).StartingIn(MessageDurationMs);
         }
 
+        // 击杀提示从已收到的玩家名字构造标签。把它加进界面后，只按显示时长管理，不参与伤害结算。
         public void AnnounceKill(string killer, string victim) {
             if (_actionFeedContainer == null) return;
             var killLabel = new Label($"{killer} killed {victim}");

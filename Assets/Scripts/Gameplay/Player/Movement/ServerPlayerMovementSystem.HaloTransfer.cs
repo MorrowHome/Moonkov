@@ -13,6 +13,7 @@ namespace Unity.MP_FPS {
         private readonly List<Entity> m_TransferActors = new();
 
         private void UpdateHaloTransfers(uint serverTick, float dt) {
+            // 重建这拍的候选角色索引。已经离场或还未生成的对象不进入传输候选。
             m_TransferGhosts.Clear();
             m_TransferActors.Clear();
             foreach (var (ghost, entity) in SystemAPI.Query<RefRO<GhostInstance>>()
@@ -23,6 +24,7 @@ namespace Unity.MP_FPS {
             foreach (var actor in m_TransferActors) {
                 var sender = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
                 bool fresh = TryReadTransferInput(actor, serverTick, out var input);
+                // 光环传输需要本拍有效的持续输入。发起时还要检测新的按下边沿，持续按住不会重建连接。
                 bool held = fresh && input.HaloTransfer;
                 bool start = held && (!sender.HaloTransferLatched || (input.HaloGuard && !sender.HaloGuardLatched));
                 bool wasLatched = sender.HaloTransferLatched;
@@ -53,6 +55,7 @@ namespace Unity.MP_FPS {
                         // 用 Ghost 编号加出生拍识别这次连接。角色销毁重生后，即使编号再用，也不应连到旧目标。
                         m_TransferGhosts.TryGetValue((input.HaloTransferGhostId, input.HaloTransferSpawnTick),
                             out target);
+                    // 先核对当前目标还活着并在同一战局。随后按输入模式检查是否可接收补能或保护。
                     bool valid = held && (occupied || start) && target != actor && target != Entity.Null &&
                                  EntityManager.HasComponent<PredictedPlayerGhost>(target) &&
                                  EntityManager.HasComponent<GhostInstance>(target) &&
@@ -71,6 +74,7 @@ namespace Unity.MP_FPS {
                                     : HaloTransferRules.CanReceive(receiver)) &&
                                 HaloTransferRules.Teammates(sender, receiver, IsHuman(actor), IsHuman(target)) &&
                                 HaloTransferRules.InRange(from, to) && TransferVisible(actor, from, to);
+                        // 建立一条新连接时还要求角色确实朝向队友。已有连接每拍重新查距离和遮挡。
                         if (valid && !occupied) {
                             var forward =
                                 Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0) *
@@ -84,6 +88,7 @@ namespace Unity.MP_FPS {
                             sender.HaloTransferPoint = to;
                             sender.HaloDeploymentMode =
                                 input.HaloGuard ? HaloDeploymentMode.AllyGuard : HaloDeploymentMode.Transfer;
+                            // 协防推进的是部署时间。补能则真的同时修改发送者和接收者，避免队友只看到动作却没收到能量。
                             if (input.HaloGuard) { HaloSupportRules.AdvanceDeployment(ref sender, dt); } else {
                                 HaloTransferRules.Transfer(ref sender, ref receiver, dt);
                                 EntityManager.SetComponentData(target, receiver);
@@ -117,8 +122,9 @@ namespace Unity.MP_FPS {
                    EntityManager.GetComponentData<GhostOwner>(actor).NetworkId > 0;
         }
 
-        // Called by the authoritative damage boundary. Re-read each donor: several impacts
-        // in one tick must spend its current pool, including when the donor is the victim.
+        // 由权威伤害入口调用。每次都读捐助者当前的能量池，
+        // 同一拍可以挨多发，每次都要消耗当时的余额。捐助者就是受害者时也一样按当前值算。
+        // 角色被击中时按当前状态重新查协防者。前一发已经用掉的能量不能再给下一发吸收。
         public float AbsorbHaloSupport(
             Entity victim,
             ref PredictedPlayerGhost health,
@@ -147,6 +153,7 @@ namespace Unity.MP_FPS {
                         guard ? HaloTransferRules.Anchor(donor) : donor.HaloTransferPoint,
                         HaloTransferRules.Anchor(health)))
                     continue;
+                // 能抵掉多少就扣多少并记录撞击之后的状态，余下的 incoming 继续交给常规伤害流程。
                 float absorbed = HaloSupportRules.Absorb(ref donor, incoming, tick, kind, point);
                 if (absorbed <= 0) continue;
                 if (actor == victim) { health = donor; } else {

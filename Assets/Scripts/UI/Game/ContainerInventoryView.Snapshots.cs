@@ -7,11 +7,12 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class ContainerInventoryView {
-        // Protection gear sends live resource snapshots every half second without
-        // changing placement. These must never destroy a pressed/captured button.
+        // 防护装备的资源值每半秒可以同步，但摆放位置没变。
+        // 这种更新应保留已经按下或抓住指针的按钮。
         private static string LayoutKey(InventoryGraph graph) {
             if (graph == null) return null;
             var key = new StringBuilder().Append(graph.StashRows).Append('/').Append(graph.LootRows);
+            // 按 ID 排序，让同一批物品换了遍历顺序也得到同一个布局标记。长度前缀还能区分字符串中的分隔符。
             foreach (var item in graph.Items.OrderBy(i => i.Id, StringComparer.Ordinal)) {
                 foreach (string value in new[] { item.Id, item.Code, item.Parent ?? "", item.Region ?? "" })
                     key.Append('|').Append(value.Length).Append(':').Append(value);
@@ -22,6 +23,7 @@ namespace Unity.MP_FPS.Client {
 
         private void RefreshSnapshotValues() {
             if (m_Graph == null) return;
+            // 使用格子缓存的 ID 去新快照找物品。保留原按钮，只改数量、剩余电量和文字。
             foreach (var pair in m_Tiles) {
                 var item = m_Graph.Find(pair.Key);
                 if (item == null) continue;
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS.Client {
             }
             RefreshWeight();
             RefreshItemTooltip();
+            // 被拖动的物品对象也换成快照里的最新对象，防止之后用过期数量或属性作判断。
             if (m_Drag != null) m_Drag.RefreshItem();
         }
 

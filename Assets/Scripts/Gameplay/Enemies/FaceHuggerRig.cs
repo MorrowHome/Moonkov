@@ -6,8 +6,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>A palm-like parasite with eight articulated fingers and one tail.
-    /// The server solves the same gripping joints used by client meshes/hit volumes.</summary>
+    /// <summary>掌形的寄生虫，带八根多节手指和一条尾巴。
+    /// 服务器和客户端网格、碰撞体共用手指抓附的关节位置。</summary>
     public sealed class FaceHuggerRig : IDisposable {
         public const int Fingers = 8, FingerPoints = 4, TailPoints = 13;
         public readonly Vector3[] Joints = new Vector3[Fingers * FingerPoints];
@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
         private readonly Vector3[] m_Curve = new Vector3[13];
         private Quaternion m_BodyRotation;
 
+        // 先创建身体关节和视觉需要的网格。背甲轮廓做得比普通平面更明显，俯视也能读出方向。
         public FaceHuggerRig(Transform owner, float scale, bool render) {
             m_Size = scale / .45f;
             if (!render) return;
@@ -43,7 +44,7 @@ namespace Unity.MP_FPS {
             m_Limbs = new Mesh { name = "Gripping fingers and tail", hideFlags = HideFlags.DontSave };
             m_Limbs.MarkDynamic();
             MeshObject("Eight jointed fingers and tapered tail", m_Limbs, m_Skin);
-            // Raised transverse plates preserve a legible dorsal silhouette.
+            // 隆起的横向背甲让俯视的轮廓也清晰。
             for (int i = 0; i < 6; i++) {
                 var plate = MeshObject("Abdominal scute " + i, m_Core, m_Dark).transform;
                 plate.SetParent(m_Palm, false);
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 把脚的支撑点和表面姿势变成各指节。附着时切到围住目标头侧的抓握姿势。
         public void Tick(SurfaceMotor.Pose surface, PredictiveFeet feet, AlienAction action, float age, float clock) {
             bool gripping = action == AlienAction.Attached;
             float size = gripping ? 1 : m_Size;
@@ -69,8 +71,8 @@ namespace Unity.MP_FPS {
                 float along = -.15f + row * .10f;
                 int first = finger * FingerPoints;
                 if (gripping) {
-                    // Digits hook around the temples from the flat abdomen on the
-                    // front of the face. The tips reach behind the skull, not across it.
+                    // 扁平腹部贴在脸前面，手指从正面勾向两侧太阳穴。
+                    // 指尖伸向头骨后面，不穿过脑袋。
                     float breathe = Mathf.Sin(clock * 7 + row) * .008f;
                     var head = surface.Position - surface.Forward * .12f;
                     Joints[first] = Centre + surface.Right * (side * .105f) + surface.Up * along;
@@ -81,8 +83,8 @@ namespace Unity.MP_FPS {
                     Joints[first + 3] = head + surface.Right * (side * .16f) - surface.Forward * .17f +
                                         surface.Up * (along * .95f);
                 } else {
-                    // Reuse the actual contact anchors while giving each foot a
-                    // three-phalange, hand-like shape rather than a spider knee.
+                    // 继续使用真实脚部触点。
+                    // 每只脚用三节手指的关节形状，而非蜘蛛膝形。
                     int leg = finger < 4 ? finger : 11 - finger;
                     var foot = feet[leg].Position;
                     var hip = Centre + pose.Right * (side * .105f * size) + pose.Forward * (along * size);
@@ -135,6 +137,7 @@ namespace Unity.MP_FPS {
             return go;
         }
 
+        // 沿实际关节点铺小段网格，更新一整条腿的外形。
         private void DrawLimbs(float size) {
             m_Vertices.Clear();
             m_Indices.Clear();
@@ -152,6 +155,7 @@ namespace Unity.MP_FPS {
             m_Limbs.RecalculateBounds();
         }
 
+        // 外层可以按指头编号和沿指距离取采样坐标，碰撞和液体表现可跟着同一关节位置。
         public Vector3 FingerPoint(int finger, float t) {
             int a = finger * FingerPoints;
             float u = 1 - t;
@@ -159,6 +163,7 @@ namespace Unity.MP_FPS {
                    Joints[a + 3] * (t * t * t);
         }
 
+        // 用半径逐渐变化的管段画指节，沿着骨架转向。
         private void Tube(Vector3[] points, float start, float end, Matrix4x4 inverse, bool knuckles) {
             const int sides = 8;
             int first = m_Vertices.Count;

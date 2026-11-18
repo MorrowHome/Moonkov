@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Client {
         private void ShipTerminal() { m_Terminal.Navigate(0); }
 
         private void InitializeTerminal() {
+            // 先把模板里每个堆叠登记好，再建立初始摆放和拖动动作。实际库存视图在此之后接到终端。
             m_Layout = new StashLayout(Columns, Rows);
             m_Loadout = new StashLoadout(m_Layout);
             foreach (var stack in m_Stacks) {
@@ -64,6 +65,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void Arrange() {
+            // 整理先记住原位置，再计算每件的新位置。如果中间有某件放不下，可以将整个显示恢复，不留下半套布局。
             var previous = new System.Collections.Generic.Dictionary<string, Vector2Int>();
             foreach (var stack in m_Visible) {
                 var item = m_Layout.Items[stack.Name];
@@ -96,6 +98,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void ItemKey(KeyDownEvent evt) {
+            // R 和 Esc 优先交给当前真实背包。正式视图已处理后，旧汇总界面不再对同一按键做第二次操作。
             if (m_Containers?.HandleKey(evt) == true) return;
             if (evt.target is VisualElement focused && focused.GetFirstAncestorOfType<TextField>() != null) return;
             if (evt.keyCode == KeyCode.Escape && m_ActiveDrag != null) {
@@ -295,6 +298,7 @@ namespace Unity.MP_FPS.Client {
                 var item = m_Owner.m_Layout.Items[m_Stack.Name];
                 int w = m_Rotated ? item.BaseHeight : item.BaseWidth, h = m_Rotated ? item.BaseWidth : item.BaseHeight;
                 var offset = new Vector2(m_Grab.x * w * cell, m_Grab.y * h * cell);
+                // 从屏幕坐标换到格子坐标时扣掉一开始抓的位置。拖动物品任意一角仍能准确预览占的格。
                 var local = m_Owner.m_Grid.WorldToLocal(m_Last) - offset;
                 m_X = Mathf.RoundToInt(local.x / cell);
                 m_Y = Mathf.RoundToInt(local.y / cell);
@@ -312,6 +316,7 @@ namespace Unity.MP_FPS.Client {
                 preview.style.top = m_Y * cell;
                 preview.style.width = w * cell;
                 preview.style.height = h * cell;
+                // 只有指针在可见滚动区内且落格合法才显示可放。鼠标到设备槽时另用设备的规则提示。
                 bool valid = within && m_Owner.m_Layout.CanPlace(m_Stack.Name, m_X, m_Y, m_Rotated);
                 preview.EnableInClassList("stash-drop-valid", valid);
                 preview.EnableInClassList("stash-drop-invalid", !valid);
@@ -340,7 +345,7 @@ namespace Unity.MP_FPS.Client {
             private void Up(PointerUpEvent evt) {
                 if (m_Pointer != evt.pointerId) return;
                 if (!m_Dragging) {
-                    // Let Button's Clickable finish the click and release its capture.
+                    // 让 Button 自带的 Clickable 完成本次点击并释放指针。
                     m_Pointer = -1;
                     m_Owner.m_ActiveDrag = null;
                     return;
@@ -360,6 +365,7 @@ namespace Unity.MP_FPS.Client {
                 m_Owner.Rebuild();
             }
 
+            // 拖动途中控件丢掉指针，也要收起提示与拖影。否则下次打开仓库可能看到这一轮留下来的标记。
             private void Lost(PointerCaptureOutEvent evt) { Cancel(); }
 
             public void Cancel() {

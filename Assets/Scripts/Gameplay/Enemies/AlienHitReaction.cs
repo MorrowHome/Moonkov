@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Snapshot-driven visual flinch. Never moves the motor or authoritative hitboxes.</summary>
+    /// <summary>根据快照做显示用的受击动作，不改移动解算和权威碰撞体。</summary>
     public sealed class AlienHitReaction {
         private struct RootPose {
             public Transform Root;
@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
             Refresh();
         }
 
+        // 先有上一次生命值才能比较真实受伤量。剧烈的倒地等状态可阻止叠加轻微受击。
         public void Observe(float currentHealth, float maxHealth, bool suppressed) {
             if (!float.IsFinite(currentHealth)) return;
             if (initialized && currentHealth > 0 && currentHealth < health - .01f && !suppressed) {
@@ -38,7 +39,8 @@ namespace Unity.MP_FPS {
             if (currentHealth <= 0 || suppressed) strength = 0;
         }
 
-        // Called after a form change, never per shot. Only generated visual roots belong here.
+        // 切换形态后更新一次。这里只收生成的显示根节点，无需每次命中都重收。
+        // 角色切换外形后重新收集可偏移的渲染根。碰撞和玩法骨架不跟着改。
         public void Refresh() {
             Restore();
             roots.Clear();
@@ -58,6 +60,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 每帧先还原上一帧前保存的姿势。否则同一个偏移逐帧施加会把模型越推越远。
         public void Restore() {
             if (!applied) return;
             foreach (var pose in roots)
@@ -66,6 +69,7 @@ namespace Unity.MP_FPS {
             applied = false;
         }
 
+        // 短暂冲量随时间衰减，只加在身体显示位置和旋转上。
         public void Present(float deltaTime, Vector3 pivot, Vector3 up, Vector3 forward, float scale, bool boss) {
             age += Mathf.Max(0, deltaTime);
             float pulse = Pulse * (boss ? .35f : 1f);

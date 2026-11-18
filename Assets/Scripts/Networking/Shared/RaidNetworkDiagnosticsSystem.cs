@@ -9,8 +9,8 @@ using Unity.Networking.Transport;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One local sample every ten seconds. No probes, RPCs, addresses, account
-    // identities or SDP. Native counters describe this process, not one player.
+    // 每十秒取一次本机样本，不额外发探测或 RPC，也不记录地址、账号身份
+    // 或 SDP。原生计数指当前进程总体，不能算某个玩家独有。
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
@@ -41,7 +41,8 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
-            // Server simulation can catch up several ticks in one Unity frame.
+            // 服务器可能在一次 Unity 帧内连续补几次模拟 tick。
+            // Unity 一帧可能模拟多个 NetCode tick。记录真实渲染循环停顿时只按首个 tick 计一次，否则会抬高帧率。
             if (m_LastFrame == UnityEngine.Time.frameCount) return;
             m_LastFrame = UnityEngine.Time.frameCount;
             double now = UnityEngine.Time.realtimeSinceStartupAsDouble;
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS {
             m_NextSample = now + 10;
             bool server = World.IsServer();
             var game = GameManager.GameConnection;
+            // 找本局实际使用的 ICE 传输，好友房与官方客户端或独立服来源不同。没有活通道时不输出旧统计。
             var transport = game?.PeerRoom?.RaidTransport ??
                             (server ? OnlineIceServer.DiagnosticTransport : game?.IceSession?.Transport);
             if (transport == null || transport.IsDisposed) {
@@ -63,6 +65,7 @@ namespace Unity.MP_FPS {
             }
             var sample = transport.GetStatistics();
             ulong adapterDrops = transport.AdapterDrops;
+            // 换传输首个样本只作今后一段的起点，不能拿新连接的累计计数减之前连接的计数。
             bool baseline = !ReferenceEquals(transport, m_Transport);
             double seconds = baseline ? 0 : Math.Max(.001, now - m_Start);
             double fps = seconds > 0 ? m_Frames / seconds : 0;
@@ -77,6 +80,7 @@ namespace Unity.MP_FPS {
                 if (EntityManager.GetComponentData<NetworkStreamConnection>(entity).CurrentState !=
                     ConnectionState.State.Connected)
                     continue;
+                // 每条连接单独读取往返时间、抖动、输入滞后和排队。原生传输总字节与丢包是一条进程级数据，不能当成单连接。
                 var ack = EntityManager.GetComponentData<NetworkSnapshotAck>(entity);
                 int queued = EntityManager.HasBuffer<OutgoingRpcDataStreamBuffer>(entity)
                     ? EntityManager.GetBuffer<OutgoingRpcDataStreamBuffer>(entity, true).Length
@@ -95,6 +99,7 @@ namespace Unity.MP_FPS {
                         ? "n/a"
                         : ack.SnapshotPacketLoss.NumPacketsDroppedNeverArrived.ToString(CultureInfo.InvariantCulture),
                     receiveRate, sendRate, sample.QueuedPackets, drops, errors, adapter);
+                // 统计按时间窗输出，没有为诊断发送额外网络包。下个窗累积重新开始。
                 Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "{0}", message);
             }
             m_Transport = transport;

@@ -7,7 +7,7 @@ using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
 
 namespace Unity.MP_FPS {
-    /// <summary>Publishes server action state for movement and animation. Presentation never completes or consumes an action.</summary>
+    /// <summary>同步服务端动作状态，供移动和动画使用。表现层无权完成动作或消耗物品。</summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(ServerGameSystem))]
     public partial class RaidHandActionSystem : SystemBase {
@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
                 ? null
                 : EntityManager.GetComponentObject<RaidMissionWorld>(missions.GetSingletonEntity());
             using (var entities = connections.ToEntityArray(Allocator.Temp)) {
+                // 将连接上的库存动作按玩家实体整理一次，后面就可直接按角色查询，而不用为每个人重新遍历连接。
                 foreach (var entity in entities) {
                     if (EntityManager.HasComponent<NetworkStreamRequestDisconnect>(entity) ||
                         (EntityManager.HasComponent<RaidSession>(entity) &&
@@ -66,6 +67,7 @@ namespace Unity.MP_FPS {
                 float remaining = 0, duration = 0;
                 bool alive = health.CurrentHealth > 0 && (!health.ClashEnabled || health.ClashLife == ClashLife.Alive);
                 health.TimedActionActive = alive && timedActors.Contains(actor);
+                // 真人由库存读出当前正在搜索、使用物品或医疗的还剩多久。同一个角色这帧只同步一种手部动作。
                 if (alive && inventories.TryGetValue(actor, out var inventory)) {
                     if (inventory.MedicalItemId != null) {
                         code = inventory.Graph.Find(inventory.MedicalItemId)?.Code;
@@ -91,6 +93,7 @@ namespace Unity.MP_FPS {
                             target = corpse.Position + new Mathematics.float3(0, .25f, 0);
                     }
                 }
+                // NPC 自己管理物品和读条。转成和玩家同样的 HandAction 后，远端表现可共用一套动画。
                 if (alive && EntityManager.HasComponent<DollSingerEnemyBrain>(actor)) {
                     var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(actor);
                     if (brain.NutritionUntil > now) {
@@ -110,6 +113,7 @@ namespace Unity.MP_FPS {
                         target = brain.LootLookPoint;
                     }
                 }
+                // 之前没选出更优先动作才读战术道具计时，避免一次同时让手上显示两种操作。
                 if (alive && action == HandAction.None && tacticalUses.TryGetValue(actor, out var use) &&
                     use.Until > now && use.Definition?.Injectable == true) {
                     action = HandAction.Inject;
@@ -123,6 +127,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 用补给目录区分吃、喝、换氧和治疗。物品具体效果在服务器完成使用时另行计算。
         public static HandAction Kind(string code, bool supply) {
             if (supply) {
                 var definition = ConsumableCatalog.Get(code);
@@ -145,6 +150,7 @@ namespace Unity.MP_FPS {
             float duration) {
             if (remaining <= 0 || duration <= 0) action = HandAction.None;
             var item = action == HandAction.None ? default : new FixedString64Bytes(code ?? "");
+            // 动作开始、换物品或确实开启新一轮读条才递增动画序号。搜索阶段余量变化不应让动画每揭开一格就重播。
             if (action != HandAction.None && ((byte)action != health.HandAction ||
                                               !item.Equals(health.HandActionItem) ||
                                               (action != HandAction.Search &&

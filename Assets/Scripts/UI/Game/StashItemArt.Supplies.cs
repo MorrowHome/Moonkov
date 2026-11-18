@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class StashItemArt {
+        // 这里开始是直接使用的补给图案。它们的效果和数量由目录给出，绘制只使用颜色与设计坐标。
         private void MedicalGel() {
             Shape(0x516466, new Vector2(27, 15), new Vector2(73, 15), new Vector2(65, 77), new Vector2(35, 77));
             Shape(0xdce4d5, new Vector2(31, 19), new Vector2(69, 19), new Vector2(61, 75), new Vector2(39, 75));
@@ -75,6 +76,7 @@ namespace Unity.MP_FPS.Client {
             Line(0xe8b769, 2, new Vector2(72, 23), new Vector2(75, 19));
         }
 
+        // 携行装备图案用不同线条区分胸挂和背包。用户可以凭轮廓认出类别，真实可装格数从库存定义读取。
         private void ScoutRig() { ChestBadge(4, 0x6eb4cc); }
         private void FieldRig() { ChestBadge(8, 0xd6ad6b); }
 
@@ -105,6 +107,7 @@ namespace Unity.MP_FPS.Client {
             Line(0xd6c199, 2, new Vector2(75, 52), new Vector2(85, 52));
         }
 
+        // 后面的材料图用芯片、线圈、陶瓷等轮廓表现物品。每种路径都复用同一组 Shape 和 Line 助手。
         private void CircuitBoard() {
             Box(0x244b3f, 16, 18, 68, 65);
             Box(0x3e7660, 20, 22, 60, 57);

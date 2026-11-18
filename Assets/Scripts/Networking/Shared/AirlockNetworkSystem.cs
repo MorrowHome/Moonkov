@@ -8,12 +8,14 @@ using Unity.Transforms;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
+    // 请求仅说明按的是哪台设备的哪个按钮。能否按由服务器从当前连接、人物和距离验证。
     public struct AirlockActionRequestRpc : IRpcCommand {
         public FixedString64Bytes AirlockId, ButtonId;
         public uint RequestId;
         public ulong ServerSession;
     }
 
+    // 门缝、压力、均压和反馈一起同步，客户端画门和仪表要用来自同一次修订的数据。
     public struct AirlockStateRpc : IRpcCommand {
         public FixedString64Bytes AirlockId;
         public ulong ServerSession;
@@ -37,6 +39,7 @@ namespace Unity.MP_FPS {
         public AirlockFeedback Feedback;
     }
 
+    // 电梯用同一按钮入口，但位置、闸门和目的楼层走独立快照，避免套用气压字段。
     public struct RaidLiftStateRpc : IRpcCommand {
         public FixedString64Bytes LiftId;
         public ulong ServerSession;
@@ -60,6 +63,7 @@ namespace Unity.MP_FPS {
         public string LastButton;
         public ulong Session;
 
+        // 换服务器会话时清请求号与每台设备的最新修订。新 World 可以从较小编号重新同步。
         public void ResetSession(ulong session) {
             Snapshots.Clear();
             LiftRevisions.Clear();
@@ -91,6 +95,7 @@ namespace Unity.MP_FPS {
             return button && button.Owner && Send(world, button.Owner.AirlockId, button.ButtonId);
         }
 
+        // 网络场景从本地客户端发带会话的操作，不能直接改变共享场景中服务端掌管的设备。
         public static bool Send(World world, string ownerId, string buttonId) {
             if (world == null || !world.IsCreated || !world.IsClient()) return false;
             var em = world.EntityManager;
@@ -141,6 +146,7 @@ namespace Unity.MP_FPS {
                                        !EntityManager.HasComponent<NetworkStreamRequestDisconnect>(connection);
                 if (validConnection) {
                     m_Requests.TryGetValue(connection, out uint prior);
+                    // 先检查这个请求属于当前服务器，并为这条连接去重。有效的序号无论结果成功失败都只消费一次。
                     if (r.ServerSession != m_Session || r.RequestId == 0 || r.RequestId <= prior) {
                         result = AirlockFeedback.StaleRequest;
                     } else {
@@ -148,6 +154,7 @@ namespace Unity.MP_FPS {
                         var controller = AirlockController.Find(r.AirlockId.ToString());
                         var button = AirlockButton.Find(r.ButtonId.ToString());
                         var liftButton = controller ? null : RaidLiftButton.Find(r.ButtonId.ToString());
+                        // 按钮必须真注册在请求的设备下。服务端再查角色位置，玩家不能用别处的按钮 ID 操作这台设备。
                         bool airlockControl = controller && button && button.Owner == controller;
                         bool liftControl = liftButton && liftButton.Owner &&
                                            liftButton.Owner.LiftId == r.AirlockId.ToString();
@@ -170,6 +177,7 @@ namespace Unity.MP_FPS {
                             }
                         }
                     }
+                    // 回执只告诉发起人这次操作是否成功。门和电梯如何移动由更后面的公共快照同步所有连接。
                     var ack = ecb.CreateEntity();
                     ecb.AddComponent(ack, new AirlockActionAckRpc {
                         AirlockId = r.AirlockId, ButtonId = r.ButtonId,
@@ -179,6 +187,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 即使这一帧没人点按钮，门与压力也由服务端按计时推进，客户端不自己改玩法规则。
             foreach (var controller in AirlockController.Active)
                 if (controller && controller.Ready)
                     controller.TickAuthoritative(SystemAPI.Time.DeltaTime);
@@ -186,6 +195,7 @@ namespace Unity.MP_FPS {
                 if (lift && lift.Ready)
                     lift.TickAuthoritative(SystemAPI.Time.DeltaTime);
             double now = SystemAPI.Time.ElapsedTime;
+            // 已同步连接按更新间隔收到新状态。刚连接的人先拿到全部设备状态，无需知道之前按过哪些按钮。
             bool periodic = now >= m_NextBroadcast;
             if (periodic) m_NextBroadcast = now + .1;
             foreach (var controller in AirlockController.Active) {
@@ -196,7 +206,7 @@ namespace Unity.MP_FPS {
                 foreach (var (id, connection) in SystemAPI.Query<RefRO<NetworkId>>().WithAll<NetworkStreamInGame>()
                              .WithEntityAccess()) {
                     if (!periodic && !changed && m_Synchronized.Contains(connection)) continue;
-                    // At most 10 Hz during motion; new connections receive the complete current state.
+                    // 设备运动时最多每秒同步 10 次。新连接立即得到完整的当前状态。
                     if (!periodic && m_Synchronized.Contains(connection)) continue;
                     var rpc = ecb.CreateEntity();
                     ecb.AddComponent(rpc, new AirlockStateRpc {
@@ -229,7 +239,7 @@ namespace Unity.MP_FPS {
                          .WithEntityAccess())
                 m_Synchronized.Add(connection);
             m_Synchronized.RemoveWhere(e => !EntityManager.Exists(e));
-            // Disconnects must not accumulate request state over a long server session.
+            // 服务器长时间运行时要回收断开连接的请求记录。
             m_DeadRequests.Clear();
             foreach (var e in m_Requests.Keys)
                 if (!EntityManager.Exists(e))
@@ -251,6 +261,7 @@ namespace Unity.MP_FPS {
         protected override void OnUpdate() {
             var state = EntityManager.GetComponentObject<AirlockClientState>(m_State);
             SystemAPI.TryGetSingletonEntity<NetworkId>(out var connection);
+            // 换连接先清掉旧设备缓存。随后从当前连接收气闸、电梯和操作结果，各按自己的会话和版本接受。
             if (connection != m_Connection) {
                 state.ResetSession(0);
                 m_Connection = connection;
@@ -265,6 +276,7 @@ namespace Unity.MP_FPS {
                     bool fresh = state.Session != r.ServerSession;
                     if (fresh) state.ResetSession(r.ServerSession);
                     string id = r.AirlockId.ToString();
+                    // 只有版本真的变新才应用门状态。房主客户端与服务器共用实体场景，只保留快照供 UI 用，不从客户端再改一次。
                     bool newer = !state.Snapshots.TryGetValue(id, out var prior) || r.Revision > prior.Revision;
                     var controller = AirlockController.Find(id);
                     if (newer && controller && (AirlockNetworkContext.HasServer ||
@@ -295,6 +307,7 @@ namespace Unity.MP_FPS {
                 received.ValueRW.Consume();
                 var r = rpc.ValueRO;
                 if (connection != Entity.Null && received.ValueRO.SourceConnection == connection &&
+                    // 回执必须对应当前连接已发送且还没收过的请求。接受后提示到原按钮，不影响其他设备的操作反馈。
                     r.ServerSession == state.Session && r.RequestId > state.LastAck &&
                     r.RequestId <= state.NextRequest) {
                     state.LastAck = r.RequestId;

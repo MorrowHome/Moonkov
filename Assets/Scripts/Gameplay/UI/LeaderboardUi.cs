@@ -79,9 +79,9 @@ namespace Unity.MP_FPS.UI {
         }
 
         private void Update() {
-            // Find the current ClientWorld, if any
+            // 查找当前的 ClientWorld。
             var clientWorld = GetClientWorld();
-            // If the client world changed (new, destroyed, or swapped), (re)initialize
+            // 创建、销毁或切换客户端 World 后都重新建查询。
             if (clientWorld != _currentClientWorld) InitializeClientWorld(clientWorld);
             bool worldIsInitialized = _currentClientWorld != null;
             if (!worldIsInitialized) {
@@ -102,21 +102,24 @@ namespace Unity.MP_FPS.UI {
 
         private void UpdateLeaderboardUI() {
             if (LeaderboardManager.Instance == null) return;
+            // 记分板直接读已有战绩。打开界面只将当前结果换成列表数据，不重新统计对局。
             var scores = LeaderboardManager.Instance.GetScores();
 
-            // Sort scores: Kills descending, then Deaths ascending
+            // 按击杀数从多到少排，再按死亡数从少到多排。
+            // 先以击杀数排高低，击杀数相同时死亡少的在前。玩家姓名与网络 ID 用原来的记录。
             scores.Sort((a, b) => {
-                // Primary sort: Kills descending
+                // 先比较击杀数，从多到少。
                 int killComparison = b.Kills.CompareTo(a.Kills);
                 if (killComparison != 0) return killComparison;
-                // Secondary sort: Deaths ascending
+                // 击杀数相同时比较死亡数，从少到多。
                 return a.Deaths.CompareTo(b.Deaths);
             });
 
-            // Clear previous entries
+            // 清掉之前的列表项。
             _items.Clear();
 
-            // Add new entries
+            // 将排序后的记录加到列表。
+            // 将记录转为列表行供 UI Toolkit 复用。视图的显示顺序由刚才的排序决定。
             foreach (var score in scores)
                 _items.Add(new ScoreUiPlayerInfo(score.NetworkId, score.PlayerName.ToString(), score.Kills,
                     score.Deaths));

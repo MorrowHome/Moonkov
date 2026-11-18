@@ -5,13 +5,14 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Unity.MP_FPS {
-    /// <summary>Surface calibration and complete-chain alignment. Never solves a wrist at runtime.</summary>
+    /// <summary>根据模型表面校准接触点，并调整整条动作链。运行时无需另外求解手腕。</summary>
     public sealed class RaidActionContact {
         private struct Measurements {
             public Vector3 MouthOffset;
             public float Radius;
         }
 
+        // 同一个角色骨架的脸部和前臂尺寸可共用。测一次后缓存，局内不每次拿道具都重新求模型位置。
         private static readonly Dictionary<Avatar, Measurements> MeasurementsByAvatar = new();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -22,6 +23,7 @@ namespace Unity.MP_FPS {
         private readonly float injectionRadius;
         public Vector3 Mouth => head.TransformPoint(mouthOffset);
 
+        // 从动作角色上找到接触计算需要的骨骼和测量值。模型不同也能用同一套修正方法。
         public RaidActionContact(Animator animator) {
             body = animator.transform;
             head = animator.GetBoneTransform(HumanBodyBones.Head);
@@ -55,11 +57,13 @@ namespace Unity.MP_FPS {
                     { MouthOffset = mouthOffset, Radius = injectionRadius };
         }
 
+        // 只有道具真正接近接触动作时才逐渐增加修正权重，动作开始和结束保留原来的手势。
         public static float ContactWeight(float phase) {
             return Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.18f, .36f, phase)) *
                    (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.68f, .88f, phase)));
         }
 
+        // 按嘴和道具接触点之间的差旋转骨架局部。食品到了脸旁时才让它贴在唇边。
         public void ToMouth(Vector3 propContact, float weight) {
             if (!rightRoot || weight <= 0) return;
             var correction = Quaternion.FromToRotation(propContact - rightRoot.position, Mouth - rightRoot.position);
@@ -80,9 +84,11 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 针剂沿前臂段选一个位置，再偏移到皮肤表面，避免针尖对齐到骨骼中心。
         public Vector3 InjectionSite =>
             Vector3.Lerp(leftLower.position, leftHand.position, .48f) + InjectionNormal * injectionRadius;
 
+        // 搜索姿势跟着真实搜刮点改变观察方向，让身体弯向面前的物资。
         public void Search(Vector3 target, float phase, float weight) {
             if (target.sqrMagnitude < .000001f || !rightRoot || !leftRoot) return;
             var pivot = (rightRoot.position + leftRoot.position) * .5f;
@@ -100,6 +106,7 @@ namespace Unity.MP_FPS {
             root.SetPositionAndRotation(pivot + correction * (root.position - pivot), correction * root.rotation);
         }
 
+        // 用绑定的模型估计唇的位置与手臂表面距离。不同外观的尺寸差不必靠填固定值硬调。
         private float MeasureForearm(Animator animator, out Vector3 mouth) {
             mouth = Vector3.positiveInfinity;
             SkinnedMeshRenderer source = null;
@@ -117,8 +124,8 @@ namespace Unity.MP_FPS {
                 var vertices = mesh.vertices;
                 int shape = source.sharedMesh.GetBlendShapeIndex("あ");
                 if (shape >= 0 && source.sharedMesh.GetBlendShapeFrameCount(shape) > 0) {
-                    // The actual mouth morph identifies each model's lip region.
-                    // Eye-to-mouth offsets vary substantially between these three faces.
+                    // 用角色实际的嘴部形状确定嘴唇区域。
+                    // 这三个模型的眼睛到嘴偏移有明显差异。
                     var deltas = new Vector3[vertices.Length];
                     source.sharedMesh.GetBlendShapeFrameVertices(shape, 0, deltas, null, null);
                     float maximum = 0;

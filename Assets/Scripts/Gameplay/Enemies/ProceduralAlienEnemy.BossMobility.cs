@@ -10,7 +10,9 @@ namespace Unity.MP_FPS {
         public int BossRepositions { get; private set; }
 
         private bool TickBossMobility(float dt, PredictedPlayerGhost health, bool remembered) {
+            // 位移技能只给配置启用它的 Boss。普通追击仍走 Combat 内部的路线。
             if (!profile.Boss || profile.BossRepositionSpeed <= 0) return false;
+            // 已有一段侧移就先继续它。不再记得目标、路线失效太久或到达目标时退出这段位移。
             if (m_Action == AlienAction.Reposition) {
                 if (!remembered || m_Clock - m_ActionStarted >= profile.BossRepositionSeconds + .8f ||
                     (m_BossMoveStarted >= 0 && m_Clock - m_BossMoveStarted >= profile.BossRepositionSeconds) ||
@@ -20,14 +22,15 @@ namespace Unity.MP_FPS {
                 }
                 var waypoint = UprightWaypoint(m_BossDestination);
                 var intent = Vector3.ProjectOnPlane(waypoint - transform.position, Vector3.up).normalized;
-                // A newly requested sidestep may arrive during the previous plan's
-                // .75s cache window. Wait for its own checked route, without bypassing
-                // the planner's rate/budget or spending the whole dash on a stale goal.
+                // 新触发的侧移可能撞上上一条路线的缓存有效期。
+                // 上一条路径最多缓存 .75 秒。新侧移要等自己的路线检查完成。
+                // 这样可以遵守寻路的频率和预算，也不把冲刺时间用在旧目的地上。
                 if (intent.sqrMagnitude < .01f || Vector3.Distance(m_UprightGoal, m_BossDestination) > .1f) {
                     UpdateCombatPresentation(health.CurrentHealth);
                     m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false);
                     return true;
                 }
+                // 等换位自己的路径真正可用才记冲刺开始时间，等规划期间不消耗有效移动时间。
                 if (m_BossMoveStarted < 0) m_BossMoveStarted = m_Clock;
                 var facing = m_Visible
                     ? Vector3.ProjectOnPlane(m_LastSeen - transform.position, Vector3.up).normalized
@@ -50,6 +53,7 @@ namespace Unity.MP_FPS {
                 return false;
             Vector3 target = m_LastSeen, delta = Vector3.ProjectOnPlane(target - transform.position, Vector3.up);
             float distance = delta.magnitude;
+            // 受伤、太远或刚完成一招都可以触发侧移尝试。还要在冷却结束、能看见目标并且当前可切换时才发起。
             bool damaged = m_BossMoveHealth - health.CurrentHealth > health.MaxHealth * .08f;
             bool far = distance > profile.BossPreferredDistance * 1.4f;
             bool afterAttack = m_Attacks > m_BossMoveAttack;
@@ -62,6 +66,7 @@ namespace Unity.MP_FPS {
             desired = transform.position + Vector3.ClampMagnitude(desired - transform.position,
                 profile.BossRepositionSpeed * profile.BossRepositionSeconds);
             float radius = profile.GroundBodyRadius(m_Body.Scale);
+            // 先验证侧移目的地能容下整个身体，之后再用实际导航去走。
             if (!RaidSpawnSafety.TryGroundPosition(desired, radius, profile.GroundBodyHeight(m_Body.Scale), 35,
                     out var floor, out _)) {
                 m_NextBossMove = m_Clock + 1;

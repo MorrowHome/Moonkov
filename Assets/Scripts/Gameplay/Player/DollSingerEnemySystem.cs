@@ -12,7 +12,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // These components exist only on the server. The normal player ghost is the network contract.
+    // 这些组件仅在服务器上存在。对客户端仍发送普通玩家 Ghost。
     public struct DollSingerEnemy : IComponentData {
         public Entity InputEntity;
         public int CharacterIndex;
@@ -103,8 +103,8 @@ namespace Unity.MP_FPS {
             m_ClashAgents.Clear();
             m_ClashSquads.Clear();
             m_ClashNavChecked = m_ClashNavReady = false;
-            // All transports can disconnect while the map/world remain alive. Retain the
-            // session budget and cutoff so reconnecting cannot manufacture another wave.
+            // 即使所有连接都断开，地图和 World 也可能继续存在。
+            // 维护本局剩余预算和截止时间，重连不能平白再带出一批增援。
         }
 
         private void ReleaseNavigation() {
@@ -122,6 +122,7 @@ namespace Unity.MP_FPS {
             m_TacticalWorld = m_TacticalQuery.IsEmptyIgnoreFilter
                 ? null
                 : EntityManager.GetComponentObject<TacticalServerWorld>(m_TacticalQuery.GetSingletonEntity());
+            // 悬赏有独立的对局注册表和入场条件。满足时提前转到悬赏循环，不继续推进普通远征人群。
             if (BountyClashRuntime.Enabled(EntityManager)) {
                 if (ClashSoloRuntime.TryGetRegistry(EntityManager, out var registry) && MoonRaidMap.Active != null) {
                     UpdateClashBots(MoonRaidMap.Active, registry, SystemAPI.Time.ElapsedTime);
@@ -140,7 +141,8 @@ namespace Unity.MP_FPS {
             m_ClashAgents.Clear();
             var map = MoonRaidMap.Active;
             double now = SystemAPI.Time.ElapsedTime;
-            // Reference identity also detects an unloaded Unity object that now compares equal to null.
+            // 引用比较也能识别已卸载的 Unity 对象，即使它与 null 比较时结果为真。
+            // Unity 对象销毁后比较起来可能像 null。这里用对象身份识别地图确实换过，从而清理上局。
             if (!ReferenceEquals(m_Map, map) || (map != null && map.EnemyCount <= 0 && m_NavData != null)) {
                 DestroyEnemies();
                 ReleaseNavigation();
@@ -149,7 +151,9 @@ namespace Unity.MP_FPS {
                 ResetPopulation();
             }
             if (map == null || map.EnemyCount <= 0) return;
+            // 正式驱动 AI 之前要有可寻路场景。异步网格还没就绪时晚几拍启动，不在未知地形发出直走指令。
             if (!NavigationReady(map, now)) return;
+            // 刷新潜在目标和队伍信息按较低频率，具体碰撞移动仍每拍推进。
             if (now >= m_NextTargets) {
                 CollectTargets(now);
                 UpdateExpeditionSquads(now);
@@ -162,8 +166,8 @@ namespace Unity.MP_FPS {
                          .WithEntityAccess()) {
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 if (health.ValueRO.CurrentHealth <= 0) {
-                    // Lethal damage may arrive after the last protection update.
-                    // The actual remaining charge must follow the item into the corpse.
+                    // 最后一次装备同步后还可能收到致命伤害。
+                    // 护盾的实际剩余能量必须跟物品一起进入尸体。
                     // 死亡可能刚发生在两次装备刷新之间。先把护盾真实剩余能量写回库存，再生成尸体容器。
                     EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);
                     DropCorpse(brain, pose.ValueRO, now, enemy.ValueRO.CharacterIndex);
@@ -172,6 +176,7 @@ namespace Unity.MP_FPS {
                     deaths.DestroyEntity(entity);
                     continue;
                 }
+                // 随行队友和创建它的玩家同进同出。主人不再是有效局内参与者就清掉队友输入和实体。
                 if (brain.IsCompanion && !CompanionOwnerActive(brain)) {
                     RetireEnemy(entity, brain);
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
@@ -186,13 +191,15 @@ namespace Unity.MP_FPS {
                 // 机器人和玩家在角色系统里读的是同一种输入。这里给出这一拍想做什么，后面的系统执行它。
                 input.ValueRW.Input = Think(entity, brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
                     (float)SystemAPI.Time.DeltaTime);
+                // 安全撤离只移除角色并清掉记分项，不把活人撤离变成一个可搜的尸体。
                 if (brain.Extracted) {
-                    // Successful extraction removes this raid actor, without producing a corpse.
+                    // 成功撤离后移除这个战局角色，无需生成尸体。
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
                     deaths.DestroyEntity(entity);
                     RetireEnemy(entity, brain);
                 }
             }
+            // 先完成当前遍历，再批量落实实体销毁。剩余人数变动之后才能判断是否补刷。
             deaths.Playback(EntityManager);
             UpdatePopulation(map, now);
             UpdateCompanionPopulation(map, now);
@@ -215,6 +222,7 @@ namespace Unity.MP_FPS {
             LeaderboardManager.RetireRaidActor(EntityManager.GetComponentData<GhostOwner>(entity).NetworkId);
         }
 
+        // 用场景边界与玩法路线约束构建范围。大地图用较粗的采样，研究站等局部再单独补细节。
         private bool NavigationReady(MoonRaidMap map, double now) {
             if (m_NavInstance.valid) return MissionNavigationReady();
             if (m_Build != null) {
@@ -225,7 +233,7 @@ namespace Unity.MP_FPS {
             }
             if (now < m_NextBuild) return false;
             m_NextBuild = now + 1;
-            // Authored entry points define the playable expedition, including full-map routes.
+            // 场景设定的入口决定可玩的远征范围，整张地图的路线也从这些位置衔接。
             var bounds = new Bounds(map.LootPositions[0], Vector3.one);
             foreach (var point in map.LootPositions) bounds.Encapsulate(point);
             foreach (var point in map.EnemySpawnPositions) bounds.Encapsulate(point);
@@ -240,14 +248,14 @@ namespace Unity.MP_FPS {
             m_Sources.Clear();
             NavMeshBuilder.CollectSources(bounds, s_WorldMask, NavMeshCollectGeometry.PhysicsColliders, 0,
                 new List<NavMeshBuildMarkup>(), m_Sources);
-            if (m_Sources.Count == 0) return false; // The streamed terrain may still be loading.
+            if (m_Sources.Count == 0) return false; // 分区流式加载的地形现在可能还没齐。
             for (int i = 0; i < m_Sources.Count; i++) {
                 var source = m_Sources[i];
                 if (source.shape != NavMeshBuildSourceShape.Mesh || !(source.sourceObject is Mesh mesh) ||
                     mesh.isReadable)
                     continue;
-                // Imported rocks discard CPU vertices in a Player build. Their local bounds
-                // conservatively block navigation without retaining every rock mesh in RAM.
+                // 导入岩石在 Player 构建中会丢弃 CPU 端顶点。
+                // 使用各自局部包围盒保守挡住导航，不需要把每块岩石网格存在内存里。
                 source.shape = NavMeshBuildSourceShape.Box;
                 source.transform *= Matrix4x4.Translate(mesh.bounds.center);
                 source.size = mesh.bounds.size;
@@ -260,8 +268,8 @@ namespace Unity.MP_FPS {
             settings.agentClimb = .35f;
             settings.agentSlope = 45;
             settings.overrideVoxelSize = true;
-            // A four-kilometre expedition must not rasterize the entire DEM at 20 cm.
-            // Retain detailed navigation for compact routes and use bounded resolution for large maps.
+            // 四公里的远征图不能以 20 厘米体素重算全部 DEM 地形。
+            // 小区间留精细导航，大地图用更粗且有上限的分辨率。
             settings.voxelSize = Mathf.Max(bounds.size.x, bounds.size.z) > 1000 ? .75f : .2f;
             m_Filter = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
             m_NavData = new NavMeshData(settings.agentTypeID) { name = "DollSinger server expedition navigation" };
@@ -269,6 +277,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 建立可被 AI 感知的候选和声音表。收集位置、身体姿势和动作事件供各观察者独立判定。
         private void CollectTargets(double now) {
             m_Targets.Clear();
             m_Events.Clear();
@@ -343,7 +352,7 @@ namespace Unity.MP_FPS {
                 var capsule = player != null && player.Controller != null
                     ? player.Controller.CharacterController
                     : null;
-                // Use the actual controller stance, not imaginary standing hit points over a prone body.
+                // 使用角色当前实际控制器姿态。趴着的人不能按一处假想的站立高度当作射击点。
                 var center = capsule ? capsule.transform.TransformPoint(capsule.center) - position : Vector3.up * .9f;
                 float height = capsule ? capsule.height * capsule.transform.lossyScale.y : 1.8f;
                 m_Targets.Add(new Target {
@@ -362,6 +371,7 @@ namespace Unity.MP_FPS {
             foreach (var entity in m_ExpiredTracks) m_Tracks.Remove(entity);
         }
 
+        // 射线查询需要确认目标属于对应角色，并且实际中间没障碍。挡在前面的墙才决定是否看到目标。
         private bool ClearSight(Transform root, Vector3 eye, Vector3 targetPoint, Entity target) {
             if (SmokeVisibility.Blocked(m_TacticalWorld, root.gameObject.scene.GetPhysicsScene(), eye, targetPoint))
                 return false;
@@ -383,6 +393,7 @@ namespace Unity.MP_FPS {
             return hit != null && hit.IsChildOf(targetRoot.transform);
         }
 
+        // 导航点只在目标变化、间隔到了或移动停滞时重算。路线不全就退回决策，不把角色传送到目标。
         private void UpdatePath(DollSingerEnemyBrain brain, Vector3 position, Vector3 goal, double now) {
             if (now < brain.NextPath && HorizontalDistance(brain.Goal, goal) < 3) return;
             brain.NextPath = now + .6 + brain.Seed % 7 * .03;
@@ -407,7 +418,7 @@ namespace Unity.MP_FPS {
                 if (brain.Action == PmcAction.Scavenge) AbandonCache(brain);
                 return;
             }
-            // A stalled controller repaths instead of teleporting through an obstruction.
+            // 控制器停滞时重新寻路，不绕过碰撞直接传送。
             if (now >= brain.NextProgress) {
                 if (brain.MovementRequested && Vector3.Distance(position, brain.ProgressPosition) < .3f &&
                     Vector3.Distance(position, goal) > 2) {
@@ -433,6 +444,7 @@ namespace Unity.MP_FPS {
             brain.NextMission = brain.NextDecision = brain.NextCover = 0;
         }
 
+        // 到达一个拐点再沿下一个方向移动。路线耗尽就给零方向，留机会让选目标逻辑更新。
         private static Vector3 FollowPath(DollSingerEnemyBrain brain, Vector3 position) {
             while (brain.Corner < brain.CornerCount &&
                    HorizontalDistance(position, brain.Corners[brain.Corner]) < .7f &&
@@ -448,6 +460,7 @@ namespace Unity.MP_FPS {
             return new Vector2(a.x - b.x, a.z - b.z).magnitude;
         }
 
+        // 阵亡后把真实掉落交给本局容器，记录角色类型和位置给客户端生成对应尸体外观。
         private void DropCorpse(DollSingerEnemyBrain brain, LocalTransform pose, double now, int characterIndex) {
             using var profile = s_DropProfile.Auto();
             Vector3 position = pose.Position;

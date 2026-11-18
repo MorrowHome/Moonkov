@@ -28,6 +28,7 @@ public class SoundDef : ScriptableObject {
     }
 
     [Serializable]
+    // 一个音效可以从片段中段起播，也能先等一会儿再响或限定时长。装填等动作能借用同一个录音的不同片段。
     public class StartStop {
         [Range(0, 10.0f)] public float DelayMin = 0.0f;
         [Range(0, 10.0f)] public float DelayMax = 0.0f;
@@ -52,6 +53,7 @@ public class SoundDef : ScriptableObject {
     }
 
     [Serializable]
+    // 离听者远了可以同时变轻、变闷或改变空间感。这些参数由声源按实际位置算，给每类音效单独调。
     public class Distance {
         [Range(0.1f, 100.0f)] public float VolumeDistMin = 1.5f;
         [Range(0.1f, 100.0f)] public float VolumeDistMax = 30.0f;
@@ -59,7 +61,7 @@ public class SoundDef : ScriptableObject {
 
         [Space(5)] [Range(0.0f, 1.0f)]
         public float
-            DopplerScale = 0.0f; // 0 = no doppler effect applied to pitch. 1 = full doppler effect applied to pitch
+            DopplerScale = 0.0f; // 0 表示音高不受多普勒效应影响，1 表示完全应用。
 
         [Space(5)] public AudioRolloffMode VolumeRolloffMode = AudioRolloffMode.Linear;
         [Space(5)] public Interpolator.CurveType LPFRollOffCurveType;
@@ -99,6 +101,7 @@ public class SoundDef : ScriptableObject {
     public float VolumeScale = 1;
     public float BaseLowPassCutoff = 0;
     [Space(10)] public PlaybackTypes PlaybackType;
+    // 一次发声能并行借用若干声源叠层。片段选择有顺序、随机等方式，具体由 SoundGameObject 跟当前任务一起处理。
     public int PlayCount = 1;
     [Space(10)] public List<AudioClip> Clips;
     [Space(10)] public Repeat RepeatInfo;
@@ -109,6 +112,7 @@ public class SoundDef : ScriptableObject {
     public Filter HighPassFilter;
     [Space(5)] public Distortion DistortionFilter;
 
+    // 保存资源时把最小值限制在同组最大值以内。这样运行时抽取随机延时、偏移和滤波参数时都会有有效的范围。
     public void OnValidate() {
         PitchAndVolumeInfo.VolumeMin = PitchAndVolumeInfo.VolumeMin > PitchAndVolumeInfo.VolumeMax
             ? PitchAndVolumeInfo.VolumeMax

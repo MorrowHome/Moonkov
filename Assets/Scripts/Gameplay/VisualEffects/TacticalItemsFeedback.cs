@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Original procedural Moonkov props. Audio sources are listed in MoonkovGameAudioSources.md.
-    // This component owns presentation only; server PhysicsScene checks own all gameplay.
+    // Moonkov 自制的程序道具。声音来源见 MoonkovGameAudioSources.md。
+    // 组件只负责画面。玩法判定使用服务器的 PhysicsScene 检查。
     [DefaultExecutionOrder(150)]
     public sealed class TacticalItemsFeedback : MonoBehaviour {
         private sealed class Visual {
@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
             LocalOwner = default;
         }
 
+        // 本机动作进度和世界中已经生成的物件走不同消息。持有、使用和可见性的本机数据由这一入口更新。
         public static void SetOwner(TacticalItemOwnerRpc owner) {
             var previous = LocalOwner;
             LocalOwner = owner;
@@ -77,7 +78,7 @@ namespace Unity.MP_FPS {
         public static void SetSelectedItem(string code) {
             var definition = TacticalItemRules.Find(code);
             bool medical = Inventory.ConsumableCatalog.MedicalRestore(code) > 0;
-            // Grenades are rendered by the replicated hand animation, including safe holding.
+            // 手雷外观跟随网络同步的手部动画。安全持握阶段也照常显示。
             if (GrenadeHandling.Throwable(code) || (definition == null && !medical)) {
                 if (s_Active) {
                     s_Active.m_Selected = null;
@@ -144,7 +145,7 @@ namespace Unity.MP_FPS {
                                                                      visual.State.Phase == TacticalWorldPhase.Choke ||
                                                                      visual.State.Phase == TacticalWorldPhase.Poison))
                     return true;
-            // Cough emitters are audio only; they do not need a transparent render pass.
+            // 咳嗽发声对象只需要声音，无需走透明特效通道。
             return false;
         }
 
@@ -179,6 +180,7 @@ namespace Unity.MP_FPS {
         public void Present(in TacticalWorldStateRpc state) {
             // Epoch 用来分开不同批次的战术物件。每个物件还检查消息序号，已移除的道具不会被晚到的旧包重新建出来。
             if (state.Epoch < m_Epoch || (state.Id == 0 && state.Phase != TacticalWorldPhase.Removed)) return;
+            // 切到新的战局时期先清理上一批表现。整批移除用特殊的零 ID，普通物件各用独立身份和序号。
             if (state.Epoch > m_Epoch) {
                 Clear();
                 m_Epoch = state.Epoch;
@@ -202,6 +204,7 @@ namespace Unity.MP_FPS {
                 m_Visuals[state.Id] = visual;
             }
             bool change = visual.Root == null || state.Phase != visual.State.Phase;
+            // 同一物件从飞行变成陷阱或持续区域时要换外观节点。阶段相同就沿用原节点，只更新位置、时间和声音。
             if (change) {
                 if (visual.Root) Release(visual.Root);
                 visual.Root = new GameObject("Tactical " + state.Kind + " / " + state.Phase);
@@ -216,7 +219,7 @@ namespace Unity.MP_FPS {
             visual.Expire = Time.time + Mathf.Max(.3f, state.Remaining + .5f);
             visual.Root.transform.position = state.Position;
             visual.Audio.Present(state);
-            // Sequence records are bounded by the world's monotonic id range. No stale resurrection.
+            // 序号只保留在当前 World 的递增编号范围内，迟到的旧状态不会复活已清理效果。
             if (m_Sequences.Count > 512) {
                 m_Expired.Clear();
                 foreach (var pair in m_Sequences)
@@ -270,6 +273,7 @@ namespace Unity.MP_FPS {
             if (!s_Active) return false;
             float depth = 0;
             foreach (var visual in s_Active.m_Visuals.Values) {
+                // 烟区效果要从物件列表找当前仍有效的烟雾。不同阶段即使沿用同一个 ID，也不再进入烟雾这条渲染路径。
                 if (visual.State.Phase != TacticalWorldPhase.Smoke) continue;
                 float remaining = visual.State.Remaining - (Time.time - visual.Received);
                 if (remaining <= 0) continue;
@@ -308,6 +312,7 @@ namespace Unity.MP_FPS {
         }
 
         private void DrawAimPreview() {
+            // 只有当前可操作并选中了道具时才显示本地操作预览。使用中的服务端计时接管以后，用确认进度驱动画面。
             bool visible = !m_PresentationBlocked && m_Selected != null && Camera.main &&
                            Cursor.lockState == CursorLockMode.Locked && LocalOwner.Remaining <= 0;
             m_Preview.SetActive(visible);
@@ -328,7 +333,7 @@ namespace Unity.MP_FPS {
                     UnityEngine.Physics.Raycast(eye, direction, out var hit, 3, mask, QueryTriggerInteraction.Ignore) &&
                     hit.normal.y > .7f;
                 var point = valid ? hit.point + Vector3.up * .04f : eye + direction * 2;
-                // A preview is advisory. The server rechecks its capsule eye, level, support and occupancy.
+                // 预览只提示可能位置。服务器还会从角色胶囊体视点检查层高、支撑与占用。
                 m_PreviewRing.sharedMaterial = valid ? m_Green : m_Red;
                 float radius = m_Selected.Trap ? .65f : .35f;
                 for (int i = 0; i < 48; i++) {
@@ -337,7 +342,7 @@ namespace Unity.MP_FPS {
                 }
             }
             if (m_Selected.Throwable) {
-                // Aim line uses camera direction, while actual release always comes from the server capsule.
+                // 瞄准线随相机方向计算。真正放出道具的位置由服务端的角色胶囊体决定。
                 Vector3 position = eye + direction * .55f, velocity = direction * 14 + Vector3.up * 2;
                 int count = 1;
                 m_Trajectory.positionCount = 49;
@@ -518,8 +523,8 @@ namespace Unity.MP_FPS {
             if (!m_Held) {
                 m_Held = new GameObject("Held " + m_SelectedCode);
                 m_Held.transform.SetParent(transform, false);
-                // Medical supplies use the same authored models as loot and inventory.
-                // Selecting only draws the model; LMB still sends the authoritative use request.
+                // 医疗用品沿用仓库和地面战利品已经有的模型。
+                // 选中时只显示持握外观，左键使用仍走服务器确认。
                 if (!PhysicalItemVisuals.Create(m_SelectedCode, m_Held.transform, true)) {
                     if (m_Selected == null && m_SelectedCode != "energy_grenade") {
                         Release(m_Held);
@@ -535,6 +540,7 @@ namespace Unity.MP_FPS {
                 Moon.MoonSilverPrintSubject.Protect(m_Held);
             }
             m_Held.SetActive(true);
+            // 错过角色创建时稍后再找本机角色和右手。第一视角与第三视角可以各自把手持道具摆到正确位置。
             if ((!m_Owner || !m_RightHand) && Time.time >= m_NextOwnerSearch) {
                 m_NextOwnerSearch = Time.time + 1;
                 foreach (var candidate in FindObjectsByType<DollSingerNetworkPresentation>(FindObjectsInactive.Exclude))

@@ -31,10 +31,12 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
+            // 低频采样所有人的灯光和各自的受影响强度，没到下一采样点不用每帧重新比较所有角色。
             if (SystemAPI.Time.ElapsedTime < m_NextSample) return;
             m_NextSample = SystemAPI.Time.ElapsedTime + HaloLightGlareRules.SampleInterval;
             m_Actors.Clear();
             m_Filters.Clear();
+            // 从权威背包查有没有防眩设备。对目标计算前先缓存人物的折减系数。
             foreach (var (joined, connection) in SystemAPI.Query<RefRO<JoinedClient>>().WithAll<RaidInventoryState>()
                          .WithEntityAccess())
                 m_Filters[joined.ValueRO.PlayerEntity] =
@@ -69,6 +71,7 @@ namespace Unity.MP_FPS {
                 ? null
                 : EntityManager.GetComponentObject<TacticalServerWorld>(m_Smoke.GetSingletonEntity());
             UnityEngine.Physics.SyncTransforms();
+            // 对每个活目标看有哪些来源可造成有效强光。距离和方向合格后再查实际物理遮挡与烟雾。
             foreach (var target in m_Actors) {
                 float strongest = 0;
                 var sourcePoint = Vector3.zero;
@@ -77,7 +80,7 @@ namespace Unity.MP_FPS {
                         if (!source.Emits || source.Entity == target.Entity || source.Physics != target.Physics ||
                             HaloTransferRules.Teammates(source.State, target.State, source.Human, target.Human))
                             continue;
-                        // The light follows weapon aim; free look changes the receiver's gaze only.
+                        // 灯束朝武器瞄准的方向发出，自由观察只改变受影响玩家的观察方向。
                         var control = source.State.ControllerState;
                         var direction = Quaternion.Euler(control.PitchDegrees, control.YawDegrees, 0) * Vector3.forward;
                         float strength = HaloLightGlareRules.Strength(source.State, source.Eye, direction, target.Eye,
@@ -90,6 +93,7 @@ namespace Unity.MP_FPS {
                         sourcePoint = source.Eye;
                     }
                 var state = EntityManager.GetComponentData<PredictedPlayerGhost>(target.Entity);
+                // 烟雾里的角色可额外读取战术视线状态。灯光和烟的影响分别存，后续角色判断用对应字段。
                 if (state.CurrentHealth > 0 && (!state.ClashEnabled || state.ClashLife == ClashLife.Alive) &&
                     smoke != null && smoke.Statuses.TryGetValue(target.Entity, out var exposure) &&
                     exposure.FlashUntil > SystemAPI.Time.ElapsedTime) {

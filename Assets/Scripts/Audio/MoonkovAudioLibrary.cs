@@ -6,6 +6,7 @@ namespace Unity.MP_FPS {
     public sealed class MoonkovAudioLibrary : ScriptableObject {
         public SoundDef Click, Hover, Confirm, Error, Notification;
         public SoundDef AirlockButtonPress;
+        // 界面音与道具音共用配置入口。每个名字指向一个 SoundDef 资源，改录音可以只换引用。
         public SoundDef InventoryOpen, InventoryClose, ContainerClose;
 
         public SoundDef InventoryCloth,
@@ -45,9 +46,10 @@ namespace Unity.MP_FPS {
         public SoundDef InteriorVent, SuitVent;
         public SoundDef OxygenSupply;
         public SoundDef ShipInterior;
+        // 这一组配合登录画面的各阶段，和进战局后的角色声或地图环境声单独配置。
         public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;
 
-        // Layered deployment confirmation (success gong + android voice).
+        // 多层的出战确认音，由成功锣声和仿生人语音组成。
         public SoundDef DeployConfirm;
     }
 }

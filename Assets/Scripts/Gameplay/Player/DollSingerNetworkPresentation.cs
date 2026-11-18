@@ -7,7 +7,7 @@ using UnityEngine.Animations;
 using UnityEngine.Playables;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation for the template's predicted player, with no independent movement simulation.</summary>
+    /// <summary>预测角色的客户端显示组件，无需额外模拟一遍人物移动。</summary>
     [DefaultExecutionOrder(-50)]
     public sealed class DollSingerNetworkPresentation : GhostMonoBehaviour {
         [SerializeField] private DollSingerMovement m_Model;
@@ -73,6 +73,7 @@ namespace Unity.MP_FPS {
 
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
 
+        // 手被近战、道具或手雷占用时不继续驱动光环姿势。本机快速反馈也遵循这个切换。
         public bool WeaponHandsAvailable =>
             m_Halo && !m_Halo.ExternalHandPoseActive && !RaidHUD.GrenadeInHands && !(m_Grenade && m_Grenade.OwnsHands);
 
@@ -99,6 +100,7 @@ namespace Unity.MP_FPS {
                 : m_Model.GetLeanOffset(lean, bodyRotation);
         }
 
+        // 先检查生死、当前动作和 UI 请求，再决定能否读取本地视角。还能单独允许调光时的预览瞄准。
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked) {
             if (blocked || !m_OwnedAlive || !WeaponHandsAvailable || m_Input.LightAdjusting ||
                 RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
@@ -123,6 +125,7 @@ namespace Unity.MP_FPS {
             return freeLooking;
         }
 
+        // 准星点可能在第三人称镜头视线的远处。查当前客户端物理场景时过滤另一套服务端角色，防止打在自己的复制体上。
         public Vector3 CaptureAimPoint(float2 look, float range) {
             m_OwnedLook = look;
             var viewLook = look + m_FreeLookOffset;
@@ -130,13 +133,13 @@ namespace Unity.MP_FPS {
                 Quaternion.Euler(0f, look.x, 0f), m_OwnedLean);
             var target = ray.GetPoint(range);
             UnityEngine.Physics.SyncTransforms();
-            // Host server colliders duplicate the client avatars; ignore that world here.
+            // 房主的服务器碰撞体与客户端外观重叠。这里做显示层查询时忽略服务器副本。
             int count;
             var physicsScene = gameObject.scene.GetPhysicsScene();
             while ((count = physicsScene.Raycast(ray.origin, ray.direction, m_AimHits, range, AimMask,
                        QueryTriggerInteraction.Ignore)) == m_AimHits.Length) {
-                // Unordered saturated queries can omit the closest wall or target.
-                // Grow only on saturation and reuse the buffer for subsequent frames.
+                // 查询结果不保证排序。缓冲满时可能刚好没返回最近的墙或目标。
+                // 只有结果装满才扩容，后面的帧复用同一块缓冲。
                 if (m_AimHits.Length >= 4096) return PresentOwnedAimPoint(ray.GetPoint(.05f));
                 System.Array.Resize(ref m_AimHits, m_AimHits.Length * 2);
             }
@@ -150,17 +153,19 @@ namespace Unity.MP_FPS {
             return PresentOwnedAimPoint(target);
         }
 
+        // 输入系统采样的新目标直接给这一帧的光环渲染，避免每次瞄准都晚一帧。
         private Vector3 PresentOwnedAimPoint(Vector3 target) {
             m_HasOwnedAimPoint = true;
             m_OwnedAimPoint = target;
-            // The ECS input pass follows MonoBehaviour.Update. Forward its freshly
-            // sampled target before Halo.LateUpdate, without waiting another frame.
+            // ECS 读取输入发生在 MonoBehaviour.Update 之后。
+            // 在 Halo.LateUpdate 前就用新采到的瞄点，避免多等一帧。
             m_Halo.SetNetworkPresentation(!m_HaloOccupied && m_OwnedAiming, m_OwnedViewRotation * Vector3.forward,
                 target, m_OwnedLightEnabled, !m_HaloOccupied && ReadOwnedReadyIntent());
             PresentMuzzleObstruction(target);
             return target;
         }
 
+        // 准星看得到的地方，枪口可能被墙挡住。用共用射线起点查两者之间的掩体，并把情况提示给玩家。
         public bool HasMuzzleObstruction(float2 look, Vector3 target, float lean, bool thirdPerson) {
             if (!m_PlayerGhost) m_PlayerGhost = GetComponent<PlayerGhost>();
             if (!m_PlayerGhost) return false;
@@ -168,8 +173,8 @@ namespace Unity.MP_FPS {
             command.SetFlag(PlayerInput.InputFlag.ThirdPerson, thirdPerson);
             var ray = m_PlayerGhost.GetShotRay(command, 10000, out var requested);
             float distance = Vector3.Distance(ray.origin, requested);
-            // A surface at the intended target is not an obstruction. Ignore player
-            // copies entirely here: this cue describes cover, never damage or a hit.
+            // 原本就想打中的表面无需显示遮挡。
+            // 也不在这判断玩家命中，这个反馈只说明掩体是否挡枪。
             return distance > .1f && m_PlayerGhost.RaycastShot(ray, distance - .08f, CoverMask, out _);
         }
 
@@ -210,9 +215,10 @@ namespace Unity.MP_FPS {
             return ReadOwnedReadyState(m_Input.FireHeld || m_Input.FirePressed);
         }
 
+        // 松开瞄准本机立即退出对应手势。旧快照里暂时仍有腰射保持时，等新一次本机开火才重新进入。
         private bool ReadOwnedReadyState(bool fire) {
-            // RMB owns the local release. Late snapshots may still contain the
-            // previous hip-fire hold; only a new local hip-fire input rearms it.
+            // 松开右键时，由本地立即处理。
+            // 较晚快照里的腰射保持状态不会重新抬手，除非玩家又按下腰射。
             if (m_OwnedAiming)
                 m_OwnedHipHoldSuppressed = true;
             else if (fire) m_OwnedHipHoldSuppressed = false;
@@ -290,14 +296,15 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Also available to the owning prediction adapter; confirmation uses the same sequence and timeline.
+        // 自身角色的预测适配层也能访问这个入口。服务端确认按相同序号和时间轴处理。
         public void PresentMelee(in MeleeViewState state) {
             if (m_Linked && Role != MultiplayerRole.Server && m_Melee) m_Melee.SetPresentation(state);
         }
 
+        // 较远的远端角色保留动画时间，但不可见时可少算蒙皮和脚部装饰。这只是画面设置。
         private void ConfigureClientAnimationBudget(bool budget) {
-            // Keep animation state advancing, but do not skin invisible remote
-            // avatars or write their cosmetic IK bones. Server simulation is separate.
+            // 动画状态继续随时间前进。
+            // 远端角色不在画面里时不更新蒙皮和装饰性 IK 骨骼。服务器模拟独立运行。
             if (m_PresentationAnimator) {
                 m_AuthoredAnimationCulling ??= m_PresentationAnimator.cullingMode;
                 m_PresentationAnimator.cullingMode =
@@ -310,6 +317,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 服务器和其他玩家的角色只需要外观。自己此时才接管渲染镜头、操作视角和随之启用的表现。
         public Camera ActivateOwnedView() {
             if (m_ViewActivated) return m_View.camera;
             m_ViewActivated = true;
@@ -336,6 +344,7 @@ namespace Unity.MP_FPS {
         private void Update() {
             if (!m_Linked || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
+            // 经典爆破保留死者的原角色到回合结束。第一次确认死亡时开始它的死亡片段。
             if (!m_ClassicDeathStarted && Role != MultiplayerRole.Server && ghost.ClashEnabled &&
                 ghost.CurrentHealth <= 0 && GameSettings.Instance.RequestedMode == RaidGameMode.Classic)
                 BeginClassicDeath();
@@ -345,6 +354,7 @@ namespace Unity.MP_FPS {
             var presentedStance = downed ? DollSingerStance.Prone : state.Stance;
             m_OwnedAlive = ghost.CurrentHealth > 0;
             m_OwnedRaised = ghost.HipFireHoldRemaining > 0;
+            // 以角色状态中的待发标记续住动作。旧枪出现死亡、倒地或换武器时清反冲缓存。
             m_OwnedPendingFire = HaloModuleFire.HasPendingFire(ghost);
             m_Halo.HandlingMultiplier = RaidHealth.HandlingMultiplier(ghost);
             if (!m_OwnedAlive || downed || m_RecoilWeapon != ghost.EquippedWeaponID) m_Recoil.Reset();
@@ -364,6 +374,7 @@ namespace Unity.MP_FPS {
                 : state.HaloLightingSettings;
             m_Motor.ApplyStanceCapsule(presentedStance);
             m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
+            // 跳跃是一次性事件，用 tick 去重。连续收到描述同一拍的多个快照也只播一次。
             bool jumped = ghost.LastJumpTick != 0 &&
                           (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
             if (jumped) m_LastJumpTick = ghost.LastJumpTick;
@@ -403,12 +414,14 @@ namespace Unity.MP_FPS {
                               (owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected));
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
+            // 自己看本机即时朝向和灯开关，其他人看预测后确认的状态，游戏外观统一进入光环表现接口。
             bool lightEnabled = ghost.CurrentHealth > 0 && (owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             m_Halo.SetNetworkPresentation(!hideWeapon && !m_HaloOccupied && (owned ? m_OwnedAiming : state.Aiming),
                 (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
                 owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint, lightEnabled,
                 !hideWeapon && !m_HaloOccupied &&
                 (owned ? ReadOwnedReadyIntent() : m_OwnedRaised || m_OwnedPendingFire));
+            // 枪械外观要读当前配件版本的容量和装填时间。相同型号装不同配件时 HUD 和动画仍能对上。
             var weapon =
                 WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
@@ -435,6 +448,7 @@ namespace Unity.MP_FPS {
                         audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut,
                         transform.position);
                 m_AudioAiming = audibleAim;
+                // 空弹点击可在本地播一次提示音，同时做间隔限制，避免按住变成连续错误声音。
                 if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
                     !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&
                     !hideWeapon && !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked) {
@@ -458,9 +472,11 @@ namespace Unity.MP_FPS {
             bool haloDeployed = false,
             Vector3 shotOrigin = default) {
             if (m_Linked && Role != MultiplayerRole.Server) {
-                // The shot RPC may precede the equipment snapshot on an observer.
+                // 远端观察者可能先收到射击 RPC，再收到对应武器的装备快照。
                 var shotState = ReadGhostComponentData<PredictedPlayerGhost>();
+                // 射击事件可能比装备快照早到，先用事件自己的武器编号确定声音和效果。
                 bool equipped = shotState.EquippedWeaponID == weaponId;
+                // 预测和确认有机会报告同一拍开火，通过记录的 tick 避免重复声音和反冲。
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
@@ -475,12 +491,13 @@ namespace Unity.MP_FPS {
                     m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification, interval, m_OwnedAiming, profile);
                 }
                 if (weaponId == DollSingerWeapons.Halo || profile != null) {
+                    // 连发时根据射击间隔累计声音压力，让短音保持清晰，上一发的长拖尾逐渐混下去。
                     bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime <
                         Mathf.Max(.15f, (weapon?.CooldownInMs ?? .1f) * 1.5f);
                     m_ShotSoundPressure = sustained ? Mathf.Min(1, m_ShotSoundPressure + .18f) : 0;
                     m_LastSoundWeapon = weaponId;
                     m_LastShotSoundTime = Time.unscaledTime;
-                    // The new attack remains crisp; only the preceding body and resonance crossfade.
+                    // 新一发保留清晰的起声，只淡化上一发留下的主体与共振。
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, profile?.BodyCrossfade ?? .045f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);
@@ -510,6 +527,7 @@ namespace Unity.MP_FPS {
             if (m_Linked && Role != MultiplayerRole.Server && isActiveAndEnabled) m_Model.Footstep += OnFootstep;
         }
 
+        // 将死亡片段切成单独的播放图，退出回合后由生命周期统一恢复清理。
         private void BeginClassicDeath() {
             if (!m_PresentationAnimator || !m_PresentationAnimator.isHuman) return;
             var settings = Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
@@ -554,6 +572,7 @@ namespace Unity.MP_FPS {
             if (m_View) m_View.SetHitFlinch(Vector3.zero);
         }
 
+        // 链接解除前还原客户端的动画预算和状态，取消外观动作、订阅和占用音源。
         public override void OnGhostPreDestroy() {
             if (m_ClassicDeathGraph.IsValid()) m_ClassicDeathGraph.Destroy();
             if (m_ClassicDeathStarted && m_PresentationAnimator) {

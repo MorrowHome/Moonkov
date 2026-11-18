@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The account service owns the party. This view only presents snapshots and
-    // emits player intent; it can also be reviewed with isolated sample data.
+    // 小队由账号服务管理。界面读取快照并报告玩家操作，
+    // 也可以用独立样例检查显示效果。
     public sealed partial class OnlineSquadPanel : IDisposable {
         public VisualElement Element { get; }
         public OnlineSquadStage Stage { get; }
@@ -29,8 +29,8 @@ namespace Unity.MP_FPS.Client {
             Action browseRooms = null) {
             m_Action = action;
             Element = TerminalLayout.Clone("OnlineLobby", "onlineLobby");
-            // Clone detaches this root from its UXML TemplateContainer.
-            // Keep the screen's stylesheets on the root that actually gets mounted.
+            // Clone 将页面的根节点从 UXML 的 TemplateContainer 中取出。
+            // 样式表要放到真正挂上面板的节点上，选择器才生效。
             foreach (string path in new[] { "Moonkov/UI/SquadGlassStyles", "Moonkov/UI/OnlineSquadStyles" }) {
                 var styles = Resources.Load<StyleSheet>(path);
                 if (styles != null && !Element.styleSheets.Contains(styles)) Element.styleSheets.Add(styles);
@@ -123,8 +123,8 @@ namespace Unity.MP_FPS.Client {
                 SetReducedMotion(e.newValue);
                 PlayerPrefs.SetInt("Moonkov.SquadReducedMotion", e.newValue ? 1 : 0);
             });
-            // Clone already bound the static UXML. Member names are player data;
-            // leave those newly created labels out of the translation bindings.
+            // Clone 已绑定 UXML 里的固定文案。成员名字是玩家数据，
+            // 新建的姓名标签应按原文显示。
         }
 
         private void Emit(string action) { m_Action?.Invoke(new LobbyAction { Action = action }); }
@@ -190,6 +190,7 @@ namespace Unity.MP_FPS.Client {
             }
             Array.Clear(m_Slots, 0, m_Slots.Length);
             if (party) {
+                // 先把队长放到默认主位置，其他人再依次补到其他席位。未组队时同一个位置展示自己。
                 var captain = snapshot.Members.FirstOrDefault(m => m.PlayerId == snapshot.LeaderId) ??
                               snapshot.Members.FirstOrDefault();
                 m_Slots[1] = captain;
@@ -201,6 +202,7 @@ namespace Unity.MP_FPS.Client {
             } else { m_Slots[1] = new LobbyMember { PlayerId = "local", Name = displayName, Appearance = self }; }
             for (int i = 0; i < 4; i++) {
                 var member = m_Slots[i];
+                // 通过服务器给的玩家 ID 标记自己。是否准备、断线或返回都读成员快照，避免仅根据本地按钮猜。
                 bool own = member != null && (!party || member.PlayerId == snapshot.SelfId);
                 m_Cards[i].style.display = member != null ? DisplayStyle.Flex : DisplayStyle.None;
                 m_Cards[i].EnableInClassList("is-self", own);
@@ -216,6 +218,7 @@ namespace Unity.MP_FPS.Client {
                     (member.PlayerId == snapshot.LeaderId ? "队长 / " : "") + (member.Ready ? "已准备" : "未准备") +
                     (snapshot.Mode == "Versus" && !snapshot.PublicQueue ? member.Team == 0 ? " / A 队" : " / B 队" : "");
                 var row = m_MemberRows[i];
+                // 只有准备阶段的队长能看到移除其他人的入口。玩家不能把自己当成移除目标。
                 bool canRemove = lobby && leader && member != null && !own;
                 row.style.display = canRemove ? DisplayStyle.Flex : DisplayStyle.None;
                 if (canRemove) row.Q<Label>().text = member.Name;
@@ -246,6 +249,7 @@ namespace Unity.MP_FPS.Client {
                 // 私房对抗要求 A、B 两队都有人。出发按钮还会等队员都准备、在线，且出战配置同步完成。服务器另有自己的检查。
                 bool validTeams = snapshot.Mode != "Versus" || snapshot.PublicQueue ||
                                   snapshot.Members.Select(m => m.Team).Distinct().Count() >= 2;
+                // 只有队长在准备期拥有出发按钮。公开匹配时按钮会向大厅请求找对手，其他模式直接申请开始。
                 var start = Element.Q<Button>("onlineStart");
                 start.style.display = lobby && leader ? DisplayStyle.Flex : DisplayStyle.None;
                 MoonkovLocalization.Set(start, snapshot.PublicQueue && snapshot.Mode == "Versus" ? "寻找对手" : "出发");
@@ -256,6 +260,7 @@ namespace Unity.MP_FPS.Client {
                 leave.SetEnabled((lobby || snapshot.CanLeave) && !busy);
                 Element.Q<Button>("onlineCancel").style.display = cancelQueue ? DisplayStyle.Flex : DisplayStyle.None;
                 var retry = Element.Q<Button>("onlineRetry");
+                // 出现可以重连的旧局时由单独面板处理。否则只有房间快照允许重试才开放按钮。
                 retry.style.display = snapshot.CanRetry && !reconnect ? DisplayStyle.Flex : DisplayStyle.None;
                 retry.SetEnabled(!busy);
                 var returned = Element.Q<Button>("onlineReturn");
@@ -287,6 +292,7 @@ namespace Unity.MP_FPS.Client {
 
         private void AlignMembers() {
             Stage.AlignMemberCards(m_Cards);
+            // 先等舞台产出相机画面，再展示对齐后的姓名卡。避免开页时只看到漂浮的标签。
             m_Badges.style.visibility = Stage.Target != null ? Visibility.Visible : Visibility.Hidden;
         }
 

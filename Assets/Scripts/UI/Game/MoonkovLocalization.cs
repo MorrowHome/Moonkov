@@ -14,8 +14,8 @@ using UnityEngine.UIElements;
 using FontAsset = UnityEngine.TextCore.Text.FontAsset;
 
 namespace Unity.MP_FPS {
-    // UI Toolkit adapter for Unity Localization. Locale selection, persistence and
-    // string/font loading belong to the package; bindings only own their UI lifetime.
+    // 这是 Unity Localization 的 UI Toolkit 接口。语言选择、持久化、
+    // 译文与字体加载由本地化包处理，绑定随自己的控件生命周期释放。
     public static class MoonkovLocalization {
         public const string Strings = "MoonkovUI", Fonts = "MoonkovFonts";
         private static readonly Dictionary<TextElement, Binding> s_Bindings = new();
@@ -41,6 +41,7 @@ namespace Unity.MP_FPS {
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        // 第一次需要本地化时订阅字符串表和字体变化。登录首屏可以在加载进行中创建界面。
         private static void Initialize() {
             if (s_Initialized || Application.isBatchMode) return;
             s_Initialized = true;
@@ -60,8 +61,9 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 译文表到达后更新已绑定元素。已有字符串在初始资源慢时也能从原文补翻译。
         private static void StringTableChanged(StringTable table) {
-            // Initial UI renders source text; refresh it once the asynchronous table arrives.
+            // 首屏先画原文。异步翻译表到达后把现有界面补翻译。
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Refresh();
         }
 
@@ -93,16 +95,17 @@ namespace Unity.MP_FPS {
             if (table != null)
                 foreach (var entry in table.Values)
                     text.Append(entry.LocalizedValue);
-            // Populate the existing dynamic atlas while the loading screen is
-            // visible. Keep the asset's font features; unknown names use fallback.
+            // 在加载页可见时预先填充动态字体图集，
+            // 保留字体资源的现有特性。未知名字沿用回退字体。
             font.TryAddCharacters(text.ToString(), out _);
             await Awaitable.NextFrameAsync(cancellationToken);
             s_PreparedFont = font;
         }
 
+        // 语言切换也会换字体。已明确使用美术字体或原样式的元素保持自身定义。
         private static void ApplyFont(TextElement element) {
-            // A surface can own its source-font rendering while keeping string bindings.
-            // In particular, LAN uses the source font to avoid shared SDF atlas edge artifacts.
+            // 某些界面可以自己使用源字体，并保留本地化字符串绑定。
+            // 好友房用源字体来避开共用 SDF 图集的边缘瑕疵。
             for (VisualElement scope = element; scope != null; scope = scope.parent)
                 if (scope.ClassListContains("moonkov-style-font")) {
                     element.style.unityFontDefinition = StyleKeyword.Null;
@@ -128,6 +131,7 @@ namespace Unity.MP_FPS {
             // 连续选两次语言时，只有最后一次仍有效。等待初始化结束后用这个序号丢掉旧的选择。
             int request = ++s_LocaleRequest;
             try {
+                // 等初始化完成后才查可选语言。中间又选了别的语言时，用请求序号让这次回调失效。
                 var initialization = LocalizationSettings.InitializationOperation;
                 await initialization.Task;
                 if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return false;
@@ -147,6 +151,7 @@ namespace Unity.MP_FPS {
             if (string.IsNullOrEmpty(source)) return source;
             Initialize();
             var table = ReadyTable;
+            // 词条或整张表当前不可用时显示原文。这样缺资源也能继续进入界面。
             return table?.GetEntry(source)?.LocalizedValue ?? source;
         }
 
@@ -173,12 +178,12 @@ namespace Unity.MP_FPS {
             Initialize();
             root.Query<TextElement>().ForEach(element => {
                 ApplyFont(element);
-                // Input values are player content. Localize field labels and buttons,
-                // never usernames, passwords, chat or numeric editing buffers.
+                // 输入框里的值属于玩家。翻译字段标题和按钮，
+                // 玩家名、密码、聊天内容及数字编辑中的文字保持原样。
                 if (element.ClassListContains("unity-text-element--inner-input-field") ||
                     element.ClassListContains("unity-text-element--inner-input-field-component"))
                     return;
-                // The language dropdown supplies its own option names. Only apply locale fonts to its value.
+                // 语言下拉框自带选项名称。这里只为显示值设置当前语言的字体。
                 if (element.ClassListContains(DropdownField.textUssClassName) &&
                     element.GetFirstAncestorOfType<DropdownField>()?.ClassListContains("terminal-language") == true) {
                     if (!s_Bindings.ContainsKey(element)) s_Bindings.Add(element, new Binding(element));
@@ -233,6 +238,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
+            // 格式参数中有原始文本时，在填进译好的模板前也翻译它。数量等原始值继续用原来的类型格式化。
             private object[] TranslateArguments() {
                 object[] args = new object[m_Arguments.Length];
                 for (int i = 0; i < args.Length; i++)
@@ -250,6 +256,7 @@ namespace Unity.MP_FPS {
                 Element.text = value;
             }
 
+            // 每个绑定跟着控件的面板生命周期。子页面卸载时释放订阅，避免后续语言变化更新已销毁的控件。
             private void Detached(DetachFromPanelEvent evt) { Dispose(); }
 
             public void Dispose() {

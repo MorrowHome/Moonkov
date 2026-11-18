@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manages a pool of reusable SoundGameObjects that contain AudioSource components.
-/// Provides efficient allocation and deallocation of audio sources for the sound system.
+/// 管理带 AudioSource 的 SoundGameObjects 对象池。
+/// 集中分配和归还音源，避免每次播放都创建与销毁。
 /// </summary> 
 public class SoundGameObjectPool {
-    // Explicit ownership cleanup for independent validation scopes; regular GameManager ownership is unchanged.
+    // 独立验证可以主动清理自己的对象池。正常游戏仍由 GameManager 管理。
     public void Dispose() {
         if (m_SourceHolder) Object.Destroy(m_SourceHolder);
         SoundGameObjectList?.Clear();
@@ -24,17 +24,19 @@ public class SoundGameObjectPool {
 #endif
 
     /// <summary>
-    /// Initializes a new sound game object pool with the specified capacity.
-    /// Creates all sound game objects upfront and organizes them in a linked list for efficient allocation.
+    /// 按给定容量初始化声音对象池。
+    /// 提前造好所需对象，空闲对象用链表串联，方便快速取用。
     /// </summary>
-    /// <param name="parentGameObjectName">Name for the parent GameObject that will hold all sound objects</param>
-    /// <param name="maxSoundGameObjects">Maximum number of sound game objects to create</param>
+    /// <param name="parentGameObjectName">容纳全部声音对象的父 GameObject 名称。</param>
+    /// <param name="maxSoundGameObjects">要创建的声音对象上限。</param>
     public SoundGameObjectPool(string parentGameObjectName, int maxSoundGameObjects) {
         if (maxSoundGameObjects <= 0) return;
         SoundGameObjectList = new List<SoundGameObject>();
         m_SourceHolder =
-            new GameObject(parentGameObjectName); // All SoundGameObjects are instantiated under this parent.
+            new GameObject(parentGameObjectName); // 所有 SoundGameObjects 都建在这个父节点下。
+        // 菜单和战局共用同一批声源。池子挂在常驻父节点下，播放期间跟随别的物体，归还时再接回池。
         GameObject.DontDestroyOnLoad(m_SourceHolder);
+        // 初始化时把所有槽位连成一圈，并记下还可借多少。发声任务据此决定还有没有足够的声源叠出完整音效。
         AvailableSoundObjectCount = maxSoundGameObjects;
         SoundGameObject lastAllocated = null;
         for (int i = 0; i < maxSoundGameObjects; i++) {
@@ -48,15 +50,15 @@ public class SoundGameObjectPool {
     }
 
     /// <summary>
-    /// Creates a new SoundGameObject with all required audio components.
-    /// Adds AudioSource, AudioDistortionFilter, AudioLowPassFilter, and AudioHighPassFilter components.
+    /// 创建一个 SoundGameObject，并装上播放所需的音频组件。
+    /// 添加 AudioSource、AudioDistortionFilter、AudioLowPassFilter 和 AudioHighPassFilter。
     /// </summary>
-    /// <returns>A new SoundGameObject ready for use</returns>
+    /// <returns>可供播放的全新 SoundGameObject。</returns>
     public SoundGameObject Create() {
         GameObject go;
 #if UNITY_EDITOR
         go = new GameObject("SGO" + " " + m_SoundObjectCounter++);
-        // Add name and counter value to the GameObject name to make it easier to find in the Hierarchy window
+        // 用名称加计数给 GameObject 命名，方便在 Hierarchy 窗口中定位。
 #else
         go = new GameObject("SGO");
 #endif
@@ -72,24 +74,25 @@ public class SoundGameObjectPool {
     }
 
     /// <summary>
-    /// Replaces a broken SoundGameObject with a new one and maintains the linked list integrity.
-    /// This is called when a SoundGameObject's parent has been destroyed and needs to be replaced.
+    /// 用新对象替换已失效的 SoundGameObject，并修复空闲链表。
+    /// 原对象随父节点被销毁后，由这里补建并接回池子。
     /// </summary>
-    /// <param name="oldSGO">The broken SoundGameObject to replace</param>
-    /// <param name="newSGO">The new SoundGameObject to use as replacement</param>
-    /// <returns>True if replacement was successful, false if the old object wasn't found</returns>
+    /// <param name="oldSGO">要替换的失效 SoundGameObject。</param>
+    /// <param name="newSGO">用来补上的新 SoundGameObject。</param>
+    /// <returns>替换成功为 true，找不到原对象时为 false。</returns>
     public bool Replace(SoundGameObject oldSGO, SoundGameObject newSGO) {
         for (int i = 0; i < SoundGameObjectList.Count; i++)
+            // 声源被跟随对象一并销毁后，用新对象补同一个位置。链表里原来指向旧对象的链接也要指到新对象。
             if (SoundGameObjectList[i] == oldSGO) {
-                SoundGameObjectList[i] = newSGO; // Replace SoundGameObject with new
-                // (required if parent destroys the SoundGameObject)
+                SoundGameObjectList[i] = newSGO; // 用新 SoundGameObject 替代旧对象。
+                // 父节点销毁时可能连带销毁它，池子需要补位。
                 for (int j = 0; j < SoundGameObjectList.Count; j++)
                     if (SoundGameObjectList[j].NextAvailable != null && SoundGameObjectList[j].NextAvailable == oldSGO)
                         SoundGameObjectList[j].NextAvailable = newSGO;
-                // This would only be found if the SoundGameObject had been destroyed whilst in its
-                // SoundGameObjectPool. Unlikely
+                // 只有对象在空闲并且还挂在 SoundGameObjectPool 下时，才能在这里找到。
+                // 平时很少发生。
                 return true;
             }
-        return false; // Failed to patch up linked list
+        return false; // 无法修复空闲链表。
     }
 }

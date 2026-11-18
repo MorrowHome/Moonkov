@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One track per accepted world object; the caller owns network ordering and expiry.
+    // 每个已确认的世界物体有一个音轨。网络先后顺序与过期由调用方管理。
     public sealed class MoonkovTacticalAudio {
         private bool m_Initialized;
         private TacticalWorldPhase m_Phase;
@@ -14,6 +14,7 @@ namespace Unity.MP_FPS {
 
         public void Present(in TacticalWorldStateRpc state) {
             m_Position = state.Position;
+            // 每次更新先记物件位置。收到同样阶段只更新坐标，诸如点火、引爆或落地等单次声音只随阶段切换。
             if (m_Initialized && m_Phase == state.Phase && m_Kind == state.Kind) return;
             Stop();
             m_Initialized = true;
@@ -43,7 +44,7 @@ namespace Unity.MP_FPS {
                                         ? lib.TacticalDeploy
                                         : null;
             // 很晚才收到持续烟火的状态时可以接上循环底声。点火或落地的瞬间音效只在消息足够新、且听者在范围内时播放。
-            // Late arrivals resume the area bed, without replaying its original ignition or deployment.
+            // 较晚进入时从当前区域的循环底声接上，不补播开始燃烧或部署时的声音。
             if (cue && Fresh(state) && MoonkovAudio.CanHearDetail(m_Position, cue.DistanceInfo.VolumeDistMax))
                 m_Start = MoonkovAudio.Play(cue, m_Position);
             Update();
@@ -51,6 +52,7 @@ namespace Unity.MP_FPS {
 
         public void Update() {
             if (!m_LoopBank) return;
+            // 循环声可以随听者走近再加入。走远后立刻拿回声源，后面同一物件仍可以在合适距离重开。
             if (!MoonkovAudio.CanHearDetail(m_Position, m_LoopBank.DistanceInfo.VolumeDistMax)) {
                 Stop(ref m_Loop);
                 return;
@@ -80,8 +82,9 @@ namespace Unity.MP_FPS {
         }
 
         public void Stop(bool finishExplosion = false) {
-            // The server removes an explosion after 0.35 s. Its finite acoustic tail
-            // still belongs to the sound pool and must finish after the visual vanishes.
+            // 服务器在 0.35 秒后清除爆炸画面。剩下的短尾音仍由音源池管理，
+            // 特效已经消失时也让尾音自然播完。
+            // 服务器先移除已经结束的爆炸物件时，短促的声音尾巴可以留给声音池自然播完。持续烟雾或警报的循环则会关闭。
             if (finishExplosion && m_Phase == TacticalWorldPhase.Explosion)
                 m_Start = null;
             else

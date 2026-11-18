@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
         private int m_InitialRemaining, m_ReinforcementsRemaining, m_SpawnSerial;
         private double m_PopulationStartedAt, m_NextPopulationCheck, m_NextInitialAttempt, m_NextReinforcement;
 
+        // 地图或模式换过才重置整局配额和随机源。短时没人连接沿用本局已经消耗的预算。
         private void ResetPopulation() {
             m_PopulationStarted = false;
             m_Characters.Reset();
@@ -51,7 +52,7 @@ namespace Unity.MP_FPS {
             if (tutorial && (!RaidMissionSite.Active || !RaidMissionSite.Active.FirstChapter || !TutorialReported()))
                 return;
             int alive = CollectSpawnObservers(out bool hasHuman, out _);
-            // AI actors never keep the population spawning after the humans have left.
+            // 真人都走后，AI 也不应该让刷新继续。
             if (!hasHuman) return;
             int maxAlive =
                 tutorial ? 1 : Mathf.Clamp(m_Tuning.MaxAlive > 0 ? m_Tuning.MaxAlive : map.EnemyCount, 1, 12);
@@ -81,12 +82,12 @@ namespace Unity.MP_FPS {
             if (m_NextReinforcement == 0) m_NextReinforcement = now + Mathf.Max(5, m_Tuning.ReinforcementDelay);
             if (now < m_NextReinforcement) return;
             int available = Mathf.Min(maxAlive - alive, m_ReinforcementsRemaining);
-            // A reserve squad enters together. Keep a third seat when the remaining budget permits it.
+            // 增援小队一起进入，剩余预算足够时保留第三个席位。
             if (maxAlive > 1 && available < 2) return;
             int wave = Mathf.Clamp(m_Tuning.ReinforcementWaveSize, 2, 4);
             int count = Mathf.Min(available, m_ReinforcementsRemaining - wave == 1 ? wave + 1 : wave);
             int added = SpawnBatch(map, count, now);
-            // Failed placement consumes neither a life nor a reinforcement. Retry only at the configured cadence.
+            // 选点失败不扣存活数或增援预算，只按配置间隔再试。
             m_ReinforcementsRemaining -= added;
             m_NextReinforcement = now + (added > 0
                 ? Mathf.Max(5, m_Tuning.ReinforcementDelay)
@@ -103,6 +104,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 生成前先收所有相关角色占位。真人还提供视线方向，用来拒绝在面前突然出现的人。
         private int CollectSpawnObservers(out bool hasHuman, out int companions) {
             m_SpawnObservers.Clear();
             hasHuman = false;
@@ -132,6 +134,7 @@ namespace Unity.MP_FPS {
             return alive;
         }
 
+        // 普通远征在生成前确定一队有几人。队伍出生点先互相验过，再按剩余预算逐个创建。
         private int SpawnBatch(MoonRaidMap map, int count, double now) {
             using var profile = s_SpawnProfile.Auto();
             var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
@@ -152,7 +155,7 @@ namespace Unity.MP_FPS {
                     var actor = SpawnActor(map, prefab, position, now, characterIndex);
                     if (squad != 0) SetExpeditionSquad(actor, squad, slot, size, leader);
                     if (slot == 0) leader = actor;
-                    // Reserve immediately: the new ghost's GameObject does not exist until the bridge updates.
+                    // 立刻登记新角色的位置。桥接系统走过一轮之前，新 Ghost 的 GameObject 还不存在。
                     m_SpawnObservers.Add(new RaidSpawnObserver { Position = position });
                     spawned++;
                 }
@@ -162,6 +165,7 @@ namespace Unity.MP_FPS {
             return spawned;
         }
 
+        // 先找队长的落点，然后找彼此隔开又能很快汇合的队员位置。
         private bool TryChooseSquadSpawns(MoonRaidMap map, int size) {
             int observerCount = m_SpawnObservers.Count;
             for (int attempt = 0; attempt < 3; attempt++) {
@@ -197,6 +201,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 候选点要同时符合可站立空间和导航面。两边的高度差太大时，可能是另一个楼层，不能直接用。
         private bool TryGroundedSpawn(Vector3 candidate, out Vector3 position) {
             position = default;
             if (!NavMesh.SamplePosition(candidate, out var sample, 3, m_Filter) ||
@@ -227,6 +232,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 先试地图提供的坐标，再有限次数采附近区域。靠出口、能被看见或路线不通的会跳过。
         private bool TryChooseSpawn(MoonRaidMap map, out Vector3 position) {
             position = default;
             var anchors = map.EnemySpawnPositions;
@@ -263,7 +269,7 @@ namespace Unity.MP_FPS {
                 nearbyAttempts++;
                 float angle = m_SpawnRandom.NextFloat(0, Mathf.PI * 2);
                 float radius = Mathf.Sqrt(m_SpawnRandom.NextFloat(inner * inner, outer * outer));
-                // Try authored points themselves before searching their surrounding area.
+                // 先检查地图明确设定的位置本身，再试它们的周边。
                 var candidate = attempt < anchors.Length
                     ? anchor
                     : anchor + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
@@ -298,8 +304,8 @@ namespace Unity.MP_FPS {
                         NavMesh.CalculatePath(point, m_SpawnExitSamples[i], m_Filter, m_SpawnPath) &&
                         m_SpawnPath.status == NavMeshPathStatus.PathComplete)
                         reachesExit = true;
-                // Full-map entries can serve separate crater basins. Require local walking
-                // space and let these raiders leave through their own entry instead.
+                // 整图不同入口可能位于彼此独立的环形山盆地。
+                // 至少确认入口附近能走，让这些 AI 最终可以从自己进来的地方撤出。
                 if (!reachesExit && (map.EnemyActivationDistance <= 0 || !HasLocalSpawnRoute(point))) continue;
                 position = point;
                 return true;
@@ -320,6 +326,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 给出生处挑路线可达的正式出口。没有长通路时才允许从本来的入口撤并启用目击限制。
         private Vector3 SelectRaidExit(MoonRaidMap map, Vector3 position, out bool localExit) {
             var chosen = position;
             float nearest = float.MaxValue;
@@ -337,6 +344,7 @@ namespace Unity.MP_FPS {
             return chosen;
         }
 
+        // 创建与玩家能共用的 Ghost、装备与输入实体。脑和库存留在服务器，之后由 AI 逐拍填输入。
         private Entity SpawnActor(
             MoonRaidMap map,
             Entity prefab,
@@ -384,7 +392,7 @@ namespace Unity.MP_FPS {
             bool tutorial = TutorialRuntime.Enabled(EntityManager);
             var inventory = m_Weapons.Create(WeaponManager.Instance.WeaponRegistry, tutorial, clash.HasValue,
                 ref m_SpawnRandom);
-            // A finite raid loadout; unused medicine remains in the normal death inventory.
+            // 战局初装有限。阵亡时没用掉的药继续留在正常尸体库存中。
             inventory.AddSupply("medkit", 2, InventoryCatalog.Pockets, true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
             bool suit = PmcLifeSupport.TryEquip(inventory, clash.HasValue, tutorial);

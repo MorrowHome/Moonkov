@@ -11,14 +11,15 @@ using Unity.Networking.Transport.Utilities;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // One reliable DTLS driver for the room and a separate ICE context for NetCode.
-    // Both candidates are exchanged up front. NetCode borrows its context per round.
+    // 房间操作用一个可靠的 DTLS 驱动，NetCode 则单独用战局的 ICE 上下文。
+    // 入房前交换两条通路的候选地址。每局 NetCode 借用自己的上下文。
     internal sealed class LanPeerRoom : IDisposable {
         private const int ChunkSize = 1024, ChunksPerPeerUpdate = 16;
         private const string StunHost = "stun.cloudflare.com";
         private const double OfferSeconds = 120, JoinSeconds = 45;
         private const string ConnectFailed = "跨网直连失败。请重新加入，或换一个网络再试。";
 
+        // 每个来宾同时有控制和战局两条 ICE 路线。这个对象还记消息拼包、正在处理的请求和等待的回执。
         private sealed class Peer {
             public int Control, Raid;
             public NetworkConnection Connection;
@@ -51,6 +52,7 @@ namespace Unity.MP_FPS {
         public LanJoinApplication[] Applications => m_RoomCode?.Applications ?? Array.Empty<LanJoinApplication>();
         public string InviteStatus { get; private set; }
 
+        // 有 LanRoomServer 表示本机是房主。房主在控制层监听，来宾拿着房主证书等待协商，战局传输留给 NetCode 借用。
         public LanPeerRoom(LanRoomServer server, LanPeerIdentity identity) {
             m_Server = server;
             Identity = identity;
@@ -112,6 +114,7 @@ namespace Unity.MP_FPS {
         }
 
         public void UpdateRoomCode(LanRoomSnapshot snapshot) {
+            // 离开准备室就撤掉公开列表和房间码。现成的连线仍留着打这一局，只禁止新加入。
             if (snapshot.Phase != LanRoomPhase.Lobby) { CloseRoomCode(); } else if (m_RoomCode != null) {
                 m_RoomCode.Members = snapshot.Members.Length;
                 m_RoomCode.Open = m_RoomCode.Members < snapshot.Capacity;
@@ -131,6 +134,7 @@ namespace Unity.MP_FPS {
 
         public async Task<string> InviteAsync(CancellationToken ct, bool viaCode = false) {
             ThrowIfClosed();
+            // 手动复制同一份还有效的邀请时直接复用。房主每次只协商一个来宾，避免回执不好对应。
             if (!viaCode && WaitingForManualReply) return m_Offer;
             if (!CanInvite) throw new InvalidOperationException("正在连接受邀玩家。");
             Peer peer = null;
@@ -142,6 +146,7 @@ namespace Unity.MP_FPS {
                 var invitation = LocalDescription(peer, m_OfferId);
                 invitation.RoomId = m_Server.RoomId;
                 invitation.HostId = m_Server.Persistence.HostId;
+                // 两条候选地址连同公开证书交给来宾，来宾由此知道该和哪个房间、哪台房主握手。
                 invitation.Certificate = Identity.Certificate;
                 m_Offer = invitation.Encode(false);
                 m_Pending = peer;
@@ -159,6 +164,7 @@ namespace Unity.MP_FPS {
                 Time.realtimeSinceStartupAsDouble >= m_Pending.Deadline)
                 throw new InvalidOperationException("邀请已过期，请重新复制邀请。");
             var reply = LanPeerInvitation.Decode(text, true);
+            // 已过期或另一份邀请的回执不能改变当前待接入连接。收到匹配回执也还要等两条路径都完成。
             if (reply.Id != m_OfferId) throw new InvalidOperationException("这份回执与当前邀请不匹配。");
             var peer = m_Pending;
             try { SetRemote(peer, reply); } catch {
@@ -181,6 +187,7 @@ namespace Unity.MP_FPS {
             LanRequest request,
             Func<string, CancellationToken, Task> replyReady,
             CancellationToken ct) {
+            // 来宾先建立自己的两个 peer，把本机候选回给房主，再等控制连接握手成功后送正式 join。
             m_Guest = await GatherAsync(ct);
             string reply = LocalDescription(m_Guest, invite.Id).Encode(true);
             SetRemote(m_Guest, invite);
@@ -239,6 +246,7 @@ namespace Unity.MP_FPS {
             ThrowIfClosed();
             var peer = m_Guest;
             if (peer?.Connected != true) throw new InvalidOperationException("与房主的跨网连接已断开。");
+            // 一条控制通道同一时间只有一个请求等待回包。每条响应不必另带请求号，靠这个顺序规则找对应的等待者。
             if (peer.Waiting != null) throw new InvalidOperationException("上一条房间请求尚未完成。");
             ct.ThrowIfCancellationRequested();
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct, m_Stop.Token);
@@ -253,8 +261,8 @@ namespace Unity.MP_FPS {
                 return reply;
             // 请求超时时房主可能已经执行了操作。关掉这条通道，之后重新进房读真实档案，避免把上一条迟到的回执当成下一条的结果。
             } catch (OperationCanceledException) {
-                // The server may have applied the write. Close this channel so a
-                // late reply can never be mistaken for the next request.
+                // 服务器可能已经写入这笔操作。关闭该通道才能保证
+                // 迟到的回执不会被当作下一次请求的回复。
                 Drop(peer);
                 ct.ThrowIfCancellationRequested();
                 m_Stop.Token.ThrowIfCancellationRequested();
@@ -262,6 +270,7 @@ namespace Unity.MP_FPS {
             } finally { peer.Waiting = null; }
         }
 
+        // 主线程每帧推进控制 driver。新连入必须对应已确认邀请的端点，猜一个端点进来不会成为房间成员。
         public void Pump() {
             if (m_Disposed || m_Peers.Count == 0) return;
             m_Driver.ScheduleUpdate().Complete();
@@ -300,13 +309,14 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Wait for the selected pair to be nominated. A provisional ICE check
-        // can succeed while the host is still waiting for the pasted reply.
+        // 等待 ICE 决定正式使用的候选地址对。临时连通性检查
+        // 可能在房主还没收到粘贴回的应答时就成功。
         private static bool IsReady(EmbeddedIceTransport transport, int peer) {
             return transport.GetState(peer) == EmbeddedIceState.Completed;
         }
 
         private void PumpPeer(Peer peer) {
+            // 房主异步处理档案请求。完成才把回执放入待发送缓冲，未完成时不能开始下一条。
             if (peer.Handling?.IsCompleted == true) {
                 Queue(peer, peer.Handling.GetAwaiter().GetResult());
                 peer.Handling = null;
@@ -317,6 +327,7 @@ namespace Unity.MP_FPS {
                 if (type == NetworkEvent.Type.Connect) { peer.Connected = true; } else if
                     (type == NetworkEvent.Type.Disconnect) { throw new EndOfStreamException(); } else if
                     (type == NetworkEvent.Type.Data) {
+                    // 控制消息必须来自已连好的可靠管线，而且符合一问一答顺序。乱序闯入的消息会断开该 peer。
                     if (pipeline != m_Reliable || !peer.Connected || peer.Handling != null || (m_Server == null
                             ? peer.Waiting == null || peer.Waiting.Task.IsCompleted
                             : peer.Outgoing != null))
@@ -332,12 +343,14 @@ namespace Unity.MP_FPS {
         }
 
         private async Task<LanReply> HandleAsync(Peer peer, LanRequest request) {
+            // 同一连接的第一条房间指令必须是 join，之后必须复用绑定的访客凭据。这阻止对面在同一连接换身份。
             bool joining = request.Action == "join";
             if (request.RoomId != m_Server.RoomId ||
                 (peer.Credential == null ? !joining : joining || peer.Credential != request.Credential))
                 return new LanReply { Error = "此连接没有房间访问权限。" };
             var reply = await Task.Run(() => m_Server.ReplyTo(request, peer.Control));
             if (joining && string.IsNullOrEmpty(reply.Error)) {
+                // 后台开档时来宾可能掉线。Join 即使已成功也要撤掉刚登记的成员，避免占着一个幽灵席位。
                 if (m_Disposed || !m_Peers.Contains(peer)) {
                     await Task.Run(() => m_Server.DropPeer(request.Credential, peer.Control));
                 } else {
@@ -357,6 +370,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Flush(Peer peer) {
+            // 大房间快照按固定块发送并限制每帧包数。发送队列满就留在当前偏移，下帧继续。
             for (int i = 0; peer.Outgoing != null && i < ChunksPerPeerUpdate; i++) {
                 int length = Math.Min(ChunkSize, peer.Outgoing.Length - peer.Sent);
                 int header = peer.Sent == 0 ? sizeof(int) : 0;
@@ -376,6 +390,7 @@ namespace Unity.MP_FPS {
         private static byte[] Receive(Peer peer, ref DataStreamReader reader) {
             if (peer.Incoming == null) {
                 if (reader.Length < sizeof(int)) throw new InvalidDataException();
+                // 先读整份消息的长度，合理才分配缓冲。随后每包都要求正好是下一块的大小，并有拼包截止时间。
                 int size = reader.ReadIntNetworkByteOrder();
                 if (size < 2 || size > LanProtocol.MaxFrame) throw new InvalidDataException();
                 peer.Incoming = new byte[size];
@@ -394,6 +409,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Drop(Peer peer) {
+            // 退出的来宾两条地址都解除注册，房主也撤掉该凭据的入场票。等待回执的一方尽快收到断线异常。
             if (!m_Peers.Remove(peer)) return;
             if (peer.Connection.IsCreated) m_Driver.Disconnect(peer.Connection);
             if (peer.Control > 0) m_Control.RemovePeer(peer.Control);

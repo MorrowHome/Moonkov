@@ -18,8 +18,8 @@ namespace Unity.MP_FPS {
 
         private readonly PlayerTickData[] m_Buffer;
         private readonly int m_Capacity;
-        private int m_WriteIndex; // Index where the next element will be written.
-        private int m_CurrentSize; // Number of valid elements currently in the buffer.
+        private int m_WriteIndex; // 下一条记录要写入的下标。
+        private int m_CurrentSize; // 缓冲内当前有效的记录数。
 
         public PlayerMovementHistory(int capacity = 20) {
             if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be positive.");
@@ -30,28 +30,30 @@ namespace Unity.MP_FPS {
         }
 
         public void Add(uint tick, Vector3 pos, Quaternion rot) {
-            // Store the new data at the current write index
+            // 把这一拍的位姿写到当前可写槽。
+            // 缓冲满时覆盖最旧一项，记录长度固定，不会因战局持续时间越来越占内存。
             m_Buffer[m_WriteIndex] = new PlayerTickData(tick, pos, rot);
 
-            // Move the write index to the next slot, wrapping around if necessary
+            // 写入下标向后移一格，走到末尾时回开头。
             m_WriteIndex = (m_WriteIndex + 1) % m_Capacity;
 
-            // Increment current size if the buffer isn't full yet
+            // 还有空位时增加有效记录数。满了就只覆盖旧记录。
             if (m_CurrentSize < m_Capacity) m_CurrentSize++;
         }
 
         public bool TryGetTick(uint tick, out Vector3 pos, out Quaternion rot) {
-            // Search backwards from the most recently added item to the oldest valid item.
-            // This is important because m_WriteIndex points to the *next empty slot* (or the oldest item if full),
-            // so the last written item is at (m_WriteIndex - 1).
+            // 从最新写入的有效记录往最早的找。
+            // m_WriteIndex 指下一次写入槽。写满时它指向最旧记录。
+            // 因此刚写完的一项在 (m_WriteIndex - 1)。
+            // 从最近保存的状态往回扫。目标拍找不到时返回 false，调用者可新建这一拍的记录。
             for (int i = 0; i < m_CurrentSize; i++) {
-                // Calculate the actual index in the circular buffer.
-                // i = 0 corresponds to the newest item, i = m_CurrentSize - 1 corresponds to the oldest.
-                // The expression `m_WriteIndex - 1 - i` might be negative. Adding `m_Capacity`
-                // before the modulo ensures the result is always a valid positive index.
+                // 下面算从新到旧的环形数组下标。
+                // i = 0 对应最新项，i = m_CurrentSize - 1 对应最旧项。
+                // 表达式 `m_WriteIndex - 1 - i` 可能小于零。先加上 `m_Capacity`，
+                // 再取余可确保下标在数组有效范围内。
                 int bufferIndex = (m_WriteIndex - 1 - i + m_Capacity) % m_Capacity;
 
-                // Check if the tick at this buffer slot matches the requested tick.
+                // 检查这个槽保存的 tick 是否是所求时间。
                 if (m_Buffer[bufferIndex].Tick == tick) {
                     pos = m_Buffer[bufferIndex].Position;
                     rot = m_Buffer[bufferIndex].Rotation;
@@ -59,9 +61,9 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Tick not found
-            pos = default; // e.g., Vector3.zero or new Vector3()
-            rot = default; // e.g., Quaternion.identity or new Quaternion()
+            // 缓冲内没有这个 tick。
+            pos = default; // 例如 Vector3.zero 或 new Vector3()。
+            rot = default; // 例如 Quaternion.identity 或 new Quaternion()。
             return false;
         }
 
@@ -73,24 +75,25 @@ namespace Unity.MP_FPS {
             Quaternion historyRot,
             Vector3 currentPos,
             Quaternion currentRot) {
-            // --- Position Check ---
-            // Calculate squared distance to avoid costly square root operation.
-            // Assumes Vector3 supports subtraction and has a LengthSquared() method (or equivalent like sqrMagnitude).
+            // 检查位置。
+            // 计算距离平方以省一次开平方。
+            // Vector3 需要支持相减和 LengthSquared()，也可使用等效的 sqrMagnitude。
             float positionDifferenceSquared = (historyPos - currentPos).sqrMagnitude;
-            // For UnityEngine.Vector3, you might use: (historyPos - currentPos).sqrMagnitude;
-            // For System.Numerics.Vector3, you can use: Vector3.DistanceSquared(historyPos, currentPos);
-            // or (historyPos - currentPos).LengthSquared();
+            // UnityEngine.Vector3 可用 (historyPos - currentPos).sqrMagnitude;
+            // System.Numerics.Vector3 可用 Vector3.DistanceSquared(historyPos, currentPos);
+            // 也可用 (historyPos - currentPos).LengthSquared();
+            // 比较留一点浮点误差余量。服务端和本机数值并不一定逐位相同，但游戏里足够近可以按同一处理解。
             if (positionDifferenceSquared > k_MatchPositionToleranceSquared)
-                return false; // Positions are too different
+                return false; // 位置超过误差容限。
 
-            // --- Rotation Check ---
-            // Quaternion.Dot gives cos(angle/2) between the rotations.
-            // For identical rotations (or q and -q), |DotProduct| is 1.
-            // We check if 1 - |DotProduct| is less than our epsilon.
+            // 检查旋转。
+            // Quaternion.Dot 给出两个旋转夹角一半的余弦 cos(angle/2)。
+            // 旋转相同或四元数 q 和 -q 表示同一姿势时，|DotProduct| 为 1。
+            // 检查 1 - |DotProduct| 是否小于容差。
             // 四元数的全部分量取反后仍代表同一个旋转。比较时取点积的绝对值，避免把同方向误报为回滚差异。
             float dotProduct = Quaternion.Dot(historyRot, currentRot);
-            if (1.0f - Math.Abs(dotProduct) > k_MatchQuaternionEpsilon) return false; // Rotations are too different
-            return true; // Both position and rotation match within tolerances
+            if (1.0f - Math.Abs(dotProduct) > k_MatchQuaternionEpsilon) return false; // 旋转超过误差容限。
+            return true; // 位置与旋转都在容限内。
         }
     }
 }

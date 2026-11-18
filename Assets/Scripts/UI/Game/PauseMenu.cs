@@ -38,6 +38,7 @@ namespace Unity.MP_FPS {
             GameSettings.Instance.propertyChanged += PauseStateChanged;
             root.style.display = GameSettings.Instance.PauseMenuStyle;
             m_ResumeButton = root.Q<Button>(UIElementNames.ResumeButton);
+            // 继续与返回等入口只在这个组件活着时订阅。暂停状态留在 GameSettings，其他输入系统也会看它。
             m_ResumeButton.clicked += OnResumePressed;
             m_SettingsButton = root.Q<Button>(UIElementNames.SettingsButton);
             m_SettingsButton.clicked += OnSettingsPressed;
@@ -70,7 +71,8 @@ namespace Unity.MP_FPS {
         private void TogglePauseMenuVisibility(InputAction.CallbackContext obj) {
             if (!Application.isFocused || GameSettings.Instance.GameState != GlobalGameState.InGame) return;
             if (GameSettings.Instance.IsPauseMenuOpen) {
-                // UI Toolkit receives this key after the input action; let its popup consume it first.
+                // Input Action 先看到按键，随后 UI Toolkit 也会收到。弹窗打开时先让它处理这次按键。
+                // 语言的下拉层当前可见时，留给 UI Toolkit 处理当次 Esc。下一次 Esc 才退出设置页。
                 if (m_SettingsVisible &&
                     m_Root.panel?.visualTree.Q(className: GenericDropdownMenu.ussClassName) != null)
                     return;
@@ -89,9 +91,10 @@ namespace Unity.MP_FPS {
 
         private void OnSettingsPressed() {
             if (m_SettingsVisible) return;
+            // 设置页打开时克隆同一份设置模板。控件经共享绑定即时应用设置，所以退出面板不需要再确认。
             TerminalLayout.Populate(m_SettingsContent, "Settings");
             MoonkovTerminal.BindSettings(m_SettingsContent);
-            // The pause page shows live options; stash shortcuts and the retired HUD toggle do not belong here.
+            // 暂停页直接改正在使用的选项。仓库快捷操作和旧版 HUD 开关留在它们各自的入口。
             m_SettingsContent.Q("alwaysShowHUD").parent.style.display = DisplayStyle.None;
             m_SettingsVisible = true;
             m_Menu.style.display = DisplayStyle.None;
@@ -113,12 +116,14 @@ namespace Unity.MP_FPS {
         private void PauseStateChanged(object sender, BindablePropertyChangedEventArgs evt) {
             if (evt.propertyName != GameSettings.PauseMenuStylePropertyName) return;
             m_Root.style.display = GameSettings.Instance.PauseMenuStyle;
+            // 暂停状态也可被外部流程关闭。同步清理设置子页，下一次打开时能从主暂停菜单开始。
             if (!GameSettings.Instance.IsPauseMenuOpen && m_SettingsVisible) CloseSettings(false);
         }
 
         private void FitLayout(bool force = false) {
             if (m_Root.worldBound.width <= 0 || Screen.width <= 0) return;
             float scale = Mathf.Max(1, m_Root.worldBound.width / Screen.width);
+            // 面板和屏幕比例没变时沿用原布局，减少定时检查修改控件尺寸的次数。
             if (!force && Mathf.Approximately(scale, m_Scale)) return;
             m_Scale = scale;
             m_Menu.style.width = 360 * scale;

@@ -155,6 +155,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private static ResearchQuest InitialQuest(ResearchQuestProgress progress) {
+            // 初次打开优先显示可提交的任务，接着考虑进行中和可接的。全都没有才回到开头或结尾记录。
             foreach (var preferred in new[]
                          { ResearchQuestStatus.Ready, ResearchQuestStatus.Active, ResearchQuestStatus.Available })
                 for (int i = 0; i < ResearchQuestRules.Count; i++)
@@ -170,6 +171,7 @@ namespace Unity.MP_FPS.Client {
                 var line = Box(matrix, "research-quest-matrix-row");
                 int columns = ResearchQuestRules.Count / 2;
                 for (int column = 0; column < columns; column++) {
+                    // 档案矩阵上每格使用规则目录中的固定任务 ID。刷新状态时按 ID 取标题和状态，不重新给按钮改任务。
                     int index = row * columns + column;
                     var id = ResearchQuestRules.At(index);
                     var button = Button(line, "research-quest-node", () => Select(id, true));
@@ -190,6 +192,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void Select(ResearchQuest quest, bool readBriefing) {
+            // 换任务时原有语音与反馈跟上一条任务走完或结束。随后用新选择重新装填详情。
             if (m_Selected != quest) {
                 m_Radio.Stop();
                 m_Selected = quest;
@@ -254,6 +257,7 @@ namespace Unity.MP_FPS.Client {
             RefreshRadio();
             string signature =
                 $"{saved.Accepted}/{saved.Ready}/{saved.Completed}/{saved.HaloKills}/{saved.SentryKills}/{saved.Ending}/{saved.StorySeen}/{m_Selected}/{m_Busy}/{m_Error}/{Chinese}";
+            // 视图定时被叫来刷新。进度、选中项、语言和正在提交的状态没变时，保留现有元素。
             if (signature == m_Signature) return;
             m_Signature = signature;
             Element.EnableInClassList("research-quest-en", !Chinese);
@@ -285,6 +289,7 @@ namespace Unity.MP_FPS.Client {
             Set(m_Count, $"{complete:00} / {ResearchQuestRules.Count:00}");
             Set(m_Title, entry.Title);
             Set(m_Status, State(status));
+            // 锁定任务优先告诉玩家缺哪个前置，不提前显示后续要求。可查看时才显示自己的简报和进度。
             var prior = ResearchQuestRules.MissingPrerequisite(saved, selected);
             Set(m_Brief,
                 status == ResearchQuestStatus.Locked && prior.HasValue
@@ -313,6 +318,7 @@ namespace Unity.MP_FPS.Client {
             m_ExhibitMass.style.display = item == null ? DisplayStyle.None : DisplayStyle.Flex;
             if (item != null) Set(m_ExhibitMass, Text("重量  ", "MASS  ") + $"{item.Weight:0.00} kg");
             m_Play.SetEnabled(status != ResearchQuestStatus.Locked);
+            // 最终任务完成后，按钮还能接回结局决策。普通已完成任务只保留可读档案。
             bool decision = selected == ResearchQuest.EndOfTransmission && status == ResearchQuestStatus.Completed &&
                             m_ChooseEnding != null;
             m_Action.SetEnabled(!m_Busy && status != ResearchQuestStatus.Locked &&
@@ -379,6 +385,7 @@ namespace Unity.MP_FPS.Client {
             m_Error = false;
             Refresh();
             try {
+                // 接任务与交付由创建视图时提供的回调处理。获取成功结果后，才决定是否播简报、打开章节或进入抉择。
                 bool changed = await m_Advance(quest, claim);
                 if (!m_Disposed && m_Selected == quest) {
                     m_Error = !changed;

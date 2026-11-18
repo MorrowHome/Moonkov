@@ -33,6 +33,7 @@ namespace Unity.MP_FPS {
     public partial struct ServerGameSystem {
         private bool ClashEnabled(ref SystemState state) { return BountyClashRuntime.Enabled(state.EntityManager); }
 
+        // 首次读取时按地图配置建立比赛轮次、出生点与区域。设定缺失或验证没通过时，客户端收到地图未就绪。
         private BountyClashWorld ClashWorld(ref SystemState state) {
             var entity = SystemAPI.GetSingletonEntity<RaidLootWorld>();
             var world = state.EntityManager.GetComponentObject<BountyClashWorld>(entity);
@@ -66,7 +67,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Called by the persistence adapter only after authenticated profile loading; never trusts a client team id.
+        // 持久化层完成认证并读取档案后才调用。客户端自报的队伍 ID 不参与判定。
         private void CompleteClashJoin(
             ref SystemState state,
             EntityCommandBuffer ecb,
@@ -82,6 +83,7 @@ namespace Unity.MP_FPS {
             var profile = context.Profiles[connection];
             var previous = match.Account(profile.PlayerId);
             double retainedDeadline = previous?.DisconnectDeadline ?? 0;
+            // 重连时先确认这个账号有尚未过期的原席位。通过才转移保留数据，不能新占一个参赛者。
             if (join.ResumeOnly &&
                 (previous == null || previous.Connected || retainedDeadline <= SystemAPI.Time.ElapsedTime)) {
                 ClashAccepted(ecb, connection, false, "原战局已关闭或重连窗口已过，不会自动开始新战局");
@@ -142,7 +144,7 @@ namespace Unity.MP_FPS {
             world.NextSnapshot = 0;
         }
 
-        // Late successful HTTP deployment after a bounded lobby abort must be refunded by the persistence adapter.
+        // 大厅超时取消后仍可能收到迟来的 HTTP 扣装成功，持久化层必须退回这笔装备。
         private bool ClashDeploymentAllowed(ref SystemState state, Entity connection, string deploymentId) {
             if (!ClashEnabled(ref state)) return false;
             var world = ClashWorld(ref state);
@@ -152,14 +154,14 @@ namespace Unity.MP_FPS {
                 p.DeploymentId == deploymentId);
         }
 
-        // NetCode destroys the connection's LinkedEntityGroup at the end of
-        // NetworkReceiveSystemGroup. Retain the body before that ECB plays back.
+        // NetCode 在 NetworkReceiveSystemGroup 结束时删除连接的 LinkedEntityGroup。
+        // 需在这份 ECB 回放之前把角色留下来。
         public void ClashDisconnectBeforeCleanup(ref SystemState state) {
             if (!ClashEnabled(ref state)) return;
             var world = ClashWorld(ref state);
             using var commands = new EntityCommandBuffer(Allocator.Temp);
-            // ConnectionEventsForTick is only published after NetCode cleanup.
-            // The public connection state is already updated by the receive job.
+            // ConnectionEventsForTick 要等 NetCode 清理后才发布。
+            // 公开的连接状态此时已经被接收 Job 更新了。
             foreach (var pair in world.Connections.ToArray()) {
                 var connection = pair.Value;
                 if (SystemAPI.Exists(connection) && SystemAPI.HasComponent<NetworkStreamConnection>(connection) &&
@@ -172,6 +174,7 @@ namespace Unity.MP_FPS {
             commands.Playback(state.EntityManager);
         }
 
+        // 掉线时把比赛中的角色、库存和记录解绑网络连接。保留阶段允许同账号重新加入；原实体随 NetCode 清理。
         private bool DetachClashConnection(
             ref SystemState state,
             EntityCommandBuffer ecb,
@@ -287,6 +290,7 @@ namespace Unity.MP_FPS {
                     !SystemAPI.HasComponent<LocalTransform>(player))
                     continue;
                 var h = SystemAPI.GetComponent<PredictedPlayerGhost>(player);
+                // 服务端从实际角色位置、血量和伤害标记观察参赛者。本机机器人还要求导航和实体已经就绪才能算部署完成。
                 if (match.Phase == ClashPhase.Deploying && (!p.IsBot ||
                                                             (ClashBots(ref state).NavigationReady &&
                                                              ValidSoloActor(ref state, world, p, player))))
@@ -309,6 +313,7 @@ namespace Unity.MP_FPS {
                 var r = request.ValueRO;
                 var connection = received.ValueRO.SourceConnection;
                 var pair = world.Connections.FirstOrDefault(x => x.Value == connection);
+                // 按连接查参赛者，并让规则层核对比赛、轮次和请求号。准备、驱逐、拾取、救援等操作不允许拿旧一轮的请求替代。
                 if (pair.Key != 0 && match.Players.TryGetValue(pair.Key, out var p) &&
                     match.Request(p, r.RequestId, r.Epoch, r.MatchId.ToString())) {
                     var player = ClashPlayerEntity(ref state, world, p.Id);
@@ -336,6 +341,7 @@ namespace Unity.MP_FPS {
                             case ClashIntent.Pickup:
                                 result = match.Pickup(p, ClashAccessible(ref state, player, match.BountyPosition));
                                 break;
+                            // 复苏对象由规则层检查同队、状态，服务器还检查实际距离和视线。后续持续请求续租，不在附近就停止。
                             case ClashIntent.ReviveBegin:
                                 result = match.BeginRevive(p, r.TargetParticipantId,
                                     match.Players.TryGetValue(r.TargetParticipantId, out var v) &&
@@ -363,6 +369,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 机器人提交的意图和真人是同一套规则。消费完本帧有效操作才推进比赛判定。
             HandleSoloIntents(ref state, world, now);
             match.Tick(now);
             foreach (int stale in world.Connections.Keys.Where(id => !match.Players.ContainsKey(id)).ToArray()) {
@@ -375,6 +382,7 @@ namespace Unity.MP_FPS {
                 world.Connections.Remove(stale);
                 world.Joins.Remove(stale);
             }
+            // 出战阶段首次登记比赛及真人名单。AI 也有参赛者编号，但不需要开真实玩家档案。
             if (match.Phase == ClashPhase.Deploying && !world.Registered) {
                 world.Registered = true;
                 context.RegisterBountyMatchAsync(Guid.Parse(match.MatchId), BountyClashRules.Version,
@@ -387,12 +395,14 @@ namespace Unity.MP_FPS {
                 foreach (var p in match.Players.Values)
                     if (world.Connections.TryGetValue(p.Id, out var c) && p.Connected &&
                         !world.DeployRequested.Contains(p.Id)) {
+                        // 每个玩家只启动一次扣装，等待名册登记成功。出装失败按该局的失败和退款规则处理。
                         world.DeployRequested.Add(p.Id);
                         var join = world.Joins[p.Id];
                         context.BeginBountyDeploy(c, Guid.Parse(match.MatchId), BountyClashRules.Version, p.TeamId,
                             Guid.Parse(p.DeploymentId), join.CarryCells, join);
                     }
-            // Persist the whole award event before any participant is destroyed or its inventory is transferred.
+            // 销毁任何参赛者或转移其库存之前，先为整组赏金事件落盘。
+            // 规则确认赏金撤离后，先保存每个获奖者实际携带的装备与整组奖励事件。之后才允许销毁角色或移走背包。
             if (match.Award != null && !world.AwardQueued) {
                 var award = match.Award;
                 foreach (var awarded in match.Players.Values)
@@ -409,6 +419,7 @@ namespace Unity.MP_FPS {
                 var player = ClashPlayerEntity(ref state, world, p.Id);
                 if (SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player)) {
                     var h = SystemAPI.GetComponent<PredictedPlayerGhost>(player);
+                    // 比赛状态和角色 Ghost 分两层。把每次新状态转成客户端可见的生命、姿势、可行动和感知字段。
                     bool changed = !world.AppliedLife.TryGetValue(p.Id, out var previous) || previous != p.Life;
                     bool healed = match.BanishHealed && !world.Healed && p.TeamId == match.BanishTeam && !p.IsFinished;
                     h.ClashEnabled = true;
@@ -422,6 +433,7 @@ namespace Unity.MP_FPS {
                         h.CurrentHealth = 0;
                         h.ControllerState.Shoot = false;
                     }
+                    // 倒地先禁开火并下压姿势，但角色仍留在地图等待救援。正式死亡或离场才收局。
                     if (p.Life == ClashLife.Downed) {
                         h.ControllerState.Stance = DollSinger.DollSingerStance.Prone;
                         h.AccumulatedMovement = float3.zero;
@@ -443,6 +455,7 @@ namespace Unity.MP_FPS {
                         LeaderboardManager.Instance?.AddKill(botKiller.NetworkId, p.NetworkId);
                     RetireSoloBot(ref state, ecb, world, p, p.Life == ClashLife.Dead);
                 }
+                // 参赛者结束只结算一次。撤离、超时和失败按对应结果落回档案；机器人另走移除或掉落。
                 if (p.IsFinished && !world.Settled.Contains(p.Id) &&
                     world.Connections.TryGetValue(p.Id, out var connection) && SystemAPI.Exists(connection) &&
                     SystemAPI.HasComponent<RaidSession>(connection)) {
@@ -472,6 +485,7 @@ namespace Unity.MP_FPS {
             ClearTacticalItems(ref state, ecb);
             var old = world.Match;
             if (old.IsSolo) ResetSoloBots(ref state, ecb, world, world.Epoch + 1);
+            // 新比赛保留同地图参数，提高轮次并清一次性状态。老轮的感知、库存和报名请求不能串到新局。
             var next = new BountyClashMatch(old.Arena, ++world.Epoch, SystemAPI.Time.ElapsedTime, old.IsSolo);
             world.Match = next;
             world.Registered = world.AwardQueued = world.Healed = world.Cleaned = false;
@@ -562,7 +576,7 @@ namespace Unity.MP_FPS {
                     Remaining = (float)Math.Max(0, match.Deadline - now),
                     PrepareRemaining = (float)Math.Max(0, match.PrepareDeadline - now),
                     BanishProgress = match.BanishProgress(now),
-                    // The HUD uses a negative value to hide the boundary countdown.
+                    // HUD 用负值表示无需显示出界倒计时。
                     BoundaryRemaining = match.Active(local) && local.OutsideSince >= 0
                         ? match.BoundaryRemaining(local, now)
                         : -1,

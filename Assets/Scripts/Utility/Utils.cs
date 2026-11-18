@@ -10,9 +10,10 @@ using UnityEngine.Rendering;
 using Random = Unity.Mathematics.Random;
 
 namespace Unity.MP_FPS {
+    // 服务端和客户端创建自己的 ECS 随机数单例。系统从所属 World 取这个随机源，生成位置等值时会推进随机状态。
     /// <summary>
-    /// This data structure wraps Unity.Mathematics.Random in a singleton,
-    /// so that ECS can use it to generate random numbers
+    /// 把 Unity.Mathematics.Random 包装成 ECS 单例，
+    /// 方便各系统在对应 World 里生成随机值。
     /// </summary>
     public struct FixedRandom : IComponentData {
         public Random Random;
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS {
 
         public static string GetLocalIPAddress() {
             var host = Dns.GetHostEntry(Dns.GetHostName());
+            // 本机接口可能有多个地址。这里依次挑一个可用的非回环 IPv4，供需要显示本机地址的地方读取。
             foreach (var ip in host.AddressList)
                 if (ip.AddressFamily == AddressFamily.InterNetwork && !ip.Equals(IPAddress.Loopback))
                     return ip.ToString();
@@ -78,11 +80,11 @@ namespace Unity.MP_FPS {
             float maxPitchDegrees,
             out quaternion characterRotation,
             out quaternion viewLocalRotation) {
-            // Yaw
+            // 水平转向。
             characterRotationYDegrees += yawPitchDeltaDegrees.x;
             ComputeRotationFromYAngleAndUp(characterRotationYDegrees, characterTransformUp, out characterRotation);
 
-            // Pitch
+            // 上下俯仰。
             viewPitchDegrees += yawPitchDeltaDegrees.y;
             viewPitchDegrees = math.clamp(viewPitchDegrees, minPitchDegrees, maxPitchDegrees);
             viewLocalRotation = CalculateLocalViewRotation(viewPitchDegrees, viewRollDegrees);
@@ -98,16 +100,17 @@ namespace Unity.MP_FPS {
         }
 
         public static quaternion CalculateLocalViewRotation(float viewPitchDegrees, float viewRollDegrees) {
-            // Pitch
+            // 上下俯仰。
             var viewLocalRotation = quaternion.AxisAngle(-math.right(), math.radians(viewPitchDegrees));
 
-            // Roll
+            // 左右侧倾。
             viewLocalRotation = math.mul(viewLocalRotation,
                 quaternion.AxisAngle(math.forward(), math.radians(viewRollDegrees)));
             return viewLocalRotation;
         }
 
         public static void SetCursorVisible(bool isVisible) {
+            // 恢复鼠标操作需要同时解除锁定和显示指针。回到战斗时两项一起关，避免看见光标却拖不动，或有输入但看不见。
             var mode = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
             if (Cursor.lockState != mode) Cursor.lockState = mode;
             if (Cursor.visible != isVisible) Cursor.visible = isVisible;

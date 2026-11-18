@@ -10,8 +10,8 @@ namespace Unity.MP_FPS {
         private static CampaignProgress s_Campaign;
         private static ResearchQuestProgress s_ResearchQuests;
 
-        // UI treats this cache as read-only. All writes are intents handled by
-        // the selected store, and campaign facts come from the local server.
+        // UI 只读这份缓存。需要修改时发出意图，由
+        // 当前选定的档案处理。章节事实来自本机服务端。
         public static CampaignProgress Campaign => IsOffline ? s_Campaign : null;
 
         public static ResearchQuestProgress ResearchQuests {
@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
             if (error != null) throw new InvalidOperationException("Invalid chapter profile: " + error);
         }
 
+        // 接任务和领取是不同动作。单人改本地档，好友与在线包成研究命令让它们的权威档案处理。
         public static async Task<bool> AdvanceResearchQuestAsync(ResearchQuest quest, bool claim) {
             if (ResearchQuests == null) return false;
             if (!IsOffline)
@@ -45,6 +46,7 @@ namespace Unity.MP_FPS {
             return changed;
         }
 
+        // 结局选择也属于档案操作。单人提交结束后先确认还在原档案，再刷新菜单里能看到的剧情和奖励。
         public static async Task<bool> ChooseResearchEndingAsync(ResearchEnding ending) {
             if (ResearchQuests == null) return false;
             if (!IsOffline)
@@ -58,6 +60,7 @@ namespace Unity.MP_FPS {
         }
 
         private static async Task<bool> SendResearchCommand(ResearchQuestCommand command) {
+            // 出战已经接管档案时，仓库界面不能同时改研究状态。这时等待该局结算。
             if (RaidActive) return false;
             if (IsLan)
                 await LanRoomClient.RequestAsync("research", command);
@@ -66,6 +69,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 先看章节是否已解锁，再发一次读过的命令给当前档案。服务端也按自己的进度校验。
         public static async Task<bool> ReviewResearchStoryAsync(ResearchStoryChapter chapter) {
             if (!ResearchQuestRules.StoryAvailable(ResearchQuests, chapter)) return false;
             var command = new ResearchQuestCommand { Action = ResearchQuestAction.ReviewStory, Chapter = chapter };
@@ -77,6 +81,7 @@ namespace Unity.MP_FPS {
             return saved;
         }
 
+        // 章节追踪只在单人使用。磁盘写完后若玩家已换档，别拿旧档的数据更新新页面。
         public static async Task SetCampaignTrackingAsync(
             string taskId,
             bool secondary = false,

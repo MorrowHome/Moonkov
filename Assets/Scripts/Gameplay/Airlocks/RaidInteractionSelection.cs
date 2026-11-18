@@ -7,9 +7,10 @@ using Unity.MP_FPS.Moon;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // A typed adapter keeps the existing scene endpoints and their state owners intact.
-    // Add further endpoint kinds here; selection, occlusion and HUD need no duplicate input loop.
+    // 带类型的包装统一各类可交互设备的入口，保留它们原有的状态管理者。
+    // 新增设备类型从这里接入，可以共用选择、遮挡判断和 HUD 的输入流程。
     public readonly struct RaidInteractionTarget : IEquatable<RaidInteractionTarget> {
+        // 一次选择只填气闸、灯、升降梯中的一种。外层统一读坐标、显示名和按钮 ID。
         public readonly AirlockButton Airlock;
         public readonly LightSwitchButton Light;
         public readonly RaidLiftButton Lift;
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS {
             return Airlock ? Airlock.InRange(actor) : Light ? Light.InRange(actor) : Lift && Lift.InRange(actor);
         }
 
+        // 离得近也要属于同一块面板才放在一组。门两边和不同灯组不能因为挨着就互相切换。
         public bool SameGroup(RaidInteractionTarget other) {
             if (!IsValid || !other.IsValid || (Center - other.Center).sqrMagnitude > .75f * .75f) return false;
             if (Lift || other.Lift) return Lift && Lift == other.Lift;
@@ -41,6 +43,7 @@ namespace Unity.MP_FPS {
                   Light.transform.parent == other.Light.transform.parent;
         }
 
+        // 目标自己的按钮碰撞体被射中时仍算看得见；先撞到其他场景物体就判为遮挡。
         public bool VisibleFrom(Vector3 origin) {
             var delta = Center - origin;
             if (delta.sqrMagnitude < .0001f) return true;
@@ -89,6 +92,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             m_Candidates.Clear();
+            // 候选来自目前开启的场景组件，统一做范围和准星分数筛选。
             foreach (var button in AirlockButton.Active)
                 if (button)
                     m_Candidates.Add(new RaidInteractionTarget(button));
@@ -118,8 +122,9 @@ namespace Unity.MP_FPS {
                 if (focus.SameGroup(target) && target.InRange(actor) && target.VisibleFrom(camera.transform.position) &&
                     camera.WorldToViewportPoint(target.Center).z > 0)
                     m_Choices.Add(target);
+            // 同一面板的选项从上到下排序。同高时按横坐标和 ID 继续排，滚动顺序更稳定。
             m_Choices.Sort(Compare);
-            // A new direct surface wins. Explicit cycling survives a stationary aim.
+            // 改为直接瞄向新的按钮时置顶它。准星不动时保留手动切换的选项。
             if ((best > 900 && !focus.Equals(m_LastAimFocus)) || !retain || !m_Choices.Contains(Selected))
                 Selected = focus;
             m_LastAimFocus = focus;
@@ -131,6 +136,7 @@ namespace Unity.MP_FPS {
             return order == 0 ? string.CompareOrdinal(a.Id, b.Id) : order;
         }
 
+        // 在同组可见按钮中循环，翻过末尾回第一项，反向也一样。
         public void Cycle(int direction) {
             if (m_Choices.Count == 0) return;
             int index = m_Choices.IndexOf(Selected);
@@ -138,9 +144,10 @@ namespace Unity.MP_FPS {
         }
 
         public bool Press(Camera camera, Vector3 actor, World world) {
-            // Re-evaluate on the input frame: cached UI must never operate a disabled,
-            // occluded or out-of-range target after a teleport/menu transition.
+            // 输入发生的这一帧要重新检查。瞬移或退出菜单后，
+            // 若先前目标已停用、被挡住或离得太远，就不继续用缓存中的选项。
             Refresh(camera, actor, true);
+            // 真正执行前再按这一帧的位置和视线刷新。被挡住或离开范围后，上一帧提示不会继续触发按钮。
             return Selected.IsValid && Selected.VisibleFrom(camera.transform.position) && Selected.Press(actor, world);
         }
     }

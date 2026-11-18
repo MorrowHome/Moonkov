@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Authored physical hardware. It presents server state and never decides completion.
+    // 场景设备按服务端状态做显示。是否完成由服务端任务规则决定。
     public sealed class RaidMissionDevice : MonoBehaviour {
         private static readonly System.Collections.Generic.List<RaidMissionDevice> s_Active = new();
         public static System.Collections.Generic.IReadOnlyList<RaidMissionDevice> Active => s_Active;
@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
         [SerializeField] private GameObject[] m_Products;
         private MaterialPropertyBlock m_Block;
         private Color m_Color;
+        // 场景挂点通过同一个 ID 和任务定义关联。准星交互查当前登记的设备时也用这个 ID。
         public string AnchorId => m_AnchorId;
         public void Present(
             bool active,
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS {
             bool failed,
             int products,
             bool operateLever = true) {
+            // 灯色区分未启用、失败、完成、运行和可交互。颜色变了才改渲染器属性。
             var color = !active ? new Color(.12f, .15f, .2f) :
                 failed ? new Color(.8f, .2f, .12f) :
                 completed ? new Color(.24f, .65f, .47f) :
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS {
                         if (indicator)
                             indicator.SetPropertyBlock(m_Block);
             }
+            // 转子按是否工作决定要不要转。拉杆和可见的产物数量也直接跟随当前任务状态。
             if (m_Rotor) m_Rotor.localRotation = Quaternion.Euler(0, running ? Time.time * 135 : 0, 0);
             if (m_Lever) m_Lever.localRotation = Quaternion.Euler(operateLever && completed ? 35 : -15, 0, 0);
             if (m_Products != null)

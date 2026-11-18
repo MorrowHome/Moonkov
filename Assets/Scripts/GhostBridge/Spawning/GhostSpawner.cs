@@ -37,6 +37,7 @@ public class GhostSpawner : MonoBehaviour {
         [SerializeField] [HideInInspector] private Hash128 m_GhostGuid;
 
         public bool OnValidate() {
+            // 场景保存的是 Addressables 资源引用，同时把它的 GUID 缓存给运行时代码。生成前可以很快判断引用是否配置完整。
             bool validReference = GhostPrefab != null && GhostPrefab.RuntimeKeyIsValid();
             m_GhostGuid = validReference ? new Hash128(GhostPrefab.AssetGUID) : new Hash128();
             return validReference;
@@ -93,9 +94,9 @@ public class GhostSpawner : MonoBehaviour {
 
     // public void RestoreEditorVisuals()
     // {
-    //     EditorApplication.delayCall -= EditorVisualCreate; //CH: strip any previous callbacks so we don't double up
+    //     EditorApplication.delayCall -= EditorVisualCreate; //CH: 清掉之前的回调，避免重复执行。
     //     EditorApplication.delayCall += EditorVisualCreate;
-    //     // Add callbacks for lightmapping
+    //     // 挂接光照烘焙的回调。
     //     Lightmapping.bakeStarted -= EditorLightBakeStart;
     //     Lightmapping.bakeStarted += EditorLightBakeStart;
     // }
@@ -176,7 +177,7 @@ public class GhostSpawner : MonoBehaviour {
     }
 
     protected void MarkEditorOnlyChildrenForDestroy(Transform parent) {
-        // remove any editor only children
+        // 移除只为编辑器预览创建的子物体。
         for (int i = 0; i < parent.childCount; i++) {
             var child = parent.GetChild(i);
             if (child.gameObject.CompareTag("EditorOnly")) {
@@ -205,8 +206,8 @@ public class GhostSpawner : MonoBehaviour {
         if (m_EditorVisualObjectForLightbaking == null) return;
         ModifyHideFlagsRecursive(m_EditorVisualObjectForLightbaking, HideFlags.None, kDefaultHideValues);
 
-        // We run a constant update to cover for canceling a lightbake, we only get a callback from Lightmapping when its complete
-        // TODO: Use Complete and Cancelled callbacks when switching to 2023.3 / Unity 6
+        // 光照烘焙只有完成时有回调。持续检查可以兼顾中途取消。
+        // 待办。切到 2023.3 或 Unity 6 时可使用完成与取消回调。
         EditorApplication.update += EditorLightBakeHeartbeat;
     }
 
@@ -222,7 +223,7 @@ public class GhostSpawner : MonoBehaviour {
             m_EditorVisualObjectsToDestroy.Clear();
         }
         if (m_EditorComponentsToDestroy != null) {
-            // remove ghost monobehaviours first
+            // 先移除 GhostMonoBehaviour 脚本。
             foreach (var comp in m_EditorComponentsToDestroy)
                 if (comp is GhostMonoBehaviour ||
 #if WWISE_AUDIO_SUPPORTED
@@ -233,7 +234,7 @@ public class GhostSpawner : MonoBehaviour {
                     comp is GhostAuthoringComponent || comp is Joint)
                     DestroyImmediate(comp);
 
-            // then everything else
+            // 接着移除其他预览组件。
             foreach (var comp in m_EditorComponentsToDestroy)
                 if (comp != null)
                     DestroyImmediate(comp);
@@ -244,8 +245,8 @@ public class GhostSpawner : MonoBehaviour {
 
     protected virtual void Awake() {
         if (!ClientServerBootstrap.HasServerWorld)
-            // we don't want to attempt to spawn ghosts
-            // if there is no server world
+            // Ghost 的生成由
+            // 拥有服务端 World 的进程负责。
             DestroySpawner();
         else
             AllocateGhostGUID();
@@ -262,23 +263,24 @@ public class GhostSpawner : MonoBehaviour {
     private void DestroySpawner() {
         if (PersistGameObject) {
 #if UNITY_EDITOR
-            // ensure we don't have visuals during runtime
+            // 运行时先撤掉只供摆场景用的外观。
             MarkEditorOnlyChildrenForDestroy(transform);
             EditorVisualDestroy();
 #endif
 
-            // we want to keep the gameobject but we want to strip the spawner components
+            // 保留这个场景物体，移除其生成器组件。
             GetComponentsInChildren(s_GhostSpawnerCustomisers);
             foreach (var componentToDestroy in s_GhostSpawnerCustomisers) Destroy((Component)componentToDestroy);
             Destroy(this);
         } else { Destroy(gameObject); }
     }
 
-    // we do the spawning in LateUpate rather than Update as we want to avoid any "unlinked" ghost entities
-    // we spawn being sent to the client in the "GhostSend" that happens after the entity updates.
-    // this means the GhostGameObjectLifetimeSystem can pick up the newly spawned ghost entities
-    // at the start of the next frame and initialise them before the next GhostSend
+    // 在 LateUpdate 生成，让绑定在下一帧的正确阶段进行。
+    // 如果 Update 里创建，随后的 GhostSend 可能马上发出尚未接好的实体。
+    // GhostGameObjectLifetimeSystem 会在下一帧开始接手，
+    // 在下一次 GhostSend 前完成初始化。
     public virtual void LateUpdate() {
+        // 资源登记包含异步加载。出生标记要等到登记结束再试，避免刚进地图还没有模板就开始生成。
         if (GhostEntityPrefabSystem.ServerInstance != null && !GhostEntityPrefabSystem.ServerInstance.PrefabsLoaded)
             return;
         if (GhostBridgeManager.Instance.IsServerListening())
@@ -288,6 +290,7 @@ public class GhostSpawner : MonoBehaviour {
             if (RandomiseRotation) spawnRotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
             m_GhostSpawned = false;
             if (GhostPrefabReference.GhostGuid.IsValid) {
+                // 部分地图物体只能在功能开关启用时出现。未开就标记这一处已经处理，普通生成器不用留场继续重试。
                 if (FeatureToggle.IsAllowedByFeature(LockedBehindFeature)) {
                     var prefabEntity = FindGhostPrefabEntity(GhostPrefabReference);
                     if (prefabEntity != Entity.Null) {
@@ -297,6 +300,7 @@ public class GhostSpawner : MonoBehaviour {
                         m_GhostSpawned = SpawnGhostPrefab(prefabEntity, transform.position, spawnRotation, GhostNetGUID,
                             UniformScaleOverride ? transform.localScale.x : 1.0f, (entity, ecb) => {
                                 OnGhostPrefabSpawned(entity, ecb);
+                                // 实体刚创建时可以写入这一个出生点的额外配置。这些写入和生成请求使用同一份命令缓冲。
                                 foreach (var customiser in s_GhostSpawnerCustomisers)
                                     customiser.OnGhostPrefabSpawned(entity, ecb);
                             });
@@ -306,20 +310,21 @@ public class GhostSpawner : MonoBehaviour {
                             this);
                     }
                 } else {
-                    // feature is not enabled, but let's treat it as if it had done
-                    // a valid spawn
+                    // 功能关掉时也将这个生成点标记为已处理，
+                    // 走一次成功处理后的清理流程。
                     m_GhostSpawned = true;
 
-                    // don't persist if the spawner shouldn't exist
+                    // 这个出生点停用时也撤掉常驻标记。
                     m_PersistSpawnerAfterSpawn = false;
                     PersistGameObject = false;
                 }
             } else {
                 Debug.LogError($"[SCENEGHOSTSPAWNER] Update: GhostPrefabReference invalid for {GetCachedName()}", this);
             }
+            // 多数出生点生成一次就完成。只在创建成功后拆掉出生点，找不到资源时暂时保留并留待下次重试。
             if (!m_PersistSpawnerAfterSpawn) {
                 if (m_GhostSpawned)
-                    // spawner no longer needed
+                    // 生成完成，出生点可以收回。
                     DestroySpawner();
                 else
                     Debug.LogWarning(
@@ -391,17 +396,19 @@ public class GhostSpawner : MonoBehaviour {
             return false;
         }
 
-        // do we have an active ecb? If so, let's use that
+        // 如果 Ghost 更新已经准备了命令缓冲，就沿用它。
+        // 在某个 Ghost 更新中生成时沿用现成的命令缓冲。回调之外调用则新建一个，记录完后当场交给服务端执行。
         var ecb = GhostGameObject.UpdateEntityCommandBuffer;
         bool ecbNeedsPlayback = false;
         if (!ecb.IsCreated) {
-            // let's create one and immediately play it back
+            // 如果当前在更新之外，就创建临时缓冲并当场执行。
             ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             ecbNeedsPlayback = true;
         }
         if (GhostBridgeManager.Instance.IsServerListening())
             //if (ServerConnectionSystem.Instance.IsPlaying)
         {
+            // 从服务端的模板复制实体后，先给它初始坐标、缩放和网络标识。生命周期系统读到这些值后才创建对应表现。
             var instance = ecb.Instantiate(prefabEntity);
             ecb.SetComponent(instance, new LocalTransform {
                 Position = spawnPos,

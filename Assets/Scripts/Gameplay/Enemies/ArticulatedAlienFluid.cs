@@ -7,8 +7,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>Filled articulated volumes for the existing Umbra particle/volume/
-    /// filament solver. Gameplay bones remain authoritative; GPU work is client-only.</summary>
+    /// <summary>用现有的 Umbra 粒子、体积和细丝求解器填充关节形体。
+    /// 玩法仍按实际骨骼判定，GPU 计算只在客户端做。</summary>
     public sealed class ArticulatedAlienFluid {
         private readonly Transform m_Owner, m_Pivot;
         private readonly StiltWalkerRig m_Stilt;
@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
         private Quaternion CoreRotation => m_Stilt != null ? m_Stilt.HeadRotation : m_Face.CoreRotation;
         private Vector3 CoreRadii => m_Stilt != null ? m_Stilt.HeadRadii : m_Face.CoreRadii;
 
+        // 先按长脚或覆面虫的静止肢体搭出各关节的液体种子，运行时可随关节变形。
         public ArticulatedAlienFluid(
             Transform owner,
             int mask,
@@ -93,8 +94,8 @@ namespace Unity.MP_FPS {
                     }
                 }
             }
-            // Same normalized volume resolution as the other filled creature rigs;
-            // scaling a creature never deletes its particle/filament detail.
+            // 与其它填充式异形骨架使用一致的归一化体积精度。
+            // 体型缩放后也保留对应的粒子与细丝细节。
             Fluid = new SkeletonFluidPresentation(m_Pivot, mask, seeds.ToArray(), bones, 2.8f, 128, true, true);
         }
 
@@ -104,6 +105,7 @@ namespace Unity.MP_FPS {
             m_Centres[index] = new Vector4(point.x, point.y, point.z, 1);
         }
 
+        // 一滴外壳的粒子可以由相邻骨段一起决定位置，跨关节就不会突然裂开。
         private void Add(List<SkeletonFluidPresentation.Seed> seeds, Vector3 point, int a, int b, float t, int region) {
             var rest = m_Pivot.InverseTransformPoint(point);
             seeds.Add(new SkeletonFluidPresentation.Seed {
@@ -122,6 +124,7 @@ namespace Unity.MP_FPS {
             return Matrix4x4.TRS(point, rotation, new Vector3(radius, radius, 1));
         }
 
+        // 将覆面虫的关节转到流体渲染使用的坐标里，跟上附脸时的新形状。
         private void CaptureFace() {
             int count = 0;
             float size = m_Face.BodyRadius / .17f;
@@ -147,6 +150,7 @@ namespace Unity.MP_FPS {
             m_Pivot.SetPositionAndRotation(bounds.center, m_Owner.rotation);
         }
 
+        // 用这一拍的骨架与身体姿态更新液体。附着变化较大时重置历史状态，避免旧外形拖过去。
         public void Draw(SurfaceMotor motor, SpiderFluidSettings style, float dt, bool attached) {
             if (m_Face != null) CaptureFace();
             PlacePivot();
@@ -158,9 +162,9 @@ namespace Unity.MP_FPS {
                 m_Matrices[1 + i * 2] = local * Frame(m_A[i], rotation, radius) * m_Inverse[1 + i * 2];
                 m_Matrices[2 + i * 2] = local * Frame(m_B[i], rotation, radius) * m_Inverse[2 + i * 2];
             }
-            // Attachment changes the parasite topology around the head abruptly.
-            // Re-initialize on the current guide rather than pulling stale liquid
-            // through the player's face on the transition frame.
+            // 附着时寄生虫围着头部的形状会一下改变。
+            // 按当前引导骨架重新初始化流体，
+            // 避免切换这帧把上个姿势遗留的液体拖过玩家面部。
             if (attached != m_Attached) {
                 Fluid.SetVisible(false);
                 m_Attached = attached;
@@ -172,6 +176,7 @@ namespace Unity.MP_FPS {
             Fluid.Draw(m_Matrices, m_Centres, motor.Velocity, dt);
         }
 
+        // 从显示层撤下时释放液体实例占用的资源。
         public void Release() {
             Fluid.Release();
             if (Application.isPlaying)

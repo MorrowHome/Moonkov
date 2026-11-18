@@ -12,6 +12,7 @@ namespace Unity.MP_FPS {
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(ServerGameSystem))]
     public partial class EnergyGrenadeServerSystem : SystemBase {
+        // 扔出去的手雷有自己的位置、速度、年龄和来源。角色死亡或换武器后，这个对象仍按原出手人和引信推进。
         private sealed class Grenade {
             public uint Id;
             public int Owner;
@@ -25,6 +26,7 @@ namespace Unity.MP_FPS {
 
         private readonly List<Grenade> m_Active = new();
 
+        // 还在手上的状态按连接记住对应玩家、这次拿雷编号、背包及阶段。未拉环道具仍在包里，拉环后由此接管。
         private sealed class Held {
             public Entity Player;
             public RaidInventoryState Inventory;
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
             if (!canAct || !(health.CurrentHealth > 0) || !float.IsFinite(health.CurrentHealth) ||
                 health.ClashDarkSight || RaidHealth.HandsBusy(health) || health.MeleePhase != 0)
                 return InventoryError.Inaccessible;
+            // 装备请求要来自当时的背包版本，并且实际还拿得到这个物品。通过只锁定手部与库存动作，尚未扣物品。
             if (inventory.Graph.Version != version) return InventoryError.Stale;
             if (!GrenadeHandling.Accessible(inventory.Graph, inventory.Graph.Find(itemId)))
                 return InventoryError.Inaccessible;
@@ -80,7 +83,7 @@ namespace Unity.MP_FPS {
             return InventoryError.None;
         }
 
-        // Read-only server perception. No trajectory or owner is exposed to NPCs.
+        // 供服务器 AI 读取的感知状态。不给 NPC 暴露轨迹或投掷者身份。
         public int ActiveThreatCount => m_Active.Count;
 
         public bool TryGetLiveThreat(
@@ -108,6 +111,7 @@ namespace Unity.MP_FPS {
 
         protected override void OnUpdate() {
             var map = MoonRaidMap.Active;
+            // 切地图时清理旧手雷和冷却，避免同一个服务端系统被复用时把上一局对象留进这一局。
             if (map != m_Map) {
                 foreach (var held in m_Held.Values) Clear(held);
                 m_Held.Clear();
@@ -128,6 +132,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             uint tick = serverTick.TickIndexForValidTick;
+            // 从 RPC 的发包连接取真实玩家，再检查当前是活动 RaidId 和更新的请求号。位置、朝向和角色不是客户端包指定的。
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidGrenadeThrowRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 var connection = received.ValueRO.SourceConnection;
@@ -175,13 +180,15 @@ namespace Unity.MP_FPS {
                              EntityManager.GetComponentData<RaidSession>(connection).RaidId == held.Raid &&
                              EntityManager.GetComponentData<RaidSession>(connection).Phase == RaidPhase.Active;
                 if (held.Root) held.Position = HandPosition(held.Root, health);
+                // 人没了、断线或手雷在手上到点时，已扣掉的手雷要就地释放。没拉环则直接清手部状态，原物品仍在原背包。
                 if (!valid || (held.Consumed && now >= held.FuseAt)) {
                     if (held.Consumed) Release(held, health, true, now, tick, ecb);
                     Clear(held);
                     m_Held.Remove(connection);
                     continue;
                 }
-                // A safe grenade stays in inventory. An external inventory replacement must never duplicate it.
+                // 未拉环的手雷仍留在库存。外部替换背包时不能因此生成第二颗。
+                // 安全状态的雷仍然依靠实际背包存在。装备被替换时不能继续持有失效的引用，否则有机会产生两份物品。
                 if (!held.Consumed && held.Phase != GrenadePhase.Recovering &&
                     !GrenadeHandling.Accessible(held.Inventory.Graph, held.Inventory.Graph?.Find(held.ItemId))) {
                     Clear(held);
@@ -189,6 +196,7 @@ namespace Unity.MP_FPS {
                     continue;
                 }
                 if (now >= held.Until) {
+                    // 手部动作按服务端阶段计时。提前松手可排入释放，但真正飞出仍要等动画规定的释放时刻。
                     if (held.Phase == GrenadePhase.Drawing)
                         SetPhase(held, GrenadePhase.Safe, now);
                     else if (held.Phase == GrenadePhase.Priming)
@@ -216,6 +224,7 @@ namespace Unity.MP_FPS {
                         continue;
                     }
                     float dt = Mathf.Min(SystemAPI.Time.DeltaTime, EnergyGrenadeRules.Fuse - g.Age);
+                    // 飞行和碰撞由服务器地图中的物理查询更新。结束时结算爆炸并发一次最终状态，飞行中只间隔给客户端校正。
                     EnergyGrenadePhysics.Step(g.Scene, ref g.Position, ref g.Velocity, ref g.Resting, dt,
                         g.FlightAge < .25f ? g.Shooter : null, ref m_Hits);
                     g.FlightAge += dt;
@@ -243,6 +252,7 @@ namespace Unity.MP_FPS {
             double now,
             uint tick,
             EntityCommandBuffer ecb) {
+            // 新请求先判断当前是否空手、能行动且冷却已过。通过后建立这次拿雷动作，用请求号标记后续操控归属。
             if (request.Command == GrenadeCommand.Equip) {
                 if (m_Held.ContainsKey(connection) || RaidHealth.HandsBusy(health) || health.MeleePhase != 0 ||
                     (m_NextThrow.TryGetValue(connection, out double next) && now < next))
@@ -266,9 +276,11 @@ namespace Unity.MP_FPS {
                 return InventoryError.None;
             }
             if (!m_Held.TryGetValue(connection, out var current) || current.Player != player ||
+                // 后来的拉环、收回和投掷都得对应同一次拿雷的编号。延迟到的新一轮操作不会误扔掉手上的另一颗。
                 request.HoldId != current.HoldId)
                 return InventoryError.Inaccessible;
             switch (request.Command) {
+                // 拉环先为即将进入世界的对象确认容量，再从背包扣一次。此后引信运行，不能放回背包抵消。
                 case GrenadeCommand.Prime:
                     if (current.Phase != GrenadePhase.Safe) return InventoryError.Inaccessible;
                     var tactical = Tactical;
@@ -295,6 +307,7 @@ namespace Unity.MP_FPS {
                     SetPhase(current, GrenadePhase.Priming, now);
                     health.LastGrenadeShotTick = tick;
                     break;
+                // 如果拉环动画未完，先排队请求投出。已经进入实弹状态才直接开始投掷阶段。
                 case GrenadeCommand.Release:
                     if (current.Phase == GrenadePhase.Priming)
                         current.ReleaseQueued = true;
@@ -372,7 +385,7 @@ namespace Unity.MP_FPS {
                 ? Vector3.zero
                 : direction * (held.Underhand ? GrenadeHandling.LowSpeed : EnergyGrenadeRules.Speed) +
                   Vector3.up * (held.Underhand ? .8f : 2f);
-            // Sweep from inside the capsule to the hand. A live grenade can never be cancelled by a wall.
+            // 从角色胶囊内部扫到手部。已拉环的手雷必须实际释放，不能因碰墙被取消。
             if (held.Root) {
                 var origin = new Vector3(held.Root.position.x, position.y, held.Root.position.z);
                 if (Ballistics.Sweep(held.Scene, origin, position, EnergyGrenadeRules.BodyRadius,
@@ -406,8 +419,9 @@ namespace Unity.MP_FPS {
             held.Reserved = held.Consumed = false;
         }
 
+        // 服务端用实际爆炸位置、角色位置与遮挡结算伤害。客户端的爆炸画面只消费 Broadcast 的结果。
         private void Explode(Grenade grenade, uint tick) {
-            // One entity per victim, including aliens, PMCs and the thrower; colliders never multiply damage.
+            // 一次爆炸对每个角色实体只算一次，包括异形、PMC 和投掷者。有多个碰撞体也不能多受伤。
             foreach (var (health, link, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>, GhostGameObjectLink>()
                          .WithEntityAccess()) {
                 var root = link.LinkedInstance;
@@ -420,7 +434,7 @@ namespace Unity.MP_FPS {
                 if (damage <= 0 ||
                     !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform))
                     continue;
-                // Resolve shielding once, then distribute the residual over living tissue.
+                // 先一次性结算护盾，再把余下伤害分配给未归零的各部位。
                 BountyClashDamage.Apply(World, entity, grenade.Source, BodyPart.Auto, damage, tick,
                     RaidDamageKind.Explosion, (Mathematics.float3)grenade.Position);
             }

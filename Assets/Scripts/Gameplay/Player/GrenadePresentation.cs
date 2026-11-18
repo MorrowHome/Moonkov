@@ -45,6 +45,7 @@ namespace Unity.MP_FPS {
 
         public void Configure(Animator animator, DollSingerHaloAim playerHalo, string rig) {
             if (library != null) return;
+            // 不同角色骨骼用自己的采样动画。按骨骼名字绑定到当前模型，重复使用同一资产就复用解析结果。
             var asset = Resources.Load<TextAsset>("Moonkov/Grenades/" + rig);
             if (!asset) throw new InvalidOperationException("Missing grenade motion library: " + rig);
 #if UNITY_EDITOR
@@ -83,6 +84,7 @@ namespace Unity.MP_FPS {
             }
             active = next != GrenadePhase.None;
             if (!active) return;
+            // 阶段变化或重新取出一颗手雷时开始新的表现计时，即便两颗来自同种物品。
             if (phase != next || holdId != state.GrenadeHoldId) {
                 phase = next;
                 holdId = state.GrenadeHoldId;
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 在两次快照之间平滑接续一点时间，但限制最大外推，网络停更太久时不自己演完。
         private float Progress =>
             Mathf.Clamp01(1 - (remaining - Mathf.Min(Time.time - receivedAt, .15f)) /
                 Mathf.Max(.001f, GrenadeHandling.Duration(phase)));
@@ -123,6 +126,7 @@ namespace Unity.MP_FPS {
             }
             var motion = library.hold;
             float sample = 0;
+            // 拔销、保持、投掷出手前和投掷后续动作都可取同一个片段的不同区间。
             switch (phase) {
                 case GrenadePhase.Priming:
                     motion = library.prime;
@@ -147,6 +151,7 @@ namespace Unity.MP_FPS {
                 phase == GrenadePhase.Live || phase == GrenadePhase.Throwing ? 1 :
                 phase == GrenadePhase.Recovering ? 1 - progress : 0;
             leftArm.rotation = Quaternion.AngleAxis(pitch * guide * blend, body.right) * leftArm.rotation;
+            // 跨过出手时间就隐藏掌心的手雷模型。真正扔出的实体由服务端创建。
             bool visible = phase != GrenadePhase.Recovering && !(phase == GrenadePhase.Throwing && progress >= 1);
             if (prop) {
                 prop.SetActive(visible);
@@ -158,6 +163,7 @@ namespace Unity.MP_FPS {
                     Quaternion.LookRotation(-normal, across));
             }
             if (halo) halo.ExternalHandPoseActive = true;
+            // 每个阶段的关键声响一次。拔销和抛掷分两个句柄，快速投掷也能听到拔销尾音。
             if (active && !sounded && (phase == GrenadePhase.Drawing ||
                                        (phase == GrenadePhase.Priming && progress >= .8f) ||
                                        phase == GrenadePhase.Throwing || phase == GrenadePhase.Stowing)) {
@@ -166,8 +172,8 @@ namespace Unity.MP_FPS {
                 var cue = phase == GrenadePhase.Priming ? audio?.GrenadePin :
                     phase == GrenadePhase.Throwing ? audio?.GrenadeThrow :
                     phase == GrenadePhase.Stowing ? audio?.WeaponStow : audio?.GrenadeDraw;
-                // A queued throw can begin immediately after the pin clears. Let its
-                // short metallic tail finish; both handles are still owned and stopped.
+                // 拔销刚结束时，已排队的投掷可能马上开始。
+                // 让拔销的短金属尾音播完。两个声音句柄仍由这里管理，并可停止。
                 if (phase == GrenadePhase.Priming) {
                     GameManager.Instance?.SoundSystem?.Stop(pinSound, .025f);
                     pinSound = MoonkovAudio.PlayWeaponLayer(cue, hand.position, 1, owner ? 0 : 1, follow: hand);
@@ -178,6 +184,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 在采样帧之间插值关节，再按当前手部权重混合，抓握切换不会硬跳。
         private void Sample(Motion motion, float phaseTime, float weight) {
             float frame = Mathf.Clamp01(phaseTime) * (motion.frames - 1);
             int a = Mathf.FloorToInt(frame), b = Mathf.Min(a + 1, motion.frames - 1);
@@ -218,6 +225,7 @@ namespace Unity.MP_FPS {
             Apply(Mathf.Clamp01(progress));
         }
 
+        // 角色离场或取消时收掉手中道具、声音和手势控制，让正常武器动画重新接管。
         public void ResetPresentation() {
             if (prepared && library != null) Restore();
             if (OwnsHands && halo) halo.ExternalHandPoseActive = false;

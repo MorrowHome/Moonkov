@@ -15,6 +15,7 @@ namespace Unity.MP_FPS {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [UpdateAfter(typeof(ServerPlayerMovementSystem))]
     public partial class ServerMeleeSystem : SystemBase {
+        // 一次近战持续多个服务器 tick。这里存开始时的武器、方向和伤害归属以及已打中过的人，中途不能重复命中。
         private sealed class Actor {
             public MeleeCombatState State;
             public int RaidId, Epoch;
@@ -89,6 +90,7 @@ namespace Unity.MP_FPS {
 
         private bool Tick(out uint tick) {
             tick = 0;
+            // 只有存在唯一有效的网络时间才推进。开图或关闭阶段没有服务器 tick 时，不能凭 Unity 帧数推进伤害。
             if (m_TimeQuery.CalculateEntityCount() != 1) return false;
             var time = m_TimeQuery.GetSingleton<NetworkTime>().ServerTick;
             if (!time.IsValid) return false;
@@ -111,6 +113,7 @@ namespace Unity.MP_FPS {
                 context.Epoch = EntityManager.GetComponentData<ClashPlayer>(player).Epoch;
             context.CanAct = context.Health.CurrentHealth > 0 && BountyClashDamage.CanAct(EntityManager, player) &&
                              !context.Health.ClashDarkSight;
+            // 真人从服务端连接获取手部、背包和会话；NPC 直接读自己的脑组件。规则与命中使用相同结构。
             if (EntityManager.HasComponent<DollSingerEnemyBrain>(player)) {
                 context.Graph = EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory;
             } else {
@@ -142,6 +145,7 @@ namespace Unity.MP_FPS {
                 actor = new Actor();
                 m_Actors.Add(context.Player, actor);
             }
+            // 角色换局或回合时保留状态容器也要重建本局动作编号，不能把旧挥砍带到新回合。
             if (!actor.State.Initialized || actor.Epoch != context.Epoch || actor.RaidId != context.RaidId) {
                 actor.State = default;
                 actor.Epoch = context.Epoch;
@@ -163,7 +167,7 @@ namespace Unity.MP_FPS {
 
         private void Publish(Entity player, Actor actor) {
             if (!EntityManager.Exists(player) || !EntityManager.HasComponent<PredictedPlayerGhost>(player)) return;
-            // Always re-read: another sweep can already have damaged this actor during the same tick.
+            // 每次重新读取，另一段扫击可能已在同一 tick 打伤这个角色。
             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(player);
             health.MeleeWeapon = (byte)actor.State.SelectedWeapon;
             health.MeleeAttackWeapon = (byte)actor.State.AttackWeapon;
@@ -204,6 +208,7 @@ namespace Unity.MP_FPS {
         }
 
         public bool TryStart(Entity player, MeleeAttackKind attack) {
+            // 按当前服务器状态判断是否可以挥击。手上有动作或装备不匹配时，只发拒绝反馈。
             if (!TryContext(player, out var context) || !Tick(out uint tick)) return false;
             var actor = Resolve(context);
             if (!context.CanAct || context.Pending || RaidHealth.HandsBusy(context.Health)) {
@@ -211,6 +216,7 @@ namespace Unity.MP_FPS {
                 Publish(player, actor);
                 return false;
             }
+            // 规则通过后才冻结出刀朝向、受击状态和归属，并清空这次攻击命中的对象集合。
             if (!MeleeRules.TryStart(ref actor.State, attack, true, Stimulated(player), out var error)) {
                 actor.Feedback = error == MeleeStartError.Exhausted ? MeleeFeedback.Exhausted :
                     error == MeleeStartError.Busy ? MeleeFeedback.Busy : MeleeFeedback.Unavailable;
@@ -268,6 +274,7 @@ namespace Unity.MP_FPS {
             if (!TryContext(player, out var context) || context.Connection != work.Connection) return;
             var request = work.Value;
             var actor = Resolve(context);
+            // 要求请求是当前出战、当前回合且编号更新。同一段网络输入重发不会再次开出一刀。
             if (request.RaidId != context.RaidId || request.Epoch != context.Epoch ||
                 !Newer(request.RequestId, actor.LastRequest))
                 return;
@@ -281,6 +288,7 @@ namespace Unity.MP_FPS {
                 Publish(player, actor);
                 return;
             }
+            // 切换必须在服务器背包核对槽位和物品 ID。拳击或卸下已有武器也要过同一个装备状态。
             if (request.Action == MeleeAction.Equip) {
                 bool selected = request.EquipmentSlot == MeleeInventory.EquipmentIndex
                     ? (MeleeInventory.Equipped(context.Graph)?.Id ?? "") == request.ItemId.ToString() && Select(player)
@@ -305,6 +313,7 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
+            // 每个服务器 tick 只处理一次近战进度。重复调度或回看时间不能多算一帧命中。
             if (!Tick(out uint tick) || (m_HasAdvancedTick && tick == m_LastAdvancedTick)) return;
             m_LastAdvancedTick = tick;
             m_HasAdvancedTick = true;
@@ -326,6 +335,7 @@ namespace Unity.MP_FPS {
                     ? a.Connection.Index.CompareTo(b.Connection.Index)
                     : unchecked((int)(a.Value.RequestId - b.Value.RequestId)));
             foreach (var request in m_Requests) Handle(request);
+            // 检测命中前先让碰撞体位置跟当帧角色的实际姿态一致，别对上一帧位置做测试。
             UnityEngine.Physics.SyncTransforms();
             m_Removed.Clear();
             foreach (var pair in m_Actors) {
@@ -335,6 +345,7 @@ namespace Unity.MP_FPS {
                     m_Removed.Add(pair.Key);
                     continue;
                 }
+                // 处理每段挥砍前确认角色还活着、仍拿原武器且没有被打断。脱离上下文时清掉动作。
                 if (!context.CanAct || context.Pending || actor.Epoch != context.Epoch ||
                     (actor.State.Phase != MeleePhase.Idle && (context.Item != actor.ItemId ||
                                                               context.Health.LastHitTick != actor.DamageTick ||
@@ -362,10 +373,11 @@ namespace Unity.MP_FPS {
         private void Sweep(in Context context, Actor actor, in MeleeActiveWindow window, uint tick) {
             if (!MeleeRules.TryDefinition(actor.State.AttackWeapon, out var definition)) return;
             var eye = Eye(context);
+            // 攻击起点本身被掩体挡住就停止，不让挥砍从墙里穿出来。
             if (context.Scene.OverlapSphere(eye, definition.SweepRadius, m_CoverOverlaps, CoverMask,
                     QueryTriggerInteraction.Ignore) > 0)
                 return;
-            // Facing may follow the player's current look only within the original committed arc.
+            // 挥砍方向只允许在起手时定下的角度范围内跟随当前视角。
             var look = Quaternion.Euler(context.Health.ControllerState.PitchDegrees,
                 context.Health.ControllerState.YawDegrees, 0);
             var facing = Quaternion.RotateTowards(actor.Facing, look, MeleeRules.MaximumTurnDegrees);
@@ -387,7 +399,8 @@ namespace Unity.MP_FPS {
                 int count;
                 while ((count = context.Scene.OverlapCapsule(eye, end, definition.SweepRadius, m_Overlaps, VictimMask,
                            QueryTriggerInteraction.Ignore)) == m_Overlaps.Length) {
-                    if (m_Overlaps.Length >= 4096) return; // Saturated unordered results never grant a partial hit set.
+                    // 命中结果缓冲满时先扩容重新查。达到上限则放弃当前段，不能根据截断的任意碰撞结果偏判。
+                    if (m_Overlaps.Length >= 4096) return; // 无序查询填满缓冲时，不能拿截断的结果只判命中其中一部分人。
                     Array.Resize(ref m_Overlaps, m_Overlaps.Length * 2);
                 }
                 m_Contacts.Clear();

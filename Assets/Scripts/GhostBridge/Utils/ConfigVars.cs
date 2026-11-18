@@ -16,6 +16,7 @@ public class ConfigVarAttribute : Attribute {
 }
 
 public class ConfigVar {
+    // 通过名字集中查参数，调试配置和业务可以读同一个对象。DirtyFlags 能标记有哪些类别的值变化过。
     public static Dictionary<string, ConfigVar> ConfigVars;
     public static Flags DirtyFlags = Flags.None;
     private static bool s_Initialized = false;
@@ -58,7 +59,7 @@ public class ConfigVar {
         }
         foreach (var v in ConfigVars)
             if ((v.Value.flags & Flags.FeatureToggle) != 0)
-                // surpress initial change check
+                // 初始化时先记录基线，避免把初始值算成改动。
                 v.Value.changed = false;
     }
 
@@ -127,13 +128,13 @@ public class ConfigVar {
 
     [Flags]
     public enum Flags {
-        None = 0x0, // None
-        Save = 0x1, // Causes the cvar to be save to settings.cfg
-        Cheat = 0x2, // Consider this a cheat var. Can only be set if cheats enabled
-        ServerInfo = 0x4, // These vars are sent to clients when connecting and when changed
-        ClientInfo = 0x8, // These vars are sent to server when connecting and when changed
-        User = 0x10, // User created variable
-        FeatureToggle = 0x20 // Feature toggle
+        None = 0x0, // 无额外标记。
+        Save = 0x1, // 这个配置值会写入 settings.cfg。
+        Cheat = 0x2, // 需要启用调试作弊开关时才可修改。
+        ServerInfo = 0x4, // 连接建立或值变化时同步到客户端。
+        ClientInfo = 0x8, // 连接建立或值变化时同步到服务端。
+        User = 0x10, // 由用户新建的变量。
+        FeatureToggle = 0x20 // 功能开关。
     }
 
     public ConfigVar(string name, string description, string defaultValue, Flags flags = Flags.None) {
@@ -169,6 +170,7 @@ public class ConfigVar {
 
     public float FloatValue => _floatValue;
 
+    // 扫描游戏程序集里标过特性的静态字段。名字、默认值和用途由标记提供，注册后把创建好的对象填回该字段。
     private static void InjectAttributeConfigVars() {
         var classes = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Assembly-CSharp"))
             .SelectMany(a => a.GetTypes());
@@ -181,6 +183,7 @@ public class ConfigVar {
                 if (!field.IsDefined(typeof(ConfigVarAttribute), false) &&
                     !field.IsDefined(typeof(FeatureToggleAttribute), false))
                     continue;
+                // 扫描器给全局字段注入共享值，因此要求字段本身是静态的。类型也必须和参数或特性开关一致。
                 if (!field.IsStatic) {
                     Debug.LogError("Cannot use ConfigVar attribute on non-static fields");
                     continue;
@@ -210,7 +213,7 @@ public class ConfigVar {
                     }
                 }
 
-                // is it a feature toggle?
+                // 检查这个字段是否声明了功能开关。
                 object[] featureAttrs = field.GetCustomAttributes(typeof(FeatureToggleAttribute), false);
                 if (featureAttrs.Length > 0) {
                     var featureAttr = featureAttrs[0] as FeatureToggleAttribute;
@@ -225,8 +228,9 @@ public class ConfigVar {
                             continue;
                         }
 
-                        // does it exist already?
+                        // 先查同名开关是否已经注册。
                         string featureName = $"feature.{name}";
+                        // 名字相同的功能开关可以已经由其他入口注册。复用同名对象，避免配置窗口和玩法各拿一份状态。
                         var existingFeature = FindFeatureToggle(featureName);
                         if (existingFeature != null) {
                             existingFeature.SetEnabled(featureAttr.Default);
@@ -242,12 +246,13 @@ public class ConfigVar {
             }
         }
 
-        // Clear dirty flags as default values shouldn't count as dirtying
+        // 默认值只作为起点，初始化完清掉改动标记。
         DirtyFlags = Flags.None;
     }
 
     private void ResetToDefault() { Value = defaultValue; }
 
+    // 由调用者在需要的时候查值是否变过。混音系统可以只在音量参数改变时改一次混音器。
     public bool ChangeCheck() {
         if (!changed) return false;
         changed = false;
@@ -287,7 +292,7 @@ public class FeatureToggle : ConfigVar {
     public void SetValue(string value) {
         _stringValue = value;
 
-        // for a feature toggle we also want to try and set the float value too
+        // 解析功能开关时也尝试更新浮点形式的值。
         if (!float.TryParse(value, System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.InvariantCulture, out _floatValue))
             _floatValue = 0f;
@@ -306,7 +311,7 @@ public class FeatureToggle : ConfigVar {
                 feature = feature.Substring(1);
             }
 
-            // look up feature, is it enabled?
+            // 查出功能开关，再看它当前是否启用。
             string featureName = $"feature.{feature}";
             var toggle = FindFeatureToggle(featureName);
             if (toggle != null) { return invert ? !toggle.IsEnabled : toggle.IsEnabled; } else {
@@ -319,8 +324,8 @@ public class FeatureToggle : ConfigVar {
 }
 
 /*
-// Slower variant of ConfigVar that is backed by code. Useful for wrapping Unity API's
-// into ConfigVars but beware that performance is not the same as a normal ConfigVar.
+// 这是由代码提供读写操作的 ConfigVar 版本，可用于包装 Unity API。
+// 它比普通配置变量多一层调用开销。
 
 public class ConfigVarVirtual : ConfigVar
 {
@@ -339,8 +344,8 @@ public class ConfigVarVirtual : ConfigVar
         set { m_Setter(value); }
     }
 
-    // These methods are made 'new' to avoid the base class having to
-    // make IntValue and FloatValue virtual
+    // 这里用 new 隐藏基类的方法，所以
+    // 基类的 IntValue 和 FloatValue 可以保留普通属性。
     public new int IntValue
     {
         get { int res; int.TryParse(Value, out res); return res; }

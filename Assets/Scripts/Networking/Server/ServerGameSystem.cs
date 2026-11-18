@@ -14,12 +14,12 @@ using Collider = UnityEngine.Collider;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// Processes client join requests and spawns a character for each client.
+    /// 处理客户端入场请求，并为通过入场的客户端创建角色。
     /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
     [UpdateAfter(typeof(ServerGhostTransformWriteSystem))]
-    //[UpdateInGroup(typeof(SimulationSystemGroup))]  //Default, no explicit declaration is needed;
+    //[UpdateInGroup(typeof(SimulationSystemGroup))]  //默认就在该更新组中，可省略显式声明。
     [BurstCompile]
     public partial struct ServerGameSystem : ISystem {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -29,6 +29,7 @@ namespace Unity.MP_FPS {
         private ComponentLookup<JoinedClient> _joinedClientLookup;
 
         public void OnCreate(ref SystemState state) {
+            // 地图预制体、物理世界和网络驱动都准备后才开始跑对局。没有这些数据时不能替客户端生成角色。
             state.RequireForUpdate<PlayerEntityPrefabs>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<NetworkStreamDriver>();
@@ -37,9 +38,11 @@ namespace Unity.MP_FPS {
             state.EntityManager.AddComponentData(randomEntity, new FixedRandom {
                 Random = Random.CreateFromIndex((uint)DateTime.Now.Millisecond)
             });
+            // 用 NetCode 的整数 NetworkId 直接索引连接。第零格留给服务器，后面每个来宾在连上时扩表。
             var mapSingleton = state.EntityManager.CreateSingletonBuffer<ClientsMap>();
-            state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //The server NetworkId is 0
+            state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //服务器的 NetworkId 为 0。
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
+            // 本局共用的箱子、任务、在线列表和机器人注册表留在服务端自己的 World 里。不同 World 不会共享一份对局记录。
             var lootEntity = state.EntityManager.CreateSingleton(new RaidLootWorld());
             state.EntityManager.AddComponentObject(lootEntity, new RaidLootContainers());
             state.EntityManager.AddComponentObject(lootEntity, new RaidMissionWorld());
@@ -52,10 +55,11 @@ namespace Unity.MP_FPS {
         [BurstDiscard]
         public void OnUpdate(ref SystemState state) {
             // 先为本 World 选好档案通道。添加这份 ECS 数据会改变实体结构，所以要做完再拿本帧用的组件查询和缓冲。
-            // Initialize before borrowing buffers/lookups: adding the managed context
-            // is a structural change, and the World now has its session-mode marker.
+            // 取得缓冲区或组件查询前先初始化档案。加上托管上下文会改变实体结构，
+            // 而此时 World 所用的玩法标记已经设好。
             var persistence = Persistence(ref state);
             _joinedClientLookup.Update(ref state);
+            // 每帧查询角色和 RPC 时，把增删 ECS 实体的操作记进命令缓冲，之后统一回放，避免遍历时改变实体结构。
             var ecb = SystemAPI.GetSingletonRW<BeginSimulationEntityCommandBufferSystem.Singleton>().ValueRW
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
@@ -70,6 +74,7 @@ namespace Unity.MP_FPS {
                 HandleArena(ref state, ecb);
                 return;
             }
+            // 先接收存档任务的回执并检查断线保留期限，再读本帧的新入场请求。真正可用的出战数据这时才进入匹配。
             PollPersistence(ref state, ecb);
             PollRetainedRaids(ref state, ecb);
             _joinedClientLookup.Update(ref state);
@@ -77,6 +82,7 @@ namespace Unity.MP_FPS {
             state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>())
                 .BackendCompatible = persistence.MissionsSupported;
             if (MoonRaidMap.Active != null) EnsureRaidInventories(ref state);
+            // 角色活着时先扣本帧生存资源、处理战术物品，然后处理死亡和撤出。死亡已经发生的人不会又同时走撤离成功。
             UpdateSurvival(ref state);
             UpdateTacticalItems(ref state, ecb);
             HandleBountyClash(ref state, ecb);
@@ -89,8 +95,9 @@ namespace Unity.MP_FPS {
             EntityCommandBuffer ecb,
             DynamicBuffer<ClientsMap> clientsMap,
             NativeArray<NetCodeConnectionEvent>.ReadOnly connectionEventsForTick) {
-            //Maintain the clients map size
+            //维护客户端索引表容量。
             foreach (var evt in connectionEventsForTick) {
+                // 首次上报连接时把编号和连接实体塞进映射。玩家角色还要等入场流程，映射里的角色位置可以暂时是空的。
                 if (evt.State == ConnectionState.State.Connected) {
                     int lengthNeeded = evt.Id.Value + 1;
                     if (clientsMap.Length < lengthNeeded)
@@ -100,7 +107,7 @@ namespace Unity.MP_FPS {
                 if (evt.State == ConnectionState.State.Disconnected) {
                     int networkId = evt.Id.Value;
                     if (ClashEnabled(ref state)) {
-                        // The receive-phase hook already retained the body before NetCode cleanup.
+                        // 接收阶段的断线钩子已在 NetCode 清理前接管了原角色。
                         DetachClashConnection(ref state, ecb, evt.ConnectionEntity, networkId);
                         clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
                         if (networkId < clientsMap.Length &&
@@ -110,12 +117,13 @@ namespace Unity.MP_FPS {
                         continue;
                     }
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
-                    // Normally handled by RaidDisconnectSystem before NetCode
-                    // removes RaidSession and the linked character. Keep this
-                    // fallback idempotent for connections that still exist.
+                    // 一般由 RaidDisconnectSystem 在 NetCode 清理之前处理，
+                    // 赶在删除 RaidSession 和关联角色之前。这个补救入口也要保证
+                    // 尚未移除的连接重复经过此处时不会再次结算。
+                    // 普通远征的提前断线钩子通常已经接管。如果旧连接还留有进行中出战，从这里补结算，状态检查会挡住重复执行。
                     SettleDisconnectedRaid(ref state, evt.ConnectionEntity);
 
-                    // Find and destroy the player character entity by querying for its GhostOwner.
+                    // 查询 GhostOwner 找到并删除该客户端的角色实体。
                     foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>()
                                  .WithAll<PredictedPlayerGhost>().WithEntityAccess())
                         if (ghostOwner.ValueRO.NetworkId == networkId) {
@@ -125,7 +133,8 @@ namespace Unity.MP_FPS {
                             break;
                         }
 
-                    // Find and destroy the clientInputEntity by querying for its PlayerCommandTarget.
+                    // 查询 PlayerCommandTarget 找到并删除该客户端的 clientInputEntity。
+                    // 旧输入实体也要回收。它和玩家角色是两个 Ghost，只有删除模型还会留下无人控制的命令目标。
                     foreach (var (commandTarget, entity) in SystemAPI.Query<RefRO<PlayerCommandTarget>>()
                                  .WithEntityAccess())
                         if (commandTarget.ValueRO.NetworkId == networkId) {
@@ -139,7 +148,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Entities created via ECB have temporary Entity IDs. Need to refresh this index lookup. So patch them.
+            // 通过 ECB 新建时先得到临时实体 ID，回放后需要把最终实体引用补回索引表。
             // 通过命令缓冲排队新建实体时，先拿到的是临时编号。回放之后再把能长期使用的实体引用补回 NetworkId 索引。
             for (int i = clientsMap.Length - 1; i >= 0; --i) {
                 ref var map = ref clientsMap.ElementAt(i);
@@ -170,7 +179,7 @@ namespace Unity.MP_FPS {
         [BurstDiscard]
         private void AddDeathToLeaderboard(int networkId) { LeaderboardManager.Instance.AddDeath(networkId); }
 
-        // Add near the top of the struct/class:
+        // 可以放在结构或类的开头附近。
         [BurstDiscard]
         private void AddPlayerToLeaderboard(int networkId, FixedString64Bytes playerName) {
             LeaderboardManager.AddPlayer(networkId, playerName);
@@ -190,6 +199,7 @@ namespace Unity.MP_FPS {
             ArenaMatch.Player arenaPlayer = null,
             LocalTransform? matchSpawn = null) {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
+            // 客户端选择的角色编号不一定合法，先规整并确认对应实体预制体存在。个别角色缺资源可退回默认角色。
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (playerEntityPrefabs.DollSingerEntityPrefab == Entity.Null)
                 throw new InvalidOperationException("Moonkov requires a registered DollSinger player prefab.");
@@ -204,7 +214,7 @@ namespace Unity.MP_FPS {
             }
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
 
-            // Instantiate the client input entity
+            // 创建客户端输入实体。
             // 一条连接同时关联两类实体。命令实体负责接玩家输入，角色实体负责移动和生命值。给两边标上同一个 NetworkId 才能配对。
             var clientInputEntity = ecb.Instantiate(playerEntityPrefabs.ClientInputEntityPrefab);
             ecb.SetComponent(clientInputEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
@@ -212,8 +222,10 @@ namespace Unity.MP_FPS {
             ecb.AddBuffer<ClientCommandInput>(clientInputEntity);
             ecb.SetComponent(clientInputEntity, new PlayerCommandTarget { NetworkId = ownerNetworkId.Value });
 
-            // Instantiate the player entity
+            // 创建玩家角色实体。
+            // 输入 Ghost 的所有者已绑定到连接，现在才实例化有动作和血量的玩家角色。两者靠组件里的实体引用衔接。
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
+            // 未使用正式远征地图时可能没有出战库存。此处按该连接已读到的档案提取随身装备，拿不到档案才从空图开始。
             if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity)) {
                 var context = Persistence(ref state);
                 var graph =
@@ -244,6 +256,7 @@ namespace Unity.MP_FPS {
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None,
                 PistolWeaponID = DollSingerWeapons.None
             };
+            // 出生时设置完整分部位血量与生存字段，在线小队和竞技场队伍信息再按服务器认证档案添进角色。
             RaidHealth.Initialize(ref playerState);
             playerState.OnlineHuman = !string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId);
             playerState.OnlineTeam = onlineProfile?.OnlineTeam ?? 0;
@@ -260,6 +273,7 @@ namespace Unity.MP_FPS {
             ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);
+            // 比赛玩法可以提前安排出生点。一般远征则查烘焙的 SpawnPoint，在线同队玩家进一步分配到相邻位置。
             if (matchSpawn.HasValue) { ecb.SetComponent(playerEntity, matchSpawn.Value); } else if
                 (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint)) {
                 var spawn = new LocalTransform
@@ -273,11 +287,12 @@ namespace Unity.MP_FPS {
             ecb.SetComponent(playerEntity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
             ecb.SetComponent(playerEntity, new PlayerGhost.PlayerData { Name = playerName });
 
-            // Update the clients map
+            // 更新客户端索引表。
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
             clientsMap.ElementAt(ownerNetworkId.Value).PlayerEntity = playerEntity;
+            // 第一次出生把角色、名字和模型编号记到连接上。下次复活还用原连接而换角色实体。
             if (!SystemAPI.HasComponent<JoinedClient>(connectionEntity)) {
-                // Update the connection's JoinedClient component with the new player entity
+                // 将连接上的 JoinedClient 改为新的角色实体。
                 ecb.AddComponent(connectionEntity, new JoinedClient {
                     PlayerEntity = playerEntity, PlayerName = playerName, CharacterIndex = characterIndex
                 });
@@ -286,6 +301,7 @@ namespace Unity.MP_FPS {
                     var persistence = Persistence(ref state);
                     if (arenaPlayer != null) {
                         raid = new RaidSession { RaidId = 1, Phase = RaidPhase.Active, ExtractionIndex = -1 };
+                    // 入场档案流程已准备好 RaidSession 时直接接过来。里面保留这次扣装的编号和初始计时，不能临时生成另一份。
                     } else if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared)) {
                         raid = prepared;
                         persistence.ReadyRaids.Remove(connectionEntity);
@@ -308,6 +324,7 @@ namespace Unity.MP_FPS {
                     persistence.ReadyRaids.Remove(connectionEntity);
                 }
             }
+            // 把角色挂到连接的关联组，随连接正常清理。断线保留要先主动从这组解除，不然旧连接会把原角色一并删掉。
             ecb.AppendToBuffer(connectionEntity, new LinkedEntityGroup { Value = playerEntity });
             if (!SystemAPI.HasComponent<NetworkStreamInGame>(connectionEntity))
                 ecb.AddComponent(connectionEntity, new NetworkStreamInGame());
@@ -316,10 +333,11 @@ namespace Unity.MP_FPS {
         private void HandlePlayerDeathAndRespawn(ref SystemState state, EntityCommandBuffer ecb) {
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
 
-            // --- Part 1: Detect Death and Destroy Player Entity ---
+            // 第一步，检测死亡并删除玩家角色。
             foreach (var (playerGhost, ghostOwner, entity) in SystemAPI
                          .Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>()
                          .WithNone<DollSingerEnemy, ProceduralAlienEnemy.State>().WithEntityAccess()) {
+                // 赏金等比赛玩法由各自状态机处理击倒与死亡。这里仅接管普通角色，远征玩家走死亡结算。
                 if (playerGhost.ValueRO.ClashEnabled) continue;
                 if (playerGhost.ValueRO.CurrentHealth <= 0) {
                     int networkId = ghostOwner.ValueRO.NetworkId;
@@ -330,7 +348,7 @@ namespace Unity.MP_FPS {
                         continue;
                     }
 
-                    // Add a respawn timer to the connection
+                    // 在连接上添加重生计时。
                     if (!SystemAPI.HasComponent<PendingRespawn>(connectionEntity)) {
                         Debug.Log(
                             $"[Server] Player {entity} has died. Starting respawn timer for connection {connectionEntity}.");
@@ -342,28 +360,29 @@ namespace Unity.MP_FPS {
                             ecb.DestroyEntity(inputLookup.ClientCommandInputEntity);
                     }
 
-                    // Destroy the player character entity
+                    // 删除玩家角色实体。
                     ecb.DestroyEntity(entity);
                 }
             }
 
-            // --- Part 2: Countdown Timers and Respawn Players ---
+            // 第二步，更新倒计时并重生玩家。
             foreach (var (pendingRespawn, connection, entity) in SystemAPI
                          .Query<RefRW<PendingRespawn>, RefRO<NetworkId>>().WithEntityAccess()) {
+                // 只有无 RaidSession 的普通死亡才在连接上排复活计时。倒计时结束，仍是已加入玩家时重新生成角色。
                 pendingRespawn.ValueRW.RespawnTimer -= SystemAPI.Time.DeltaTime;
                 if (pendingRespawn.ValueRO.RespawnTimer <= 0f) {
                     Debug.Log($"[Server] Respawning player for connection {entity}.");
                     if (_joinedClientLookup.HasComponent(entity)) {
                         var joinedClientData = _joinedClientLookup[entity];
 
-                        // Call the spawn function again
+                        // 再次调用出生函数。
                         SpawnPlayerCharacter(ref state, ecb, entity, joinedClientData.PlayerName,
                             joinedClientData.CharacterIndex);
 
-                        // Remove the timer component
+                        // 移除计时组件。
                         ecb.RemoveComponent<PendingRespawn>(entity);
                     } else {
-                        // This would indicate a problem, but we handle it safely.
+                        // 这个分支意味着状态异常，按无效重生任务清掉。
                         Debug.LogError($"Connection entity {entity} is pending respawn but has no JoinedClient data!");
                         ecb.RemoveComponent<PendingRespawn>(entity);
                     }
@@ -390,6 +409,7 @@ namespace Unity.MP_FPS {
                     continue;
                 }
                 bool clash = ClashEnabled(ref state);
+                // 客户端和服务端的玩法、规则版本不一致时明确发拒绝理由，再断开旧连接，免得进入错误地图。
                 if (request.ValueRO.Mode != (clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition) ||
                     request.ValueRO.RulesVersion != (clash ? BountyClashRules.Version : 0)) {
                     var reject = ecb.CreateEntity();
@@ -423,6 +443,7 @@ namespace Unity.MP_FPS {
                             new NetworkStreamRequestDisconnect
                                 { Reason = NetworkStreamDisconnectReason.ConnectionClose });
                     } else if (persistence.Enabled) {
+                        // 同伴人数只接受允许该功能的单人和好友房远征。先做人数上限校验，再把入场请求交给档案加载。
                         byte companions =
                             !clash && !SystemAPI.HasSingleton<TutorialRaidMode>() &&
                             (SystemAPI.HasSingleton<OfflineRaidMode>() || SystemAPI.HasSingleton<LanRaidMode>())
@@ -448,6 +469,7 @@ namespace Unity.MP_FPS {
             ref SystemState state,
             out LocalToWorld spawnPoint,
             System.Collections.Generic.HashSet<Mathematics.float3> reserved = null) {
+            // 出生点由场景烘焙成带位置的 ECS 标记。随机找候选后还要根据本帧预留和碰撞过滤，避免两个角色叠在一起。
             var spawnPointsQuery = SystemAPI.QueryBuilder().WithAll<SpawnPoint, LocalToWorld>().Build();
             var spawnPoints = spawnPointsQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp);
             ref var random = ref SystemAPI.GetSingletonRW<FixedRandom>().ValueRW;
@@ -474,8 +496,8 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Shuffle the list to ensure that if multiple points have the same low number
-            // of players, the choice among them is still random.
+            // 先打乱候选点列表。附近玩家同样少的点有多个时，
+            // 从这些点里随机选择。
             for (int i = spawnPoints.Length - 1; i > 0; i--) {
                 int k = random.Random.NextInt(0, i + 1);
                 (spawnPoints[k], spawnPoints[i]) = (spawnPoints[i], spawnPoints[k]);

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Unity.MP_FPS {
-    // Explicit per-world marker, captured on loading. Skipping prompts does not change encounter rules mid-raid.
+    // 加载时为每个 World 确定教学标记。跳过提示不会在对局中途改敌人规则。
     public struct TutorialRaidMode : IComponentData {
     }
 
@@ -23,11 +23,13 @@ namespace Unity.MP_FPS {
 
         public static void Observe(in PlayerInput input) { Aiming = input.Aim; }
 
+        // 教学开关走当前世界的 ECS 标记。普通对局能用同一套玩家和地图逻辑，只是不走教学提示。
         public static bool Enabled(EntityManager manager) {
             using var query = manager.CreateEntityQuery(typeof(TutorialRaidMode));
             return !query.IsEmptyIgnoreFilter;
         }
 
+        // 结合当前操作判断键鼠或手柄，切换时缓存手柄按钮的可读名字，提示能跟随设备。
         public static void UpdateDevice() {
             var pad = Gamepad.current;
             if (pad == null) UsingGamepad = false;
@@ -60,6 +62,7 @@ namespace Unity.MP_FPS {
                 : button?.displayName ?? fallback;
         }
 
+        // 供教学界面读已经按设备选好的操作提示。键盘改键后从现有键位中取显示文字。
         public static string HealthHint =>
             UsingGamepad
                 ? s_PadHealth

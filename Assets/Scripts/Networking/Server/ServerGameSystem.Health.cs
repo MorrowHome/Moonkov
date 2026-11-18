@@ -9,6 +9,7 @@ namespace Unity.MP_FPS {
         private double m_NextProtectionSnapshot;
 
         private void UpdateProtectionGear(ref SystemState state) {
+            // 每帧可以计算角色能量，库存重发的检查单独限频。换装备或耗氧改变了物品详情，才标记需发新快照。
             double now = SystemAPI.Time.ElapsedTime;
             bool send = now >= m_NextProtectionSnapshot;
             if (send) m_NextProtectionSnapshot = now + .5;
@@ -20,16 +21,17 @@ namespace Unity.MP_FPS {
                     continue;
                 var health = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                 var inventory = GetRaidInventory(ref state, entity);
+                // 只有本局仍在进行且角色在当前模式可行动时允许回充，免得结算或倒地时继续生成资源。
                 bool recover = session.ValueRO.Phase == RaidPhase.Active &&
                                (!health.ValueRO.ClashEnabled || health.ValueRO.ClashCanAct);
                 EnergyShieldEquipment.Tick(ref health.ValueRW, inventory.Graph, SystemAPI.Time.DeltaTime, recover);
-                // Halo energy already travels in the Ghost. Inventory only needs
-                // another snapshot when the collar's displayed oxygen changes.
+                // 光环能量已经随 Ghost 同步。库存只在
+                // 项圈显示的氧气发生变化时需要再发快照。
                 // 光环能量已经跟角色 Ghost 同步。这里只在项圈显示的氧气或装备身份有变化时让库存重发，避免把整包库存当作能量计时器。
                 if (send && inventory.ProtectionDisplayChanged) inventory.LastSentVersion = -1;
             }
-            // NPCs have no connection/RaidSession. Their halos share the player
-            // recovery rule; ordinary PMC life support is updated separately below.
+            // NPC 没有连接或 RaidSession。它们的光环沿用玩家的
+            // 回复规则，普通 PMC 的生命维持则由下方更新。
             foreach (var (health, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<DollSingerEnemy, Simulate>().WithEntityAccess()) {
                 if (!state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
@@ -43,9 +45,10 @@ namespace Unity.MP_FPS {
             if (ClashEnabled(ref state) || SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>()) return;
             var map = MoonRaidMap.Active;
             if (map == null) return;
+            // 供氧、饥渴和缺氧伤害按服务器当前 tick 推进。客户端只读同步数值，预测重放不会再次扣氧。
             uint tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick;
-            // Once per authoritative simulation update, outside prediction replay.
-            // Settled players do not consume oxygen.
+            // 每次权威模拟只执行一次，不跟随客户端预测重放。
+            // 玩家结算完成后停止耗氧。
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>()
                          .WithEntityAccess()) {
                 var player = joined.ValueRO.PlayerEntity;
@@ -60,11 +63,13 @@ namespace Unity.MP_FPS {
                 bool? moving = null;
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) {
                     inventory = GetRaidInventory(ref state, connection);
+                    // 拿真实位置变化和控制器速度一起判断移动。被墙卡住时速度字段可能还显示在走，这时氧气不用按跑动消耗。
                     bool actualMove = inventory.SurvivalMotion.Observe(position, SystemAPI.Time.DeltaTime);
                     moving = health.ValueRO.ControllerState.MovementSpeed > .1f && actualMove;
                 }
-                // Check torso rather than the feet to avoid treating a doorway's
-                // floor contact as breathable before the character has entered.
+                // 从身体位置采样气体。脚先跨过门槛不等于面罩已经进入有氧区。
+                // 在躯干处采样。只看脚的位置会在过门时
+                // 把地面接触误判成角色已经进入有氧处。
                 var samplePosition = position + Vector3.up;
                 BreathableZone.TrySample(samplePosition, out var atmosphere);
                 RaidOxygen.Tick(ref health.ValueRW, atmosphere, map.OxygenParameters, SystemAPI.Time.DeltaTime, tick,
@@ -76,6 +81,7 @@ namespace Unity.MP_FPS {
                     map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick, moving);
                 if (inventory != null) EnergyShieldEquipment.Flush(ref health.ValueRW, inventory.Graph);
             }
+            // 教学只走上面的玩家生存流程。普通远征中的敌人也会耗氧和补氧，教学这里跳过敌人的生存更新。
             if (SystemAPI.HasSingleton<TutorialRaidMode>()) return;
             var tactical = TacticalWorld(ref state);
             double now = SystemAPI.Time.ElapsedTime;
@@ -94,6 +100,7 @@ namespace Unity.MP_FPS {
                     BreathableZone.TrySample(samplePosition, out brain.CachedAtmosphere);
                     brain.CachedOxygenSupply =
                         OxygenRefillZone.SampleSupply(samplePosition, brain.CachedAtmosphere.Breathable);
+                    // 敌人仍按 tick 计算耗氧，但环境与供氧点约半秒采样一次，用上一结果填中间帧，减少查区域的次数。
                     brain.NextAtmosphereSample = now + .5;
                 }
                 var status = TacticalStatus(tactical, entity);
@@ -104,6 +111,7 @@ namespace Unity.MP_FPS {
                 RaidNutrition.Tick(ref health.ValueRW, dt, map.EnergyReserveSeconds, map.HydrationReserveSeconds,
                     map.DigestionSeconds, map.NutritionGraceSeconds, map.StarvationDamagePerSecond,
                     map.DehydrationDamagePerSecond, tick, health.ValueRO.ControllerState.MovementSpeed > .1f && moved);
+                // 将营养损伤前后状态交给 PMC 的状态记录。敌人当帧死亡时也立即把装备余量写回，供随后掉落使用。
                 PmcStatusDamage.Record(status, beforeNutrition, health.ValueRO);
                 if (!sample && health.ValueRO.CurrentHealth <= 0)
                     EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);

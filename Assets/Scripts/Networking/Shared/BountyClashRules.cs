@@ -85,6 +85,7 @@ namespace Unity.MP_FPS {
 
         public ClashPoint[] Spawns = Array.Empty<ClashPoint>(), Exits = Array.Empty<ClashPoint>();
 
+        // 先确保比赛区域有限、两个出口以及出生点都合理。上层只有在地图配置通过后才会让人报名。
         public string Validate() {
             if (!Center.Finite || !Target.Finite || Radius < 20 || Radius > 1500 || !float.IsFinite(Radius) ||
                 Spawns == null || Spawns.Length != 12 || Exits == null || Exits.Length != 2 || ExitRadius < 2 ||
@@ -226,6 +227,7 @@ namespace Unity.MP_FPS {
             return account != null && m_Accounts.TryGetValue(account, out int id) ? Players[id] : null;
         }
 
+        // 同一账号只能认回自己的参赛者。是否还在准备阶段和有无空位决定能否为新玩家分席。
         public ClashParticipant Join(string account, string name, double now) {
             if (!TimeValid(now) || now < m_LastTime || string.IsNullOrWhiteSpace(account)) return null;
             var old = Account(account);
@@ -247,7 +249,7 @@ namespace Unity.MP_FPS {
             return p;
         }
 
-        // Bots have no account identity and can never reconnect through the human account table.
+        // 机器人没有账号身份，不能通过真人账号映射重连。
         public ClashParticipant JoinBot(string name) {
             if (!IsSolo || !Lobby() || Players.Count >= BountyClashRules.MaxPlayers) return null;
             var p = new ClashParticipant(m_NextPlayer++, null, name, true);
@@ -256,6 +258,7 @@ namespace Unity.MP_FPS {
             return p;
         }
 
+        // 验比赛号、轮次和递增请求号。客户端重新点击与 RPC 重发不能在另一轮修改队伍。
         public bool Request(ClashParticipant p, uint request, int epoch, string match) {
             if (p == null || !p.Connected || epoch != Epoch || match != MatchId || request == 0 ||
                 request <= p.LastRequest)
@@ -265,6 +268,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 建队、加队、离队都属于准备阶段。成员变化后重置准备，必须按新队伍重新确认。
         public ClashResult CreateTeam(ClashParticipant p, int size) {
             if (!Lobby()) return ClashResult.WrongPhase;
             if (size < 1 || size > 3) return ClashResult.Invalid;
@@ -319,6 +323,7 @@ namespace Unity.MP_FPS {
             return ClashResult.Ok;
         }
 
+        // 两队且每位成员已连上并准备后启动开赛计时。有人取消或断开，要等全员再次具备条件。
         public ClashResult Ready(ClashParticipant p, bool ready, double now) {
             if (!Lobby() || p.TeamId < 0) return ClashResult.WrongPhase;
             p.Ready = ready;
@@ -348,6 +353,7 @@ namespace Unity.MP_FPS {
                    Players.Values.All(p => p.TeamId >= 0 && p.Ready && p.Connected);
         }
 
+        // 断线先撤当前操作和准备，再按阶段保留重连窗口。活动角色不立即抹掉库存。
         public void Disconnect(ClashParticipant p, double now) {
             p.Connected = false;
             p.SenseLease = p.ViewLease = 0;
@@ -375,6 +381,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 能接近现场目标的存活角色启动驱逐计时。结束才生成可携带赏金。
         public ClashResult Banish(ClashParticipant p, bool accessible, double now) {
             if (!Active(p) || Bounty != ClashBountyState.Unbanished) return ClashResult.WrongPhase;
             if (!accessible) return ClashResult.Blocked;
@@ -389,6 +396,7 @@ namespace Unity.MP_FPS {
             return ClashResult.Ok;
         }
 
+        // 只有场上确实已掉出的赏金能被拾取。先绑定具体携带者，其他人随后不再拿到同一份。
         public ClashResult Pickup(ClashParticipant p, bool accessible) {
             if (!Active(p) || Bounty != ClashBountyState.Ground) return ClashResult.WrongPhase;
             if (!accessible) return ClashResult.Blocked;
@@ -400,6 +408,7 @@ namespace Unity.MP_FPS {
 
         public void Sense(ClashParticipant p, bool held, double now) { Sense(p, held ? 3 : 0, now); }
 
+        // 查看与加强各有短时租约。携带者的加强有效才随实际经过时间消耗额度。
         public void Sense(ClashParticipant p, int flags, double now) {
             p.ViewLease = Active(p) && (flags & 1) != 0 ? now + .6 : 0;
             p.SenseLease = p.ViewLease > now && p.Id == CarrierId && (flags & 2) != 0 && p.SenseRemaining > 0
@@ -407,6 +416,7 @@ namespace Unity.MP_FPS {
                 : 0;
         }
 
+        // 活角色才能救同队倒地者。开始时同时记两人的受伤序号，期间被打或不续租都中断。
         public ClashResult BeginRevive(ClashParticipant p, int target, bool accessible, double now) {
             if (!Active(p) || !Players.TryGetValue(target, out var victim) || victim.TeamId != p.TeamId ||
                 victim.Life != ClashLife.Downed)
@@ -443,6 +453,7 @@ namespace Unity.MP_FPS {
             return Phase == ClashPhase.Active && p != null && p.Life == ClashLife.Alive;
         }
 
+        // 归零可能进入倒地而不是立即离场，倒地次数还影响下一次起身可有的最大生命。
         public void Down(ClashParticipant p, int attacker) {
             if (!Active(p)) return;
             p.Downs++;
@@ -461,8 +472,8 @@ namespace Unity.MP_FPS {
             Revision++;
         }
 
-        // A local solo user may leave a completed personal raid after its receipt saves.
-        // Remaining bots time out without awarding or dropping another kit.
+        // 本机单人玩家的结算成功保存后，可以退出本人已结束的行动。
+        // 剩下的机器人按超时结束，不发额外奖励或再掉一套装备。
         public bool EndSoloRound() {
             if (!IsSolo || !Players.Values.Any(p => !p.IsBot) || Players.Values.Any(p => !p.IsBot && !p.IsFinished))
                 return false;
@@ -501,6 +512,7 @@ namespace Unity.MP_FPS {
         }
 
         public void Tick(double now) {
+            // 规则只接受向前走的服务端时刻。实际经过的 dt 用来推进所有计时器，而不是按客户端 FPS。
             if (!TimeValid(now) || now < m_LastTime) return;
             double dt = now - m_LastTime;
             m_LastTime = now;
@@ -511,6 +523,7 @@ namespace Unity.MP_FPS {
                         Players.Remove(p.Id);
                         if (!p.IsBot) m_Accounts.Remove(p.Account);
                     }
+            // 准备倒计时到点确认所有人仍在队且准备，再给真人分配出战编号。之后的扣装按这一批固定名单执行。
             if (Phase == ClashPhase.Preparing) {
                 if (!AllReady()) {
                     Phase = ClashPhase.Lobby;
@@ -527,6 +540,7 @@ namespace Unity.MP_FPS {
                     Revision++;
                 }
             }
+            // 部署超过时间或有人掉线过期，整场取消。其他成员不应该带着新扣的装备无限等待。
             if (Phase == ClashPhase.Deploying && (now >= DeploymentDeadline ||
                                                   Players.Values.Any(p =>
                                                       !p.Connected && now >= p.DisconnectDeadline))) {
@@ -536,6 +550,7 @@ namespace Unity.MP_FPS {
                 Revision++;
                 return;
             }
+            // 所有人真正完成生成才启动全局比赛时钟。进入对局的人有同一个开始时间。
             if (Phase == ClashPhase.Deploying && Players.Values.All(p => p.Deployed)) {
                 Phase = ClashPhase.Active;
                 Deadline = now + 900;
@@ -557,6 +572,7 @@ namespace Unity.MP_FPS {
                     Kill(p);
                     continue;
                 }
+                // 区域边界按平面范围算。短时间出界还有缓冲，回到区内就清这次出界计时。
                 bool outside = ClashPoint.HorizontalSquared(p.Position, Arena.Center) >
                                Arena.Radius * (double)Arena.Radius;
                 if (!outside) { p.OutsideSince = -1; } else if (p.OutsideSince < 0) { p.OutsideSince = now; } else if
@@ -574,6 +590,7 @@ namespace Unity.MP_FPS {
                 BountyPosition = Arena.Target;
                 Revision++;
             }
+            // 逐个检查复苏期是否仍有效。到点成功才让目标重新成为活角色，再由外层同步实际血量。
             foreach (var pair in m_Revives.ToArray()) {
                 var r = pair.Value;
                 var a = Players[r.Actor];
@@ -592,6 +609,7 @@ namespace Unity.MP_FPS {
             }
             foreach (var team in Teams.Values) {
                 var members = team.Members.Select(id => Players[id]).ToArray();
+                // 一队已没有能救人的成员时，倒地者也转为失败，不让整个对局永远等他们。
                 if (!members.Any(p => p.Life == ClashLife.Alive))
                     foreach (var p in members)
                         if (p.Life == ClashLife.Downed)
@@ -608,6 +626,7 @@ namespace Unity.MP_FPS {
                         p.Life == ClashLife.Alive && ClashPoint.DistanceSquared(p.Position, point) <=
                         Arena.ExitRadius * (double)Arena.ExitRadius).ToArray();
                     bool wasBlocked = m_ExitBlocked[team.Id, exit] != ClashExitBlock.None;
+                    // 有敌人或队友倒在附近会暂停撤离，完全走离开重置计时。持续无阻才开始累计这段成功条件。
                     m_ExitBlocked[team.Id, exit] = enemy ? ClashExitBlock.Enemy :
                         downed ? ClashExitBlock.DownedTeammate : ClashExitBlock.None;
                     if (escaping.Length == 0) {
@@ -620,6 +639,7 @@ namespace Unity.MP_FPS {
                     else if (!enemy && !downed && !wasBlocked) m_ExitElapsed[team.Id, exit] += dt;
                     if (enemy || downed || m_ExitElapsed[team.Id, exit] < 30) continue;
                     var carrier = escaping.FirstOrDefault(p => p.Id == CarrierId);
+                    // 这批撤离的人包含赏金携带者时才建立唯一奖励事件。部署编号就是后续发放给哪几份档案的依据。
                     if (carrier != null) {
                         Award = new ClashExtraction(MatchId, TokenId, carrier.DeploymentId,
                             escaping.Where(p => !p.IsBot).Select(p => p.DeploymentId).ToArray(), carrier.Id);

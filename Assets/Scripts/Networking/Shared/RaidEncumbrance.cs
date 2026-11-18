@@ -3,17 +3,19 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Weight is server-derived from the actual carried inventory. The same value
-    // is replicated for owner prediction; storage and open loot are excluded.
+    // 服务器从实际随身背包算重量。同一个数值也同步给
+    // 本机预测，仓库和当前打开的地上物不计入负重。
     public static class RaidEncumbrance {
         public const float ComfortableWeight = 18;
 
+        // 先把重量归一化为负担比例，所有速度和耐力倍率都读同一份比例，极端数值不继续无限增长。
         public static float Burden(float weight) {
             if (!float.IsFinite(weight)) return 0;
             return Mathf.Clamp01((weight - ComfortableWeight) /
                                  (InventoryCatalog.CarryWeightLimit - ComfortableWeight));
         }
 
+        // 远征中调整控制器的移动参数，临时竞技等模式可保留默认移动。玩家仍经过同一碰撞解算。
         public static FirstPersonController.ControllerConsts Movement(
             in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants) {
@@ -25,6 +27,7 @@ namespace Unity.MP_FPS {
             return constants;
         }
 
+        // 负重增加时耐力更快消耗、恢复更慢。它与缺氧或受伤的限制分开，最后共同影响角色。
         public static float SprintDrain(float weight) { return 1 + .75f * Burden(weight); }
         public static float SprintRecovery(float weight) { return 1 - .35f * Burden(weight); }
     }

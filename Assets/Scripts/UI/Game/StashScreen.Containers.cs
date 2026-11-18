@@ -21,6 +21,7 @@ namespace Unity.MP_FPS.Client {
 
         private void InitializeContainers() {
             var body = m_Root.Q<VisualElement>(className: "stash-body");
+            // 仓库模板自带一个汇总式旧界面。初始化正式容器页时隐藏旧节点，真实操作都从新的格子控件进来。
             foreach (var child in body.Children()) child.style.display = DisplayStyle.None;
             m_Containers = new ContainerInventoryView(body, true, SendContainerCommand);
             m_InventoryRetry = new Button(RetryInventory) { name = "stashInventoryRetry" };
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS.Client {
                 MoonkovLocalization.Bind(claim);
                 return row;
             };
+            // 虚拟列表会反复使用同一行来画不同物品。重绑时更新行里的物品 ID，按钮点击后才会取正在显示的那一件。
             m_RecoveryList.bindItem = (row, index) => {
                 var item = m_RecoveryRoots[index];
                 row.userData = item.Id;
@@ -84,6 +86,7 @@ namespace Unity.MP_FPS.Client {
             m_Terminal.HaloWorkshopShowing += ShowHaloWorkshop;
             m_Containers.WorkshopRequested += OpenHaloWorkshopForItem;
             m_Containers.WorkshopSupplyRequested += OpenWorkshopSupply;
+            // 正式仓库靠库存变动通知刷新。预览模式有隔离的样例物品树，只改自己的副本。
             if (m_Preview) {
                 m_PreviewInventory = InventoryGraph.Create();
                 m_PreviewInventory.AddSupply("dust", 128, "stash");
@@ -129,9 +132,11 @@ namespace Unity.MP_FPS.Client {
             if (m_Containers == null) return;
             m_Terminal.PresentEquipment(m_Preview ? m_PreviewInventory : PlayerProfileClient.MenuInventory);
             PresentRecovery(m_Preview ? null : PlayerProfileClient.Recovery, PlayerProfileClient.RaidActive);
+            // 已有出战仍在进行时，中央库存只能看。避免在菜单一起改动出战时已经拿走的装备。
             m_Containers.SetReadOnly(!m_Preview && PlayerProfileClient.RaidActive
                 ? AccountClient.InventoryFailureMessage("raid_active")
                 : null);
+            // 普通快照刷新只改变画面。实际结束一次拖放的是发送回调里的本地确认或后续回执。
             m_Containers.Present(m_Preview ? m_PreviewInventory : PlayerProfileClient.MenuInventory,
                 m_Preview ? "LOCAL PREVIEW / SAMPLE ITEMS" :
                 PlayerProfileClient.MenuInventory == null ? "Loading account inventory…" : InventorySyncMessage(),
@@ -152,6 +157,7 @@ namespace Unity.MP_FPS.Client {
                 m_RecoveryList.itemsSource = m_RecoveryRoots;
                 m_RecoveryList.Rebuild();
             }
+            // 领取暂存物资前要等仓库命令队列清空，否则界面上看到的空位可能还没被确认。
             m_RecoveryPanel.SetEnabled(!m_RecoveryBusy && !raidActive && PlayerProfileClient.MenuInventoryPending == 0);
         }
 
@@ -174,9 +180,10 @@ namespace Unity.MP_FPS.Client {
             try {
                 // 菜单可以先显示排队操作的本地结果，让拖放立即有反馈。网络回执后来校正库存，期间可看待同步状态。
                 var confirmation = PlayerProfileClient.QueueMenuMoveAsync(command);
-                // Acknowledge the local gesture now; later receipts only reconcile state.
+                // 先让本地操作获得反馈。后续回执只校正实际状态。
                 m_Containers.Present(PlayerProfileClient.MenuInventory);
                 PresentContainers();
+                // 等待期间显示排队后的库存。回执到达后再刷新一次，把服务器确认或撤销的结果画出来。
                 await confirmation;
                 if (!m_ContainerStop.IsCancellationRequested) PresentContainers();
             } catch (OperationCanceledException) {
@@ -231,6 +238,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void DisposeContainers() {
+            // 离开仓库时取消与该视图绑定的操作，并解除全局库存事件和终端事件。旧回执不会再去操作销毁的视图。
             m_ContainerStop.Cancel();
             m_ContainerStop.Dispose();
             PlayerProfileClient.InventoryChanged -= PresentContainers;

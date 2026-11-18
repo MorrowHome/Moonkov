@@ -3,14 +3,16 @@ using Unity.MP_FPS;
 using UnityEngine;
 
 /// <summary>
-/// Owns the shared input actions used by scene components.
+/// 保存场景组件共同使用的输入动作。
 /// </summary>
 public static class GameInput {
-    // Recreate the actions each session so scene components can subscribe in OnEnable.
+    // 每次会话重新创建输入动作，场景组件可在 OnEnable 里订阅。
+    // 场景脚本进入 OnEnable 时就可能订阅操作，所以先在场景启动前构造 Actions 实例。
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void RuntimeInitializeOnLoad() { Actions = new InputSystem_Actions(); }
 
-    // Input System resets action state at BeforeSceneLoad in Player builds.
+    // Player 构建中的 Input System 会在 BeforeSceneLoad 重置动作状态。
+    // Player 读第一个场景前 Input System 会重新设置动作启用状态，因此在场景读完后统一启用这份共享映射。
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void EnableActions() { Actions.Enable(); }
 

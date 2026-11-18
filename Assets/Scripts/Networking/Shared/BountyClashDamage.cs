@@ -13,16 +13,16 @@ namespace Unity.MP_FPS {
         Melee
     }
 
-    // Server-only attribution captured when an attack is released. NetworkIds
-    // can be reused; participant+epoch identify the original combatant.
+    // 攻击离手时保存服务端使用的伤害归属。NetworkId 可被复用，
+    // 参赛者编号和轮次共同识别最初的施放者。
     public struct ClashDamageSource {
         public int NetworkId, ParticipantId, Epoch, TeamId;
         public bool HasMatchTeam;
         public bool OnlineHuman;
         public int OnlineTeam;
 
-        // Server-world identity captured at release; unlike NetworkId it is not
-        // reassigned to a different entity after a disconnect.
+        // 这是攻击发出时对应的服务端 World 身份，与 NetworkId 不同，
+        // 断线后不会改指另一个实体。
         public Entity OnlineActor;
         public int ExpeditionSquadId;
         public Entity ExpeditionActor;
@@ -36,6 +36,7 @@ namespace Unity.MP_FPS {
             return BountyClashRuntime.CanAct(manager, player);
         }
 
+        // 每发攻击记录出手时的角色和阵营。如果发射后角色死亡、掉线或实体回收，伤害还要按这份归属算。
         public static ClashDamageSource Capture(World world, Entity actor) {
             if (world == null || !world.IsCreated || !world.EntityManager.Exists(actor)) return default;
             var manager = world.EntityManager;
@@ -65,6 +66,7 @@ namespace Unity.MP_FPS {
             return source;
         }
 
+        // 只有网络编号的旧调用会尝试找回实际角色，然后取得同样的快照。单靠名字无法判自伤和友伤。
         public static ClashDamageSource Capture(World world, int networkId) {
             var source = new ClashDamageSource { NetworkId = networkId };
             if (world == null || !world.IsCreated || networkId == 0) return source;
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS {
             return source;
         }
 
+        // 优先比对可确认的真实角色引用。网络编号可能被重用，不能让旧攻击错误认成新玩家的自伤。
         public static bool IsSelf(World world, Entity victim, ClashDamageSource source) {
             var manager = world.EntityManager;
             if (source.ParticipantId > 0 && manager.HasComponent<ClashPlayer>(victim)) {
@@ -141,12 +144,13 @@ namespace Unity.MP_FPS {
             return source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
         }
 
+        // 按玩法的当前受击阵营和攻击时携带的来源判友军保护。世界伤害与同队攻击不应走同一判断。
         public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) {
             if (source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) && TeamProtected(source, victim,
                     manager.GetComponentData<OnlineRaidMember>(victim).Team))
                 return true;
             if (source.ExpeditionActor == victim) return false;
-            // Keep existing human friendly-fire rules. Room protection applies to exchanges with companion bots.
+            // 沿用原先真人彼此的友伤规则。房间保护用于带人机同伴的交互。
             bool lanCompanion = source.ExpeditionLanCoop && (source.NetworkId < 0 ||
                                                              (manager.HasComponent<GhostOwner>(victim) &&
                                                               manager.GetComponentData<GhostOwner>(victim).NetworkId <
@@ -154,7 +158,7 @@ namespace Unity.MP_FPS {
             return ExpeditionSquadMember.BelongsTo(manager, victim, source.ExpeditionSquadId, lanCompanion);
         }
 
-        // Compatibility for immediate damage. Delayed attacks must capture at release.
+        // 立即生效的伤害继续兼容旧入口。有延迟的攻击必须在出手时保存归属。
         public static float Apply(
             World world,
             Entity victim,
@@ -167,6 +171,7 @@ namespace Unity.MP_FPS {
             return Apply(world, victim, Capture(world, sourceNetworkId), part, amount, tick, kind, impactPoint);
         }
 
+        // 所有攻击先判断目标可受伤以及模式允许，再交给分部位、护盾处理。返回实际扣除血量，其他系统可据此加声效或记分。
         public static float Apply(
             World world,
             Entity victim,
@@ -204,8 +209,8 @@ namespace Unity.MP_FPS {
             float healthBefore = health.CurrentHealth;
             float tissueBefore = classic != null && health.BodyHealthInitialized ? RaidHealth.TissueHealth(health) : 0;
             float damaged = RaidHealth.CombatDamage(manager, victim, ref health, part, amount, tick, kind, impactPoint);
-            // Several pellets can strike during one server update. Count only real
-            // tissue damage; a shielded or lethal hit cannot create a new wound.
+            // 一次服务器更新内可能有多个弹丸打到角色。只按实际
+            // 部位扣血计算，护盾全挡或这发已致死均不产生新伤口。
             if (kind == RaidDamageKind.Bullet && damaged > 0 && health.CurrentHealth > 0 &&
                 health.BodyHealthInitialized && !health.ClashEnabled) {
                 health.PendingBulletWound = System.Math.Min(1000, health.PendingBulletWound + damaged);
@@ -213,7 +218,7 @@ namespace Unity.MP_FPS {
             }
             manager.SetComponentData(victim, health);
             if (classic != null && damaged > 0) {
-                // Death zeroes CurrentHealth even when other body parts are intact.
+                // 死亡后 CurrentHealth 强制为零，即使其他部位仍有血量。
                 float tissueDamage = health.BodyHealthInitialized
                     ? tissueBefore - RaidHealth.TissueHealth(health)
                     : damaged;
@@ -232,6 +237,7 @@ namespace Unity.MP_FPS {
             return damaged;
         }
 
+        // 真实扣血后把攻击归给与当前轮次相符的参赛者。生命周期和队伍变动不应凭旧状态刷新本局记分。
         private static bool ApplyClashAttribution(
             EntityManager manager,
             Entity victim,

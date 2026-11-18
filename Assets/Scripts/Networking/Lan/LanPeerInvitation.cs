@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
         }
 
         public void Configure(ref NetworkSettings settings, bool server) {
+            // 房主用证书配私钥，来宾把邀请里的公开证书当作这个房间的信任根。两端同用一个事先约好的名称。
             if (server)
                 settings.WithSecureServerParameters(Pem("CERTIFICATE", Certificate), m_PrivateKey);
             else
@@ -30,10 +31,11 @@ namespace Unity.MP_FPS {
             return $"-----BEGIN {type}-----\n{data}\n-----END {type}-----\n";
         }
 
-        // Unity's Mono profile does not implement CertificateRequest. Encode a
-        // short-lived self-signed X.509 certificate and sign it with the runtime's RSA.
-        // Only the public certificate leaves this process, in the private invitation.
+        // Unity 的 Mono 没有实现 CertificateRequest。这里手动编码一张
+        // 短期的自签名 X.509 证书，并用运行时生成的 RSA 密钥签名。
+        // 只有公开证书会随私密邀请发给客人。
         public static LanPeerIdentity Create() {
+            // 临时证书在本机创建，私钥不落系统密钥存储。Unity 的 Mono 缺少常用证书创建 API，因此代码自己组装所需字段。
             using var rsa = new RSACryptoServiceProvider(2048) { PersistKeyInCsp = false };
             var key = rsa.ExportParameters(true);
             try {
@@ -42,13 +44,14 @@ namespace Unity.MP_FPS {
                 byte[] signatureAlgorithm = Sequence(Oid(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 1, 1, 11), Der(5));
                 byte[] publicKey = Sequence(Sequence(Oid(0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 1, 1, 1), Der(5)),
                     Der(3, new byte[] { 0 }, Sequence(Integer(key.Modulus), Integer(key.Exponent))));
-                // The self-signed certificate is also the explicit trust anchor.
+                // 这张自签证书就是来宾明确使用的信任根。
                 byte[] constraints = Sequence(Oid(0x55, 0x1d, 0x13), Der(1, new byte[] { 0xff }),
                     Der(4, Sequence(Der(1, new byte[] { 0xff }), Integer(new byte[] { 0 }))));
                 var now = DateTime.UtcNow;
                 byte[] body = Sequence(Der(0xa0, Integer(new byte[] { 2 })), Integer(Guid.NewGuid().ToByteArray()),
                     signatureAlgorithm, name, Sequence(Date(now.AddDays(-2)), Date(now.AddDays(7))), name, publicKey,
                     Der(0xa3, Sequence(constraints)));
+                // 房主用刚生成的私钥签自己这张证书，发送出去的是客人能用来验证的公开证书。
                 byte[] signature = rsa.SignData(body, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 byte[] certificate = Sequence(body, signatureAlgorithm, Der(3, new byte[] { 0 }, signature));
                 byte[] privateKey = Sequence(Integer(new byte[] { 0 }), Integer(key.Modulus), Integer(key.Exponent),
@@ -57,6 +60,7 @@ namespace Unity.MP_FPS {
                 try {
                     return new LanPeerIdentity(Convert.ToBase64String(certificate),
                         Pem("RSA PRIVATE KEY", Convert.ToBase64String(privateKey)));
+                // 转换成驱动所需的证书文本后，清掉用过的临时私钥字节缓冲。
                 } finally { Array.Clear(privateKey, 0, privateKey.Length); }
             } finally {
                 foreach (byte[] value in new[] { key.D, key.P, key.Q, key.DP, key.DQ, key.InverseQ })
@@ -110,6 +114,7 @@ namespace Unity.MP_FPS {
 
         public string Id, RoomId, HostId, Control, Raid, Certificate;
 
+        // 邀请和回执有不同前缀，且都带房间协议版本。接收到文本时可先判断玩家是不是把回执当邀请粘贴。
         public string Encode(bool reply) {
             string descriptions = $"{Id}.{EncodeDescription(Control)}.{EncodeDescription(Raid)}";
             return reply
@@ -117,6 +122,7 @@ namespace Unity.MP_FPS {
                 : $"{OfferPrefix}.{descriptions}.{RoomId}.{HostId}.{Certificate}";
         }
 
+        // 解码先检查字符、段数和大小。只有邀请携带房主身份和证书，回执仅用同一个邀请号及来宾的两个连接描述。
         public static LanPeerInvitation Decode(string text, bool reply) {
             string error = reply ? "剪贴板里没有有效的跨网回执。" : "剪贴板里没有有效的跨网邀请。";
             if (string.IsNullOrWhiteSpace(text) || text.Length > 14000) throw new InvalidDataException(error);

@@ -69,6 +69,7 @@ namespace Unity.MP_FPS {
             }
             bool visible = live && !m_TasksCollapsed && !m_CampaignHud.ClassListContains("campaign-hidden");
             if (visible) {
+                // 同一时刻只显示一条文本通信。显示时间按字符数限制在合理范围内，读完再从队列取下一条。
                 if (m_ChapterRadioCurrent == null && m_ChapterRadioQueue.Count > 0) {
                     m_ChapterRadioCurrent = m_ChapterRadioQueue.Dequeue();
                     m_ChapterRadioRemaining = Mathf.Clamp(m_ChapterRadioCurrent.Length * .16f, 6, 14);
@@ -84,6 +85,7 @@ namespace Unity.MP_FPS {
             if (!active || !live || !m_PlayerQuery.HasSingleton<LocalTransform>()) return;
             var player = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
             Vector3 position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
+            // 第一次看到这局记录起始位置、朝向和开火编号。之后与基准相比才能知道玩家真的尝试了动作。
             if (m_TutorialRaid != m_Snapshot.RaidId) {
                 m_TutorialRaid = m_Snapshot.RaidId;
                 m_TutorialStart = position;
@@ -97,9 +99,11 @@ namespace Unity.MP_FPS {
             if (TutorialRuntime.Aiming) m_TutorialObserved |= TutorialRules.Aimed;
             if (player.LastShotTick != 0 && player.LastShotTick != m_TutorialFirstShot)
                 m_TutorialObserved |= TutorialRules.Fired;
+            // 把观察到的动作累积到位标记里。只有新进度且不在写入时才发保存，避免一帧写一遍存档。
             if (!m_TutorialWriting && m_TutorialObserved != m_TutorialPersisted) PersistTutorialObservation();
             if (!visible || Time.unscaledTime < m_MissionNoticeUntil) return;
             string hint = null;
+            // 先给受伤时要用的提示。健康时才按移动、视角和射击教程的进度解释下一步。
             if (player.CurrentHealth < player.MaxHealth * .7f) { hint = TutorialRuntime.HealthHint; } else if
                 ((m_TutorialObserved & (TutorialRules.Moved | TutorialRules.Looked)) !=
                  (TutorialRules.Moved | TutorialRules.Looked)) { hint = TutorialRuntime.MoveHint + "，留意撤离方向"; } else if

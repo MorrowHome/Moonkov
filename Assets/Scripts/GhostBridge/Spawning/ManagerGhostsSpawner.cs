@@ -13,17 +13,20 @@ public class ManagerGhostsSpawner : Singleton<ManagerGhostsSpawner> {
     public override void Awake() {
         base.Awake();
 
-        // Don't attempt to spawn ghosts if there is no server world.
+        // 等本进程拥有服务端 World 后才生成 Ghost。
+        // 纯客户端会收到服务端生成的管理器 Ghost，因此场景上的生成器只在有自己 ServerWorld 的进程中启用。
         if (!ClientServerBootstrap.HasServerWorld) gameObject.SetActive(false);
     }
 
     public void LateUpdate() {
         if (GhostBridgeManager.Instance != null && GhostBridgeManager.Instance.IsServerListening())
+            // 监听起来、表现模板也加载完了，才遍历管理器名单。列表用完后停用生成器，后续帧沿用已生成的管理器。
             if (GhostEntityPrefabSystem.ServerInstance != null &&
                 GhostEntityPrefabSystem.ServerInstance.PrefabsLoaded) {
                 foreach (var manager in ManagersToSpawn) {
                     var managerPrefab = GhostSpawner.FindGhostPrefab(manager);
                     if (managerPrefab != null)
+                        // 生命周期系统靠 IGhostManager 识别需要先绑定的角色。这里提示预制件漏配接口的情况。
                         Debug.Assert(managerPrefab.TryGetComponent<IGhostManager>(out _),
                             "Manager prefabs must have an IManager interface");
                     var netGuid = GhostGameObject.GenerateRandomHash();

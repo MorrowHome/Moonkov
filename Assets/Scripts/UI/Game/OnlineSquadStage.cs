@@ -11,8 +11,8 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // One small scene, one camera and one target for the entire squad. These
-    // actors reuse the menu's equipment/animation code, with no gameplay World.
+    // 整个小队共用一套小场景、相机和目标纹理。
+    // 角色沿用菜单的装备与动画代码，在独立预览场景里展示。
     public sealed partial class OnlineSquadStage : IDisposable {
         private const int StageLayer = 5;
         private const int MaxTargetEdge = 3072;
@@ -114,6 +114,7 @@ namespace Unity.MP_FPS.Client {
             evt.StopPropagation();
         }
 
+        // 点击从预览相机映射到舞台中的射线，再跟角色边界比较。最终拖动的是所选人物而不是整张背景。
         private MenuCharacterView PickActor(Vector2 local) {
             var rect = m_Image.contentRect;
             if (m_Camera == null || rect.width <= 0 || rect.height <= 0 || !rect.Contains(local)) return null;
@@ -124,7 +125,7 @@ namespace Unity.MP_FPS.Client {
             for (int i = 0; i < m_Actors.Length; i++) {
                 var actor = m_Actors[i];
                 if (actor == null || !actor.HitSquadModel(ray)) continue;
-                // Hair and costumes may extend into the neighboring stand.
+                // 头发和服装的边界有时会伸进相邻席位。
                 float offset = Mathf.Abs(ProjectSlot(i).x - point.x);
                 if (offset >= closest) continue;
                 selected = actor;
@@ -141,7 +142,7 @@ namespace Unity.MP_FPS.Client {
                 return;
             }
             float x = m_Image.WorldToLocal(evt.position).x;
-            // Both character cameras look along -Z, so negative yaw follows a rightward drag.
+            // 两个预览相机都朝 -Z 看。鼠标向右拖时，绕竖直轴的转角应减小。
             m_DragActor.SquadInspectionYaw =
                 Mathf.Repeat(
                     m_DragActor.SquadInspectionYaw -
@@ -205,6 +206,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 定时推进角色动画和画面。面板不可见或未完成布局时没有需要绘制的纹理。
         private void Tick() {
             double now = Time.realtimeSinceStartupAsDouble;
             float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f);
@@ -247,6 +249,7 @@ namespace Unity.MP_FPS.Client {
             m_Viewport = viewport;
             if (m_Target == null || m_Target.width != width || m_Target.height != height) {
                 ReleaseTarget();
+                // 同一相机的输出跟随 UI 尺寸分配。用系统支持的采样数处理边缘，再把完成的画面通知磨砂层。
                 var descriptor = new RenderTextureDescriptor(width, height, RenderTextureFormat.ARGB32, 24) {
                     msaaSamples = width * height <= 1_600_000 ? 4 : 2,
                     useMipMap = false
@@ -267,7 +270,7 @@ namespace Unity.MP_FPS.Client {
                 float tangent = Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad);
                 float halfHeight = Mathf.Max(1.39f, 590f / viewport.y);
                 float distance = Mathf.Max(halfHeight, 2.45f / m_Camera.aspect) / tangent + .23f;
-                // The full-screen stage needs room beneath the boots for the badges and action dock.
+                // 全屏舞台在脚下留出一些空间，供席位标签和操作栏使用。
                 float floorSpace = (distance - SlotPositions[1].z) * tangent;
                 float focusY = Mathf.Clamp((1f - 2f * FullscreenBottomClearance / viewport.y) * floorSpace, .3f, .87f);
                 var focus = m_Root.transform.position + new Vector3(0, focusY, 0);
@@ -284,6 +287,7 @@ namespace Unity.MP_FPS.Client {
 
         private float SlotViewportX(int slot) { return m_Camera != null ? ProjectSlot(slot).x : 1 - (slot + .5f) / 4; }
 
+        // 座位在 3D 场景里有固定位置。用相机投影把它换成页面坐标，姓名卡才会跟人对齐。
         private Vector3 ProjectSlot(int slot) {
             return m_Camera.WorldToViewportPoint(m_Root.transform.position + SlotPositions[slot]);
         }
@@ -341,6 +345,7 @@ namespace Unity.MP_FPS.Client {
             return child;
         }
 
+        // 离队或者角色资源变化时只释放那个座位上的预览。其他成员的动画和纹理还能继续使用。
         private void ReleaseActor(int index) {
             if (m_DragActor != null && m_DragActor == m_Actors[index]) StopTurn();
             m_Actors[index]?.Dispose();
@@ -360,6 +365,7 @@ namespace Unity.MP_FPS.Client {
             FrameChanged?.Invoke(null);
         }
 
+        // 不可见时释放临时舞台和渲染纹理。再打开时仍可从上一次收到的成员数据还原。
         public void Suspend() {
             StopTurn();
             for (int i = 0; i < 4; i++) ReleaseActor(i);

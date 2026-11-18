@@ -8,7 +8,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // Owned by one client world. Bounded character-only mask; no scene scan or extra camera.
+    // 归当前一个客户端 World。仅在有限范围内处理角色遮罩，无需查全场景或另建相机。
     public sealed class TeamOutlineRenderer : IDisposable {
         public const int MaxDraws = 96;
         private Camera m_Camera;
@@ -19,6 +19,7 @@ namespace Unity.MP_FPS {
         private readonly Plane[] m_Frustum = new Plane[6];
 
         public void Publish(Camera camera, List<SkinnedMeshRenderer> renderers, double now) {
+            // 接收一次队友标记清单并重新检查网格当前是否可画。本机看不到目标时可以直接解除渲染。
             if (!camera || camera.cameraType != CameraType.Game || renderers.Count == 0) {
                 Clear();
                 return;
@@ -54,6 +55,7 @@ namespace Unity.MP_FPS {
         }
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera) {
+            // 队友系统需要持续推送哪些人应显示。清单长时间不更新时自动清理，角色离场后画面不会还留着旧轮廓。
             if (!m_Camera || Time.realtimeSinceStartupAsDouble - m_PublishedAt > .5) {
                 Clear();
                 return;
@@ -118,6 +120,7 @@ namespace Unity.MP_FPS {
                 descriptor.clearBuffer = true;
                 descriptor.clearColor = Color.clear;
                 descriptor.filterMode = FilterMode.Bilinear;
+                // 先把可显示队友的网格画进遮罩，再从遮罩轮廓合成到画面。队伍和授权在客户端系统里先筛过。
                 var mask = graph.CreateTexture(descriptor);
                 using (var builder = graph.AddRasterRenderPass<MaskData>("Squad tracker silhouettes", out var data)) {
                     data.Material = m_Material;
@@ -138,7 +141,7 @@ namespace Unity.MP_FPS {
                     data.Destination = destination;
                     data.Material = m_Material;
                     data.Properties = m_Properties;
-                    // Keep the line near two output pixels even with the project's low world render scale.
+                    // 即使项目缩小了世界渲染比例，最终描边也尽量保持在两个输出像素。
                     data.Texel = new Vector4(1.8f / Mathf.Max(1, Owner.pixelWidth),
                         1.8f / Mathf.Max(1, Owner.pixelHeight), 0, 0);
                     builder.UseTexture(source, AccessFlags.Read);

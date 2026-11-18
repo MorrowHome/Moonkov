@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
         public float Fov = 75f;
 
         public class Baker : Baker<MainCameraAuthoring> {
+            // Baker 把场景配置对接到动态实体。表现系统可以通过组件查询取姿势和视野。
             public override void Bake(MainCameraAuthoring authoring) {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new MainCamera(authoring.Fov));
@@ -16,13 +17,14 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// This Camera component is added to the player character entity by the <see cref="ClientGameSystem"/>
-    /// after the server spawns a new character.
+    /// MainCameraAuthoring 的 Baker 把相机参数写入实体。<see cref="ClientGameSystem"/> 负责发出玩家入场请求。
+    /// 客户端相机系统从自己的 World 读取这份组件。
     ///
-    /// It is used by the <see cref="MainCameraSystem"/> to position the GameObject of the MainCamera at the player position.
+    /// <see cref="MainCameraSystem"/> 用它和实体的位姿更新场景摄像机的位置、方向和视野。
     /// </summary>
     public struct MainCamera : IComponentData {
         public MainCamera(float fov) { CurrentFov = BaseFov = fov; }
+        // 基础视野是配置值。另有 CurrentFov 留给当前画面使用。
         public float BaseFov;
         public float CurrentFov;
     }

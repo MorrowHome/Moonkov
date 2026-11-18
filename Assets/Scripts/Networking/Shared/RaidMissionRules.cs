@@ -55,6 +55,7 @@ namespace Unity.MP_FPS.Missions {
         public float OfferSeconds = 120, ActiveSeconds = 600, MinAudienceSeconds = 420, CooldownSeconds = 180;
         public MissionObjectiveDefinition[] Objectives;
 
+        // 任务定义由节点、前置位、时限和挂点组成。非法下标或不可能满足的组合需在启用前拦住。
         public string Validate() {
             if (string.IsNullOrWhiteSpace(Id) || Id.Length > 48 || string.IsNullOrWhiteSpace(Name) || Version < 1 ||
                 Weight < 1 || Weight > 100000 || OutputCount < 1 || OutputCount > 8 ||
@@ -78,7 +79,7 @@ namespace Unity.MP_FPS.Missions {
                                                                  Array.Exists(n.Choices, string.IsNullOrWhiteSpace)))
                     return "mission_configuration";
             }
-            // A topological pass rejects cycles without executing content-authored code.
+            // 按依赖顺序遍历来拒绝环形引用，无需执行内容中配置的代码。
             uint visited = 0;
             for (int pass = 0; pass < Objectives.Length; pass++)
             for (int i = 0; i < Objectives.Length; i++)
@@ -113,7 +114,7 @@ namespace Unity.MP_FPS.Missions {
             };
         }
 
-        // Authoring settings can replace these templates; the running instance freezes a copy.
+        // 场景配置可替换模板，开始运行时冻结一份副本。
         public static MissionDefinition Mooncore() {
             return new MissionDefinition {
                 Id = "mc00_mooncore", Name = "封存样本", ArtifactCode = "mooncore_fragment", Weight = 45, OutputCount = 2,
@@ -145,7 +146,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Running machinery is a location clue, never a player identity.
+    // 机器运行声只提供位置线索，不泄露操作者身份。
     public static class MissionMachineSounds {
         public const float CutterRange = 40, ArchiveRange = 25;
 
@@ -174,7 +175,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Owned by one server World. No acceptance, discovery or UI tracking state exists here.
+    // 由一个服务端 World 掌管。接取、发现与界面追踪状态由各自系统维护。
     public sealed class MissionOperation {
         private sealed class Interaction {
             public string Actor;
@@ -215,6 +216,7 @@ namespace Unity.MP_FPS.Missions {
             return false;
         }
 
+        // 一场地图实例有自己的任务操作号和轮次，便于旧 UI 请求只影响原实例。开始时复制定义避免外部改时间或节点。
         public MissionOperation(string worldSessionId, string id, int epoch, MissionDefinition definition, double now) {
             if (!Guid.TryParse(worldSessionId, out _) || !Guid.TryParse(id, out _) || epoch < 1 || definition == null ||
                 definition.Validate() != null || !ValidTime(now))
@@ -229,14 +231,15 @@ namespace Unity.MP_FPS.Missions {
         }
 
         // 这个任务模型只认服务器传来的角色、当前轮次和时间。距离、视线及人物能否操作，由 ServerGameSystem.Missions 在调用前确认。
-        // The caller supplies server-validated actor/deployment identity and server time.
-        // Distance, visibility, health and ownership remain the existing server adapter's responsibility.
+        // 调用者提供服务器已验证的玩家和出战身份及服务端时间。
+        // 距离、可见、生命和所有权仍由现有服务端适配层核对。
         public MissionActionResult Begin(string actor, int epoch, int node, uint request, double now) {
             if (!ValidTime(now) || now < m_LastTime || string.IsNullOrWhiteSpace(actor) || actor.Length > 128 ||
                 epoch != Epoch || node < 0 || node >= ObjectiveCount || request == 0)
                 return MissionActionResult.Invalid;
             Tick(now);
             if (Phase == MissionPhase.Expired || Phase == MissionPhase.Resolved) return MissionActionResult.Expired;
+            // 同一玩家更早的开始请求无效。已在相同节点跑那一个请求时可返回继续，避免重发让读条从头开始。
             if (m_Requests.TryGetValue(actor, out uint last) && request <= last)
                 return m_Interactions.TryGetValue(actor, out var old) && old.Request == request && old.Node == node
                     ? MissionActionResult.Running
@@ -252,6 +255,7 @@ namespace Unity.MP_FPS.Missions {
             foreach (var interaction in m_Interactions.Values)
                 if (interaction.Actor != actor && interaction.Node == node)
                     return MissionActionResult.Busy;
+            // 一项手动交互给玩家短期租约。同一节点当前被另一人操作时不可抢占，房主接受请求才启用整个任务。
             m_Interactions[actor] = new Interaction
                 { Actor = actor, Request = request, Node = node, Started = now, LeaseUntil = now + 2 };
             if (Phase == MissionPhase.Offered) {
@@ -277,6 +281,7 @@ namespace Unity.MP_FPS.Missions {
             return MissionActionResult.Completed;
         }
 
+        // 有选择值的节点由单独配置请求完成。需要校验值可选、阶段和前置节点，再让后续机器流程启动。
         public MissionActionResult Configure(string actor, int epoch, int node, uint request, int choice, double now) {
             if (!ValidTime(now) || now < m_LastTime || string.IsNullOrWhiteSpace(actor) || actor.Length > 128 ||
                 epoch != Epoch || node < 0 || node >= ObjectiveCount || request == 0)
@@ -309,6 +314,7 @@ namespace Unity.MP_FPS.Missions {
             return node >= 0 && node < ObjectiveCount && (CompletedMask & (1u << node)) != 0;
         }
 
+        // 从任务已完成位、手动交互的开始时间或机器截止时间推算进度，界面随动不负责完成判定。
         public float Progress(int node, double now) {
             if (node < 0 || node >= ObjectiveCount || !ValidTime(now)) return 0;
             if (Completed(node)) return 1;
@@ -320,6 +326,7 @@ namespace Unity.MP_FPS.Missions {
             return 0;
         }
 
+        // 统一清掉过期手动操作并提交已到时间的机器步骤。节点改变可再开启满足前置条件的流程。
         public void Tick(double now) {
             if (!ValidTime(now) || now < m_LastTime) return;
             m_LastTime = now;
@@ -354,8 +361,9 @@ namespace Unity.MP_FPS.Missions {
             return true;
         }
 
-        // Only the local chapter adapter restores already committed facility work.
-        // A restore is accepted once, before any live action, and cannot skip prerequisites.
+        // 已经落盘的设施进度只由本机章节适配层恢复。
+        // 只有在实际交互前允许恢复一次，而且不能跳过前置节点。
+        // 保留地图内已经有可靠完成记录的步骤，同时检查依赖掩码，恢复并不会凭空产生新产物。
         public bool RestoreCompleted(uint mask, double now) {
             if (m_Restored || Phase != MissionPhase.Offered || CompletedMask != 0 || !ValidTime(now) ||
                 now < m_LastTime || (mask & ~m_All) != 0)
@@ -390,6 +398,7 @@ namespace Unity.MP_FPS.Missions {
             return (CompletedMask & n.Prerequisites) == n.Prerequisites;
         }
 
+        // 机器节点只有前置全部满足才开始倒计时。人为节点等玩家操作，共用同一个完成掩码。
         private void StartProcesses(double now) {
             if (Phase != MissionPhase.Active) return;
             for (int i = 0; i < ObjectiveCount; i++)
@@ -405,7 +414,7 @@ namespace Unity.MP_FPS.Missions {
         }
     }
 
-    // Stable across Unity/.NET runtimes. Selection never bypasses the adapter's location/safety predicate.
+    // Unity 和 .NET 运行时都能稳定得到同样抽取结果。选中任务仍须通过适配层的地点和安全判断。
     public sealed class MissionDirector {
         private uint m_Random;
         private readonly Dictionary<string, double> m_LastOffered = new(StringComparer.Ordinal);
@@ -418,6 +427,7 @@ namespace Unity.MP_FPS.Missions {
             NextEvaluation = now + 50 + Unit() * 60;
         }
 
+        // 挑任务前看受众剩余时间、任务冷却和地图可用定义。满足条件才按随机值选一次，避免刚进图刷很多任务。
         public MissionDefinition TryOffer(
             IReadOnlyList<MissionDefinition> definitions,
             double now,

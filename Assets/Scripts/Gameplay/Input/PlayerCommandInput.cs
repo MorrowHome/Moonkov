@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 
 public struct PlayerInput {
+    // 一条指令里有很多开关。每种操作占一个位，可以一起发送站姿、开火、举盾等状态。
     [Flags]
     public enum InputFlag {
         Jump = 1 << 0,
@@ -34,15 +35,17 @@ public struct PlayerInput {
     public float2 MoveInput;
     public float2 LookYawPitchDegrees;
 
-    // Head-only angles relative to the normal view; locomotion and weapons keep their base facing.
+    // 只改变头的相对角度。移动和武器仍沿用角色的主朝向。
+    // 自由观察只给头或相机一个相对角度。身体正常转向仍在 LookYawPitchDegrees，后续模拟靠它判断移动方向。
     public float2 FreeLookOffset;
     public float Lean;
     public bool FreeLooking;
 
-    // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
+    // 将镜头中心瞄到的目标作为意图。射击起点、射线判定和伤害仍由服务器计算。
+    // 这是按准星得到的预期目标点。服务器还会从它认可的起点重算射线，命中结算由服务端给出。
     public float3 AimPoint;
 
-    // Ghost identity includes its spawn tick so a recycled id cannot change the recipient.
+    // Ghost 身份同时含编号和出生 tick。旧编号被复用后，不能误将动作发给新角色。
     public int HaloTransferGhostId;
     public uint HaloTransferSpawnTick;
     public uint HaloLightingSettings;
@@ -85,8 +88,8 @@ public struct PlayerInput {
             InputFlags &= ~(uint)flag;
     }
 
-    // Apply the same numeric contract to client prediction and server simulation.
-    // Command payloads are player intent, never trusted movement or shot state.
+    // 客户端预测和服务端模拟使用相同的数值检查。
+    // 指令只描述玩家想做什么。位置和射击结果由模拟得出。
     // 压住移速输入、视角和其他数据的范围，处理 NaN 等异常值，再按自由视角和光环动作的互斥规则去掉冲突的操作。
     public PlayerInput Sanitized() {
         var result = this;
@@ -100,8 +103,10 @@ public struct PlayerInput {
         result.InputFlags &= k_KnownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
+        // 先修正每根轴的范围，再把向量长度限制在一以内。这样同时按横向和前进不会让斜走比直走更快。
         float moveLengthSq = math.lengthsq(result.MoveInput);
         if (moveLengthSq > 1f) result.MoveInput *= math.rsqrt(moveLengthSq);
+        // 有效视角会变成有界的角度。无效视角则一起关掉本次移动和开火，避免把异常坐标带进模拟。
         if (math.all(math.isfinite(LookYawPitchDegrees))) {
             result.LookYawPitchDegrees.x = math.fmod(LookYawPitchDegrees.x, 360f);
             result.LookYawPitchDegrees.y = math.clamp(LookYawPitchDegrees.y, -85f, 85f);
@@ -127,6 +132,7 @@ public struct PlayerInput {
         return result;
     }
 
+    // 普通操作与部署、支援、自由观察有互斥关系。先清冲突的动作，再根据是否真的转移来决定保不保留目标 ID。
     private void ApplyTransferIntent() {
         if (FreeLooking || FireSuppressed) {
             SetFlag(InputFlag.HaloAnchor, false);
@@ -166,12 +172,13 @@ public struct PlayerInput {
             AimPoint = input.AimPoint;
             HaloTransferGhostId = input.HaloTransferGhostId;
             HaloTransferSpawnTick = input.HaloTransferSpawnTick;
+            // 短按类操作在多个渲染帧内只亮一瞬。把旧命令的这些位并进来，下一拍才不会漏掉一次操作。
             const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo |
                                        InputFlag.EquipRevolver | InputFlag.EquipPistol);
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
         // 短按开火合并到后面的帧时，应带上按下当时那次瞄准，避免之后移开鼠标让这枪换了方向。
-        // Preserve the target belonging to a buffered single-shot press.
+        // 缓存单发按键时，把当时瞄到的目标一起保存。
         if (input.Shoot && !HaloTransfer) {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
@@ -201,6 +208,7 @@ public struct PlayerClientCommandInputLookup : IComponentData {
     public Entity ClientCommandInputEntity;
 }
 
+// 这两种组件先装当前采样。网络实际发送的是带命令 tick 的 ClientCommandInput，供另一端按拍重放。
 public struct ClientInput : IComponentData {
     public PlayerInput PlayerInput;
     public void SetInput(int playerIndex, in PlayerInput playerInput) { PlayerInput = playerInput.Sanitized(); }
@@ -217,6 +225,7 @@ public struct ClientMovementInput : IComponentData {
 
 public struct ClientCommandInput : ICommandData {
     public NetworkTick Tick { get; set; }
+    // 记录采样时客户端渲染远端对象的时间。插值让远端画面的时间落后于服务器模拟，以便在已有快照之间平滑移动。
     public NetworkTick ClientInterpolationTick;
     public PlayerInput PlayerInput;
 

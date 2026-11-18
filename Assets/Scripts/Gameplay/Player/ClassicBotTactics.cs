@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         public readonly Vector3? Approach;
         public readonly bool Guard;
 
+        // 一份命令同时有要到的地方、到了看哪里、要不要守角，以及路上可选的经过点。
         public ClassicBotOrder(Vector3 goal, Vector3 watch, bool guard = false, Vector3? approach = null) {
             Goal = goal;
             Watch = watch;
@@ -20,19 +21,19 @@ namespace Unity.MP_FPS {
     }
 
     internal sealed class ClassicBotTactics {
-        // Dust II coordinates on the imported NavMesh. The hold positions watch
-        // different entrances even when the round objective is on the same site.
+        // 这里的坐标取自 Dust II 导入的 NavMesh。
+        // 即使这一轮目标是同一个包点，防守位置也看住不同入口。
         private static readonly Vector3 s_Long = new(39.50f, 99.80f, 36.40f);
         private static readonly Vector3 s_Short = new(52.22f, 102.44f, 11.60f);
         private static readonly Vector3 s_Tunnels = new(30.60f, 100.85f, -46.80f);
         private static readonly Vector3 s_MidToB = new(58.00f, 98.25f, -23.40f);
 
         private static readonly ClassicBotOrder[] s_GuardPosts = {
-            new(new Vector3(61.00f, 102.51f, 30.50f), new Vector3(49, 99.80f, 36.50f), true), // A Long
-            new(new Vector3(65.50f, 100.82f, -47.90f), new Vector3(49, 100.00f, -47.90f), true), // B Tunnels
-            new(new Vector3(54.70f, 97.03f, -15.80f), new Vector3(43.70f, 96.83f, -12.20f), true), // Mid
-            new(new Vector3(64.20f, 102.51f, 22.80f), s_Short, true), // A Short
-            new(new Vector3(60.00f, 100.06f, -35.42f), new Vector3(56.70f, 98.80f, -29.60f), true) // B Doors
+            new(new Vector3(61.00f, 102.51f, 30.50f), new Vector3(49, 99.80f, 36.50f), true), // A 大道
+            new(new Vector3(65.50f, 100.82f, -47.90f), new Vector3(49, 100.00f, -47.90f), true), // B 通道
+            new(new Vector3(54.70f, 97.03f, -15.80f), new Vector3(43.70f, 96.83f, -12.20f), true), // 中路
+            new(new Vector3(64.20f, 102.51f, 22.80f), s_Short, true), // A 短道
+            new(new Vector3(60.00f, 100.06f, -35.42f), new Vector3(56.70f, 98.80f, -29.60f), true) // B 门
         };
 
         private static readonly ClassicBotOrder[] s_AfterPlantPosts = {
@@ -70,6 +71,7 @@ namespace Unity.MP_FPS {
         private int m_AttackSite, m_CarrierSlot, m_RecoveryBot, m_DefuseBot;
         private double m_DefuseChoiceUntil, m_RecoveryChoiceUntil;
 
+        // 新回合重置上一轮包点、任务人选和队友报告，最初的分路再根据回合和持包席位安排。
         public void BeginRound(int round, int carrierSlot) {
             Array.Clear(Roster, 0, Roster.Length);
             Array.Clear(m_Contacts, 0, m_Contacts.Length);
@@ -85,6 +87,7 @@ namespace Unity.MP_FPS {
 
         private static int SeatIndex(int team, int slot) { return team * ClassicMatch.TeamSize + slot; }
 
+        // 按队伍加席位更新已上场且活着的角色。枪声变化和当前位置可供队伍调度计算。
         public void Observe(
             Entity actor,
             int id,
@@ -112,6 +115,7 @@ namespace Unity.MP_FPS {
 
         public bool Alive(ClassicBot bot) { return Roster[SeatIndex(bot.Team, bot.Slot)].Alive; }
 
+        // 按队伍记被看见的敌方席位出现在哪一侧和线索失效时间。过期或离场角色的报告不再算压力。
         public void Report(int team, int observedSeat, Vector3 position, ClassicDust2Map map, double now) {
             float distanceA = (position - map.Site(0)).sqrMagnitude;
             float distanceB = (position - map.Site(1)).sqrMagnitude;
@@ -138,6 +142,7 @@ namespace Unity.MP_FPS {
                 m_RecoveryChoiceUntil = 0;
             }
             if (rules.Phase == ClassicPhase.Planted) {
+                // 已下包时优先处理拆包人选。有人正在操作就固定给当前人，没人操作才挑路线合适的机器人。
                 if (rules.HoldActor != 0) {
                     m_DefuseBot = rules.HoldActor < 0 ? rules.HoldActor : 0;
                     m_DefuseChoiceUntil = 0;
@@ -150,7 +155,7 @@ namespace Unity.MP_FPS {
             foreach (var entry in Roster) {
                 if (!entry.Alive || rules.Carrier != entry.Id) continue;
                 m_CarrierSlot = entry.Slot;
-                // Respect a human carrier who takes the bomb to the other site.
+                // 真人持包绕向另一个包点时，调整计划配合他。
                 if (!entry.Bot && map.InSite(1 - m_AttackSite, entry.Position)) m_AttackSite = 1 - m_AttackSite;
                 break;
             }
@@ -163,6 +168,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 找目标距离要看可走路线。两个候选差距很小时保留原派出的人，减少来回换任务。
         private int NearestBot(int team, Vector3 goal, int current) {
             float nearest = float.PositiveInfinity;
             float nearestFallback = float.PositiveInfinity;
@@ -183,7 +189,7 @@ namespace Unity.MP_FPS {
                 float cost = 0;
                 for (int i = 1; i < count; i++)
                     cost += Vector3.Distance(m_ObjectiveCorners[i - 1], m_ObjectiveCorners[i]);
-                // Keep a runner moving when another route is only slightly shorter.
+                // 其他路线只短一点时仍保留已经派出的人，让当前任务继续。
                 if (entry.Id == current) cost *= .75f;
                 if (cost >= nearest) continue;
                 nearest = cost;
@@ -201,6 +207,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 同一队按席位分多个进出路线和守位方向。即使目标点相同，也尽量不让所有机器人堆到同一条路。
         public ClassicBotOrder Order(ClassicBot bot, ClassicMatch rules, ClassicDust2Map map) {
             bool attacking = bot.Team == rules.AttackTeam;
             if (rules.Phase == ClassicPhase.Planted) {

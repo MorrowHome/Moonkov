@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Client-only shell. One shared mesh/finish set serves every authored cache;
-    // no colliders, loot rules, transforms or network state belong to this view.
+    // 客户端箱壳。所有配置好的物资箱复用一套网格和材质。
+    // 碰撞、掉落规则、位置和网络状态由调用它的系统管理。
     internal sealed class RaidSupplyCacheVisuals : IDisposable {
         internal const float TopTrayHeight = .368f;
         private const int Paint = 0, Polymer = 1, Metal = 2, Hazard = 3;
@@ -17,6 +17,7 @@ namespace Unity.MP_FPS {
         private readonly MeshRenderer[] m_Indicators;
         private readonly bool[] m_EmptyState;
 
+        // 箱壳、托盘、锁扣等部件的网格和材质预先造好。每个箱只创建自己的对象与指示状态。
         public RaidSupplyCacheVisuals(Shader shader, int count) {
             m_Indicators = new MeshRenderer[count];
             m_EmptyState = new bool[count];
@@ -33,15 +34,15 @@ namespace Unity.MP_FPS {
             m_Ready.EnableKeyword("_EMISSION");
             m_Empty = Finish(shader, "Cache / depleted indicator", new Color(.2f, .12f, .045f), .1f, .25f);
             var mesh = new ShellBuilder(4);
-            // Preserve the original x/z envelope and root position. Authoring puts roots
-            // .35 m above the floor, so only the skid feet extend down to that contact plane.
+            // 保留原先的 x/z 尺寸和根节点位置。
+            // 场景根节点在地面上方 .35 米，只有底部滑轨脚延伸到接触面。
             mesh.Box(new Vector3(0, -.035f, 0), new Vector3(1.08f, .49f, .76f), .055f, Paint);
             mesh.Box(new Vector3(0, .229f, 0), new Vector3(1.08f, .024f, .77f), .024f, Polymer);
             mesh.Box(new Vector3(0, .293f, 0), new Vector3(1.12f, .102f, .80f), .035f, Paint);
             mesh.Box(new Vector3(0, .347f, 0), new Vector3(.79f, .027f, .50f), .012f, Metal);
             mesh.Box(new Vector3(0, TopTrayHeight - .006f, 0), new Vector3(.65f, .012f, .39f), .005f, Polymer);
 
-            // Protective skid rails and hard corner shoes make the silhouette readable at a distance.
+            // 底部护轨和加固角让远处也能看懂箱子轮廓。
             for (int x = -1; x <= 1; x += 2) {
                 mesh.Box(new Vector3(x * .435f, -.29f, 0), new Vector3(.16f, .12f, .80f), .018f, Polymer);
                 mesh.Box(new Vector3(x * .435f, .327f, 0), new Vector3(.09f, .086f, .82f), .017f, Metal);
@@ -50,7 +51,7 @@ namespace Unity.MP_FPS {
                     mesh.Box(new Vector3(x * .513f, .143f, z * .352f), new Vector3(.10f, .105f, .13f), .017f, Metal);
                     mesh.Box(new Vector3(x * .36f, .313f, z * .404f), new Vector3(.095f, .06f, .014f), .005f, Hazard);
                 }
-                // End handles sit over a dark recess, with a visible gap beneath the metal grip.
+                // 端面把手放在深色凹槽上，金属握杆下面有看得见的空隙。
                 mesh.Box(new Vector3(x * .545f, .025f, 0), new Vector3(.012f, .175f, .35f), .005f, Polymer);
                 mesh.Box(new Vector3(x * .562f, .08f, 0), new Vector3(.014f, .039f, .29f), .006f, Metal);
                 for (int z = -1; z <= 1; z += 2)
@@ -64,7 +65,7 @@ namespace Unity.MP_FPS {
                     mesh.Box(new Vector3(x * .272f, .193f, z * .419f), new Vector3(.064f, .125f, .002f), .0008f, Metal);
                     mesh.Box(new Vector3(x * .272f, .158f, z * .416f), new Vector3(.088f, .025f, .006f), .002f, Hazard);
                 }
-                // Small recessed equipment plate, with raised bars in place of tiny unreadable text.
+                // 小铭牌做成嵌入式，用凸条代替难辨认的小字。
                 mesh.Box(new Vector3(0, .128f, z * .389f), new Vector3(.18f, .11f, .02f), .008f, Metal);
                 mesh.Box(new Vector3(0, .147f, z * .403f), new Vector3(.12f, .021f, .006f), .002f, Polymer);
                 for (int bar = 0; bar < 5; bar++)
@@ -78,6 +79,7 @@ namespace Unity.MP_FPS {
             m_Indicator = light.Build("Raid supply cache / shared status inset");
         }
 
+        // 场景中的箱按下标装配，稍后用同一下标找库存提示灯。
         public GameObject Create(Transform parent, Vector3 position, int index, bool showInventoryIndicator = true) {
             var root = new GameObject("Supply cache " + (index + 1).ToString("00"));
             root.transform.SetParent(parent, false);
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS {
             return root;
         }
 
+        // 空箱时只切换指示灯外观，箱体保留在场景，和可搜刮容器的寿命一致。
         public void SetEmpty(int index, bool empty) {
             if (m_EmptyState[index] == empty) return;
             m_EmptyState[index] = empty;
@@ -153,6 +156,7 @@ namespace Unity.MP_FPS {
                 for (int i = 0; i < materials; i++) m_Triangles[i] = new List<int>();
             }
 
+            // 程序把带倒角的箱子部件拆成面来加。每个面记自己应使用的材质。
             public void Box(Vector3 center, Vector3 size, float bevel, int material) {
                 var half = size * .5f;
                 float b = Mathf.Min(bevel, Mathf.Min(half.x, Mathf.Min(half.y, half.z)) * .8f);
@@ -204,6 +208,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
+            // 把顶点、法线和 UV 写进共用网格，材质分组分别写三角面。
             public Mesh Build(string name) {
                 var mesh = new Mesh { name = name, subMeshCount = m_Triangles.Length };
                 mesh.SetVertices(m_Vertices);

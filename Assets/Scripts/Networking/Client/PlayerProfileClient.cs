@@ -8,8 +8,8 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // The UI and owned client read their selected profile here. Server Worlds choose
-    // persistence independently from their own OfflineRaidMode marker.
+    // UI 和本地拥有角色的客户端在这里读选择的档案。服务端 World
+    // 则按自己有没有 OfflineRaidMode 标记来选择持久化。
     public static partial class PlayerProfileClient {
         private static OfflineProfileStore s_Offline;
         private static InventoryGraph s_Inventory;
@@ -35,6 +35,7 @@ namespace Unity.MP_FPS {
             s_Offline ?? throw new InvalidOperationException("No single-player profile is open.");
 
         public static bool IsLoggedIn => IsLan || IsOffline || AccountClient.IsLoggedIn;
+        // 这里选择三种入场凭据。房主票、单人占位值和在线账号凭据的签发途径不同，实际使用的位置也不同。
         public static string Token => IsLan ? LanRoomClient.Ticket : IsOffline ? "single-player" : AccountClient.Token;
 
         public static string DisplayName =>
@@ -105,16 +106,17 @@ namespace Unity.MP_FPS {
                 throw new InvalidOperationException("Single player requires a Client+Server build.");
             string path = Path.Combine(Application.persistentDataPath, "SinglePlayer", "profile-v1.json");
 #if UNITY_EDITOR
-            // MPPM clones must not share a mutable local profile.
+            // MPPM 的编辑器克隆各自需要独立的可写本机档案。
             using (var hash = System.Security.Cryptography.SHA256.Create()) {
                 path = Path.Combine(Application.persistentDataPath, "SinglePlayer",
                     Convert.ToBase64String(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Application.dataPath)))
                         .Replace('/', '_').Replace('+', '-'), "profile-v1.json");
             }
 #endif
+            // 读档在后台进行。只有待保存记录都恢复好、而且请求未取消之后，才正式把菜单切进单人档。
             var store = await Task.Run(() => new OfflineProfileStore(path), ct);
             try {
-                // Replay acknowledged/unfinished writes before treating an open raid as lost.
+                // 先重放已确认或未写完的记录，再判断是否把仍开启的出战视作失败。
                 // 先补写上次没发完的结算。完成后如果还有未结束的出战，才按遗留战局处理，避免本该撤离成功的装备被清掉。
                 var recovery = new RaidPersistenceContext(store);
                 recovery.Dispose();
@@ -125,6 +127,7 @@ namespace Unity.MP_FPS {
                         "Single-player settlement recovery is pending. Reopen single player to retry.");
                 await Task.Run(store.RecoverAbandonedRaid, ct);
                 ct.ThrowIfCancellationRequested();
+                // 此时才让界面看见这份档案。此前加载如果失败，会释放锁和临时状态，免得下次点击单人打不开档。
                 s_Offline = store;
                 RefreshOffline();
             } catch {
@@ -152,6 +155,7 @@ namespace Unity.MP_FPS {
             s_OfflineChanged?.Invoke();
         }
 
+        // 从当前档案拿一份正式快照，重建库存、战役、教学和携带电池的数据，再让订阅的页面统一刷新。
         private static void RefreshOffline() {
             var profile = s_Offline.Read();
             s_Recovery = s_Offline.ReadRecovery();
@@ -188,6 +192,7 @@ namespace Unity.MP_FPS {
             } else { AccountClient.UpdateStash(dust, alloy, cells); }
         }
 
+        // 切在线账号前要把菜单库存队列处理完。单人正式档和在线地址的数据不能互相写入。
         public static async Task AuthenticateAsync(
             string url,
             string username,
@@ -221,6 +226,7 @@ namespace Unity.MP_FPS {
             LeaveOffline();
         }
 
+        // 同一个拖格入口在好友房请求房主，在线请求账号后端，单人在后台调本机档案。回调要确认仍显示同一份档才刷新。
         public static async Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) {
             if (IsLan) {
                 await LanRoomClient.RequestAsync("move", command, ct: ct);
@@ -236,6 +242,7 @@ namespace Unity.MP_FPS {
             if (store == s_Offline) RefreshOffline();
         }
 
+        // 回收箱领取和普通拖格分别发请求。回收物仍由对应档案系统验证，菜单只能读最新回执。
         public static async Task ClaimRecoveryAsync(RecoveryClaim request, CancellationToken ct) {
             if (IsLan) {
                 await LanRoomClient.RequestAsync("recovery", request, ct: ct);
@@ -251,6 +258,7 @@ namespace Unity.MP_FPS {
             if (store == s_Offline) RefreshOffline();
         }
 
+        // 报价页面只提交交易意图。本机、房主或在线服务负责真正算资源和写档。
         public static async Task TradeAsync(ShopCommand command, CancellationToken ct) {
             if (IsLan) {
                 await LanRoomClient.RequestAsync("trade", command, ct: ct);

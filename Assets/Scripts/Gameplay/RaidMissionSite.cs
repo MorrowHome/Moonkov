@@ -13,7 +13,7 @@ namespace Unity.MP_FPS {
         public float Yaw;
     }
 
-    // Scene authoring only. All mutable operation/interaction state belongs to the server World.
+    // 这个组件配置场景。可变的任务与交互状态留在服务端 World。
     [DisallowMultipleComponent]
     public sealed class RaidMissionSite : MonoBehaviour {
         [SerializeField] private RaidMissionAnchor[] m_Anchors = Array.Empty<RaidMissionAnchor>();
@@ -36,12 +36,14 @@ namespace Unity.MP_FPS {
         public static RaidMissionSite Active { get; private set; }
         public RaidMissionAnchor[] Anchors => m_Anchors;
 
+        // 不同战役章节用各自的任务定义数组，运行中要按同一个数组解释快照的 DefinitionIndex。
         public MissionDefinition[] Definitions =>
             m_CampaignChapter == 1 ? m_FirstChapterDefinitions :
             m_CampaignChapter == 2 ? m_SecondChapterDefinitions : m_Definitions;
 
         public bool FirstChapter => m_CampaignChapter == 1;
 
+        // 切换章节时写入对应的任务阶段与时长，场景中的设备和锚点可以保持复用。
         public void SetCampaignChapter(int chapter, float raidSeconds = 600) {
             if (chapter < 0 || chapter > 2) throw new ArgumentOutOfRangeException(nameof(chapter));
             if (!float.IsFinite(raidSeconds) || raidSeconds < 30)
@@ -66,8 +68,8 @@ namespace Unity.MP_FPS {
                 if (definition.Validate() != null || definition.Objectives.Length > 8)
                     throw new InvalidOperationException("第二章设施模板无效。");
             }
-            // Guaranteed chapter facilities stay available for the authored raid budget.
-            // Refresh cached copies too: a later deployment may use a different duration.
+            // 保证章节设施在这次配置的远征时限内可用。
+            // 缓存里的定义也要刷新。下一次入场可能设了别的时长。
             if (chapter != 0) {
                 var definitions = chapter == 1 ? m_FirstChapterDefinitions : m_SecondChapterDefinitions;
                 var definition = Array.Find(definitions,
@@ -88,6 +90,7 @@ namespace Unity.MP_FPS {
         }
 
         public void Present(RaidMissionSnapshotRpc snapshot, bool playerActive) {
+            // 服务器没给有效任务编号或定义下标时，让设备回到未知状态，不猜当前该亮哪台。
             bool known = snapshot.OperationId.Length > 0 && snapshot.DefinitionIndex >= 0 &&
                          snapshot.DefinitionIndex < Definitions.Length;
             var definition = known ? Definitions[snapshot.DefinitionIndex] : null;
@@ -107,6 +110,7 @@ namespace Unity.MP_FPS {
                             active = true;
                             hasObjective = true;
                             complete &= (snapshot.CompletedMask & (1u << i)) != 0;
+                            // 加工类设备要前置步骤都完成、自己还没完成且任务进行中，才显示正在工作。
                             if (n.Kind == MissionObjectiveKind.Process &&
                                 (snapshot.CompletedMask & n.Prerequisites) == n.Prerequisites &&
                                 (snapshot.CompletedMask & (1u << i)) == 0 && snapshot.Phase == MissionPhase.Active) {
@@ -126,6 +130,7 @@ namespace Unity.MP_FPS {
                         known && snapshot.Phase == MissionPhase.Expired, products,
                         definition?.ArtifactCode == "mooncore_fragment");
                 }
+            // 设备显示和工作声用同一状态。只在当前玩家仍在局内时维持声音，并按设备类别选音效。
             var desired = machineRunning && playerActive
                 ? definition.ArtifactCode == "mooncore_fragment" ? m_CutterSound : m_ArchiveSound
                 : null;
@@ -160,6 +165,7 @@ namespace Unity.MP_FPS {
         }
 #endif
 
+        // 验证任务定义引用的锚点、位置和设备能否对应上。地图缺了配置时能在进入任务前定位原因。
         public string Validate() {
             if (m_Definitions == null || m_Definitions.Length < 2 || m_Anchors == null || m_Anchors.Length > 32)
                 return "缺少任务模板或设备锚点";

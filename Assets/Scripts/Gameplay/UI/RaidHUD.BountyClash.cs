@@ -30,6 +30,7 @@ namespace Unity.MP_FPS {
 
         private void PresentClashAudio(ClashSnapshotRpc snapshot) {
             if (!m_Clash.HasSnapshot) return;
+            // 比较同一场的前后快照才会播拾起目标、被救起等反馈。刚加入或换局先建立基准，避免把既有状态当成突然变化。
             bool same = m_ClashAudioInitialized && snapshot.Epoch == m_ClashAudioSnapshot.Epoch &&
                         snapshot.MatchId.Equals(m_ClashAudioSnapshot.MatchId);
             if (same) {
@@ -40,7 +41,7 @@ namespace Unity.MP_FPS {
                 if (snapshot.Bounty != m_ClashAudioSnapshot.Bounty && !snapshot.IsCarrier)
                     MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
                 if (m_ClashAudioRequest != 0 && snapshot.AcknowledgedRequest >= m_ClashAudioRequest) {
-                    // A later lease acknowledgment cannot describe an earlier action's outcome.
+                    // 后续的续按确认无法说明前一个操作的结果，两份回执要分开看。
                     if (snapshot.AcknowledgedRequest == m_ClashAudioRequest) {
                         if (snapshot.Result != ClashResult.Ok)
                             MoonkovAudio.Error();
@@ -99,6 +100,7 @@ namespace Unity.MP_FPS {
             m_ClashInteractionFocused = false;
             m_ClashMode = BountyClashRuntime.Enabled(m_World.EntityManager);
             var cargo = m_Bag.parent;
+            // 赏金冲突把随身物资读数挂到自己的一栏。记住原父节点，退出玩法时再移回通用 HUD。
             if (m_ClashMode && m_ClashCargoParent == null) {
                 m_ClashCargoParent = cargo.parent;
                 m_QuickView.Element.parent.Add(cargo);
@@ -121,6 +123,7 @@ namespace Unity.MP_FPS {
                 m_ClashQuery = m_World.EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
                 m_ClashQueryCreated = true;
             }
+            // 模式启用和快照可用之间可能隔几帧。界面暂时接管指针，别让玩家在等批准时误发战斗操作。
             if (m_ClashQuery.IsEmptyIgnoreFilter) {
                 BountyClashDarkSightRenderer.ClearImmediate();
                 m_ClashActionsBlocked = m_ClashLobbyPointer = true;
@@ -143,6 +146,7 @@ namespace Unity.MP_FPS {
                 Utils.SetCursorVisible(false);
             bool hasLocal = TryGetLocalPlayerEntity(out var owner);
             if (hasLocal) {
+                // 重生或换角色会换本地拥有的实体。暗视应该绑定真正的当前角色相机，不能沿用旧镜头。
                 if (owner != m_ClashCameraOwner || !m_ClashCamera) {
                     m_ClashCameraOwner = owner;
                     m_ClashCamera = null;
@@ -184,8 +188,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // GhostOwnerIsLocal is enableable: GetSingletonEntity rejects this query.
-        // Materialize its filtered entities so disabled ownership never keeps a camera/action target.
+        // GhostOwnerIsLocal 可以单独禁用，这类查询不能用 GetSingletonEntity。
+        // 读取经过过滤的实体列表，确保没有所有权的实体不会被当成镜头或操作目标。
         private bool TryGetLocalPlayerEntity(out Entity entity) {
             using var players = m_PlayerQuery.ToEntityArray(Allocator.Temp);
             entity = players.Length == 1 ? players[0] : Entity.Null;
@@ -227,6 +231,7 @@ namespace Unity.MP_FPS {
                          Mouse.current.rightButton.isPressed;
             int flags = view ? boost ? 3 : 1 : 0;
             m_Clash.SetSenseInput(view, boost);
+            // 暗视开启后按间隔续报。切换或松开时立即告诉服务端，断连后也不会永远停在打开状态。
             if (flags != m_SenseFlags || (flags != 0 && Time.unscaledTime >= m_NextSenseLease)) {
                 if (flags != m_SenseFlags && (flags == 0 || m_SenseFlags == 0))
                     MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Aim, Vector3.zero, .65f, 0,
@@ -243,6 +248,7 @@ namespace Unity.MP_FPS {
             int candidate = -1;
             float nearest = 3f, reviveProgress = 0;
             foreach (var member in m_Clash.Participants.Values) {
+                // 先过滤掉自己、敌人和没倒地的人。接近的合规目标才会获得救援提示。
                 if (!member.OwnTeam || member.TeamId != s.LocalTeamId || member.IsLocal ||
                     member.Life != ClashLife.Downed)
                     continue;
@@ -255,6 +261,7 @@ namespace Unity.MP_FPS {
             }
             m_ClashInteractionFocused = candidate >= 0;
             bool held = RaidKeyBindings.Held(RaidKey.Interact);
+            // 有救援目标时优先处理持续按住。失去它才把共享交互键还给地图目标等操作。
             if (candidate >= 0 && held) {
                 if (m_ReviveTarget != candidate) {
                     CancelClashRevive();

@@ -38,7 +38,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Observes input and synchronized facts only; never reserves energy or predicts a refill.
+    // 这部分读输入和已同步的状态。预留能量与补能确认由原规则处理。
     public sealed class HaloChargeFeedback {
         private MoonkovReloadAudio m_Transitions;
         private uint m_Weapon;
@@ -64,6 +64,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Context(in PredictedPlayerGhost player) {
+            // 用武器类型和物品 ID 一起判断是否换了装备。交换同型号武器也要清掉原来的充能提示。
             if (m_Weapon == player.EquippedWeaponID && m_Item.Equals(player.EquippedWeaponItem)) return;
             Reset();
             m_Weapon = player.EquippedWeaponID;
@@ -73,6 +74,7 @@ namespace Unity.MP_FPS {
         public void ObserveInput(in PlayerInput input, in PredictedPlayerGhost player, float now) {
             Context(player);
             bool emptyFire = !player.HaloEnergyInitialized && input.Shoot && input.Aim && player.CurrentAmmo <= 0;
+            // 只对按下换弹或合条件的第一次空击记一次尝试。一直按住不让提示从头计时。
             if ((input.Reload || (emptyFire && !m_EmptyFireHeld)) && !player.ControllerState.IsReloadingState &&
                 player.CurrentHealth > 0 && player.WeaponEquipRemaining <= 0 && player.InventoryWeapons &&
                 DollSingerWeapons.IsHalo(player.EquippedWeaponID) && now - m_AttemptAt >= .35f) {
@@ -96,6 +98,7 @@ namespace Unity.MP_FPS {
             }
             // 有共用光环能量时按同步的补能序号和余额显示。后面的兼容路径仍能按传统弹匣和待装弹量显示。
             if (player.HaloEnergyInitialized) {
+                // 服务器确认补能时会推进序号。只在前后序号不同后短暂显示就绪，不把首次收到状态当成刚充完。
                 if (m_HasRechargeSequence && m_RechargeSequence != player.HaloRechargeSequence) {
                     m_ReadyUntil = now + 1.5f;
                     m_AttemptAt = float.NegativeInfinity;
@@ -114,6 +117,7 @@ namespace Unity.MP_FPS {
                 if (now - m_AttemptAt >= 2.5f) return default;
                 if (current >= maximum) return new HaloChargeStatus(HaloChargeNotice.Full, current, maximum);
                 if (inventory == null) return new HaloChargeStatus(HaloChargeNotice.Syncing, current, maximum);
+                // 刚点完时服务器还可能在处理。先显示等待，过一小会儿才用库存解释为什么无法补能。
                 if (now - m_AttemptAt < .2f) return new HaloChargeStatus(HaloChargeNotice.Waiting, current, maximum);
                 if (inventory.CellEnergy(accessibleOnly: true) <= 0)
                     return new HaloChargeStatus(
@@ -141,6 +145,7 @@ namespace Unity.MP_FPS {
                 return new HaloChargeStatus(HaloChargeNotice.Full, player.CurrentAmmo, capacity);
             if (now - m_AttemptAt < .2f)
                 return new HaloChargeStatus(HaloChargeNotice.Waiting, player.CurrentAmmo, capacity);
+            // 传统弹量路径只在库存对象或版本改变时重新扫描。缓存的是可达电量和随身总电量，方便区分两种不足。
             if (inventory != null &&
                 (!ReferenceEquals(inventory, m_EnergyGraph) || inventory.Version != m_EnergyVersion)) {
                 m_EnergyGraph = inventory;

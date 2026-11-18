@@ -41,6 +41,7 @@ namespace Unity.MP_FPS.Client {
             return null;
         }
 
+        // 只有局内能取到活的本地角色数据，才用实时弹药和动作刷新头像。仓库和失去角色时继续用库存做展示。
         private bool TryOperatorPortraitSnapshot(out PredictedPlayerGhost snapshot) {
             snapshot = default;
             var player = PortraitPlayer();
@@ -104,6 +105,7 @@ namespace Unity.MP_FPS.Client {
             int characterIndex = OperatorPortraitCharacter();
             bool livePortrait = GameSettings.IsPlayableCharacter(characterIndex);
             m_Root.EnableInClassList("inventory-live-operator", livePortrait);
+            // 角色预览只在活动页面真正可见时保留。阻止隐藏的面板继续更新相机画面。
             if (!livePortrait) {
                 ReleaseOperatorPortrait();
                 return;
@@ -117,7 +119,7 @@ namespace Unity.MP_FPS.Client {
                 m_CharacterStage.Insert(0, m_Character.Element);
             }
             bool hasSnapshot = TryOperatorPortraitSnapshot(out var snapshot);
-            // An empty ID is empty hands; null means the deployment slot priority.
+            // 空字符串表示徒手，null 表示按出战装备槽的默认优先级。
             m_PortraitWeaponItem = hasSnapshot ? snapshot.EquippedWeaponItem.ToString() : null;
             m_Character.SetEquipmentInventory(m_Graph, m_PortraitWeaponItem);
             if (hasSnapshot) m_Character.SetEquipmentSnapshot(in snapshot);
@@ -129,6 +131,7 @@ namespace Unity.MP_FPS.Client {
                 m_PortraitTimer = m_Root.schedule.Execute(RefreshPortraitWeapon).Every(150);
                 m_PortraitTimer.Pause();
             }
+            // 装备按钮的锚点来自美术布局。这样角色模型位置调整时，连线和点击位置可以跟着资源配置更新。
             var layout =
                 JsonUtility.FromJson<PortraitLayout>(Resources.Load<TextAsset>("Moonkov/UI/FieldOperatorPortraitLayout")
                     .text);
@@ -256,6 +259,7 @@ namespace Unity.MP_FPS.Client {
             var shown = new HashSet<string>();
             if (GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex))
                 Text(m_LootPane, GameSettings.CharacterName(m_CorpseCharacterIndex), "inventory-section-title");
+            // 人形尸体的角色可识别时做整套装备预览。只有普通掉落物时直接画它的容器内容。
             bool portraitKnown = GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex);
             VisualElement equipment;
             if (portraitKnown) {
@@ -314,6 +318,7 @@ namespace Unity.MP_FPS.Client {
 
         private void PresentCorpsePortrait() {
             if (m_CorpseStage == null || !GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex)) return;
+            // 尸体预览只在需要时建一个模型，搜索状态更新后直接把新装备数据给它。
             if (m_CorpseCharacter == null) {
                 m_CorpseCharacter = new MenuCharacterView(true, characterIndex: m_CorpseCharacterIndex);
                 m_CorpseCharacter.Element.name = "corpseLivePortrait";
@@ -328,6 +333,7 @@ namespace Unity.MP_FPS.Client {
         private InventoryGraph CorpsePortraitInventory() {
             var graph = InventoryGraph.Create(false, false);
             if (m_Graph == null) return graph;
+            // 复制当前版本作为预览基准。随后把已揭示的尸体装备及其子物品复制过去，保证渲染出原有模块。
             graph.Version = m_Graph.Version;
             var tops = m_Graph.Children(LootInventoryExchange.Root).ToArray();
             var selected = new HashSet<string>();
@@ -423,8 +429,9 @@ namespace Unity.MP_FPS.Client {
             });
         }
 
-        // Death caches pack gear as loot. Compact only loose-item drawing; drop
-        // intents still use real IDs and authoritative free positions.
+        // 尸体容器把装备也当物资存放。只压缩散件在画面上的排列，
+        // 拖放仍需使用物品的真实 ID 和已确认的空位。
+        // 临时排列只改复制出的物品坐标。这样可以把所见掉落物放得更紧凑，同时保留服务端的真实位置。
         private static Dictionary<string, InventoryItem> CompactLoot(InventoryItem[] entries, int width) {
             var result = new Dictionary<string, InventoryItem>();
             var occupied = new HashSet<Vector2Int>();
@@ -456,6 +463,7 @@ namespace Unity.MP_FPS.Client {
             return result;
         }
 
+        // 格子要仍在面板里并位于父滚动区的可见范围内，挡在滚动窗口之外的格子不接受拖放。
         private static bool VisibleDropTarget(VisualElement element, Vector2 point) {
             if (element.panel == null || !element.enabledInHierarchy || !element.worldBound.Contains(point))
                 return false;

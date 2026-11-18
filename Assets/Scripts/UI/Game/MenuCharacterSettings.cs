@@ -5,6 +5,7 @@ using Unity.MP_FPS.DollSinger;
 namespace Unity.MP_FPS.Client {
     [CreateAssetMenu(menuName = "Moonkov/Menu Character Settings")]
     public sealed class MenuCharacterSettings : ScriptableObject {
+        // 视觉预览用这些模型与动画。角色战斗时的服务端状态不放在这份资产里。
         public GameObject VisualPrefab;
 
         [Header("Gameplay equipment appearance")]
@@ -13,6 +14,7 @@ namespace Unity.MP_FPS.Client {
         public WeaponRegistry WeaponRegistry;
 
         [Header("Halo workshop preview sources")]
+        // 改装台的预览用单独的光环来源。它可以演示模块而无需启动实际玩家。
         public GameObject RifleHaloPreviewPrefab;
 
         public GameObject ShotgunHaloPreviewPrefab;
@@ -34,6 +36,7 @@ namespace Unity.MP_FPS.Client {
         [Min(.1f)] public float CrossfadeSeconds = .65f;
         public Vector2 IdleInterval = new(6f, 11f);
 
+        // 资源缺少某条动作的配置时用默认动作参数。播放器仍可以用 Clip，减少旧资源的迁移要求。
         public MenuCharacterMotion Motion(int index) {
             return MotionOptions != null && index < MotionOptions.Length
                 ? MotionOptions[index]

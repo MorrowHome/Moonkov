@@ -39,6 +39,7 @@ namespace Unity.MP_FPS.Client {
             window.Q<Button>("windowClose").clicked += () => Close(window);
             TerminalMotion.Fade(window, 0, .28f);
             header.AddManipulator(new WindowDrag(window));
+            // 新窗口先记住原来的焦点。日后关闭可以把键盘操作还给它，控制器也能从原按钮接着走。
             m_ReturnFocus[window] = m_Root.panel?.focusController.focusedElement as VisualElement;
             m_Windows.Add(window);
             m_Layer.Add(window);
@@ -47,6 +48,7 @@ namespace Unity.MP_FPS.Client {
                 var bounds = m_Layer.contentRect;
                 if (bounds.width <= 0 || bounds.height <= 0) return;
                 float left = window.resolvedStyle.left, top = window.resolvedStyle.top;
+                // 窗口的尺寸或父层变化时限制它在可见范围。否则拖着窗缩小屏幕可能够不到右上角关闭按钮。
                 float x = Mathf.Clamp(left, 0, Mathf.Max(0, bounds.width - window.resolvedStyle.width));
                 float y = Mathf.Clamp(top, 0, Mathf.Max(0, bounds.height - window.resolvedStyle.height));
                 if (Mathf.Abs(x - left) > .1f) window.style.left = x;
@@ -56,6 +58,7 @@ namespace Unity.MP_FPS.Client {
             return window;
         }
 
+        // 窗口视觉顺序和逻辑顺序要一起改。之后 Esc 才会关掉真正显示在最上边的那个。
         private void BringToFront(VisualElement window) {
             m_Windows.Remove(window);
             m_Windows.Add(window);
@@ -81,8 +84,9 @@ namespace Unity.MP_FPS.Client {
 
         private void OnKey(KeyDownEvent evt) {
             if (evt.keyCode != KeyCode.Escape) return;
-            // Descendant menus get first refusal. An empty inventory window manager
-            // must let Esc continue to the owning page's back handler.
+            // 内层菜单先试着按 Esc 关闭自己的窗。
+            // 背包没有浮窗可关时，把 Esc 交给所在页面的返回处理。
+            // 先让子层自己的按键处理运行。当前管理器没有窗口时再尝试父页回退，避免同一按键连退两层。
             if (!CloseTop()) {
                 if (m_Back == null) return;
                 m_Back();
@@ -137,6 +141,7 @@ namespace Unity.MP_FPS.Client {
 
             private void Down(PointerDownEvent e) {
                 if (e.button != 0 || e.target is Button) return;
+                // 拖动标题栏时捕获该指针。即便鼠标离开原标题位置，仍能收到移动和松开事件。
                 m_Pointer = e.pointerId;
                 m_StartPointer = e.position;
                 m_Start = new Vector2(m_Window.resolvedStyle.left, m_Window.resolvedStyle.top);

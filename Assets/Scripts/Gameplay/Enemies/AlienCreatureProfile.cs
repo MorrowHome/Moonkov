@@ -30,9 +30,9 @@ namespace Unity.MP_FPS {
         KeepDistance
     }
 
-    /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
-    /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
-    /// Runtime contact/AI state belongs to each spawned enemy, never this asset.</summary>
+    /// <summary>可共用的配置。Scale 是统一的权威尺寸倍率，
+    /// 供身体、触地、命中体、招式距离和流体范围使用。
+    /// 每只生成的怪分别保存自己的碰撞接触和 AI 状态。</summary>
     [CreateAssetMenu(menuName = "Moonkov/Alien Creature Profile")]
     public sealed class AlienCreatureProfile : ScriptableObject {
         public AlienSpecies Species;
@@ -67,6 +67,7 @@ namespace Unity.MP_FPS {
         public bool IsSpiderBoss => Boss && Species == AlienSpecies.Spider;
         public bool IsCeilingSpider => !Boss && Species == AlienSpecies.Spider;
 
+        // 体型要传给出生和路线判断。直立型、巨蛛和普通异形的胶囊半径不由同一个默认值硬套。
         public float GroundBodyRadius(float scale) {
             return IsUpright ? UprightRadius(scale) :
                 IsSpiderBoss ? SurfaceBodyRadius * scale :
@@ -81,6 +82,7 @@ namespace Unity.MP_FPS {
                 Mathf.Max(GroundBodyRadius(scale) * 2, (Branch.bodyRadii.y * 2 + .4f) * scale);
         }
 
+        // Boss 设置的是场景米每秒，保持追击和侧移速度可直接调整。普通物种的速度和缩放走别处。
         [Header("Boss 追击与换位 / 世界米每秒")] [Min(0)]
         public float BossPursuitSpeed = 4.8f;
 
@@ -89,6 +91,7 @@ namespace Unity.MP_FPS {
         [Min(1)] public float BossRepositionCooldown = 4;
         [Min(1)] public float BossPreferredDistance = 4.5f;
 
+        // 这个字段控制喷吐插入普通攻击的节奏。零为不参与喷吐选招，其余参数控制距离和致盲时间。
         [Header("黏液喷射 / 毛毛虫、黏液兽与 Boss")] [Tooltip("每几次攻击喷射一次；0 为关闭。")] [Min(0)]
         public int MucusEveryAttacks = 3;
 
@@ -140,6 +143,7 @@ namespace Unity.MP_FPS {
             Species == AlienSpecies.Slime ? ProceduralMenagerieExperiment.Species.Slime :
             ProceduralMenagerieExperiment.Species.Tentacle;
 
+        // 新建或切换种类时给体型、步态和攻击一套可用参数。实例动作和当前血量不放进这个共享资产。
         public void ApplyDefaults(AlienSpecies species) {
             Species = species;
             MucusEveryAttacks = species == AlienSpecies.Tentacle || species == AlienSpecies.Roots ? 3 : 0;
@@ -193,8 +197,8 @@ namespace Unity.MP_FPS {
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() :
                 species == AlienSpecies.Centipede ? ProceduralMenagerieExperiment.CentipedeFluidDefaults() :
                 IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);
-            // Defaults retain the accepted lab's world speed at its authored size;
-            // later Scale edits still resize both stride geometry and travel speed.
+            // 默认尺寸下保持试验场已确认的场景移动速度。
+            // 之后再调 Scale 时，步幅和移动速度仍随之变化。
             Speed /= Mathf.Max(.1f, Scale);
         }
     }

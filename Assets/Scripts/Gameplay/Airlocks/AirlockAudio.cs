@@ -29,6 +29,7 @@ namespace Unity.MP_FPS {
             AtmosphereSample listener,
             bool structureContact,
             bool radioLinked = true) {
+            // 头盔内声一直存在，无线电看连接，结构传声看是否踩到舱体。空气声还要看两点气压和之间有没有隔断。
             switch (path) {
                 case AirlockSoundPath.HelmetInternal: return 1;
                 case AirlockSoundPath.Radio: return radioLinked ? 1 : 0;
@@ -42,7 +43,7 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Uses the existing pooled SoundSystem and mixer; never modifies the global mute or AudioListener volume.
+    // 复用带对象池的 SoundSystem 和混音器，保留全局静音和 AudioListener 音量的原值。
     [DisallowMultipleComponent]
     [RequireComponent(typeof(AirlockController))]
     public sealed class AirlockAudio : MonoBehaviour {
@@ -66,7 +67,7 @@ namespace Unity.MP_FPS {
         public float ContactGain { get; private set; }
 
         public event Action<AirlockSoundEvent, bool>
-            EventRaised; // bool: a real clip is assigned, false: explicit pending cue.
+            EventRaised; // 布尔值为真时已有实际音源，为假时只报告待播的提示。
 
         public void Configure(
             AirlockController owner,
@@ -114,16 +115,19 @@ namespace Unity.MP_FPS {
             if (!m_Owner || !m_Owner.Ready) return;
             if (m_Sound == null && GameManager.Instance) m_Sound = GameManager.Instance.SoundSystem;
             if (!m_Listener && Camera.main) m_Listener = Camera.main.transform;
+            // 气阀声来自仍有压差的调压；只有朝舱内加压时，泵才和气阀一起工作。
             var s = m_Owner.State;
             ValveActive = s.Equalizing && Mathf.Abs(s.PressureKPa -
                                                     (s.TargetInside
                                                         ? m_Owner.Settings.InsidePressureKPa
                                                         : m_Owner.Settings.OutsidePressureKPa)) > .0001f;
             PumpActive = ValveActive && s.TargetInside;
-            // A requested direction can remain set while a panel is held by an actor.
-            // Drive each motor from its observed motion, independently of shared feedback.
+            // 有人挡住门板时，状态里仍可能保留原来请求的方向。
+            // 每台电机按自己门板的实际位移发声，不受共用反馈值影响。
+            // 用两帧开度差判断门板真的在走。若门发了打开命令但被人卡住，电机声不该继续假装它在走。
             OuterMotorActive = m_HasPrevious && Mathf.Abs(s.OuterFraction - m_Previous.OuterFraction) > .000001f;
             InnerMotorActive = m_HasPrevious && Mathf.Abs(s.InnerFraction - m_Previous.InnerFraction) > .000001f;
+            // 呼吸区也提供音频传播需要的空气区和气压。走出舱内后，即使声音源还很近，真空也会切断空气声。
             AtmosphereSample listener = default;
             if (m_Listener) BreathableZone.TrySample(m_Listener.position, out listener);
             var source = new AtmosphereSample(m_Owner.AirlockId + ".CHAMBER", s.PressureKPa,
@@ -131,7 +135,8 @@ namespace Unity.MP_FPS {
             bool contact = HasStructureContact();
             AirGain = AirlockAcoustics.Gain(AirlockSoundPath.Airborne, source, listener, contact);
             ContactGain = AirlockAcoustics.Gain(AirlockSoundPath.StructureContact, source, listener, contact);
-            // One localized emitter represents its two possible physical propagation paths; a contact path is low-passed.
+            // 同一个定位音源表示两种传声路径。经结构传声时用低通滤波。
+            // 同一机械声选更强的一条传播路径，避免空气声和结构声叠成两份。
             float mechanismGain = Mathf.Max(AirGain, ContactGain);
             float delta =
                 Mathf.Abs((s.TargetInside ? m_Owner.Settings.InsidePressureKPa : m_Owner.Settings.OutsidePressureKPa) -
@@ -142,6 +147,7 @@ namespace Unity.MP_FPS {
             Loop(1, PumpActive, m_Pump, m_PumpAnchor, mechanismGain, AirlockSoundEvent.Pump);
             Loop(2, OuterMotorActive, m_DoorMotor, m_OuterAnchor, mechanismGain, AirlockSoundEvent.OuterMotor);
             Loop(3, InnerMotorActive, m_DoorMotor, m_InnerAnchor, mechanismGain, AirlockSoundEvent.InnerMotor);
+            // 锁声只在门板刚离开零点或刚回到零点时播一次。组件刚打开还没有前一帧，不补播。
             if (m_HasPrevious) {
                 if (s.OuterFraction > 0 && m_Previous.OuterFraction == 0)
                     OneShot(AirlockSoundEvent.OuterUnlock, m_Unlock,
@@ -160,6 +166,7 @@ namespace Unity.MP_FPS {
             m_HasPrevious = true;
         }
 
+        // 监听器附近要有落地的角色胶囊。再向脚下探测，确认实际接触的是这个气闸的结构。
         private bool HasStructureContact() {
             if (!m_Listener) return false;
             UnityEngine.CharacterController capsule = null;
@@ -197,6 +204,7 @@ namespace Unity.MP_FPS {
             }
             var handle = m_Loops[index];
             bool contactRoute = ContactGain > AirGain;
+            // 声音从空气传播切到结构传播时，重新开循环以应用低通。装置没停时则用同一个句柄随压力改音量。
             if (handle?.Handle != null && handle.Handle.IsValid() && m_ContactRoute[index] != contactRoute) {
                 StopLoop(index);
                 handle = null;

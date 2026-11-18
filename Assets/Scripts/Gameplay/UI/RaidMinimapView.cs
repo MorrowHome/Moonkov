@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation only; consumes the same owned-player and raid snapshot as RaidHUD.</summary>
+    /// <summary>仅客户端展示，与 RaidHUD 读取同一份本地角色和战局快照。</summary>
     public sealed class RaidMinimapView : IDisposable {
         public const float HalfRange = 120f;
         private const float ReadoutInterval = .2f;
@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
             }
             if (!Visible) m_Panel.style.display = DisplayStyle.Flex;
             bool changedMap = m_Map != map;
+            // 地图换到新的场景时重新取得共享卫星底图。旧场景的物资与补氧点不能沿用。
             if (changedMap) {
                 m_Map = map;
                 tacticalMap.TryGetSatellite(out m_Surface, out m_SurfaceXZ);
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS {
             m_Position = position;
             m_TakenMask = takenMask;
             var heading = new Vector2(forward.x, forward.z);
+            // 视角方向几乎没有地面分量时沿用上一个方向。避免玩家往脚下看时箭头突然转向。
             if (heading.sqrMagnitude <= .001f)
                 heading = m_Forward;
             else
@@ -72,6 +74,7 @@ namespace Unity.MP_FPS {
                 var delta = map.NearestExtraction(position) - position;
                 MoonkovLocalization.Set(m_Distance, "EXIT / {0:0} m", new Vector2(delta.x, delta.z).magnitude);
             }
+            // 只旋转视角时底图并不移动。背景与标记分层，玩家位置变化才要求重画背景。
             if (changedMap || moved) m_Backdrop.MarkDirtyRepaint();
             if (changedMap || moved || turned || changedLoot || refresh) m_Overlay.MarkDirtyRepaint();
         }
@@ -84,7 +87,8 @@ namespace Unity.MP_FPS {
             BountyClashMapView.DrawSatellite(context, m_Surface, topLeft, bottomRight);
         }
 
-        /// <summary>North (+Z) is up; the same square projection is used for terrain and all markers.</summary>
+        // 以角色地面坐标为原点，按小图范围和实际尺寸换算。箭头和场景标记使用相同的比例。
+        /// <summary>地图上方为正北（+Z）。地形和所有标记使用同一套方形坐标投影。</summary>
         public static Vector2 Project(Vector3 world, Vector3 origin, Vector2 size) {
             return new Vector2((.5f + (world.x - origin.x) / (HalfRange * 2)) * size.x,
                 (.5f - (world.z - origin.z) / (HalfRange * 2)) * size.y);
@@ -113,6 +117,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Map.LootPositions.Length && i < RaidLootContainers.FirstDeathBagId; i++) {
                 var point = Project(m_Map.LootPositions[i], origin, size);
                 if (!Inside(point, size, 8)) continue;
+                // 普通箱子空了也保留位置。用空箱标记体现服务端更新后的状态。
                 bool empty = (m_TakenMask & (1UL << i)) != 0;
                 painter.strokeColor = empty ? new Color(.56f, .6f, .63f, .65f) : SupplyColor;
                 painter.fillColor = new Color(.06f, .07f, .08f, .9f);
@@ -125,6 +130,7 @@ namespace Unity.MP_FPS {
             var stations = OxygenRefillZone.ActiveZones;
             for (int i = 0; i < stations.Count; i++) {
                 var station = stations[i];
+                // 补氧站来自全局注册列表。这里只显示与本局地图同场景的条目，防止叠加了其他加载场景的图标。
                 if (!station || station.gameObject.scene != m_Map.gameObject.scene) continue;
                 var point = Project(station.transform.position, origin, size);
                 if (Inside(point, size, 8)) DrawOxygenMarker(painter, point);
@@ -133,8 +139,9 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Map.ExtractionCount; i++) {
                 if (!m_Map.TryExtractionPosition(i, out var point)) continue;
                 var exit = Project(point, origin, size);
+                // 最近撤离点在小地图画面之外时还能在边缘指一个方向。其他不在范围内的撤离点先跳过。
                 if (!Inside(exit, size, 12)) {
-                    // One edge arrow keeps distant alternatives from crowding the map.
+                    // 边缘只保留一个指向最近撤离点的箭头，远处的其他选择不会挤满小图。
                     if (i != nearest) continue;
                     var delta = exit - size * .5f;
                     float factor = Mathf.Min((size.x * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.x)),

@@ -35,6 +35,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             InventoryGraph graph = null;
+            // 只有装备有光环的角色才需要库存查询，用当前客户端 World 建一次，换局后要释放并重建。
             if (!m_ChargeQueryCreated) {
                 m_ChargeInventoryQuery =
                     m_EntityManager.CreateEntityQuery(typeof(RaidClientState), typeof(RaidInventoryClientState));
@@ -45,19 +46,22 @@ namespace Unity.MP_FPS {
                 var inventory =
                     m_EntityManager.GetComponentObject<RaidInventoryClientState>(m_ChargeInventoryQuery
                         .GetSingletonEntity());
+                // 只有本局有效战斗阶段的库存可用来算电池剩余。旧图与新局快照错位时先记未知。
                 if (snapshot.Phase == RaidPhase.Active && inventory.RaidId == snapshot.RaidId) graph = inventory.Graph;
             }
             var weapon =
                 WeaponManager.Instance.WeaponRegistry.GetWeaponData(player.EquippedWeaponID, player.EquippedModules);
             var status = m_ChargeFeedback.Update(player, weapon, graph,
                 !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked, Time.unscaledTime);
+            // 共享能量模式让生命监视区处理提示。旧的装弹文案在兼容模式仍可继续用。
             if (player.HaloEnergyInitialized) {
-                // The shared energy belongs to the existing medical scanner HUD.
+                // 共用的光环能量由已有的医疗监测 HUD 显示。
                 m_LastChargeNotice = status.Notice;
                 m_ReloadingLabel.style.display = DisplayStyle.None;
                 m_ChargeWeaponPanel.style.display = DisplayStyle.None;
                 return;
             }
+            // 状态改变立即更新，连续变化的倒计时限频刷新。画面之间可保留已有提示。
             if (status.Notice != m_LastChargeNotice || Time.unscaledTime >= m_NextChargeText) {
                 PresentChargeStatus(m_RootElement, status);
                 if (status.Notice == HaloChargeNotice.Charging)
@@ -65,11 +69,11 @@ namespace Unity.MP_FPS {
                 m_LastChargeNotice = status.Notice;
                 m_NextChargeText = Time.unscaledTime + .1f;
             }
-            // Keep the existing ammo auto-hide from hiding a brief charge notice between text refreshes.
+            // 弹药栏可能自动隐藏。两次文字刷新之间仍应保留短暂的补能提示。
             if (status.Notice != HaloChargeNotice.None) m_ChargeWeaponPanel.style.display = DisplayStyle.Flex;
             if (m_AmmoBar != null) {
                 bool charging = status.Notice == HaloChargeNotice.Charging;
-                m_AmmoBar.style.display = DisplayStyle.None; // The common halo ring owns action progress.
+                m_AmmoBar.style.display = DisplayStyle.None; // 动作进度由共用的光环读条显示。
                 if (charging) {
                     m_AmmoBar.highValue = 1;
                     m_AmmoBar.value = status.Progress;
@@ -77,7 +81,7 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // Shared with the native review; it renders facts, without interpreting gameplay input.
+        // 原生界面检查也复用此处。这里展示已得到的状态，不解析战斗输入。
         public static void PresentChargeStatus(VisualElement root, HaloChargeStatus status) {
             var label = root.Q<Label>("reloading-label");
             var bar = root.Q<ProgressBar>("player-ammo-bar");

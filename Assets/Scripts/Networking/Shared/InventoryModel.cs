@@ -67,6 +67,7 @@ namespace Unity.MP_FPS.Inventory {
         public readonly int Width, Height, MaxStack;
         public readonly float Weight;
         public readonly InventoryRegion[] Regions;
+        // 物品类型静态定义它占多少格、能堆多少、内部有没有容器区。单件实际物品再记录所处的格子和数量。
         public bool Container => Regions.Length > 0;
 
         public ItemDefinition(
@@ -89,8 +90,8 @@ namespace Unity.MP_FPS.Inventory {
         }
     }
 
-    // One catalog shared by Unity and the data service. Dimensions are external footprints;
-    // Regions describe independent internal compartments, never a second copy of the items.
+    // Unity 和数据服务共用一份目录。尺寸表示外部占格，
+    // Regions 表示独立内部区块，里面的物品仍只有一份。
     public static class InventoryCatalog {
         public const string Stash = "stash", Equipment = "equipment", Pockets = "pockets";
         public const int MaxDepth = 8, MaxItems = 2048;
@@ -117,6 +118,7 @@ namespace Unity.MP_FPS.Inventory {
         public static string LootCode(int index) { return LootCodes[index % LootCodes.Length]; }
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
 
+        // 物品码为存档与网络共用的身份。这里声明基础类型、尺寸及容量，翻译名不会影响已保存物品。
         private static Dictionary<string, ItemDefinition> Build() {
             var defs = new[] {
                 new ItemDefinition("stash", "Personal storage", ItemKind.Root, 0, 0, 1, 0,
@@ -267,18 +269,18 @@ namespace Unity.MP_FPS.Inventory {
         public int X, Y, Quantity = 1;
         public bool Rotated, FoundInRaid;
 
-        // -1 is a new weapon; live ammo follows the item through moves/deploy/settlement.
+        // -1 表示新武器。实际弹药在移动、出战和结算中跟随物品。
         public int LoadedAmmo = -1;
 
-        // Missing in old saves means full. One partial cell per stack; the rest are full.
+        // 旧档缺此字段表示满电。一堆最多一节有余量，其他是满电。
         public int CellCharge = -1;
         public bool EmergencySupply;
 
-        // -1 denotes a new/legacy item, initialized once when first authoritatively bound.
-        // Live resources follow this item through move/drop/loot/reconnect and settlement.
+        // -1 表示新物品或旧档缺值。第一次由权威状态绑定时初始化一次。
+        // 实时余量跟随这件物品移动、丢弃、拾取、重连和结算。
         public float ShieldCharge = -1, ShieldEnergy = -1, SuitOxygen = -1;
 
-        // Assigned only by the authoritative facility output. Kept through loot/death/return.
+        // 仅由权威设施产出时设置来源。搜刮、死亡和返回仓库都保留该标记。
         public string MissionWorldId, MissionOperationId;
         public int MissionContentVersion;
         public bool MissionRecovered;
@@ -301,12 +303,13 @@ namespace Unity.MP_FPS.Inventory {
         public int ProtectionKitVersion;
         public int HaloResearchLevel;
 
-        // Bits 0..2: existing biology; bit 3: mooncore fabrication knowledge only.
+        // 第 0 至 2 位保存已有生物研究，第 3 位只解锁月核制作知识。
         public int HaloResearchBranches;
 
-        // Account facts; never merged from a client/raid graph. Bits: recovery, mooncore, archive.
+        // 账号事实不从客户端结果或局内图合并。各位分别表示首次回收、月核与档案。
         public int MissionFirsts;
         public List<InventoryItem> Items = new();
+        // ID 唯一识别某一堆物品，而不是大类。两个相同类型药箱分别拖放时，用各自 ID 来区分。
         public InventoryItem Find(string id) { return Items.Find(i => i.Id == id); }
 
         public InventoryGraph Clone() {
@@ -326,6 +329,7 @@ namespace Unity.MP_FPS.Inventory {
             return Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         }
 
+        // 按 Parent 追到最外层，可以判断一件背包里的东西属于玩家、仓库还是地上箱子。负重和出战都要查整个父链。
         public string RootOf(string id) {
             var item = Find(id);
             for (int n = 0; item != null && n <= InventoryCatalog.MaxDepth; n++) {
@@ -344,12 +348,14 @@ namespace Unity.MP_FPS.Inventory {
             return Items.Where(i => i.Code == code && (!carriedOnly || Carried(i))).Sum(i => i.Quantity);
         }
 
+        // 随身所有层级物品均计进重量。在两层包里藏同样东西也增加相同负重，仓库里的物品不算。
         public float CarriedWeight => Items.Where(Carried).Sum(i => InventoryCatalog.Get(i.Code).Weight * i.Quantity);
 
         public InventoryItem Equipped(string slot) {
             return Items.Find(i => i.Parent == InventoryCatalog.Equipment && i.Region == slot);
         }
 
+        // 角色背包有装备与口袋根，账号档再加仓库根。局内状态不带整个账号仓库，避免一次出战接管无关装备。
         public static InventoryGraph Create(bool stash = true, bool starter = true) {
             var g = new InventoryGraph();
             foreach (string root in
@@ -366,6 +372,7 @@ namespace Unity.MP_FPS.Inventory {
             return g;
         }
 
+        // 开新库存或旧版迁移时按需求补武器。后续物品组合访问同一图结构，不把刀、枪和改装另存为一份。
         public void AddStarterWeapons(bool equipped = false) {
             if (WeaponKitVersion >= 1) return;
             foreach (var pair in new[] {
@@ -393,6 +400,7 @@ namespace Unity.MP_FPS.Inventory {
             WeaponKitVersion = 1;
         }
 
+        // 放物品先从具体容器类型查有效区块。是否装备槽、仓库可变行数、以及特殊光环挂点都影响怎样放。
         private InventoryRegion RegionFor(string parent, string region) {
             string code = Find(parent)?.Code;
             if (region == InventoryCatalog.HaloCargoRegion.Id && InventoryCatalog.CanStoreHaloCargo(code))
@@ -401,6 +409,7 @@ namespace Unity.MP_FPS.Inventory {
                    (HaloModules.IsWeapon(code) ? HaloModules.Slots.FirstOrDefault(r => r.Id == region) : null);
         }
 
+        // 只验证一个候选位置。检查容器和物品是否兼容、格子尺寸与重叠、禁止把容器放进自己的子孙和其他特殊限制。
         public InventoryError CanPlace(
             InventoryItem item,
             string parent,
@@ -432,7 +441,7 @@ namespace Unity.MP_FPS.Inventory {
                     return InventoryError.Incompatible;
                 x = y = 0;
             } else {
-                // Pockets and rig pouches are for supplies, never bags or other wearable gear.
+                // 口袋和胸挂小格用于补给品，不放背包或其他穿戴装备。
                 if ((target.Code == "pockets" || InventoryCatalog.Get(target.Code)?.Kind == ItemKind.Rig) &&
                     definition.Container)
                     return InventoryError.Incompatible;
@@ -454,6 +463,7 @@ namespace Unity.MP_FPS.Inventory {
             return InventoryError.None;
         }
 
+        // 按区域和行列顺序找第一个合规格。直接拖动和自动找位都共享 CanPlace，自动移动也不能叠物品。
         public bool FindSpace(InventoryItem item, string parent, out string region, out int x, out int y) {
             var regions = InventoryCatalog.Get(Find(parent)?.Code)?.Regions;
             if (regions != null)
@@ -481,10 +491,12 @@ namespace Unity.MP_FPS.Inventory {
 
         // 拖动、拆堆和合并先改库存副本。结构、负重和版本全检查通过才替换正式物品并增加版本，失败时旧背包仍完整。
         public InventoryError TryApply(InventoryCommand request, bool enforceWeight = true) {
+            // 界面操作绑定当时看到的图版本。别人先拿走、上一笔已修改或操作发了两次都会让旧版本失效。
             if (request == null || request.ExpectedVersion != Version) return InventoryError.Stale;
-            // Mounting, removing and swapping modules are base-only transactions. Whole
-            // weapon subtrees can still move freely during a raid.
+            // 安装、拆下和替换模块是基地仓库事务。整个武器含子物品
+            // 仍可作为一棵完整物品树在局内移动。
             var source = Find(request.ItemId);
+            // 任务装载槽只允许当局的合适研究物品；普通模块挂装只允许在仓库阶段。移动整个已装备光环仍可随物品树进行。
             if (source?.Region == InventoryCatalog.HaloCargoRegion.Id ||
                 request.Region == InventoryCatalog.HaloCargoRegion.Id) {
                 if (!InventoryCatalog.IsHaloResearchCargo(source?.Code) ||
@@ -497,10 +509,11 @@ namespace Unity.MP_FPS.Inventory {
                        HaloModules.IsWeapon(Find(request.Parent)?.Code)) {
                 if (Find(InventoryCatalog.Stash) == null || Find("loot") != null) return InventoryError.Inaccessible;
             }
+            // 在副本里执行，完成后重新校验整个图。已超重的旧档可以整理或减重，但不能通过一次操作继续增加超重。
             var copy = Clone();
             var error = copy.Apply(request);
             if (error == InventoryError.None) error = copy.Validate();
-            // Rearranging an already-heavy migrated kit is allowed; adding more weight is not.
+            // 旧档已经超重时可以整理原装备，不能继续增加负重。
             if (error == InventoryError.None && enforceWeight &&
                 copy.CarriedWeight > InventoryCatalog.CarryWeightLimit && copy.CarriedWeight > CarriedWeight + .001f)
                 error = InventoryError.Overweight;
@@ -515,6 +528,7 @@ namespace Unity.MP_FPS.Inventory {
             var item = Find(r.ItemId);
             var def = InventoryCatalog.Get(item?.Code);
             if (item == null || def == null || def.Kind == ItemKind.Root) return InventoryError.Missing;
+            // 合堆由数量和电池余量一起决定，来源或类型不合时拒绝。来源已经空则删掉那一堆。
             if (r.Operation == InventoryOperation.Merge) {
                 var target = Find(r.TargetId);
                 int count = r.Quantity == 0 ? item.Quantity : r.Quantity;
@@ -523,6 +537,7 @@ namespace Unity.MP_FPS.Inventory {
                 if (item.Quantity == 0) Items.Remove(item);
                 return InventoryError.None;
             }
+            // 拆堆先试放新堆，再从原数量切出去。新堆有新 ID，旧堆仍保留。
             if (r.Operation == InventoryOperation.Split) {
                 if (def.Container || r.Quantity <= 0 || r.Quantity >= item.Quantity) return InventoryError.Invalid;
                 var split = item.Clone();
@@ -548,7 +563,8 @@ namespace Unity.MP_FPS.Inventory {
             Position(item, r.Parent, r.Region, slot.SlotKind.HasValue ? 0 : r.X, slot.SlotKind.HasValue ? 0 : r.Y,
                 r.Rotated);
             if (displaced != null) {
-                displaced.Parent = null; // Reserve incoming's destination before searching for the replaced kit.
+                // 换装时临时腾出旧装备位置，先试回新装备原位置，再至少找到一个合法空格；失败整笔保留不变。
+                displaced.Parent = null; // 先给新装备占好目标位置，再替换下来的旧装备找位置。
                 if (CanPlace(displaced, oldParent, oldRegion, oldX, oldY, oldRotation) == InventoryError.None)
                     Position(displaced, oldParent, oldRegion, oldX, oldY, oldRotation);
                 else if (FindSpace(displaced, oldParent, out string region, out int x, out int y))
@@ -564,8 +580,9 @@ namespace Unity.MP_FPS.Inventory {
         }
 
         public InventoryError Validate() {
-            // A world-loot snapshot joins two owners; account/actor graphs keep the
-            // original limit. The extra loot root must also fit a maximum-sized drop.
+            // 世界搜刮快照合并两个所有者，正式账号或角色图仍保留
+            // 无合并时的原上限。额外的 loot 根也要能容纳最大的一份掉落。
+            // 合并战利品快照同时含两边物品，数量上限更宽。普通仓库或随身图仍按单个所有者上限查。
             int limit = Items != null && Items.Any(i => i?.Id == "loot")
                 ? InventoryCatalog.MaxItems * 2
                 : InventoryCatalog.MaxItems;
@@ -597,7 +614,7 @@ namespace Unity.MP_FPS.Inventory {
                         return InventoryError.Invalid;
                 } else if (!Guid.TryParse(item.Id, out _) || item.Parent == null) { return InventoryError.Invalid; }
             }
-            // Check every identity/type first: a malformed neighbour must not crash CanPlace.
+            // 先验证每件物品的身份和类型，避免附近损坏记录导致 CanPlace 异常。
             if (!ids.Contains("equipment") || !ids.Contains("pockets")) return InventoryError.Invalid;
             foreach (var item in Items)
                 if (InventoryCatalog.Get(item.Code).Kind != ItemKind.Root) {
@@ -608,8 +625,9 @@ namespace Unity.MP_FPS.Inventory {
             return InventoryError.None;
         }
 
-        // Use the same provenance, capacity and partial-cell rules for previews
-        // and authoritative merges. A rejected candidate must not hide free space.
+        // 预览和正式合堆共用来源、容量与余电规则。
+        // 某个候选不能合并时继续检查空位。
+        // 堆叠不仅看物品码，也要保存物品的来源等字段。电池合并还要遵守每堆最多一节有余量的规则。
         public static bool CanMergeStacks(InventoryItem source, InventoryItem target, int count) {
             var definition = InventoryCatalog.Get(source?.Code);
             return source != null && target != null && definition != null && !definition.Container &&
@@ -618,6 +636,7 @@ namespace Unity.MP_FPS.Inventory {
                    source.EmergencySupply == target.EmergencySupply && BatteryEnergy.CanMerge(source, target, count);
         }
 
+        // 快捷搬东西先在接收方查现有堆和空格，只返回拟执行的库存命令。权威写入仍会重新检查版本与规则。
         public InventoryCommand PlanQuickMove(
             string itemId,
             string parent,
@@ -649,7 +668,7 @@ namespace Unity.MP_FPS.Inventory {
                 { ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y, Rotated = placement.Rotated };
         }
 
-        // Shortcut transfer never searches nested bags. Manual placement still can.
+        // 快捷搬运不会查套在内部的包，手动放置仍允许。
         public IEnumerable<string> QuickTransferContainers() {
             if (Find(InventoryCatalog.Pockets) != null) yield return InventoryCatalog.Pockets;
             var rig = Equipped("ChestRig");
@@ -658,8 +677,9 @@ namespace Unity.MP_FPS.Inventory {
             if (pack != null) yield return pack.Id;
         }
 
+        // 遍历玩家可随身接收物品的根和槽位。快捷转移、创建补给与可访问性有不同需求，按各入口自己的顺序选。
         public IEnumerable<string> CarryContainers() {
-            // Direct pockets/rig access first; backpacks (including nested bags) last.
+            // 优先读一伸手能拿到的口袋和胸挂，最后再找背包和套在里面的包。
             if (Find("pockets") != null) yield return "pockets";
             var rig = Equipped("ChestRig");
             if (rig != null) yield return rig.Id;
@@ -668,6 +688,7 @@ namespace Unity.MP_FPS.Inventory {
                     yield return i.Id;
         }
 
+        // 自动补给需要同时处理多个堆、可用格和原堆属性。操作成功前不能留下发了一半的物资。
         public InventoryError AddSupply(
             string code,
             int quantity,
@@ -703,8 +724,8 @@ namespace Unity.MP_FPS.Inventory {
                 }
             }
             if (supply.Quantity > 0) return InventoryError.Full;
-            // Explicit pockets/rig/backpack destinations must obey the same limit.
-            // Existing overweight saves may still receive items in storage or world loot.
+            // 显式指定口袋、胸挂或背包也要满足同一负重限制。
+            // 早已超重的存档仍可为仓库或世界掉落增添物品。
             if (copy.CarriedWeight > InventoryCatalog.CarryWeightLimit && copy.CarriedWeight > CarriedWeight + .001f)
                 return InventoryError.Overweight;
             var validation = copy.Validate();
@@ -724,20 +745,22 @@ namespace Unity.MP_FPS.Inventory {
             return true;
         }
 
+        // 医疗、食品和电池不是随便背在仓库里就可用。按动作查带在身上的可达容器，再交给消耗事务。
         public bool MedicalAccessible(InventoryItem item) {
             return item != null && ConsumableCatalog.MedicalRestore(item.Code) > 0 &&
                    (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
         }
 
-        // Food/water may be used from any carried bag. Emergency suit canisters
-        // must be immediately accessible in a pocket or the equipped chest badge.
-        // Joined loot snapshots and the personal stash are never consumable here.
+        // 食物与水可以从任意随身包取。应急补氧罐
+        // 至少要放在口袋或已装备胸挂等可立刻取用的区域。
+        // 合并后的世界箱视图和个人仓库在这里都不能使用消耗品。
         public bool ConsumableAccessible(InventoryItem item) {
             return item != null && ConsumableCatalog.Get(item.Code) != null && Carried(item) &&
                    (ConsumableCatalog.Get(item.Code).Oxygen <= 0 || item.Parent == InventoryCatalog.Pockets ||
                     item.Parent == Equipped("ChestRig")?.Id);
         }
 
+        // 扣除一次消耗前核对版本和物品仍有效。用完的堆删掉并递增版本，让后发的旧动作失效。
         public InventoryError ConsumeOne(string itemId, int expectedVersion) {
             if (expectedVersion != Version) return InventoryError.Stale;
             var item = Find(itemId);
@@ -749,8 +772,8 @@ namespace Unity.MP_FPS.Inventory {
             return InventoryError.None;
         }
 
-        // Only the match server commits this result. Full health/death/stale versions
-        // leave both health and the stack untouched; a replay cannot consume it twice.
+        // 这步只由战局服务器提交。身体已满、死亡或者版本过时，
+        // 生命与物品堆都维持原样，重发也不会消费两份。
         public InventoryError UseMedical(
             string itemId,
             int expectedVersion,
@@ -784,7 +807,8 @@ namespace Unity.MP_FPS.Inventory {
                 .Sum(BatteryEnergy.Stored);
         }
 
-        // Called once by the server when authorizing a reload; prediction uses its target ammo.
+        // 服务器批准换弹时只调用一次。预测只使用确定好的弹药目标值。
+        // 旧武器补弹按要增加的弹数换算电量。取可访问电池，在空间和电量够时才一起改弹药结果。
         public bool TryRecharge(int currentAmmo, int magazineSize, int energyPerRound, out int targetAmmo) {
             targetAmmo = currentAmmo;
             if (currentAmmo < 0 || magazineSize <= currentAmmo || energyPerRound < 1) return false;
@@ -840,13 +864,14 @@ namespace Unity.MP_FPS.Inventory {
             return raid;
         }
 
+        // 将随身树归回账号图时仍要核对同一 ID 是否重复、存放位置是否合法。仓库不够的在正式结算走回收箱。
         public InventoryError ReturnLoadout(InventoryGraph raid) {
             if (raid == null || raid.Validate() != InventoryError.None) return InventoryError.Invalid;
             var copy = Clone();
             foreach (var source in raid.Items.Where(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root))
                 if (copy.Find(source.Id) != null)
                     return InventoryError.Invalid;
-            // Restore root children into equipment/pockets where available, otherwise store whole subtrees.
+            // 先尝试把随身的顶层物品恢复到装备或口袋，否则把整个物品子树一起放仓库。
             foreach (var top in raid.Items.Where(i => i.Parent == "equipment" || i.Parent == "pockets")) {
                 var item = top.Clone();
                 if (copy.CanPlace(item, item.Parent, item.Region, item.X, item.Y, item.Rotated) !=
@@ -872,8 +897,8 @@ namespace Unity.MP_FPS.Inventory {
         }
     }
 
-    // A case only protects its tree while equipped in the dedicated slot.
-    // Failure returns never grant extraction flags, mission facts or rewards.
+    // 保险箱装在专用槽中时才保护其全部子物品。
+    // 失败仍退回的物品不授予成功撤离标记、任务进度或奖励。
     public static class SecureInventory {
         public static bool Allowed(string code) {
             var def = InventoryCatalog.Get(code);
@@ -886,6 +911,7 @@ namespace Unity.MP_FPS.Inventory {
                    def.Kind == ItemKind.UtilityModule;
         }
 
+        // 出战失败时，先找保险区和允许退还的特殊装备，再保留这些容器完整子树。没被保护的交掉落端。
         public static HashSet<string> ProtectedIds(InventoryGraph graph) {
             var ids = new HashSet<string>();
             var equipped = graph.Equipped("SecureContainer");
@@ -905,6 +931,7 @@ namespace Unity.MP_FPS.Inventory {
             return ids;
         }
 
+        // 截取失败仍能返回的物品，形成一份独立的可结算图。原本在掉落中的未保护物品不会在这里再复制。
         public static InventoryGraph FailureReturn(InventoryGraph raid) {
             if (raid == null || raid.Validate() != InventoryError.None || raid.Find("stash") != null ||
                 raid.Find("loot") != null)
@@ -919,8 +946,8 @@ namespace Unity.MP_FPS.Inventory {
         }
     }
 
-    // Shared by online/offline ReturnLoadout so inventory and first rewards commit together.
-    // No UI discovery, accepted-task list or pinned-state input can affect this calculation.
+    // 线上和离线的 ReturnLoadout 共用，使库存与首次奖励一起提交。
+    // UI 界面是否发现任务、当前接过什么或追踪什么都不参与这项判断。
     public static class MissionInventory {
         public const int FirstRecovery = 1, FirstMooncore = 2, FirstArchive = 4;
 
@@ -928,6 +955,7 @@ namespace Unity.MP_FPS.Inventory {
             return code == "mooncore_fragment" || code == "mc00_archive_drive";
         }
 
+        // 任务样本除了物品码，还要含当初任务操作的来源标记。背包中摆一件同名物品不能作为真实任务产物。
         public static bool ValidSource(InventoryItem item) {
             if (!IsArtifact(item.Code))
                 return item.MissionWorldId == null && item.MissionOperationId == null &&

@@ -42,18 +42,20 @@ namespace Unity.MP_FPS {
             var raid = m_Raid.GetSingletonEntity();
             var snapshot = EntityManager.GetComponentData<RaidClientState>(raid).Snapshot;
             var inventory = EntityManager.GetComponentObject<RaidInventoryClientState>(raid);
-            // Only a complete server inventory for this raid grants the effect. No optimistic UI state.
+            // 识别器效果依赖本局完整的服务器库存快照，菜单预览装备不会提前生效。
             if (snapshot.Sequence == 0 || snapshot.Phase != RaidPhase.Active || snapshot.DeployPending ||
                 inventory.Sequence == 0 || inventory.RaidId != snapshot.RaidId || inventory.Graph == null) {
                 Clear();
                 return;
             }
+            // 完整快照已经确认属于这一局后，只在图对象或版本改变时重查装备槽，免得每帧遍历整个库存。
             if (m_Graph != inventory.Graph || m_Version != inventory.Graph.Version) {
                 m_Graph = inventory.Graph;
                 m_Version = m_Graph.Version;
                 m_Equipped = TeamOutlineRules.Equipped(m_Graph);
             }
-            // GhostOwnerIsLocal is enableable: GetSingletonEntity is not valid for this query.
+            // GhostOwnerIsLocal 可以启用或禁用，这种查询不能直接用 GetSingletonEntity。
+            // 只接受唯一的本地玩家实体。所有权切换或玩家暂时未出生时，把上一角色留下的轮廓释放掉。
             using var owners = m_Owner.ToEntityArray(Allocator.Temp);
             if (owners.Length != 1) {
                 ReleaseTargets();
@@ -87,13 +89,16 @@ namespace Unity.MP_FPS {
                          .WithAll<GhostGameObjectLink>().WithEntityAccess()) {
                 if (entity == owner || count >= TeamOutlineRules.MaxTeammates) continue;
                 bool human = identity.ValueRO.NetworkId > 0;
+                // 人机同伴用小队编号认，真人和其他队友用玩法的队伍规则认。有识别器和没识别器时显示资格不同。
                 bool companion = TeamOutlineRules.Companion(viewer, health.ValueRO, human);
                 if (!companion &&
                     !(m_Equipped && TeamOutlineRules.Teammate(viewer, health.ValueRO, ownerId > 0, human)))
                     continue;
                 var other = EntityManager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
                 if (!other || !other.gameObject.activeInHierarchy) continue;
+                // 没装备识别器时，同伴需要在近处、视线可达且没被烟挡住，才能保留提示。
                 if (!m_Equipped && !CompanionVisible(camera, other.transform)) continue;
+                // 同一个 ECS 实体可能换了关联模型。缓存绑定到具体模型，换了就释放旧缓存再取新渲染器。
                 if (!m_Targets.TryGetValue(entity, out var target) || target.Root != other.gameObject) {
                     target?.Dispose();
                     m_Targets[entity] = target = new Target(other.gameObject);
@@ -113,6 +118,7 @@ namespace Unity.MP_FPS {
                 m_Targets[entity].Dispose();
                 m_Targets.Remove(entity);
             }
+            // 收完当帧还有效的渲染器，才发布给本地拥有者的相机。这些列表不会通过网络同步。
             m_Renderer.Publish(camera, m_Renderers, UnityEngine.Time.realtimeSinceStartupAsDouble);
         }
 
@@ -148,6 +154,7 @@ namespace Unity.MP_FPS {
             private readonly Animator m_Animator;
             private readonly AnimatorCullingMode m_Culling;
 
+            // 轮廓可能在角色普通画面被裁掉时仍要绘制。暂时调整动画与蒙皮更新设置，同时保存每个原值供退出时恢复。
             internal Target(GameObject root) {
                 Root = root;
                 Renderers = root.GetComponentsInChildren<SkinnedMeshRenderer>(true);

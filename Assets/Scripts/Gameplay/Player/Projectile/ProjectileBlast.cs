@@ -8,9 +8,10 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
     public static class ProjectileBlast {
+        // 中心一小圈保持满伤害，从这个范围边沿向外逐渐下降，到爆炸半径处归零。
         private const float InnerRadiusFraction = .25f;
 
-        // Authoritative projectile impacts run serially on the main thread.
+        // 真实投射物的命中在主线程依次结算。
         private static readonly List<Collider> s_Colliders = new(32);
 
         public static float DamageAt(float damage, float radius, float distance) {
@@ -20,6 +21,7 @@ namespace Unity.MP_FPS {
             return damage * Mathf.Min(1, (1 - distance / radius) / (1 - InnerRadiusFraction));
         }
 
+        // 一只角色可以有多个身体碰撞体。选择其中离爆点最近的实物表面，单用角色根坐标会低估大体型。
         private static Vector3 ClosestBodyPoint(Transform root, Vector3 origin) {
             var point = root.position + Vector3.up * .8f;
             float nearest = float.PositiveInfinity;
@@ -39,8 +41,8 @@ namespace Unity.MP_FPS {
             return point;
         }
 
-        // Health entities are the victim identity. Alien rigs and PMC limbs can
-        // have many colliders, on different layers; none can multiply the blast.
+        // 受害者按拥有生命数据的实体识别。异形或 PMC 可能有许多碰撞体，
+        // 即使挂在不同物理层，也不会因此让同一爆炸扣多次。
         public static int Apply(
             World world,
             PhysicsScene scene,
@@ -79,16 +81,18 @@ namespace Unity.MP_FPS {
                 if (health.CurrentHealth <= 0) continue;
                 var point = ClosestBodyPoint(root.transform, origin);
                 float amount = DamageAt(damage, radius, Vector3.Distance(origin, point));
+                // 先确认距离衰减结果，再检查爆点到这个表面是否被障碍挡住。两项都通过才按一次爆炸伤害结算。
                 if (amount <= 0 || !EnergyGrenadePhysics.ClearSight(scene, origin, point, root.transform)) continue;
                 var before = health;
-                // A blast is one combat impact; the unified damage entry splits residual tissue damage.
+                // 一次爆炸只发一个战斗命中。护盾处理完的剩余伤害由统一入口分配到身体部位。
                 BountyClashDamage.Apply(world, entity, source, BodyPart.Auto, amount, tick, RaidDamageKind.Explosion,
                     (Mathematics.float3)origin);
                 health = manager.GetComponentData<PredictedPlayerGhost>(entity);
                 byte impact = RaidHealth.ImpactFlags(before, health);
                 if (impact == 0) continue;
                 victims++;
-                // Self damage is real, but cannot confirm an opponent hit or kill.
+                // 自伤会真实结算，但不能算对敌方的命中或击杀。
+                // 自伤会真实扣血，但不发对敌人命中确认。
                 if (!BountyClashDamage.IsSelf(world, entity, source)) flags |= impact;
             }
             return victims;

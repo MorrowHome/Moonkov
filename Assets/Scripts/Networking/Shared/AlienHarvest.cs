@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Inventory {
         public const float DissectionSeconds = 6;
         public const int NeuralOrganChancePercent = 12;
 
+        // 先创建单独异形遗体容器，再按类型和是否 Boss 加入对应的一组物品。不会直接修改搜刮者背包。
         public static InventoryGraph Create(bool boss, Random random, string species = null) {
             if (random == null) throw new ArgumentNullException(nameof(random));
             var graph = InventoryGraph.Create(false, false);
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS.Inventory {
             return graph;
         }
 
+        // 每个掉落物仍要能放进遗体箱，放不下的条目跳过。只有实际出现的才可能进入后面的搜索和拾取。
         private static void Add(InventoryGraph graph, string code, int quantity) {
             if (graph.AddSupply(code, quantity, LootInventoryExchange.Root, true) != InventoryError.None)
                 throw new InvalidOperationException("Alien harvest does not fit: " + code);

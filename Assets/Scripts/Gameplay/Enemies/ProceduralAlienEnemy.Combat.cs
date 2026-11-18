@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
         private void UpdateSpeciesCombat(float dt, PredictedPlayerGhost health) {
             var manager = GhostGameObject.EntityManager;
             TickMucusProjectile();
+            // 当前在覆面附着阶段就专门推进附着，没附着才继续选择其它攻击。
             if (m_Action == AlienAction.Attached) {
                 TickFaceAttachment(dt, health.CurrentHealth);
                 return;
@@ -38,12 +39,15 @@ namespace Unity.MP_FPS {
                 m_Visible = false;
             }
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
+            // 玩家线索消失后可被设备响声吸引。设备位置给调查路线，不会被当成一个攻击对象。
             bool investigating = !remembered && m_Clock < m_MissionAlarmUntil;
+            // Boss 在展示或已经开始快速换位时先把那段动作走完。普通选招等它交回控制。
             if (TickBossDisplay(dt, health, remembered)) return;
             if (TickBossMobility(dt, health, remembered)) return;
             float age = m_Clock - m_ActionStarted;
             if ((m_Action == AlienAction.Windup || m_Action == AlienAction.Strike) && !living) {
                 ChangeAction(AlienAction.Recover);
+            // 蓄力结束进入有效命中窗口。部分招式在这一拍发出弹体或让身体起跳，其它招式按节拍结算。
             } else if (m_Action == AlienAction.Windup && age >= m_Pattern.Windup) {
                 ChangeAction(AlienAction.Strike);
                 m_Pulse = 0;
@@ -64,6 +68,7 @@ namespace Unity.MP_FPS {
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction
                     ? (byte)2
                     : (byte)1;
+                // 可选目标要还记得并且现在真的可见。等冷却结束后再从种族允许的攻击里挑一招。
                 bool committed = remembered && m_Visible && m_Clock >= m_NextAttack &&
                                  TryChooseAttack(phase, out var next) && CommitAttack(next, phase);
                 if (!committed)
@@ -72,6 +77,7 @@ namespace Unity.MP_FPS {
             }
             var intent = Vector3.zero;
             float speed = 0;
+            // 突进类的位移沿已经选定的方向执行。其它移动交给追击目标与可用导航。
             if (m_Action == AlienAction.Strike && m_Pattern.Speed > 0) {
                 intent = Vector3.ProjectOnPlane(m_CombatDirection, m_Body.Motor.Current.Up).normalized;
                 speed = m_Pattern.Speed;
@@ -86,6 +92,7 @@ namespace Unity.MP_FPS {
                     ? HuntGoal(m_Visible ? m_LastSeen : SearchGoal(), out pause)
                     : PatrolGoal();
                 if (!pause && (profile.IsUpright || profile.Boss)) goal = UprightWaypoint(goal);
+                // 普通异形有表面图时可以翻墙追击。直立型和 Boss 已经用地面路线，避免两套导航一起改方向。
                 var graph = pause || profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal)) {
                     if (graph.TryGetSteering(m_Route, m_Body.Motor, goal, m_Clock, out var waypoint))
@@ -101,7 +108,7 @@ namespace Unity.MP_FPS {
                     speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
                 if (pause)
                     speed = 0;
-                // The path cursor owns arrival. Keep moving into its tolerance without stepping past the waypoint.
+                // 路径进度决定是否到达。允许走进到点容差，步长不能跨过目标点。
                 else if (!motor.Transitioning) speed = Mathf.Min(speed, travel.magnitude / Mathf.Max(.001f, dt));
             }
             var facingIntent =
@@ -123,6 +130,7 @@ namespace Unity.MP_FPS {
             if (m_Action == AlienAction.Strike) ResolveSpeciesAttack(previous);
         }
 
+        // 选招前先做这一招自己的触及检查。距离够但目标在身体后侧、不同高度或不在正确范围时仍不能出。
         private bool CanBeginSpeciesAttack(AlienCombatPattern next) {
             var target = ContactPoint(m_Target);
             float glare = ReadGhostComponentData<PredictedPlayerGhost>().HaloLightGlare;
@@ -138,8 +146,8 @@ namespace Unity.MP_FPS {
                     Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized, next.Radius,
                     m_Body.Motor.BodyHeight))
                 return false;
-            // A heavy mantle cannot warn forward and then sweep behind itself.
-            // Roots erupt remotely and do not require a forward-facing melee arc.
+            // 重甲扫击的伤害方向要与往前给出的预警一致。
+            // 根须可以在别处破土，无需在面朝方向的近战扇区内。
             return !profile.Boss || profile.Species == AlienSpecies.Roots || Vector3.Angle(transform.forward,
                 Vector3.ProjectOnPlane(target - transform.position, Vector3.up)) <= 60;
         }
@@ -178,9 +186,10 @@ namespace Unity.MP_FPS {
                 var sightOrigin = AimPoint;
                 bool hit = false;
                 switch (m_Pattern.Kind) {
+                    // 巨蛛用本步真实位移扫过的线判断撞到了谁。角色躲开实际轨迹就不会因为站在预告终点附近而必中。
                     case AlienAttackKind.SpiderRush:
-                        // Swept damage follows the actual body, not the warned destination.
-                        // The warning includes the victim radius and the rounded end caps.
+                        // 扫掠伤害跟随身体的实际运动路径，预警终点只供玩家参考。
+                        // 预警轮廓计入受击者半径和两端半圆。
                         hit = DistanceToSegment(Vector3.ProjectOnPlane(point, Vector3.up),
                                   Vector3.ProjectOnPlane(previous, Vector3.up),
                                   Vector3.ProjectOnPlane(transform.position, Vector3.up)) <= m_Pattern.Radius &&
@@ -201,6 +210,7 @@ namespace Unity.MP_FPS {
                     case AlienAttackKind.Charge:
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius + .35f;
                         break;
+                    // 覆面虫的目标是头部，扫过时要用头的位置查交叉，普通撞击才用常规身体点。
                     case AlienAttackKind.FaceLeap:
                         point = TargetHead(entity).position;
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius;
@@ -215,8 +225,9 @@ namespace Unity.MP_FPS {
                         sightOrigin = centre + Vector3.up * .25f;
                         hit = GroundDistance(point, centre) <= m_Pattern.Radius && Mathf.Abs(point.y - centre.y) < 2;
                         break;
+                    // 前后节拍可有三片分开的地刺范围。三片之间留出间隙，处在空隙中的角色可躲。
                     case AlienAttackKind.RootSpikes:
-                        // Three marked patches leave open lanes between the eruptions.
+                        // 地刺在三个分开的预警区冒出。它们之间留有可躲避的空隙。
                         var right = Vector3.Cross(Vector3.up, m_CombatDirection);
                         hit = GroundDistance(point, centre) <= m_Pattern.Radius ||
                               GroundDistance(point, centre + right * (m_Pattern.Radius * 2.7f)) <= m_Pattern.Radius ||
@@ -236,8 +247,9 @@ namespace Unity.MP_FPS {
                         break;
                 }
                 var root = manager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
+                // 几何范围命中后再看场景遮挡，Boss 远程落点还要从出招处确认看得到。
                 if (!hit || !ClearSight(sightOrigin, point, root.transform)) continue;
-                // Remote patches cannot damage a player behind a wall or on a hidden floor.
+                // 远处的落点也不能打到隔墙或藏在其他楼层的玩家。
                 if (profile.Boss && !ClearSight(m_CombatOrigin, point, root.transform)) continue;
                 m_StrikeVictims.Add(entity);
                 if (m_Pattern.Kind == AlienAttackKind.FaceLeap) {
@@ -257,6 +269,7 @@ namespace Unity.MP_FPS {
             var manager = GhostGameObject.EntityManager;
             if (!IsLivingHumanoid(manager, target)) return 0;
             var health = manager.GetComponentData<PredictedPlayerGhost>(target);
+            // 真实伤害走共用部位和防护结算，得到实际扣掉的量。吸血技能据此算能回复多少。
             float damaged = RaidHealth.CombatDamage(manager, target, ref health, part, amount,
                 GhostGameObject.GetCurrentTick(), RaidDamageKind.Melee);
             manager.SetComponentData(target, health);
@@ -281,7 +294,7 @@ namespace Unity.MP_FPS {
 
         // 附着身份使用可在客户端换算的 Ghost 实体。开始前检查有没有另一只异形已经占住这个目标。
         private void AttachFace(Entity target) {
-            // One face parasite per victim; identity is a remapped Ghost Entity.
+            // 每个目标最多附着一只覆面虫。身份用能在不同 World 映射的 Ghost Entity。
             var manager = GhostGameObject.EntityManager;
             using var query = manager.CreateEntityQuery(typeof(State));
             using var states = query.ToComponentDataArray<State>(Allocator.Temp);
@@ -293,6 +306,7 @@ namespace Unity.MP_FPS {
             ChangeAction(AlienAction.Attached);
         }
 
+        // 附着中跟随目标头部，并按节拍处理生命变化。到期、目标消失或自身受伤等情况可释放。
         private void TickFaceAttachment(float dt, float health) {
             var manager = GhostGameObject.EntityManager;
             if (!IsLivingHumanoid(manager, m_AttachedTarget) ||
@@ -321,6 +335,7 @@ namespace Unity.MP_FPS {
             ChangeAction(AlienAction.Recover);
         }
 
+        // 客户端用服务器攻击类型、阶段和序号重建这次招式的时间轴，再交给对应特效。
         private void ObserveSpeciesAttack(State state) {
             m_BossPhase = state.BossPhase;
             m_Pattern = AlienCombatPattern.For(profile, state.BossPhase, state.AttackSequence, state.AttackKind);

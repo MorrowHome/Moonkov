@@ -11,10 +11,11 @@ namespace Unity.MP_FPS {
         public bool Aiming;
     }
 
-    /// <summary>Bounded physical checks shared by server encounter placement and authoring.</summary>
+    /// <summary>服务端布置遭遇和场景配置共用的有限物理查询。</summary>
     public static class RaidSpawnSafety {
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
 
+        // 候选点先向下找地面。站得下、斜坡没太陡且胶囊空间没被占，才能当作一个落脚点。
         public static bool TryGroundPosition(
             Vector3 candidate,
             float radius,
@@ -29,7 +30,7 @@ namespace Unity.MP_FPS {
             if (!UnityEngine.Physics.Raycast(candidate + Vector3.up * 2, Vector3.down, out var hit, 6, s_WorldMask,
                     QueryTriggerInteraction.Ignore) || Vector3.Angle(hit.normal, Vector3.up) > maxSlope)
                 return false;
-            // Keep the lower capsule clear of sloping ground; do not sample a different floor.
+            // 胶囊下部要避开斜坡，并且落在同一层地面。
             float clearance = .06f + radius * Mathf.Tan(Vector3.Angle(hit.normal, Vector3.up) * Mathf.Deg2Rad);
             var bottom = hit.point + Vector3.up * (radius + clearance);
             var top = hit.point + Vector3.up * (height - radius + clearance);
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 候选点离观察者太近直接放弃。再按距离、朝向与遮挡检查对方能否看到将要出生的角色。
         public static bool IsSafeFromObservers(
             Vector3 position,
             IReadOnlyList<RaidSpawnObserver> observers,
@@ -52,7 +54,7 @@ namespace Unity.MP_FPS {
                 if (!observer.CheckVisibility || distance > visibilityDistance) continue;
                 var eye = observer.Position + Vector3.up * 1.6f;
                 var direction = position + Vector3.up * .7f - eye;
-                // Conservatively cover a 120-degree cone. An unknown direction checks all sides.
+                // 按 120 度视锥保守检查。观察方向未知时看四周。
                 if (observer.Forward.sqrMagnitude > .01f &&
                     Vector3.Dot(observer.Forward.normalized, direction.normalized) < .5f)
                     continue;
@@ -75,8 +77,9 @@ namespace Unity.MP_FPS {
                     QueryTriggerInteraction.Ignore) || Vector3.Angle(floor.normal, Vector3.up) > 18)
                 return false;
             normal = floor.normal;
+            // 箱子的朝向和地面坡度一起算。接下来按实际朝向检查四角是否有同一平面的支撑。
             var rotation = Quaternion.FromToRotation(Vector3.up, normal) * Quaternion.Euler(0, yaw, 0);
-            // All four skid corners must have support on the same floor, away from ledges.
+            // 底部四角必须都由同一层地面托住，且离开边沿。
             for (int x = -1; x <= 1; x += 2)
             for (int z = -1; z <= 1; z += 2) {
                 var corner = floor.point + rotation * new Vector3(x * .51f, 0, z * .37f);
@@ -85,11 +88,12 @@ namespace Unity.MP_FPS {
                     return false;
                 if (Mathf.Abs(Vector3.Dot(support.point - corner, normal)) > .12f) return false;
             }
+            // 物资箱本体要避开障碍物，至少有一条长边旁能站人交互，避免摆出有箱子却够不着的位置。
             position = floor.point + normal * .35f;
             if (UnityEngine.Physics.CheckBox(position + normal * .035f, new Vector3(.58f, .31f, .43f), rotation,
                     s_WorldMask, QueryTriggerInteraction.Ignore))
                 return false;
-            // At least one long side must offer a standing interaction spot.
+            // 至少有一条长边旁能站人交互。
             for (int side = -1; side <= 1; side += 2)
                 if (TryGroundPosition(position + rotation * new Vector3(0, 0, side * 1.25f), .35f, 1.8f, 40,
                         out var access, out _) && Mathf.Abs(access.y - floor.point.y) < .6f)

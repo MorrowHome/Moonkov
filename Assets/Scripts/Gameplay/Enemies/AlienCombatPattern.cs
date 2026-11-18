@@ -20,17 +20,18 @@ namespace Unity.MP_FPS {
         SpiderRake
     }
 
-    /// <summary>Species define different timing and hit geometry. Boss phase is
-    /// committed at windup, so a health change cannot silently resize a warning.</summary>
+    /// <summary>不同物种有各自的出招节拍和命中形状。
+    /// Boss 阶段在蓄力开始时确定，后续血量变化也不会改掉已经显示的预警。</summary>
     public struct AlienCombatPattern {
         public AlienAttackKind Kind;
         public float Range, Radius, Windup, Active, Recovery, DamageScale, Speed;
         public int Pulses;
 
-        // One shared clock for authoritative damage, warning flashes and impact audio.
+        // 服务端伤害、预警闪烁和命中音效共用同一个时钟。
         // 某些技能有好几次伤害节拍。这里把每一拍换算成攻击开始后多少秒。
         public float PulseTime(int pulse) { return .08f + pulse * Active / Mathf.Max(1, Pulses); }
 
+        // 用当前动作经过的秒数换出现在第几拍，第一次命中以前用 -1 表示尚未开始。
         public int PulseAt(float age) {
             return age < PulseTime(0)
                 ? -1
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS {
                     Mathf.Max(0, Pulses - 1));
         }
 
+        // 根须尖刺的后一拍沿攻击方向移动，其他技能可以沿用原攻击中心。
         public Vector3 PulsePoint(Vector3 point, Vector3 direction, int pulse) {
             return Kind == AlienAttackKind.RootSpikes
                 ? point + direction * (Mathf.Clamp(pulse, 0, Mathf.Max(0, Pulses - 1)) * Radius * 1.6f)
@@ -50,6 +52,7 @@ namespace Unity.MP_FPS {
             Vector3 direction,
             float radius,
             float bodyHeight) {
+            // 扫击先在水平面上算距离和扇区，另比较高度，避免同一方向不同楼层也算命中。
             var delta = Vector3.ProjectOnPlane(point - origin, Vector3.up);
             return delta.magnitude <= radius && Vector3.Angle(direction, delta) <= 65 &&
                    Mathf.Abs(point.y - origin.y + bodyHeight) < 2;
@@ -61,9 +64,10 @@ namespace Unity.MP_FPS {
             uint sequence,
             AlienAttackKind? committed = null) {
             float scale = Mathf.Clamp(profile.Scale, .1f, 4);
+            // 巨蛛突进和扫击有自己按实际体型调好的参数。这里专门处理，喷吐仍能走通用逻辑。
             if (profile.IsSpiderBoss && committed != AlienAttackKind.MucusSpit) {
-                // World-space ranges belong to the boss profile. Do not multiply a
-                // large spider's reach or speed by the generic creature size again.
+                // Boss 配置里的距离已经是世界空间数值。
+                // 巨蛛的触及距离和速度无需再乘通用的异形尺寸。
                 bool rush = committed == AlienAttackKind.SpiderRush;
                 float active = rush ? Mathf.Max(.4f, profile.SpiderStrikeSeconds) : .45f;
                 float range = rush ? profile.SpiderAmbushRange : profile.AttackReach * scale;
@@ -194,7 +198,7 @@ namespace Unity.MP_FPS {
                 p.Recovery *= .65f;
                 if (p.Kind == AlienAttackKind.TentacleSweep) p.Range = p.Radius * .9f;
             }
-            // Bound large profiles without shrinking their attacks into their own body.
+            // 大型怪物也对数值设上限，同时保留能打到体外的触及范围。
             float reachScale = profile.IsUpright ? scale : Mathf.Clamp(scale / .65f, .7f, 1.8f);
             p.Range *= reachScale;
             if (p.Kind != AlienAttackKind.MucusSpit) p.Radius *= reachScale;
@@ -203,8 +207,8 @@ namespace Unity.MP_FPS {
                 p.Recovery *= .85f;
             }
             if (profile.Boss) {
-                // Giant limbs must reach their visible tips. Retain local slam/spike
-                // patches and a readable minimum warning even during enrage.
+                // 巨型肢体需要打到画面上能看到的尖端。
+                // 狂暴时也保留局部重击和地刺范围，以及人能看清的最短预警。
                 float limbReach = profile.Branch.reach * scale * 1.1f;
                 if (p.Kind == AlienAttackKind.TentacleSweep) p.Range = p.Radius = limbReach;
                 if (p.Kind == AlienAttackKind.TentacleSlam || p.Kind == AlienAttackKind.RootSpikes)
@@ -229,11 +233,12 @@ namespace Unity.MP_FPS {
         Face
     }
 
-    // Each client owns its gates; the first snapshot establishes a baseline, including late join.
+    // 每个客户端自己防重复。刚加入时收到的第一包也只用来建立基线。
     public struct AlienAttackEvents {
         private bool m_Observed;
         private uint m_Attack, m_Launch, m_Impact;
 
+        // 客户端保存已见过的发射序号。刚加入先登记基线，避免补播别人在几秒前发射的声音和粒子。
         public bool Launch(in ProceduralAlienEnemy.State state) {
             if (!m_Observed) {
                 m_Observed = true;
@@ -251,6 +256,7 @@ namespace Unity.MP_FPS {
 
         private bool m_ImpactObserved;
 
+        // 命中用独立序号去重。一次技能发出和后来打中是两个不同事件。
         public bool Impact(in ProceduralAlienEnemy.State state) {
             if (!m_ImpactObserved) {
                 m_ImpactObserved = true;

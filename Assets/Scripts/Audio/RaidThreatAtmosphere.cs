@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client presentation for the authored raid route. Never drives enemy AI or spawning.</summary>
+    /// <summary>根据已布置的战局路线播放客户端环境表现。敌人 AI 与刷新各由玩法系统负责。</summary>
     [DisallowMultipleComponent]
     public sealed class RaidThreatAtmosphere : MonoBehaviour {
         [SerializeField] private SoundDef environmentBed;
@@ -35,7 +35,7 @@ namespace Unity.MP_FPS {
             m_Map = GetComponent<MoonRaidMap>();
             m_System = game.SoundSystem;
             m_Random = new System.Random(System.Guid.NewGuid().GetHashCode());
-            // Runtime profile leaves authored sky, exposure, bloom and other maps untouched.
+            // 运行时配置沿用场景自带的天空、曝光和泛光，不影响其他地图。
             var root = new GameObject("Raid atmosphere volume");
             root.transform.SetParent(transform, false);
             m_Volume = root.AddComponent<Volume>();
@@ -60,6 +60,7 @@ namespace Unity.MP_FPS {
                 m_ContextGain = Mathf.MoveTowards(m_ContextGain, 1, Time.unscaledDeltaTime * .7f);
                 m_ContextBed.Handle.Emitter.SetVolume(m_ContextGain);
             }
+            // 压力、建筑音和本机环境最多间隔采样。已有底噪仍逐帧调音量，切状态听起来是连续的。
             if (Time.time < m_NextSample) return;
             m_NextSample = Time.time + .5f;
             if (!m_Map || m_System == null ||
@@ -73,6 +74,7 @@ namespace Unity.MP_FPS {
             var state = player.GhostGameObject.ReadGhostComponentData<PredictedPlayerGhost>();
             BindCamera(player.GetPlayerCamera());
             var listener = player.CameraTarget ? player.CameraTarget.position : player.transform.position;
+            // 有氧舱室和真空服用不同背景声。角色跨过气闸时替换对应声层，并从低音量逐步进入。
             var contextSound =
                 state.BreathableAir ? MoonkovAudio.Library?.InteriorVent : MoonkovAudio.Library?.SuitVent;
             if (contextSound != m_ContextSound || (contextSound && !Valid(m_ContextBed))) {
@@ -83,6 +85,7 @@ namespace Unity.MP_FPS {
             }
             bool nearby = ProceduralAlienEnemy.TryGetNearbySoundSource(player.World, listener,
                 creatureSoundRange, out var source);
+            // 最近异形越近，压迫度越高。用同一个平滑值微调底噪和暗角，异形自己的叫声仍由它的表现脚本管。
             float pressure = nearby ? 1 - Mathf.Clamp01(Vector3.Distance(listener, source) / creatureSoundRange) : 0;
             m_Pressure = Mathf.MoveTowards(m_Pressure, pressure, .15f);
             m_Volume.weight = Mathf.MoveTowards(m_Volume.weight, 1, .15f);
@@ -92,11 +95,12 @@ namespace Unity.MP_FPS {
                 m_NextCreak = Time.time + Range(5, 9);
             }
             if (Valid(m_Bed)) m_Bed.Handle.Emitter.SetVolume(Mathf.Lerp(.45f, .8f, m_Pressure));
-            // Creature-local feedback owns idle vocals; the atmosphere layer only supplies the bed/structure.
+            // 怪物个体自己播待机叫声。环境层只提供背景声与场景氛围。
             if (Time.time < m_NextCreak) return;
             m_NextCreak = Time.time + Range(9, 16);
             var anchors = m_Map.LootPositions;
             if (anchors.Length == 0) return;
+            // 从随机选的补给锚点开始找一个刚好在附近的点，给结构声一个可信的世界位置。
             int first = m_Random.Next(anchors.Length);
             for (int i = 0; i < anchors.Length; i++) {
                 var point = anchors[(first + i) % anchors.Length] + Vector3.up * 2;
@@ -135,6 +139,7 @@ namespace Unity.MP_FPS {
 
         private void BindCamera(Camera camera) {
             var data = camera ? camera.GetUniversalAdditionalCameraData() : null;
+            // 相机切换时先恢复老相机的后处理配置，再让新相机能够看到暗角。退局也能把临时改动收回。
             if (data == m_CameraData) return;
             RestoreCamera();
             if (!data) return;
@@ -142,7 +147,7 @@ namespace Unity.MP_FPS {
             m_PreviousPostProcessing = data.renderPostProcessing;
             m_PreviousVolumeMask = data.volumeLayerMask;
             data.renderPostProcessing = true;
-            data.volumeLayerMask |= 1; // The runtime atmosphere volume uses Default.
+            data.volumeLayerMask |= 1; // 运行时的环境 Volume 使用 Default 层。
         }
 
         private void RestoreCamera() {

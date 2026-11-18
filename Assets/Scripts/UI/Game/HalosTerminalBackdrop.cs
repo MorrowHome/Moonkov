@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Skipping changes presentation only, never GameSettings or LoadingData.
+    // 快进只跳过画面演出。GameSettings 和 LoadingData 仍由原流程更新。
     public sealed class HalosTerminalBackdrop : IDisposable {
         public const string ReducedMotionPreference = "Moonkov.AccessReducedMotion";
 
-        // Four accelerating subdivisions accumulate a wall of windows before the release.
+        // 开场分成四段，刷新越来越快。放开时会看到屏幕上积满了窗口。
         private const int SourceRate = 60, BuildCompleteFrame = 264, ImpactFrame = 282, ClearFrame = 294;
 
-        // Halos tail: black hold, 50 design pixels per frame, then an exponential reveal.
+        // Halos 片尾节奏为黑屏停留、每帧 50 个设计像素位移，随后按指数曲线显现。
         private const int ShutterFrame = ClearFrame + 60, ShutterFrames = 14, RevealFrame = ShutterFrame + 13;
         private const int RevealFrames = 17, FlickerFrame = RevealFrame + RevealFrames, IntroFrames = FlickerFrame + 18;
         private const int LoadingLoopFrames = 360, LiveTextWindows = 12;
@@ -40,7 +40,7 @@ namespace Unity.MP_FPS.Client {
         private int m_NextLoginFlickerFrame = -1;
         private float m_LoginOpacity = 1;
 
-        // Authentication may finish first; presentation still owns the opening sequence.
+        // 验证可能提前完成，开场顺序仍由画面演出决定。
         public bool IntroPending => !m_Loading && !m_IntroPlayed && !m_ReducedMotion && !m_Disposed;
 
         private sealed class TerminalWindow {
@@ -122,8 +122,8 @@ namespace Unity.MP_FPS.Client {
             m_Root.RegisterCallback<AttachToPanelEvent>(Attached);
         }
 
-        // Irregular, interleaved positions: wide consoles, tall traces and small popups
-        // overlap across the center instead of growing in tidy quadrant staircases.
+        // 宽控制台、纵向轨迹窗和小弹窗交错摆放，
+        // 向中间叠起来，避免窗口沿四角规整地排成阶梯。
         private static Rect TerminalFrame(int index) {
             return index switch {
                 0 => new Rect(0, 0, 1920, 1080),
@@ -188,6 +188,7 @@ namespace Unity.MP_FPS.Client {
 
         public void Present(bool visible, bool reducedMotion) {
             if (m_Disposed) return;
+            // 可见性或减弱动画设置变化时才重配动画状态。重复报告同一个状态不会把动画重新开播。
             bool changed = m_Visible != visible || m_ReducedMotion != reducedMotion;
             m_ReducedMotion = reducedMotion;
             m_Host.EnableInClassList("halos-reduced-motion", reducedMotion);
@@ -196,6 +197,7 @@ namespace Unity.MP_FPS.Client {
             m_Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             m_Tick.Pause();
             m_LastTick = double.NaN;
+            // 画面不再显示时停掉声音并清理开场覆盖层，避免进入仓库或进局后仍听到登录背景。
             if (!visible) {
                 m_Audio?.Suspend();
                 HideIntro();
@@ -259,10 +261,11 @@ namespace Unity.MP_FPS.Client {
                 return;
             }
             double now = TerminalMotion.Now;
-            // Hidden panels and a blocked startup frame must not consume the whole intro.
+            // 面板隐藏或启动卡住时不把经过的所有时间算进开场。
             double step = double.IsNaN(m_LastTick) ? 0 : Math.Max(0, Math.Min(.1, now - m_LastTick));
             m_LastTick = now;
             m_Elapsed += step;
+            // 减弱动画用可读的静态状态把流程走完，登录仍能通知外层转场。
             if (m_ReducedMotion) {
                 m_Audio?.Present(HalosAccessAudio.Stage.Login, 0, (float)step);
                 return;
@@ -277,6 +280,7 @@ namespace Unity.MP_FPS.Client {
             int frame = m_Loading
                 ? (int)(m_Elapsed * SourceRate) % LoadingLoopFrames
                 : (int)(m_IntroElapsed * SourceRate);
+            // 用开场同一进度决定画面和音效阶段。背景已经显露时就进入登录的音轨，不需要独立的计时器。
             var audioStage = !IntroPending || frame >= RevealFrame ? HalosAccessAudio.Stage.Login :
                 frame >= ShutterFrame ? HalosAccessAudio.Stage.Shutter :
                 frame >= ClearFrame ? HalosAccessAudio.Stage.Blackout :
@@ -311,12 +315,12 @@ namespace Unity.MP_FPS.Client {
                 bool show = age >= 0 && frame < ClearFrame;
                 window.Element.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!show) continue;
-                int textStep = age / 4; // Chunked text updates at 15 Hz, independent of the 60 Hz reveal.
+                int textStep = age / 4; // 分批文字按 15 Hz 更新，与 60 Hz 的显现动画分开计时。
                 int key = textStep * 17 + i * 13;
                 bool dropout = age > 6 && key % 11 == 0;
                 window.Element.style.opacity = release * (dropout ? .65f : 1);
                 window.Element.style.translate = new Translate(dropout ? i % 2 == 0 ? 7 : -7 : 0, 0);
-                // Covered layers retain their last text; only the newest twelve keep scrolling.
+                // 被盖住的窗口保留最后一次文字，只有最新的十二个继续滚动。
                 if (i <= newest - LiveTextWindows) continue;
                 if (window.TextStep == textStep) continue;
                 window.TextStep = textStep;
@@ -349,7 +353,8 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void PresentSignal(int frame) {
-            // Transform/opacity updates at 30 Hz; text layout is unaffected by noise flicker.
+            // 位移和透明度按 30 Hz 更新。信号闪烁时文字布局保持原样。
+            // 信号故障效果按两帧一拍更新。若还在同一拍，保留上次的样式，避免每次定时循环都乱跳。
             if (frame / 2 == m_SignalFrame / 2 && m_SignalFrame >= 0) return;
             if (m_SignalFrame < 0) m_NextGlitchFrame = frame + 90;
             m_SignalFrame = frame;
@@ -383,8 +388,8 @@ namespace Unity.MP_FPS.Client {
                 ? m_LoginOpacity
                 : 1 - Mathf.Pow(5f / 6, Math.Max(0, introFrame - RevealFrame + 1));
             if (flickering && m_Content != null) m_Content.style.opacity = opacity;
-            // loginControl.gml: alpha .6-.9, opposing static layers, stronger jitter
-            // in the final ten frames before the next irregular brightness change.
+            // loginControl.gml 中透明度为 .6 到 .9，两层静噪反向移动，
+            // 下次随机亮度变化前十帧加大抖动。
             int range = m_NextLoginFlickerFrame - frame < 10 ? 20 : 5;
             float offset = m_SignalRandom.Next(-range, range + 1) * m_Root.layout.width / 1920f;
             m_Noise.style.opacity = m_NoiseEcho.style.opacity = Mathf.Max(0, opacity - .5f);
@@ -422,6 +427,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void FinishIntro() {
+            // 结束通知每次开场只做一次。点击跳过和动画自然到尾都可以经过这里。
             if (m_Intro == null || m_IntroPlayed) return;
             m_IntroPlayed = true;
             m_Stage.style.display = DisplayStyle.None;

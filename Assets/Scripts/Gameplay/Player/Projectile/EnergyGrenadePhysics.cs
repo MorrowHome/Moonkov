@@ -14,8 +14,9 @@ namespace Unity.MP_FPS {
             float duration,
             Transform ignoredRoot,
             ref RaycastHit[] hits) {
+            // 手雷已经停止滚动就保留位置。尚在运动时，把本次时间切成多个小段检查碰撞。
             if (resting) return;
-            // Small swept steps prevent fast throws and stalled frames crossing thin walls.
+            // 用短的扫掠步长检查物理路径，速度很高或卡帧时也不易穿过薄墙。
             while (duration > .00001f) {
                 float dt = Mathf.Min(duration, 1f / 120f);
                 duration -= dt;
@@ -26,8 +27,10 @@ namespace Unity.MP_FPS {
                     position = next;
                     continue;
                 }
+                // 命中后沿表面法线稍微移开手雷半径，然后丢掉一部分速度反弹，避免下一步还卡在表面里。
                 position = hit.point + hit.normal * (EnergyGrenadeRules.BodyRadius + .006f);
                 velocity = Vector3.Reflect(velocity, hit.normal) * .48f;
+                // 速度很低并且碰到可落地的表面才停止。碰到墙的那种慢反弹随后仍受重力。
                 if (hit.normal.y > .55f && velocity.sqrMagnitude < 1.2f) {
                     velocity = Vector3.zero;
                     resting = true;
@@ -36,6 +39,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 发射点到目标之间若先撞到目标自身，判为可见。提前撞到别的东西就当成遮挡。
         public static bool ClearSight(PhysicsScene scene, Vector3 origin, Vector3 point, Transform target) {
             var travel = point - origin;
             return travel.sqrMagnitude < .001f ||

@@ -4,6 +4,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS {
     public sealed partial class RaidHUD {
         private bool CanRechargeShieldCell(InventoryItem item) {
+            // 忙于治疗、投掷或其他动作时先挡住补能按钮。真实电量和电池存放位置再交给统一规则判断。
             if (item == null || !QuickAlive || QuickBusy || TimedActionInputActive || QuickGraph == null) return false;
             var current = QuickGraph.Find(item.Id);
             return current != null &&

@@ -19,6 +19,7 @@ namespace Unity.MP_FPS {
             public DateTime ExpiresAt;
         }
 
+        // 这是后端档案的响应形状。背包与待领取回收物是嵌在 JSON 里的两份数据，读取后还要检查它们是否能组成完整的档案。
         private sealed class Profile {
             public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson;
             public int Dust, Alloy, Cells;
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS {
 
         public static string LocalPreferenceScope {
             get {
+                // 只有确认了当前服务地址和真实玩家 ID 才生成偏好作用域。用这两个值的哈希区分不同服务器上的账号。
                 if (!IsLoggedIn || !Uri.TryCreate(s_BaseUrl, UriKind.Absolute, out var service) ||
                     !Guid.TryParse(s_VerifiedPlayerId, out var id) ||
                     service.AbsoluteUri.TrimEnd('/') != s_VerifiedServiceUrl)
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS {
             CarryCells = Mathf.Clamp(cells, 0, Mathf.Min(StashCells, RaidRules.BagCapacity));
         }
 
+        // 同步资源总数以后重新夹住携带电池数。库存被卖掉或带出后，旧的选择量可能比仓库实际剩余量大。
         public static void UpdateStash(int dust, int alloy, int cells) {
             StashDust = dust;
             StashAlloy = alloy;
@@ -105,6 +108,7 @@ namespace Unity.MP_FPS {
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset() {
+            // Unity 关闭重载域时，静态字段可能跨次运行保留。这里释放上次 HTTP 对象并清缓存，下次从本机偏好和后端恢复。
             s_Http?.Dispose();
             s_Http = null;
             s_Token = s_Name = s_PreferenceKey = null;
@@ -123,10 +127,11 @@ namespace Unity.MP_FPS {
         }
 
         private static void Load() {
+            // 本次运行只载入一次已保存的登录结果。此处仅恢复凭据，档案是否仍有效要等 auth/me 返回确认。
             if (s_PreferenceKey != null) return;
             s_PreferenceKey = "MoonRaid.Account.v1";
 #if UNITY_EDITOR
-            // Virtual editor clones keep independent logins even if their PlayerPrefs registry is shared.
+            // 即使编辑器克隆共享 PlayerPrefs，也要分别保留各自的登录状态。
             using (var hash = SHA256.Create()) {
                 s_PreferenceKey += BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath)))
                     .Replace("-", "");
@@ -155,11 +160,13 @@ namespace Unity.MP_FPS {
                        Address(baseUrl, register ? "auth/register" : "auth/login"))) {
                 request.Content = new StringContent(JsonConvert.SerializeObject(new {
                     Username = username.Trim(), Password = password,
+                    // 只有注册填本机的访客凭据。登录既有账号时由后端按用户名和密码认出原账号。
                     GuestToken = register ? RaidGuestIdentity.GetToken(false) : null
                 }), Encoding.UTF8, "application/json");
                 using (var response = await SendAccountRequestAsync(request, ct)) {
                     ThrowIfFailed(response.StatusCode);
                     var result = JsonConvert.DeserializeObject<LoginResult>(await response.Content.ReadAsStringAsync());
+                    // 返回格式、凭据长度和过期时间都对上以后才能换账号。取消的请求也不能改掉本地登录状态。
                     if (result == null || result.Token == null || result.Token.Length != 64 ||
                         result.ExpiresAt <= DateTime.UtcNow)
                         throw new InvalidOperationException("Invalid login response.");
@@ -173,6 +180,7 @@ namespace Unity.MP_FPS {
                     s_Token = result.Token;
                     s_Name = result.DisplayName;
                     s_Expires = result.ExpiresAt.ToUniversalTime();
+                    // 先存登录结果，再请求完整仓库。UI 读到有效 token 还不表示档案下载已经完成。
                     PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result));
                     PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
@@ -188,10 +196,13 @@ namespace Unity.MP_FPS {
             if (!IsLoggedIn) return;
             string token = Token;
             long requestId = ++s_ProfileRequest;
+            // 请求发出时记录序号，使晚返回的旧仓库结果不会覆盖先返回的新操作结果。
             using (var request = new HttpRequestMessage(HttpMethod.Get, Address(baseUrl, "auth/me"))) {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                // 请求发出后用户可能已换账号。等 HTTP 完成后再核对旧 token，只给仍然属于当前账号的响应更新界面。
                 using (var response = await SendAccountRequestAsync(request, ct, true)) {
                     if (token != Token) return;
+                    // 服务器明确说旧凭据无效时清掉登录缓存；网络连不上则保留凭据，让界面能够重试。
                     if (response.StatusCode == HttpStatusCode.Unauthorized) {
                         Clear();
                         return;
@@ -212,6 +223,7 @@ namespace Unity.MP_FPS {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 using (var response = await Http().SendAsync(request, ct)) { ThrowIfFailed(response.StatusCode); }
             }
+            // 退出请求异步返回。只清它发出时的那个账号，防止晚到响应把后来登录的账号退出。
             if (token == Token) Clear();
         }
 
@@ -226,11 +238,12 @@ namespace Unity.MP_FPS {
             Recovery = new RecoveryInbox();
             RaidActive = false;
             InventoryChanged?.Invoke();
+            // 内存和本机保存的登录状态都清掉。否则这次退出了，下次启动还会读回同一个 token。
             PlayerPrefs.DeleteKey(s_PreferenceKey);
             PlayerPrefs.Save();
         }
 
-        // Covers the full inventory download, not just the much smaller login response.
+        // 超时设置要覆盖完整的仓库下载，登录响应本身小得多。
         private static HttpClient Http() {
             return s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
         }
@@ -239,12 +252,13 @@ namespace Unity.MP_FPS {
             HttpRequestMessage request,
             CancellationToken ct,
             bool loadingStash = false) {
+            // 登录接口和加载仓库失败的提示分别处理。外部取消由调用方决定，客户端自己的 HTTP 超时才会转成用户可读的提示。
             string timeoutMessage = loadingStash
                 ? "Loading your stash timed out. Please retry Login."
                 : "Account service timed out. Please retry.";
             try { return await Http().SendAsync(request, ct); } catch (OperationCanceledException ex) when
                 (!ct.IsCancellationRequested) { throw new TimeoutException(timeoutMessage, ex); }
-            // Unity's Mono transport can surface a timeout as WebException instead.
+            // Unity 的 Mono 传输层也可能用 WebException 报告超时。
             catch (WebException ex) when (!ct.IsCancellationRequested && (ex.Status == WebExceptionStatus.Timeout ||
                                                                           ex.Status == WebExceptionStatus
                                                                               .RequestCanceled)) {
@@ -257,11 +271,13 @@ namespace Unity.MP_FPS {
             if (profile == null || string.IsNullOrEmpty(profile.InventoryJson))
                 throw new InvalidOperationException(
                     "Account service returned no inventory. Update the persistence service.");
+            // 完整账号库存要有仓库根，并且只属于该玩家。带着局内箱子根的临时合并视图不算有效的账号响应。
             var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.InventoryJson);
             if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null ||
                 graph.Find("loot") != null)
                 throw new InvalidOperationException(
                     "Invalid account inventory snapshot. Existing inventory was preserved.");
+            // 旧响应没带回收箱时用空箱。带了就检查回收物与仓库的物品 ID 能否同时存在。
             var recovery = string.IsNullOrEmpty(profile.RecoveryJson)
                 ? new RecoveryInbox()
                 : JsonConvert.DeserializeObject<RecoveryInbox>(profile.RecoveryJson);
@@ -270,10 +286,11 @@ namespace Unity.MP_FPS {
             var research = profile.ResearchQuests;
             if (research != null && !ResearchQuestRules.Valid(research))
                 throw new InvalidOperationException("Invalid account research quest snapshot.");
-            // Research progress and the inventory have separate revisions.
+            // 研究进度和库存使用各自的修订号。
+            // 研究进度有自己的版本号。先按研究版本更新它，再看下方的库存版本和请求先后次序。
             if (research != null && (ResearchQuests == null || research.Revision > ResearchQuests.Revision))
                 ResearchQuests = research;
-            // A delayed background refresh cannot roll back a successful move or a newer raid state.
+            // 延迟返回的后台刷新不能撤销已成功的库存移动，也不能盖掉较新的战局状态。
             if (Inventory != null && (graph.Version < Inventory.Version ||
                                       (graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)))
                 return;
@@ -281,6 +298,7 @@ namespace Unity.MP_FPS {
             s_VerifiedServiceUrl = Uri.TryCreate(s_BaseUrl, UriKind.Absolute, out var service)
                 ? service.AbsoluteUri.TrimEnd('/')
                 : null;
+            // 确认响应能用于本账号后再一起换背包与回收数据，最后通知界面重画，并更新是否仍有活动出战。
             Inventory = graph;
             Recovery = recovery;
             s_AppliedProfileRequest = requestId;
@@ -319,6 +337,7 @@ namespace Unity.MP_FPS {
             bool allocated = OnlineLobbyClient.InInstance;
             using var request = new HttpRequestMessage(HttpMethod.Post,
                 Address(s_BaseUrl, allocated ? "auth/lobby/game-ticket" : "auth/game-ticket"));
+            // 已开在线实例时，请求体带实例 ID 和网络协议版本。后端据此确认玩家有资格领这台战局服务器的票。
             if (allocated)
                 request.Content =
                     new StringContent(
@@ -334,6 +353,7 @@ namespace Unity.MP_FPS {
             var ticket = JsonConvert.DeserializeObject<GameTicket>(body);
             ct.ThrowIfCancellationRequested();
             if (token != Token) throw new OperationCanceledException("Account changed while joining.");
+            // 返回值只留给本次网络入场。账号 HTTP 凭据仍保存在自己的通路里，不能当作战局票替代。
             if (ticket?.Ticket?.Length != 64)
                 throw new InvalidOperationException("Invalid game join ticket. Update the account service.");
             return ticket.Ticket;
@@ -354,6 +374,7 @@ namespace Unity.MP_FPS {
             }
             if (!response.IsSuccessStatusCode)
                 throw new InventoryRequestException("service_" + (int)response.StatusCode);
+            // 商店报价与可操作的档案一起返回。先验证目录，再应用同一响应的档案，避免用坏报价尝试购买。
             var snapshot = JsonConvert.DeserializeObject<ShopSnapshot>(await response.Content.ReadAsStringAsync());
             if (snapshot?.Profile == null || !ShopCatalog.ValidOffers(snapshot.Offers))
                 throw new InvalidOperationException("Invalid supplier catalogue. Existing inventory was preserved.");
@@ -375,11 +396,12 @@ namespace Unity.MP_FPS {
             using var response = await Http().SendAsync(request, ct);
             ct.ThrowIfCancellationRequested();
             if (token != Token) throw new OperationCanceledException("Account changed while moving inventory.");
+            // 业务拒绝和连接异常分开处理。冲突后补刷新当前仓库，但界面仍需要收到最初那条拒绝原因。
             if (response.StatusCode == HttpStatusCode.Conflict) {
                 string code =
                     JsonConvert.DeserializeObject<Failure>(await response.Content.ReadAsStringAsync())?.Error ??
                     "unknown";
-                // Refresh failure must not replace the original, actionable rejection.
+                // 即使刷新失败，也要保留最初可用于处理问题的拒绝原因。
                 try { await ValidateAsync(s_BaseUrl, ct); } catch (OperationCanceledException) { throw; } catch
                     (Exception ex) when (ex is HttpRequestException || ex is InvalidOperationException) { }
                 throw new InventoryRequestException(code);
@@ -395,6 +417,7 @@ namespace Unity.MP_FPS {
             if (token == Token) ApplyProfile(profile, requestId);
         }
 
+        // 保留后端的短错误码供队列判断能否重试，界面则根据同一个码显示和操作相关的提示。
         public static string InventoryFailureMessage(string code) {
             switch (code) {
                 case "recovery_pending": return "Make room and claim pending recovery items before deploying again.";

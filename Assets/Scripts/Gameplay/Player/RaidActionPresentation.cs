@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    /// <summary>One authored arm pose and the actual inventory prop, driven by server action time.</summary>
+    /// <summary>用服务端动作时间驱动已制作的手势和库存对应的实物道具。</summary>
     [DefaultExecutionOrder(120)]
     public sealed class RaidActionPresentation : MonoBehaviour {
         private sealed class Prop {
@@ -55,8 +55,10 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 快照之间最多补一点时间，让动画更顺，也不会因掉包在本地把动作提前播完。
         public float Elapsed => Mathf.Max(0, duration - remaining + Mathf.Min(Time.time - receivedAt, .15f));
 
+        // 准备当前模型的动作库和骨架挂点。不同角色可提供自己的采样动作。
         public void Configure(Animator target, DollSingerView playerView, DollSingerHaloAim playerHalo, string rig) {
             if (animation != null) return;
             animator = target;
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
             little = animator.GetBoneTransform(HumanBodyBones.RightLittleProximal);
         }
 
+        // 每次读取动作、道具、剩余时间和中断状态。真正结束后只演该动作的收起段。
         public void Present(in PredictedPlayerGhost value, bool isOwner, bool isFirstPerson, bool suppressed) {
             searchTarget = value.HandActionTarget;
             owner = isOwner;
@@ -79,8 +82,8 @@ namespace Unity.MP_FPS {
             bool playing = alive && !suppressed && next != HandAction.None && animation != null && animation.Has(next);
             if (!playing) {
                 if (active) {
-                    // Keep using until the server ends the action, then play only
-                    // its authored put-away segment. This never grants an effect.
+                    // 持续演使用动作，直到服务器结束它。
+                    // 之后只播原动画的收起段。这段表现不会给玩家任何道具效果。
                     releasePhase = Phase;
                     releaseStartedAt = Time.time;
                     finishing = HasUseAndStow && Elapsed >= duration - .15f;
@@ -116,6 +119,7 @@ namespace Unity.MP_FPS {
             if (OwnsHands && halo) halo.ExternalHandPoseActive = true;
         }
 
+        // 在基础动画算完之后叠上手部动作并摆道具，让吃喝和针剂能接住身体的当前姿势。
         private void LateUpdate() {
             if (animation == null) return;
             if (!OwnsHands) {
@@ -129,8 +133,8 @@ namespace Unity.MP_FPS {
             animation.Sample(action, phase, blend, code);
             if (action == HandAction.Search) contact.Search(searchTarget, phase, blend);
             if (prop != null) {
-                // Keep the held object attached while interrupted arms lower.
-                // Hiding it on the first inactive snapshot made it vanish mid-air.
+                // 中断后双臂落下时，道具仍跟着手。
+                // 一收到动作停止就隐藏会让道具半空消失。
                 prop.Root.SetActive(true);
                 var motion = animation.GetMotion(action, code);
                 bool authored = motion != null && motion.root?.positions?.Length == motion.frames * 3;
@@ -145,14 +149,14 @@ namespace Unity.MP_FPS {
             var soundPosition =
                 prop?.Model && prop.Model.Grip ? prop.Model.Grip.position : animation.RightHand.position;
             var soundMotion = animation.GetMotion(action, code);
-            // The injection track includes needle entry before the plunger stroke.
+            // 针剂片段先演针头进皮肤，再推进活塞。
             float soundContact = action == HandAction.Inject && soundMotion != null && soundMotion.contactIn > 0f
                 ? soundMotion.contactIn
                 : animation.Contact(action, code);
             foley.Observe(action, sequence, phase, soundContact, code, soundPosition, owner, active || finishing,
                 soundMotion?.openMarker ?? .08f, UseEnd, transform);
-            // The real prop and body always share world depth. Walls occlude
-            // them without a second copy, camera or per-action physics queries.
+            // 道具和角色身体始终使用同一份场景深度。
+            // 自然由墙体遮住，无需再建副本、摄像机或给每个动作另做物理查询。
         }
 
         public void SamplePreview(float phase) {
@@ -160,14 +164,15 @@ namespace Unity.MP_FPS {
             animation.RestoreBeforeAnimation();
             blend = active ? 1 : 0;
             if (action == HandAction.Search) searchStartedAt = Time.time - phase * animation.Seconds(action, code);
-            // The preview API addresses the authored source, independent of the
-            // server's use/put-away timing split.
+            // 预览接口直接选原始动作片段。
+            // 不受服务端实际使用段和收起段的计时划分限制。
             remaining = duration * (1 - Mathf.Clamp01(phase));
             receivedAt = Time.time;
             previewPhase = Mathf.Clamp01(phase);
             try { LateUpdate(); } finally { previewPhase = -1f; }
         }
 
+        // 按道具代码懒创建外观并缓存，可从动作专用预制体或物品模型取得。反复吃同类动作不用重建。
         private Prop GetProp(string item) {
             if (string.IsNullOrEmpty(item)) return null;
             if (props.TryGetValue(item, out var cached)) return cached;
@@ -187,8 +192,8 @@ namespace Unity.MP_FPS {
             var bounds = worldRenderers[0].bounds;
             foreach (var renderer in worldRenderers) bounds.Encapsulate(renderer.bounds);
             if (!world.GetComponent<RaidActionProp>()) {
-                // Unwrapped food keeps its actual inventory mesh. Its bite point is
-                // measured once in metre space, like the authored packet variants.
+                // 无包装食物仍用库存的实际模型。
+                // 和有包装的版本一样，以米为单位测一次接触到嘴的位置。
                 var model = world.AddComponent<RaidActionProp>();
 
                 Transform Anchor(string name, Vector3 point) {
@@ -201,8 +206,8 @@ namespace Unity.MP_FPS {
                 model.Grip = Anchor("Grip", bounds.center);
                 model.Contact = Anchor("Bite contact", bounds.center + Vector3.up * (bounds.extents.y - .005f));
             }
-            // The source prefab already converts its FBX centimetres and Z-up axis.
-            // Preserve it and move a metre-scale parent, never rescale skinned bones.
+            // 源预制体已完成 FBX 厘米单位和 Z 轴朝上的转换。
+            // 保留它，并移动按米配置的父物体，不额外缩放蒙皮骨骼。
             var result = new Prop { Root = root, Model = world.GetComponent<RaidActionProp>() };
             foreach (var renderer in worldRenderers) renderer.shadowCastingMode = ShadowCastingMode.Off;
             root.SetActive(false);
@@ -210,6 +215,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 将握持点和真实手部对齐，再按吃喝或注射的进度做接触修正。
         private void PlaceProp(Prop value, float phase) {
             var motion = animation.GetMotion(action, code);
             if (motion != null && motion.root?.positions?.Length == motion.frames * 3) {
@@ -232,6 +238,7 @@ namespace Unity.MP_FPS {
             if (value.Model && value.Model.Grip) value.Root.transform.position += position - value.Model.Grip.position;
         }
 
+        // 道具内部还能按进度改针头、活塞等零件。进度和动画来自同一条本地时间。
         private void PresentParts(RaidActionProp model, DollSingerActionAnimation.Motion motion, float phase) {
             if (!model || motion.parts == null) return;
             foreach (var track in motion.parts) {
@@ -248,6 +255,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 退出时让道具隐藏、角色手部解锁和动作音结束，下一次动作会重新采样状态。
         public void ResetPresentation() {
             if (animation != null && prepared) animation.RestoreBeforeAnimation();
             foley.Stop();

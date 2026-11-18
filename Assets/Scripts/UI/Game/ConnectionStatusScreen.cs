@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    /// <summary>In-game connection state screen.</summary>
+    /// <summary>游戏中的连接状态画面。</summary>
     [RequireComponent(typeof(UIDocument))]
     public class ConnectionStatusScreen : MonoBehaviour {
         private static class UIElementNames {
@@ -15,12 +15,14 @@ namespace Unity.MP_FPS.Client {
 
         private void OnEnable() {
             var root = GetComponent<UIDocument>().rootVisualElement;
+            // 界面只跟连接状态绑定，所以 GameManager 断开连接时可以统一收起它和其他页面。
             root.SetBinding("style.display", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
                 dataSourcePath = new PropertyPath(ConnectionSettings.ConnectionStatusStylePropertyName),
                 bindingMode = BindingMode.ToTarget
             });
             m_CancelButton = root.Q<Button>(UIElementNames.CancelButton);
+            // 取消走通用回菜单流程。连接资源和 World 在那里一起处理。
             m_CancelButton.clicked += OnCancelPressed;
         }
 

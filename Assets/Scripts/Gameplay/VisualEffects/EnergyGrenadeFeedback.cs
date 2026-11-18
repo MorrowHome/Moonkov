@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Client-only, bounded pool. No collision or damage is owned by presentation.
+    // 客户端使用有限的对象池。碰撞和伤害由玩法系统计算。
     public sealed class EnergyGrenadeFeedback : MonoBehaviour {
         private sealed class Effect {
             public uint Id;
@@ -36,6 +36,7 @@ namespace Unity.MP_FPS {
         public void Present(in EnergyGrenadeStateRpc state, float elapsed = 0) {
             if (!Warmup()) return;
             Effect effect = null;
+            // 先按这颗手雷的 ID 查池中是否已有对象，再记一个空位。更新消息到来时能继续原有的尾迹。
             int empty = -1;
             for (int i = 0; i < m_Pool.Length; i++) {
                 if (m_Pool[i] != null && m_Pool[i].Active && m_Pool[i].Id == state.Id) {
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS {
                 }
                 if (empty < 0 && (m_Pool[i] == null || !m_Pool[i].Active)) empty = i;
             }
+            // 确定是新物件时才取空槽并清理旧尾迹。只在收到的状态看起来刚投出时才给它播投掷声。
             if (effect == null) {
                 if (empty < 0) return;
                 effect = m_Pool[empty] ??= CreateEffect(empty);
@@ -59,14 +61,16 @@ namespace Unity.MP_FPS {
                     MoonkovAudio.Play(m_Style.ThrowSound, state.Position);
             }
             // 一旦进入确认的爆炸阶段，就按爆炸的寿命和表现播完。后续飞行姿态不能把它送回飞行阶段。
-            // Reliable ordered state means a confirmed explosion cannot be resurrected by an old pose.
+            // 有序可靠的状态更新保证爆炸确认后，旧位置消息不会让道具重新出现。
             if (effect.Exploded) return;
             effect.Origin = state.Position;
             effect.Velocity = state.Velocity;
+            // 从插值时刻带来的延迟估计换算成当前表现时间，限制补偿长度。这样第一帧位置能接近所见场景，迟到很久的消息不会让特效飞太远。
             effect.PoseTime = Time.time - Mathf.Clamp(elapsed, 0, .3f);
             effect.Remaining = state.Remaining;
             effect.Root.position = state.Position;
             if (state.Exploded != 0) {
+                // 引爆时停止尾迹，启动火花并给爆炸设独立寿命。服务端消息里原来的飞行剩余时间就不再控制视觉对象。
                 effect.Exploded = true;
                 effect.Age = 0;
                 effect.Trail.emitting = false;
@@ -85,6 +89,7 @@ namespace Unity.MP_FPS {
         private void Update() {
             foreach (var effect in m_Pool) {
                 if (effect == null || !effect.Active) continue;
+                // 到期只隐藏池里的对象，下一颗雷还能借用。飞行期间以权威位置和速度向前显示，已经停住的雷固定留在收到的位置。
                 if (Time.time > effect.Expire) {
                     effect.Active = false;
                     effect.Root.gameObject.SetActive(false);
@@ -92,7 +97,7 @@ namespace Unity.MP_FPS {
                 }
                 if (effect.Exploded) { effect.Age += Time.deltaTime; } else {
                     float age = Mathf.Min(Time.time - effect.PoseTime, effect.Remaining);
-                    // Resting poses have zero velocity; authoritative snapshots keep them on the floor.
+                    // 静止时速度为零。服务端位置会继续让道具贴在地面。
                     effect.Root.position = effect.Velocity.sqrMagnitude < .0001f
                         ? effect.Origin
                         : Ballistics.Position(effect.Origin, effect.Velocity, EnergyGrenadeRules.Gravity, age);
@@ -233,7 +238,7 @@ namespace Unity.MP_FPS {
             renderer.lengthScale = 2;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             effect.Sparks = sparks;
-            // At most four additional unshadowed lights across the whole feedback pool.
+            // 整个反馈对象池最多额外开四盏无阴影灯。
             if (index < 4) {
                 effect.Light = root.gameObject.AddComponent<Light>();
                 effect.Light.type = LightType.Point;

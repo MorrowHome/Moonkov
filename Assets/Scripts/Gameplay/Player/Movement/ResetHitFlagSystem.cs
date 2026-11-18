@@ -2,14 +2,15 @@
 using Unity.Entities;
 
 namespace Unity.MP_FPS {
-    // Its only job is to clean up the IsHit flag from the previous frame.
+    // 负责清除上一帧留下的 IsHit。
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     public partial class ResetHitFlagSystem : SystemBase {
         protected override void OnUpdate() {
-            // Reset IsHit flag for all players at the start of the frame.
-            // This ensures any hit from the PREVIOUS frame is cleared before
-            // any new hits from the CURRENT frame are processed.
+            // 帧首把所有角色的 IsHit 清掉。
+            // 让本帧新计算的命中能再次置位，
+            // 从而不会把上一帧的受击误认成本帧事件。
+            // 放在帧首清的是给表现系统看的瞬时标记，实际血量和上次命中的编号仍保留。
             foreach (var playerGhost in SystemAPI.Query<RefRW<PredictedPlayerGhost>>())
                 if (playerGhost.ValueRO.ControllerState.IsHit)
                     playerGhost.ValueRW.ControllerState.IsHit = false;

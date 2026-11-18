@@ -3,8 +3,8 @@ using System;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory {
-    // A one-time account migration, not a per-deployment supply. Callers commit
-    // account/inbox/version together and defer while a raid owns the carried kit.
+    // 账号只迁移一次，不随每次出战发放。调用者将
+    // 账号库存、回收箱和版本一起提交。局内持有装备时延后处理。
     public static class ProtectionKitMigration {
         public static bool TryApply(
             InventoryGraph account,
@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Inventory {
             pending = inbox;
             if (account == null || inbox == null || inbox.Validate(account) != InventoryError.None)
                 throw new InvalidOperationException("Cannot migrate an invalid protection inventory.");
+            // 已有有效迁移标记就直接返回。旧档本来就佩戴合适项圈时只升级标记，不覆盖现有氧气。
             if (account.ProtectionKitVersion >= 1) return false;
             var next = account.Clone();
             var recovery = inbox.Clone();
@@ -23,12 +24,14 @@ namespace Unity.MP_FPS.Inventory {
                 Complete(next, recovery, out stored, out pending);
                 return true;
             }
+            // 给确实缺项圈的档案新建唯一物品。先试人物槽，失败再试仓库空间。
             var grant = new InventoryItem
                 { Id = Guid.NewGuid().ToString("D"), Code = "energy_head_dome", Quantity = 1 };
             if (Place(next, grant, "equipment", "Helmet", 0, 0, true) || FindAndPlace(next, grant, "stash", false)) {
                 Complete(next, recovery, out stored, out pending);
                 return true;
             }
+            // 仓库也塞不下才尝试已有回收批次或创建新批。容量仍需合法，不能为了迁移超过承载上限。
             foreach (var batch in recovery.Batches) {
                 bool placed = Place(batch, grant, "equipment", "Helmet", 0, 0, false);
                 if (!placed)
@@ -51,8 +54,8 @@ namespace Unity.MP_FPS.Inventory {
                     return true;
                 }
             }
-            // Nothing was persisted: retry after space is made. No receipt is
-            // consumed and no existing item or resource is replaced or refilled.
+            // 这次没写入，腾地方之后可以重试。回执没有登记，
+            // 既有物品和可用资源也未被换掉或补满。
             return false;
         }
 
@@ -88,6 +91,7 @@ namespace Unity.MP_FPS.Inventory {
             return false;
         }
 
+        // 只有已装备或放入某处的完整库存才升级迁移版本，由存档和回收箱一起提交。
         private static void Complete(
             InventoryGraph graph,
             RecoveryInbox inbox,

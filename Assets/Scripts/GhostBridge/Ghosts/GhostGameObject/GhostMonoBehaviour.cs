@@ -7,12 +7,14 @@ using UnityEngine;
 public abstract class GhostMonoBehaviour : MonoBehaviour {
     private GhostGameObject m_GhostGameObject;
     public GhostGameObject GhostGameObject => m_GhostGameObject;
+    // 每份场景脚本能读到桥接对象分配的端和 World。共用一个预制件时，脚本可以据此区分服务端、本机和远端职责。
     public MultiplayerRole Role => m_GhostGameObject.Role;
     public World World => GhostGameObject.World;
     public void SetGhostGameObject(GhostGameObject ghostGameObject) { m_GhostGameObject = ghostGameObject; }
 
-    // internal accessors
+    // 访问 Ghost 数据的内部辅助方法。
     protected bool TryReadGhostComponentData<T>(out T data) where T : unmanaged, IComponentData {
+        // 可选的 ECS 数据先检查是否存在再读。不同 Ghost 模板的组件集合可能不同，调用方可以用返回值决定是否继续。
         if (GhostHasComponent<T>()) {
             data = ReadGhostComponentData<T>();
             return true;
@@ -42,6 +44,7 @@ public abstract class GhostMonoBehaviour : MonoBehaviour {
     }
 
     public virtual bool AllowAutoRegisterForUpdates() { return true; }
+    // 等桥接已建立，子类才有可用的实体和 World。要登记或读取同步状态可以放这里，退出时到 OnGhostPreDestroy 收尾。
     public virtual void OnGhostLinked() { }
     public virtual void OnGhostPreDestroy() { }
 
@@ -57,6 +60,7 @@ public abstract class GhostMonoBehaviour : MonoBehaviour {
         GhostGameObject.IterateRPC(callback);
     }
 
+    // 场景脚本从自己这个实例发定向消息，底层会把这个 Ghost 的标识一起写进去。
     protected void SendDirectedRPC<T>(T rpcCommand) where T : unmanaged, IRpcCommand, IGhostGameObjectDirectedRPC {
         GhostGameObject.SendDirectedRPC(rpcCommand);
     }

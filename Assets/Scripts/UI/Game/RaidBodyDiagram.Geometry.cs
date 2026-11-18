@@ -14,9 +14,11 @@ namespace Unity.MP_FPS.Client {
         }
 
         private static Vector2 P(float x, float y) { return new Vector2(x, y); }
+        // 坐标来自原始扫描图的像素尺寸，后面拿来取对应贴图区域。缩放窗口并不改变这些点。
         private const float ImageWidth = 1075, ImageHeight = 1463;
 
-        // Hulls derive from the source sprite's alpha. They only mask UVs; they do not draw anatomy.
+        // 从源 Sprite 的透明边界得到轮廓。它用来裁贴图 UV，人体形状仍由原图提供。
+        // 一个伤害部位可由多段轮廓组成，例如胳膊包含几块关节。显示生命时仍合起来对应同一个部位。
         private static readonly ScanPiece[] Pieces = {
             new(BodyPart.Head, P(456.4f, 104.5f), P(457.5f, 102.4f), P(462.6f, 95.2f), P(465.7f, 91.0f),
                 P(474.0f, 80.7f), P(481.3f, 72.5f), P(485.4f, 68.4f), P(488.5f, 66.4f), P(490.6f, 65.4f),

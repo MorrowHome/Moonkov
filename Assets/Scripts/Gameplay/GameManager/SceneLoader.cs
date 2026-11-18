@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This utility class is handling Unity Scenes and Subscenes loading/unloading for a gameplay session.
+    /// 为一次战局会话统一加载或卸载 Unity 主场景和子场景。
     /// </summary>
     internal static class ScenesLoader {
         public static async Task LoadMenuPreviewAsync(World client) {
@@ -17,6 +17,7 @@ namespace Unity.MP_FPS {
         }
 
         public static async Task LoadGameplayAsync(World server, World client) {
+            // 先给两个 World 装好本次规则，再加载共享地图。这样子场景加载过程中的地图组件和系统能读到正确模式。
             GameManager.ConfigureRaidMode(server);
             GameManager.ConfigureRaidMode(client);
             await LoadGameplayScenesAsync();
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS {
 
         private static async Task UnloadSceneAsync(string sceneName) {
             var gameplay = SceneManager.GetSceneByName(sceneName);
+            // 这里卸载以叠加方式打开的地图。仍作为活动场景使用的那一份会保留给当前流程。
             if (gameplay.IsValid() && gameplay != SceneManager.GetActiveScene()) {
                 var unloadScene = SceneManager.UnloadSceneAsync(gameplay);
                 UpdateLoadingStateAsync(LoadingData.LoadingSteps.UnloadingGameScene, unloadScene);
@@ -51,6 +53,7 @@ namespace Unity.MP_FPS {
             await LoadSceneAsync(sceneName, LoadingData.LoadingSteps.LoadGameScene);
             if (!ArenaMatch.UsesTemporaryKit(mode) || MoonRaidMap.Active) return;
             var scene = SceneManager.GetSceneByName(sceneName);
+            // 经典爆破的外层场景带基础组件，沙2地图从本地资源另外实例化。把实例移入新场景后，退局卸图时地图也会跟着清理。
             if (mode == RaidGameMode.Classic) {
                 var prefab = ClassicDust2Map.LoadPrefab();
                 if (!prefab || !prefab.Configured) throw new System.InvalidOperationException("沙2地图资源未配置。");
@@ -64,6 +67,7 @@ namespace Unity.MP_FPS {
 
         private static async Task LoadSceneAsync(string sceneName, LoadingData.LoadingSteps step) {
             if (SceneManager.GetSceneByName(sceneName).isLoaded) return;
+            // 场景在当前内容上叠加读入。加载任务还没结束时，另一个逐帧更新把真实进度报给加载界面。
             var sceneLoading = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             UpdateLoadingStateAsync(step, sceneLoading);
             await sceneLoading;
@@ -76,6 +80,7 @@ namespace Unity.MP_FPS {
             using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
             using var scenesLeftToLoad = scenesQuery.ToEntityListAsync(Allocator.Persistent, out var handle);
             handle.Complete();
+            // 先记住待就绪的子场景总数。每完成一个就从等待清单移除，并按已经完成的比例推进这段进度。
             float count = scenesLeftToLoad.Length;
             while (scenesLeftToLoad.Length > 0) {
                 for (int i = 0; i < scenesLeftToLoad.Length; i++) {
@@ -88,6 +93,7 @@ namespace Unity.MP_FPS {
                         i--;
                     }
                 }
+                // 在循环里交回这一帧，让 Unity 有机会继续实际加载。下一帧再看还有哪个子场景没准备好。
                 await Awaitable.NextFrameAsync();
             }
         }

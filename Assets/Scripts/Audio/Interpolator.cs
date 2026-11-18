@@ -1,18 +1,18 @@
 // 给淡入淡出提供按时间计算的数值。MoveTo 会从此刻的实际值开始，因此中途改变目标时音量可以连续过渡。
 using UnityEngine;
 
-// Utility class for interpolating values. Usage
+// 用于数值插值。下方为使用示例。
 //
 //    var ival = new Interpolator(0.0f, Interpolator.CurveType.Linear)
-//    ival.MoveTo(10.0f, 0.5f); // interpolate from 0 to 10 in 0.5 secs
+//    ival.MoveTo(10.0f, 0.5f); // 在 0.5 秒内从 0 过渡到 10。
 //
-//    ival.GetValue();          // gets current value
+//    ival.GetValue();          // 读取当前值。
 //
-//    ival.SetValue(12.0f);     // force value and stop animation
+//    ival.SetValue(12.0f);     // 立即设成指定值，结束原插值。
 //
-//    ival.GetNormalizedCurveValue(CurveType, 0.5f // gets normalized curve value for the CurveType at normalized x position 0.5f
+//    ival.GetNormalizedCurveValue(CurveType, 0.5f // 取该曲线在归一化位置 0.5 处的值。
 //
-// Ideas for more curve types: http://sol.gfxile.net/interpolation/ 
+// 更多曲线的思路见 http://sol.gfxile.net/interpolation/
 
 public class Interpolator {
     public enum CurveType {
@@ -35,6 +35,7 @@ public class Interpolator {
         SetValue(startValue);
     }
 
+    // 当场设置起值与终值，并清掉计时。淡出中途需要急停或复位时，用它直接回到指定音量。
     public void SetValue(float value) {
         m_StartValue = value;
         m_TargetValue = value;
@@ -43,6 +44,7 @@ public class Interpolator {
     }
 
     public void MoveTo(float target, float time) {
+        // 新目标先从上一段插值此刻的值开始。音量正在变化时重新下指令，也能从已经听到的声音接着变化。
         m_StartValue = GetValue();
         m_TargetValue = target;
         m_StartTime = Time.realtimeSinceStartup;
@@ -62,6 +64,7 @@ public class Interpolator {
         float now = Time.realtimeSinceStartup;
         float timeToLive = m_TargetTime - now;
         if (timeToLive <= 0.0f) return m_TargetValue;
+        // 经过时间先换算为零到一的比例，再过指定曲线。最后乘以起点与终点的差值，就得到这一帧要用的音量。
         float t = (now - m_StartTime) / (m_TargetTime - m_StartTime);
         t = GetNormalizedCurveValue(m_Type, t);
         return m_StartValue + (m_TargetValue - m_StartValue) * t;

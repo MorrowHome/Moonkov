@@ -10,6 +10,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public partial struct ServerGameSystem {
+        // 给有对应章节任务的单人档建立本局进度。不同任务使用固定的机器和补给点，服务端把这些内容组织为当前可操作的一段。
         private void PrepareCampaign(
             ref SystemState state,
             RaidMissionWorld context,
@@ -96,6 +97,7 @@ namespace Unity.MP_FPS {
             context.Operation.RestoreCompleted(restored, now);
         }
 
+        // 观察当前连接的真实库存与任务动作。即使玩家曾拿过样本，后来丢下仍需要修正本局的携带事实。
         private void ObserveCampaign(ref SystemState state, RaidMissionWorld context) {
             if (context.CampaignChapter == 0 || context.Operation == null || !SystemAPI.HasSingleton<OfflineRaidMode>())
                 return;
@@ -115,7 +117,7 @@ namespace Unity.MP_FPS {
                     RecordChapterFact(run, "CM01", "arrive", session.ValueRO, inventory.Version);
                     context.Known.Add(connection);
                 }
-                // If an artifact is dropped, the live task follows real ownership again.
+                // 任务物丢掉后，局内任务按当前实际持有情况重新判断。
                 string taskId = context.CampaignChapter == 1 ? "CM03" : "CM04";
                 string code = context.CampaignChapter == 1 ? "mooncore_fragment" : "mc00_archive_drive";
                 if (run.NodeItemIds.TryGetValue(taskId + "/recover", out string prior) &&
@@ -134,6 +136,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 把出战号、物品号和库存版本写为可追踪事实。规则层拿这些字段判定某个节点是否已推进。
         private static void RecordChapterFact(
             CampaignProgress run,
             string taskId,
@@ -152,6 +155,7 @@ namespace Unity.MP_FPS {
             }, out _);
         }
 
+        // 同一张任务地图里可能要显示多个目标。把本局战役节点和读档的追踪偏好投成 HUD 可读的状态。
         private void AddCampaignSnapshot(
             ref SystemState state,
             RaidMissionWorld context,

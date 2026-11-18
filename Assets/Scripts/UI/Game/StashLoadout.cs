@@ -26,7 +26,7 @@ namespace Unity.MP_FPS.Client {
         Melee
     }
 
-    // Local presentation only. Item IDs and equipment writes must eventually come from the server.
+    // 仅管理本地模板展示。正式物品编号和装备改动都要由服务器确认。
     public sealed class StashLoadout {
         private readonly StashLayout m_Storage;
         private readonly Dictionary<string, EquipmentKind> m_Kinds = new();
@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public bool Accepts(string id, LoadoutSlot slot) {
+            // 要先登记物品类别，再判断槽位是否接受。主副武器可接受同类，其他槽位通常一类对应一槽。
             if (!m_Kinds.TryGetValue(id, out var kind)) return false;
             return (kind == EquipmentKind.Helmet && slot == LoadoutSlot.Helmet) ||
                    (kind == EquipmentKind.LongGun && (slot == LoadoutSlot.Primary || slot == LoadoutSlot.Secondary)) ||
@@ -69,6 +70,7 @@ namespace Unity.MP_FPS.Client {
             incoming.InStorage = false;
             Vector2Int destination = default;
             bool swapSlots = displaced != null && sourceSlot != LoadoutSlot.None && Accepts(displaced, sourceSlot);
+            // 目标槽已有人时，先看看能否与来源槽互换。互换不了就给旧装备在仓库找格子。
             if (displaced != null && !swapSlots) {
                 var old = m_Storage.Items[displaced];
                 destination = new Vector2Int(incoming.X, incoming.Y);
@@ -78,6 +80,7 @@ namespace Unity.MP_FPS.Client {
                     return false;
                 }
             }
+            // 新旧位置都已找到才真正更新两个装备槽。这样失败能直接返回，不会发生一半脱下的情况。
             if (sourceSlot != LoadoutSlot.None) m_Equipped.Remove(sourceSlot);
             m_Equipped[slot] = id;
             if (displaced != null) {
@@ -93,6 +96,7 @@ namespace Unity.MP_FPS.Client {
 
         public bool TryStore(string id, int x, int y, bool rotated) {
             if (!m_Storage.Items[id].Available) return false;
+            // 物品先成功搬进仓储格，再从装备槽移除。落地不合法时保持当前穿戴。
             if (!m_Storage.TryMove(id, x, y, rotated)) return false;
             m_Storage.Items[id].InStorage = true;
             var slot = Location(id);

@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // Only the owning client presents its research devices. These models have
-    // no colliders, so a LAN host's private props cannot block other players.
+    // 各客户端只显示属于自己的研究设备。生成的模型没有碰撞，
+    // 所以局域网房主的私有道具不会挡住其他玩家。
     internal sealed class ResearchQuestFieldView {
         private static readonly ResearchDevice[] s_LowerDevices =
             { ResearchDevice.LowerSeal, ResearchDevice.NadirTerminal, ResearchDevice.CredentialsLocker };
@@ -27,6 +27,7 @@ namespace Unity.MP_FPS {
 
             internal void Signal(Color color, float strength = 2) {
                 var emission = color * strength;
+                // 设备发光通过材质属性块更新。颜色没变时保留现有属性，避免每个快照都写给渲染器。
                 if (m_Color == emission) return;
                 m_Color = emission;
                 m_Block.SetColor("_BaseColor", color);
@@ -41,6 +42,7 @@ namespace Unity.MP_FPS {
                 Clear();
                 return;
             }
+            // 任务设备属于当前战局的临时布置。换局先拆旧对象才能使用新的场景锚点。
             if (m_RaidId != snapshot.RaidId) {
                 Clear();
                 m_RaidId = snapshot.RaidId;
@@ -50,6 +52,7 @@ namespace Unity.MP_FPS {
             bool central = ResearchQuestRules.Has(snapshot.Active, ResearchQuest.EndOfTransmission);
             if (!lower && !central) return;
             foreach (var device in lower ? s_LowerDevices : s_ControlDevices) {
+                // 每个设备按标识缓存首次创建的模型。以后只按进度改变盖板、可见物件和发光。
                 if (!m_FieldDevices.TryGetValue(device, out var field) || !field.Root) {
                     var anchor = ResearchQuestRuntime.Anchor(device);
                     if (anchor == null) continue;
@@ -59,6 +62,7 @@ namespace Unity.MP_FPS {
                 bool covered = device is ResearchDevice.NadirTerminal or ResearchDevice.CredentialsLocker
                     ? !snapshot.LowerOpened
                     : device is ResearchDevice.OriginalArchive or ResearchDevice.Shutdown && !snapshot.ControlOpened;
+                // 是否需要这台设备由玩家的任务快照决定。显示变化分别反映门禁、物件是否还需要拿以及当前状态。
                 bool available = snapshot.Needs(device);
                 if (field.Cover && field.Cover.activeSelf != covered) field.Cover.SetActive(covered);
                 if (field.Artifact && field.Artifact.activeSelf != available) field.Artifact.SetActive(available);
@@ -76,6 +80,7 @@ namespace Unity.MP_FPS {
         }
 
         private void PresentTablet(bool available) {
+            // 平板不适用时不能留在世界上继续误导玩家。需要的时候才在正式场景的表面上摆出来。
             if (!available) {
                 Destroy(m_Tablet);
                 m_Tablet = null;
@@ -173,6 +178,7 @@ namespace Unity.MP_FPS {
         }
 
         private static GameObject Part(Transform parent, string name, Vector3 local, Vector3 scale, Material material) {
+            // 这些立方体是外观零件。创建后会清掉默认碰撞，其他角色的运动仍按原场景处理。
             var part = GameObject.CreatePrimitive(PrimitiveType.Cube);
             part.name = name;
             part.transform.SetParent(parent, false);

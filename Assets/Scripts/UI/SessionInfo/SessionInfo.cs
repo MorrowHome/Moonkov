@@ -67,6 +67,7 @@ namespace Unity.MP_FPS.Client {
             m_ShowSessionInfo = m_SessionInfoBanner.Q<Label>(UIElementNames.ShowSessionInfo);
 
             // https://docs.unity3d.com/6000.1/Documentation/Manual/frame-timing-manager.html
+            // 诊断面板打开后采样 CPU、内存及绘制数据。下面的记录器各自设采样窗口，显示时从它们读近期平均。
             m_SystemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
             m_GcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Used Memory");
             m_CpuRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "CPU Main Thread Frame Time", 15);
@@ -135,11 +136,13 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void LateUpdate() {
+            // 模板会话面板在游戏内让位给局内自己的诊断信息。隐藏时也不定时重写标签。
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_SessionInfoBanner.style.display = inGame ? DisplayStyle.None : DisplayStyle.Flex;
             if (inGame) return;
             if (m_SessionInfoContainer.style.display == DisplayStyle.None) return;
             m_Timer += Time.deltaTime;
+            // 读数按间隔更新。性能统计不需要像操控角色那样每帧变化。
             if (m_Timer >= k_UpdateSessionInfoDelay) {
                 m_Timer -= k_UpdateSessionInfoDelay;
                 UpdateSessionInfo();
@@ -158,7 +161,7 @@ namespace Unity.MP_FPS.Client {
             var sb = new StringBuilder();
             sb.Append("Args: ");
 
-            // Ignore the first, as it's just the full path.
+            // 第一项是程序自身的完整路径，显示参数时从下一项开始。
             for (int i = 1; i < commandLineArgs.Length; i++) {
                 sb.Append(commandLineArgs[i]);
                 if (i < commandLineArgs.Length - 1) sb.Append(' ');
@@ -170,6 +173,7 @@ namespace Unity.MP_FPS.Client {
         private void UpdateSessionInfo() {
             string netcodeInfo = GetNetcodeInfoFromSystem();
             string playerName = GameSettings.Instance.PlayerName;
+            // 同机还有服务器 World 时显示主机，否则显示客户端。连接状态文字另由 ECS 系统提供。
             var networkRole = ClientServerBootstrap.HasServerWorld ? NetworkRole.Host : NetworkRole.Client;
             string interactionTypeText = "click";
 #if UNITY_ANDROID || UNITY_IOS
@@ -211,7 +215,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private string GetCurrentParameters() {
-            // Clear the cached StringBuilder instead of creating a new one.
+            // 清空并复用已有 StringBuilder，省去重新创建。
             m_StringBuilder.Clear();
             bool needsSeparator = false;
 
@@ -220,6 +224,7 @@ namespace Unity.MP_FPS.Client {
                 needsSeparator = true;
             }
 
+            // 平台不一定支持所有统计项。逐项检查记录器有效后再显示，缺一项不影响其他数据。
             if (m_CpuRecorder.Valid) {
                 AppendSeparator();
                 m_StringBuilder.Append("CPU:").Append((GetRecorderFrameAverage(m_CpuRecorder) * 1e-6f).ToString("F1"))
@@ -242,7 +247,7 @@ namespace Unity.MP_FPS.Client {
             }
             if (m_GcMemoryRecorder.Valid) {
                 AppendSeparator();
-                // For integers/longs, ToString() is efficient and doesn't box.
+                // 整型或长整型可直接 ToString()，不会发生装箱。
                 m_StringBuilder.Append("Managed:").Append(m_GcMemoryRecorder.LastValue / (1024 * 1024)).Append("MB");
             }
             if (m_SystemMemoryRecorder.Valid) {
@@ -286,11 +291,12 @@ namespace Unity.MP_FPS.Client {
         }
 
         /// <summary>
-        /// Reads the cached network status from the NetworkStatusSystem.
+        /// 从 NetworkStatusSystem 读取已经缓存的网络状态。
         /// </summary>
-        /// <returns>A formatted string with network status, or a default message if not available.</returns>
+        /// <returns>格式化后的网络状态，或状态不可用时的默认提示。</returns>
         private string GetNetcodeInfoFromSystem() {
             var clientWorld = ClientServerBootstrap.ClientWorld;
+            // World 未创建或已离开、系统未提供状态时直接返回等候文字。避免继续读无效的实体句柄。
             if (clientWorld == null || !clientWorld.IsCreated || NetworkStatusSystem.StatusEntity == Entity.Null)
                 return $"<color={k_RedColor}>No client world!</color>";
             var entityManager = clientWorld.EntityManager;

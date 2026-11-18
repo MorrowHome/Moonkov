@@ -28,8 +28,8 @@ namespace Unity.MP_FPS {
             !Client.QuickSlotBindings.Typing(
                 m_Root?.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement);
 
-        // Input delegates run before this HUD's LateUpdate. Reserve the opening M frame,
-        // and the closing frame, so wheel/click/look cannot slip through before UI toggles.
+        // 输入回调在 HUD 的 LateUpdate 之前执行。预先占用按 M 的打开帧，
+        // 并保留关闭帧，避免界面切换时滚轮、点击或转身穿过去。
         // 输入回调早于 LateUpdate。打开和关闭地图的那一帧都先挡住转身、开火和滚轮，避免一次按键穿过界面。
         private bool MapBlocksInput =>
             m_MapOpen || Time.frameCount <= m_MapInputGuardFrame || (MapKeyPressed &&
@@ -54,11 +54,14 @@ namespace Unity.MP_FPS {
         private void SetRaidMapOpen(bool open) {
             if (open == m_MapOpen) return;
             if (open) {
+                // 必须有活着的本地角色以及可用连接才能开大地图。其他手动操作和正在读的日志不能被大地图强行打断。
                 if (!MapPlayable || QuickManualBusy || m_FieldRecordOpen) return;
                 if (m_InventoryVisible) SetInventory(false);
+                // 背包可能因为等待确认拒绝关闭。还开着就不要再叠一层地图，以免焦点同时被两个界面要走。
                 if (m_InventoryVisible) return;
                 if (m_MissionDetailsVisible) SetMissionDetails(false);
                 if (m_CampaignJournalVisible) SetCampaignJournal(false);
+                // 每局首次打开回到适合导航的范围，有底图时放大到玩家附近。同一局中再次打开保留之前视图。
                 if (!m_MapOpenedInContext) {
                     m_ClashView.Map.FullMap();
                     if (m_ClashView.Map.HasSurface) {
@@ -94,6 +97,7 @@ namespace Unity.MP_FPS {
             }
             var pose = m_PlayerQuery.GetSingleton<LocalTransform>();
             var controller = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().ControllerState;
+            // 小地图箭头跟着视角方向。自由转头会加上额外偏移，即使角色身体没转，箭头也能指向看过去的方向。
             var forward = Quaternion.Euler(0, controller.YawDegrees + controller.FreeLookOffset.x, 0) * Vector3.forward;
             m_Minimap.Present(MoonRaidMap.Active, m_ClashView.Map, pose.Position, forward, m_Snapshot.TakenMask);
         }
@@ -123,6 +127,7 @@ namespace Unity.MP_FPS {
                 m_ClashView.Map.PresentExpedition(MoonRaidMap.Active, pose.Position,
                     math.mul(pose.Rotation, math.forward()), m_Snapshot.TakenMask);
             }
+            // 一次按键可能被多个刷新入口看到。记录切换帧，保证一帧里只开或关一次。
             if (MapKeyPressed && m_MapToggleFrame != Time.frameCount) {
                 m_MapToggleFrame = Time.frameCount;
                 SetRaidMapOpen(!m_MapOpen);

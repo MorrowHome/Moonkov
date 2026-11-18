@@ -50,7 +50,7 @@ namespace Unity.MP_FPS {
             s_PlayerMovementTick = 0;
         }
 
-        // logging and diagnostics
+        // 日志与诊断
         private static bool s_PlayerMovementActive = false;
         private static uint s_PlayerMovementTick;
         public static bool PlayerMovementActive => s_PlayerMovementActive;
@@ -68,15 +68,17 @@ namespace Unity.MP_FPS {
         private float CarriedWeight(Inventory.InventoryGraph inventory) {
             if (inventory == null) return 0;
             var sample = m_CarriedWeights.GetValue(inventory, _ => new CarriedWeightSample());
+            // 库存结构版本没变时复用上次负重。重新算后按网络同步精度取整，避免客户端和服务器用到不同速度上限。
             if (sample.Version != inventory.Version || !ReferenceEquals(sample.Items, inventory.Items)) {
                 sample.Version = inventory.Version;
                 sample.Items = inventory.Items;
-                // Match Ghost quantization so prediction uses the server's exact rule input.
+                // 按 Ghost 的同步精度取整，让预测使用与服务器一致的规则输入。
                 sample.Weight = Mathf.Round(inventory.CarriedWeight * 100) / 100;
             }
             return sample.Weight;
         }
 
+        // 机器人自己的库存挂在脑组件，真人的库存挂在网络连接。二者最终都把库存交给同一套武器和负重规则。
         private Inventory.InventoryGraph WeaponInventory(Entity player) {
             if (EntityManager.HasComponent<DollSingerEnemyBrain>(player))
                 return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory;
@@ -108,6 +110,7 @@ namespace Unity.MP_FPS {
                 return false;
             var session = EntityManager.GetComponentData<RaidSession>(connection);
             var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
+            // 充能要属于当前战局，不能插进进行中的库存操作。扣电池成功后再让库存重发，并保留这次的预留量给计时。
             if (session.Phase != RaidPhase.Active || inventory.RaidId != session.RaidId || inventory.ActionPending ||
                 !HaloEnergyInventory.RechargeFirst(ref state, inventory.Graph, weapon))
                 return false;
@@ -162,9 +165,9 @@ namespace Unity.MP_FPS {
                     }
             }
 
-            // for each client
-            // we process the input and create a list of commandInputs that need to be processed by the movement code
-            // the movement code processes the inputs in order
+            // 逐个处理已加入的客户端。
+            // 把客户端的输入取成移动模拟要处理的 commandInputs 列表。
+            // 移动按输入顺序逐段处理。
             m_ProcessedClientInputCommands.Clear();
             var commands = m_ProcessedClientInputCommands;
             int unityFrameCount = UnityEngine.Time.frameCount;
@@ -175,8 +178,9 @@ namespace Unity.MP_FPS {
                 if (!clientCommandInputBufferLookup.TryGetBuffer(entity, out var buffer) || buffer.Length == 0)
                     continue;
                 predictedClient.ValueRW.BeginInputIndex = commands.Length;
+                // 第一次收到这个玩家输入时，从查到的指令起步。已有上次处理记录才从上次编号追赶。
                 if (predictedClient.ValueRO.LastProcessedServerTick == 0) {
-                    // first frame, let's just get the latest data and set it
+                    // 首次运行时先从当前找到的最新数据起步。
                     if (buffer.GetDataAtTick(new NetworkTick(serverTick), out var commandInput)) {
                         var input = commandInput;
                         commands.Add(input);
@@ -188,8 +192,8 @@ namespace Unity.MP_FPS {
                                          $"[ServerPlayerMovementSystem] Server tick has skipped a frame of input. " +
                                          $"Current server tick {serverTick.ToString()}, last processed tick {predictedClient.ValueRO.LastProcessedServerTick.ToString()}");
 
-                    // we need to check we aren't missing data
-                    // so let's check for any data from the ticks in between
+                    // 检查上次已消耗输入和本次之间有没有缺值。
+                    // 逐个查询这期间的输入拍。
                     // 从上次处理的输入拍追到本拍。中间缺包时用当前能找到的指令近似补齐，客户端预测可能因此需要校正。
                     for (uint tick = predictedClient.ValueRO.LastProcessedServerTick + 1; tick <= serverTick; tick++)
                         if (buffer.GetDataAtTick(new NetworkTick(tick), out var commandInput) &&
@@ -199,12 +203,12 @@ namespace Unity.MP_FPS {
                             commands.Add(input);
                             if (commandInput.Tick.TickIndexForValidTick >
                                 predictedClient.ValueRO.LastProcessedServerTick + 1)
-                                // we are missing input from the client which means we might mispredict
+                                // 客户端有指令没收到时，两端移动模拟可能不同。
                                 for (uint i = predictedClient.ValueRO.LastProcessedServerTick + 1;
                                      i < commandInput.Tick.TickIndexForValidTick;
                                      i++) {
-                                    // if we have missing ticks here, it means the server did not (and will not) receive it.
-                                    // So the best we can do is assume the input is the same and accumulate our movement based on that
+                                    // 走到这里仍缺的输入拍没有对应的可用指令。
+                                    // 移动以找到的指令代替缺值来累计这一段位移。
                                     if (logPredictionWarnings)
                                         Debug.LogWarning($"[{unityFrameCount.ToString()}] " +
                                                          $"[ServerPlayerMovementSystem] Missing client input for tick {i.ToString()} - " +
@@ -227,7 +231,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Bots produce the same command stream as players, without a fake transport connection.
+            // 机器人填与玩家相同的指令流，无需伪造网络连接。
             foreach (var (enemy, input, health) in SystemAPI
                          .Query<RefRO<DollSingerEnemy>, RefRO<PlayerInputComponent>, RefRO<PredictedPlayerGhost>>()
                          .WithAll<Simulate>()) {
@@ -249,11 +253,12 @@ namespace Unity.MP_FPS {
             m_PlayerGhostLookup.Update(this);
             m_PredictedClientInputComponentLookup.Update(this);
             var predictedClientInputComponentLookup = m_PredictedClientInputComponentLookup;
+            // 采集网络指令后先准备查询角色和物理碰撞。Host 同一进程存在两套角色，使用各自的组件和碰撞层。
             var playerGhostLookup = m_PlayerGhostLookup;
             var projectileSpawnList = new NativeList<ProjectileSpawnData>(Allocator.Temp);
             var vfxSpawnList = new NativeList<VfxSpawnData>(Allocator.Temp);
-            // The project disables automatic transform syncing. Query the current poses,
-            // including newly spawned head hitboxes, rather than the previous physics step.
+            // 项目关闭了自动物理位姿同步。手动同步后才能查当前位姿，
+            // 也包括刚生成的头部碰撞体，避免拿上一物理步的位置。
             UnityEngine.Physics.SyncTransforms();
             foreach (var (player, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>()
                          .WithEntityAccess())
@@ -267,6 +272,7 @@ namespace Unity.MP_FPS {
                 }
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>()) {
                 HaloModuleFire.AdvanceTimers(ref predictedPlayer.ValueRW, deltaTime);
+                // 已有的充能和装填先继续计时。这拍归零了才能把新入账的能量用于下一步射击。
                 if (predictedPlayer.ValueRO.ControllerState.IsReloadingState) {
                     var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(
                         predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
@@ -274,8 +280,8 @@ namespace Unity.MP_FPS {
                 }
             }
 
-            // Resolve every actor's defense before any hitscan shot. Entity iteration order
-            // must not decide whether this tick's held defense protects the target.
+            // 射线伤害之前先结算所有人的防御状态。
+            // 这样同一拍的防御会不会保护目标，就不会由实体遍历次序决定。
             // 先把所有角色这一拍的防御状态结算完，再检查射线命中。否则先跑到的角色可能绕过同拍举起的盾。
             foreach (var (defender, lookup) in SystemAPI
                          .Query<RefRW<PredictedPlayerGhost>, RefRO<PlayerClientCommandInputLookup>>()
@@ -303,13 +309,15 @@ namespace Unity.MP_FPS {
                     continue;
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
                 if (predictedClient.InputCount > 0) {
-                    // get movement index for the last frame we are going to process
+                    // 取这一拍最后一段待处理操作的下标。
+                    // 这一拍的装备、射击用最新一条有效输入。运动会稍后按这一拍收到的多段输入分摊时间。
                     var commandInput = commands[predictedClient.BeginInputIndex + predictedClient.InputCount - 1];
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRO.InputIndex, out var input)) {
                         input = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
                         playerGhost.ServerMovementInput = input;
                     }
                     predictedPlayer.ValueRW.ControllerState.Shoot = false;
+                    // 先处理拿哪把武器，再根据实际武器和模块读参数。切换的这一拍有取枪等待。
                     bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
                         WeaponManager.Instance.WeaponRegistry);
                     if (switchedWeapon)
@@ -328,6 +336,7 @@ namespace Unity.MP_FPS {
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) &&
                                           predictedPlayer.ValueRO.CurrentAmmo <= 0;
                         bool halo = DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID);
+                        // 光环按装填键从库存预留电池能量。传统武器还可因空仓自动走旧的弹仓装填逻辑。
                         if (halo && wantsToReload && TryRechargeHalo(entity, ref predictedPlayer.ValueRW, weaponData)) {
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                             HaloEnergyRules.RefreshAmmo(ref predictedPlayer.ValueRW, weaponData);
@@ -336,6 +345,7 @@ namespace Unity.MP_FPS {
                             HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, weaponData.MagazineSize);
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
+                        // 部署在身外的哨戒光环也通过一次正式开火检查。真开火时以锚点当射线起点，记录它专用的事件拍。
                         bool sentryShot = TrySentryShot(entity, ref predictedPlayer.ValueRW, weaponData, serverTick,
                             out var sentryRay);
                         if (sentryShot || HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input,
@@ -354,6 +364,7 @@ namespace Unity.MP_FPS {
                             bool aimed = sentryShot ||
                                          !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) ||
                                          input.Aim;
+                            // 射线武器直接改这条射线的散布方向。弹体武器在生成每颗弹丸时按编号分别取散布。
                             if (weaponData.Type == WeaponType.Hitscan) {
                                 shotRay = new Ray(shotRay.origin,
                                     WeaponSpread.Direction(shotRay.direction, weaponData, 0,
@@ -368,12 +379,13 @@ namespace Unity.MP_FPS {
                                 VisualEffectManager.ServerInstance.Server_RequestVfx(shooterNetworkId,
                                     predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick, sentryShot,
                                     shotOriginPosition);
+                            // 发射时就记录伤害来源和归属。晚到的弹体命中也用这一发的身份来判断，而不看后来换了什么阵营或模式。
                             var shotSource = ResearchQuestRuntime.TagShot(World, entity,
                                 DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID), sentryShot,
                                 BountyClashDamage.Capture(World, entity));
                             switch (weaponData.Type) {
                                 case WeaponType.Hitscan: {
-                                    // Use the calculated eyePosition and aimDirection
+                                    // 用已经计算的 eyePosition 和 aimDirection 作为射线输入。
                                     if (playerGhost.RaycastShot(shotRay, weaponData.HitscanRange, s_HitscanLayerMask,
                                             out var hit)) {
                                         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ServerPlayer"))
@@ -386,9 +398,10 @@ namespace Unity.MP_FPS {
                                                     .NetworkId;
                                                 if (BountyClashDamage.IsSelf(World, hitGhostObject.LinkedEntity,
                                                         shotSource))
-                                                    //skip hitting self
+                                                    //跳过自己的碰撞。
                                                     continue;
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO;
+                                                // 用碰撞体确定身体部位，再按距离衰减，把最终请求交给统一伤害入口做护盾、队伍关系和模式判断。
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 BountyClashDamage.Apply(World, hitGhostObject.LinkedEntity, shotSource,
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),
@@ -422,6 +435,7 @@ namespace Unity.MP_FPS {
                                     }
                                     break;
                                 }
+                                // 弹体记录射出时的所有者和生成编号，之后自己推进飞行。对应事件可供本机预测找到同一颗弹丸。
                                 case WeaponType.Projectile: {
                                     var prefabEntity =
                                         GhostSpawner.FindGhostPrefabEntity(weaponData.ProjectileGhostPrefab.GhostGuid);
@@ -498,6 +512,7 @@ namespace Unity.MP_FPS {
                                 predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 &&
                                 !predictedPlayer.ValueRO.ClashDarkSight);
                     }
+                    // 把刚起跳或刚落地的动作转成服务器 tick，远端看到新编号才播一次。
                     if (predictedPlayer.ValueRW.ControllerState.JumpTriggered) {
                         predictedPlayer.ValueRW.LastJumpTick = serverTick;
                         predictedPlayer.ValueRW.ControllerState.JumpTriggered = false;
@@ -516,6 +531,7 @@ namespace Unity.MP_FPS {
                 var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f ||
                     controllerLink.Controller.NeedsLiftCarry(predictedPlayer.ValueRO.ControllerState)) {
+                    // 落地和伤腿冲刺的后果放在真实碰撞移动后结算。移动请求被墙挡住时，不按原本想走的距离扣状态。
                     bool wasLanding = predictedPlayer.ValueRO.ControllerState.LandTriggered;
                     bool wasGrounded = predictedPlayer.ValueRO.ControllerState.MovementType ==
                                        FirstPersonController.MovementType.Standing;
@@ -538,19 +554,21 @@ namespace Unity.MP_FPS {
                          .Query<RefRW<LocalTransform>, RefRW<PredictedPlayerGhost>,
                              RefRO<PredictedPlayerControllerConsts>>()
                          .WithAll<Simulate, PlayerControllerLink, GhostGameObjectLink>().WithEntityAccess()) {
+                // 最后把碰撞后的姿势写回 ECS LocalTransform。这是快照和客户端回滚对齐的位置。
                 transform.ValueRW.Position = predictedPlayer.ValueRO.ControllerState.CurrentPosition;
                 transform.ValueRW.Rotation = predictedPlayer.ValueRO.ControllerState.CurrentRotation;
+                // 可选诊断把这一拍结果与历史记录比较。找到不同可定位具体哪一拍出现差异。
                 if (checkForPredictionErrors) {
                     if (MovementHistory.TryGetTick(serverTick, out var pos, out var rot))
-                        // compare our calculation with the recorded
+                        // 把本次位置和旋转与历史记录比较。
                         Debug.Assert(
                             PlayerMovementHistory.HistoryMatches(pos, rot,
                                 predictedPlayer.ValueRO.ControllerState.CurrentPosition,
                                 predictedPlayer.ValueRO.ControllerState.CurrentRotation),
                             $"[ServerPlayerMovementSystem] Mispredict detected at tick {serverTick} predicted pos {predictedPlayer.ValueRO.ControllerState.CurrentPosition} recorded {(float3)pos}");
                     else
-                        // this is the first time we've processed this tick
-                        // let's add our result
+                        // 这是第一次处理这个 tick，
+                        // 把结果存进诊断历史，之后重算可以比对。
                         MovementHistory.Add(serverTick, predictedPlayer.ValueRO.ControllerState.CurrentPosition,
                             predictedPlayer.ValueRO.ControllerState.CurrentRotation);
                 }

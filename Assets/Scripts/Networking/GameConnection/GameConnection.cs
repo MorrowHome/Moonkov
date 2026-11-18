@@ -9,27 +9,28 @@ using Unity.Services.Multiplayer;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This extension methods help with some specificities of the <see cref="ISession"/> interface.
+    /// 这些扩展方法补充 <see cref="ISession"/> 接口的会话判断。
     /// </summary>
     public static class SessionExtension {
         /// <summary>
-        /// This method is used to know if the current <see cref="ISession"/> is a pure server and not a client.
+        /// 判断当前 <see cref="ISession"/> 是否只有服务器进程，不带客户端。
         /// </summary>
-        /// <returns>True if the session is only a server and does not have a client, false otherwise.</returns>
+        /// <returns>会话是纯服务器时返回 true，其余情况返回 false。</returns>
         public static bool IsServer(this ISession session) {
             return session.IsHost && session.CurrentPlayer?.Id == null;
         }
     }
 
     /// <summary>
-    /// This class is a wrapper around <see cref="MultiplayerService.Instance"/> session API.
+    /// 包装 <see cref="MultiplayerService.Instance"/> 的会话 API。
     /// </summary>
     /// <remarks>
-    /// The purpose of this class is to encapsulate the need for a custom <see cref="INetworkHandler"/> that we are using
-    /// to retrieve the Listen and Connect <see cref="NetworkEndpoint"/> while connecting through the <see cref="ISession"/> API.
-    /// This is done in order to control the Worlds creation and Connection in <see cref="GameManager.StartGameAsync"/>.
+    /// 此类封装自定义 <see cref="INetworkHandler"/>，
+    /// 用来取得监听和连接的 <see cref="NetworkEndpoint"/>。这一步发生在使用 <see cref="ISession"/> API 时。
+    /// 这样可以在 <see cref="GameManager.StartGameAsync"/> 中控制何时创建各个 World 并发起连接。
     /// </remarks>
     public class GameConnection {
+        // Relay 才会持有 Unity Session。直接 IP 或进程内游戏只需要端点，好友房和官方 ICE 还各带自己的连接对象。
         public ISession Session { get; private set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS {
             Task<ISession> pending = null;
             try {
                 await BoundedAsync(StartServicesAsync(), timeout.Token);
+                // 有房间码时加入现有 Relay 会话。新开会话则使用配置容量和 DTLS 创建，再等底层参数。
                 if (joinByCode) {
                     pending = MultiplayerService.Instance.JoinSessionByCodeAsync(
                         ConnectionSettings.Instance.SessionCode, new JoinSessionOptions().WithNetworkHandler(handler));
@@ -74,11 +76,13 @@ namespace Unity.MP_FPS {
                 var session = await BoundedAsync(pending, timeout.Token);
                 return new GameConnection {
                     Session = session,
+                    // SDK 先返回会话也不代表端点已经填好。还要等 EntityNetworkHandler 安装完驱动所需参数。
                     ConnectEndpoint = await BoundedAsync(handler.ConnectEndpoint, timeout.Token),
                     ListenEndpoint = await BoundedAsync(handler.ListenEndpoint, timeout.Token),
                     SessionConnectionType = await BoundedAsync(handler.SessionConnectionType, timeout.Token)
                 };
             } catch (Exception ex) {
+                // 超时先停回调，再对仍在创建的会话登记补清理。迟到新房间要删掉，迟到加入要退房。
                 await handler.StopAsync();
                 if (pending != null) _ = CleanupLateSessionAsync(pending);
                 if (ex is OperationCanceledException && !ct.IsCancellationRequested)
@@ -87,10 +91,11 @@ namespace Unity.MP_FPS {
             }
         }
 
-        // The SDK does not expose cancellation for every operation. Bound our wait,
-        // observe late failures, and remove late-created sessions rather than leaking rooms.
+        // SDK 不是每种操作都能取消。外部限制等待时长，
+        // 处理迟到的异常，并清掉超时后才创建的会话，避免遗留房间。
         private static async Task BoundedAsync(Task operation, CancellationToken ct) {
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            // 给不支持取消的 SDK 任务套上外部等待期限。返回超时不会强夺 SDK 的内部任务，也要把迟到异常观察掉。
             var delay = Task.Delay(Timeout.Infinite, deadline.Token);
             if (await Task.WhenAny(operation, delay) != operation) {
                 _ = ObserveAsync(operation);
@@ -124,6 +129,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 纯服务器只需要监听端点，不在这个 World 发起客户端连接。这里准备通配 IPv4 或由调用方指定的监听地址。
         public static GameConnection GetServerConnectionSettings(ushort port) {
             ConnectionSettings.Instance.Port = port.ToString();
             var gameConnection = new GameConnection();
@@ -142,6 +148,7 @@ namespace Unity.MP_FPS {
             return gameConnection;
         }
 
+        // 跨网好友房已有战局 ICE，房主本人仍走本机端点。局域网普通房对外监听端口，房主的客户端用回环地址连接。
         public static Task<GameConnection> HostGameAsync() {
             if (LanRoomClient.PeerRoom is { } room)
                 return Task.FromResult(new GameConnection {
@@ -156,6 +163,7 @@ namespace Unity.MP_FPS {
             return Task.FromResult(gameConnection);
         }
 
+        // 单人也有一套客户端和服务端 World，因此同样需要端点数据。默认用本机回环，两边在同一进程通信。
         public static Task<GameConnection> OfflineGameAsync() {
             return Task.FromResult(new GameConnection {
                 ListenEndpoint = NetworkEndpoint.LoopbackIpv4,
@@ -178,6 +186,7 @@ namespace Unity.MP_FPS {
                 if (snapshot?.InstanceId != OnlineLobbyClient.InstanceId ||
                     !Online.OnlineNetworkProtocol.ValidPath(snapshot.ConnectionPath))
                     throw new InvalidOperationException("战局连接方式无效，请返回小队刷新。");
+                // 官方大厅分配的路线不能只从地址文本猜。如果要求 P2P，就先把 ICE 建起来，TCP 账号服务只协助交换参数。
                 if (snapshot.ConnectionPath == Online.OnlineNetworkProtocol.P2P) {
                     var ice = await EmbeddedIceClientSession.ConnectAsync(snapshot, ct);
                     return new GameConnection {
@@ -187,8 +196,9 @@ namespace Unity.MP_FPS {
                 }
             }
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
-            // A host name cannot be stored in a NetworkEndpoint, so resolve one here. This is what
-            // lets the shipped settings file name the server by domain instead of by address.
+            // NetworkEndpoint 只能保存具体地址，所以在这里解析域名。
+            // 这样随包设置可以直接写服务器域名。
+            // 普通 IP 直连在加载时把域名变成具体地址。取消后不会把一条刚解析完的旧连接设为目标。
             string address = await ClientSettings.ResolveAsync(ConnectionSettings.Instance.IPAddress);
             ct.ThrowIfCancellationRequested();
             var gameConnection = new GameConnection();
@@ -199,6 +209,7 @@ namespace Unity.MP_FPS {
         }
 
         private static async Task StartServicesAsync() {
+            // Unity Relay 属于自己的服务体系，先初始化再匿名授权。账号后端登录和 Unity Relay 认证是两套不同的状态。
             if (UnityServices.State != ServicesInitializationState.Initialized) await UnityServices.InitializeAsync();
             if (!AuthenticationService.Instance.IsAuthorized)
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();

@@ -15,10 +15,12 @@ namespace Unity.MP_FPS {
             bool researchOperate,
             Vector3 actor,
             RaidDeathBagClientState bags) {
+            // 描边系统决定这次是否要采集。不可互动、暂停或还未达到刷新时刻时保持它自己的状态。
             if (!m_InteractionOutline.BeginCollection(Camera.main, actor, allowed && Time.timeScale > 0,
                     Time.unscaledTime))
                 return;
             var map = MoonRaidMap.Active;
+            // 容器轮廓只在允许搜刮时加入。已经空的地面掉落物也跳过，不把它伪装成还有操作的物品。
             if (lootAllowed && map) {
                 if (expedition && RaidFurnitureLoot.Active)
                     foreach (var drawer in RaidFurnitureLoot.Active.Drawers)
@@ -33,6 +35,7 @@ namespace Unity.MP_FPS {
                     if (bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex || !bag.Empty)
                         m_InteractionOutline.Add(map.DeathBagVisual(bag.LootId), (Vector3)bag.Position);
             }
+            // 设备轮廓和搜刮权限分开。战术道具可自己报告轮廓，远征再额外收门、灯和电梯按钮。
             if (operate) {
                 TacticalItemsFeedback.AddInteractionOutlines(m_InteractionOutline);
                 if (expedition) {
@@ -47,6 +50,7 @@ namespace Unity.MP_FPS {
                             m_InteractionOutline.Add(button.transform, button.Center);
                 }
             }
+            // 研究设备和一般设备各用自己的允许条件。最后由同一个描边组件套用减弱动效设置。
             if (expedition && (operate || researchOperate)) AddMissionOutlines(operate, researchOperate);
             m_InteractionOutline.FinishCollection(Client.HalosTerminalBackdrop.PrefersReducedMotion);
         }

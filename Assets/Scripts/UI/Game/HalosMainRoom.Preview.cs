@@ -22,7 +22,7 @@ namespace Unity.MP_FPS.Client {
             m_HomePortrait = Root.Q<Image>("halosRoomPortrait");
             m_CharacterHit = Root.Q<Button>("halosRoomInspectCharacter");
             m_MoonHit = Root.Q<Button>("halosRoomInspectMoon");
-            // The window hit area and actor sit behind the original monitor controls.
+            // 观察窗的可点区域和人物都在原监视器控件后面。
             m_MoonHit.RemoveFromHierarchy();
             m_World.Add(m_MoonHit);
             m_CharacterHost.RemoveFromHierarchy();
@@ -54,6 +54,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void UpdateHomeCharacter() {
+            // 只有首页中间一带需要人物相机。切开预览、离开面板或滑到远处就回收首页模型。
             bool visible = m_Visible && !m_Disposed && !IsPreviewOpen && Root.panel != null &&
                            Mathf.Abs(m_Camera - 1920) < 1550;
             m_CharacterHost.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -93,6 +94,7 @@ namespace Unity.MP_FPS.Client {
             }).StartingIn(CharacterDoubleClickMilliseconds);
         }
 
+        // 单击原先预约延迟触发。第二次点击或离开页面必须取消已预约的回调，防止预览在错误时刻打开。
         private void CancelCharacterClick() {
             m_CharacterClick?.Pause();
             m_CharacterClick = null;
@@ -102,6 +104,7 @@ namespace Unity.MP_FPS.Client {
         public void OpenMoonPreview() { OpenPreview(true); }
 
         private void OpenPreview(bool moon) {
+            // 仅中间舱的正常状态允许看人物和月球。打开前先判定房间没有移动，也没有另一层平板。
             if (m_Disposed || !m_Visible || m_Busy || Room != 1 || IsMoving || IsOpening || IsPreviewOpen ||
                 m_TabletState > 0)
                 return;
@@ -139,6 +142,7 @@ namespace Unity.MP_FPS.Client {
 
         public void ClosePreview() { ClosePreview(true); }
 
+        // 关闭时释放当前独立预览。需要恢复首页时再根据当前可见性把首页人物建回来。
         private void ClosePreview(bool restore) {
             if (!IsPreviewOpen) return;
             IsPreviewOpen = false;

@@ -3,11 +3,12 @@
 using System;
 
 namespace Unity.MP_FPS.Inventory {
-    // A stack holds full cells plus at most one partially discharged cell.
-    // Keeping that cell distinct avoids turning two partial casings into one full cell.
+    // 一堆电池可以有若干节满电电池，以及最多一节未满的。
+    // 单独记下那节余量，避免两节没满的电池合并成一节凭空满电的。
     public static class BatteryEnergy {
         public const int Capacity = 100;
         public static bool IsCell(InventoryItem item) { return item?.Code == "cells"; }
+        // CellCharge 的负值是满电占位。整堆电量计算时把其余电池都按容量上限累加。
         public static int Charge(InventoryItem item) { return item.CellCharge < 0 ? Capacity : item.CellCharge; }
 
         public static int Stored(InventoryItem item) {
@@ -25,12 +26,13 @@ namespace Unity.MP_FPS.Inventory {
             return !IsCell(source) || !Partial(target) || !Partial(source) || quantity < source.Quantity;
         }
 
-        // Splits prefer full cells; moving the whole stack preserves its partial cell and identity.
+        // 拆堆优先拿满电电池，整堆移动才保留那节余量和原 ID。
         public static InventoryItem Take(InventoryItem source, int quantity) {
             if (source == null || quantity < 1 || quantity > source.Quantity)
                 throw new ArgumentOutOfRangeException(nameof(quantity));
             var moved = source.Clone();
             moved.Quantity = quantity;
+            // 只拿一部分先从满电电池里拆，并给新堆唯一 ID。整堆移动才带走那节剩余电量与原 ID。
             if (quantity < source.Quantity) {
                 moved.Id = Guid.NewGuid().ToString("D");
                 if (IsCell(moved)) moved.CellCharge = -1;
@@ -42,10 +44,12 @@ namespace Unity.MP_FPS.Inventory {
         public static void Merge(InventoryItem source, InventoryItem target, int quantity) {
             var moved = Take(source, quantity);
             target.Quantity += quantity;
+            // 合并后的不满电电池留在目标堆。CanMerge 已经保证那里能表示这一节。
             if (Partial(moved)) target.CellCharge = moved.CellCharge;
         }
 
         public static void Spend(InventoryItem item, int energy) {
+            // 扣电后按剩余总电量反推需要几节电池。整除为全满，否则最后一节记录余量。
             int remaining = Stored(item) - energy;
             if (energy < 1 || remaining < 0) throw new ArgumentOutOfRangeException(nameof(energy));
             item.Quantity = (remaining + Capacity - 1) / Capacity;

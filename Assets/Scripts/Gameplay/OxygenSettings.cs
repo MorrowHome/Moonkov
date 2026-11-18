@@ -13,12 +13,14 @@ namespace Unity.MP_FPS {
         [SerializeField] [Min(1)] private float m_SprintingMultiplier = 1.75f;
 
         public OxygenParameters Parameters =>
+            // 把配置资产字段打包成运行时的值类型。一处读全组，服务端耗氧时不必逐个找场景字段。
             new(m_OutdoorSeconds, m_AirRefillPerSecond, m_HypoxiaGraceSeconds, m_HypoxiaDamagePerSecond,
                 m_WalkingMultiplier, m_SprintingMultiplier);
     }
 
-    // Immutable values can also be supplied by a local preview or a simulation test.
+    // 这些不可变的数值也能直接用于本地预览或模拟测试。
     public readonly struct OxygenParameters {
+        // 地图没有额外配置时可以拿整组默认值。
         public static OxygenParameters Default => new(600, 5, 8, 3, 1.1f, 1.75f);
         public readonly float OutdoorSeconds, AirRefillPerSecond, GraceSeconds, DamagePerSecond;
         public readonly float WalkingMultiplier, SprintingMultiplier;
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS {
             SprintingMultiplier = Valid(sprintingMultiplier, 1.75f, 1);
         }
 
+        // 防止过低或缺失的数据被用于计时和速率计算。先给无效值用备用值，再保证符合字段的最小约束。
         private static float Valid(float value, float fallback, float minimum) {
             return float.IsFinite(value) ? Mathf.Max(minimum, value) : fallback;
         }

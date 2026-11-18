@@ -12,13 +12,15 @@ public partial class ClientInputSenderSystem : SystemBase {
 
     protected override void OnUpdate() {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        // Above the prediction window, NetCode delays local playback but still
-        // needs commands for the future input tick so they reach the server on time.
+        // 网络延迟超过预测窗口时，NetCode 会放慢本地模拟使用输入的时刻，
+        // 仍然需要提前发出目标 tick 的指令，才能按时到达服务器。
         // 输入要送到服务器将来会处理的那一拍。网络延迟高时，本机正在预测的 ServerTick 可能落在它后面，此处按 InputTargetTick 排队。
         var tick = networkTime.InputTargetTick;
+        // 网络时钟尚无有效 tick 时先不排命令。客户端预测和服务端据 tick 对齐，没编号的输入没法正确对应一拍。
         if (tick.IsValid) {
             var previousTick = m_PreviouslySentTick;
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
+            // 打开暂停等界面时清掉之前尚未合并的动作，避免关闭后突然补出一次开枪或跳跃。
             var inProgressCommandInput = blocked ? default : m_InProgressCommandInput;
             var bufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>();
             foreach (var (input, entity) in SystemAPI.Query<RefRO<ClientMovementInput>>().WithAll<ClientCommandInput>()
@@ -26,33 +28,36 @@ public partial class ClientInputSenderSystem : SystemBase {
                 var buffer = bufferLookup[entity];
                 if (!previousTick.IsValid || tick.IsNewerThan(previousTick)) {
                     // 开启一条新指令，用这帧的移动等连续状态，再合并上一段积下来的跳跃、单发开火等瞬时操作。
-                    // this is a new tick.
+                    // 跨到了新的网络 tick。
                     var commandInput = new ClientCommandInput
+                        // 一个 tick 说明服务器何时执行操作，另一个记本机观看的是哪一拍的远端场景。发出的命令会一起保存这两个时刻，因为它们各有自己的节奏。
                         { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick };
                     commandInput.SetFrom(in input.ValueRO);
                     commandInput.UpdateFrom(inProgressCommandInput, false);
                     buffer.AddCommandData(commandInput);
 
-                    // we can now start a new inprogress input
+                    // 开始收集下一份输入。
                     inProgressCommandInput = default;
                     previousTick = tick;
                 } else {
                     // 一拍内可能有多帧。多出来的操作先累积给下一拍，同时更新本拍的本机缓冲，让重跑预测也能用到这一拍最新的输入。
-                    // we've already sent this tick
-                    // but we've still got client frames happening
-                    // so let's record our input for sending when the tick next changes
+                    // 这个 tick 的输入已经发过了，
+                    // 但同一个 tick 内仍可能经过多个客户端渲染帧。
+                    // 先记录这些帧里的输入，等下次 tick 变化再发。
                     inProgressCommandInput.UpdateFrom(in input.ValueRO);
 
-                    // even though it's been sent, we add it again, so that the prediction
-                    // system has the very latest data for this tick
+                    // 发送过的 tick 也会用新的本地输入覆盖记录，
+                    // 这样预测系统拿到的是本 tick 最近一次的值。
                     if (buffer.GetDataAtTick(tick, out var existingCommandData) && existingCommandData.Tick == tick) {
+                        // 同一拍内从游戏切到界面时，用屏蔽后的新输入覆盖缓冲。普通游戏帧才合并，保留短按的边沿事件。
                         if (blocked)
                             existingCommandData.SetFrom(in input.ValueRO);
                         else
                             existingCommandData.UpdateFrom(in input.ValueRO);
                         buffer.AddCommandData(existingCommandData);
                     } else {
-                        // Recover a pruned command so prediction always has this tick.
+                        // 缓冲可能已经清掉了这条历史数据。用此刻读到的指令补一个明确的本拍条目，让预测有可读的输入。
+                        // 找回被清理的指令，使预测始终有这个 tick 的数据。
                         var command = new ClientCommandInput
                             { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick };
                         command.SetFrom(input.ValueRO);

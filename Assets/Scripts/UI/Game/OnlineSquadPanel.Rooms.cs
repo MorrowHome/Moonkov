@@ -50,10 +50,12 @@ namespace Unity.MP_FPS.Client {
             var request = m_Snapshot?.JoinRequest;
             bool pending = request?.Status == "Pending";
             string pendingRoomId = pending ? request.RoomId : null;
+            // 已有小队或存在待审申请时不再同时申请别的房间。最终权限也来自账号服务的目录快照。
             bool allow = !party && !busy && !pending && m_Snapshot?.CanRequestJoin == true;
             bool actionsChanged = allow != m_AllowRoomActions || m_PendingRoomId != pendingRoomId;
             m_AllowRoomActions = allow;
             m_PendingRoomId = pendingRoomId;
+            // 列表内容变了才换数据源。若仅申请状态或按钮权限变化，刷新原有行即可。
             if (!SameRooms(rooms)) {
                 m_Rooms = rooms;
                 m_RoomList.itemsSource = m_Rooms;
@@ -102,6 +104,7 @@ namespace Unity.MP_FPS.Client {
             var section = Element.Q("onlineJoinRequests");
             section.style.display = requests.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             section.SetEnabled(!busy);
+            // 按申请编号和展示名比对。队长等审批时不必因为每次轮询都删掉当前控件。
             if (m_JoinRequests.Select(r => (r.RequestId, r.ApplicantName))
                 .SequenceEqual(requests.Select(r => (r.RequestId, r.ApplicantName))))
                 return;
@@ -113,6 +116,7 @@ namespace Unity.MP_FPS.Client {
                 var row = new VisualElement();
                 row.AddToClassList("online-member-row");
                 row.Add(new Label(request.ApplicantName) { enableRichText = false });
+                // 同意和拒绝都使用申请编号。即使有同名玩家，也能把审批准确发给那一份申请。
                 var decline = new Button(() => ReviewJoinRequest("decline-join", request.RequestId))
                     { name = "onlineDeclineJoin" };
                 decline.AddToClassList("online-member-action");
@@ -150,6 +154,7 @@ namespace Unity.MP_FPS.Client {
                 Add(summary);
                 m_Status.AddToClassList("online-room-state");
                 Add(m_Status);
+                // 虚拟列表复用控件，按钮点击时读取该行最新的 RoomId。滚动过后也只申请正在展示的房间。
                 m_Apply = new Button(() =>
                         action?.Invoke(new LobbyAction { Action = "request-join", RoomId = m_RoomId }))
                     { name = "onlineApplyJoin" };

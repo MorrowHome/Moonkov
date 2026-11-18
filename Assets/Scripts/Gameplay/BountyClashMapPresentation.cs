@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS {
-    // Rendering only: real collision and the authority stay on the existing map/server.
+    // 这里只画场景标记。碰撞复用现有地图，玩法判断由服务端负责。
     internal sealed class BountyClashMapPresentation {
         private readonly GameObject m_Root;
         private readonly List<Material> m_Materials = new();
@@ -22,6 +22,7 @@ namespace Unity.MP_FPS {
         private readonly Texture2D m_Tissue;
         private static readonly int s_Mask = LayerMask.GetMask("Default", "Ground");
 
+        // 从对局位置生成场景标记。能向下找到地面时贴地摆放，让边线和灯柱跟随实际起伏。
         public BountyClashMapPresentation(Transform owner, ClashArenaDefinition arena) {
             m_Root = new GameObject("Bounty Clash / MC00 compound");
             m_Root.transform.SetParent(owner, false);
@@ -91,7 +92,7 @@ namespace Unity.MP_FPS {
             m_Corpse.Tick(motor, shape, 0, 0, 0, .016f);
             m_Corpse.SetVisible(true);
             m_Tissue = TissueTexture();
-            // BranchCreatureRig allocates its skin per instance; no live Boss asset is mutated.
+            // BranchCreatureRig 为每个实例分别创建皮肤材质，原有 Boss 资产不会被改动。
             var skin = corpse.GetComponentInChildren<Renderer>().sharedMaterial;
             skin.SetColor("_BaseColor", Color.white);
             skin.SetTexture("_BaseMap", m_Tissue);
@@ -115,6 +116,7 @@ namespace Unity.MP_FPS {
                 Part("Irregular exposed tissue", PrimitiveType.Sphere,
                     floor + new Vector3(-.3f + i * .13f, .47f - Mathf.Abs(i - 2) * .035f, .05f),
                     new Vector3(.18f, .065f, .12f), wound);
+            // 悬赏掉落物的世界标记先隐藏。客户端得知悬赏物当前可拾取后，才在最新掉落位置显示。
             m_BountyCore = Part("Unique ground bounty signal / cosmetic", PrimitiveType.Cube,
                 target + Vector3.up * .15f, new Vector3(.14f, .23f, .14f), m_ObjectiveMaterial);
             m_BountyCore.transform.rotation = Quaternion.Euler(0, 32, 45);
@@ -122,11 +124,12 @@ namespace Unity.MP_FPS {
             m_BountySignal = Line("Ground bounty signal",
                 new[] { target + Vector3.up * .3f, target + Vector3.up * .75f }, m_ObjectiveMaterial, .025f);
             m_BountySignal.SetActive(false);
-            // The formal map intentionally maps saturated environment colors to cobalt.
-            // Preserve gameplay semantics through its existing actor/subject path.
+            // 正式地图有意把高饱和环境颜色映射成钴蓝色。
+            // 用现有角色材质通道保留这些玩法标记的颜色含义。
             MoonSilverPrintSubject.Protect(m_Root);
         }
 
+        // 把目标道具的四肢摆成贴地的倒伏姿势，作为祭坛旁的场景表现。
         private void PoseCollapsedLimbs(GameObject corpse, Vector3 floor) {
             float[] lengths = new[] { 1.8f, 1.2f, 2f, 1.5f, 1.65f, 1.1f };
             float[] turns = new[] { 12f, -8f, 17f, 5f, -14f, 4f };
@@ -171,7 +174,7 @@ namespace Unity.MP_FPS {
                         }
                     }
                 }
-                // Supply ellipse normals and orient this private collapsed mesh outward.
+                // 为椭圆表面计算法线，使这个倒伏模型的表面朝外。
                 mesh.vertices = vertices;
                 mesh.uv = uv;
                 mesh.normals = normals;
@@ -220,6 +223,7 @@ namespace Unity.MP_FPS {
             return texture;
         }
 
+        // 按快照改变发光和目标标记。附近的点用目标位置，物品实际落到别处时用掉落信号。
         public void PresentObjective(float progress, bool bountyAvailable) {
             var color = Color.Lerp(new Color(.95f, .62f, .21f), new Color(.64f, .82f, 1), Mathf.Clamp01(progress));
             m_ObjectiveMaterial.SetColor("_BaseColor", color);
@@ -229,6 +233,7 @@ namespace Unity.MP_FPS {
             foreach (var signal in m_TargetSignals) signal.SetActive(progress < 1 || (bountyAvailable && atSite));
         }
 
+        // 同时挪动模型和发光的竖线，两者保持围着同一个世界位置。
         public void SetBountyPosition(Vector3 position) {
             m_BountyPosition = position;
             m_BountyCore.transform.position = position + Vector3.up * .15f;
@@ -311,6 +316,7 @@ namespace Unity.MP_FPS {
                     label.rotation = Quaternion.LookRotation(label.position - camera.transform.position, Vector3.up);
         }
 
+        // 这些形状和材质是运行时造的，离开玩法时与其父节点一起释放。
         public void Dispose() {
             if (m_Root) m_Root.SetActive(false);
             m_Corpse?.Release();

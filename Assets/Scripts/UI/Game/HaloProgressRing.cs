@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The same four sprites and rest layout as RifleHaloVisual. No rotor animation.
+    // 复用 RifleHaloVisual 的四张贴图和静止布局。转子保持静止。
     public sealed class HaloProgressRing : VisualElement {
         private struct Point {
             public Vector2 Position, UV;
@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public void SetProgress(float value) {
+            // 进度输入必须是 0 到 1。数据尚未同步导致无效数值时先画空环，避免生成坏顶点。
             value = float.IsFinite(value) ? Mathf.Clamp01(value) : 0;
             if (m_Progress == value) return;
             m_Progress = value;
@@ -53,7 +54,8 @@ namespace Unity.MP_FPS.Client {
             var group = new Group { Texture = sprite.texture };
             m_Groups[index] = group;
             var rect = sprite.textureRect;
-            // Tight sprites trim transparent padding. Preserve their pivot and true pixel scale.
+            // 紧密打包的 Sprite 会裁掉透明边。画回去时保留原轴心和像素比例。
+            // 图集会裁掉透明边。用裁切偏移和原始锚点恢复图案应在的位置，圆环才不会挤到一处。
             var low = (sprite.textureRectOffset - sprite.pivot) / sprite.pixelsPerUnit;
             var high = low + rect.size / sprite.pixelsPerUnit;
             var corners = new[] {
@@ -89,6 +91,7 @@ namespace Unity.MP_FPS.Client {
             for (int i = 0; i < count; i++) {
                 var current = input[i];
                 float side = Cross(boundary, current.Position) * (positive ? 1 : -1);
+                // 轮廓边跨过要填充的边界时补一个交点。贴图坐标按同样比例插值，截取的图案不会拉花。
                 if (side >= 0 != previousSide >= 0) {
                     float t = previousSide / (previousSide - side);
                     output[written++] = new Point(Vector2.LerpUnclamped(previous.Position, current.Position, t),
@@ -109,7 +112,8 @@ namespace Unity.MP_FPS.Client {
                 m_Vertices.Add(new Vertex
                     { position = new Vector3(p.x, p.y, Vertex.nearZ), tint = (Color32)color, uv = points[i].UV });
             }
-            // Source quads are clockwise in Unity's y-up coordinates; UI uses y-down.
+            // 源图的四边形在 Unity 纵轴向上的坐标中为顺时针，UI 纵轴则朝下。
+            // 将裁出的多边形绕第一个顶点拆成多个三角形。UI 的纵轴方向和 sprite 坐标相反，索引顺序也随之反过来。
             for (int i = 1; i < count - 1; i++) {
                 m_Indices.Add(start);
                 m_Indices.Add((ushort)(start + i + 1));
@@ -126,13 +130,15 @@ namespace Unity.MP_FPS.Client {
                 m_Vertices.Clear();
                 m_Indices.Clear();
                 foreach (var piece in group.Pieces) {
+                    // 先画完整灰底，彩色部分再叠到已完成的角度。这样低进度时仍能看清整圈形状。
                     Append(piece, 4, new Color(.23f, .25f, .28f, .85f), center, scale);
                     if (m_Progress >= 1) {
                         Append(piece, 4, m_Color, center, scale);
                         continue;
                     }
                     float end = m_Progress * 360;
-                    // Intersect fixed quadrant wedges, so fill stays correct beyond a half-circle.
+                    // 按固定的四分之一圆区域裁剪。这样超过半圈时仍能正确填色。
+                    // 每九十度分一道边界进行裁剪。大于半圈的进度也能用多个相交区域正确填上。
                     for (float from = 0; from < end; from += 90) {
                         float a = (from - 90) * Mathf.Deg2Rad, b = (Mathf.Min(end, from + 90) - 90) * Mathf.Deg2Rad;
                         int count = Clip(piece, 4, m_ClipA, new Vector2(Mathf.Cos(a), Mathf.Sin(a)), true);

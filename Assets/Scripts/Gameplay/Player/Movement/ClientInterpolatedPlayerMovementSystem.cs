@@ -17,12 +17,14 @@ namespace Unity.MP_FPS {
                          .Query<RefRO<PredictedPlayerGhost>, RefRO<GhostInstance>>()
                          .WithNone<PlayerControllerLink, PredictedGhost>().WithAll<GhostGameObjectLink>()
                          .WithEntityAccess()) {
+                // 网络实体可能先生成，外观稍后才链接。两者都到齐时缓存 FirstPersonController 供后续帧使用。
                 var gameObjectLink = SystemAPI.ManagedAPI.GetComponent<GhostGameObjectLink>(entity);
                 if (gameObjectLink.LinkedInstance != null)
-                    // get controller
+                    // 找这个代理角色的移动控制器。
                     if (gameObjectLink.LinkedInstance.TryGetComponent<FirstPersonController>(out var controller))
                         ecb.AddComponent(entity, new PlayerControllerLink { Controller = controller });
             }
+            // 先安装本帧找到的控制器链接，下面的查询随即能把这些角色也纳入同步。
             ecb.Playback(EntityManager);
             ecb.Dispose();
             foreach (var (predictedGhost, transform, controllerConsts, entity) in SystemAPI
@@ -32,6 +34,7 @@ namespace Unity.MP_FPS {
                 var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
                 controllerLink.Controller.ApplyInterpolatedClientState(ref predictedGhost.ValueRW.ControllerState,
                     controllerConsts.ValueRO.ControllerConsts, transform.ValueRO, deltaTime, true);
+                // 插值处理的是画面位置，动画仍按收到的状态参数走。贴地更新给表面相关表现取数据。
                 controllerLink.Controller.ApplyAnimatorState(predictedGhost.ValueRO.ControllerState,
                     controllerConsts.ValueRO.ControllerConsts, deltaTime);
                 controllerLink.Controller.UpdateGround(ref predictedGhost.ValueRW.ControllerState,

@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class ContainerInventoryView {
-        // This is a presentation catalog, separate from HaloModules.Codes (the cache-loot pool).
+        // 这里是界面展示列表。箱子能掉哪些模块由 HaloModules.Codes 决定。
         private static readonly string[] WorkshopCodes = {
             "halo_capacitor", "halo_charge_bridge", "halo_mooncore_recycler",
             "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker"
@@ -28,6 +28,7 @@ namespace Unity.MP_FPS.Client {
         public event Action<string> WorkshopRequested;
         public event Action<bool> WorkshopSupplyRequested;
 
+        // 从库存点某件光环时记住物品 ID。两把同型号光环也可装不同模块，所以改装不能只靠武器代码。
         public void SelectWorkshopWeapon(string itemId) {
             m_WorkshopWeaponId = itemId;
             m_WorkshopModule = null;
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS.Client {
             RefreshWorkshop();
         }
 
+        // 终端把当前页面的父节点交给这里。创建改装面板时一起连接模块选择和 3D 预览，切页时可整体回收。
         public void AttachWorkshop(VisualElement host) {
             if (!m_Stash || m_Disposed) return;
             ReleaseWorkshop();
@@ -155,6 +157,7 @@ namespace Unity.MP_FPS.Client {
             if (m_Workshop == null || m_Disposed) return;
             var weapons = m_Graph?.Items.Where(item => HaloModules.IsWeapon(item.Code)).ToArray() ??
                           Array.Empty<InventoryItem>();
+            // 库存变化可能使刚选的那一把不见了。改选仍存在的武器，随后用当前装备刷新下拉框。
             if (!weapons.Any(item => item.Id == m_WorkshopWeaponId))
                 m_WorkshopWeaponId = weapons.FirstOrDefault(item => item.Parent == "equipment")?.Id ??
                                      weapons.FirstOrDefault()?.Id;
@@ -189,6 +192,7 @@ namespace Unity.MP_FPS.Client {
             string[] codes = WorkshopCodes.Where(code =>
                 HaloModules.Compatible(weaponCode, code) &&
                 HaloModules.Slot(HaloModules.FromCode(code)) == m_WorkshopSlot).ToArray();
+            // 换槽位后，旧模块可能不属于这个槽。优先选当前已装的模块，空槽再选列表第一件。
             if (!codes.Contains(m_WorkshopModule)) m_WorkshopModule = WorkshopInstalled?.Code ?? codes[0];
             MoonkovLocalization.Set(m_Workshop.Q<Label>("workshopSlotTitle"), WorkshopSlotName(m_WorkshopSlot));
             var modules = m_Workshop.Q<ScrollView>("workshopModules");
@@ -276,6 +280,7 @@ namespace Unity.MP_FPS.Client {
                 ? HaloModule.None
                 : HaloModules.Mask(m_Graph, weapon ?? new InventoryItem { Id = "workshop-preview", Code = weaponCode });
             var afterMask = mask;
+            // 计算预览时先从掩码删掉这个槽原来的模块，再加入候选。其他槽位和永久研究仍算在预览数据里。
             foreach (string other in WorkshopCodes.Where(other =>
                          HaloModules.Slot(HaloModules.FromCode(other)) == m_WorkshopSlot))
                 afterMask &= ~HaloModules.FromCode(other);
@@ -329,6 +334,7 @@ namespace Unity.MP_FPS.Client {
                              error == InventoryError.None && !installed);
             var remove = m_Workshop.Q<Button>("workshopRemove");
             remove.style.display = installed ? DisplayStyle.Flex : DisplayStyle.None;
+            // 已装模块卸下要占用仓储空间。先查有没有位置，再决定能否显示可用的卸下操作。
             bool space = WorkshopInstalled != null &&
                          m_Graph.FindSpace(WorkshopInstalled, "stash", out _, out _, out _);
             remove.SetEnabled(!m_Busy && m_ReadOnlyReason == null && space);
@@ -422,6 +428,7 @@ namespace Unity.MP_FPS.Client {
             var candidate = WorkshopCandidate(out var error);
             if (candidate == null || error != InventoryError.None) return;
             m_WorkshopMessage = null;
+            // 确认安装时把真实模块当作库存物品移动到武器槽。取预览数值无法改变任何真实物品。
             Command(new InventoryCommand
                 { ItemId = candidate.Id, Parent = WorkshopWeapon.Id, Region = m_WorkshopSlot });
         }
@@ -429,6 +436,7 @@ namespace Unity.MP_FPS.Client {
         private void RemoveWorkshopModule() {
             if (m_Busy || m_ReadOnlyReason != null || WorkshopInstalled == null) return;
             var item = WorkshopInstalled;
+            // 卸模块时找到的格子也随命令发出去。仓库变化后，库存规则还会校验这个位置。
             if (!m_Graph.FindSpace(item, "stash", out string region, out int x, out int y)) return;
             m_WorkshopMessage = null;
             Command(new InventoryCommand

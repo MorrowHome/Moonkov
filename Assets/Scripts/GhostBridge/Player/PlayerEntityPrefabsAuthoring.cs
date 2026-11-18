@@ -23,6 +23,7 @@ public struct PlayerEntityPrefabs : IComponentData {
 
 public class PlayerEntityPrefabsBaker : Baker<PlayerEntityPrefabsAuthoring> {
     public override void Bake(PlayerEntityPrefabsAuthoring authoring) {
+        // 输入 Ghost 是玩家入场的必需模板。预制件配表里缺它时，这个 Baker 直接停止生成配表。
         if (authoring.ClientInputEntityPrefab == null) return;
         var playerPrefabsEntity = GetEntity(TransformUsageFlags.None);
         AddComponent(playerPrefabsEntity, new PlayerEntityPrefabs {
@@ -33,6 +34,7 @@ public class PlayerEntityPrefabsBaker : Baker<PlayerEntityPrefabsAuthoring> {
             PlayerShotgunEntityPrefab = authoring.PlayerShotgunEntityPrefab != null
                 ? GetEntity(authoring.PlayerShotgunEntityPrefab.gameObject, TransformUsageFlags.None)
                 : Entity.Null,
+            // 每个角色有自己的网络预制件。它们可以选配，缺的那一项变成 Entity.Null，让运行时按可用模板处理。
             DollSingerEntityPrefab = authoring.DollSingerEntityPrefab != null
                 ? GetEntity(authoring.DollSingerEntityPrefab.gameObject, TransformUsageFlags.None)
                 : Entity.Null,

@@ -25,30 +25,33 @@ namespace Unity.MP_FPS {
 
         private void Update() {
             if (GameSettings.Instance == null) return;
+            // 常驻对象可能同时陪客户端经过主菜单和战局。只有现在处在菜单并且登陆动画退开，才挂船舱循环音。
             bool menu = SceneManager.GetActiveScene().name == GameManager.MainMenuSceneName &&
                         GameSettings.Instance.GameState != GlobalGameState.InGame;
             if (menu && !m_MenuActive) EnsureListener();
             m_MenuActive = menu;
             bool ship = menu && !m_AccessVisible;
+            // 同一个房间里反复 Update 只复用当前的声音。场景或登陆状态切换才重新播放或让底音淡出。
             if (ship == m_OnShip) return;
             m_OnShip = ship;
             if (ship) {
-                // Back on the ship the player-owned listener is gone, so make sure the camera
-                // listener is enabled again before playing the interior bed.
+                // 回到船舱时，玩家角色的监听器已销毁。播放船舱环境底声前，
+                // 先确保主摄像机的监听器已重新启用。
                 EnsureListener();
                 m_Interior = MoonkovAudio.Play(MoonkovAudio.Library?.ShipInterior, Vector3.zero);
             } else { StopInterior(); }
         }
 
         /// <summary>
-        /// Unity is completely silent while no AudioListener in the scene is enabled, so the
-        /// ship always re-arms the persistent camera listener.
+        /// 场景中没有启用任何 AudioListener 时，Unity 不会输出声音。
+        /// 因此回到船舱一定要重新打开常驻相机的监听器。
         /// </summary>
         private void EnsureListener() {
             var camera = MainCameraSingleton.Instance;
             if (camera == null) return;
             var listener = camera.GetComponent<AudioListener>();
             if (listener == null) return;
+            // 退出战局时本机角色的听者可能被销毁，恢复菜单相机的听者后才能重新收听船内声音。
             listener.enabled = true;
             m_System?.SetListenerTransform(listener.transform);
         }

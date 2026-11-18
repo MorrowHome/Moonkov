@@ -10,6 +10,7 @@ namespace Unity.GhostBridge {
         public static GhostBridgeManager Instance { get; private set; } = null;
 
         private void Awake() {
+            // 常驻场景重复加载时保留第一份管理器。生成器只需问同一个入口当前房主能否生成实体。
             if (Instance != null && Instance != this) {
                 Destroy(gameObject);
                 return;
@@ -23,11 +24,12 @@ namespace Unity.GhostBridge {
 
         public bool IsServerListening() {
             // 每次从当前服务端 World 查驱动。退局时 World 和它的原生驱动会一起释放，旧引用不能用来判断新战局是否准备好。
-            // DriverStore dereferences a native pointer. Never cache a driver across
-            // world lifetimes or read a default driver before the server is ready.
+            // DriverStore 持有原生指针，驱动引用只在当前 World 有效。
+            // 等服务端驱动就绪后再读取。
             if (!TryGetServerEntityManager(out var manager)) return false;
             using var query = manager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             if (query.IsEmptyIgnoreFilter) return false;
+            // 驱动组件含有原生资源，读它之前先等其他 ECS 作业用完。接着确认真的建好了驱动且处于 Listening。
             query.CompleteDependency();
             var driver = query.GetSingletonRW<NetworkStreamDriver>();
             ref var driverStore = ref driver.ValueRW.DriverStore;
@@ -42,6 +44,7 @@ namespace Unity.GhostBridge {
         public bool TryGetServerEntityManager(out EntityManager manager) {
             World serverWorld = null;
             foreach (var world in World.All)
+                // 遍历时只认仍有效、还在更新的服务端 World。正在退出的那个即使还在 World 列表里，也不能接收新生成物体的请求。
                 if (world.IsCreated && !world.QuitUpdate &&
                     (world.Flags & WorldFlags.GameServer) == WorldFlags.GameServer) {
                     serverWorld = world;

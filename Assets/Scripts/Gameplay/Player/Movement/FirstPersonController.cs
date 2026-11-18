@@ -15,9 +15,9 @@ public class FirstPersonController : MonoBehaviour {
     public SoundDef PlayerHitSFX;
 
     private static class AnimationParameters {
-        //Speed, Strafe, Turn: float values
-        //Verbs: triggers
-        //Is-X: boolean values
+        //Speed、Strafe 和 Turn 是浮点参数。
+        //动作类的参数用触发器。
+        //名称以 Is 开头的参数是布尔值。
         public static readonly int IsMoving = Animator.StringToHash("IsMoving"); //1P
         public static readonly int Speed = Animator.StringToHash("Speed"); //3P
         public static readonly int StrafeSpeed = Animator.StringToHash("SpeedStrafe"); //3P
@@ -41,6 +41,7 @@ public class FirstPersonController : MonoBehaviour {
         Falling
     }
 
+    // 这份可回滚状态记的是角色在某一拍的姿势、速度和动作。重算某一拍时先从旧状态出发，再重新读这一拍的输入。
     public struct ControllerState {
         public enum StateFlag {
             Jump = 1 << 0,
@@ -58,7 +59,7 @@ public class FirstPersonController : MonoBehaviour {
             StanceHigh = 1 << 12
         }
 
-        //WARNING WARNING: Adding more members to this struct might break network serialisation speak to Claire/Andy B
+        //新增字段可能改变网络序列化。修改前与 Claire 或 Andy B 确认格式。
 
         [GhostField(SendData = false)]
         public DollSingerStance Stance {
@@ -66,7 +67,7 @@ public class FirstPersonController : MonoBehaviour {
             set => StateFlags = (StateFlags & ~(3u << 11)) | (((uint)value & 3u) << 11);
         }
 
-        // booleans
+        // 这些是需要用标志位表示的布尔值。
         public uint StateFlags;
         public uint HaloLightingSettings;
 
@@ -148,7 +149,7 @@ public class FirstPersonController : MonoBehaviour {
         public float AnimatorMotionSpeed; // _animIDMotionSpeed
         public float TeleportFreeze;
 
-        // Nested fields are serialized by the generated PredictedPlayerGhost serializer.
+        // 内部字段由生成的 PredictedPlayerGhost 序列化代码负责。
 
         private void SetFlag(StateFlag flag, bool set) {
             if (set)
@@ -165,6 +166,7 @@ public class FirstPersonController : MonoBehaviour {
         }
     }
 
+    // 控制常量是角色的走跑速度、重力、碰撞层和动画参数。同样状态和输入要和同样常量配对，预测和服务器才容易一致。
     public struct ControllerConsts {
         public struct StateConsts {
             public float Speed;
@@ -215,9 +217,10 @@ public class FirstPersonController : MonoBehaviour {
     private PlayerGhost m_PlayerGhost;
     private PlayerGhost PlayerGhost => m_PlayerGhost;
 
-    // Explicit opt-in for map previews: reuse the motor without creating a network world.
+    // 地图预览需要显式启用这个入口。不开网络 World 也能复用移动控制器。
     [SerializeField] [HideInInspector] private bool m_StandalonePreview;
 
+    // 无网络场景也可显式借用角色马达。正式角色则用已链接的 Ghost 识别自己在哪套物理世界。
     public void ConfigureStandalonePreview(FirstPersonController source) {
         m_StandalonePreview = true;
         GroundedOffset = source.GroundedOffset;
@@ -260,6 +263,7 @@ public class FirstPersonController : MonoBehaviour {
         DollSingerStances.Apply(m_Controller, stance, m_StandingHeight, m_StandingCenter);
     }
 
+    // 只给站在移动轿厢的人补一个高度差。跳起来后就跟随自己的速度，不能被电梯吸住。
     private float LiftCarryOffset(in ControllerState state) {
         if (state.MovementType != MovementType.Standing || !m_Controller || !m_Controller.enabled) return 0;
         var feet = (Vector3)state.CurrentPosition + (Quaternion)state.CurrentRotation * m_Controller.center -
@@ -275,12 +279,13 @@ public class FirstPersonController : MonoBehaviour {
         in ControllerConsts consts,
         in float3 accumulatedMovement,
         float deltaTime) {
+        // 碰撞前先确定胶囊高度和电梯随行偏移。角色下一步走不走得过去，得用新的身体尺寸来判断。
         DollSingerStances.Apply(m_Controller, state.Stance, m_StandingHeight, m_StandingCenter);
         state.CurrentPosition.y += LiftCarryOffset(state);
         ApplyMove(ref state, consts, accumulatedMovement, deltaTime);
         GroundedCheck(ref state, consts);
 
-        // cache latest values for access outside of entity data
+        // 缓存最近的跳跃和下落值，供读不到 ECS 数据的组件查询。
         CachedJumpFallSpeed = state.JumpFallSpeed;
         CachedFallHeight = state.FallHeight;
     }
@@ -290,6 +295,7 @@ public class FirstPersonController : MonoBehaviour {
 #if ENABLE_MOVEMENT_DIAGNOSTICS
             Debug.Log($"SetMovementType to {(int)type} (from {(int)state.MovementType})");
 #endif
+            // 每次进入新的移动状态重新计时。开始下落时清零本次落差，后续只累计这一次掉下去的距离。
             bool wasUpdatingFallHeight = ShouldUpdateFallHeight(state.MovementType);
             state.PreviousMovementType = state.MovementType;
             state.MovementType = type;
@@ -345,45 +351,48 @@ public class FirstPersonController : MonoBehaviour {
         out GroundCollisionVariables groundCollision) {
         if (ShouldUpdateGround(state.MovementType)) {
             var currentPos = GetGroundRaycastOrigin(state, m_Controller);
-            // set sphere position, with offset
+            // 根据角色的胶囊偏移确定探地球的起点。
             var controllerCentre = transform.rotation * ControllerOffset;
             float testRadius = m_Controller.radius;
             var testStart = new Vector3(currentPos.x + controllerCentre.x, currentPos.y + +controllerCentre.y,
                 currentPos.z + controllerCentre.z);
+            // 用球体向下扫跟角色胶囊同宽的区域。角色脚刚压到台阶边缘时，中心的一根射线可能漏判。
             int numHits = Physics.SphereCastNonAlloc(testStart, testRadius, Vector3.down, m_GroundCheckRaycastResults,
                 GroundedOffset, consts.GroundLayers, QueryTriggerInteraction.Ignore);
 
-            // Choose the best hit
+            // 从碰撞结果挑出有效的地面位置。
             float largestDot = float.MinValue;
             float closestDistSq = float.MaxValue;
             int flattestHitIndex = -1;
             int closestHitIndex = -1;
             for (int i = 0; i < numHits; ++i) {
                 var raycastResult = m_GroundCheckRaycastResults[i];
+                // 房主同时有服务器实体和客户端角色外观。找地面时拒绝另一套世界的角色碰撞，免得踩到同一个角色的另一份。
                 if (!m_StandalonePreview && PlayerGhost &&
                     GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
                     !GhostGameObject.BroadClientServerRolesMatch(ghost.Role, PlayerGhost.Role))
-                    // not a valid ground for this player (server hitting client object, or vice versa)
+                    // 这个碰撞体属于另一套角色世界，不能当当前角色的地面。
                     continue;
 #if DEBUG_RENDER_MOVEMENT
                     Debug.DrawLine(raycastResult.point, raycastResult.point + raycastResult.normal, Color.red, k_DebugRenderingTimeout);
 #endif
+                // 最平的命中决定脚下坡度，最近的命中决定是什么表面。两者用途不同，例如脚步声使用材质。
                 float dot = math.dot(raycastResult.normal, k_UpVector);
-                if (dot > largestDot) //select the most upright normal to avoid issues with corner collisions looking like a slope
+                if (dot > largestDot) //优先选择最朝上的法线，避免台阶拐角边被当成斜坡。
                 {
                     largestDot = dot;
                     flattestHitIndex = i;
                 }
                 float distSq = raycastResult.point.sqrMagnitude > 0f
                     ? math.distancesq(raycastResult.point, currentPos)
-                    : 0f; //point will be (0,0,0) if the spherecast starts inside the collider
+                    : 0f; //球体一开始就在碰撞体里时，命中点可能是 (0,0,0)。
                 if (distSq < closestDistSq) {
                     closestDistSq = distSq;
                     closestHitIndex = i;
                 }
             }
 
-            // Did we discard all of the collisions?
+            // 检查有没有可用的地面命中。
             if (flattestHitIndex >= 0) {
                 Debug.Assert(closestHitIndex >= 0,
                     "[THIRDPERSONCONTROLLER] flattest hit is valid but closest hit isn't, this shouldn't be possible!");
@@ -409,6 +418,7 @@ public class FirstPersonController : MonoBehaviour {
 
     public void GroundedCheck(ref ControllerState state, in ControllerConsts consts) {
         bool isGrounded = UpdateGround(state, consts, out var groundCollision);
+        // 从下落到踩地这一次才标记为落地事件。站着却没地面表示走出边缘，需要进入 Falling。
         if (isGrounded && state.MovementType == MovementType.Falling) {
             state.JumpTimeoutDelta = consts.LandingTimeout;
             state.Land = true;
@@ -432,30 +442,32 @@ public class FirstPersonController : MonoBehaviour {
         }
     }
 
+    // 其他玩家已经有插值后的位姿，直接把它送进显示对象。他们的移动不用本机重新碰撞。
     public void ApplyInterpolatedClientState(
         ref ControllerState state,
         in ControllerConsts consts,
         in LocalTransform localTransform,
         float deltaTime,
         bool applyAnimation = false) {
-        // apply smoothed rotation
+        // 应用已平滑过的旋转。
         state.CurrentPosition = localTransform.Position;
         state.CurrentRotation = localTransform.Rotation;
         transform.SetPositionAndRotation(state.CurrentPosition, state.CurrentRotation);
     }
 
+    // 先消费只播一遍的事件，再更新每帧连续变化的动画参数。这样连续的移动姿态和开火、落地不会互相覆盖。
     public void ApplyAnimatorState(in ControllerState state, in ControllerConsts consts, float deltaTime) {
         if (m_PlayerGhost == null || m_PlayerGhost.GhostGameObject == null)
-            return; //Return if the ghost has not been linked
+            return; //Ghost 还没链接时先返回。
         var predictedPlayerGhost = m_PlayerGhost.GhostGameObject.ReadGhostComponentData<PredictedPlayerGhost>();
         bool isClientOwned = m_PlayerGhost.Role == MultiplayerRole.ClientOwned;
         var animator = isClientOwned ? m_Animator_1P : m_Animator_3P;
         if (animator == null) return;
 
-        // Handle one-shot events first
+        // 先处理只触发一次的动画事件。
         HandleAnimationEvents(animator, predictedPlayerGhost);
 
-        // Then handle continuous state parameters
+        // 再更新持续变化的动画参数。
         if (isClientOwned)
             ApplyFirstPersonMovementAnimation(animator, state);
         else
@@ -463,7 +475,7 @@ public class FirstPersonController : MonoBehaviour {
     }
 
     private void HandleAnimationEvents(Animator animator, in PredictedPlayerGhost ghostState) {
-        // Shooting
+        // 射击动作
         if (ghostState.LastShotTick > _lastAnimatedShotTick) {
             if (!ghostState.ControllerState.IsReloadingState && !animator.GetBool(AnimationParameters.IsShooting)) {
                 if (m_EnableAnimationLogging)
@@ -473,7 +485,7 @@ public class FirstPersonController : MonoBehaviour {
             _lastAnimatedShotTick = ghostState.LastShotTick;
         }
 
-        // Reloading
+        // 装填动作
         if (ghostState.LastReloadTick > _lastAnimatedReloadTick) {
             if (m_EnableAnimationLogging)
                 Debug.Log($"[ANIMATION] Firing RELOAD trigger at Tick: {ghostState.LastReloadTick.ToString()}");
@@ -486,7 +498,7 @@ public class FirstPersonController : MonoBehaviour {
             _lastAnimatedReloadTick = ghostState.LastReloadTick;
         }
 
-        // Jumping
+        // 起跳动作
         if (ghostState.LastJumpTick > _lastAnimatedJumpTick) {
             if (m_EnableAnimationLogging)
                 Debug.Log($"[ANIMATION] Firing JUMP trigger at Tick: {ghostState.LastJumpTick.ToString()}");
@@ -494,7 +506,7 @@ public class FirstPersonController : MonoBehaviour {
             _lastAnimatedJumpTick = ghostState.LastJumpTick;
         }
 
-        // Landing
+        // 落地动作
         if (ghostState.LastLandTick > _lastAnimatedLandTick) {
             if (m_EnableAnimationLogging)
                 Debug.Log($"[ANIMATION] Firing LAND trigger at Tick: {ghostState.LastLandTick.ToString()}");
@@ -502,19 +514,19 @@ public class FirstPersonController : MonoBehaviour {
             _lastAnimatedLandTick = ghostState.LastLandTick;
         }
 
-        // Hit Reaction
+        // 受击动作
         if (ghostState.LastHitTick > _lastProcessedHitTick) {
             if (m_PlayerGhost.Role == MultiplayerRole.ClientOwned) {
                 if (m_EnableAnimationLogging)
                     Debug.Log($"[ANIMATION] Firing 1P HIT trigger at Tick: {ghostState.LastHitTick.ToString()}");
 
-                // Owning-camera feedback observes replicated tissue loss independently
-                // of animation updates; shield/metabolic ticks must not replay gunshot blood.
+                // 自己的镜头反馈独立观察网络确认的组织伤害，
+                // 不依赖动画刷新。护盾或代谢变化不应重复播放枪伤血效。
             } else {
                 if (m_EnableAnimationLogging)
                     Debug.Log($"[ANIMATION] Firing 3P HIT trigger at Tick: {ghostState.LastHitTick.ToString()}");
 
-                // Handle the 3P hit animation
+                // 触发第三人称模型的受击动作。
                 animator.SetTrigger(AnimationParameters.IsHit);
             }
             if (PlayerHitSFX != null && ghostState.LastDamageAmount > 0 && !InjuryFeedbackState.Systemic(ghostState))
@@ -530,7 +542,7 @@ public class FirstPersonController : MonoBehaviour {
 
     private void ApplyThirdPersonMovementAnimation(Animator animator, in ControllerState state, float currentHealth) {
         var relativeSpeed = math.mul(math.inverse(state.CurrentRotation), state.MovementRequest);
-        animator.SetFloat(AnimationParameters.Speed, relativeSpeed.z); // Use raw value for blend trees
+        animator.SetFloat(AnimationParameters.Speed, relativeSpeed.z); // 给动画混合树使用原始值。
         animator.SetFloat(AnimationParameters.StrafeSpeed, relativeSpeed.x);
         float speedZ = math.abs(relativeSpeed.z) < 0.01f ? 0.0f : math.sign(relativeSpeed.z);
         float speedX = math.abs(relativeSpeed.x) < 0.01f ? 0.0f : math.sign(relativeSpeed.x);
@@ -551,7 +563,7 @@ public class FirstPersonController : MonoBehaviour {
                 $"ApplyPosImmediate has failed to move the controller to the correct location (target {state.CurrentPosition} actual {(float3)transform.position} delta {math.sqrt(deltaSqrd)} {state.CurrentPosition - (float3)transform.position} state {state.MovementType} prev {m_PrevMovementType})");
 #endif
         } else {
-            // set directly, no physics required
+            // 直接应用该位置，无需再做物理移动。
             transform.position = state.CurrentPosition;
         }
     }
@@ -569,11 +581,12 @@ public class FirstPersonController : MonoBehaviour {
         float deltaTime) {
         stateConsts.Speed = 0f;
         stateConsts.RotationSmoothTime = 0f;
-        stateConsts.SpeedChangeRate = k_DefaultSpeedChange; //just a large number to make it snap to the 0 speed
+        stateConsts.SpeedChangeRate = k_DefaultSpeedChange; //给较大的变化速度，让移动速度迅速回到零。
         stateConsts.LandingSpeedMult = 1f;
         stateConsts.AnimationMotionScale = 0.4f;
 
-        // Freeze after teleport for a second
+        // 传送后短暂停止移动。
+        // 传送刚发生时给一段暂停走动的时间，避免缓存中的输入把角色又移出落点。
         if (state.TeleportFreeze > 0f)
             state.TeleportFreeze -= deltaTime;
         else
@@ -605,8 +618,9 @@ public class FirstPersonController : MonoBehaviour {
             if (!input.ThirdPerson) {
                 if (!state.FreeLooking) state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
                 state.RotationVelocity = 0f;
+            // 第三人称能把镜头绕到身体侧面。攻击或瞄准时身体朝镜头，移动时可转向运动方向，闲置绕看不带动身体。
             } else if (faceView || input.Aim || state.MovementSpeed > 0f) {
-                // Third person walks towards camera-relative input; aiming keeps the body facing the view.
+                // 第三人称按镜头方向解释移动输入。瞄准时身体面朝镜头正在指的方向。
                 float targetYaw = state.YawDegrees;
                 if (!input.Aim && !faceView)
                     targetYaw += math.degrees(math.atan2(input.MoveInput.x, input.MoveInput.y));
@@ -618,27 +632,29 @@ public class FirstPersonController : MonoBehaviour {
                     : targetYaw;
                 state.CurrentRotation = quaternion.RotateY(math.radians(yaw));
             } else {
-                // Orbiting the camera at rest must not turn the third-person character.
+                // 第三人称原地绕看时，身体不需要跟着旋转。
                 state.RotationVelocity = 0f;
             }
         }
 
-        // View yaw and body yaw are independent: using the turning body would rotate the input twice.
+        // 视角与身体的水平朝向独立。直接用正在转动的身体算输入，会让输入方向被旋转两次。
+        // 将摇杆或按键方向换算成世界方向。自由观察例外，人物继续以身体朝向走，转头不会顺便改变走路方向。
         var rotQuat = state.FreeLooking ? state.CurrentRotation : quaternion.RotateY(math.radians(state.YawDegrees));
         var localMove = new float3(input.MoveInput.x, 0f, input.MoveInput.y);
 
-        // Normalize it to get a pure direction vector with a length of 1.
-        // This is the crucial step.
+        // 归一化后取得长度为 1 的纯方向向量。
+        // 这一步让移动方向与速度的计算分离。
+        // 输入只负责选方向，另外计算的速度决定走多快。归一化后斜按两个方向不会比直走快。
         var localDir = math.normalizesafe(localMove);
 
-        // Rotate movement by the view, regardless of which way the body currently faces.
+        // 用视角换算移动方向，与当前身体朝哪边无关。
         var worldDir = math.mul(rotQuat, localDir);
 
-        // Reuse the existing replicated animation vector for directional character poses.
-        // The DollSinger view converts this world-space motion into its body's local axes.
+        // 方向姿势复用已同步的动画移动向量。
+        // DollSinger 的外观再把世界空间移动换算回身体的本地轴。
         state.AnimatorMotion = worldDir * state.MovementSpeed;
 
-        // Multiply the pure direction by the final speed calculated in AccumulateMovement.
+        // 用 AccumulateMovement 算出的最终速度乘上这个方向。
         return worldDir * state.MovementSpeed;
     }
 
@@ -650,6 +666,7 @@ public class FirstPersonController : MonoBehaviour {
         state.Aiming = input.Aim;
         state.HaloLightEnabled = input.HaloLightEnabled;
         state.HaloLightingSettings = HaloLighting.Sanitize(input.HaloLightingSettings);
+        // 瞄准和低姿态不能冲刺。自由观察和探身的角度也在入口限制，双方使用同一个可预测范围。
         state.Sprinting = input.Sprint && !input.Aim && state.Stance == DollSingerStance.Standing;
         state.FirstPersonView = !input.ThirdPerson;
         state.FreeLooking = state.FirstPersonView && input.FreeLooking;
@@ -661,6 +678,7 @@ public class FirstPersonController : MonoBehaviour {
             : 0f;
     }
 
+    // 先检查所请求的新姿态能否放进场景，再由输入、姿态、重力算出这一小段的速度与位移。
     public static void AccumulateMovement(
         ref ControllerState state,
         ref float3 accumulatedMovement,
@@ -680,17 +698,18 @@ public class FirstPersonController : MonoBehaviour {
         bool updateRotation = true;
         float combinedMoveSpeedModifier = 1f;
         float modifiedTargetMoveSpeed =
-            stateConsts.Speed * combinedMoveSpeedModifier; //don't apply modifiers to the aiming speed
+            stateConsts.Speed * combinedMoveSpeedModifier; //瞄准移速不应用这组额外倍率。
         float inputMagnitude = math.length(input.MoveInput);
 
-        // apply analog deadzone
+        // 忽略小于死区的摇杆幅度。
+        // 输入幅度低于阈值按没操作处理。超过这个阈值使用当前走或跑速度，本段没有按摇杆幅度连续缩放。
         inputMagnitude = inputMagnitude >= 0.4f ? 1f : 0f;
         float applyTargetSpeed = modifiedTargetMoveSpeed * inputMagnitude;
         float blendAlpha = deltaTime * stateConsts.SpeedChangeRate;
         state.MovementSpeed = applyTargetSpeed;
         state.AnimatorTargetSpeedChangeRate = stateConsts.SpeedChangeRate;
         state.AnimatorTargetSpeed = stateConsts.Speed * inputMagnitude;
-        state.AnimatorMotionSpeed = inputMagnitude > 0f ? state.MovementSpeed : 1f; //play the idle at 1x
+        state.AnimatorMotionSpeed = inputMagnitude > 0f ? state.MovementSpeed : 1f; //待机动画用正常一倍速度播放。
         state.AnimatorMotion = float3.zero;
         state.AnimatorMotionChangeRate = 0f;
         var moveDelta = float3.zero;
@@ -715,6 +734,7 @@ public class FirstPersonController : MonoBehaviour {
             }
                 break;
         }
+        // 这里只累加想走的位移，可能还会合并同一拍的其他操作。之后 ApplyMove 才让碰撞体真正移动。
         accumulatedMovement += moveDelta * deltaTime;
         state.MovementRequest = accumulatedMovement;
 #if DEBUG_RENDER_MOVEMENT
@@ -727,6 +747,7 @@ public class FirstPersonController : MonoBehaviour {
         in ControllerConsts consts,
         in float3 accumulatedMovement,
         float deltaTime) {
+        // 物件的姿势可能还停在预测前或传送前的位置。移动起点要先对齐这拍状态中的位置，才不会从旧位置再算一次。
         var posDelta = (Vector3)state.CurrentPosition - transform.position;
         if (posDelta.sqrMagnitude > 0f) {
             MovementLog($"{name} - Reset Teleport to {state.CurrentPosition} (from {(float3)transform.position})");
@@ -734,25 +755,27 @@ public class FirstPersonController : MonoBehaviour {
         }
         bool allowMove = math.lengthsq(accumulatedMovement) > 0f;
         if (allowMove) {
-            // apply movement
+            // 把这一拍累计的位移送给角色控制器。
             var movementToApply = accumulatedMovement;
 
-            // This can be called before the controller is enabled (e.g. on spawn)
-            // prevents errors of moving when controller is disabled or GameObject inactive
+            // 角色出生等情况下，方法可能先于控制器启用被调用。
+            // 碰撞马达停用或对象未激活时，不调用 Move，以免报错。
             if (m_Controller != null && m_Controller.enabled && gameObject.activeInHierarchy)
-                // just apply our move as normal
+                // 控制器可用时正常应用位移。
+                // CharacterController 在游戏场景里实际推一次胶囊。撞墙后的真实位置可能和刚才累加出的目标不一样。
                 m_Controller.Move(movementToApply);
         }
 
-        // apply rotation
+        // 把旋转写入场景对象。
         transform.rotation = state.CurrentRotation;
         if (ShouldUpdateFallHeight(state.MovementType)) {
+            // 用实际移动后的高度差累加落差，便于服务器的落地结算。撞到平台意味着这一段下落到此为止。
             float fallDist = state.CurrentPosition.y - transform.position.y;
             state.FallHeight += fallDist;
         }
         HandleFirstPersonFootstepSFX(state);
 
-        // store position
+        // 保存移动后的实际位置。
         state.CurrentPosition = transform.position;
 #if UNITY_EDITOR || DEBUG
         m_PrevMovementType = state.MovementType;
@@ -777,7 +800,7 @@ public class FirstPersonController : MonoBehaviour {
 #endif
 
     private void HandleFirstPersonFootstepSFX(ControllerState state) {
-        // Full-body presentations can use their own animation footstep events.
+        // 全身模型可以用已配置的动画事件来播脚步。
         if (m_Animator_1P == null || m_StandalonePreview) return;
         if (state.MovementType == MovementType.Standing && m_Controller != null && m_Controller.enabled &&
             gameObject.activeInHierarchy) {
@@ -787,7 +810,7 @@ public class FirstPersonController : MonoBehaviour {
                     transform.position.z == state.CurrentPosition.z) { footstepTriggerTimer = 0; } else {
                     if (footstepTriggerTimer == 0) {
                         footstepTriggerTimer =
-                            Time.time; // This is called multiple times per update. So I can't use Time.delta
+                            Time.time; // 一次更新会调用多次，不能每次都代入整帧的 Time.delta。
                         footstepStartTimer = footstepTriggerTimer;
                     }
                     footstepTriggerTimer = Time.time;
@@ -812,10 +835,11 @@ public class FirstPersonController : MonoBehaviour {
                 ClearFallingState(ref state);
                 if (AccumulateJump(ref state, in input, in consts, deltaTime) ||
                     state.TimeInState < consts.LandingTimeout)
-                    //we've just started jumping or we're in the process of landing so apply gravity
+                    //刚起跳或还在结束落地过渡时，继续施加重力。
                     AccumulateGravity(ref state, in consts, deltaTime);
                 else
-                    //fully in standing state reset gravity to a minimal fall speed to keep player aligned on ground (necessary for uneven terrain)
+                    //稳定站立后仍保留很小向下速度，在起伏地面上走也贴着地。
+                    // 稳定站立时仍留少量向下速度，让沿斜地走时脚贴住地面。
                     state.JumpFallSpeed = consts.StandingFallSpeed;
             }
                 break;
@@ -824,12 +848,13 @@ public class FirstPersonController : MonoBehaviour {
                 state.Jump = true;
                 state.JumpTimeoutDelta = math.max(consts.JumpTimeout, state.JumpTimeoutDelta);
 
-                // fall timeout
+                // 累计超过下落动画的延迟才标为正在下落。
                 if (state.FallTimeoutDelta < consts.FallTimeout)
                     state.FallTimeoutDelta += deltaTime;
                 else
                     state.Fall = true;
                 AccumulateGravity(ref state, in consts, deltaTime);
+                // 竖直速度过零时由向上跳切到落下，落地检查随后才重新接受地面碰撞。
                 var newMovementState = state.JumpFallSpeed >= 0f ? MovementType.Jumping : MovementType.Falling;
                 SetMovementType(ref state, newMovementState);
             }
@@ -843,20 +868,20 @@ public class FirstPersonController : MonoBehaviour {
     }
 
     private static void ClearFallingState(ref ControllerState state) {
-        // reset the fall timeout timer
+        // 清掉本次空中的下落计时。
         state.FallTimeoutDelta = 0f;
 
-        // update animator if using character
+        // 清除给角色动画使用的跳跃和下落状态。
         state.Jump = false;
         state.Fall = false;
     }
 
     private static void AccumulateGravity(ref ControllerState state, in ControllerConsts consts, float deltaTime) {
-        // apply gravity over time if we haven't reached terminal (multiply by delta time twice to linearly speed up over time)
+        // 未到极限时，按这一小段时间施加重力改变速度。随后由速度乘时间算位移。
         float terminalVelocity = consts.TerminalVelocity;
         if (state.JumpFallSpeed > terminalVelocity)
             state.JumpFallSpeed += consts.Gravity * deltaTime;
-        // Handle the terminal velocity becoming much smaller due to umbrella opening
+        // 伞具展开后极限速度可能突然变化，这时平滑靠近新值。
         else if (state.JumpFallSpeed <= terminalVelocity)
             state.JumpFallSpeed = Mathf.Lerp(state.JumpFallSpeed, terminalVelocity, deltaTime);
     }
@@ -869,13 +894,14 @@ public class FirstPersonController : MonoBehaviour {
         Quaternion spawnRotation,
         int pelletIndex = 0,
         ushort modules = 0) {
+        // 回滚后一拍可能被客户端重算。同拍同武器同弹丸已创建时直接复用，别让同一秒内出现重复弹体。
         foreach (var shot in Projectile.PredictedProjectiles)
             if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId && shot.PelletIndex == pelletIndex)
                 return;
         var player = GetComponent<PlayerGhost>();
         var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
-        // GameResources has already loaded ghost prefabs before it permits player spawning.
-        // Instantiate that cached asset synchronously: no async duplicate or first-shot load delay.
+        // GameResources 先加载 Ghost 预制体，再允许生成玩家。
+        // 直接用缓存资产同步创建，避免异步重复或第一发等待。
         var world = player.GhostGameObject.World;
         var prefab = world.GetExistingSystemManaged<GhostEntityPrefabSystem>()
             ?.GetGameObjectPrefab(weapon.ProjectileGhostPrefab.GhostGuid)?.Asset as GameObject;
@@ -900,7 +926,8 @@ public class FirstPersonController : MonoBehaviour {
         float deltaTime) {
         bool jumped = false;
         if (input.Jump && state.Stance == DollSingerStance.Standing && state.JumpTimeoutDelta <= 0f) {
-            // the square root of H * -2 * G = how much velocity needed to reach desired height
+            // H * -2 * G 的平方根是达到目标跳高需要的起跳速度。
+            // 起跳速度由配置的跳高与重力反推。先记一个跳起事件，再让后续步长逐渐施加重力。
             state.JumpFallSpeed = math.sqrt(consts.JumpHeight * -2f * consts.Gravity); // 6
             SetMovementType(ref state, MovementType.Jumping);
             state.Jump = true;
@@ -946,9 +973,9 @@ public class FirstPersonController : MonoBehaviour {
     }
 #endif
 
-    // taken from DOTSSample MathHelper
-    // Collection of converted classic Unity (Mathf, Vector3 etc.) + some homegrown math functions using Unity.Mathematics
-    // These are made/converted for production and unlike a proper library they are lacking any tests, so use at your own peril!
+    // 取自 DOTSSample 的 MathHelper。
+    // 含经典 Unity 的 Mathf、Vector3 等函数转换版，也有用 Unity.Mathematics 编写的辅助计算。
+    // 这些函数按当时项目使用需求改写。原实现缺少正式库的测试覆盖，使用时留意边界。
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float SmoothDampAngle(
         float current,
@@ -971,7 +998,7 @@ public class FirstPersonController : MonoBehaviour {
         float smoothTime,
         float maxSpeed,
         float deltaTime) {
-        // Based on Game Programming Gems 4 Chapter 1.10
+        // 基于 Game Programming Gems 4 第 1.10 章。
         smoothTime = math.max(0.0001F, smoothTime);
         float omega = 2F / smoothTime;
         float x = omega * deltaTime;
@@ -979,7 +1006,7 @@ public class FirstPersonController : MonoBehaviour {
         float change = current - target;
         float originalTo = target;
 
-        // Clamp maximum speed
+        // 限制最大移动速度。
         float maxChange = maxSpeed * smoothTime;
         change = math.clamp(change, -maxChange, maxChange);
         target = current - change;
@@ -987,7 +1014,7 @@ public class FirstPersonController : MonoBehaviour {
         currentVelocity = (currentVelocity - omega * temp) * exp;
         float result = target + (change + temp) * exp;
 
-        // Prevent overshooting
+        // 防止一步跨过目标值。
         if (originalTo - current > 0.0F == result > originalTo) {
             result = originalTo;
             currentVelocity = (result - originalTo) / deltaTime;

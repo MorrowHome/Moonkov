@@ -8,18 +8,20 @@ namespace Unity.MP_FPS {
         Body
     }
 
-    // Optional explicit surface override for authored structures and props.
+    // 场景中手工制作的结构与道具可显式指定表面类型。
     public sealed class RifleImpactSurface : MonoBehaviour {
         public RifleImpactKind Kind = RifleImpactKind.Rock;
 
         public static RifleImpactKind Classify(Collider collider) {
             if (collider == null) return RifleImpactKind.Rock;
+            // 先沿碰撞体查角色对应的 Ghost。找到玩家后直接用身体命中反馈，衣料材质名不会让这发被认成墙。
             if (GhostGameObject.TryFindGhostGameObject(collider.gameObject, out var ghost) &&
                 ghost.GetComponent<PlayerGhost>() != null)
                 return RifleImpactKind.Body;
             var surface = collider.GetComponentInParent<RifleImpactSurface>();
             if (surface) return surface.Kind;
             if (collider is TerrainCollider) return RifleImpactKind.Rock;
+            // 当没有手工标记时，先从物理材料找金属，再检查渲染材料。地形及没有金属证据的表面用岩石。
             var material = collider.sharedMaterial;
             if (material && IsMetal(material.name)) return RifleImpactKind.Metal;
             var renderer = collider.GetComponent<Renderer>();
@@ -31,7 +33,7 @@ namespace Unity.MP_FPS {
         private static bool IsMetal(string name) {
             return name.IndexOf("metal", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                    name.IndexOf("steel", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
-                   // Matches both aluminium and aluminum in the authored MC00 material names.
+                   // 兼容 MC00 原材质名里的 aluminium 和 aluminum 两种拼写。
                    name.IndexOf("alumin", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                    name.IndexOf("alloy", System.StringComparison.OrdinalIgnoreCase) >= 0;
         }

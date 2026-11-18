@@ -50,18 +50,21 @@ namespace Unity.MP_FPS {
 
         private void PresentFieldRecords(bool active) {
             var map = MoonRaidMap.Active;
+            // 只有本局地图与远征时钟都已同步时才生成日志可见物。有一项丢失就清掉旧局生成的内容。
             if (!active || !map || !m_FieldRecordClock.TryGetSingleton<ExpeditionClockState>(out var clock) ||
                 !clock.Ready) {
                 ClearFieldRecords();
                 return;
             }
-            // The clock already identifies the shared server map. Solo redeploys also vary the layout.
+            // 时钟标识共享的服务端地图。单人再次出发还会按局号变更日志摆放。
+            // 日志物体按会话识别。单人再加局号，让重开一局的物体从当前进度重新布置。
             if (m_FieldRecords.Present(map, clock.SessionId, PlayerProfileClient.IsOffline ? m_Snapshot.RaidId : 0))
                 SetFieldRecordOpen(false);
         }
 
         private bool ReadFieldRecord(bool allowed) {
             if (!allowed || !m_FieldRecordFocus.HasValue) return false;
+            // 存在瞄准目标就消耗这次交互的优先权，但真正打开只认刚按下的一帧。
             if (m_InteractionBindings.Operate.WasPressedThisFrame()) OpenFieldRecord(m_FieldRecordFocus.Value);
             return true;
         }
@@ -82,6 +85,7 @@ namespace Unity.MP_FPS {
             RaidQuickSlotInput.ReleasePrimary();
             if (GameSettings.Instance != null && GameSettings.Instance.GameState == GlobalGameState.InGame)
                 Utils.SetCursorVisible(open || m_WasSettled || GameSettings.Instance.IsPauseMenuOpen);
+            // 打开后焦点落在退出按钮，键盘可以马上关窗。鼠标是否恢复锁定已经根据其他菜单一起更新。
             if (open) m_FieldRecordClose.Focus();
         }
 

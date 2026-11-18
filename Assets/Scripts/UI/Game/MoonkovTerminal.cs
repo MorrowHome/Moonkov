@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Navigation and presentation; shop transactions go through the account inventory service.
+    // 处理终端导航和展示。商店交易通过账号库存服务执行。
     public sealed partial class MoonkovTerminal : IDisposable {
         private readonly VisualElement m_Root,
             m_Gear,
@@ -50,6 +50,7 @@ namespace Unity.MP_FPS.Client {
             m_EquipmentInventory = inventory;
             m_Home.PresentEquipment(inventory);
             m_Character?.SetEquipmentInventory(inventory);
+            // 装备数据可能在行动页已经打开时变化。处于出发确认页就立即重算装备提示。
             if (m_Page == 4 && m_OperationStep == 4) PresentDepartureEquipment();
         }
 
@@ -131,6 +132,7 @@ namespace Unity.MP_FPS.Client {
             Navigating?.Invoke();
             DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
+            // 船舱首页有独立动画，出入首页走舱室过渡。其他终端页面之间才用通用的切页演出。
             bool roomTransition = page == 0 || m_Page == 0;
             if (page == 0)
                 m_Home.Show(m_Page != 0);
@@ -141,6 +143,7 @@ namespace Unity.MP_FPS.Client {
                 CloseResearchTasks();
                 m_FacilityRecords = false;
             }
+            // 浮窗属于打开它的页面。切页先关掉、再渲染新内容，避免上一页窗口悬在新页面上。
             m_Page = page;
             m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
@@ -205,6 +208,7 @@ namespace Unity.MP_FPS.Client {
 
         // 按当前页装配内容。任务页已打开且只需要更新研究状态时，可以刷新现有视图，保留用户正在看的任务。
         private void Render() {
+            // 研究任务每次快照变化都可能刷新。已有任务页面时优先更新它，保留当前选择和正在看的故事。
             if (m_Page == 5 && m_ResearchTasks != null && PlayerProfileClient.ResearchQuests != null) {
                 m_ResearchTasks.Refresh();
                 return;
@@ -253,7 +257,7 @@ namespace Unity.MP_FPS.Client {
 
         private void ApplyPageTheme() {
             m_Root.EnableInClassList("archive-pages", m_Page != 0);
-            // All runtime terminal pages now share dark surface roles.
+            // 所有运行时终端页面共用深色界面配色。
             for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
             m_Root.RemoveFromClassList("archive-light");
             for (int i = 0; i < 5; i++)
@@ -292,6 +296,7 @@ namespace Unity.MP_FPS.Client {
 
         private void SupplierDetail(string name) { OpenShop(name); }
 
+        // 商店从终端的浮窗管理器打开。传入所属供应商和初选物品，商店自身负责库存交易。
         private void OpenShop(string name, bool recovery = false, bool research = false, string initialProduct = null) {
             var window = m_Windows.Open(name);
             new MoonkovShopView(window, () => {
@@ -303,6 +308,7 @@ namespace Unity.MP_FPS.Client {
             }, research, initialProduct);
         }
 
+        // 任务入口按档案支持的类型切换。研究主线和单人战役用独立页面，其余情况继续显示设施资料。
         private void Tasks() {
             if (TryPresentResearchTasks()) return;
             if (TryPresentCampaignTasks()) return;
@@ -356,7 +362,7 @@ namespace Unity.MP_FPS.Client {
             ApplyPageTheme();
         }
 
-        // Endless marquee; the copy is doubled so the loop has no seam.
+        // 把滚动文字重复拼接两遍，使循环衔接处不会突然断开。
         internal static VisualElement Ticker(VisualElement parent, string text) {
             var ticker = new VisualElement { pickingMode = PickingMode.Ignore };
             ticker.AddToClassList("terminal-ticker");
@@ -370,6 +376,7 @@ namespace Unity.MP_FPS.Client {
             return ticker;
         }
 
+        // 终端滚动信息按可见宽度重复铺开。随布局重排，避免结束位置留下空白。
         private static void AnimateTicker(VisualElement ticker) {
             var track = ticker.Q<VisualElement>(className: "terminal-ticker-track");
             var first = track.Q<Label>(className: "terminal-ticker-text");
@@ -455,6 +462,7 @@ namespace Unity.MP_FPS.Client {
             m_Gear.style.display = DisplayStyle.Flex;
         }
 
+        // 角色预览拥有专门的模型和相机纹理。换到不展示它的页就释放，减少主菜单长期占用。
         private void DisposeCharacter() {
             if (m_Character == null) return;
             m_Character.Element.RemoveFromHierarchy();

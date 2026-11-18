@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // The anatomy is raster artwork from the approved monitor, never a procedural mannequin.
+    // 人体轮廓使用确认过的扫描图素材。代码负责显示和裁剪。
     public sealed partial class RaidBodyDiagram : VisualElement {
         public const float DesignWidth = 770, DesignHeight = 1370;
         private static readonly Vector2 ImageOrigin = new(153, 60);
@@ -57,6 +57,7 @@ namespace Unity.MP_FPS.Client {
                         }
                 m_Bounds[i] = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
                 VisualElement target;
+                // 同一张人体图可用于纯读数或选择治疗部位。只有传入选择回调时，按钮的点击和焦点才会改变选中部位。
                 if (select == null) { target = new VisualElement { pickingMode = PickingMode.Ignore }; } else {
                     var button = new Button(() => m_Select(part));
                     button.RegisterCallback<FocusInEvent>(_ => m_Select(part));
@@ -85,6 +86,7 @@ namespace Unity.MP_FPS.Client {
             m_Selected = selected;
             for (int i = 0; i < RaidHealth.PartCount; i++) {
                 float health = RaidHealth.Get(state, (BodyPart)i), maximum = RaidHealth.Maximum(state, (BodyPart)i);
+                // 只要任一部位生命值变化就重新计算扫描区域。重复快照转入同一画面，无需重算多边形。
                 if (m_Health[i] != health || m_Maximum[i] != maximum) changed = true;
                 m_Health[i] = health;
                 m_Maximum[i] = maximum;
@@ -94,6 +96,7 @@ namespace Unity.MP_FPS.Client {
                 for (int i = 0; i < RaidHealth.PartCount; i++) {
                     var part = (BodyPart)i;
                     float fraction = RaidVitalSignal.BodyFill(m_Health[i], m_Maximum[i], m_Ready);
+                    // 躯干和头部用从中心收缩的样式，四肢按轮廓面积截取。两种画法都从同一个剩余比例得到。
                     m_FillCuts[i] = Shrinks(part) ? float.PositiveInfinity : FindFillCut(part, fraction);
                     if (Shrinks(part)) SetShrinkScales(part, fraction);
                 }
@@ -104,6 +107,7 @@ namespace Unity.MP_FPS.Client {
         private Vector2 Screen(Vector2 point) { return m_Origin + (point - ImageOrigin) * m_Scale; }
 
         private void Resize() {
+            // 等比缩放并把设计图居中，避免身体被拉扁。点击区域与贴图使用同一缩放和偏移。
             m_Scale = Mathf.Min(contentRect.width / DesignWidth, contentRect.height / DesignHeight);
             if (!float.IsFinite(m_Scale) || m_Scale <= 0) return;
             m_Origin = new Vector2((contentRect.width - DesignWidth * m_Scale) * .5f,
@@ -125,7 +129,7 @@ namespace Unity.MP_FPS.Client {
             for (int index = 0; index < Pieces.Length; index++) {
                 var piece = Pieces[index];
                 int part = (int)piece.Part;
-                // Keep the entire source silhouette visible, then light only the true remaining area.
+                // 保留完整暗色轮廓，只点亮代表实际剩余生命的区域。
                 DrawPiece(context, piece.Points, float.PositiveInfinity,
                     new Color(.55f, .55f, .55f, m_Ready ? .6f : .18f));
                 DrawPiece(context, piece.Points, m_FillCuts[part],
@@ -143,6 +147,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 计算水平截线以上或以下实际要显示的轮廓段。边穿过截线就新加交点，再用输出轮廓画亮色区域。
         private int ClipHull(Vector2[] hull, float bottom) {
             int count = 0;
             var previous = hull[hull.Length - 1];
@@ -181,7 +186,7 @@ namespace Unity.MP_FPS.Client {
                 }
             }
             float target = totalArea * fraction;
-            // One shared cut across the entire anatomical part, including every visual plate.
+            // 同一部位的所有图形片段共用一条截线。
             for (int step = 0; step < 12; step++) {
                 float middle = (low + high) * .5f;
                 float filledArea = 0;
@@ -200,10 +205,11 @@ namespace Unity.MP_FPS.Client {
             return part == BodyPart.Head || part == BodyPart.Chest || part == BodyPart.Abdomen;
         }
 
+        // 等比缩放两边会让面积按平方变化。按面积推导缩放才会得到与生命比例一致的亮色面积。
         private void SetShrinkScales(BodyPart part, float fraction) {
             for (int i = 0; i < Pieces.Length; i++) {
                 if (Pieces[i].Part != part) continue;
-                // Scale area in proportion to health while keeping the original silhouette underneath.
+                // 亮色面积按生命值比例缩放，暗色底层继续展示原来的轮廓。
                 m_PieceScales[i] = Mathf.Sqrt(fraction);
             }
         }

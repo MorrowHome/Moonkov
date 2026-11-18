@@ -12,12 +12,13 @@ namespace Unity.MP_FPS {
         private byte m_BadgeStyle, m_BadgeBuiltStyle;
 
         private void FitBadge(Animator animator) {
+            // 优先挂上胸骨，找不到就用胸、颈或髋。要先选一个稳定锚点，后面再把测得的位置保存成它的局部偏移。
             m_BadgeAnchor = animator.GetBoneTransform(HumanBodyBones.UpperChest);
             if (!m_BadgeAnchor) m_BadgeAnchor = m_Chest ? m_Chest : m_Neck ? m_Neck : m_Hips;
             if (!m_BadgeAnchor) return;
             var frame = Quaternion.LookRotation(transform.forward, transform.up);
-            // Work in the imported bind pose. A menu/late spawn can already be
-            // leaning or gesturing; that pose must not become the fit reference.
+            // 在导入时的绑定姿势下计算贴合。菜单角色或较晚出生的角色可能已经侧倾或做手势，
+            // 当下姿势不适合当贴合基准。
             var renderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
             var anchorBind = m_BadgeAnchor.localToWorldMatrix;
             var neckBind = m_Neck ? m_Neck.position : m_BadgeAnchor.position;
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS {
                 var bones = renderer.bones;
                 int anchor = System.Array.IndexOf(bones, m_BadgeAnchor), neck = System.Array.IndexOf(bones, m_Neck);
                 if (anchor < 0 || data.Bindposes.Length != bones.Length) continue;
+                // 取回角色导入时的骨骼姿态。即使现在穿戴界面里正歪头或转身，量胸口仍用原来的固定参考。
                 anchorBind = renderer.localToWorldMatrix * data.Bindposes[anchor].inverse;
                 if (neck >= 0) neckBind = (renderer.localToWorldMatrix * data.Bindposes[neck].inverse).GetColumn(3);
                 break;
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS {
                 }
             }
             if (float.IsNegativeInfinity(front)) front = .09f;
+            // 沿胸口参考位置往前找到表面，再加一点距离让胸章贴在外面。之后胸章随骨骼走，身体动作不会重算尺寸。
             m_BadgeOffset = anchorBind.inverse.MultiplyPoint3x4(center + frame * new Vector3(0, 0, front + .007f));
             m_BadgeFrame = Quaternion.Inverse(anchorBind.rotation) * frame;
             m_Badge = new GameObject("Equipped subspace chest badge") { layer = gameObject.layer }.transform;

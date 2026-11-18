@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // Owning-camera presentation; independent of animation update and prediction replay.
+    // 只对本地视角展示。动画更新和预测重算各走自己的流程。
     public class DamageVisualsController : MonoBehaviour {
         [Header("References")] [Tooltip("Legacy damage material, retained as a fallback.")] [SerializeField]
         private Material screenDamageMaterial;
@@ -44,6 +44,7 @@ namespace Unity.MP_FPS {
 
         private void Update() {
             var ghost = m_Player ? m_Player.GhostGameObject : null;
+            // 先确认这个角色属于本机且数据仍有效。离开战局、切换角色暂时空档时，清掉上一只角色的屏幕状态。
             if (!ghost || ghost.Role != MultiplayerRole.ClientOwned || !ghost.GhostEntityExists() ||
                 !ghost.GhostHasComponent<PredictedPlayerGhost>()) {
                 m_Injury.Reset();
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS {
 
         private void EnsureInjuryMaterial() {
             if (m_InjuryMaterial) return;
+            // 优先用新版生存和受伤材质，如果资源缺失可以回到预制件配的画面材质。每个角色只持有自己使用的一份参数。
             var shader = Resources.Load<Shader>("Moonkov/InjurySurvivalScreen");
             if (shader) {
                 m_InjuryMaterial = new Material(shader)
@@ -86,6 +88,7 @@ namespace Unity.MP_FPS {
 
         private void UpdateMucus(in PredictedPlayerGhost state) {
             float remaining = state.CurrentHealth > 0 ? state.MucusBlindSeconds : 0;
+            // 收到更长的一次黏液效果时重新起动画计时。普通的剩余时间下降继续沿同一段退去。
             if (remaining > m_MucusRemaining + .15f) m_MucusElapsed = 0;
             m_MucusRemaining = remaining;
             if (remaining <= 0) return;
@@ -109,6 +112,7 @@ namespace Unity.MP_FPS {
             if (camera.TryGetComponent<UniversalAdditionalCameraData>(out var data) &&
                 data.renderType == CameraRenderType.Overlay)
                 return;
+            // 到相机真正渲染时才把仍有强度的效果放进去。伤势、黏液、眩光各有自己的时间和渲染步骤。
             if (effectStrength > 0 && m_Injury.Active) m_InjuryPass?.EnqueuePass(camera);
             if (m_MucusRemaining > 0) m_MucusPass?.EnqueuePass(camera);
             if (m_GlareStrength > .001f) m_GlarePass?.EnqueuePass(camera);
@@ -124,6 +128,7 @@ namespace Unity.MP_FPS {
             float target = state.CurrentHealth > 0 && viewport.z > 0
                 ? Mathf.Clamp01(state.HaloLightGlare) * effectStrength
                 : 0;
+            // 眩光来自世界里的光源，先投影成屏幕里的位置。减弱时沿用最后可见的位置，效果随后平滑衰减。
             if (target > 0) m_GlareViewport = new Vector2(Mathf.Clamp01(viewport.x), Mathf.Clamp01(viewport.y));
             m_GlareStrength = Mathf.MoveTowards(m_GlareStrength, target,
                 Time.unscaledDeltaTime * (target > m_GlareStrength ? 4 : 2));
@@ -140,7 +145,7 @@ namespace Unity.MP_FPS {
                 new Vector4(m_GlareViewport.x, m_GlareViewport.y, camera.aspect, m_GlareStrength));
         }
 
-        // Preserve the existing trigger API for explicit presentation callers.
+        // 保留已经存在的触发入口，供主动播放表现的调用方继续使用。
         public void TriggerDamageEffect() { TriggerDamageEffect(minIntensity); }
 
         public void TriggerDamageEffect(float intensity) {
@@ -165,6 +170,7 @@ namespace Unity.MP_FPS {
             DestroyPrivate(m_MucusMaterial);
             m_InjuryMaterial = m_MucusMaterial = null;
             m_InjuryPass = m_MucusPass = null;
+            // 禁用组件时解开相机钩子和运行时材质。血管纹理由多处共用，释放这一个使用者后再按引用数决定是否销毁。
             if (m_VeinsRetained) {
                 InjuryVeinMask.Release();
                 m_VeinsRetained = false;

@@ -3,14 +3,16 @@ using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
-    // Shared authored asset lookup; presentation never owns loot or collision authority.
+    // 供显示层查复用的美术资源。掉落和碰撞由各自的玩法系统负责。
     public static class PhysicalItemVisuals {
+        // 识别有独立实物素材的物品类别。上层可以在找不到对应模型时走自己的外观回退。
         public static bool IsPhysical(string code) {
             var definition = InventoryCatalog.Get(code);
             return definition != null && definition.Kind != ItemKind.Root && definition.Kind != ItemKind.LongGun &&
                    definition.Kind != ItemKind.Pistol && !code.StartsWith("halo_", System.StringComparison.Ordinal);
         }
 
+        // 生成一个供显示的实例，挂到拥有它的场景节点。需要在预览中心呈现时单独调整位置。
         public static GameObject Create(string code, Transform parent, bool centered = false) {
             if (!IsPhysical(code)) return null;
             var prefab = Prefab(code);
@@ -35,6 +37,7 @@ namespace Unity.MP_FPS {
             return IsPhysical(code) ? Resources.Load<Texture2D>("Moonkov/Items/Icons/" + ArtCode(code)) : null;
         }
 
+        // 把变体物品映射到已有美术素材。物品的实际 code 仍保留，不影响库存里的区分。
         private static string ArtCode(string code) {
             return code switch {
                 ResearchQuestRules.Sample or ResearchQuestRules.SampleKit => "helium3_sample",

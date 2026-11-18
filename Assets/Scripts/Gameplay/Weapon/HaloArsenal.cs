@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
             public readonly string Code, Name;
             public readonly int Capacity, Energy, Pellets, BurstCount;
 
+            // 这里的射击间隔、装填和取枪时间以秒计，容量与能耗是不同的数值。
             public readonly float Interval,
                 Damage,
                 Reload,
@@ -61,6 +62,7 @@ namespace Unity.MP_FPS {
                 BlastRadius = blastRadius;
             }
 
+            // 手势枚举和装备编号有固定偏移。保存、显示或输入传来的编号要先经过这层对照。
             public DollSingerHaloAim.HaloWeapon Gesture => (DollSingerHaloAim.HaloWeapon)(Id - 1);
         }
 
@@ -77,6 +79,7 @@ namespace Unity.MP_FPS {
             new(14, "nocturne", "Nocturne / 夜曲", 10, 14, .62f, 65, 2.6f, .34f, 780, .18f, 2, scope: 3.5f)
         };
 
+        // 表按连续武器编号排列。查不到武器返回空值，调用方可以决定是否使用其他来源。
         public static Entry? Find(uint id) {
             int i = (int)id - 6;
             return i >= 0 && i < Entries.Length ? Entries[i] : (Entry?)null;

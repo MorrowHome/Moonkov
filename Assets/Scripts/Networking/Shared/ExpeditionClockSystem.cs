@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.NetCode;
 
 namespace Unity.MP_FPS {
+    // 用一个网络 tick、该 tick 的小时数与速率表示走时。客户端和服务端都可用它换算任意同步时刻。
     public struct ExpeditionClockState : IComponentData {
         public double AnchorHours, HoursPerSecond;
         public uint AnchorTick, Sequence;
@@ -23,9 +24,10 @@ namespace Unity.MP_FPS {
     }
 
     public static class ExpeditionClock {
-        // A fractional tick denotes progress toward that tick, not time after its end.
+        // 分数表示到达当前 tick 的进度，从这一 tick 开始前计算。
         public static double HoursAt(in ExpeditionClockState state, NetworkTick tick, float fraction = 1) {
             if (!state.Ready || !tick.IsValid || state.TickRate <= 0) return state.AnchorHours;
+            // NetCode 的 tick 分数对应到达当前 tick 的进度。换算为秒后乘走时速度得到游戏内经过的小时数。
             double seconds = (tick.TicksSince(new NetworkTick(state.AnchorTick)) + fraction - 1) / state.TickRate;
             return state.AnchorHours + seconds * state.HoursPerSecond;
         }
@@ -56,6 +58,7 @@ namespace Unity.MP_FPS {
         protected override void OnUpdate() {
             var map = MoonRaidMap.Active;
             var clock = EntityManager.GetComponentData<ExpeditionClockState>(m_State);
+            // 离开远征地图就清时钟准备状态。下一张地图从它自己的起始时刻开始，不继承之前的时间。
             if (map == null) {
                 clock.Ready = false;
                 EntityManager.SetComponentData(m_State, clock);
@@ -69,12 +72,14 @@ namespace Unity.MP_FPS {
                 rates.ResolveDefaults();
                 tickRate = rates.SimulationTickRate;
             }
+            // 地图设定的分钟是跑一整个游戏日的现实长度。停时配置则使用零速度，其他逻辑仍能同步当前时刻。
             double rate = map.TimeRunning ? 24d / (map.DayLengthMinutes * 60d) : 0;
             double now = SystemAPI.Time.ElapsedTime;
             bool fresh = !ReferenceEquals(m_Map, map) || !clock.Ready;
             bool changed = fresh || clock.HoursPerSecond != rate || clock.TickRate != tickRate;
             bool broadcast = changed || now >= m_NextSync;
             if (broadcast) {
+                // 切图重设到起始时间。普通广播或改速度则先算旧时钟的当前值，再以此为新锚避免画面跳变。
                 clock.AnchorHours = fresh ? map.StartHour : ExpeditionClock.HoursAt(clock, tick);
                 clock.AnchorTick = tick.TickIndexForValidTick;
                 clock.TickRate = tickRate;
@@ -89,6 +94,7 @@ namespace Unity.MP_FPS {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (id, connection) in SystemAPI.Query<RefRO<NetworkId>>().WithAll<NetworkStreamInGame>()
                          .WithEntityAccess()) {
+                // 新连接直接获得基准。已有连接按周期或变化重新对齐，网络不必每帧发一个钟面值。
                 bool joined = !EntityManager.HasComponent<ExpeditionClockSynchronized>(connection);
                 if (!broadcast && !joined) continue;
                 var rpc = ecb.CreateEntity();
@@ -114,6 +120,7 @@ namespace Unity.MP_FPS {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
             var clock = EntityManager.GetComponentData<ExpeditionClockState>(m_State);
             SystemAPI.TryGetSingletonEntity<NetworkId>(out var connection);
+            // 换连接重置原时钟。只接当前连接送的来源，且必须是新会话或更大序号和有效速率。
             if (connection != m_Connection) {
                 clock = default;
                 m_Connection = connection;

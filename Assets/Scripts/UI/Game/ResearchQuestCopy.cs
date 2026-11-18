@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.Client {
             internal string ItemDescription => Copy.item;
         }
 
+        // 研究任务的中英文随已加载的当前语言切换。任务名称和成就条件仍以自己的任务标识为准。
         internal static bool Chinese =>
             MoonkovLocalization.CurrentLocaleCode?.StartsWith("zh", StringComparison.OrdinalIgnoreCase) == true;
 
@@ -80,6 +81,7 @@ namespace Unity.MP_FPS.Client {
                 photo: "mc00_archive_drive")
         };
 
+        // 词条按任务枚举排列。换顺序会让任务读取别的简报，所以和任务目录的枚举保持一致。
         internal static Entry For(ResearchQuest quest) { return Entries[(int)quest]; }
         internal static EndingText Ending(ResearchEnding ending) { return Current.endings[(int)ending - 1]; }
 
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS.Client {
             };
         }
 
+        // 仅覆盖研究剧情中的物品名。普通物品由目录和本地化表提供，调用方见到空结果时会走统一名称。
         internal static string ItemName(string code) {
             return code switch {
                 ResearchQuestRules.Tablet => Text("研究员信息平板", "Personnel information tablet"),

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Port of Halos mainRoomControl. Coordinates, phases and rates use its 1920x1080 / 60 Hz space.
+    // 移植自 Halos 的 mainRoomControl。坐标、阶段和速度取原来的 1920×1080 与 60 Hz。
     public sealed partial class HalosMainRoom : IDisposable {
         [Serializable]
         private sealed class Layout {
@@ -56,6 +56,7 @@ namespace Unity.MP_FPS.Client {
         public HalosMainRoom(VisualElement parent, Action<int> navigate) {
             m_Navigate = navigate;
             m_Owner = parent;
+            // 场景分舱和图标位置由美术资源给出。代码只把这些图和可交互区域接入窗口，点击后由终端选择目标页。
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/HalosMainRoom").CloneTree();
             Root = tree.Q("halosOriginalHome");
             Root.RemoveFromHierarchy();
@@ -174,6 +175,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public void Open(int page) {
+            // 房间正在滑动、被遮住或处于预览时，不接受图标点击。玩家点到的是稳定的房间布局才会导航。
             if (!m_Visible || m_Disposed || m_Busy || IsMoving || IsPreviewOpen || IsOpening || m_TabletState > 0)
                 return;
             if (!Animate) {
@@ -186,6 +188,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public void MoveRoom(int direction) {
+            // 切换中不响应新的切房请求。房间编号还有边界，移到最左或最右再继续就停在原位。
             if (!m_Visible || m_Disposed || IsMoving || IsPreviewOpen || IsOpening || m_TabletState > 0 ||
                 m_Cooldown > 0)
                 return;
@@ -200,6 +203,7 @@ namespace Unity.MP_FPS.Client {
                 monitor.Pointed = false;
                 monitor.Focused = false;
             }
+            // 1920 是每间舱的设计宽度。关闭动画时直接把视图跳到目标舱的横坐标。
             if (!Animate) m_Camera = Room * 1920;
             Paint();
         }
@@ -324,6 +328,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void UpdateInput() {
+            // 平板合拢、进场结束、人物或月球预览关掉后才重新启用舱室操作，避免不同界面同时响应。
             bool ready = m_TabletState == 0 && !IsOpening && !IsPreviewOpen;
             m_Left.style.display = Room > 0 && ready ? DisplayStyle.Flex : DisplayStyle.None;
             m_Right.style.display = Room < 2 && ready ? DisplayStyle.Flex : DisplayStyle.None;

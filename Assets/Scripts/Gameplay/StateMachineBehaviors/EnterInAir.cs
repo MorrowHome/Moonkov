@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Unity.MP_FPS {
     public class EnterInAir : StateMachineBehaviour {
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+            // 动画进入腾空段时打开标记，让动画过渡继续按空中姿势处理。
             animator.SetBool("IsInAir", true);
         }
     }

@@ -30,7 +30,9 @@ namespace Unity.MP_FPS.Client {
         private void OnDisable() { StopCoroutine(UpdateNetworkStatusInfo()); }
 
         private IEnumerator UpdateNetworkStatusInfo() {
+            // 状态文字用重复执行的协程刷新。UI 组件关闭时会结束这段刷新，免得离开画面还继续查。
             while (true) {
+                // 同一个栏位根据当前连接阶段显示正在连接、会话中或断开等信息。它读取的是连接流程提供的状态。
                 switch (ConnectionSettings.Instance.GameConnectionState) {
                     case ConnectionState.State.Disconnected:
                         MoonkovLocalization.Set(m_ConnectionStatus, "Connection: {0}", "Offline");

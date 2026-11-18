@@ -5,6 +5,7 @@ namespace Unity.MP_FPS {
         private float _time;
 
         public void UpdateServer(float deltaTime) {
+            // 计时随服务器的模拟推进，达到预制件上的寿命后由 Ghost 删除入口通知客户端收掉效果。
             _time += deltaTime;
             if (_time >= Lifetime) GhostGameObject.DestroyEntity();
         }

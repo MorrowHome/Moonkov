@@ -15,9 +15,9 @@ using UnityEditor.SceneManagement;
 #endif
 
 namespace Unity.MP_FPS.Client {
-    // A private rendering stage: no player input, networking, or gameplay controller.
+    // 独立的渲染舞台。预览角色只需要视觉组件。
     public sealed partial class MenuCharacterView : IDisposable {
-        // The project's PC renderer only draws layers 0–7. UI is within that mask.
+        // 项目的 PC 渲染器只画第 0 到 7 层。UI 层在这个掩码内。
         private const int ViewLayer = 5;
         private const float PortraitFieldOfView = 27;
         private EnergyShieldPresentation m_Protection;
@@ -112,6 +112,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 角色编号变化后按新资源建模型。之前拍摄的纹理和动画图跟旧角色一起释放，避免换人后画面残留。
         private void SelectCharacter(int characterIndex) {
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (m_Disposed || CharacterIndex == characterIndex) return;
@@ -131,8 +132,8 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void BeginInspect(PointerDownEvent evt) {
-            // Only a press on the portrait starts inspection. Buttons/items layered
-            // above it retain their own event target and pointer capture.
+            // 只有点到人物图本身才开始查看，
+            // 覆盖在上方的按钮和物品仍接收自己的事件和指针捕获。
             if (m_Disposed || m_HomePose || m_DragPointer >= 0 || evt.target != Element ||
                 evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0)
                 return;
@@ -232,7 +233,7 @@ namespace Unity.MP_FPS.Client {
             }
             m_Stage = new GameObject("Menu character render stage");
             SceneManager.MoveGameObjectToScene(m_Stage, m_Scene);
-            // Far from gameplay geometry and lights in a player build.
+            // Player 构建时把预览放远一些，避开实际场景的模型和灯光。
             if (m_SharedStage != null)
                 m_Stage.transform.SetParent(m_SharedStage, false);
             else
@@ -302,8 +303,8 @@ namespace Unity.MP_FPS.Client {
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in m_Renderers) {
                 renderer.updateWhenOffscreen = true;
-                // Squad renders are requested manually, sometimes more than once
-                // per Editor update. Skin the final authored pose for each render.
+                // 小队相机按要求绘制，编辑器一次更新可能请求多次。
+                // 每次都让蒙皮更新到最终的骨骼姿势。
                 if (m_SharedStage != null) renderer.forceMatrixRecalculationPerRender = true;
                 renderer.forceRenderingOff = false;
             }
@@ -327,7 +328,7 @@ namespace Unity.MP_FPS.Client {
             data.renderPostProcessing = false;
             data.volumeLayerMask = 0;
             data.renderShadows = true;
-            // Apply in both editor and player: a camera must never draw a second UI stage.
+            // 编辑器和 Player 都按同样的可见性限制处理。每部相机只画自己的 UI 舞台。
             m_Camera.scene = m_Scene;
             Light("Soft key", new Vector3(24, 145, 0), new Color(1f, .97f, .94f), m_HomePose ? .7f : 1.25f, true);
             Light("Cool fill", new Vector3(8, -135, 0), new Color(.82f, .89f, 1f), m_HomePose ? .3f : .5f, false);
@@ -363,6 +364,7 @@ namespace Unity.MP_FPS.Client {
             m_Clips[slot] = AnimationClipPlayable.Create(m_Graph, m_Settings.Motions[index]);
             m_Clips[slot].SetApplyFootIK(false);
             m_Clips[slot].SetApplyPlayableIK(true);
+            // 这里自己在 Advance 中推进采样时刻。新的 Clip 不让动画系统自动走时间，切页暂停与减弱效果都能直接控制。
             m_Clips[slot].SetSpeed(0);
             m_Graph.Connect(m_Clips[slot], 0, m_Mixer, slot);
             m_Indices[slot] = index;
@@ -370,7 +372,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void BeginNextMotion() {
-            // Shuffle without replacement: every configured action gets a turn before any repeat.
+            // 打乱动作后每个只拿一次。一轮都展示完才开始下一轮。
             int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? TakeAction() : 0;
             BeginMotion(next);
         }
@@ -388,6 +390,7 @@ namespace Unity.MP_FPS.Client {
             m_FadeSeconds = Mathf.Max(.01f, m_Settings.CrossfadeSeconds);
             if (next != 0 && !options.Loop && options.Weapon == 0)
                 m_FadeSeconds = Mathf.Min(m_FadeSeconds, Mathf.Max(.05f, clip.length * .25f));
+            // 保留还在播放的动作，在另一个槽准备下一段。过渡期间用两个槽的权重做平滑混合。
             SetClip(1 - m_Slot, next);
             m_Motion = next;
             m_Transition = true;
@@ -401,6 +404,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private int TakeAction() {
+            // 可选动作只收与当前装备兼容的条目。一轮随机列表用完再洗，避免短时间同一动作反复出现。
             if (m_ActionBag == null) {
                 var actions = new List<int>();
                 for (int i = 1; i < m_Settings.Motions.Length; i++)
@@ -434,11 +438,13 @@ namespace Unity.MP_FPS.Client {
                     visible = false;
                     break;
                 }
+            // 不可见视图不继续占用舞台和纹理。需要时会用同样的配置建回来。
             if (!visible) {
                 ReleaseStage();
                 return;
             }
             if (m_Camera == null) CreateStage();
+            // 关闭动态效果时，只在首次、尺寸或状态变化时渲染静态帧。首页的明确点击演出仍有专门处理。
             if ((!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion) &&
                 !HomeReactionActive) {
                 var size = Element.contentRect.size;
@@ -453,7 +459,7 @@ namespace Unity.MP_FPS.Client {
             Render();
         }
 
-        // Also used by the editor's single targeted lifecycle/animation check.
+        // 编辑器的生命周期与动画定向检查也会调用这里。
         public void Advance(float dt) {
             if (m_Disposed || m_Settings == null) return;
             if (m_Model == null) CreateStage();
@@ -465,6 +471,7 @@ namespace Unity.MP_FPS.Client {
             m_Remaining -= dt;
             m_BaseTime += dt;
             var idle = m_Settings.Motions[0];
+            // 待机作为底层连续循环。上层动作仍能保留各自的播放时间和骨骼遮罩。
             m_BaseIdle.SetTime(m_BaseTime % idle.length);
             if (m_SharedStage != null)
                 AdvanceSquadPose(dt);
@@ -477,6 +484,7 @@ namespace Unity.MP_FPS.Client {
                     ? m_Times[i] % clip.length
                     : Math.Min(m_Times[i], clip.length));
             }
+            // 两个动作的权重加起来为一。混合结束后交换当前槽，下次继续复用另一边。
             if (m_Transition) {
                 m_Blend = Mathf.Min(1f, m_Blend + dt / m_FadeSeconds);
                 float weight = Mathf.SmoothStep(0, 1, m_Blend);
@@ -610,6 +618,7 @@ namespace Unity.MP_FPS.Client {
             float scale = Mathf.Min(m_Settings.ResolutionScale, maximum / Mathf.Max(width, height));
             int w = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16));
             int h = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(height * scale / 16f) * 16));
+            // 只有分辨率真的变了才重新分配渲染纹理。普通每帧渲染复用原来的目标。
             if (m_Target == null || m_Target.width != w || m_Target.height != h) {
                 ReleaseTarget();
                 var descriptor = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 24)
@@ -629,7 +638,7 @@ namespace Unity.MP_FPS.Client {
             m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
             var focus = m_Bounds.center;
             if (m_HomePose && m_Head != null) {
-                // Keep the foreground framing through the skirt and upper legs during the turn.
+                // 角色转身时保持近景构图，仍能看到裙摆和大腿上半部。
                 var hips = m_Animator.GetBoneTransform(HumanBodyBones.Hips);
                 float torso = m_Head.position.y - hips.position.y;
                 float top = Mathf.Max(m_Head.position.y + torso * .88f, m_Bounds.max.y) + torso * .07f;
@@ -692,6 +701,7 @@ namespace Unity.MP_FPS.Client {
             m_ProtectionInventory = null;
         }
 
+        // 舞台关闭时要释放 PlayableGraph、纹理和模型。下一次打开重新建立隔离的预览资源。
         private void ReleaseStage() {
             ReleaseHomeReaction();
             ReleaseEquipmentVisuals();

@@ -4,13 +4,15 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    /// <summary>Owner-only muzzle obstruction cue. It never captures gameplay/UI input.</summary>
+    /// <summary>仅本地操作者可见的枪口遮挡提示。游戏与 UI 输入仍由原控件处理。</summary>
     public sealed class HaloObstructionView : IDisposable {
         public VisualElement Element { get; }
 
         public HaloObstructionView(VisualElement host) {
+            // 遮挡提示与准星叠在一起。它本身不接触发事件，显示时也不会影响鼠标归属。
             Element = new VisualElement { name = "haloMuzzleObstructed", pickingMode = PickingMode.Ignore };
             Element.style.position = Position.Absolute;
+            // 用百分比找到准星中心，再用半个图标大小补偿左上角位置。不同分辨率可继续居中。
             Element.style.left = Element.style.top = Length.Percent(50);
             Element.style.marginLeft = Element.style.marginTop = -6;
             Element.style.width = Element.style.height = 12;

@@ -9,6 +9,7 @@ using UnityEngine.AI;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
+    // 行动是这段时间想完成的事。Approaching 等掩体子状态记录的是这件事在执行到哪一步。
     public enum PmcAction {
         Scavenge,
         Extract,
@@ -35,7 +36,8 @@ namespace Unity.MP_FPS {
         Returning
     }
 
-    // A sound identifies a place, not an opponent or a firing solution.
+    // 声音只说明大概哪里有动静，不能据此确定敌人或开火线路。
+    // 机器、枪声之类只说明哪里有动静。更新线索可打断搜刮，不凭它获得精确枪线。
     public static class PmcSoundClue {
         public static bool Hear(DollSingerEnemyBrain brain, string id, Vector3 position, double now) {
             if (brain == null || string.IsNullOrEmpty(id) || brain.IsClashBot || brain.Leaving ||
@@ -51,8 +53,9 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // The observer only remembers positions it could actually see. Turning away
-    // does not erase the clue before detonation or track it through walls.
+    // 观察者只记住自己看到时的位置。
+    // 转头后会把线索保留到爆炸，但不会透墙追踪手雷。
+    // 记忆保存最后一处真正看见的手雷位置和时效。转开视线不立刻忘掉，手雷也不会隔墙自动跟踪。
     public struct PmcGrenadeAwareness {
         private ulong m_ObservedId, m_DangerId;
         private double m_ObservedSince, m_LastObservation, m_RecognizedAt;
@@ -85,6 +88,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 逃离方向不能在起点先靠近爆炸点。几何检查对每条候选路线单独做。
     public static class PmcGrenadeRules {
         public static bool Finite(Vector3 point) {
             return float.IsFinite(point.x) && float.IsFinite(point.y) && float.IsFinite(point.z);
@@ -111,8 +115,8 @@ namespace Unity.MP_FPS {
                    angle <= cone;
         }
 
-        // Reject a route that first approaches the last observed grenade. This
-        // also prevents a failed escape from reversing into the blast.
+        // 如果路线第一段先靠近最后看到的手雷，就拒绝它。
+        // 逃跑受阻后也不会因此掉头跑进爆点。
         public static bool SegmentSafe(Vector3 from, Vector3 to, Vector3 grenade, float minimum) {
             if (!Finite(from) || !Finite(to) || !Finite(grenade) || !float.IsFinite(minimum) || minimum < 0)
                 return false;
@@ -127,8 +131,9 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 以实际走过的地面距离更新体力。卡在墙前或原地走动作，不按请求速度来记。
     public static class PmcSprintRules {
-        // An exhausted raider walks to recover, but may still attempt to flee an explosive.
+        // 体力耗完时改为走路恢复，但见到爆炸威胁时仍可尝试紧急冲刺。
         public static bool Allows(bool clash, PmcAction action, bool exhausted) {
             return clash || !exhausted || action == PmcAction.EvadeGrenade || action == PmcAction.EvadeHazard;
         }
@@ -157,11 +162,12 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // A fallback entry is not a real extraction point. Keep a raider present
-    // while a nearby human could watch it disappear from the map.
+    // 备用入口并不是正式撤离点。
+    // 附近有真人可能看到人消失时，让 AI 继续留在场景里。
+    // 找不到正式出口时可回入口离场，但如果附近真人会目击到角色消失，要等可安全退出的窗口。
     public static class PmcLocalExitRules {
         public const float NearbyRange = 30, SightRange = 100, AimedSightRange = 1000;
-        private const float AimedConeDot = .990268f; // Eight degrees around the current view.
+        private const float AimedConeDot = .990268f; // 以当前视角方向为中心，容许 8 度偏角。
         private static int s_WorldMask = int.MinValue;
 
         public static bool Nearby(Vector3 player, Vector3 actor) {
@@ -216,6 +222,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 持续区域风险沿观察过的位置和结束时间保存，方便 AI 选择必须中断当前动作的避险行为。
     public static class PmcHazardRules {
         public static bool Active(
             bool clash,
@@ -234,8 +241,9 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Returns true when the shared status action consumed this update. The
-    // caller supplies its real safety/position check and otherwise handles medicine.
+    // 本次更新已被共用的状态处理动作消耗时返回 true。
+    // 由调用方做真实的安全与位置检查，并处理其它用药逻辑。
+    // 止血或灭火能获得独立的治疗阶段。等待安全窗口并持续验证条件，真正完成才更新状态。
     public static class PmcSelfTreatment {
         public static bool Advance(DollSingerEnemyBrain brain, bool eligible, bool bleeding, bool burning, double now) {
             if (!eligible) {
@@ -272,18 +280,19 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // A minority of ordinary raid actors carry the same physical shield item as
-    // players. Tutorial and bounty encounters retain their existing loadouts.
+    // 少数普通远征角色带着与玩家相同的实体护盾物品。
+    // 教学与悬赏仍沿用原来的装备。
+    // 普通远征 AI 有机会穿真实的护具。扣掉的充能或损耗留在物品上，死亡时可由尸体继承。
     public static class PmcProtectionLoadout {
         public const float ShieldChance = 1f / 3f;
 
-        // Legacy generators are retained in old saves, but no longer spawn or equip.
+        // 旧档案可保留旧版发生器，但不再生成或装备这种东西。
         public static bool ShouldEquip(bool clash, bool tutorial, float roll) { return false; }
         public static bool TryEquip(InventoryGraph inventory, bool clash, bool tutorial, float roll) { return false; }
 
         public static void Initialize(ref PredictedPlayerGhost health, InventoryGraph inventory) {
-            // Preserve the existing reserve for loadouts without life support,
-            // including the tutorial; binding a shield alone must not change it.
+            // 没有生命维持设备的装备方案沿用已有储备，教学也包括在内。
+            // 仅绑定护盾不应该改变这份储备。
             float oxygen = health.Oxygen;
             EnergyShieldEquipment.Synchronize(ref health, inventory);
             if (!health.HeadDomeEquipped) health.Oxygen = oxygen;
@@ -293,8 +302,9 @@ namespace Unity.MP_FPS {
         public static bool BindLootedShield(ref PredictedPlayerGhost health, InventoryGraph inventory) { return false; }
     }
 
-    // These instant inventory actions still wait for a safe opening and cannot
-    // overlap the actor's own search, treatment, extraction, or hazard response.
+    // 即时的库存操作也要等安全时机。
+    // 角色自己在搜刮、治疗、撤离或避险时不能顺便做这些操作。
+    // 换电池、穿装备等短操作也要查手头有没有正在搜刮、治疗或读条。用同一条件避免重叠做两件事。
     public static class PmcResourceActions {
         public static bool SafeWindow(
             DollSingerEnemyBrain brain,
@@ -325,8 +335,9 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // A shield and a halo draw from the same physical cells. Leave a full
-    // magazine's accessible energy before spending any cell on protection.
+    // 护盾和光环消耗同一批实体电池。
+    // 先留够一仓弹药所需的可用能量，再拿电池给护盾用。
+    // 护盾与枪用同一类电池。优先留出可访问的一仓火力所需能量，再考虑给护盾充。
     public static class PmcShieldSupply {
         public const float RechargeThreshold = 25;
 
@@ -353,8 +364,9 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // The suit and refill are real carried items. NPCs use the same atmosphere,
-    // oxygen drain and atomic refill transaction as a player.
+    // 服装和补氧道具确实在 AI 身上。
+    // AI 和真人共用空气检测、耗氧和一次性补氧事务。
+    // 生存所需时间、氧气区与补氧物品复用玩家规则。AI 也会因为缺氧受伤或考虑离场。
     public static class PmcLifeSupport {
         public const float RefillThreshold = 40, DepartureThreshold = 20;
 
@@ -441,6 +453,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 一次补氧失败按库存版本记录。物资没变之前无需每帧尝试同一件拿不出的东西。
     public struct PmcOxygenFailure {
         private bool m_Failed;
         private int m_Version;
@@ -454,8 +467,9 @@ namespace Unity.MP_FPS {
         public void Clear() { m_Failed = false; }
     }
 
-    // Food and water use the player's real items, timing and inventory version.
-    // Starvation and hypoxia continue while the action is underway.
+    // 食物和水使用真人同款的物品、计时和库存版本规则。
+    // 动作进行时，饥渴和缺氧也继续。
+    // 开吃后记下所选食物和库存版本。时间走完仍要确认物品有效，饥饿与缺水在动作中照常变化。
     public static class PmcNutrition {
         public const float UseThreshold = 35, DangerThreshold = 20, DepartureThreshold = 10;
 
@@ -553,8 +567,9 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // An inaccessible backpack cell cannot be re-attempted every frame while
-    // the physical inventory and weapon's energy cost remain unchanged.
+    // 够不着的背包电池，不会每帧都重试同一次操作。
+    // 实际库存有变化或武器能耗改变后，才值得重试。
+    // 装填失败的条件不只与库存有关。换武器或配件使每发能耗改变后，也有理由重新尝试。
     public struct PmcReloadFailure {
         private bool m_Failed;
         private int m_Version, m_Cost;
@@ -574,11 +589,12 @@ namespace Unity.MP_FPS {
         public void Clear() { m_Failed = false; }
     }
 
+    // 电池在背包里不等于手能用到。需要先通过库存移动放到口袋或可用装备槽。
     public static class PmcReloadInventory {
         public static bool Prepare(InventoryGraph inventory, int energyPerRound) {
             string rig = inventory.Equipped("ChestRig")?.Id;
             if (inventory.CellEnergy(accessibleOnly: true) >= energyPerRound) return true;
-            // Stored cells must be moved to pockets or the equipped rig first.
+            // 存放的电池要先搬到口袋或当前穿戴的装备中。
             foreach (var source in inventory.Items.Where(i => i.Code == "cells" && inventory.Carried(i) &&
                                                               i.Parent != InventoryCatalog.Pockets && i.Parent != rig)
                          .ToArray()) {
@@ -610,6 +626,7 @@ namespace Unity.MP_FPS {
         public void Clear() { m_Failed = false; }
     }
 
+    // 药品必须在可使用区域才能开始治疗。AI 身上有药但拿不到时也要遵守库存移动限制。
     public static class PmcMedicalInventory {
         public static InventoryItem FindAccessible(InventoryGraph inventory) {
             return inventory?.Items.FirstOrDefault(item => item.Quantity > 0 && inventory.MedicalAccessible(item));
@@ -620,7 +637,7 @@ namespace Unity.MP_FPS {
                 item.Quantity > 0 && ConsumableCatalog.MedicalRestore(item.Code) > 0 && inventory.Carried(item));
         }
 
-        // NPCs use the same carried-storage and versioned movement rules as players.
+        // AI 使用和玩家相同的随身容器与带版本的物品移动规则。
         public static InventoryItem Prepare(InventoryGraph inventory) {
             var available = FindAccessible(inventory);
             if (available != null || inventory == null) return available;
@@ -649,12 +666,13 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 优先适合当前距离且仍有可用能量的枪。切换有分开的阈值，在边界附近不反复横跳。
     public static class PmcWeaponTactics {
         internal static bool PrefersCloseRange(uint weapon) {
             return weapon is DollSingerWeapons.Shotgun or DollSingerWeapons.Thorn or DollSingerWeapons.Cicada;
         }
 
-        // Separate thresholds keep a target near the boundary from causing a weapon swap loop.
+        // 切入与切出条件使用不同阈值，目标在边界附近时不会反复换枪。
         public static int PreferredSlot(in PredictedPlayerGhost health, float distance) {
             return SelectSlot(health, distance, true);
         }
@@ -697,14 +715,15 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 受击但不知道攻击者在哪时，按已知出口或自身朝向找安全方向，避免隔墙猜到精确射手。
     public static class PmcUnknownAttack {
         public static bool NeedsEvasion(bool clash, bool hasContact, double lastDamage, double now) {
             return !clash && !hasContact && double.IsFinite(lastDamage) && double.IsFinite(now) && now >= lastDamage &&
                    now - lastDamage < 3;
         }
 
-        // Retreat toward a known exit, or backward when already there. Neither
-        // direction encodes an unseen attacker's actual position.
+        // 撤退时往已知出口走。已经到出口时则向后退。
+        // 这些方向都不包含看不见的攻击者的精确位置。
         public static float3 Direction(float3 position, float3 exit, float yawDegrees) {
             if (math.all(math.isfinite(position)) && math.all(math.isfinite(exit))) {
                 var towardExit = new float2(exit.x - position.x, exit.z - position.z);
@@ -719,8 +738,8 @@ namespace Unity.MP_FPS {
         }
     }
 
-    // Observations are the only way world knowledge enters a brain. Decision code uses
-    // this snapshot, never a hidden opponent's current transform or inventory.
+    // AI 的世界知识只来自自己的观察记录和已接收的报告。
+    // 决定时读这份状态，不直接查隐藏对手现在的位置或库存。
     // 这是某个观察者对目标的记忆。这里的时间、估计位置和置信度决定 AI 下一步能依据哪些信息。
     public sealed class PmcContact {
         public Vector3 Position, Velocity;
@@ -735,6 +754,7 @@ namespace Unity.MP_FPS {
         public double LastReported = -100;
     }
 
+    // 服务端为每个机器人各保留一份脑状态，包含真实库存、观察缓存、掩体阶段和寻路索引。网络只同步表现和结算所需部分。
     public sealed class DollSingerEnemyBrain : IComponentData {
         public Entity Target;
         public InventoryGraph Inventory;
@@ -801,7 +821,7 @@ namespace Unity.MP_FPS {
 
         public float ExtractionProgress, ActionScore;
 
-        // A server-assigned identity, never a fabricated transport connection.
+        // 身份由服务器分配。机器人没有模拟客户端的传输连接。
         public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;
         public bool IsClashBot => ClashParticipantId > 0;
         internal bool IsExpeditionRaider => !IsClashBot && !TutorialActor;

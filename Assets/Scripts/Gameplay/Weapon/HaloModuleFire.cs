@@ -5,14 +5,16 @@ using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Prediction and server share timing, the one-shot input buffer and burst lifecycle.
+    // 客户端预测和服务器共用计时、单发输入缓存与连射阶段。
     public static class HaloModuleFire {
         public const float InputBufferSeconds = .12f;
 
+        // 外观层也会读取待出手状态。有缓存的点按时，瞄准已经松开也可能还有一发在等。
         public static bool HasPendingFire(in PredictedPlayerGhost state) {
             return state.HaloPendingShot || state.BurstRemaining > 0 || state.FireBufferRemaining > 0;
         }
 
+        // 只清理待发和连发序列等瞬间状态。和换枪的冷却、已付能量分开。
         public static void Reset(ref PredictedPlayerGhost state) {
             state.BurstRemaining = 0;
             state.BurstSequence = 0;
@@ -21,6 +23,7 @@ namespace Unity.MP_FPS {
             state.HaloPendingShot = false;
         }
 
+        // 计时由模拟步长推进，包括闲置武器槽的开火恢复。角色切走一把枪再切回时，不应重置它的射击节奏。
         public static void AdvanceTimers(ref PredictedPlayerGhost state, float deltaTime) {
             state.WeaponCooldown += deltaTime;
             state.WeaponEquipRemaining = Mathf.Max(0, state.WeaponEquipRemaining - deltaTime);
@@ -35,6 +38,7 @@ namespace Unity.MP_FPS {
                 ((HaloModule)state.EquippedModules & HaloModule.PulseController) != 0;
         }
 
+        // 连发的一组里面和两组之间用不同的时间。伤势造成的处理倍率还会延长这些时间。
         private static float Interval(in PredictedPlayerGhost state, WeaponData weapon, bool betweenBursts) {
             return Mathf.Max(.001f,
                        weapon.BurstCount > 1 ? (betweenBursts ? weapon.BurstCooldown : weapon.BurstInterval) :
@@ -42,6 +46,7 @@ namespace Unity.MP_FPS {
                    RaidHealth.HandlingMultiplier(state);
         }
 
+        // 换武器先重建抬手和装备等待状态，并从对应槽位取还没走完的射击恢复时间。
         public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon) {
             Reset(ref state);
             state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
@@ -61,8 +66,9 @@ namespace Unity.MP_FPS {
                 : 0;
         }
 
-        // R pressed during a draw waits for that draw, without spending a cell
-        // early. A later weapon switch discards the old weapon's queued intent.
+        // 取枪时按 R 会记下装填意图，等取枪结束再消耗电池。
+        // 之后若换武器，就不用这个旧请求了。
+        // 如果还在取武器，能记录一次装填请求，等武器就绪后再消费；占手、已满弹等情况则直接清掉请求。
         public static bool ReadyToReload(ref PredictedPlayerGhost state, bool requested, int magazineSize) {
             if (GrenadeHandling.Occupied(state) || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState ||
                 magazineSize <= state.CurrentAmmo) {
@@ -78,8 +84,8 @@ namespace Unity.MP_FPS {
             return requested || queued;
         }
 
-        // Aim controls the lens. Hip fire and ADS must both raise the halo and hands.
-        // Store one click through that windup, separately from the short cooldown buffer.
+        // 瞄准键控制镜片。腰射与开镜射击都要抬起手和光环。
+        // 抬手期间单独记一发点按，与短冷却时的输入缓存分开。
         public static bool TryFire(
             ref PredictedPlayerGhost state,
             WeaponData weapon,
@@ -88,6 +94,7 @@ namespace Unity.MP_FPS {
             float deltaTime) {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
+            // 正在做手雷、防御、转移光环或自由观察等事时，先取消待发，等手空出来再接受新动作。
             bool blocked = GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer ||
                            state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed ||
                            input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
@@ -99,10 +106,11 @@ namespace Unity.MP_FPS {
             if (!halo) return TryFire(ref state, weapon, input.Shoot, input.Aim, switched);
             float step = Mathf.Max(0, deltaTime);
             bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
-            // Lowering can return before TryFire's trigger edge tracking runs.
+            // 光环放下时可能提前返回，还没走到 TryFire 里的扳机边沿检测。
             if (!input.Shoot) state.BurstTriggerHeld = false;
-            // Aiming consumes the hip-fire hold. An aimed shot must not leave a
-            // timed pose behind when RMB is released, even immediately after firing.
+            // 开始瞄准会消耗掉腰射姿势的保持时间。
+            // 即使刚刚瞄准开火，松开右键也不会继续摆腰射姿势。
+            // 瞄准和腰射可共用抬手姿势，但保持方式不同。腰射短暂保持，按住瞄准则由瞄准键维持。
             if (input.Aim)
                 state.HipFireHoldRemaining = 0;
             else if (input.FireHeld || input.Shoot || (state.HipFireHoldRemaining > 0 && HasPendingFire(state)))
@@ -120,6 +128,7 @@ namespace Unity.MP_FPS {
                         RaidHealth.HandlingMultiplier(state)));
             if (state.ControllerState.IsReloadingState && !reloadEnding) state.HaloPendingShot = false;
             if (state.WeaponRaiseProgress < 1f - .00001f || state.WeaponEquipRemaining > 0) return false;
+            // 抬手达到可开火位置后，把这一拍的按键和之前暂存的一发汇在一起，再进入射速判断。
             bool trigger = input.Shoot || state.HaloPendingShot;
             state.HaloPendingShot = false;
             bool fired = TryFire(ref state, weapon, trigger, true, false);
@@ -136,6 +145,7 @@ namespace Unity.MP_FPS {
             bool switched) {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool pulse = IsPulse(state, weapon);
+            // 连发需要一次新的按下才会建一组。一直按着不会在每拍都重新开始一组。
             bool pressed = trigger && !state.BurstTriggerHeld;
             state.BurstTriggerHeld = trigger;
             bool blocked = GrenadeHandling.Occupied(state) || weapon == null || switched || state.CurrentHealth <= 0 ||
@@ -147,11 +157,12 @@ namespace Unity.MP_FPS {
                 return false;
             }
 
-            // Semi-auto input is already a press event; pulse rifles receive a held trigger.
-            // A single pending press expires quickly and follows the current aim when released.
+            // 半自动收到的是一次按下事件。脉冲连发武器收到的是扳机持续状态。
+            // 缓存的点按很快过期。实际开火时使用那一刻的瞄准方向。
             if (((!pulse && !weapon.Automatic && trigger) || (pulse && pressed)) &&
                 (!state.ControllerState.IsReloadingState || state.ReloadTimer <= InputBufferSeconds))
                 state.FireBufferRemaining = InputBufferSeconds;
+            // 换弹期间不能在本拍打出子弹。只有计时快结束时才保留很短的点按缓存。
             if (state.ControllerState.IsReloadingState) {
                 state.BurstRemaining = 0;
                 if (state.ReloadTimer > InputBufferSeconds) state.FireBufferRemaining = 0;
@@ -165,6 +176,7 @@ namespace Unity.MP_FPS {
             if (state.WeaponEquipRemaining > 0) return false;
             float interval = Interval(state, weapon, pulse && state.BurstRemaining == 0);
             if (state.WeaponCooldown + .00001f < interval) return false;
+            // 全自动看当前是否仍按住，半自动看是否有一发缓存，连发另走剩余发数判断。
             if (!pulse) {
                 state.BurstRemaining = 0;
                 state.BurstSequence = 0;
@@ -183,8 +195,8 @@ namespace Unity.MP_FPS {
             return true;
         }
 
-        // Retain at most one simulation step of overshoot for continuous fire. Idle time,
-        // a buffered semi-auto press, or a hitch never buys several accelerated shots.
+        // 连续射击最多保留一拍多算的冷却时间。
+        // 等待、半自动缓存或卡顿不会换来多发超速射击。
         public static void CommitShot(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime) {
             bool pulse = IsPulse(state, weapon);
             float firedInterval = Interval(state, weapon, pulse && state.BurstSequence == 0);
@@ -193,6 +205,7 @@ namespace Unity.MP_FPS {
             bool preserveRemainder = (weapon.Automatic || pulse) && deltaTime <= firedInterval && remainder >= 0 &&
                                      remainder <= deltaTime + .00001f;
             state.WeaponCooldown = preserveRemainder ? Mathf.Min(remainder, deltaTime) : 0;
+            // 为目前的装备槽记录本发后还要等多久，换到别的枪时原枪仍保留自己的恢复时间。
             float recovery = Interval(state, weapon, pulse && state.BurstRemaining == 0) - state.WeaponCooldown;
             if (state.EquippedWeaponSlot == 1)
                 state.PrimaryFireRecovery = recovery;

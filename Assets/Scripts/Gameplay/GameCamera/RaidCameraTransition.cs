@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    /// <summary>One temporary rendering camera; the player camera continues updating its destination.</summary>
+    /// <summary>过场使用临时渲染相机，玩家自己的相机继续更新过场的移动目标。</summary>
     internal sealed class RaidCameraTransition : IDisposable {
         internal const float DeploymentSeconds = 4.5f;
         internal const float DeathSeconds = 4.6f;
@@ -27,7 +27,7 @@ namespace Unity.MP_FPS {
         public bool DeathComplete => DeathActive && m_Time >= DeathSeconds;
         public bool HidesHUD => Deploying || (DeathActive && !DeathComplete);
 
-        // The fall and a brief grounded hold remain fully visible before eyelids close.
+        // 倒地和落地后短暂停顿时保持画面可见，然后再淡黑。
         public float BlackAlpha => DeathActive ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((m_Time - 2f) / 2.2f)) : 0;
 
         public RaidCameraTransition(Transform owner) {
@@ -44,6 +44,7 @@ namespace Unity.MP_FPS {
                 m_Source = source;
                 m_SourceEnabled = source.enabled;
             }
+            // 过场镜头继承玩家镜头的配置及 URP 选项，保持阴影和后处理看起来一致，随后才接管画面。
             m_Camera.CopyFrom(source);
             m_Camera.enabled = false;
             m_Camera.transform.SetPositionAndRotation(source.transform.position, source.transform.rotation);
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS {
             Deploying = true;
             var eye = m_Source.transform.position;
             bounds.Encapsulate(eye);
+            // 俯视镜头高度按地图面积和画面宽高比来算，让初始视野尽量包含战局目标区域和人的落点。
             float span = Mathf.Max(bounds.size.z, bounds.size.x / Mathf.Max(.5f, m_Source.aspect));
             float height = Mathf.Max(160, span * .56f / Mathf.Tan(30 * Mathf.Deg2Rad));
             m_Overview = new Vector3(bounds.center.x, bounds.max.y + height, bounds.center.z);
@@ -86,6 +88,7 @@ namespace Unity.MP_FPS {
             m_Time += Mathf.Max(0, deltaTime);
             var eye = m_Source.transform.position;
             var rotation = m_Source.transform.rotation;
+            // 入场分两段。先从俯视点下降到接近位，再慢慢对齐玩家当前的眼睛和视野。
             float descend = Mathf.SmoothStep(0, 1, Mathf.Clamp01((m_Time - .65f) / 2.35f));
             float approach = Mathf.SmoothStep(0, 1, Mathf.Clamp01((m_Time - 3f) / 1.5f));
             var position = Vector3.Lerp(m_Overview, m_Approach, descend);
@@ -115,8 +118,9 @@ namespace Unity.MP_FPS {
             Deploying = false;
             DeathActive = true;
             m_Time = 0;
-            if (!m_HasPose) return; // Missing spawn/camera still receives a bounded fade and result.
-            // A third-person orbit must not make death tumble from several metres behind the body.
+            if (!m_HasPose) return; // 没找到出生位或摄像机时，仍采用有时限的淡出再显示结算。
+            // 第三人称环绕镜头离角色较远，倒地应该从身体附近演起。
+            // 第三人称镜头离身体太远时，从身体的头高开始倒地切镜头，避免从几米外突然跌过来。
             m_DeathStart = Vector3.Distance(m_LastEye, m_LastFeet) > 2.5f ? m_LastFeet + Vector3.up * 1.45f : m_LastEye;
             var yaw = Quaternion.Euler(0, m_LastLook.eulerAngles.y, 0);
             var floor = m_LastFeet + yaw * new Vector3(.28f, .2f, .15f);
@@ -124,6 +128,7 @@ namespace Unity.MP_FPS {
             if (m_PhysicsScene.IsValid() && m_PhysicsScene.Raycast(floor + Vector3.up, Vector3.down, out var ground, 3,
                     mask, QueryTriggerInteraction.Ignore))
                 floor = ground.point + ground.normal * .2f;
+            // 倒地前先找合适的地面终点，再沿倒下方向扫墙。前面有障碍时缩短到可达位置。
             var delta = floor - m_DeathStart;
             if (m_PhysicsScene.IsValid() && delta.sqrMagnitude > .001f && m_PhysicsScene.SphereCast(m_DeathStart, .12f,
                     delta.normalized, out var obstruction, delta.magnitude, mask, QueryTriggerInteraction.Ignore))
@@ -140,6 +145,7 @@ namespace Unity.MP_FPS {
             if (!DeathActive) return;
             m_Time = Mathf.Min(DeathSeconds, m_Time + Mathf.Max(0, deltaTime));
             if (!m_HasPose) return;
+            // 短时间内完成倒地姿态。整体死亡过场另有计时，HUD 和变黑可根据该计时接着演。
             float t = Mathf.Clamp01(m_Time / 1.1f);
             float fall = t * t * (2 - t);
             m_Camera.transform.SetPositionAndRotation(Vector3.Lerp(m_DeathStart, m_DeathEnd, fall),
@@ -159,6 +165,7 @@ namespace Unity.MP_FPS {
             RestoreSource();
         }
 
+        // 结束时把原摄像机恢复到接管前的启用状态。过场相机及时取消主相机标签。
         private void RestoreSource() {
             if (m_Source) m_Source.enabled = m_SourceEnabled;
         }

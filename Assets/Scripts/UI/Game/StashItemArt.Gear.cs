@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class StashItemArt {
+        // 胸章基础造型共用，靠格数轮廓和点缀色做出型号差异。显示结构可以扩展，装备槽规则保持由库存处理。
         private void ChestBadge(int lobes, uint accent) {
             var outline = new Vector2[64];
             for (int i = 0; i < outline.Length; i++) {
@@ -26,6 +27,7 @@ namespace Unity.MP_FPS.Client {
             m_Painter.Fill();
         }
 
+        // 项圈用分层图形表示金属底、发光环和固定件。路径坐标经 StashItemArt 的比例换算。
         private void StandardLifeSupportCollar() {
             Ring(0x6f9baf, 1.7f, 50, 38, 28);
             Shape(0x293442, new Vector2(14, 58), new Vector2(29, 52), new Vector2(71, 52), new Vector2(86, 58),
@@ -37,7 +39,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void LifeSupportShroud() {
-            // Matches the fitted navy band, lilac bow and gold cat bell on the real character.
+            // 对照实际角色上的深蓝带、淡紫蝴蝶结和金色猫铃。
             Shape(0x202740, new Vector2(12, 33), new Vector2(29, 24), new Vector2(71, 24), new Vector2(88, 33),
                 new Vector2(88, 54), new Vector2(73, 64), new Vector2(27, 64), new Vector2(12, 54));
             Line(0xd4af70, 2, new Vector2(14, 34), new Vector2(30, 27), new Vector2(70, 27), new Vector2(86, 34));
@@ -61,7 +63,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void ShieldGenerator() {
-            // A carried projector with three emitter vanes, rather than plate armor.
+            // 外形画成带三片发射翼的随身投射器。
             Shape(0x344251, new Vector2(30, 13), new Vector2(70, 13), new Vector2(83, 32), new Vector2(77, 82),
                 new Vector2(62, 92), new Vector2(38, 92), new Vector2(23, 82), new Vector2(17, 32));
             Shape(0xb1bbc1, new Vector2(34, 19), new Vector2(66, 19), new Vector2(73, 34), new Vector2(67, 77),
@@ -76,6 +78,7 @@ namespace Unity.MP_FPS.Client {
             Box(0x7096bc, 45, 77, 10, 2);
         }
 
+        // 等级用不同轮廓和饰色表示。这里收到的是外形等级，背包内部容量仍读物品定义。
         private void SubspacePack(int tier) {
             bool scout = tier == 4;
             int rings = scout ? 1 : tier;

@@ -95,7 +95,7 @@ namespace Unity.MP_FPS.Client {
         RegenerationShot
     }
 
-    // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
+    // 原有矢量小图在 PanelSettings 的共用缩放下仍能保持清晰。
     [UxmlElement]
     public sealed partial class StashItemArt : VisualElement {
         private StashArtKind m_Kind;
@@ -125,6 +125,7 @@ namespace Unity.MP_FPS.Client {
             if (Inventory.HaloModules.FromCode(code) == HaloModule.None) SetPhysicalIcon(code);
         }
 
+        // 目录中的正式物品图优先显示。资源缺失时保留程序绘制的备用外观。
         private void SetPhysicalIcon(string code) {
             var texture = PhysicalItemVisuals.Icon(code);
             if (!texture) return;
@@ -151,6 +152,7 @@ namespace Unity.MP_FPS.Client {
                 m_Kind = value;
                 m_HasPhysicalIcon = false;
                 Clear();
+                // 模块有自己的小图选择。能加载就用模块贴图，否则走其他类型相同的绘制机制。
                 if (SetModuleArtwork(value)) {
                     MarkDirtyRepaint();
                     return;
@@ -186,6 +188,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void Draw(MeshGenerationContext context) {
+            // 正式图片已经覆盖本元素，或布局还没给出面积时不画备用图形。
             if (m_HasPhysicalIcon || contentRect.width < 1 || contentRect.height < 1) return;
             m_Painter = context.painter2D;
             float width = m_Kind == StashArtKind.Cell ? 60 : 100;
@@ -256,6 +259,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 图案用固定的设计坐标来写。绘制时统一换到实际控件中心、乘当前缩放，所以大图和小格共用一个图案。
         private Vector2 P(float x, float y) { return m_Origin + new Vector2(x, y) * m_Scale; }
 
         private void Fists() {
@@ -327,6 +331,7 @@ namespace Unity.MP_FPS.Client {
             return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
         }
 
+        // 多边形、线与圆都经这组绘制方法转换。修改设计路径只影响图标，不碰格子数据。
         private void Shape(uint color, params Vector2[] points) {
             m_Painter.fillColor = C(color);
             m_Painter.BeginPath();
@@ -379,7 +384,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void OxygenCanister() {
-            // Distinct valve, pressure gauge and cyan shell read at one inventory cell.
+            // 用明显的阀门、压力表和青色外壳，在一个库存格里也能认出它。
             Box(0x25383b, 43, 10, 14, 12);
             Box(0xb1bcb9, 35, 7, 30, 6);
             Shape(0x296e77, new Vector2(37, 23), new Vector2(63, 23), new Vector2(72, 34), new Vector2(72, 82),
@@ -543,6 +548,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 背景按容器行列画格线。每件物品的实际占格和能否拖放由使用背景的视图计算。
         public StashGridVisual(int columns, int rows) {
             m_Columns = columns;
             m_Rows = rows;

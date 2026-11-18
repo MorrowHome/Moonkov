@@ -22,6 +22,7 @@ namespace Unity.MP_FPS.Client {
         private void ShowItemTooltip(VisualElement target, InventoryItem item, Vector2 position) {
             // 打开右键菜单时可能收到一次新的鼠标进入事件。这里依然挡住信息卡，避免它抢在菜单上面。
             if (m_Disposed || m_Drag != null || m_Windows.HasContext || item == null || target.panel == null) return;
+            // 鼠标在同一格内移动只计算位置。换了物品或目标元素才重新填详情。
             bool changed = m_TooltipTarget != target || m_TooltipItemId != item.Id;
             m_TooltipTarget = target;
             m_TooltipItemId = item.Id;
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS.Client {
 
         private void RefreshItemTooltip() {
             if (m_TooltipTarget == null) return;
+            // 鼠标仍悬停时，物品可能已被移走。每次刷新按 ID 查，查不到就关闭信息卡。
             var item = m_Graph?.Find(m_TooltipItemId);
             if (item == null || m_TooltipTarget.panel == null || m_Drag != null) {
                 HideItemTooltip();
@@ -53,6 +55,7 @@ namespace Unity.MP_FPS.Client {
             float width = m_ItemTooltip.resolvedStyle.width, height = m_ItemTooltip.resolvedStyle.height;
             if (float.IsNaN(width) || float.IsNaN(height)) return;
             float x = m_TooltipPointer.x + offset, y = m_TooltipPointer.y + offset;
+            // 通常把卡片放在指针右下方。靠近右边或底边时翻到另一侧，再限制在界面以内。
             if (x + width > bounds.xMax - margin) x = m_TooltipPointer.x - width - offset;
             if (y + height > bounds.yMax - margin) y = m_TooltipPointer.y - height - offset;
             m_ItemTooltip.style.left = Mathf.Clamp(x, bounds.xMin + margin,
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void HideItemTooltip(VisualElement target = null) {
+            // 旧元素的离开事件可能晚于新元素的进入事件。只关闭它自己的卡片，免得把新卡盖掉。
             if (target != null && target != m_TooltipTarget) return;
             m_TooltipTarget = null;
             m_TooltipItemId = null;
@@ -72,6 +76,7 @@ namespace Unity.MP_FPS.Client {
         private void TooltipScrolled(WheelEvent evt) { HideItemTooltip(); }
         private void TooltipDetached(DetachFromPanelEvent evt) { HideItemTooltip(); }
 
+        // 收掉父节点大小变化、滚动和离开面板的监听。销毁后的视图才能停止收到悬停事件。
         private void ReleaseItemTooltip() {
             HideItemTooltip();
             m_ItemTooltip.UnregisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);

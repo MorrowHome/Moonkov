@@ -9,8 +9,8 @@ using Unity.MP_FPS.EmbeddedNetworking;
 
 namespace Unity.MP_FPS {
     /// <summary>
-    /// This struct contains the necessary information from the <see cref="NetworkConfiguration"/> instance
-    /// that are required to create the right <see cref="NetworkStreamDriver"/> on world creation.
+    /// 该结构保存 <see cref="NetworkConfiguration"/> 中
+    /// 创建 World 时构造正确 <see cref="NetworkStreamDriver"/> 所需的配置。
     /// </summary>
     internal struct EntityNetworkConfiguration {
         public NetworkRole Role;
@@ -20,11 +20,11 @@ namespace Unity.MP_FPS {
     }
 
     /// <summary>
-    /// This class creates the required <see cref="NetworkStreamDriver"/> on world creation for the Server and Client world.
+    /// 这个类为服务端和客户端 World 创建所需的 <see cref="NetworkStreamDriver"/>。
     /// </summary>
     /// <remarks>
-    /// It is using the <see cref="NetworkConfiguration"/> information when used from a Session within <see cref="GameManager.StartGameAsync"/>.
-    /// When starting from <see cref="GameBootstrap"/>, it will instead default drivers setup to <see cref="NetworkType.Direct"/>.
+    /// <see cref="NetworkConfiguration"/> 的信息用于 <see cref="GameManager.StartGameAsync"/> 所启动的会话。
+    /// 由 <see cref="GameBootstrap"/> 启动时，默认以 <see cref="NetworkType.Direct"/> 配置驱动。
     /// </remarks>
     internal class EntityDriverConstructor : INetworkStreamDriverConstructor {
         private EntityNetworkConfiguration m_Configuration;
@@ -50,8 +50,9 @@ namespace Unity.MP_FPS {
             };
         }
 
-        // The lobby-selected P2P client completes signaling before creating its World.
+        // 大厅选择 P2P 的客户端会先完成信令交换，再创建自己的 World。
         public EntityDriverConstructor(NetworkRole role, EmbeddedIceTransport embeddedIce) : this(role) {
+            // 官方在线的 ICE 连接跨进程。房主同进程的 IPC 路径另建，不共用这里的原生传输。
             if (role == NetworkRole.Host)
                 throw new System.ArgumentException("Online ICE does not use local host/IPC.", nameof(role));
             m_EmbeddedIce = embeddedIce ?? throw new System.ArgumentNullException(nameof(embeddedIce));
@@ -61,7 +62,7 @@ namespace Unity.MP_FPS {
 
         // World 建立时把对应的传输装进去。好友房的来宾借用房间留好的战局 ICE 通道，房主自己的客户端走进程内连接。
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug) {
-            var networkSettings = GameNetworkSettings(64, // Client only needs small buffers.
+            var networkSettings = GameNetworkSettings(64, // 客户端只需较小的收发缓冲区。
                 64);
 #if UNITY_EDITOR || NETCODE_DEBUG
             if (NetworkSimulatorSettings.Enabled) NetworkSimulatorSettings.SetSimulatorSettings(ref networkSettings);
@@ -70,18 +71,21 @@ namespace Unity.MP_FPS {
                 if (m_Configuration.Role == NetworkRole.Host) {
                     DefaultDriverBuilder.RegisterClientIpcDriver(world, ref driverStore, netDebug, networkSettings);
                 } else {
+                    // 已协商成功的好友房借用战局数据通道。来宾按照邀请附带的证书验证房主，房主自己的客户端走 IPC。
                     m_PeerRoom.Identity.Configure(ref networkSettings, false);
                     driverStore.RegisterDriver(TransportType.Socket,
                         DefaultDriverBuilder.CreateClientNetworkDriver(
                             m_PeerRoom.RaidTransport.BorrowNetworkInterface(), networkSettings));
                 }
             } else if (m_Configuration.Type == NetworkType.Relay) {
+                // 选择 Unity Relay 时用大厅给的客户端参数建 UDP driver。协议会话参数已经由 SDK 生成。
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayClientData);
                 DefaultDriverBuilder.RegisterClientUdpDriver(world, ref driverStore, netDebug, networkSettings);
             } else {
+                // 官方直连与官方 ICE 入口都要先配服务器认证。它们只是在游戏数据到底走普通 UDP 还是 ICE 上不同。
                 if (m_SecureDirect) OnlineTransportSecurity.ConfigureClient(ref networkSettings);
-                // A secure direct connection always targets a separate server process.
-                // Do not accidentally select IPC because an Editor World is present.
+                // 加密直连需要连到另一个服务器进程。
+                // 编辑器里即使有本地 World，也不能误选 IPC。
                 if (m_EmbeddedIce != null)
                     driverStore.RegisterDriver(TransportType.Socket,
                         DefaultDriverBuilder.CreateClientNetworkDriver(m_EmbeddedIce.CreateNetworkInterface(),
@@ -95,13 +99,15 @@ namespace Unity.MP_FPS {
 
         public void CreateServerDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug) {
 #if UNITY_EDITOR || !UNITY_WEBGL
+            // 服务端为许多连接共用收发队列预留容量。这个容量估算不等于玩法允许加入的人数。
             const int expectedMaxPlayerCount = 1000;
             var networkSettings = GameNetworkSettings(expectedMaxPlayerCount * 4,
-                expectedMaxPlayerCount * 16 // This is how many incoming messages per player
-                // the server can cache.
+                expectedMaxPlayerCount * 16 // 这是服务器为每位玩家
+                // 预计需要缓存的入站消息数。
             );
 
-            // Ipc driver is not needed unless we are self-connecting.
+            // 只有同进程自连需要 IPC driver。
+            // 房主要同时服务自己和来宾，所以有 IPC driver 后仍要为外部连接加一个 socket driver。
             if (m_Configuration.Role == NetworkRole.Host)
                 DefaultDriverBuilder.RegisterServerIpcDriver(world, ref driverStore, netDebug, networkSettings);
             if (m_PeerRoom != null) {
@@ -115,6 +121,7 @@ namespace Unity.MP_FPS {
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayServerData);
             else if (m_SecureDirect) OnlineTransportSecurity.ConfigureServer(ref networkSettings);
             var embeddedIce = m_EmbeddedIce;
+            // 官方独立服本场指定 ICE 才建原生通道。其他官方直连及有 Relay 参数的服务器都继续用自己的 UDP 路线。
             if (embeddedIce == null && m_SecureDirect && m_Configuration.Role == NetworkRole.Server &&
                 OnlineIceServer.Selected)
                 embeddedIce = OnlineIceServer.CreateTransport();
@@ -131,9 +138,10 @@ namespace Unity.MP_FPS {
 #endif
         }
 
+        // 统一底层握手、断开、重连时间，以及收发队列大小。模式或档案允许进场的时限在别处另行管理。
         private static NetworkSettings GameNetworkSettings(int sendQueueCapacity, int receiveQueueCapacity) {
             var networkSettings = new NetworkSettings(Allocator.Temp);
-            networkSettings.WithNetworkConfigParameters(500, 30, // Allow DTLS/WAN handshakes fifteen seconds.
+            networkSettings.WithNetworkConfigParameters(500, 30, // 为 DTLS 和广域网握手留出 15 秒。
                 15_000, reconnectionTimeoutMS: 3_000, sendQueueCapacity: sendQueueCapacity,
                 receiveQueueCapacity: receiveQueueCapacity);
             return networkSettings;

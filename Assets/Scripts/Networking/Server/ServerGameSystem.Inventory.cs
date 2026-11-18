@@ -16,6 +16,7 @@ namespace Unity.MP_FPS {
             InventoryGraph graph,
             int raidId) {
             RaidInventoryState inventory;
+            // 库存跟服务器实际的连接走。开始新局时复用容器对象，但清掉前一局的动作、搜索记录和结算清单。
             if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) {
                 inventory = state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
             } else {
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS {
                 !string.IsNullOrEmpty(profile.InventoryJson)
                     ? RaidInventoryTransport.Decode(profile.InventoryJson).MissionFirsts
                     : 0;
+            // 持久化要能在连接消失前找到同一份随身物品。这里登记对象引用，场内操作和最终写盘读取的就是同一份。
             Persistence(ref state).Inventories[connection] = inventory;
             return inventory;
         }
@@ -60,8 +62,9 @@ namespace Unity.MP_FPS {
         }
 
         private void EnsureRaidInventories(ref SystemState state) {
-            // Structural additions happen before SystemAPI enumerators acquire component references.
+            // 在 SystemAPI 开始持有组件引用并遍历之前，完成增添组件等结构改动。
             using var query = state.EntityManager.CreateEntityQuery(typeof(RaidSession));
+            // 给缺库存状态的连接补组件前先留一份实体列表。直接在正在遍历的 ECS 查询里加组件会破坏已有引用。
             using var connections = query.ToEntityArray(Allocator.Temp);
             foreach (var connection in connections) {
                 var session = state.EntityManager.GetComponentData<RaidSession>(connection);
@@ -70,6 +73,7 @@ namespace Unity.MP_FPS {
                     continue;
                 var graph = InventoryGraph.Create(false);
                 graph.AddSupply("cells", session.Cells);
+                // 开发用的非持久出战可以直接发临时物资。正式账号出装需要已经由档案确认，不能拿这批临时物资替代正式扣装。
                 if (!session.PersistentDeployment) {
                     graph.AddSupply("medkit", 2);
                     graph.AddSupply("ration", 2);
@@ -82,6 +86,7 @@ namespace Unity.MP_FPS {
         }
 
         private void HandleInventoryRequests(ref SystemState state, EntityCommandBuffer ecb, bool discard = false) {
+            // 取消也走同一个请求编号。新取消到达后，之前排在它前面的重复操作都不能再补执行。
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidActionCancelRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 var connection = received.ValueRO.SourceConnection;
@@ -97,6 +102,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 丢弃从发包连接找实际背包与活角色。确定动作不被读条占用、位置合法、还是这一局后才允许把所属权转到场景。
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidInventoryDropRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 var connection = received.ValueRO.SourceConnection;
@@ -117,9 +123,11 @@ namespace Unity.MP_FPS {
                             BountyClashRuntime.CanAct(state.EntityManager, player) &&
                             TryGetLivingPosition(ref state, player, out var position)) {
                             UpdateInventoryProtection(ref state, connection);
+                            // 充能或换手的武器还会被进行中的动作访问，先拒绝移出它。普通丢弃成功后再同步装备给角色。
                             if (ReloadWeaponMoveBlocked(ref state, connection, InventoryOperation.Move,
                                     r.ItemId.ToString())) {
                                 inventory.ActionFeedback = "充能中不能移动当前武器。";
+                            // 临时玩法可直接丢弃，不生成可被别人带走的地面包。仍用同一套事务预备代码来核对版本并移走整棵物品树。
                             } else if (discard) {
                                 inventory.Error = LootInventoryExchange.PrepareDrop(inventory.Graph,
                                     r.ItemId.ToString(), r.ExpectedVersion, out var remaining, out _);
@@ -127,6 +135,7 @@ namespace Unity.MP_FPS {
                                     inventory.Graph = remaining;
                                     UpdateInventoryProtection(ref state, connection, true);
                                 }
+                            // 远征要找人在附近可达的落点。找不到先返回失败，这时物品还在原容器里。
                             } else if (TryFindDropGround(position, out var grounded)) {
                                 inventory.Error = LootContainers(ref state).DropItem(inventory.Graph,
                                     r.ItemId.ToString(), r.ExpectedVersion, grounded, SystemAPI.Time.ElapsedTime,
@@ -144,6 +153,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 使用物品、治疗和拖放共用递增的请求号，防止延迟的旧操作在手部已切换时又生效一次。
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidConsumableUseRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 var connection = received.ValueRO.SourceConnection;
@@ -154,8 +164,8 @@ namespace Unity.MP_FPS {
                     var session = SystemAPI.GetComponent<RaidSession>(connection);
                     var inventory = GetRaidInventory(ref state, connection);
                     var r = request.ValueRO;
-                    // The source connection owns the player. Consumption shares the
-                    // same monotonic request stream as medical use and item moves.
+                    // 玩家归属由实际发包连接确定。使用补给与
+                    // 治疗、移动物品共用只增不减的请求编号。
                     if (r.RequestId > inventory.RequestId) {
                         inventory.RequestId = r.RequestId;
                         inventory.ActionFeedback = null;
@@ -168,6 +178,7 @@ namespace Unity.MP_FPS {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                             string itemId = r.ItemId.ToString();
                             var item = inventory.Graph.Find(itemId);
+                            // 电池走光环充能规则并更新当前武器的装填事件。食物和氧气罐走下方的延时消耗。
                             if (item?.Code == "cells") {
                                 var weapon =
                                     WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(
@@ -178,6 +189,7 @@ namespace Unity.MP_FPS {
                                     ghost.ValueRW.LastReloadTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick
                                         .TickIndexForValidTick;
                             } else if (TryGetLivingPosition(ref state, player, out var usePosition)) {
+                                // 请求通过只代表开始读条，实际消耗还要等完整步骤结束。先标记正在使用，给手部音效和移动限制读取。
                                 inventory.Error = inventory.BeginConsumable(ghost.ValueRO, itemId, r.ExpectedVersion,
                                     usePosition, SystemAPI.Time.ElapsedTime);
                                 if (inventory.Error == InventoryError.None) {
@@ -205,8 +217,8 @@ namespace Unity.MP_FPS {
                     var session = SystemAPI.GetComponent<RaidSession>(connection);
                     var inventory = GetRaidInventory(ref state, connection);
                     var r = request.ValueRO;
-                    // Request IDs share the inventory operation stream. Delayed/replayed
-                    // intents cannot heal again, including after respawn/deployment.
+                    // 各库存操作共用一套请求号。延迟或重复送达的
+                    // 请求不能再次治疗，重生或再次出战后也一样。
                     if (r.RequestId > inventory.RequestId) {
                         inventory.RequestId = r.RequestId;
                         inventory.ActionFeedback = null;
@@ -216,6 +228,7 @@ namespace Unity.MP_FPS {
                             inventory.RaidId == r.RaidId && BountyClashRuntime.CanAct(state.EntityManager, player) &&
                             TryGetLivingPosition(ref state, player, out var medicalPosition)) {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
+                            // 治疗记录当时的目标部位、物品 ID 和库存版本。读条结束时再从仍存在的同一件物品结算。
                             inventory.Error = inventory.BeginMedical(ghost.ValueRO, r.ItemId.ToString(),
                                 r.ExpectedVersion, r.Part, medicalPosition, SystemAPI.Time.ElapsedTime,
                                 MoonRaidMap.Active.MedicalSeconds);
@@ -280,8 +293,8 @@ namespace Unity.MP_FPS {
             if (!Mathematics.math.all(Mathematics.math.isfinite(origin))) return false;
             var source = (UnityEngine.Vector3)origin;
             int mask = UnityEngine.LayerMask.GetMask("Default", "Ground");
-            // Only the nearby surface directly under the player is eligible. A lower
-            // floor reached through a gap, or a long jump, must not consume inventory.
+            // 只允许丢到角色正下方的邻近表面。跳跃很远，
+            // 或隔着缺口射线打到下一层时，不能先扣背包物品。
             if (!UnityEngine.Physics.Raycast(source + UnityEngine.Vector3.up * .3f, UnityEngine.Vector3.down,
                     out var ground, 1.55f, mask, UnityEngine.QueryTriggerInteraction.Ignore) ||
                 ground.normal.y < .65f || ground.point.y > source.y + .15f || ground.point.y < source.y - 1.25f)
@@ -320,12 +333,14 @@ namespace Unity.MP_FPS {
                 cache = searching;
             }
             int lootVersion = cache?.Version ?? 0;
+            // 随身背包和搜刮箱都有版本。只有两边上次内容都没变且没有强制重发，才跳过本次序列化。
             if (inventory.LastSentVersion == inventory.Graph.Version && inventory.LastSentLootVersion == lootVersion)
                 return;
             inventory.LastSentVersion = inventory.Graph.Version;
             inventory.Sequence++;
             inventory.LastSentLootVersion = lootVersion;
             var visible = cache != null && searchTotal >= 0 ? inventory.SearchPreview(cache) : cache;
+            // 如果仍在搜索，临时快照只能带看得见的箱物品。已打开箱或尸体的全内容也只是供该玩家显示的合并图。
             var snapshot = visible == null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph, visible);
             RaidCorpseRecord corpse = null;
             if (cache != null && searchTotal < 0)
@@ -345,6 +360,7 @@ namespace Unity.MP_FPS {
                         };
                     }).ToList(), searchTotal < 0 ? 0 : inventory.SearchSecondsPerItem);
             inventory.RecordProtectionSnapshot();
+            // 同一份快照的所有分片带相同序号、请求回执和总块数。客户端能等齐后一次替换，不会先看到半份背包。
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++) {

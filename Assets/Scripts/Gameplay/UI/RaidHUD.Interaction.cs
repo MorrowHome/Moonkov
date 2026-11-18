@@ -31,18 +31,20 @@ namespace Unity.MP_FPS {
             void Consider(int id, Vector3 point, Transform surface = null, Vector3? rangeAnchor = null) {
                 float score =
                     RaidInteractionAim.Score(camera, actor, point, RaidRules.PickupRange, surface, rangeAnchor);
+                // 所有候选都用同一套瞄准分数。只有分数更好的候选替换当前目标，距离读数随后由它的测距位置决定。
                 if (score <= m_WorldFocusScore) return;
                 m_WorldFocusScore = score;
                 bestLoot = id;
                 bestDistance = Vector3.Distance(actor, rangeAnchor ?? point);
             }
 
-            // All loot kinds use the same aim/visibility rule. Proximity alone cannot pick a cache behind the player.
+            // 所有战利品用相同的瞄准和可见规则。靠得近也需要朝向和视线能到。
             var map = MoonRaidMap.Active;
             for (int i = 0; i < map.LootPositions.Length; i++) Consider(i, map.LootPositions[i]);
             foreach (var bag in bags.Bags.Values)
                 if (bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex || !bag.Empty) {
                     var anchor = (Vector3)bag.Position + Vector3.up * .25f;
+                    // 先按范围排除远处尸体，再去找骨骼的位置。没必要为一具够不到的尸体做额外计算。
                     if ((actor - anchor).sqrMagnitude > RaidRules.PickupRange * RaidRules.PickupRange) continue;
                     var point = anchor;
                     // 人形尸体倒地后，镜头瞄身体的实际位置。距离仍按同步的尸体位置判断，动画改变姿势时也能选到。
@@ -56,6 +58,7 @@ namespace Unity.MP_FPS {
                     if (drawers[i] != null && drawers[i].Target && drawers[i].Target.gameObject.activeInHierarchy)
                         Consider(RaidFurnitureLoot.FirstId + i, drawers[i].Position, drawers[i].Target);
             }
+            // 日志也是可交互候选，比箱子更贴近准星时接管。此时清空搜刮目标才能避免一次按键开两个面板。
             foreach (var record in m_FieldRecords.Tablets) {
                 if (!record.Screen || !record.Screen.gameObject.activeInHierarchy) continue;
                 var point = record.Screen.bounds.center;
@@ -68,6 +71,7 @@ namespace Unity.MP_FPS {
                 bestDistance = Vector3.Distance(actor, point);
             }
             float controlScore = worldControls ? m_AirlockPrompt.FocusScore(camera, actor) : -1;
+            // 控制按钮赢得选择时把搜刮与日志都清掉。因此提示和按键调用都指向同一个按钮。
             if (controlScore > m_WorldFocusScore) {
                 m_WorldFocusScore = controlScore;
                 m_WorldControlFocused = true;

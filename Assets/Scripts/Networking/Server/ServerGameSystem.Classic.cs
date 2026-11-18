@@ -20,11 +20,13 @@ namespace Unity.MP_FPS {
             var rules = match.Classic;
             var map = ClassicDust2Map.Active;
             if (!map || match.Players.Count == 0) return;
+            // 首回合需要等房主已分配的来宾就绪或加入窗口到期。后续回合按上一轮结果和时间推进。
             if (rules.NeedsRound(now) && match.FirstRoundReady(now, expected) &&
                 match.Players.Keys.All(connection => manager.HasComponent<RaidSession>(connection)) &&
                 state.World.GetExistingSystemManaged<DollSingerEnemySystem>() is { } ai &&
                 WeaponManager.Instance?.WeaponRegistry != null)
                 StartClassicRound(ref state, ecb, match, map, ai, now);
+            // 按住或松开是输入意图，只有当前回合记录在册的角色才能推动装拆包。松开立即取消该次读条。
             foreach (var (intent, received, entity) in SystemAPI
                          .Query<RefRO<ClassicUseRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 received.ValueRW.Consume();
@@ -39,9 +41,11 @@ namespace Unity.MP_FPS {
             bool startingCombat = rules.Phase == ClassicPhase.Buy && now >= rules.Deadline;
             bool live = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             var tactics = match.ClassicTactics;
+            // 战斗阶段先把真人和机器人的位置交给战术表，再让 AI 读同一份观察数据做决定。
             if (live) tactics.BeginTick();
             foreach (var (connection, seat) in match.Players) {
                 var actor = MatchActor(manager, connection);
+                // 阵亡角色如果带炸弹就留在该位置附近，保留尸体作本回合的表现和物资来源。
                 if (!TryGetLivingPosition(ref state, actor, out var position)) {
                     if (live) {
                         rules.DropBomb(seat.Id, seat.LastPosition);
@@ -51,6 +55,7 @@ namespace Unity.MP_FPS {
                     rules.CancelHold(seat.Id);
                     continue;
                 }
+                // 正式开打时记录哪些席位进入本回合战斗。后面均伤按实际打过的回合计算。
                 if (startingCombat) rules.EnterCombat(seat.Id);
                 seat.LastPosition = position;
                 if (seat.Team == 0)
@@ -95,6 +100,7 @@ namespace Unity.MP_FPS {
             }
             if (live) UpdateClassicBots(ref state, match, map, now);
             rules.Advance(now, rules.AttackTeam == 0 ? aliveA : aliveB, rules.AttackTeam == 0 ? aliveB : aliveA);
+            // 每回合结果只发一次购买额度。记下已处理的回合号，后续快照再发也不会重复加钱。
             if (rules.Phase is ClassicPhase.RoundOver or ClassicPhase.Finished && match.CreditedRound != rules.Round) {
                 match.CreditedRound = rules.Round;
                 foreach (var seat in match.Players.Values)
@@ -154,6 +160,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 机器人按席位和队伍扮演进攻或防守。朝目标移动、观察队友和尝试装拆包都通过同一张对局地图及规则。
         private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now) {
             using var profile = s_ClassicBotProfile.Auto();
             var manager = state.EntityManager;
@@ -194,6 +201,7 @@ namespace Unity.MP_FPS {
                    match.ClassicDeaths.Add(actor);
         }
 
+        // 阶段变化要同时更新赛局角色标记与同步状态。当前不能行动就立即关开火，避免准备阶段仍沿用上一帧射击。
         private static void SetClassicActorActive(EntityManager manager, Entity actor, bool active) {
             if (!manager.HasComponent<ClashPlayer>(actor) || !manager.HasComponent<PredictedPlayerGhost>(actor)) return;
             var id = manager.GetComponentData<ClashPlayer>(actor);
@@ -249,6 +257,7 @@ namespace Unity.MP_FPS {
                 var spawn = map.Spawn(seat.Team == attackTeam, seat.Slot);
                 seat.LastPosition = spawn.Position;
                 var oldActor = MatchActor(manager, connection);
+                // 中场换边重置角色和开局资源。普通下一回合的存活者可继续用装备，阵亡或需换边的人重新生成。
                 bool retain = !halftime && TryGetLivingPosition(ref state, oldActor, out _);
                 int previousVersion = seat.Spawned ? GetRaidInventory(ref state, connection).Graph.Version : 0;
                 if (retain) {
@@ -277,6 +286,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 换回合时清上局的尸体、掉落和搜索记录，箱子恢复为该局供应状态，避免从旧版容器复制物品。
         private void ResetClassicLoot(ref SystemState state, ArenaMatch match) {
             var loot = LootContainers(ref state);
             foreach (int id in loot.DeathBags.Keys) loot.Containers.Remove(id);

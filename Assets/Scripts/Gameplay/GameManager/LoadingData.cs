@@ -42,6 +42,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 每项保存显示文案和总进度条上的起止位置。入局与退局分别从自己的零点到一百。
         private static readonly Dictionary<LoadingSteps, LoadingStep> k_LoadingSteps = new() {
             { LoadingSteps.StartLoading, new LoadingStep("Loading game...", 0f, 0f) },
             { LoadingSteps.InitializeConnection, new LoadingStep("Initializing connection...", 0.1f, 0.1f) },
@@ -66,8 +67,9 @@ namespace Unity.MP_FPS {
 
         public static LoadingData Instance { get; private set; } = null!;
 
+        // 刚开始运行就建一份新的进度对象。使用关闭域重载的 Editor 试玩选项时，也会重新开始计进度。
         /// <summary>
-        /// This initialization is required in the Editor to avoid the instance from a previous Playmode to stay alive in the next session.
+        /// 编辑器重新进入 Play 时先初始化，免得继续使用上一轮的旧实例。
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RuntimeInitializeOnLoad() { Instance = new LoadingData(); }
@@ -81,6 +83,7 @@ namespace Unity.MP_FPS {
 
         public void UpdateLoading(LoadingSteps step, float stepProgress = 0f) {
             var currentStep = k_LoadingSteps[step];
+            // 场景读了四分之一，只表示当前阶段完成四分之一。这里按这个阶段在总进度中占的范围换算。
             LoadingProgress = currentStep.Start + stepProgress * (currentStep.End - currentStep.Start);
             LoadingStatusText = currentStep.Text;
         }
@@ -102,6 +105,7 @@ namespace Unity.MP_FPS {
 
         [CreateProperty]
         private string LoadingStatusText {
+            // 内部先记住原始文案。界面真正取这条状态时再按当前语言查对应文字。
             get => MoonkovLocalization.Text(m_LoadingStatusText);
             set {
                 if (m_LoadingStatusText == value) return;

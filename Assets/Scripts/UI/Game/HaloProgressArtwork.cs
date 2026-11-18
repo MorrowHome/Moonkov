@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
     public sealed class HaloProgressArtwork : ScriptableObject {
+        // 各部分素材是独立 sprite，读条按不同半径重复使用。调整外观时不需要更改进度规则。
         public Sprite Petal, OuterArc, InnerArc, Cell;
         public Color Color = new(1f, .18f, .42f, 1);
     }

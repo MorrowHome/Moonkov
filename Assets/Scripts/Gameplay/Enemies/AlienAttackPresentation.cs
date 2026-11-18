@@ -5,8 +5,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS {
-    /// <summary>Client-only physical attack effects from committed snapshots. No damage or target
-    /// selection occurs here, including when joining an attack already in progress.</summary>
+    /// <summary>客户端按已确认的快照显示实体攻击效果。
+    /// 即使中途加入一段正在进行的攻势，选目标和伤害也由服务端处理。</summary>
     public sealed class AlienAttackPresentation : IDisposable {
         private readonly GameObject m_Root;
         private readonly AlienCreatureProfile m_Profile;
@@ -35,11 +35,13 @@ namespace Unity.MP_FPS {
         }
 
         public void Observe(ProceduralAlienEnemy.State state, AlienCombatPattern pattern, Vector3 socket = default) {
+            // 每帧先把旧落点网格收起，再按最新的攻击阶段决定哪些重新出现，攻击结束后不会留一堆假危险区。
             foreach (var impact in m_Impacts)
                 if (impact)
                     impact.gameObject.SetActive(false);
             if (m_Style && m_Profile && (m_Profile.VoidLiquid || pattern.Kind == AlienAttackKind.MucusSpit))
                 DrawLiquidAttack(state, pattern, socket);
+            // 命中事件只消费一次。颗粒根据服务端命中法线喷出，撞墙和击中角色的数量也不同。
             if (m_Events.Impact(state) && m_Droplets) {
                 m_Droplets.transform.SetPositionAndRotation(state.ImpactPoint,
                     Quaternion.FromToRotation(Vector3.up, state.ImpactNormal));
@@ -47,13 +49,14 @@ namespace Unity.MP_FPS {
                 m_Droplets.Emit(state.ImpactKind == AlienImpactKind.World ? 24 : 36);
             }
             DrawWarnings(state, pattern);
-            // Impact meshes start on the same pulse clock as damage and audio.
+            // 命中网格、伤害和音效按同一个攻击节拍开始。
             if (state.Action != AlienAction.Strike || state.AttackSequence == 0 ||
                 pattern.PulseAt(state.ActionTime) < 0)
                 return;
             if (pattern.Kind != AlienAttackKind.RootSpikes && pattern.Kind != AlienAttackKind.AcidSpit &&
                 pattern.Kind != AlienAttackKind.SlimePulse && pattern.Kind != AlienAttackKind.TentacleSlam)
                 return;
+            // 定位共享攻击节拍的中心。多点技能围绕这个位置放出各块落点，画面时间跟伤害时间对得上。
             var centre = pattern.PulsePoint(state.AttackPoint, state.AttackDirection,
                 pattern.PulseAt(state.ActionTime));
             if (pattern.Kind == AlienAttackKind.SlimePulse)
@@ -94,7 +97,7 @@ namespace Unity.MP_FPS {
                     var start = (Vector3)state.AttackOrigin - Vector3.up * (.56f * state.Scale);
                     Vector3 end = state.AttackPoint;
                     Vector3 heading = state.AttackDirection;
-                    // One capsule outline covers the same swept radius as damage.
+                    // 胶囊形预警线覆盖和伤害扫描相同的半径。
                     lane.positionCount = 27;
                     for (int cap = 0; cap < 2; cap++)
                     for (int i = 0; i <= 12; i++) {
@@ -154,6 +157,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 预警线按号复用，只有第一次用到某条线时才创建。
         private LineRenderer Warning(int index) {
             if (!m_Warnings[index]) {
                 var go = new GameObject("Boss committed attack warning");
@@ -170,6 +174,7 @@ namespace Unity.MP_FPS {
             return m_Warnings[index];
         }
 
+        // 将预警轮廓投到脚下地面。候选点高度和场景真实地面有差异时，更容易看清要躲哪里的图形。
         private static Vector3 WarningGround(Vector3 point) {
             return UnityEngine.Physics.Raycast(point + Vector3.up * 1.5f, Vector3.down, out var hit, 3,
                 LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)
@@ -177,6 +182,7 @@ namespace Unity.MP_FPS {
                 : point + Vector3.up * .06f;
         }
 
+        // 不同技能按当前节拍显示液体沉积或尖刺等效果。重用相同实例时仍要选择对应的网格。
         private void DrawImpact(int index, Vector3 point, AlienCombatPattern pattern, float age) {
             bool roots = pattern.Kind == AlienAttackKind.RootSpikes;
             if (!m_ImpactMaterial) {
@@ -196,8 +202,8 @@ namespace Unity.MP_FPS {
                 go.AddComponent<MeshRenderer>().sharedMaterial = m_ImpactMaterial;
                 m_Impacts[index] = go.transform;
             }
-            // Root bosses can now alternate spikes and a radial pulse. Refresh the
-            // pooled impact mesh instead of retaining the previous skill's shape.
+            // 根须 Boss 可以交替使用地刺和环形脉冲。
+            // 重用落点网格时更新形状，别留着上一招的外形。
             if (roots && !m_Spike) m_Spike = BuildSpike();
             if (!roots && !m_Residue) m_Residue = BuildResidue();
             var impact = m_Impacts[index];
@@ -211,6 +217,7 @@ namespace Unity.MP_FPS {
             } else { impact.localScale = new Vector3(pattern.Radius * 2, .04f, pattern.Radius * 2); }
         }
 
+        // 喷吐和液体攻击根据快照算流向，已经在飞的液滴按发射时间和弹道移动。
         private void DrawLiquidAttack(ProceduralAlienEnemy.State state, AlienCombatPattern pattern, Vector3 socket) {
             if (!m_Globule) CreateLiquidEffects();
             bool windup = state.Action == AlienAction.Windup;
@@ -253,8 +260,8 @@ namespace Unity.MP_FPS {
             if (pattern.Kind == AlienAttackKind.AcidSpit && windup) {
                 float t = Mathf.Clamp01(state.ActionTime / Mathf.Max(.05f, pattern.Windup));
                 m_Globule.gameObject.SetActive(true);
-                // The last part of the windup shows a physical blob in flight; it lands
-                // when the authoritative pool activates. There is no ground range overlay.
+                // 蓄力后段会看到一团液体飞过去。
+                // 权威伤害区域生效时液团落地。画面不额外叠地面范围线。
                 float flight = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - .65f) / .35f));
                 m_Globule.position = Vector3.Lerp(socket, state.AttackPoint, flight) +
                                      Vector3.up * (Mathf.Sin(flight * Mathf.PI) * 1.2f);
@@ -300,6 +307,7 @@ namespace Unity.MP_FPS {
             m_Observed = true;
         }
 
+        // 用线段表示从起点到落点的一股液流。宽度和流动方向依当前阶段改变。
         private void Stream(int index, Vector3 from, Vector3 to, float width, float age, bool reflux) {
             var stream = m_Streams[index];
             stream.enabled = true;
@@ -368,8 +376,8 @@ namespace Unity.MP_FPS {
         }
 
         private static Mesh BuildSpike() {
-            // Several bent, tapering liquid jets erupt from one irregular deposit.
-            // These are the visible strike, not a preview of its collision radius.
+            // 好几股弯曲并逐渐收细的液流从同一块不规则沉积中冲出。
+            // 液流表现的是本次攻击，实际碰撞半径由服务端规则决定。
             const int jets = 5, rings = 6, sides = 8;
             var vertices = new Vector3[jets * rings * sides];
             int[] triangles = new int[jets * (rings - 1) * sides * 6];
@@ -404,7 +412,7 @@ namespace Unity.MP_FPS {
         }
 
         private static Mesh BuildResidue() {
-            // An uneven, lit deposit is part of the impact, not an exact range marker.
+            // 发光而不平整的沉积属于落点效果，精确判定范围另由规则定义。
             const int sides = 24;
             var vertices = new Vector3[sides + 1];
             int[] triangles = new int[sides * 3];
@@ -425,6 +433,7 @@ namespace Unity.MP_FPS {
             return mesh;
         }
 
+        // 连同根对象释放程序生成的材质和网格，不继续占用显存。
         public void Dispose() {
             Destroy(m_Root);
             Destroy(m_ImpactMaterial);

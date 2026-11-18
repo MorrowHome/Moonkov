@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
-    // Static vector edges. Native Buttons retain their rectangular hit area and input behavior.
+    // 固定的矢量描边。原生 Button 仍用矩形命中区域处理输入。
     [UxmlElement]
     public partial class ArchiveCardFrame : VisualElement {
         [UxmlAttribute] public bool Orbital { get; set; }
@@ -17,6 +17,7 @@ namespace Unity.MP_FPS.Client {
             RegisterCallback<DetachFromPanelEvent>(Detach);
         }
 
+        // 边框监听的是实际父按钮或卡片的事件。装饰元素本身不参与命中，用户点击直接落在按钮上。
         private void Attach(AttachToPanelEvent evt) {
             m_Button = parent as Button;
             if (m_Button == null) return;
@@ -29,6 +30,7 @@ namespace Unity.MP_FPS.Client {
             m_Button.RegisterCallback<PointerCaptureOutEvent>(CaptureLost);
         }
 
+        // 离开页面时去掉在父元素上注册的监听。同一个装饰移到新页面后不会继续接旧按钮的状态。
         private void Detach(DetachFromPanelEvent evt) {
             if (m_Button == null) return;
             m_Button.UnregisterCallback<PointerEnterEvent>(Enter);
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS.Client {
             MarkDirtyRepaint();
         }
 
+        // 指针被其他控件抢走时也结束按下态。即使没有收到松开事件，边框也不会一直亮着。
         private void CaptureLost(PointerCaptureOutEvent evt) {
             m_Press = false;
             MarkDirtyRepaint();
@@ -139,6 +142,7 @@ namespace Unity.MP_FPS.Client {
 
     [UxmlElement]
     public partial class ArchiveOrbitGuides : VisualElement {
+        // 轨道线和卡片输入是两部分。轨道绘制忽略鼠标，留给上层按钮响应。
         public ArchiveOrbitGuides() {
             pickingMode = PickingMode.Ignore;
             generateVisualContent += Draw;

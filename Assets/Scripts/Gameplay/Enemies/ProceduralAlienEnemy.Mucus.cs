@@ -10,6 +10,7 @@ namespace Unity.MP_FPS {
         private AlienImpactKind m_ImpactKind;
         public int LastArcQueries { get; private set; }
 
+        // 出招时试可达的抛物线，高弧线被屋顶挡住时也可尝试低弧。实在无路就短暂延后重试。
         private bool PrepareMucusArc(Vector3 target) {
             LastArcQueries = 0;
             var origin = MucusSocket();
@@ -19,20 +20,21 @@ namespace Unity.MP_FPS {
                 m_MucusLowArc = mode == 1;
                 return true;
             }
-            // A failed launch is reconsidered at most twice a second, not every server tick.
+            // 发射预检失败后最多每秒再试两次。
             m_NextAttack = m_Clock + .5f;
             return false;
         }
 
         private Vector3 MucusSocket() { return m_Body.AttackSocket + transform.forward * .4f + Vector3.up * .12f; }
 
+        // 用有限数量的分段扫略测轨迹，中间被挡比只看终点更早发现。正式飞行还会再次检查实际碰撞。
         private bool MucusArcClear(Vector3 origin, Vector3 target, bool low) {
             int mask = LayerMask.GetMask("Default", "Ground");
             LastArcQueries++;
             if (UnityEngine.Physics.CheckSphere(origin, .18f, mask, QueryTriggerInteraction.Ignore)) return false;
             float duration = AlienMucusTrajectory.FlightTime(origin, target, profile.MucusSpeed);
             var previous = origin;
-            // 24 bounded swept segments; the server motor still resolves every flight step.
+            // 预检限为 24 段扫掠。服务器仍在正式飞行的每一小步判断碰撞。
             for (int i = 1; i <= 24; i++) {
                 var point = AlienMucusTrajectory.Point(origin, target, profile.MucusSpeed, duration * i / 24, low);
                 var delta = point - previous;
@@ -50,6 +52,7 @@ namespace Unity.MP_FPS {
         private RaycastHit[] m_MucusHits;
         public int MucusHits { get; private set; }
 
+        // 把已经确定的起点、目标和时间保存为一发独立弹体状态。客户端可用同一条曲线画出来。
         private void StartMucusProjectile() {
             m_MucusHits ??= new RaycastHit[64];
             m_MucusInFlight = true;
@@ -61,6 +64,7 @@ namespace Unity.MP_FPS {
 
         private void TickMucusProjectile() {
             if (!m_MucusInFlight) return;
+            // 每拍由经过的时间重算这滴黏液的位置，然后扫过上一步与现在之间的路径。
             float age = m_Clock - m_MucusStarted;
             float duration = AlienMucusTrajectory.FlightTime(m_MucusOrigin, m_MucusTarget, profile.MucusSpeed);
             var next = AlienMucusTrajectory.Point(m_MucusOrigin, m_MucusTarget, profile.MucusSpeed,
@@ -75,6 +79,7 @@ namespace Unity.MP_FPS {
                     m_MucusInFlight = false;
                     return;
                 }
+                // 碰撞结果不保证按距离排列。近的墙能先挡住后面的目标，需要找到真实第一处接触。
                 float nearest = float.MaxValue;
                 GhostGameObject victim = null;
                 RaycastHit contact = default;
@@ -94,6 +99,7 @@ namespace Unity.MP_FPS {
                     var manager = GhostGameObject.EntityManager;
                     if (victim && victim.World == World && IsLivingHumanoid(manager, victim.LinkedEntity)) {
                         var entity = victim.LinkedEntity;
+                        // 打到头附近才添加特殊的黏液眩目。其他身体命中或撞墙的反馈各有单独类型。
                         bool face = Vector3.Distance(contact.point, TargetHead(entity).position) < .7f;
                         m_ImpactKind = face ? AlienImpactKind.Face : AlienImpactKind.Body;
                         ApplyAlienDamage(entity, profile.Damage * .4f, face ? BodyPart.Head : BodyPart.Chest);

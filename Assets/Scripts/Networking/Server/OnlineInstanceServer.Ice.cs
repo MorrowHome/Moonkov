@@ -13,8 +13,8 @@ using Unity.MP_FPS.Online;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // The account backend only exchanges SDP. All raid datagrams use the native
-    // ICE agents owned by this process's NetCode driver.
+    // 账号后端只负责交换 SDP。实际战局数据报都经过这个进程中
+    // 由 NetCode 驱动掌管的原生 ICE 对端。
     internal static class OnlineIceServer {
         private sealed class Config {
             public string BackendUrl, ServerKey;
@@ -50,6 +50,7 @@ namespace Unity.MP_FPS {
 
         public static EmbeddedIceTransport CreateTransport() {
             if (!Selected) throw new InvalidOperationException("This instance did not select P2P.");
+            // 一场官方对局只能让一个网络驱动拥有原生传输。发现已存在时不能再建一份取代它。
             if (Available) throw new InvalidOperationException("P2P server transport is already owned by a driver.");
             BindAddress =
                 EmbeddedIceNetwork.PhysicalAddress(Environment.GetEnvironmentVariable("MOON_ICE_BIND_ADDRESS"));
@@ -64,6 +65,7 @@ namespace Unity.MP_FPS {
             s_Stop = new CancellationTokenSource();
             Application.quitting -= Stop;
             Application.quitting += Stop;
+            // 报就绪后启动这局自己的轮询任务。退出应用时取消，不能留下后台继续给旧实例发候选。
             s_Loop = RunAsync(s_Stop.Token);
         }
 
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
 
         private static async Task RunAsync(CancellationToken ct) {
             var transport = s_Transport;
+            // 服务端按玩家保存当前连接尝试，并额外带尝试号。重复轮询或请求重发不会多分配一个原生 peer。
             var peers = new Dictionary<string, Peer>();
             try {
                 string configPath = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
@@ -93,6 +96,7 @@ namespace Unity.MP_FPS {
                             var state = transport.GetState(peer.Id);
                             if (EmbeddedIceNetwork.Connected(state)) peer.Connected = true;
                             if (!peer.Answered) {
+                                // 候选收全才带着尝试号回给信令服务。找不到允许的公开地址或收集超时，则回该次失败原因。
                                 if (transport.IsGatheringComplete(peer.Id))
                                     try {
                                         answers.Add(new IceAnswer {
@@ -118,6 +122,7 @@ namespace Unity.MP_FPS {
                                 peers.Remove(peer.Player);
                             }
                         }
+                        // 同一轮 HTTP 把已收集的回执上报，再拿新的来宾申请。对成功送达的当前尝试打标，后续不用重复发。
                         using var content =
                             new StringContent(
                                 JsonConvert.SerializeObject(new IceServerPoll
@@ -134,6 +139,7 @@ namespace Unity.MP_FPS {
                                 answered.Answered = true;
                         foreach (var offer in inbox?.Offers ?? Array.Empty<IceOffer>()) {
                             peers.TryGetValue(offer.PlayerId, out var current);
+                            // 取消或另一次新尝试到达时收回旧 peer，旧端点不能拿来接新连接。
                             if (current != null && (offer.Cancelled || current.Attempt != offer.AttemptId)) {
                                 transport.RemovePeer(current.Id);
                                 peers.Remove(current.Player);
@@ -146,7 +152,8 @@ namespace Unity.MP_FPS {
                             };
                             peer.Id = transport.AddPeer(BindAddress, stun, stunPort);
                             peers.Add(peer.Player, peer);
-                            // Both sides suppress private/local candidates for the host-PC client.
+                            // 房主电脑自己的客户端需要走公网，两边都过滤私有和本机候选。
+                            // 把已经过信令鉴权的对端候选交给原生传输。筛选规则两端相同，之后原生层开始寻路和收集本机地址。
                             transport.SetRemoteDescription(peer.Id,
                                 EmbeddedIceNetwork.Description(offer.Description, offer.PublicOnly));
                             transport.Gather(peer.Id);
@@ -154,6 +161,7 @@ namespace Unity.MP_FPS {
                     } catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; } catch
                         (Exception ex) {
                         if (transport.IsDisposed) break;
+                        // 信令暂时断开可以重试。日志限频且只记异常类型，避免一直刷屏或把候选描述写入日志。
                         if (Time.realtimeSinceStartupAsDouble >= nextWarning) {
                             Debug.LogWarning("[P2P] Signaling temporarily unavailable: " + ex.GetType().Name);
                             nextWarning = Time.realtimeSinceStartupAsDouble + 15;
@@ -164,6 +172,7 @@ namespace Unity.MP_FPS {
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) { } catch (Exception ex) {
                 Debug.LogError("[P2P] Server signaling stopped: " + ex.GetType().Name);
             } finally {
+                // 取消轮询时若驱动还活着，逐个清掉本轮登记的远端。驱动已销毁则原生句柄已回收。
                 if (!transport.IsDisposed)
                     foreach (var peer in peers.Values)
                         transport.RemovePeer(peer.Id);

@@ -3,7 +3,7 @@ using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    /// <summary>Crossed presentation markers play once. Snapshot refreshes and late joins never replay old markers.</summary>
+    /// <summary>渲染动作跨过音效时间点时只播一次。刷新快照或中途加入不会补播旧声音。</summary>
     public sealed class RaidActionFoley {
         private uint sequence;
         private HandAction action;
@@ -29,17 +29,19 @@ namespace Unity.MP_FPS {
                 Stop();
                 return;
             }
+            // 动作种类或序号变了就从头跟踪。首次看到时已过半的动作以当时进度作起点，避免补响早就过去的开盖声。
             if (!observed || sequence != currentSequence || action != kind) {
                 Stop();
                 observed = true;
                 sequence = currentSequence;
                 action = kind;
-                // A snapshot arriving midway through an action must stay midway through its sound track.
+                // 刚收到已经进行到一半的动作时，声音也从对应时刻开始。
                 previous = phase < .12f ? -.001f : phase;
             }
             var library = MoonkovAudio.Library;
             if (!library) return;
             code = code ?? string.Empty;
+            // 医疗品也分操作方式。止血包需要一段包扎摩擦声，其他治疗品可以只播开封和接触时的音。
             bool wrapping = kind == HandAction.Treat &&
                             (code == "trauma_kit" || code == "hemostatic_bandage" || code == "rescue_kit");
 
@@ -66,6 +68,7 @@ namespace Unity.MP_FPS {
             }
             if (kind == HandAction.Drink && code == "water" && Crossed(4, .74f)) closeSound = Play(library.BottleClose);
             if (kind == HandAction.RefillOxygen && Crossed(4, .82f)) closeSound = Play(library.OxygenDisconnect, .8f);
+            // 接触时机跟角色动作配置走，再限制在动作中间。针剂、吃喝和药膏就能在手碰到正确的位置时响。
             float contactAt = Mathf.Clamp(contact, .28f, .72f);
             bool firstContact = Crossed(2, contactAt);
             var mouth = kind == HandAction.Eat && !code.Contains("gel") &&
@@ -78,13 +81,14 @@ namespace Unity.MP_FPS {
                     kind == HandAction.Treat && !wrapping ? library.MedicalGel : null;
                 contactSound = Play(sound);
             }
-            // A second mouth movement belongs inside the authored contact hold, never the put-away segment.
+            // 第二次嘴部动作应处在接触保持段内，收起物品的阶段不用再出声。
             if ((kind == HandAction.Eat || kind == HandAction.Drink) &&
                 Crossed(8, Mathf.Lerp(contactAt, Mathf.Max(contactAt, contactOut), .65f)) && !firstContact &&
                 phase < contactOut) {
                 GameManager.Instance?.SoundSystem?.Stop(contactSound, .04f);
                 contactSound = Play(mouth, .85f);
             }
+            // 供氧和包扎持续一小段时间，所以维护循环声来表现连续的声音。离开该段或中止动作时一起收回。
             bool flowing = (kind == HandAction.RefillOxygen && phase >= contactAt && phase < .82f) ||
                            (wrapping && phase >= .28f && phase < .88f);
             if (!flowing) {

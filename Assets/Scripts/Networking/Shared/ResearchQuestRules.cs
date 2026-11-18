@@ -9,7 +9,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public enum ResearchQuest {
-        // These values are stored as bits. Presentation order is separate.
+        // 这些值按位存储。界面展示顺序独立设置。
         Exposure,
         HaloTrial,
         Biology,
@@ -72,11 +72,12 @@ namespace Unity.MP_FPS {
         public long Revision;
         public string CredentialsId, EvidenceId;
         public ResearchEnding Ending;
+        // 三个掩码分别表示接取、达到交付条件和已领取。已经准备好交付的任务就不用局内继续记满一次。
         public int Active => Accepted & ~(Ready | Completed);
         public ResearchQuestProgress Copy() { return (ResearchQuestProgress)MemberwiseClone(); }
     }
 
-    // The raid server freezes this evidence in the existing settlement journal.
+    // 战局服务器把这份证据冻结到已有的结算日志中。
     [Serializable]
     public sealed class ResearchQuestResult {
         public int Active, ExposureSeconds, HaloKills, SentryKills;
@@ -153,10 +154,11 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 同一条进度链按任务表查前置。客户端能解释为什么暂未开放，档案提交也用相同条件。
         public static ResearchQuest? MissingPrerequisite(ResearchQuestProgress progress, ResearchQuest quest) {
             var prerequisite = Prerequisite(quest);
             if (prerequisite.HasValue && !Has(progress.Completed, prerequisite.Value)) return prerequisite;
-            // A legacy profile may have delivered the database before equipment qualification.
+            // 部分旧档可能在取得装备资格前就已交付数据库。
             if (quest == ResearchQuest.NoWayBack && (progress.Completed & FirstEight) != FirstEight)
                 for (int i = 0; i < 8; i++)
                     if (!Has(progress.Completed, At(i)))
@@ -174,8 +176,9 @@ namespace Unity.MP_FPS {
                 : ResearchQuestStatus.Available;
         }
 
-        // Keep prior deliveries and pending contracts. Only the two contracts whose
-        // prerequisites changed can have legacy authorization.
+        // 保留已经交付和仍待完成的任务。只有那两个前置条件
+        // 变过的任务可以沿用旧资格。
+        // 旧档第一次加载时转换版本和已知进度位，随后必须通过当前结构验证。
         public static void Migrate(ResearchQuestProgress progress) {
             if (progress == null || progress.SequenceVersion != 0 || (progress.Accepted & ~FirstEight) != 0 ||
                 progress.LegacyAccepted != 0)
@@ -189,6 +192,7 @@ namespace Unity.MP_FPS {
             progress.SequenceVersion = SequenceVersion;
         }
 
+        // 状态位、计数、凭据与最终证据要互相对应。不能只因 JSON 反序列化成功就当作合法完成。
         public static bool Valid(ResearchQuestProgress progress) {
             if (progress == null || progress.SequenceVersion != SequenceVersion || progress.Revision < 0 ||
                 (progress.StorySeen & ~((1 << StoryCount) - 1)) != 0 || (progress.Accepted & ~All) != 0 ||
@@ -231,6 +235,7 @@ namespace Unity.MP_FPS {
                    (count == goal) == Has(progress.Ready | progress.Completed, quest);
         }
 
+        // 接取通过后加入已接位并推进修订号，提供给后面的出战资料。
         public static bool Accept(ResearchQuestProgress progress, ResearchQuest quest) {
             if (Status(progress, quest) != ResearchQuestStatus.Available) return false;
             Migrate(progress);
@@ -239,6 +244,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 要先达到交付条件才允许领取。已完成的前置可解锁下个任务，领取与现场拿物是两条路径。
         public static bool Claim(ResearchQuestProgress progress, ResearchQuest quest) {
             if (Status(progress, quest) != ResearchQuestStatus.Ready) return false;
             progress.Ready &= ~Bit(quest);
@@ -285,6 +291,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 最后选择需要已经存在的证据 ID 和尚未做过决定。选择后消费该证据，防止再次走另一结局。
         public static bool ChooseEnding(ResearchQuestProgress progress, ResearchEnding ending) {
             if (!DecisionAvailable(progress) || progress.Ending != ResearchEnding.None ||
                 !Guid.TryParse(progress.EvidenceId, out _) || ending <= ResearchEnding.None ||
@@ -312,6 +319,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 依次尝试把公司奖励存入仓库，再给新光环装模块。调用方只在全套放置都成功后写盘。
         public static bool GrantCorporateReward(InventoryGraph inventory) {
             string weapon = Guid.NewGuid().ToString("D"), module = Guid.NewGuid().ToString("D");
             if (!DepositReward(inventory, "dust", CorporateDust) ||
@@ -332,6 +340,7 @@ namespace Unity.MP_FPS {
             return error == InventoryError.None;
         }
 
+        // 角色出战时根据当前活动任务发配电子设备、物品和证据。放不下就阻挡本局扣装，不能带着缺组件的档案进图。
         public static InventoryError Issue(InventoryGraph loadout, ResearchQuestProgress progress) {
             foreach ((var quest, string code) in new[] {
                          (ResearchQuest.FlashDrive, Flash),
@@ -351,6 +360,7 @@ namespace Unity.MP_FPS {
             return loadout?.Items.Find(item => item.Code == code && loadout.Carried(item))?.Id;
         }
 
+        // 代码和具体物品编号都要相同。任务要求确为现场取得的证据时还会核对来源。
         public static bool Holds(InventoryGraph graph, string id, string code, bool found = false) {
             if (string.IsNullOrEmpty(id)) return false;
             var item = graph?.Find(id);
@@ -372,6 +382,7 @@ namespace Unity.MP_FPS {
             InventoryGraph loadout,
             InventoryGraph raid,
             bool extracted) {
+            // 只有成功撤离且任务入口与出战时一致才接本次结果。计数上限和背包完整也要满足。
             if (!extracted || raid == null || result == null || result.Active != progress.Active ||
                 (uint)result.ExposureSeconds > ExposureSeconds || (uint)result.HaloKills > HaloKillGoal ||
                 (uint)result.SentryKills > SentryKillGoal || result.SampleIds == null ||
@@ -388,6 +399,7 @@ namespace Unity.MP_FPS {
                 progress.SentryKills = Math.Min(SentryKillGoal, progress.SentryKills + result.SentryKills);
                 if (progress.SentryKills == SentryKillGoal) progress.Ready |= Bit(ResearchQuest.Sentry);
             }
+            // 不同任务要核对实际带回的东西，有些要求本局预先配发的同一件工具。完成计数本身不能伪造样品或原档证据。
             if (Has(result.Active, ResearchQuest.Biology) && IssuedId(loadout, SampleKit) != null &&
                 result.SampleIds.Length == SampleGoal && new HashSet<string>(result.SampleIds).Count == SampleGoal &&
                 Array.TrueForAll(result.SampleIds, id => Holds(raid, id, Sample, true)))
@@ -409,6 +421,7 @@ namespace Unity.MP_FPS {
                 progress.CredentialsId = result.CredentialsId;
                 progress.Ready |= Bit(ResearchQuest.NoWayBack);
             }
+            // 最后的证据要对应已经保存的凭据，并见到机器关闭和带回的实际档案。由当前确认条件决定是否可选结局。
             if (Has(result.Active, ResearchQuest.EndOfTransmission) && result.SystemsDisabled &&
                 Guid.TryParse(result.OriginalArchiveId, out _) && result.CredentialsId == progress.CredentialsId &&
                 result.CredentialsId == IssuedId(loadout, Credentials) &&
@@ -422,6 +435,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 临时研究道具只为这趟任务提供工具。结算检查完再从可带回物品里剔除，防止留着大量同款配发物。
         public static void RemoveSupplies(InventoryGraph graph) {
             if (graph != null && graph.Items.RemoveAll(item => InventoryCatalog.IsResearchSupply(item.Code)) != 0)
                 graph.Version++;

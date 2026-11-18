@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
-    // North-up schematic. Every marker consumes approved snapshots or the owned player;
-    // this view never queries entities, cameras or scene geometry.
+    // 地图正北朝上。所有标记来自已获准的快照或本地拥有的角色，
+    // 绘图直接使用这些数据，无需搜索实体、相机或场景几何。
     public sealed class BountyClashMapView : VisualElement {
         public const float MinimumZoom = 1, MaximumZoom = 8;
         public float Zoom { get; private set; } = MinimumZoom;
@@ -70,6 +70,7 @@ namespace Unity.MP_FPS {
         public bool HasSurface => m_Surface != null;
 
         private void LoadSurface(string scene) {
+            // 同场景的底图和边界共用。换图才重新读资源和地标，避免每次快照都加载纹理。
             if (m_SurfaceScene == scene) return;
             m_SurfaceScene = scene;
             m_Surface = null;
@@ -79,6 +80,7 @@ namespace Unity.MP_FPS {
             var data = Resources.Load<TextAsset>("Moonkov/Maps/TheophilusSatelliteBounds");
             if (data == null) return;
             var info = JsonUtility.FromJson<SatelliteImageData>(data.text);
+            // 只有资源配的场景名对得上且范围有效才叠卫星图。其他地图仍能使用坐标网格和标记。
             if (info.scene != scene || !float.IsFinite(info.span) || info.span <= 0) return;
             m_SurfaceData = info;
             m_Surface = Resources.Load<Texture2D>("Moonkov/Maps/TheophilusSatellite");
@@ -139,6 +141,7 @@ namespace Unity.MP_FPS {
 
         private static Vector2 XZ(Vector3 point) { return new Vector2(point.x, point.z); }
 
+        // 先按屏幕中较短的一边计算基础比例，让全图能放下。然后乘当前缩放决定一米占多少像素。
         private float Scale =>
             Mathf.Max(1, Mathf.Min(contentRect.width, contentRect.height) - 48) / (2 * m_Radius) * Zoom;
 
@@ -184,6 +187,7 @@ namespace Unity.MP_FPS {
             m_Friends.Clear();
             Bounds(XZ(value.ArenaCenter), value.ArenaRadius, reset);
             foreach (var row in rows)
+                // 标记只接收当前队伍还活着或倒地的其他成员。敌人的显示沿用服务端给的赏金信息。
                 if (row.OwnTeam && row.TeamId == value.LocalTeamId && !row.IsLocal &&
                     (row.Life == ClashLife.Alive || row.Life == ClashLife.Downed))
                     m_Friends.Add(row);
@@ -225,7 +229,8 @@ namespace Unity.MP_FPS {
                     m_SupplyMax = Vector2.Max(m_SupplyMax, center + Vector2.one * m_SurfaceData.span * .5f);
                 }
             }
-            // Full-map bounds also include the current owner, even after walking far before opening M.
+            // 全图范围也要覆盖本地角色。哪怕玩家远离出生点后才按 M，地图仍能容纳他的位置。
+            // 全图的范围还要覆盖当前角色位置。远征玩家移动到地图边沿时，仍能把自己拉进视图。
             var min = Vector2.Min(m_SupplyMin, XZ(local));
             var max = Vector2.Max(m_SupplyMax, XZ(local));
             Bounds((min + max) * .5f, Mathf.Max(120, Mathf.Max(max.x - min.x, max.y - min.y) * .52f), reset);
@@ -277,6 +282,7 @@ namespace Unity.MP_FPS {
 
         private void ZoomAt(float factor, Vector2 point) {
             if (!m_HasBounds || !float.IsFinite(factor) || factor <= 0) return;
+            // 缩放前先记住鼠标下的世界坐标。改变比例后补偿中心点，让鼠标始终指着那块地。
             var anchor = Unproject(point);
             Zoom = Mathf.Clamp(Zoom * factor, MinimumZoom, MaximumZoom);
             m_Center += anchor - Unproject(point);
@@ -287,6 +293,7 @@ namespace Unity.MP_FPS {
         private void ClampPan() {
             var min = m_BoundsCenter - Vector2.one * m_Radius * 1.5f;
             var max = m_BoundsCenter + Vector2.one * m_Radius * 1.5f;
+            // 限制拖拽中心别甩到过远的空白区，但仍给角色所在的区域留空间。
             if (m_HasLocal) {
                 min = Vector2.Min(min, XZ(m_Local));
                 max = Vector2.Max(max, XZ(m_Local));
@@ -300,6 +307,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Down(PointerDownEvent evt) {
+            // 右键位置通过逆投影变成世界定位点。左键捕获指针则用于移动地图。
             if (evt.button == 1 && m_HasBounds && !m_Dragging) {
                 m_Pin = Unproject(evt.localPosition);
                 HasPin = true;
@@ -318,6 +326,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Move(PointerMoveEvent evt) {
+            // 没按住拖动时移动鼠标只检查附近补给标记。拖动时则把屏幕位移换成世界中心偏移。
             if (!m_Dragging) {
                 InspectCache(evt.localPosition);
                 return;
@@ -348,6 +357,7 @@ namespace Unity.MP_FPS {
         }
 
         private void InspectCache(Vector2 pointer) {
+            // 悬停补给标记按像素距离选最近一项，窗口缩放后触碰范围也保持可用。
             int selected = -1;
             float best = 14 * 14;
             if (m_Expedition && ShowSupplies && m_Supplies != null)
@@ -385,6 +395,7 @@ namespace Unity.MP_FPS {
         private float GridStep =>
             Mathf.Max(25, Mathf.Ceil(Mathf.Max(contentRect.width, contentRect.height) / Scale / 20 / 25) * 25);
 
+        // 比例尺目标大约占一段固定屏幕宽度。换算到世界距离后挑容易读的整值，缩放时不会显示许多小数。
         private float ScaleMeters {
             get {
                 float desired = 100 / Scale, power = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(desired)));
@@ -401,9 +412,10 @@ namespace Unity.MP_FPS {
 
         private static int Degrees(Vector2 direction) { return Mathf.RoundToInt(Bearing(direction)) % 360; }
         private int SupplyType(int index) { return Mathf.Clamp((int)m_ExpeditionSource.GetLootProfile(index), 0, 3); }
+        // 补给点是否空来自服务端位掩码。每个常规箱子对应一位，客户端按编号读这一位。
         private bool Available(int index) { return (m_TakenMask & (1UL << index)) == 0; }
 
-        // Readouts consume the same approved data as the markers. No scene/enemy scans.
+        // 读数与标记用同一份允许展示的数据。无需扫描场景或敌人。
         public void PresentReadouts(
             Label position,
             Label extraction,
@@ -667,9 +679,9 @@ namespace Unity.MP_FPS {
                                                                      (m_Snapshot.IsCarrier ||
                                                                       m_Snapshot.TeamHasBounty))) {
                     Diamond(p, Project(m_Snapshot.BountyPosition), 9,
-                        blue); // Already-authorized exact position: never round it.
+                        blue); // 服务器已授权准确位置，使用原值。
                 } else if (m_Snapshot.Bounty == ClashBountyState.Carried) {
-                    // The server supplies a 25m coarse position. Draw uncertainty, never a precise carrier icon.
+                    // 服务器给出约 25 米范围的粗略位置，用范围标记表现不确定性。
                     p.fillColor = new Color(.09f, .29f, 1, .12f);
                     p.strokeColor = blue;
                     p.lineWidth = 2;
@@ -715,6 +727,7 @@ namespace Unity.MP_FPS {
         }
 
         private void DrawSurface(MeshGenerationContext context) {
+            // 贴图的位置使用实际校准的世界边界。先投影左上、右下的地面坐标，再铺到地图网格下方。
             if (!TryGetSatellite(out var texture, out var worldXZ)) return;
             var topLeft = ProjectXZ(new Vector2(worldXZ.xMin, worldXZ.yMax));
             var bottomRight = ProjectXZ(new Vector2(worldXZ.xMax, worldXZ.yMin));

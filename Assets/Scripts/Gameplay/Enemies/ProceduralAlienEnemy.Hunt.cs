@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         private int m_SearchStep;
 
         private Vector3 SearchGoal() {
+            // 有新线索时重置搜索中心和下一步计时。旧线索不随隐藏目标跑。
             if (m_SearchClueAt != m_LastSeenAt) {
                 m_SearchClueAt = m_LastSeenAt;
                 m_SearchAnchor = m_LastSeen;
@@ -20,7 +21,8 @@ namespace Unity.MP_FPS {
             }
             if (Vector3.ProjectOnPlane(m_SearchGoal - transform.position, Vector3.up).sqrMagnitude < 1 ||
                 m_Clock >= m_NextSearchPoint) {
-                // Only remembered clues, never the target's hidden live transform.
+                // 搜索只能用已经记住的线索，不读取对方藏起来后的实时位姿。
+                // 到搜索点或等了一段时间没进展，就绕上次线索换一个方向，半径有上限。
                 float angle = (GhostGameObject.Owner * 137.5f + m_SearchStep++ * 110) * Mathf.Deg2Rad;
                 float radius = Mathf.Min(5, 1.5f + m_SearchStep * .6f);
                 m_SearchGoal = m_SearchAnchor + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * radius;
@@ -31,6 +33,7 @@ namespace Unity.MP_FPS {
 
         private bool TickBossDisplay(float dt, PredictedPlayerGhost health, bool remembered) {
             if (!profile.Boss) return false;
+            // Boss 特写动作是遇敌展示和达到狂暴阈值时的过渡。当前正在攻击时延后，避免改动出招窗口。
             bool enraged = health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction;
             if (m_Action == AlienAction.Dominance) {
                 if (m_Clock - m_ActionStarted >= profile.BossDisplaySeconds) {
@@ -43,7 +46,7 @@ namespace Unity.MP_FPS {
                                      Mathf.PI), false);
                 return true;
             }
-            // Never interrupt a committed warning or hit window. Each display happens once.
+            // 一次已经承诺的预警和出招不能被打断。每次展示只触发一次。
             if (!remembered || !m_Visible || m_Action == AlienAction.Windup || m_Action == AlienAction.Strike ||
                 m_Action == AlienAction.Recover || m_Action == AlienAction.Reposition)
                 return false;
@@ -58,6 +61,7 @@ namespace Unity.MP_FPS {
             return TickBossDisplay(dt, health, remembered);
         }
 
+        // 可见时才按种类做逼近策略。巨蛛留一定攻击距离，潜伏行为会参考对方视线，受阻后暂时改为直接靠近。
         private Vector3 HuntGoal(Vector3 target, out bool pause) {
             pause = false;
             if (!m_Visible || m_Clock < m_DirectUntil) return target;
@@ -108,6 +112,7 @@ namespace Unity.MP_FPS {
             return target;
         }
 
+        // 记录追击是否真的前进。绕侧卡住时有临时直追回退，不会永久对着墙推。
         private void ObserveHuntMovement(Vector3 before, float speed, float dt) {
             if ((m_Action != AlienAction.Chase && m_Action != AlienAction.Search) || speed <= .1f) {
                 m_ApproachBlocked = 0;
@@ -117,7 +122,7 @@ namespace Unity.MP_FPS {
                 ? m_ApproachBlocked + dt
                 : 0;
             if (m_ApproachBlocked < 1.2f) return;
-            // Bounded fallback prevents a flanking goal pinning the creature to a wall.
+            // 有限时长的回退可以让侧绕路线遇墙时尽快换办法。
             m_DirectUntil = m_Clock + 2;
             m_ApproachBlocked = 0;
             m_BlockedGroundGoal = m_UprightGoal;

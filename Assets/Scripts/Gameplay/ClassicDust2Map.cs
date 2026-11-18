@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
         internal const int SupplyCacheCount = 3;
         public static ClassicDust2Map Active { get; private set; }
 
+        // 两边每个席位都要有出生点，还要有 A、B 包点碰撞体。配置缺一项就不能按标准回合开局。
         public bool Configured =>
             ValidSpawns(m_AttackSpawns) && ValidSpawns(m_DefenseSpawns) && m_SiteA && m_SiteB && m_SiteA.isTrigger &&
             m_SiteB.isTrigger && m_Navigation;
@@ -45,11 +46,13 @@ namespace Unity.MP_FPS {
                 : Vector3.Lerp(Site(0), Site(1), (index + 1) * .25f) + Vector3.up * .35f;
         }
 
+        // 每位二进制标志对应一个补给箱。客户端拿到可用标志后只更新箱子的可用表现。
         public void PresentSupplyCacheMask(byte availableMask) {
             if (m_SupplyCaches == null) return;
             for (int i = 0; i < SupplyCacheCount; i++) m_SupplyCaches.SetEmpty(i, (availableMask & (1 << i)) == 0);
         }
 
+        // 炸弹能否放下取角色和包点碰撞区域的关系。用完整的区域比单看中心点更符合地图摆放。
         public bool InSite(int index, Vector3 position) {
             var site = index == 0 ? m_SiteA : m_SiteB;
             var offset = site.transform.InverseTransformPoint(position) - site.center;
@@ -57,11 +60,13 @@ namespace Unity.MP_FPS {
             return Mathf.Abs(offset.x) <= half.x && Mathf.Abs(offset.y) <= half.y && Mathf.Abs(offset.z) <= half.z;
         }
 
+        // 由本回合攻守方和队内席位确定出生位姿。换边后同一个人会按新阵营索引另一组。
         public LocalTransform Spawn(bool attacking, int slot) {
             var point = (attacking ? m_AttackSpawns : m_DefenseSpawns)[slot];
             return LocalTransform.FromPositionRotation(point.position, point.rotation);
         }
 
+        // 进入爆破局时写好空气和氧气状态，让这一模式按场内环境运行。
         internal static void InitializeAir(ref PredictedPlayerGhost player) {
             player.BreathableAir = true;
             player.AmbientPressureKPa = 101.325f;

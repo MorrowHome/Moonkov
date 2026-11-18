@@ -54,10 +54,11 @@ namespace Unity.MP_FPS.UI {
                 InitializeEcs();
                 if (m_ClientWorld == null) return;
             }
+            // 赏金模式玩家失去角色时先满足观战条件。它自己的快照区分倒地、死亡和离场，通用倒计时先不接管。
             if (BountyClashRuntime.Enabled(m_EntityManager)) {
                 m_RespawnScreen.style.display = DisplayStyle.None;
-                // Downed players retain their owned character and camera. Only a missing
-                // character uses this neutral spectator; never an individual respawn timer.
+                // 倒地时保留自己拥有的角色与镜头。只有已失去角色时，
+                // 才切到通用观战相机，无需个人复活倒计时。
                 bool hasCharacter = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
                 RespawnCamera.gameObject.SetActive(!hasCharacter);
                 if (!hasCharacter && !m_ClashQuery.IsEmptyIgnoreFilter) {
@@ -71,8 +72,10 @@ namespace Unity.MP_FPS.UI {
                 }
                 return;
             }
+            // 远征场景由战后结算负责后续。还活着时持续保存角色位置，失去角色时可供观战镜头使用。
             if (MoonRaidMap.Active != null) {
-                // Raid settlement replaces arena auto-respawn, while retaining its spectator camera.
+                // 远征结算取代竞技场的自动复活，但继续复用观战相机。
+                // 地图换了，之前的身体位置对新场景没意义。等新角色出现后重新记住有效位置。
                 if (m_LastRaidMap != MoonRaidMap.Active) {
                     m_LastRaidMap = MoonRaidMap.Active;
                     m_HasLastRaidPosition = false;
@@ -81,7 +84,7 @@ namespace Unity.MP_FPS.UI {
                 bool alive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
                 RespawnCamera.gameObject.SetActive(!alive);
                 if (alive) {
-                    // Typed singleton reads respect the enabled local-owner filter.
+                    // 读取有明确类型的单例时，只考虑本地所有权组件已启用的实体。
                     m_LastRaidPosition = m_LocalPlayerQuery.GetSingleton<LocalTransform>().Position;
                     m_HasLastRaidPosition = true;
                 }
@@ -97,17 +100,18 @@ namespace Unity.MP_FPS.UI {
                 }
                 return;
             }
+            // 通用玩法以本地拥有的角色是否存在决定复活 HUD。服务器重新生成该角色后立即收起倒计时。
             bool isPlayerAlive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
             if (isPlayerAlive) {
                 RespawnCamera.gameObject.SetActive(false);
-                // Player is alive, hide the respawn screen
+                // 角色还活着时隐藏复活画面。
                 if (m_RespawnScreen.style.display == DisplayStyle.Flex)
                     m_RespawnScreen.style.display = DisplayStyle.None;
             } else {
                 RespawnCamera.gameObject.SetActive(true);
-                // Player is dead, show the respawn screen and update the timer
+                // 死亡时显示复活画面，并更新剩余时间。
                 if (m_RespawnScreen.style.display == DisplayStyle.None) {
-                    // This is the first frame death is detected, start the countdown
+                    // 第一次发现角色死亡时开始倒计时。
                     m_RespawnCountdown = RESPAWN_DURATION;
                     m_RespawnScreen.style.display = DisplayStyle.Flex;
                 }

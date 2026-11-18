@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
     public partial class DollSingerEnemySystem {
+        // 服务器按分给机器人的队伍和席位创建普通角色，给这一席的回合规则和输入缓冲对上它。
         internal ClassicBot SpawnClassicBot(
             LocalTransform pose,
             int team,
@@ -78,7 +79,7 @@ namespace Unity.MP_FPS {
             m_Yaw = yaw;
         }
 
-        // Returns whether this bot is committing to the server's current interaction.
+        // 返回机器人是否决定执行服务器允许的当前交互。
         public bool Tick(
             EntityManager manager,
             ClassicBotTactics tactics,
@@ -92,6 +93,7 @@ namespace Unity.MP_FPS {
             if (!health.ClashCanAct || !manager.HasComponent<PlayerInputComponent>(Actor)) return false;
             var physics = map.gameObject.scene.GetPhysicsScene();
             var eye = Eye(manager);
+            // 闪光效果来自服务器的真实状态。被致盲时不刷新目击，也不会继续精准瞄准旧目标。
             bool flashed = tacticalWorld.Statuses.TryGetValue(Actor, out var status) && status.FlashUntil > now &&
                            status.FlashStrength > .25f;
             if (now >= m_NextSense && !flashed) {
@@ -109,17 +111,20 @@ namespace Unity.MP_FPS {
                 WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
             float distance = Vector3.Distance(eye, m_LastSeen);
             bool recentlyHit = now - m_LastHitAt < .7;
+            // 炸弹快到期时操作优先级提高。时间充足则会在交火或刚受击时先让开火线。
             bool critical = opportunity == ClassicUse.Defuse ? rules.Deadline - now < 12 : rules.Deadline - now < 5.5;
             bool use = tactics.HasBombAssignment(Id, opportunity) && (opportunity == ClassicUse.PickUp || critical ||
                                                                       (!recentlyHit && (!visible ||
                                                                           (rules.HoldActor == Id && distance > 15))));
             bool wasReloading = health.ControllerState.IsReloadingState;
+            // 交火时主武器打空且副手有弹，先切副手；短时间安全后可换回还有弹药的主武器。
             bool switchToPistol = visible && health.CurrentAmmo == 0 && health.EquippedWeaponSlot != 3 &&
                                   health.PistolAmmo > 0;
             bool returnToPrimary = !visible && now - m_LastSeenAt > 2 && health.EquippedWeaponSlot == 3 &&
                                    health.PrimaryAmmo > 0;
             bool takeCover = !use && TakeCover(physics, now,
                 recentlyHit || (visible && (wasReloading || (health.CurrentAmmo == 0 && !switchToPistol))));
+            // 队伍命令给目标位置。个人再根据掩体、火线和同伴位置微调实际移动和朝向。
             var order = tactics.Order(this, rules, map);
             bool shootLane = visible && ShotLaneClear(tactics, eye, m_LastSeen);
             var aim = AimPoint(weapon, distance);
@@ -158,14 +163,16 @@ namespace Unity.MP_FPS {
             if (reload) m_NextReload = now + Mathf.Max(.7f, weapon.ReloadTime);
             input.SetFlag(PlayerInput.InputFlag.Reload, reload);
 
-            // Burst timing starts once a shot is possible, with a pause to move
-            // or reacquire between bursts. Losing the lane also cancels pending fire.
+            // 能开火时才开始计算连发。两组之间留出时间走位或重新瞄准。
+            // 枪线一旦受阻，就清掉尚在排队的发射。
             bool clear = !use && !takeCover && shootLane && !switched && !reload && !wasReloading;
+            // 看见人后还要等反应时间、抬枪和瞄准收敛。射出去的实际方向也要没有墙和友军。
             bool aimed = clear && weapon && health.CurrentAmmo > 0 && health.WeaponEquipRemaining <= 0 &&
                          now >= m_ReactAt && distance <= fireRange &&
                          Vector3.Dot(forward, (aim - eye).normalized) >= .997f &&
                          !DollSingerBotCombat.WallBetween(physics, eye, eye + forward * distance) &&
                          ShotLaneClear(tactics, eye, eye + forward * distance);
+            // 有实际开火条件时才开始计连射。短窗口之后留出回身或移动时间。
             if (aimed && now >= m_NextBurst) {
                 double raise = DollSingerWeapons.IsHalo(health.EquippedWeaponID)
                     ? (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds *
@@ -191,6 +198,7 @@ namespace Unity.MP_FPS {
             return LastPosition + Vector3.up * 1.5f;
         }
 
+        // 候选来自当前回合存活的对方席位。要有视角和无遮挡的目标才能成为本机记忆并转给队友。
         private void Sense(
             ClassicBotTactics tactics,
             ClassicDust2Map map,
@@ -248,6 +256,7 @@ namespace Unity.MP_FPS {
             m_LastSeenAt = now;
         }
 
+        // 优先保护站在射击线上更近的友军，别因为瞄向敌人就把队友挡枪忽略。
         private bool ShotLaneClear(ClassicBotTactics tactics, Vector3 eye, Vector3 target) {
             var direction = target - eye;
             float range = direction.magnitude;
@@ -329,6 +338,7 @@ namespace Unity.MP_FPS {
             m_Pitch = Mathf.MoveTowardsAngle(m_Pitch, pitch, 115 * dt);
         }
 
+        // 刚中弹或装填遇到敌人时尝试找能挡住目标的近处位置，调整后仍受任务截止时间限制。
         private bool TakeCover(PhysicsScene physics, double now, bool threatened) {
             if (now < m_CoverUntil) return true;
             bool sawThreat = now - m_LastSeenAt < 2.3;
@@ -353,6 +363,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 缓存好导航拐点，不每一拍重算。跟随时接近当前拐点便切下一个。
         private Vector3 FollowRoute(Vector3 goal, double now, float arrive) {
             if ((goal - LastPosition).sqrMagnitude <= arrive * arrive) return Vector3.zero;
             bool changed = (goal - m_PathGoal).sqrMagnitude > 1.05f * 1.05f;
@@ -395,6 +406,7 @@ namespace Unity.MP_FPS {
             return Vector3.zero;
         }
 
+        // 移动方向加上近处队友的避让量，两名同路机器人不会一直重叠抢位。
         private Vector3 SpaceFromAllies(ClassicBotTactics tactics, Vector3 move) {
             if (move.sqrMagnitude < .01f) return move;
             foreach (var ally in tactics.Roster) {

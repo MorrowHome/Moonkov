@@ -7,6 +7,7 @@ using Unity.Transforms;
 
 namespace Unity.MP_FPS {
     public partial struct ServerGameSystem {
+        // 竞技场和经典爆破复用本机房主与临时库存，随后依具体玩法分支。正式远征档案不会参与这条流程。
         private void HandleArena(ref SystemState state, EntityCommandBuffer ecb) {
             var match = SystemAPI.ManagedAPI.GetSingleton<ArenaMatch>();
             var manager = state.EntityManager;
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS {
                     continue;
                 var intent = request.ValueRO;
                 ArenaMatch.Player joined = null;
+                // 只有模式、版本和房主签发的比赛票全匹配，才给连接分玩家席位。连上网的连接还不能自己指定一个队伍。
                 if (intent.Mode == match.Mode && intent.RulesVersion == match.RulesVersion &&
                     !manager.HasComponent<NetworkStreamRequestDisconnect>(connection)) {
                     if (local && match.Players.Count == 0 && intent.LoginToken.ToString() == "single-player")
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS {
                         joined = match.Join(connection, participant.Id, participant.Name,
                             participant.Appearance.CharacterIndex, now);
                 }
+                // 经典爆破先占一个组内席位，实际角色与位置要到规则开始回合时统一决定。
                 if (joined != null && match.Classic != null) {
                     ecb.AddComponent(connection, new NetworkStreamInGame());
                     ecb.AddComponent(connection,
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS {
             match.Tick(now, room?.MatchMembers ?? ArenaMatch.Capacity);
             match.ReservedSpawns.Clear();
             foreach (var (connection, seat) in match.Players) {
+                // 已经出生的人先检查死亡。更新比分和观战等待，再判断当前阶段是否允许重生。
                 if (seat.Spawned && manager.HasComponent<JoinedClient>(connection)) {
                     var actor = manager.GetComponentData<JoinedClient>(connection).PlayerEntity;
                     if (manager.HasComponent<ClashPlayer>(actor) && manager.HasComponent<PredictedPlayerGhost>(actor)) {
@@ -84,6 +88,7 @@ namespace Unity.MP_FPS {
                         continue;
                     }
                 }
+                // 首个角色或复活时间已到，按比赛状态和空闲出生点安排新实体。新角色读取该局的临时装备。
                 if ((!seat.Spawned || match.Phase == ArenaPhase.Fighting) && now >= seat.RespawnAt &&
                     FindSpawnPoint(ref state, out var spawnPoint, match.ReservedSpawns)) {
                     match.ReservedSpawns.Add(spawnPoint.Position);
@@ -111,6 +116,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 两种玩法复用拖格、保护资源更新和背包快照。经典有现场搜刮，竞技场丢弃则直接移除临时物品。
         private bool UpdateMatchInventory(
             ref SystemState state,
             EntityCommandBuffer ecb,
@@ -147,6 +153,7 @@ namespace Unity.MP_FPS {
             return send;
         }
 
+        // 移除连接对旧角色和输入实体的引用后才删实体。网络连接仍给参赛者席位和后续复活用。
         private void RemoveArenaActor(ref SystemState state, EntityCommandBuffer ecb, Entity connection, Entity actor) {
             var manager = state.EntityManager;
             var joined = manager.GetComponentData<JoinedClient>(connection);
@@ -177,6 +184,7 @@ namespace Unity.MP_FPS {
                     continue;
                 var inventory = GetRaidInventory(ref state, connection);
                 var intent = request.ValueRO;
+                // 战斗补给同一条请求只能处理一次。补给规则还要检查当前阶段、玩家存活、库存版本与容量。
                 if (intent.RequestId <= inventory.RequestId) continue;
                 inventory.RequestId = intent.RequestId;
                 inventory.LastSentVersion = -1;

@@ -2,8 +2,8 @@
 using UnityEngine;
 
 namespace Unity.MP_FPS {
-    // Metre-space anchors on an action variant of the actual inventory model.
-    // The original loot/icon prefab stays sealed and is never modified.
+    // 动作模型是库存实物的变体，挂点坐标以米配置。
+    // 原掉落和图标用的预制体保持原状。
     public sealed class RaidActionProp : MonoBehaviour {
         public Transform Grip, Contact, Cap, Plunger;
         public GameObject Sealed, Opened;
@@ -19,6 +19,7 @@ namespace Unity.MP_FPS {
         public Part[] Parts;
         public bool Authored;
 
+        // 按名称找只在动作版本存在的零件。食品和针剂的道具不必共用同一骨架。
         public Transform FindPart(string name) {
             if (Parts != null)
                 foreach (var part in Parts)
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS {
             return null;
         }
 
+        // 根据当前动作阶段修改零件姿势，例如针剂在完成注射时推进部件。
         public void Present(float phase, bool injecting) {
             bool open = phase >= .18f;
             if (Sealed) Sealed.SetActive(!open);

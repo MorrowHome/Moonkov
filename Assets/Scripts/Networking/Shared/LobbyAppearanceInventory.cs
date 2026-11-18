@@ -4,9 +4,10 @@ using System;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS.Online {
-    // Only equipped appearance leaves the account service. No real item IDs,
-    // contents, ammunition counts or account inventory are sent to teammates.
+    // 账号服务只发送已经装备的公开外观。真实物品 ID、
+    // 容器内容、弹药数和完整账号库存都不会给队友。
     public static class LobbyAppearanceInventory {
+        // 从正式图校验装备槽，再提取物品码与改装位。来宾提交的装备外观不直接拿来当真正的背包。
         public static LobbyAppearance FromInventory(InventoryGraph graph, int character, int pose) {
             var appearance = new LobbyAppearance {
                 CharacterIndex = character >= 2 && character <= 4 ? character : 2,
@@ -28,11 +29,13 @@ namespace Unity.MP_FPS.Online {
             return appearance;
         }
 
+        // 只接受槽中匹配类别的已知物品，避免异常库存使预览请求去加载未知模型。
         private static string Equipped(InventoryGraph graph, string slot, ItemKind kind) {
             var item = graph?.Equipped(slot);
             return InventoryCatalog.Get(item?.Code)?.Kind == kind ? item.Code : "";
         }
 
+        // 接收方用公开外观建专供菜单模型读取的库存。物品 ID 重新生成，里面没有玩家真实背包内容。
         public static InventoryGraph PreviewInventory(LobbyAppearance appearance) {
             var graph = InventoryGraph.Create(false, false);
             if (appearance == null) return graph;

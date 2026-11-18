@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory {
-    // One transaction across two independent owners. Joined snapshots are presentation only.
+    // 跨两份独立库存的一次事务。合并后的快照只供查看。
     public static class LootInventoryExchange {
         public const string Root = "loot";
 
@@ -32,6 +32,7 @@ namespace Unity.MP_FPS.Inventory {
             return graph;
         }
 
+        // 拿到背包和箱子的副本，将箱子作为独立根挂在同一临时图内。界面和校验能同时查看两边，又不会提前改任何一方。
         public static InventoryGraph Snapshot(InventoryGraph carried, InventoryGraph cache) {
             var joined = carried.Clone();
             joined.LootRows = cache.LootRows;
@@ -40,11 +41,12 @@ namespace Unity.MP_FPS.Inventory {
             return joined;
         }
 
-        // Only discovered item trees enter the inventory graph; grey footprints are sent separately.
+        // 只把已发现物品与其中子树放进库存图。未揭开项用独立占格提示。
         public static InventoryGraph SearchPreview(InventoryGraph cache, int revealed) {
             return SearchPreview(cache, cache.Children(Root).Take(Math.Max(0, revealed)).Select(i => i.Id));
         }
 
+        // 复制箱子中已揭开 ID 的子树，没搜索到的物品不会出现在可操作图。
         public static InventoryGraph SearchPreview(
             InventoryGraph cache,
             System.Collections.Generic.IEnumerable<string> revealed) {
@@ -58,8 +60,9 @@ namespace Unity.MP_FPS.Inventory {
             return visible;
         }
 
-        // Build and validate the new owner before clearing the dead player's graph. Only
-        // direct equipment/pocket items move; descendants retain their exact placements.
+        // 先构造并验证新的所有者，再清死者的库存。只有装备槽和口袋
+        // 直接挂的物品会换父项，内部子物品保留精确格位。
+        // 死亡时把不受保护的根和子物品转成尸体箱，保留项仍留在玩家图中供结算。任务临时道具另受限制。
         public static InventoryGraph DropOnDeath(InventoryGraph carried) {
             if (carried == null || carried.Validate() != InventoryError.None || carried.Find("stash") != null ||
                 carried.Find(Root) != null)
@@ -92,7 +95,8 @@ namespace Unity.MP_FPS.Inventory {
             return cache;
         }
 
-        // Prepare both owners without mutating either. Registration must succeed before commit.
+        // 先准备两份结果并保留双方原图。地面登记成功后才提交。
+        // 先按版本确认这件东西，然后展开它的所有子物品，试着组成地面容器与剩余背包，等调用方同时确认。
         public static InventoryError PrepareDrop(
             InventoryGraph carried,
             string itemId,
@@ -147,6 +151,7 @@ namespace Unity.MP_FPS.Inventory {
             if (carried == null || cache == null || command == null || carried.Find(Root) != null ||
                 cache.Find(Root) == null)
                 return InventoryError.Invalid;
+            // 只看本人版本不够，箱子也可能被队友先取过。两份都匹配才继续。
             if (command.ExpectedVersion != carried.Version || expectedCacheVersion != cache.Version)
                 return InventoryError.Stale;
             var joined = Snapshot(carried, cache);
@@ -157,6 +162,7 @@ namespace Unity.MP_FPS.Inventory {
             if (error != InventoryError.None) return error;
             var nextCarried = carried.Clone();
             var nextCache = cache.Clone();
+            // 把事务后的图按各自最外侧根拆开。两个结果重新校验、且不把禁放的任务物制造到箱里时，才提交给双方。
             nextCarried.Items = joined.Items.Where(i => joined.RootOf(i.Id) != Root).ToList();
             nextCache.Items.RemoveAll(i => i.Id == Root || cache.RootOf(i.Id) == Root);
             nextCache.Items.AddRange(joined.Items.Where(i => joined.RootOf(i.Id) == Root));

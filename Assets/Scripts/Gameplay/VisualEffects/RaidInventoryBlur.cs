@@ -6,7 +6,7 @@ using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS {
-    // The live world is softened before UI Toolkit draws its sharp text and item icons.
+    // 先模糊游戏画面，再让 UI Toolkit 叠上清晰的文字和物品图标。
     public static class RaidInventoryBlur {
         private static Driver s_Driver;
 
@@ -25,6 +25,7 @@ namespace Unity.MP_FPS {
                 Clear();
                 return;
             }
+            // 背包发布的目标相机一换，先解除旧相机订阅，再接现在这台。保持一份局内背景模糊即可。
             if (s_Driver != null && s_Driver.Camera != camera) Clear();
             s_Driver ??= new Driver(camera);
             s_Driver.PublishedAt = Time.realtimeSinceStartupAsDouble;
@@ -50,6 +51,7 @@ namespace Unity.MP_FPS {
 
             private void BeginCamera(ScriptableRenderContext context, Camera camera) {
                 if (m_Disposed) return;
+                // 界面意外关闭也能收尾。停止刷新一小段时间后由相机回调释放它自己。
                 if (!Camera || !Camera.isActiveAndEnabled || Time.realtimeSinceStartupAsDouble - PublishedAt > .25) {
                     Clear();
                     return;
@@ -81,7 +83,7 @@ namespace Unity.MP_FPS {
             internal BlurPass(Material material, Camera owner) {
                 m_Material = material;
                 m_Owner = owner;
-                // After other world effects, before URP composites the overlay UI.
+                // 在其他世界特效之后、URP 合成叠加界面之前执行。
                 renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing + 1;
                 requiresIntermediateTexture = true;
             }
@@ -103,12 +105,13 @@ namespace Unity.MP_FPS {
                 descriptor.name = "Inventory blur / horizontal half resolution";
                 descriptor.width = Mathf.Max(1, width / 2);
                 descriptor.height = Mathf.Max(1, height / 2);
+                // 先水平模糊到一个临时纹理，再垂直模糊，避免同一读写目标互相覆盖。两步合起来得到平滑的背景。
                 var intermediate = graph.CreateTexture(descriptor);
                 descriptor.name = "Inventory blur / live world";
                 descriptor.width = width;
                 descriptor.height = height;
                 var destination = graph.CreateTexture(descriptor);
-                // About four pixels of softening at 1080p. Silhouettes and motion remain readable.
+                // 1080p 时模糊半径约四个像素，人物轮廓和运动仍然可见。
                 float radius = 2.4f * height / 1080f;
                 Record(graph, source, intermediate, m_Horizontal, new Vector2(radius / width, 0),
                     "Inventory blur / horizontal");
@@ -133,7 +136,7 @@ namespace Unity.MP_FPS {
                 builder.UseTexture(source, AccessFlags.Read);
                 builder.SetRenderAttachment(destination, 0, AccessFlags.Write);
                 builder.SetRenderFunc(static (PassData d, RasterGraphContext context) => {
-                    // The material blit helper does not account for differing texture UV origins.
+                    // 材质拷贝辅助函数不会自动处理不同纹理的 UV 原点。
                     RTHandle handle = d.Source;
                     var scale = handle.useScaling ? (Vector2)handle.rtHandleProperties.rtHandleScale : Vector2.one;
                     bool flip = context.GetTextureUVOrigin(in d.Source) != context.GetTextureUVOrigin(in d.Destination);

@@ -15,12 +15,13 @@ namespace Unity.MP_FPS {
         private float m_Charge, m_Energy;
 
         private void FitEquipment() {
+            // 背包跟随胸部，装置更靠近髋部。缺少部分骨骼时依次找可用锚点，以主角节点继续拟合。
             m_PackAnchor = m_Chest ? m_Chest : m_Hips ? m_Hips : transform;
             m_ShieldAnchor = m_Hips ? m_Hips : m_PackAnchor;
             var frame = Quaternion.LookRotation(transform.forward, transform.up);
             Vector3 hip = m_ShieldAnchor.position, center = Vector3.Lerp(hip, m_PackAnchor.position, .65f);
             float back = -.09f, front = .09f, right = .12f;
-            // Fit against torso skin/clothing only. Skin matrices preserve imported FBX scale.
+            // 贴合只参考上身皮肤及衣料。蒙皮矩阵保留 FBX 的原始缩放。
             foreach (var renderer in GetComponentsInChildren<SkinnedMeshRenderer>(true)) {
                 var mesh = renderer.sharedMesh;
                 if (!mesh || renderer.name.Contains("Runtime")) continue;
@@ -42,6 +43,7 @@ namespace Unity.MP_FPS {
                                 matrices[w.boneIndex1].MultiplyPoint3x4(v) * w.weight1 +
                                 matrices[w.boneIndex2].MultiplyPoint3x4(v) * w.weight2 +
                                 matrices[w.boneIndex3].MultiplyPoint3x4(v) * w.weight3;
+                    // 用骨骼权重与绑定矩阵把候选顶点转到统一身体坐标。只采身体前后相近的区域，避免肩袖或裙摆拉大尺寸。
                     var local = inverse * (world - center);
                     if (Mathf.Abs(local.y) > .055f || Mathf.Abs(local.x) > .19f || Mathf.Abs(local.z) > .22f) continue;
                     back = Mathf.Min(back, local.z);
@@ -49,6 +51,7 @@ namespace Unity.MP_FPS {
                     right = Mathf.Max(right, Mathf.Abs(local.x));
                 }
             }
+            // 把读到的背部和前侧位置变成胸、髋参考的局部坐标。角色动作变化只更新锚点世界姿态，装备仍能贴着身体移动。
             m_PackOffset = m_PackAnchor.InverseTransformPoint(center + frame * new Vector3(0, 0, back - .045f));
             m_PackFrame = Quaternion.Inverse(m_PackAnchor.rotation) * frame * Quaternion.Euler(0, 180, 0);
             m_DeviceOffset =
@@ -97,6 +100,7 @@ namespace Unity.MP_FPS {
                     new Vector3(.025f, .12f, .02f), metal, silver);
         }
 
+        // 根据同步的背包档位、有效能量和盾状态控制不同的灯和外形。菜单用仓库中真实装备决定同一套显示分支。
         private void UpdateEquipment() {
             m_Subspace.gameObject.SetActive(m_BackpackStyle != 0);
             m_Device.gameObject.SetActive(false);

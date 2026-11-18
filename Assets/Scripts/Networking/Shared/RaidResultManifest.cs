@@ -11,12 +11,13 @@ namespace Unity.MP_FPS {
         public int Returned, Lost;
     }
 
-    // Frozen before death transfers ownership. Never used to grant or save items.
+    // 在死亡导致装备转移前冻结清单。清单只展示，不能发放或保存物品。
     [Serializable]
     public sealed class RaidResultManifest {
         public int RaidId;
         public RaidPhase Outcome;
         public List<RaidResultItem> Items = new();
+        // HUD 所见总数从冻结好的物品行求和。正式库存与存档没有靠这两个数做扣装。
         public int ReturnedCount => Items.Sum(i => i.Returned);
         public int LostCount => Items.Sum(i => i.Lost);
 
@@ -24,6 +25,7 @@ namespace Unity.MP_FPS {
             var result = new RaidResultManifest { RaidId = raid, Outcome = outcome };
             var protectedIds = outcome == RaidPhase.Extracted ? null : SecureInventory.ProtectedIds(graph);
             var rows = new Dictionary<string, RaidResultItem>(StringComparer.Ordinal);
+            // 仅统计可带走的实际游戏物品。相同物品码合成一行，撤离全部记为带回；失败按受保护 ID 分组。
             foreach (var item in graph.Items) {
                 if (InventoryCatalog.Get(item.Code).Kind == ItemKind.Root ||
                     InventoryCatalog.IsResearchSupply(item.Code) || !graph.Carried(item))
@@ -39,6 +41,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 客户端处理快照要检查清单是否属于自己当前局，数量、物品码和结果阶段能否成立。撤离成功不应带遗失数。
         public bool Valid(int raid) {
             if (RaidId != raid || raid <= 0 || Items == null || Items.Count > InventoryCatalog.Definitions.Count ||
                 (Outcome != RaidPhase.Extracted && Outcome != RaidPhase.Dead && Outcome != RaidPhase.TimedOut))

@@ -18,8 +18,8 @@ namespace Unity.MP_FPS {
             var forward = Vector3.ProjectOnPlane(transform.forward, axis);
             if (forward.sqrMagnitude < .001f) forward = Vector3.ProjectOnPlane(transform.up, axis);
             var frame = Quaternion.LookRotation(forward, axis);
-            // The DollSinger's high shirt collar covers the lower neck. Fit the exposed
-            // upper neck below the jaw, rather than enlarging a band hidden inside the shirt.
+            // DollSinger 的高衣领遮住下半段脖子。贴合应取下巴下方露出的部分，
+            // 不用扩大藏在衣服里的那一圈。
             var center = m_Neck
                 ? Vector3.Lerp(m_Neck.position, m_Head.position, .68f)
                 : m_Head.position - transform.up * .025f;
@@ -28,6 +28,7 @@ namespace Unity.MP_FPS {
             var maximum = Vector2.one * float.NegativeInfinity;
             int samples = 0;
             var renderers = animator.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            // 角色衣服和身体由不同网格组成。用符合骨骼权重的颈部样本估尺寸，再根据当前角色把同一款项圈摆到合适位置。
             foreach (var renderer in renderers) {
                 var mesh = renderer.sharedMesh;
                 if (!mesh || renderer.name.Contains("Runtime")) continue;
@@ -68,11 +69,12 @@ namespace Unity.MP_FPS {
                 center += frame * new Vector3(midpoint.x, 0, midpoint.y);
                 m_CollarRadii = (maximum - minimum) * .5f + Vector2.one * .0012f;
             }
-            // Store the fit in the real neck's space, including the imported FBX scale.
+            // 将贴合结果保存在真实脖子坐标中，保留导入的 FBX 比例。
             m_CollarOffset = anchor.InverseTransformPoint(center);
             m_CollarLocalFrame = Quaternion.Inverse(anchor.rotation) * frame;
         }
 
+        // 按量到的尺寸搭项圈部件，通用本体和造型细节放在可单独开关的节点上。佩戴不同款式时可以切换这些节点。
         private void BuildCollar(Material material, Material indicator) {
             Color navy = new(.055f, .075f, .15f), gold = new(.83f, .65f, .32f), lavender = new(.51f, .43f, .76f);
             Color highlight = new(.75f, .68f, .93f), ink = new(.035f, .025f, .055f);
@@ -152,6 +154,7 @@ namespace Unity.MP_FPS {
             return piece;
         }
 
+        // 运行时随颈和头骨骼更新佩戴位置。拟合结果沿用已算好的半径，角色每帧动起来只更新姿态。
         private void UpdateCollarPose() {
             var anchor = m_Neck ? m_Neck : m_Head;
             WorldPose(m_Collar, anchor.TransformPoint(m_CollarOffset), anchor.rotation * m_CollarLocalFrame,
