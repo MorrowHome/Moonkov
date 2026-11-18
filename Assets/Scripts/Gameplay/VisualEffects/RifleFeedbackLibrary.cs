@@ -5,6 +5,7 @@ namespace Unity.MP_FPS {
     // Presentation only: weapon damage, spread and projectile authority remain in WeaponData.
     [System.Serializable]
     public sealed class HaloWeaponFeedbackProfile {
+        // 一声枪响可以拆成主体、短促起音和尾音。连续开火时依据武器配置调整音层重叠和音高。
         public SoundDef FireBody, FireSnap, FireTail;
         public SoundDef RockImpact, MetalImpact, BodyImpact, HitConfirm, KillConfirm;
 
@@ -45,6 +46,7 @@ namespace Unity.MP_FPS {
         public WeaponFeedbackEntry[] WeaponProfiles;
 
         public HaloWeaponFeedbackProfile ForWeapon(uint weaponId) {
+            // 先找这个武器的专用条目。没配专用时按枪型取通用反馈，旧资源也能正常播放。
             if (WeaponProfiles != null)
                 foreach (var entry in WeaponProfiles)
                     if (entry != null && entry.WeaponId == weaponId && entry.Profile != null)

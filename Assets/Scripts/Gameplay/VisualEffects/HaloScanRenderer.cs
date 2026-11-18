@@ -51,6 +51,7 @@ namespace Unity.MP_FPS {
             private void BeginCamera(ScriptableRenderContext context, Camera camera) {
                 if (m_Disposed || camera != Camera) return;
                 double now = Time.realtimeSinceStartupAsDouble;
+                // 客户端要持续发布有用的扫描状态。超过短时间没有刷新或脉冲失效后，自动解绑相机。
                 if (!Camera || Cache == null || !Cache.Active || now - PublishedAt > .25) {
                     Clear();
                     return;
@@ -66,6 +67,7 @@ namespace Unity.MP_FPS {
                     : Color.cyan;
                 m_Pass.Count = m_Pass.RendererCount = 0;
                 for (int i = 0; i < Cache.Contacts.Length; i++) {
+                    // 服务器发来的每个接触点有自己的有效期。只有仍可显示的目标才查询它的轮廓网格，并限制每帧数量。
                     if (!Cache.Visible(i, now)) continue;
                     var p = Cache.Contacts[i].Position;
                     float fade =
@@ -82,6 +84,7 @@ namespace Unity.MP_FPS {
                         m_Pass.Renderers[m_Pass.RendererCount++] = renderer;
                     }
                 }
+                // 脉冲本身还能在没有目标时播放。整段动画过去且没有接触点才不再加入渲染。
                 if (m_Pass.Count == 0 && m_Pass.Elapsed > HaloScanRules.Duration + .2f) return;
                 (additional ? additional.scriptableRenderer : pipeline.scriptableRenderer).EnqueuePass(m_Pass);
             }
@@ -125,6 +128,7 @@ namespace Unity.MP_FPS {
                 var descriptor = graph.GetTextureDesc(source);
                 descriptor.name = "Halo scan composite";
                 descriptor.clearBuffer = false;
+                // 扫描材质需要先读相机当前画面，再写到另一个颜色目标。接触点和实际网格随后进入着色步骤，作为这次显示的数据。
                 var destination = graph.CreateTexture(descriptor);
                 using var builder =
                     graph.AddRasterRenderPass<PassData>("Halo scan / authorized enemy silhouettes", out var data);

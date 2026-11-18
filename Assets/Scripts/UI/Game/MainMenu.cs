@@ -35,11 +35,13 @@ namespace Unity.MP_FPS.Client {
 
         private void OnEnable() {
             m_MainMenu = GetComponent<UIDocument>().rootVisualElement;
+            // 菜单是否显示听 GameSettings。连接流程切换全局状态时，UI 绑定会自动跟上，不用每个按钮都手动隐藏页面。
             m_MainMenu.SetBinding("style.display", new DataBinding {
                 dataSource = GameSettings.Instance,
                 dataSourcePath = new PropertyPath(GameSettings.MainMenuStylePropertyName),
                 bindingMode = BindingMode.ToTarget
             });
+            // 玩家名和会话名是双向绑定，文本输入和设置使用同一份数据。认证账号启用后由账号页接管玩家名。
             var nameInputField = m_MainMenu.Q<TextField>(UIElementNames.NameInputField);
             nameInputField.SetBinding("value", new DataBinding {
                 dataSource = GameSettings.Instance,
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS.Client {
             });
             m_JoinRelayButton = m_MainMenu.Q<Button>("JoinRelayByCode");
             m_JoinRelayButton.clicked += OnJoinRelayPressed;
+            // 通过房间码加入时，先让 ConnectionSettings 判断格式。等真正连接后才会知道房间码是否可用。
             m_JoinRelayButton.SetBinding("enabledSelf", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
                 dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsSessionCodeFormatValid)),
@@ -83,6 +86,7 @@ namespace Unity.MP_FPS.Client {
             m_ConnectToServerButton.clicked += OnConnectToServerPressed;
             m_QuitButton = m_MainMenu.Q<Button>(UIElementNames.QuitGame);
             m_QuitButton.clicked += OnQuitPressed;
+            // 主菜单资源未加载完时保留遮挡层。场景完成后通过属性通知撤掉它，避免露出中间画面。
             var hidingBackground = m_MainMenu.Q<VisualElement>(UIElementNames.HidingBackground);
             hidingBackground.SetBinding("style.display", new DataBinding {
                 dataSource = GameSettings.Instance,
@@ -102,6 +106,7 @@ namespace Unity.MP_FPS.Client {
             MoonkovLocalization.Bind(m_MainMenu);
         }
 
+        // 离开菜单需结束轮询和事件订阅。否则旧按钮还可能调用已经切换状态的 GameManager。
         private void OnDisable() {
             m_ResumeRefresh?.Pause();
             if (m_ResumeRaid != null) m_ResumeRaid.clicked -= ResumeRaid;
@@ -122,6 +127,7 @@ namespace Unity.MP_FPS.Client {
             ToggleConnectionModeDisplay();
         }
 
+        // 切换 Relay 或直连时更换能用的入口。选择连接方式只控制这层界面，出发要点相应按钮。
         private void ToggleConnectionModeDisplay() {
             m_RelayJoinControls.style.display =
                 GameSettings.Instance.ConnectionMode == 0 ? DisplayStyle.Flex : DisplayStyle.None;

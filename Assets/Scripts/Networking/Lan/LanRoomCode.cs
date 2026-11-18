@@ -61,6 +61,7 @@ namespace Unity.MP_FPS {
             m_Token = registration.Token;
         }
 
+        // 房主从信令服务领取一个房间码和管理凭据。房间码给玩家输入，管理凭据只由房主持有。
         public static async Task<LanRoomCode> CreateAsync(LanPeerRoom room, CancellationToken ct) {
             var address = Address();
             var result = await PostAsync(address, "create", new { }, null, ct);
@@ -79,6 +80,7 @@ namespace Unity.MP_FPS {
                     capacity = room.Capacity
                 }
                 : null;
+            // 公开目录只需要展示昵称、玩法、人数等资料。房主即时选择撤下时也会清掉前端已显示的申请。
             await PostAsync(m_Address, "publish", new { code = m_Code, listing }, m_Token, ct);
             m_DirectoryRevision++;
             Listed = listed;
@@ -96,11 +98,13 @@ namespace Unity.MP_FPS {
             try {
                 while (true) {
                     ct.ThrowIfCancellationRequested();
+                    // 手动发邀请和经房间码进来的申请共用房主的单人协商位置。手动邀请还没完成时先暂停自动接下一人。
                     bool open = Open && !m_Room.HasManualOffer;
                     try {
                         int revision = m_DirectoryRevision;
                         var poll = await HostAsync(
                             new { code = m_Code, open, listing = Listed ? new { members = Members } : null }, ct);
+                        // 轮询跨帧返回，期间房主可能又改了公开状态。用发布修订号挡住旧结果，把已撤掉的申请留空。
                         if (Listed && revision == m_DirectoryRevision)
                             Applications = poll.Applications ?? Array.Empty<LanJoinApplication>();
                         if (Open && m_Room.CanInvite && poll.Attempt != null) await ExchangeAsync(poll.Attempt, ct);
@@ -117,6 +121,7 @@ namespace Unity.MP_FPS {
             exchange.CancelAfter(TimeSpan.FromSeconds(30));
             bool accepted = false;
             try {
+                // 轮到一个申请时，房主经信令发出和手动邀请相同的连接描述，再等那位来宾把回执送回来。
                 string offer = await m_Room.InviteAsync(exchange.Token, true);
                 var result = await HostAsync(new { code = m_Code, attempt, offer, open = Open }, exchange.Token);
                 while (result.Reply == null) {
@@ -130,6 +135,7 @@ namespace Unity.MP_FPS {
                 (ex.Reason != "room_closed") { } catch (Exception ex) when
                 (ex is InvalidDataException or SocketException or TimeoutException ||
                  ex is InvalidOperationException and not SignalException) { } finally {
+                // 协商失败就取消当前邀请并尽力通知信令这次交换结束，避免旧条目占住下一位来宾。
                 if (!accepted) m_Room.CancelInvite(true);
                 if (!ct.IsCancellationRequested)
                     await BestEffortAsync(m_Address, "host", new { code = m_Code, attempt, finish = true, open = Open },
@@ -162,6 +168,7 @@ namespace Unity.MP_FPS {
             Action<string> progress,
             CancellationToken ct) {
             var address = Address();
+            // 按公开房间申请需等房主同意，有房间码的加入可直接进入等待交换。两种共用候选交换流程但等待时间不同。
             bool applying = roomId != null;
             using var wait = CancellationTokenSource.CreateLinkedTokenSource(ct);
             wait.CancelAfter(TimeSpan.FromSeconds(applying ? 185 : 85));
@@ -181,6 +188,7 @@ namespace Unity.MP_FPS {
                         approved = true;
                         progress?.Invoke("已同意，正在连接房主…");
                     }
+                    // 拿到房主候选后转交 LanRoomClient 建实际通道。来宾的回执用短期信令凭据发送，最终角色档案从房主返回。
                     if (poll.Offer != null) {
                         await LanRoomClient.JoinPeerAsync(poll.Offer, playerName,
                             async (reply, replyCt) => {
@@ -194,6 +202,7 @@ namespace Unity.MP_FPS {
             } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
                 throw new TimeoutException("加入跨网房间超时，请重试。");
             } finally {
+                // 来宾取消或请求超时要尽力撤掉在信令上的条目。成功交接给房主后会把这个 token 清空，不再发取消。
                 if (token != null) _ = BestEffortAsync(address, "guest", new { code, roomId, cancel = true }, token);
             }
         }
@@ -203,6 +212,7 @@ namespace Unity.MP_FPS {
         }
 
         private static Uri Address() {
+            // 信令地址要求 HTTPS，本机开发允许回环 HTTP。没有配置好仍可使用手动邀请流程。
             if (!Uri.TryCreate(ClientSettings.FriendSignalingUrl?.TrimEnd('/') + "/", UriKind.Absolute, out var url) ||
                 url.UserInfo.Length > 0 || url.Query.Length > 0 || url.Fragment.Length > 0 ||
                 !(url.Scheme == Uri.UriSchemeHttps || (url.Scheme == Uri.UriSchemeHttp && url.IsLoopback)))
@@ -217,6 +227,7 @@ namespace Unity.MP_FPS {
             string token,
             CancellationToken ct) {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            // 单次 HTTP 询问还有更短的期限，失败转成信令错误码。整套申请或加入的截止时间在上层。
             timeout.CancelAfter(TimeSpan.FromSeconds(6));
             using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(address, action));
             request.Content = new StringContent(JsonConvert.SerializeObject(body, s_RequestJson), Encoding.UTF8,

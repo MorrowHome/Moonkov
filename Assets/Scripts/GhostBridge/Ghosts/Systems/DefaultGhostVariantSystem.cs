@@ -18,6 +18,7 @@ public struct TransformDefaultVariant {
     /// The replicated position value support both interpolation and extrapolation
     /// </summary>
     [GhostField(Quantization = 1000, Smoothing = SmoothingAction.InterpolateAndExtrapolate, MaxSmoothingDistance = 2)]
+    // 这里的 1000 代表坐标按约千分之一单位编码。插值和外推用于平滑相邻快照，距离超过阈值时避免把大跳变拖成长动画。
     public float3 Position;
 
     /// <summary>
@@ -39,6 +40,7 @@ public struct TransformDefaultVariant {
 [CreateBefore(typeof(TransformDefaultVariantSystem))]
 internal sealed partial class DefaultGhostVariantSystem : DefaultVariantSystemBase {
     protected override void RegisterDefaultVariants(Dictionary<ComponentType, Rule> defaultVariants) {
+        // 只给 Ghost 的根实体默认同步坐标。子节点的骨骼或部件仍可由预制件层级和本地动画更新。
         defaultVariants.Add(typeof(LocalTransform), Rule.OnlyParents(typeof(TransformDefaultVariant)));
     }
 }

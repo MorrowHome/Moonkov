@@ -17,7 +17,9 @@ namespace Unity.MP_FPS {
             bool contact = brain.Target != Entities.Entity.Null && brain.Confidence > .2f;
             EvaluateDecision(brain, position, health, map, now, out var best, out float score, out string reason,
                 out bool emergency);
+            // 高分不代表每拍立即换动作。到达承诺时间或路径失败才切换，紧急危险则随时可打断。
             bool changed = best != brain.Action && (now >= brain.CommitUntil || emergency || brain.PathFailed);
+            // 切行动时清理上一轮的搜索、探头和路径计时。需要退回、换弹或治疗时可继续使用已选好的掩体。
             if (changed) {
                 brain.Action = best;
                 brain.ActionStarted = now;
@@ -42,12 +44,14 @@ namespace Unity.MP_FPS {
                 brain.Reason = reason;
             }
             var goal = brain.TacticalGoal;
+            // 行动选完后还要把抽象目的转成具体地点。找补给、跟队长、搜索和撤离各自选择不同的路径目标。
             switch (brain.Action) {
                 case PmcAction.ClashObjective: goal = brain.MissionGoal; break;
                 case PmcAction.FollowSquad: goal = FollowSquadGoal(brain, position, now); break;
                 case PmcAction.Scavenge: goal = SelectCache(brain, position, map); break;
                 case PmcAction.Extract: goal = brain.RaidExit; break;
                 case PmcAction.HoldAngle: goal = position; break;
+                // 没有发现可确认目标时，机器的警报位置可以当搜索中心。它没有真实敌人的速度或可见性。
                 case PmcAction.Investigate:
                     if (brain.Target == Entities.Entity.Null && now < brain.MissionAlarmUntil) {
                         brain.LastSeen = brain.MissionAlarmPosition;
@@ -154,6 +158,7 @@ namespace Unity.MP_FPS {
                 : range;
         }
 
+        // 切换探头阶段时安排最晚结束时间。即使路线遇到延迟也不会无限暴露在外。
         private static void SetCoverPhase(DollSingerEnemyBrain brain, PmcCoverPhase phase, double until) {
             brain.CoverPhase = phase;
             brain.CoverPhaseUntil = until;
@@ -239,6 +244,7 @@ namespace Unity.MP_FPS {
             m_CoverReservations[brain.Seed] = (brain.CoverPosition, now + 4);
         }
 
+        // 根据过去实际观察到的线索找可能出口，走一段再观察。线索尝试耗尽就逐步放弃，不围着一点无限打转。
         private Vector3 UpdateSearch(DollSingerEnemyBrain brain, Vector3 position, double now) {
             double observation = System.Math.Max(brain.LastSeenTime, brain.LastHeardTime);
             bool freshClue = observation > brain.SearchObservationTime &&
@@ -291,6 +297,7 @@ namespace Unity.MP_FPS {
             return goal;
         }
 
+        // 候选点要有用的观察角度和到达路线。能靠更隐蔽的入口接近时优先选择。
         private Vector3 ChooseSearchPoint(DollSingerEnemyBrain brain, Vector3 position, double now) {
             var bestPoint = position;
             float bestScore = float.MinValue, travel = 0;
@@ -333,6 +340,7 @@ namespace Unity.MP_FPS {
             return bestPoint;
         }
 
+        // 侧移需要到得了的新火线，往往还要有人掩护。完成角度或路线走不通才结束。
         private Vector3 ChooseFlank(DollSingerEnemyBrain brain, Vector3 position, uint weaponId, double now) {
             var away = position - brain.LastSeen;
             away.y = 0;
@@ -375,6 +383,7 @@ namespace Unity.MP_FPS {
                    WorldBlocked(threat + Vector3.up * 1.5f, cover + Vector3.up * 1.55f);
         }
 
+        // 沿路线采样有多少段会暴露给威胁，比较不同退路和掩体的风险。
         private static float PathExposure(DollSingerEnemyBrain brain, Vector3 threat) {
             float exposure = 0;
             int corners = brain.ProbePath.GetCornersNonAlloc(brain.ProbeCorners);
@@ -402,6 +411,7 @@ namespace Unity.MP_FPS {
             return position;
         }
 
+        // 在已知危险区外选落脚点，尤其避免第一段路先朝危险中心走。
         private Vector3 ChooseHazardEscape(DollSingerEnemyBrain brain, Vector3 position, Vector3 hazard, float radius) {
             var away = position - hazard;
             away.y = 0;
@@ -437,6 +447,7 @@ namespace Unity.MP_FPS {
             return goal;
         }
 
+        // 向后或向侧找撤退路线。前方即使有两步空位也不把受伤角色送向对手。
         private Vector3 ChooseWithdrawal(DollSingerEnemyBrain brain, Vector3 position) {
             var away = position - brain.LastSeen;
             away.y = 0;
@@ -480,6 +491,7 @@ namespace Unity.MP_FPS {
                                                                        SafeClashRoute(brain.ProbeCorners, count)));
         }
 
+        // 候选位置先验证能到，再确认真能挡目标视线，也要能站的位置可短暂探头。
         private void ChooseCover(DollSingerEnemyBrain brain, Vector3 position, Vector3 threat, double now) {
             float best = float.MinValue;
             bool found = false;

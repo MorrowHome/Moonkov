@@ -55,8 +55,10 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 快照之间最多补一点时间，让动画更顺，也不会因掉包在本地把动作提前播完。
         public float Elapsed => Mathf.Max(0, duration - remaining + Mathf.Min(Time.time - receivedAt, .15f));
 
+        // 准备当前模型的动作库和骨架挂点。不同角色可提供自己的采样动作。
         public void Configure(Animator target, DollSingerView playerView, DollSingerHaloAim playerHalo, string rig) {
             if (animation != null) return;
             animator = target;
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
             little = animator.GetBoneTransform(HumanBodyBones.RightLittleProximal);
         }
 
+        // 每次读取动作、道具、剩余时间和中断状态。真正结束后只演该动作的收起段。
         public void Present(in PredictedPlayerGhost value, bool isOwner, bool isFirstPerson, bool suppressed) {
             searchTarget = value.HandActionTarget;
             owner = isOwner;
@@ -116,6 +119,7 @@ namespace Unity.MP_FPS {
             if (OwnsHands && halo) halo.ExternalHandPoseActive = true;
         }
 
+        // 在基础动画算完之后叠上手部动作并摆道具，让吃喝和针剂能接住身体的当前姿势。
         private void LateUpdate() {
             if (animation == null) return;
             if (!OwnsHands) {
@@ -168,6 +172,7 @@ namespace Unity.MP_FPS {
             try { LateUpdate(); } finally { previewPhase = -1f; }
         }
 
+        // 按道具代码懒创建外观并缓存，可从动作专用预制体或物品模型取得。反复吃同类动作不用重建。
         private Prop GetProp(string item) {
             if (string.IsNullOrEmpty(item)) return null;
             if (props.TryGetValue(item, out var cached)) return cached;
@@ -210,6 +215,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 将握持点和真实手部对齐，再按吃喝或注射的进度做接触修正。
         private void PlaceProp(Prop value, float phase) {
             var motion = animation.GetMotion(action, code);
             if (motion != null && motion.root?.positions?.Length == motion.frames * 3) {
@@ -232,6 +238,7 @@ namespace Unity.MP_FPS {
             if (value.Model && value.Model.Grip) value.Root.transform.position += position - value.Model.Grip.position;
         }
 
+        // 道具内部还能按进度改针头、活塞等零件。进度和动画来自同一条本地时间。
         private void PresentParts(RaidActionProp model, DollSingerActionAnimation.Motion motion, float phase) {
             if (!model || motion.parts == null) return;
             foreach (var track in motion.parts) {
@@ -248,6 +255,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 退出时让道具隐藏、角色手部解锁和动作音结束，下一次动作会重新采样状态。
         public void ResetPresentation() {
             if (animation != null && prepared) animation.RestoreBeforeAnimation();
             foley.Stop();

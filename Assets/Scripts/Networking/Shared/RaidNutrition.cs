@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         private float3 m_Position;
         private bool m_Known;
 
+        // 记录真实位置差而非只看输入。帧时长异常或突然传送时不把那段距离记为常规走动。
         public bool Observe(float3 position, float dt) {
             if (!math.all(math.isfinite(position)) || !float.IsFinite(dt) || dt <= 0) {
                 m_Known = false;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS {
 
         public static SurvivalEffects Effects(in PredictedPlayerGhost state) {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0) return SurvivalEffects.None;
+            // 界面的饥渴、缺氧和肢体受伤是同一个组合状态，可以同时亮几项。资源值在各自规则里推进。
             var effects = SurvivalEffects.None;
             if (state.Energy <= 0)
                 effects |= SurvivalEffects.Starving;
@@ -79,6 +81,7 @@ namespace Unity.MP_FPS {
             return effects;
         }
 
+        // 进食检查饱腹空间以及是否确实有可恢复的资源或可延长的效果，饮水按水分需求判。氧气罐走补氧分支。
         public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition item) {
             return state.BodyHealthInitialized && state.CurrentHealth > 0 && item != null && item.Oxygen <= 0 &&
                    (item.Food
@@ -104,6 +107,7 @@ namespace Unity.MP_FPS {
             if (!CanConsume(state, definition)) return InventoryError.Invalid;
             // Validate everything before changing either resource or stack. Version
             // and request ID guard replays; no client-specified recovery values.
+            // 先查版本、可访问性和是否用得上，再扣实际物品。更新的饥渴效果都从固定道具定义取，不听客户端自报数值。
             var error = graph.ConsumeOne(id, version);
             if (error != InventoryError.None) return error;
             state.Energy = Mathf.Clamp(state.Energy + definition.Energy, 0, Capacity);
@@ -120,6 +124,7 @@ namespace Unity.MP_FPS {
             return InventoryError.None;
         }
 
+        // 食物回复只作用在还没归零的部位。已经损坏的部位要走专用医疗流程。
         private static void RestoreLivingTissue(ref PredictedPlayerGhost state, float healing) {
             // Food restores living tissue only; it cannot revive a destroyed body part.
             for (int i = 0; i < RaidHealth.PartCount && healing > 0; i++) {
@@ -148,6 +153,7 @@ namespace Unity.MP_FPS {
             state.MucusBlindSeconds = state.CurrentHealth > 0 ? Mathf.Max(0, state.MucusBlindSeconds - dt) : 0;
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0) return;
             state.AlienSurgeSeconds = Mathf.Max(0, state.AlienSurgeSeconds - dt);
+            // 异形食物的增益在帧中途到期时，只把有效的那段计算进去。回复与负面副作用都使用这一段。
             float activeTime = Mathf.Min(dt, Mathf.Max(0, state.AlienFoodEffectSeconds));
             float activeFraction = activeTime / dt;
             if (activeTime > 0) {
@@ -159,6 +165,7 @@ namespace Unity.MP_FPS {
             if (state.CurrentHealth <= 0) return;
             bool moving = movingOverride ?? state.ControllerState.MovementSpeed > .1f;
             bool sprinting = moving && state.ControllerState.Sprinting;
+            // 腹部损伤和实际跑动都会加大消耗。基础时长从地图设定拿，倍率由角色当前状态决定。
             float abdomen = state.AbdomenHealth <= 0 ? 2 : 1;
             float energyRate = Capacity / Mathf.Max(1, energySeconds) * abdomen *
                                (sprinting ? 1.75f : moving ? 1.1f : 1);
@@ -169,6 +176,7 @@ namespace Unity.MP_FPS {
             if (state.AlienFoodEffect == AlienFoodEffect.NeuralOverdrive) waterRate *= 1 + .75f * activeFraction;
             state.AlienFoodEffectSeconds = Mathf.Max(0, state.AlienFoodEffectSeconds - dt);
             if (state.AlienFoodEffectSeconds <= 0) state.AlienFoodEffect = AlienFoodEffect.None;
+            // 分别计算能量与水分在这帧超出宽限的耗尽时间。最后将两种损害一起送给身体，不在到零的那一刻扣整帧。
             float hungryTime = Drain(ref state.Energy, ref state.StarvationSeconds, energyRate, dt, graceSeconds);
             float thirstyTime = Drain(ref state.Hydration, ref state.DehydrationSeconds, waterRate, dt, graceSeconds);
             state.Satiety = Mathf.Max(0, state.Satiety - Capacity / Mathf.Max(1, digestionSeconds) * dt);
@@ -200,6 +208,7 @@ namespace Unity.MP_FPS {
 
         // Metabolic damage affects remaining tissue proportionally, including
         // players with a black abdomen, and uses the existing death/settlement path.
+        // 系统性损伤按剩余部位血量比例分摊，同时留下 HUD 受击状态。这个路径属于生存消耗，没有护盾挡伤。
         private static void DamageSystemic(ref PredictedPlayerGhost state, float amount, uint tick) {
             float scale = Mathf.Max(0, 1 - amount / state.CurrentHealth);
             for (int i = 0; i < RaidHealth.PartCount; i++) {
@@ -217,6 +226,7 @@ namespace Unity.MP_FPS {
                                                     (state.Oxygen > 0 || !RaidOxygen.NeedsSuitAir(state)));
         }
 
+        // 把营养、缺氧或肢体伤对移动的影响写进本帧控制参数，移动和减少资源是两条独立计算。
         public static FirstPersonController.ControllerConsts Movement(
             in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants) {

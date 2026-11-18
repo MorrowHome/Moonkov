@@ -21,6 +21,7 @@ namespace Unity.MP_FPS {
                 (pulse.OwnerGhostId == Pulse.OwnerGhostId && pulse.OwnerSpawnTick == Pulse.OwnerSpawnTick &&
                  pulse.Sequence <= Pulse.Sequence))
                 return false;
+            // 新脉冲确认后先清掉上一轮目标，再开始计本轮的展示时间。
             Clear();
             Pulse = pulse;
             StartedAt = now;
@@ -41,6 +42,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 每个目标从自己那条消息到达时起单独计时，因此先到的目标可以比后到的先消失。
         public bool Visible(int index, double now) {
             return Active && Contacts[index].GhostId > 0 && now - ReceivedAt[index] < HaloScanRules.RevealSeconds;
         }
@@ -84,6 +86,7 @@ namespace Unity.MP_FPS {
             bool alive = owner != Entity.Null &&
                          HaloSupportRules.CanProtect(EntityManager.GetComponentData<PredictedPlayerGhost>(owner));
             var ecb = new EntityCommandBuffer(Allocator.Temp);
+            // 先收自己的脉冲再收目标。只有当前本地角色活着且出生标识一致时，才接管这套表现状态。
             foreach (var (rpc, entity) in SystemAPI.Query<RefRO<HaloScanPulseRpc>>().WithAll<ReceiveRpcCommandRequest>()
                          .WithEntityAccess()) {
                 if (alive && rpc.ValueRO.OwnerGhostId == identity.ghostId &&
@@ -98,6 +101,7 @@ namespace Unity.MP_FPS {
             }
             ecb.Playback(EntityManager);
             ecb.Dispose();
+            // 离场、死亡、重生或整个扫描超时，任何一种都会把轮廓和脉冲一起清掉。
             if (!alive || !m_State.Active || identity.ghostId != m_State.Pulse.OwnerGhostId ||
                 identity.spawnTick.SerializedData != m_State.Pulse.OwnerSpawnTick || now - m_State.StartedAt >
                 HaloScanRules.Duration + HaloScanRules.RevealSeconds + 2) {
@@ -114,6 +118,7 @@ namespace Unity.MP_FPS {
             HaloScanRenderer.Publish(camera, m_State, now);
         }
 
+        // 精确轮廓要关联到已经同步进当前 World 的模型。旧出生 tick 即使复用了相同 ghostId，也不能拿来套目标。
         private void FindOutline(in HaloScanContactRpc contact) {
             foreach (var (ghost, entity) in SystemAPI.Query<RefRO<GhostInstance>>().WithAll<GhostGameObjectLink>()
                          .WithEntityAccess()) {

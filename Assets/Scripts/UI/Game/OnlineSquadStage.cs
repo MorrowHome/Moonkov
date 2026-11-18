@@ -114,6 +114,7 @@ namespace Unity.MP_FPS.Client {
             evt.StopPropagation();
         }
 
+        // 点击从预览相机映射到舞台中的射线，再跟角色边界比较。最终拖动的是所选人物而不是整张背景。
         private MenuCharacterView PickActor(Vector2 local) {
             var rect = m_Image.contentRect;
             if (m_Camera == null || rect.width <= 0 || rect.height <= 0 || !rect.Contains(local)) return null;
@@ -205,6 +206,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 定时推进角色动画和画面。面板不可见或未完成布局时没有需要绘制的纹理。
         private void Tick() {
             double now = Time.realtimeSinceStartupAsDouble;
             float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f);
@@ -247,6 +249,7 @@ namespace Unity.MP_FPS.Client {
             m_Viewport = viewport;
             if (m_Target == null || m_Target.width != width || m_Target.height != height) {
                 ReleaseTarget();
+                // 同一相机的输出跟随 UI 尺寸分配。用系统支持的采样数处理边缘，再把完成的画面通知磨砂层。
                 var descriptor = new RenderTextureDescriptor(width, height, RenderTextureFormat.ARGB32, 24) {
                     msaaSamples = width * height <= 1_600_000 ? 4 : 2,
                     useMipMap = false
@@ -284,6 +287,7 @@ namespace Unity.MP_FPS.Client {
 
         private float SlotViewportX(int slot) { return m_Camera != null ? ProjectSlot(slot).x : 1 - (slot + .5f) / 4; }
 
+        // 座位在 3D 场景里有固定位置。用相机投影把它换成页面坐标，姓名卡才会跟人对齐。
         private Vector3 ProjectSlot(int slot) {
             return m_Camera.WorldToViewportPoint(m_Root.transform.position + SlotPositions[slot]);
         }
@@ -341,6 +345,7 @@ namespace Unity.MP_FPS.Client {
             return child;
         }
 
+        // 离队或者角色资源变化时只释放那个座位上的预览。其他成员的动画和纹理还能继续使用。
         private void ReleaseActor(int index) {
             if (m_DragActor != null && m_DragActor == m_Actors[index]) StopTurn();
             m_Actors[index]?.Dispose();
@@ -360,6 +365,7 @@ namespace Unity.MP_FPS.Client {
             FrameChanged?.Invoke(null);
         }
 
+        // 不可见时释放临时舞台和渲染纹理。再打开时仍可从上一次收到的成员数据还原。
         public void Suspend() {
             StopTurn();
             for (int i = 0; i < 4; i++) ReleaseActor(i);

@@ -15,6 +15,7 @@ namespace Unity.MP_FPS {
                 SystemAPI.GetSingletonEntity<RaidLootWorld>());
         }
 
+        // 判断当前真人是否能开启一轮新赏金。还存在未处理装备与任务记录时不能先重置上一轮。
         private bool CanRestartClash(ref SystemState state, BountyClashWorld world, ClashParticipant local) {
             var context = Persistence(ref state);
             if (context.Saves.Count > 0 || context.Deployments.Count > 0) return false;
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS {
             return world.Match.DeploymentAborted;
         }
 
+        // 按单人场的队伍规则给真人安排队友与对手。AI 先有参赛者编号，实际角色后来按请求建出来。
         private void SetupSoloRoster(ref SystemState state, BountyClashWorld world, ClashParticipant human) {
             var match = world.Match;
             if (!match.IsSolo || human.IsBot || human.TeamId >= 0) return;
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 把目前需要的机器人写进出生队列。出生系统会按轮次和参赛者 ID 回报进度。
         private void QueueSoloSpawns(ref SystemState state, BountyClashWorld world) {
             if (!world.Match.IsSolo) return;
             var bots = ClashBots(ref state);
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS {
             var bots = ClashBots(ref state);
             while (bots.Intents.Count > 0) {
                 var request = bots.Intents.Dequeue();
+                // AI 和玩家一样只执行本轮有效意图。来源实体要是登记的机器人，意图编号也不能倒退。
                 if (request.Epoch != world.Epoch ||
                     !world.Match.Players.TryGetValue(request.ParticipantId, out var p) || !p.IsBot ||
                     !bots.Actors.TryGetValue(p.Id, out var actor) || request.Sequence <= actor.LastIntent ||
@@ -132,6 +136,7 @@ namespace Unity.MP_FPS {
                 var bounty = match.Bounty == ClashBountyState.Carried
                     ? match.Players[match.CarrierId].Position
                     : match.BountyPosition;
+                // 对手 AI 的视图只拿大致赏金区域。同队则能读本队携带者的位置，避免机器人天然知道敌方精确坐标。
                 if (!own && match.Bounty == ClashBountyState.Carried)
                     bounty = new ClashPoint((float)System.Math.Round(bounty.X / 25) * 25, bounty.Y,
                         (float)System.Math.Round(bounty.Z / 25) * 25);
@@ -180,6 +185,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 比完的机器人移出出生队列和活动索引。死亡掉落时先处理装备，结果不写到真人档。
         private void RetireSoloBot(
             ref SystemState state,
             EntityCommandBuffer ecb,
@@ -217,6 +223,7 @@ namespace Unity.MP_FPS {
             bots.Actors.Remove(p.Id);
         }
 
+        // 每场的机器人数据绑定轮次，重开后清旧请求和角色，防止已经结束的 AI 继续接任务。
         private void ResetSoloBots(ref SystemState state, EntityCommandBuffer ecb, BountyClashWorld world, int epoch) {
             var bots = ClashBots(ref state);
             foreach (var p in world.Match.Players.Values.Where(p => p.IsBot))

@@ -23,6 +23,7 @@ namespace Unity.MP_FPS {
             m_Lighting = GetComponent<MoonSceneLighting>();
         }
 
+        // 房主同一进程有服务器和客户端两套世界，先从服务器取时钟。远程玩家才找客户端转发过来的基准。
         private void FindWorld() {
             // Host renders its authoritative clock. Remote players render the server's replicated anchor.
             foreach (var world in World.All) {
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS {
                     return;
         }
 
+        // 仅在某个 World 同时拥有战局时钟和网络时间时挂接。缺一项就释放临时查询并继续寻找。
         private bool Bind(World world) {
             var clock = world.EntityManager.CreateEntityQuery(typeof(ExpeditionClockState));
             var time = world.EntityManager.CreateEntityQuery(typeof(NetworkTime));
@@ -55,6 +57,7 @@ namespace Unity.MP_FPS {
             if (!IsSynchronized) return;
             var state = m_Clock.GetSingleton<ExpeditionClockState>();
             var time = m_Time.GetSingleton<NetworkTime>();
+            // 时钟就绪且收到有效 tick 后再改变光照。开局网络数据未到时保留场景原来的光。
             IsSynchronized = state.Ready && time.ServerTick.IsValid;
             if (!IsSynchronized) return;
             // 网络包给的是可追溯的时间基准。客户端逐帧按服务器当前 tick 推算，光照就不用等每次收到包才跳一下。
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS {
             m_Lighting.ApplyTimeOfDay(TotalHours);
         }
 
+        // 离开地图时解除对 World 的查询引用。世界可能已经销毁，因此只清理仍有效的查询。
         private void OnDisable() {
             if (m_World != null && m_World.IsCreated) {
                 m_Clock.Dispose();

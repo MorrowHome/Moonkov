@@ -34,6 +34,7 @@ namespace Unity.MP_FPS {
                 Hide();
                 return false;
             }
+            // 人和相机都近似不动时，短时间沿用搜过的清单。相机变了或玩家走了一段距离，可以马上重新收集附近目标。
             if (camera == m_Camera && now < m_NextCollection && (actor - m_Actor).sqrMagnitude < .5f) return false;
             m_Camera = camera;
             m_Actor = actor;
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS {
                 if (m_Count == MaxDraws) break;
                 if (!renderer || !renderer.enabled || renderer.forceRenderingOff ||
                     (m_Camera.cullingMask & (1 << renderer.gameObject.layer)) == 0 ||
+                    // 除距离外，用视锥和绘制层过滤可用网格。同一个 Renderer 可能被多个可交互规则找到，用集合只登记一次。
                     !GeometryUtility.TestPlanesAABB(m_Frustum, renderer.bounds) || !m_Seen.Add(renderer))
                     continue;
                 var mesh = renderer is SkinnedMeshRenderer skinned
@@ -106,6 +108,7 @@ namespace Unity.MP_FPS {
         }
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera) {
+            // 收集数据刚更新且这台相机是目标时才加入渲染。过于陈旧的网格清单无需继续画。
             if (camera != m_Camera || m_Count == 0 || Time.realtimeSinceStartupAsDouble - m_CollectedAt > .35) return;
             camera.TryGetComponent<UniversalAdditionalCameraData>(out var additional);
             if ((additional && additional.renderType == CameraRenderType.Overlay) ||
@@ -136,6 +139,7 @@ namespace Unity.MP_FPS {
                 data.Count = m_Count;
                 data.Draws = m_Draws;
                 builder.SetRenderAttachment(mask, 0, AccessFlags.Write);
+                // 第一步只读已经画好的场景深度，墙后的片段在遮罩阶段就会被挡掉。
                 builder.SetRenderAttachmentDepth(depth, AccessFlags.Read);
                 builder.SetRenderFunc(static (MaskData d, RasterGraphContext context) => {
                     for (int i = 0; i < d.Count; i++) {
@@ -157,6 +161,7 @@ namespace Unity.MP_FPS {
                     height = Mathf.Max(1, camera.cameraTargetDescriptor.height);
                 float pulse = m_Steady ? .68f : .64f + .24f * Mathf.Sin(Time.unscaledTime * 3.6f);
                 data.Edge = new Vector4(1.2f / width, 1.2f / height, pulse, 0);
+                // 第二步从遮罩边缘找轮廓，再混回当前画面。动态分辨率换缩放时，采样位置也要按纹理的坐标方向换算。
                 builder.UseTexture(mask, AccessFlags.Read);
                 builder.SetRenderAttachment(data.Color, 0, AccessFlags.ReadWrite);
                 builder.SetRenderFunc(static (EdgeData d, RasterGraphContext context) => {

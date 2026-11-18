@@ -70,6 +70,7 @@ namespace Unity.MP_FPS.Campaign {
         public const int MaxProcessedEvents = 128;
         public static CampaignProgress Create() { return new CampaignProgress(); }
 
+        // 将可变的任务掩码、物品引用和追踪列表完整复制。服务端局内推进不会直接改仓库已保存的进度。
         public static CampaignProgress Clone(CampaignProgress p) {
             if (p == null) return Create();
             return new CampaignProgress {
@@ -93,6 +94,7 @@ namespace Unity.MP_FPS.Campaign {
             };
         }
 
+        // 状态版本、任务节点、依赖关系和追踪信息需要同时成立。外部档案数据先校验再给 UI 和规则使用。
         public static string Validate(CampaignProgress p) {
             if (p == null || p.SchemaVersion != 1 || p.ContentVersion != CampaignCatalog.Version || p.Revision < 0 ||
                 p.PreferenceRevision < 0 || p.NodeMasks == null || p.CompletedTasks == null || p.NodeItemIds == null ||
@@ -153,6 +155,7 @@ namespace Unity.MP_FPS.Campaign {
 
         private static int All(TaskDefinition task) { return (1 << task.Nodes.Length) - 1; }
 
+        // 根据上一章和内容进度判断是否能开启。有任务定义不代表玩家此刻有权做它。
         public static bool Available(CampaignProgress p, string taskId) {
             var task = CampaignCatalog.Find(taskId);
             if (p == null || task == null || p.CompletedTasks == null) return false;
@@ -210,12 +213,15 @@ namespace Unity.MP_FPS.Campaign {
             if (!string.IsNullOrEmpty(fact.ItemId) && !Guid.TryParse(fact.ItemId, out _))
                 return Fail("campaign_item_binding", out error);
             var node = task.Nodes[index];
+            // 事实要来自该节点预期的场景设备与事件类型。做了别处同名操作不能冒充完成。
             if (fact.SourceId != node.SourceId || fact.Kind != node.Kind) return Fail("campaign_source", out error);
             if (!Available(p, task.Id)) return Fail("campaign_locked", out error);
             int mask = Mask(p, task.Id);
+            // 已完成节点的重复回执按成功处理。未完成节点还要检查事件编号没被用于别处，且此前步骤已完整。
             if ((mask & (1 << index)) != 0) return true;
             if (p.ProcessedEvents.Contains(fact.EventId)) return Fail("campaign_event_conflict", out error);
             if ((mask & node.Prerequisites) != node.Prerequisites) return Fail("campaign_prerequisite", out error);
+            // 撤离节点需要真正成功撤离才能接受。刚拾到目标物件时只能暂记本局事实。
             if (node.Kind == CampaignObjectiveKind.Extract && !fact.Extracted)
                 return Fail("campaign_extraction", out error);
             if (node.Kind == CampaignObjectiveKind.Extract && task.PrerequisiteTask != null &&
@@ -224,6 +230,7 @@ namespace Unity.MP_FPS.Campaign {
             if (node.Kind == CampaignObjectiveKind.RecoverItem &&
                 (fact.ItemCode != node.RequiredItemCode || !Guid.TryParse(fact.ItemId, out _)))
                 return Fail("campaign_item_binding", out error);
+            // 一个节点对应掩码中的一位，也能绑回带出的实际物品 ID。全程结束且确认撤离后才将任务记在已完成集合。
             p.NodeMasks[task.Id] = mask | (1 << index);
             if (!string.IsNullOrEmpty(fact.ItemId)) p.NodeItemIds[task.Id + "/" + node.Id] = fact.ItemId;
             // Node masks are the durable idempotency key. The bounded event set detects reuse among new nodes.
@@ -251,6 +258,7 @@ namespace Unity.MP_FPS.Campaign {
                 !p.NodeItemIds.TryGetValue(key, out string bound) || bound != itemId ||
                 !NodeCompleted(p, taskId, index))
                 return false;
+            // 丢掉任务物移除这局持有事实，并逐层去掉依赖它的节点。以前已保存的完成章节不回退。
             int mask = Mask(p, taskId) & ~(1 << index);
             for (int pass = 0; pass < task.Nodes.Length; pass++)
             for (int i = 0; i < task.Nodes.Length; i++)
@@ -264,6 +272,7 @@ namespace Unity.MP_FPS.Campaign {
             return true;
         }
 
+        // 追踪是显示偏好，限制主目标和辅助数量。它只改变下一次 HUD 提示，不会替代完成事件。
         public static bool TryTrack(CampaignProgress p, string taskId, bool secondary, out string error) {
             error = Validate(p);
             if (error != null) return false;
@@ -304,6 +313,7 @@ namespace Unity.MP_FPS.Campaign {
 
         // The caller first validates item bindings against the actual frozen extracted inventory.
         // UI preferences always come from the latest saved profile, never an older server-run clone.
+        // 服务器带回局内事实时，从已保存进度合并合法节点，同时保留玩家更新的界面追踪选择。
         public static CampaignProgress MergeExtracted(CampaignProgress saved, CampaignProgress run) {
             string error = Validate(saved) ?? Validate(run);
             if (error != null) throw new ArgumentException(error);

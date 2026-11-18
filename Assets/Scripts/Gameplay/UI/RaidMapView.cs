@@ -73,6 +73,7 @@ namespace Unity.MP_FPS {
             RefreshViewport();
             m_Hint.style.display = DisplayStyle.None;
             m_Overlay.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+            // 关图要释放正在拖动的指针。下次打开不会继续移动上一轮拖拽的地图。
             if (!open) {
                 m_Map.CancelDrag();
                 return;
@@ -94,6 +95,7 @@ namespace Unity.MP_FPS {
             m_SupplyKey.style.display = clash ? DisplayStyle.None : DisplayStyle.Flex;
             m_SuppliesLayer.style.display = clash ? DisplayStyle.None : DisplayStyle.Flex;
             m_SuppliesLayer.EnableInClassList("is-active", m_Map.ShowSupplies);
+            // 位置和物资读数限频更新，鼠标拖动与缩放仍可即时重绘底图。
             if (Time.unscaledTime >= m_NextReadout) {
                 m_NextReadout = Time.unscaledTime + .2f;
                 m_Map.PresentReadouts(m_Position, m_Extraction, m_Supplies, m_Objective, m_Navigation);
@@ -126,6 +128,7 @@ namespace Unity.MP_FPS {
         private void RefreshViewport() {
             var parent = m_Scope.parent;
             if (parent == null || parent.contentRect.width < 1 || Screen.width < 1 || Screen.height < 1) return;
+            // 用窗口的实际大小缩放固定的地图布局。控件保持和当前屏幕比例一致。
             float width = Mathf.Min(Screen.width, parent.contentRect.width), scale = parent.contentRect.width / width;
             m_Scope.style.width = width;
             m_Scope.style.height = Screen.height * width / Screen.width;
@@ -171,6 +174,7 @@ namespace Unity.MP_FPS {
         private void ZoomIn() { m_Map.ZoomBy(1.25f); }
         private void ZoomOut() { m_Map.ZoomBy(.8f); }
 
+        // 析构时解除按键和滚轮监听。地图已有的指针捕获也一并清理，让战斗输入恢复。
         public void Dispose() {
             m_Map.CancelDrag();
             m_Close.clicked -= Close;

@@ -33,6 +33,7 @@ namespace Unity.MP_FPS.Campaign {
                 save: CampaignSavePolicy.OnExtraction);
         }
 
+        // 章节依靠稳定任务 ID、节点 ID 与场景锚点组成。任务说明是 UI 文本，进度绑定的是这些 ID。
         private static TaskDefinition[] Build() {
             var tasks = new[] {
                 new TaskDefinition {
@@ -121,6 +122,7 @@ namespace Unity.MP_FPS.Campaign {
             return tasks;
         }
 
+        // 启动任务前检查目录版本、任务重名、前置节点和物品等规则。定义有冲突不继续生成任务。
         public static string Validate() {
             if (Tasks == null || Tasks.Length != 4) return "campaign_catalog";
             var ids = new HashSet<string>(StringComparer.Ordinal);
@@ -149,6 +151,7 @@ namespace Unity.MP_FPS.Campaign {
     // Bridge only completed objectives from the currently selected live facility.
     // Early scans remain in the facility mask until preceding story nodes are ready.
     public static class CampaignMissionAdapter {
+        // 现场任务模型的多个小步骤要映射成章节事实。不直接用 HUD 上的百分比决定任务是否完成。
         public static void RecordCompleted(
             CampaignProgress run,
             int chapter,

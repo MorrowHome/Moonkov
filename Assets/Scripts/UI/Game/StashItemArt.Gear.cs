@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class StashItemArt {
+        // 胸章基础造型共用，靠格数轮廓和点缀色做出型号差异。显示结构可以扩展，装备槽规则保持由库存处理。
         private void ChestBadge(int lobes, uint accent) {
             var outline = new Vector2[64];
             for (int i = 0; i < outline.Length; i++) {
@@ -26,6 +27,7 @@ namespace Unity.MP_FPS.Client {
             m_Painter.Fill();
         }
 
+        // 项圈用分层图形表示金属底、发光环和固定件。路径坐标经 StashItemArt 的比例换算。
         private void StandardLifeSupportCollar() {
             Ring(0x6f9baf, 1.7f, 50, 38, 28);
             Shape(0x293442, new Vector2(14, 58), new Vector2(29, 52), new Vector2(71, 52), new Vector2(86, 58),
@@ -76,6 +78,7 @@ namespace Unity.MP_FPS.Client {
             Box(0x7096bc, 45, 77, 10, 2);
         }
 
+        // 等级用不同轮廓和饰色表示。这里收到的是外形等级，背包内部容量仍读物品定义。
         private void SubspacePack(int tier) {
             bool scout = tier == 4;
             int rings = scout ? 1 : tier;

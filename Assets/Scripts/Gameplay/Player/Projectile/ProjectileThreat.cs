@@ -34,6 +34,7 @@ namespace Unity.MP_FPS {
             if (hits == null || hits.Length == 0) hits = new Collider[16];
             int count;
             while (true) {
+                // 用这段实际弹道和擦过半径去找附近身体。只处理同一场景中的敌对 AI，撞到的那个目标直接走伤害。
                 count = scene.OverlapCapsule(from, to, Radius, hits, playerMask, QueryTriggerInteraction.Ignore);
                 if (count < hits.Length || hits.Length >= MaxHits) break;
                 Array.Resize(ref hits, Math.Min(MaxHits, hits.Length * 2));
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS {
                 float t = Vector3.Dot(centre - from, travel) / travel.sqrMagnitude;
                 // Wait until the shot has actually passed the body. Otherwise a
                 // shot that hits it on the next update would count as a near miss.
+                // 把身体位置投影到弹道线上，只有已经飞过身体时才算擦过。下一小段要打中的弹体不用提前制造擦弹。
                 if (t < 0 || t >= 1) continue;
                 var closest = from + travel * t;
                 var body = collider.ClosestPoint(closest);
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
                         gap.magnitude, worldMask, QueryTriggerInteraction.Ignore)))
                     continue;
                 brain.NextNearMiss = now + Interval;
+                // 真实擦过会增加压制并提前触发新决定。搜刮或疗伤的 AI 可以及时转身避险。
                 brain.Suppression = Mathf.Clamp01(brain.Suppression + .24f);
                 brain.NextDecision = 0;
                 if (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Heal) brain.CommitUntil = 0;
@@ -92,6 +95,7 @@ namespace Unity.MP_FPS {
                     }
                     var bias = contact.HearingBias;
                     bias.y = 0;
+                    // 只知道来球方向时，给一处带误差的线索。短时间内共用误差，防止扫几发就推算出射手精确位置。
                     contact.Position = closest - direction * 12 + bias * 4;
                     contact.PositionUncertainty = 12;
                     contact.Velocity = Vector3.zero;

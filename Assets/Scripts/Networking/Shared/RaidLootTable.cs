@@ -152,6 +152,7 @@ namespace Unity.MP_FPS {
             }
         };
 
+        // 抽屉用比普通大箱更小的容器和抽取规则。按地图给它的补给类别找相应物品池。
         public static InventoryGraph CreateDrawer(RaidLootProfile profile, Random random) {
             if (random == null) throw new ArgumentNullException(nameof(random));
             var graph = InventoryGraph.Create(false, false);
@@ -183,6 +184,7 @@ namespace Unity.MP_FPS {
             return graph;
         }
 
+        // 先放保底项目，再从该类箱子的加权池抽若干件。随机源从服务端地图状态传来。
         public static InventoryGraph Create(RaidLootProfile profile, Random random) {
             if (random == null) throw new ArgumentNullException(nameof(random));
             int index = (int)profile;
@@ -202,6 +204,7 @@ namespace Unity.MP_FPS {
             return graph;
         }
 
+        // 按物品权重选择当次抽取，成功放置受实际容器容量限制。试摆不下的物品不能堆在格子外。
         private static void AddRandom(InventoryGraph graph, Entry[] pool, int rolls, Random random) {
             // Draw without replacement so one rare result cannot consume every roll.
             // Oversized optional results are skipped and another entry is drawn. A cargo
@@ -229,6 +232,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 先决定数量和物品完整尺寸，再通过物品图的空间搜索落位。
         private static bool TryAdd(InventoryGraph graph, Entry entry, Random random) {
             var definition = InventoryCatalog.Get(entry.Code);
             if (definition == null || definition.Kind == ItemKind.Root)
@@ -269,6 +273,7 @@ namespace Unity.MP_FPS {
             return cache.Items.Exists(item => InventoryCatalog.Get(item.Code)?.Kind != ItemKind.Root);
         }
 
+        // 只在箱已空、冷却结束、未超补货次数且没人阻挡时生成新内容，并提高补货代数，旧搜索不能继续沿用。
         public bool TryRefill(
             InventoryGraph cache,
             double now,

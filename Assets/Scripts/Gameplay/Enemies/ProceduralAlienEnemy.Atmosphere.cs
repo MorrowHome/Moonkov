@@ -7,6 +7,7 @@ namespace Unity.MP_FPS {
         // Presentation reads only ghosts already replicated to this client World.
         public static bool TryGetNearbySoundSource(World world, Vector3 listener, float range, out Vector3 position) {
             position = default;
+            // 用平方距离选范围内最近的可用异形，扫描每个候选时避免开平方。
             float nearest = range * range;
             bool found = false;
             foreach (var alien in s_ClientAliens) {
@@ -15,6 +16,7 @@ namespace Unity.MP_FPS {
                     alien.ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth <= 0)
                     continue;
                 // A dormant ceiling ambush stays quiet until it actually wakes.
+                // 已死亡或仍在无声伏击的对象不参加附近声音提示。血量和距离外的淘汰也由这一轮筛选完成。
                 if (alien.m_Action == AlienAction.Dead || alien.m_Action == AlienAction.Ambush) continue;
                 float squared = (alien.AimPoint - listener).sqrMagnitude;
                 if (squared >= nearest) continue;

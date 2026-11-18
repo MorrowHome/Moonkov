@@ -8,8 +8,10 @@ namespace Unity.MP_FPS {
     // Presentation reads server facts. Coordinates always come from scene authoring.
     public static class CampaignScene {
         public static CampaignProgress ReadProgress(World clientWorld = null) {
+            // 先复制档案中的持久进度。局内当前任务只能补到这个显示副本里。
             var progress = CampaignRules.Clone(PlayerProfileClient.Campaign);
             if (!TrySnapshot(clientWorld, out var snapshot) || !snapshot.CampaignEnabled) return progress;
+            // 局内快照包含各任务做过的节点和捡到的两类任务道具编号。用它覆盖这局临时进度，地图和 HUD 便能马上更新。
             progress.NodeMasks["CM01"] = snapshot.CampaignNodes01;
             progress.NodeMasks["CM02"] = snapshot.CampaignNodes02;
             progress.NodeMasks["CM03"] = snapshot.CampaignNodes03;
@@ -25,6 +27,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < CampaignCatalog.Tasks.Length; i++)
                 if ((snapshot.CampaignCompletedMask & (1 << i)) != 0)
                     progress.CompletedTasks.Add(CampaignCatalog.Tasks[i].Id);
+            // 正追踪的任务已做完局内部分、只差撤离时，如果跟踪未关闭，尝试把标记让给下一项主线。
             if (!progress.TrackingSuppressed && progress.PrimaryTracked != null &&
                 CampaignRules.Status(progress, progress.PrimaryTracked) == CampaignTaskStatus.AwaitingExtraction) {
                 string next = CampaignRules.CurrentMain(progress);
@@ -53,6 +56,7 @@ namespace Unity.MP_FPS {
             location = null;
             var node = CampaignRules.CurrentNode(progress, taskId);
             if (node == null) return false;
+            // 返航节点指向地图撤离区。调用方给了角色位置时取离它最近的出口。
             if (node.AnchorId == "ship.return") {
                 var map = MoonRaidMap.Active;
                 if (!map) return false;
@@ -62,6 +66,7 @@ namespace Unity.MP_FPS {
             }
             var site = RaidMissionSite.Active;
             if (!site) return false;
+            // 服务器尚未告知发现研究站前，只标出入口。发现后才给出站内的实际交互点。
             bool discovered = TrySnapshot(clientWorld, out var snapshot) && snapshot.OperationId.Length > 0;
             var anchor = site.Anchor(discovered ? node.AnchorId : "entry");
             if (anchor == null) return false;

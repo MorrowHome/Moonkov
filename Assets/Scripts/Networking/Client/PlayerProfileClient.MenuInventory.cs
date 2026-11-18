@@ -21,11 +21,13 @@ namespace Unity.MP_FPS {
         public static bool MenuInventoryNeedsRetry => s_MenuInventory?.NeedsRetry == true;
         public static Exception MenuInventoryError => s_MenuInventory?.Error;
 
+        // 只有已拿到正式库存、还没出战而且队列有空位时才开放拖放。待确认异常要先同步，不能继续积累新操作。
         public static bool CanQueueMenuInventory =>
             !RaidActive && Inventory != null && !MenuInventoryNeedsRetry &&
             MenuInventoryPending < ProfileInventoryQueue.Capacity;
 
         private static void CheckMenuScope() {
+            // 队列里的物品 ID 和背包版本只对当时的档案有效。切另一个账号、房主或本机存档后直接作废。
             if (s_MenuInventory != null && s_MenuInventoryScope != LocalPreferenceScope) ResetMenuInventory();
         }
 
@@ -36,6 +38,7 @@ namespace Unity.MP_FPS {
             if (!IsLoggedIn || Inventory == null || string.IsNullOrEmpty(scope))
                 throw new AccountClient.InventoryRequestException("login_expired");
             s_MenuInventoryScope = scope;
+            // 队列也要区分明确拒绝与临时连接错误。在线拒绝常带业务码，房主的普通操作错误由房间协议转换。
             bool lan = IsLan;
             s_MenuInventory = new ProfileInventoryQueue(() => Inventory,
                 () => scope == LocalPreferenceScope && IsLoggedIn && !RaidActive, MoveInventoryAsync, TradeAsync,
@@ -48,6 +51,7 @@ namespace Unity.MP_FPS {
             return s_MenuInventory;
         }
 
+        // 重拉权威结果时按档案来源走不同接口。单人已有存档对象，直接读当前确认状态即可。
         private static Task RefreshMenuAuthorityAsync(CancellationToken ct) {
             if (IsLan) return RefreshLanAsync(ct);
             if (!IsOffline) return AccountClient.RefreshInventoryAsync(ct);
@@ -64,6 +68,7 @@ namespace Unity.MP_FPS {
         }
 
         private static void ResetMenuInventory() {
+            // 取消之前挂在账号上的刷新订阅，销毁等待中的菜单队列，避免退出后旧界面还接到变化。
             AccountClient.InventoryChanged -= RefreshMenuInventory;
             s_MenuInventory?.Dispose();
             s_MenuInventory = null;

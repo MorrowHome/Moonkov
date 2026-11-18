@@ -6,6 +6,7 @@ namespace Unity.MP_FPS {
         public static WeaponManager Instance { get; private set; }
         public WeaponRegistry WeaponRegistry;
 
+        // 场景自己的注册表挂到统一入口。角色系统之后可以直接用编号查武器配置。
         private void Awake() {
             if (Instance != null && Instance != this) {
                 Destroy(gameObject);

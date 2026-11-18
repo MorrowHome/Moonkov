@@ -17,9 +17,11 @@ namespace Unity.MP_FPS.Client {
 
         public RaidActionReadout(bool accepted, bool cancelling, float remaining, float duration) {
             Remaining = float.IsFinite(remaining) ? Mathf.Max(0, remaining) : 0;
+            // 取消中优先，其次要等服务端接受。时间显示为零只代表进入等结果状态。
             Stage = cancelling ? RaidActionStage.Cancelling :
                 !accepted ? RaidActionStage.Requesting :
                 Remaining > 0 ? RaidActionStage.Running : RaidActionStage.Awaiting;
+            // 有开始确认和有效总时长之后才有可用百分比。同步数据不完整时空环比随便显示进度更准确。
             Progress = !accepted || !float.IsFinite(duration) || duration <= 0
                 ? 0
                 : Mathf.Clamp01(1 - Remaining / duration);
@@ -81,6 +83,7 @@ namespace Unity.MP_FPS.Client {
             bool showCancel = true,
             string activeTitle = null) {
             var state = new RaidActionReadout(accepted, cancelling, remaining, duration);
+            // 进行中步到接近满环，最后一段要等完成回执。结束后换成结果文字而非沿用计时。
             PresentProgress(active ? activeTitle ?? (medical ? "TREATING" : "SEARCHING") : receipt,
                 Mathf.Min(state.Progress, .97f), state.Remaining, active,
                 active && state.Stage == RaidActionStage.Running, active && showCancel, cancelling, failed, visible);
@@ -105,6 +108,7 @@ namespace Unity.MP_FPS.Client {
             m_Ring.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             m_Ring.SetProgress(progress);
             m_Time.style.display = active && showTime ? DisplayStyle.Flex : DisplayStyle.None;
+            // 倒计时按十分之一秒显示。量化后的值发生变化才更新标签，避免每帧重算本地化文字。
             int tenth = active && showTime && float.IsFinite(remaining)
                 ? Mathf.CeilToInt(Mathf.Max(0, remaining) * 10)
                 : -1;

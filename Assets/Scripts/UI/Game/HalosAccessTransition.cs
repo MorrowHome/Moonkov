@@ -77,10 +77,12 @@ namespace Unity.MP_FPS.Client {
                 if (!visible) m_Audio.Suspend();
                 return true;
             }
+            // 验证已通过也可能还在播开场，或者菜单已经隐藏。等能看到过渡且开场完成后再推进状态。
             if (!introFinished || !visible) {
                 Hide();
                 return ContentVisible;
             }
+            // 从等待到关闭只进入一次，继续调用 Present 不会把同一段动画拉回开头。
             if (m_Phase == Phase.Waiting) {
                 m_Phase = Phase.Closing;
                 m_Age = 0;
@@ -122,6 +124,7 @@ namespace Unity.MP_FPS.Client {
                 m_LastTick = double.NaN;
                 return;
             }
+            // 内容出现后等帘门打开完。到这一步才隐藏遮罩并通知外层恢复页面操作。
             if (m_Phase == Phase.Revealing && m_Age >= CoveredSeconds + OpenSeconds + SettleSeconds) {
                 m_Phase = Phase.Complete;
                 Hide(true);
@@ -130,6 +133,7 @@ namespace Unity.MP_FPS.Client {
             }
             Paint();
             // The rise begins with the dimming/confirmation and peaks at full closure.
+            // 每个声音只在进到对应阶段时发一次。动画每帧刷新不等于要每帧重播。
             if (m_Phase == Phase.Closing && !m_CloseSoundPlayed) {
                 m_CloseSoundPlayed = true;
                 m_Audio.Shutter(true);
@@ -157,6 +161,7 @@ namespace Unity.MP_FPS.Client {
                 : 1 - TerminalMotion.OutCubic((m_Age - CoveredSeconds) / (OpenSeconds + SettleSeconds)));
         }
 
+        // 只有元素仍挂在可见页面时才继续走时间。否则先暂停更新，避免未显示的过渡耗费帧预算。
         private bool OnScreen() {
             if (m_Root.panel == null || !(m_Root.layout.width > 0) || !(m_Root.layout.height > 0)) return false;
             for (var element = m_Root; element != null; element = element.parent)

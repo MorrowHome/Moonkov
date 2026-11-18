@@ -28,10 +28,12 @@ namespace Unity.MP_FPS {
             Directory.CreateDirectory(Path.Combine(Root, "profiles"));
             Directory.CreateDirectory(Path.Combine(Root, "matches"));
             Directory.CreateDirectory(OutboxDirectory);
+            // 房主身份单独写盘，重新开房仍可找到对应存档。好友客户端会结合这个身份派生它在该房的凭据。
             string identityFile = Path.Combine(Root, "host-id.txt");
             if (!File.Exists(identityFile)) File.WriteAllText(identityFile, Guid.NewGuid().ToString("N"));
             HostId = Guid.Parse(File.ReadAllText(identityFile)).ToString("N");
             try {
+                // 开房先打开已有来宾档并建立索引。磁盘文件名是凭据哈希，档内另有真正的 PlayerId，结算走后者。
                 foreach (string file in Directory.GetFiles(Path.Combine(Root, "profiles"), "*.json")) {
                     var store = new OfflineProfileStore(file);
                     string id = store.Read().PlayerId;
@@ -48,6 +50,7 @@ namespace Unity.MP_FPS {
             var context = new RaidPersistenceContext(this);
             context.Dispose();
             await context.ShutdownTask.ConfigureAwait(false);
+            // 先恢复以前没写完的出战、结算记录。若仍有待处理，不急着当作弃局，否则可能丢掉本应成功撤回的装备。
             if (Directory.GetFiles(OutboxDirectory).Any(f => !f.EndsWith(".tmp", StringComparison.Ordinal)))
                 throw new IOException("局域网结算恢复尚未完成，已保留原存档，请重新开房重试。");
             lock (m_Lock) {
@@ -65,6 +68,7 @@ namespace Unity.MP_FPS {
 
         public string OpenPlayer(string credential, string name) {
             lock (m_Lock) {
+                // 来宾的昵称可变。房主按凭据的哈希找原档，第一次见才分配一个新的文件和玩家 ID。
                 string key = CredentialKey(credential);
                 if (!m_Credentials.TryGetValue(key, out string id)) {
                     var store = new OfflineProfileStore(Path.Combine(Root, "profiles", key + ".json"));
@@ -85,6 +89,7 @@ namespace Unity.MP_FPS {
             lock (m_Lock) { m_Tickets.Clear(); }
         }
 
+        // 成员离开或返回时移除他的所有短期入场票。长期成员档仍保留，下次加入可以读回。
         public void RevokePlayer(string id) {
             lock (m_Lock) {
                 foreach (string key in m_Tickets.Where(p => p.Value == id).Select(p => p.Key).ToArray())
@@ -109,6 +114,7 @@ namespace Unity.MP_FPS {
         public LanProfileSnapshot Mutate(string id, string action, JObject payload) {
             lock (m_Lock) {
                 var store = m_Stores[id];
+                // 档案在活动战局中不能同时拖格或买卖。仓库提交经过房主自己的锁和版本规则，执行后返回新的完整档案。
                 if (store.RaidActive) throw new InvalidOperationException("对局结算完成前不能更改装备。");
                 switch (action) {
                     case "move": store.Move(payload.ToObject<InventoryCommand>()); break;
@@ -129,6 +135,7 @@ namespace Unity.MP_FPS {
             lock (m_Lock) {
                 var data = JObject.FromObject(payload);
                 if (path == "internal/sessions/resolve") {
+                    // 战局请求带同一轮房间签发的票。经房主索引查到的玩家 ID 才是实际入场身份。
                     if (!m_Tickets.TryGetValue((string)data["Token"] ?? "", out string player))
                         throw new InvalidOperationException("请在好友房间准备并进入对局。");
                     return Named(m_Stores[player].Read());
@@ -146,6 +153,7 @@ namespace Unity.MP_FPS {
         }
 
         private static void WriteOnce(string file, object value) {
+            // 比赛登记和奖励记录一旦写入，原编号只接受同样内容。临时文件刷完再改名，半途退出也不会留下半份正式记录。
             string json = JsonConvert.SerializeObject(value);
             if (File.Exists(file)) {
                 if (!JToken.DeepEquals(JToken.Parse(File.ReadAllText(file)), JToken.Parse(json)))
@@ -179,6 +187,7 @@ namespace Unity.MP_FPS {
                 var registration = new Registration
                     { MatchId = match, TokenId = token, RulesVersion = version, Participants = participants };
                 string file = Path.Combine(Root, "matches", matchId.ToString("N") + ".json");
+                // 赏金 token 只允许分配给一场。先落整场名单，之后才逐个给房里每名参加者登记。
                 foreach (string other in Directory.GetFiles(Path.Combine(Root, "matches"), "*.json"))
                     if (other != file && JsonConvert.DeserializeObject<Registration>(File.ReadAllText(other)).TokenId ==
                         token)
@@ -194,6 +203,7 @@ namespace Unity.MP_FPS {
                 string file = Path.Combine(Root, "matches", Guid.Parse(award.MatchId).ToString("N"));
                 var registration = JsonConvert.DeserializeObject<Registration>(File.ReadAllText(file + ".json"));
                 // Replay a partially written registration before distributing an extraction.
+                // 上次写完整场登记却没来得及登记到每位玩家时，先补个人档，再检查携带者和撤离队友都属于原名单。
                 foreach (var player in registration.Participants)
                     m_Stores[player.PlayerId].RegisterBountyMatch(registration.MatchId, registration.RulesVersion,
                         registration.TokenId, registration.Participants, true);
@@ -206,6 +216,7 @@ namespace Unity.MP_FPS {
                     award.ExtractedDeploymentIds.Any(id =>
                         !registration.Participants.Any(p => p.DeploymentId == id && p.TeamId == carrier.TeamId)))
                     throw new InvalidDataException("无效的局域网赏金撤离记录。");
+                // 先落下整场统一的奖励事件，再给成功撤出的成员写个人奖励。重试能从同一个事件继续发到还没处理的档。
                 WriteOnce(file + ".award", award);
                 foreach (var player in registration.Participants.Where(p =>
                              award.ExtractedDeploymentIds.Contains(p.DeploymentId)))

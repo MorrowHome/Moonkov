@@ -10,6 +10,7 @@ namespace Unity.MP_FPS {
         public const float ObstructionMultiplier = .55f;
         public const float AlienMovementRangeScale = .6f;
 
+        // 站姿、蹲、趴和踮脚有不同的基础动静，再乘负重。玩法可以关掉重量影响。
         public static float HearingRange(
             float baseRange,
             DollSingerStance stance,
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS {
             return float.IsFinite(baseRange) && baseRange > 0 ? baseRange * LoadMultiplier(weight, clash) : 0;
         }
 
+        // 同一位置只在有效听距内才形成线索。墙挡着时缩短听距，音源没变成 AI 的可见目标。
         public static bool Audible(float distance, float range, bool blocked) {
             return float.IsFinite(distance) && float.IsFinite(range) && distance >= 0 && range > 0 &&
                    distance <= range * (blocked ? ObstructionMultiplier : 1);
@@ -44,6 +46,7 @@ namespace Unity.MP_FPS {
         public const float Range = 25;
         public const double Interval = 3.2;
 
+        // 持续呛咳只按间隔发离散事件。短暂离开影响区再回来也不会瞬间多咳几次。
         public static bool TryEmit(ref double next, double now, float remaining, bool clash) {
             if (clash || !double.IsFinite(now) || !float.IsFinite(remaining) || remaining <= 0 || now < next)
                 return false;
@@ -55,6 +58,7 @@ namespace Unity.MP_FPS {
     // Alien hearing produces a search clue, not sight. A stable bearing keeps a
     // burst of shots from averaging into the exact position of a hidden actor.
     public static class RaidAlienHearing {
+        // 听到动静后给 AI 一个带误差的搜寻位置。误差由听者、目标、距离及遮挡决定，连续声音不会平均出精确藏身点。
         public static Vector3 Estimate(
             Vector3 source,
             float distance,

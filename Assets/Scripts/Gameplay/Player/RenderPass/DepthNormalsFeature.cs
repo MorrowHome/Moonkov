@@ -50,6 +50,7 @@ namespace Unity.MP_FPS {
             private List<ShaderTagId> m_ShaderTagIds;
             private ProfilingSampler m_ProfilingSampler;
 
+            // 准备要筛哪些层、队列和实际渲染材质，以及深度与模板测试的配置。
             public DepthNormalsRenderPass(Settings settings) {
                 m_Settings = settings;
                 m_ProfilingSampler = new ProfilingSampler("DepthNormals_Custom");
@@ -81,6 +82,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
+            // 从当前相机的渲染资源拿图。缺少需要的深度或法线时按相机描述创建临时目标。
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData) {
                 var resourceData = frameData.Get<UniversalResourceData>();
                 var cameraData = frameData.Get<UniversalCameraData>();
@@ -136,7 +138,9 @@ namespace Unity.MP_FPS {
                             m_FilteringSettings);
                         passData.rendererListHdl = renderGraph.CreateRendererList(rendererListParams);
                     }
+                    // 告诉 RenderGraph 这个渲染步骤依赖哪些物体。执行时把这一组对象画到约定的目标上。
                     builder.UseRendererList(passData.rendererListHdl);
+                    // 需要供其他效果访问时，在步骤之后把输出登记为全局纹理。只给本次相机内部使用时不强制暴露。
                     if (m_Settings.setGlobalTextures) {
                         builder.SetGlobalTextureAfterPass(normalsTexture,
                             Shader.PropertyToID(DepthNormalOnlyPass.k_CameraNormalsTextureName));
@@ -168,6 +172,7 @@ namespace Unity.MP_FPS {
             m_RenderPass.renderPassEvent = settings.renderPassEvent;
         }
 
+        // 把准备好的渲染步骤挂进指定位置，接下来由 URP 按相机排序运行。
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
             if (m_RenderPass == null) return;
             renderer.EnqueuePass(m_RenderPass);

@@ -14,6 +14,7 @@ namespace Unity.MP_FPS {
             InitializeLootContainers(ref state);
             bool clash = ClashEnabled(ref state);
             var research = !clash ? Persistence(ref state) : null;
+            // 远征地图还供极速赏金复用，但地图任务和研究只在远征推进。
             if (!clash) HandleMissions(ref state, ecb);
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<ResearchQuestHoldRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 先处理玩家本帧的取放请求，再推进箱子补货并更新各容器是否为空。地图标记看的是实际剩余内容。
             HandleLootRequests(ref state, ecb);
             HandleInventoryRequests(ref state, ecb);
             RefreshLootContainers(ref state);
@@ -45,6 +47,7 @@ namespace Unity.MP_FPS {
                          .Query<RefRO<RaidPickupRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
                 // Consume obsolete instant-pickup intents without generating new items.
                 ecb.DestroyEntity(entity);
+            // 旧局返回后想再开，需要确认出战号已结束、存档不再写入。官方调度的局还要走新的大厅分配。
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidDeployRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 if (clash) {
@@ -65,6 +68,7 @@ namespace Unity.MP_FPS {
                             session.ValueRW.SnapshotTimer = 0;
                         } else if (Persistence(ref state).Enabled) {
                             // Mark immediately; repeated RPCs cannot enqueue a second debit.
+                            // 先锁定这次再部署，再启动异步扣装。相同 RPC 在任务还未完成时不能重复进入。
                             session.ValueRW.DeployPending = true;
                             session.ValueRW.LoadoutError = RaidLoadoutError.None;
                             session.ValueRW.SnapshotTimer = 0;
@@ -84,6 +88,7 @@ namespace Unity.MP_FPS {
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRW<RaidSession>, RefRO<JoinedClient>>()
                          .WithEntityAccess()) {
                 if (SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) continue;
+                // 每个仍有效的连接先推进治疗和搜索等个人动作，再根据是否真的活着计算倒计时及撤离。
                 RefreshLootAccess(ref state, connection, session.ValueRO);
                 SendInventory(ref state, ecb, connection, session.ValueRO.RaidId);
                 if (clash) {
@@ -96,6 +101,7 @@ namespace Unity.MP_FPS {
                 if (!clash && session.ValueRO.Phase == RaidPhase.Active &&
                     TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position)) {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);
+                    // 档案明确有进行中的研究时才为这局计算任务事件。只把对应本次行动的角色、库存和 tick 交进去。
                     if (research != null && research.Profiles.TryGetValue(connection, out var profile) &&
                         profile.Mode == null && profile.ResearchQuests != null && profile.ResearchQuests.Active != 0) {
                         var player = joined.ValueRO.PlayerEntity;
@@ -168,6 +174,7 @@ namespace Unity.MP_FPS {
                 (outcome == RaidPhase.Extracted || outcome == RaidPhase.Dead || outcome == RaidPhase.TimedOut) &&
                 state.EntityManager.HasComponent<RaidInventoryState>(connection)) {
                 var inventory = GetRaidInventory(ref state, connection);
+                // 撤离前把当前武器已经开始的充能状态结算好，最后保存的是带出那一刻的真实装备余量。
                 if (outcome == RaidPhase.Extracted && SystemAPI.HasComponent<JoinedClient>(connection)) {
                     var extractingPlayer = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                     if (SystemAPI.Exists(extractingPlayer) &&
@@ -181,6 +188,7 @@ namespace Unity.MP_FPS {
                                 weapon.MagazineSize);
                     }
                 }
+                // 结算清单趁背包完整时生成。稍后尸体会接管部分物品，但结果页仍可以展示哪件带回、哪件遗失。
                 inventory.Result = RaidResultManifest.Capture(inventory.Graph, session.ValueRO.RaidId, outcome);
                 inventory.LastSentVersion = -1;
             }
@@ -190,6 +198,7 @@ namespace Unity.MP_FPS {
                 DropDeathInventory(ref state, connection);
             // 同一场远征只允许从进行中结算一次。服务端得到这次阶段变化后，才向持久化上下文提交保存。
             if (!RaidRules.TrySettle(ref session.ValueRW, outcome, !persistence.Enabled)) return;
+            // 支持档案写入时标记 Saving 并提交结算。同一份快照会带这个状态，客户端能等后端确认再继续。
             if (persistence.Enabled) {
                 session.ValueRW.SaveState = RaidSaveState.Saving;
                 persistence.BeginSave(connection, session.ValueRO,
@@ -205,6 +214,7 @@ namespace Unity.MP_FPS {
                     if (SystemAPI.Exists(input)) ecb.DestroyEntity(input);
                 }
                 // Remove the stale link before despawn; the connection stays alive for settlement/redeploy.
+                // 结束角色和命令实体时保留连接，用它接结果页、档案回执与可能的下次出战。
                 if (state.EntityManager.HasBuffer<LinkedEntityGroup>(connection)) {
                     var linked = state.EntityManager.GetBuffer<LinkedEntityGroup>(connection);
                     for (int i = linked.Length - 1; i >= 0; i--)

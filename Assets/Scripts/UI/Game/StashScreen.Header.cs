@@ -18,12 +18,14 @@ namespace Unity.MP_FPS.Client {
 
         private void FitHeaderActions() {
             for (int i = m_HeaderButtons.Count - 1; i >= 0; i--)
+                // 账号和连接入口可能移到其他区域。移出去时解除对按钮的临时尺寸设置，不让新父层继承旧仓库宽度。
                 if (m_HeaderButtons[i].parent != m_HeaderActions) {
                     SizeHeaderButton(m_HeaderButtons[i], null);
                     m_HeaderButtons.RemoveAt(i);
                 }
             if (m_Host.worldBound.width <= 0 || Screen.width <= 0) return;
             float scale = m_Preview ? 1 : Mathf.Max(1, m_Host.worldBound.width / Screen.width);
+            // 面板比例和子控件数量都相同时不刷新。窗口缩放或账号入口换位置才重新布置。
             bool changed = !Mathf.Approximately(scale, m_HeaderScale) ||
                            m_HeaderButtons.Count != m_HeaderActions.childCount;
             if (!changed) return;
@@ -37,6 +39,7 @@ namespace Unity.MP_FPS.Client {
                 }
         }
 
+        // 这里把最小点击尺寸按面板缩放换成对应的值。离开这个页时清除这些临时样式。
         private static void SizeHeaderButton(Button button, float? scale) {
             // Size in layout units so scaling never paints one button over another.
             button.style.fontSize = scale.HasValue ? new StyleLength(12 * scale.Value) : StyleKeyword.Null;

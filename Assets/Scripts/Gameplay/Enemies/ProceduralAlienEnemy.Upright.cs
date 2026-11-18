@@ -19,6 +19,7 @@ namespace Unity.MP_FPS {
         private Vector3 UprightWaypoint(Vector3 goal) {
             // NavMesh positions are feet, while the ghost transform is the elevated body.
             var foot = transform.position - Vector3.up * m_Body.Motor.BodyHeight;
+            // 用少量固定间隔重算路线，避免每个移动步对整场 NavMesh 重新寻路。
             if (m_Clock >= m_NextUprightPath) {
                 NavigationPlans++;
                 m_GroundQueriesLeft = GroundQueryBudget;
@@ -26,6 +27,7 @@ namespace Unity.MP_FPS {
                 m_UprightGoal = goal;
                 m_UprightCornerCount = 0;
                 m_UprightCorner = 0;
+                // NavMesh 的起点和终点是脚底。算完脚底路径之后要转换回异形身体中心位置。
                 if (NavMesh.SamplePosition(foot, out var start, 1.2f, NavMesh.AllAreas) &&
                     NavMesh.SamplePosition(goal, out var end, 2, NavMesh.AllAreas) &&
                     Mathf.Abs(start.position.y - foot.y) < .6f && Mathf.Abs(end.position.y - goal.y) < 1.5f) {
@@ -40,6 +42,7 @@ namespace Unity.MP_FPS {
                     Mathf.Max(3, profile.GroundBodyRadius(m_Body.Scale) * 2);
                 // Verify a bounded prefix in the giant's real capsule, not the humanoid bake.
                 // A distant corner becomes a shorter supported waypoint; future prefixes replan.
+                // 只验接下来一小段导航拐点，因为烘的是人形尺寸。大体型每走一段都要再确认实际空间。
                 if (m_UprightCornerCount > 1 && !rememberedBlock) {
                     var previous = foot;
                     float remaining = 12;
@@ -56,6 +59,7 @@ namespace Unity.MP_FPS {
                     m_UprightCornerCount = accepted;
                     m_UprightCorner = 0;
                 } else { m_UprightCornerCount = 0; }
+                // 场景已有导航过不去时，允许一个经过实体碰撞检查的短直线。没验过的目标不会直接使用。
                 if (m_UprightCornerCount == 0 && !rememberedBlock) {
                     var requested = foot + Vector3.ClampMagnitude(goal - foot, 12);
                     if (ClearGroundRoute(foot, requested, out var groundedGoal)) {
@@ -71,6 +75,7 @@ namespace Unity.MP_FPS {
                     // Small, reachable side positions can change the firing angle around a blockage.
                     // Never use an unchecked target vector or teleport to the candidate.
                     var toward = Vector3.ProjectOnPlane(goal - foot, Vector3.up).normalized;
+                    // 两侧都试小步绕开障碍，并记住失败目标一段时间，避免站在同一堵墙前反复撞。
                     float side = (GhostGameObject.Owner & 1) == 0 ? 1 : -1;
                     for (int i = 0; i < 4 && m_GroundQueriesLeft >= 12; i++) {
                         float angle = (i % 2 == 0 ? side : -side) * (i < 2 ? 65 : 110);
@@ -104,6 +109,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 沿候选路线查地面连续性、坡度和角色胶囊空间，预算有限时宁可这次不前进。
         private bool ClearGroundRoute(Vector3 foot, Vector3 goal, out Vector3 groundedGoal) {
             groundedGoal = foot;
             int mask = LayerMask.GetMask("Default", "Ground");

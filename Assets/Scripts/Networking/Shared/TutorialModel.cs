@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.Campaign {
         public int Version = 1;
         public TutorialStatus Status;
         public int IntroPage;
+        // 不同位记录拿武器、电池、医疗及走动瞄准等动作。UI 可逐项读，存档不必记玩家每一次按键。
         public int CompletedSteps;
         public int SupplyCycle;
     }
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS.Campaign {
             "Gu Heng on comms. Register at the MC00 entrance, then check the backup power and the sampler. Keep the sample sealed and bring it back to the ship."
         };
 
+        // 加载时校验页数、步骤只用已知位、补给轮次和状态版本。损坏进度不会无意走到结束。
         public static string Validate(TutorialProgress state) {
             return state == null || state.Version != 1 || !Enum.IsDefined(typeof(TutorialStatus), state.Status) ||
                    state.IntroPage < 0 || state.IntroPage > Introduction.Length ||
@@ -39,6 +41,7 @@ namespace Unity.MP_FPS.Campaign {
                 : null;
         }
 
+        // 入场前检查是否实装武器，有可用位置的电池与医疗品。光拥有仓库中的这些物品还不能完成准备。
         public static int Preparation(InventoryGraph graph) {
             if (graph == null) return 0;
             int steps = graph.Items.Any(i => i.Parent == "equipment" && IsWeapon(i.Code)) ? Equipped : 0;
@@ -47,6 +50,7 @@ namespace Unity.MP_FPS.Campaign {
             return steps;
         }
 
+        // 教学准备认长枪和手枪。分类取自物品目录，让仓库上层以后加一类新武器时行为一致。
         public static bool IsWeapon(string code) {
             var kind = InventoryCatalog.Get(code)?.Kind;
             return kind == ItemKind.LongGun || kind == ItemKind.Pistol;

@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
         Dgs = 1
     }
 
+    // GameManager 根据这个枚举区分要创建本机两个 World、只去远端加入，还是从大厅或好友房接手连接。
     public enum CreationType {
         CreateOrJoin = 0,
         Host = 1,
@@ -64,6 +65,7 @@ namespace Unity.MP_FPS {
         // installs to the new server while a player's own edit still wins in between.
         private const string k_SeededAddressKey = "SeededServerAddress";
         private const string k_SeededPortKey = "SeededServerPort";
+        // 页面输入可以是地址文本或会话码。真正交给 NetCode 的是已解析端点，领票和重连标记也只用于当次加载。
         public NetworkEndpoint ConnectionEndpoint;
         public string GameJoinTicket { get; set; }
         public bool ResumeOnly { get; set; }
@@ -73,6 +75,7 @@ namespace Unity.MP_FPS {
         public int ApprovedRulesVersion { get; set; }
 
         private ConnectionSettings() {
+            // 刚安装先用随包默认值，之后保留玩家的修改。发布方改了随包地址才重新覆盖一次，端口同理。
             IPAddress = Seeded(k_IPAddressKey, k_SeededAddressKey, ClientSettings.ServerAddress, ConfiguredAddress);
             if (!ClientSettings.IsValidAddress(IPAddress)) IPAddress = ConfiguredAddress;
             string configuredPort = ClientSettings.ServerPort > 0 ? ClientSettings.ServerPort.ToString() : null;
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS {
         /// </summary>
         private static string Seeded(string valueKey, string seedKey, string configured, string fallback) {
             if (string.IsNullOrWhiteSpace(configured)) return PlayerPrefs.GetString(valueKey, fallback);
+            // 保存上次已经套用的随包值。只有新的随包值和它不同时，才用新配置替换之前的连接目标。
             if (PlayerPrefs.GetString(seedKey, string.Empty) == configured)
                 return PlayerPrefs.GetString(valueKey, configured);
             PlayerPrefs.SetString(seedKey, configured);
@@ -105,6 +109,7 @@ namespace Unity.MP_FPS {
             set {
                 if (m_ConnectionState == value) return;
                 m_ConnectionState = value;
+                // 状态值有变化时通知 UI Toolkit 重新取连接提示的 DisplayStyle，连接中才显示提示。
                 Notify(ConnectionStatusStylePropertyName);
             }
         }
@@ -135,6 +140,7 @@ namespace Unity.MP_FPS {
             set {
                 if (m_IPAddress == value) return;
                 m_IPAddress = value;
+                // 地址和端口任一修改后都重算整组端点格式。满足格式才解锁连接按钮，域名是否真能解析留给加载处理。
                 PlayerPrefs.SetString(k_IPAddressKey, value);
                 IsNetworkEndpointValid = ClientSettings.IsValidAddress(m_IPAddress) && ushort.TryParse(m_Port, out _);
                 Notify();
@@ -174,6 +180,7 @@ namespace Unity.MP_FPS {
             get => m_SessionCode;
             set {
                 if (m_SessionCode == value) return;
+                // 玩家粘贴的会话码先去前后空格并统一大写。这里检查的是六位字母数字格式，真实房间由服务查询。
                 m_SessionCode = value?.Trim().ToUpperInvariant();
                 IsSessionCodeFormatValid = CheckIsSessionCodeFormatValid(m_SessionCode);
                 Notify();

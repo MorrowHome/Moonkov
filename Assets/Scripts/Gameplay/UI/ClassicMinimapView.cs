@@ -60,6 +60,7 @@ namespace Unity.MP_FPS {
                 Hide();
                 return;
             }
+            // 地图变化就销毁原底图。新底图来自当前沙2场景的导航三角面，只生成一次。
             if (m_Map != map) {
                 m_Map = map;
                 if (m_Surface) UnityEngine.Object.Destroy(m_Surface);
@@ -72,6 +73,7 @@ namespace Unity.MP_FPS {
                 Hide();
                 return;
             }
+            // 实体查询绑定到一个 World。换客户端 World 后释放旧查询并重新找这一局的玩家。
             if (m_World != world) {
                 if (m_World != null && m_World.IsCreated) m_Actors.Dispose();
                 m_World = world;
@@ -88,6 +90,7 @@ namespace Unity.MP_FPS {
             using var actors = m_Actors.ToEntityArray(Allocator.Temp);
             foreach (var actor in actors) {
                 var health = manager.GetComponentData<PredictedPlayerGhost>(actor);
+                // 只画仍可见的本队角色，不从客户端实体列表暴露对手的位置。
                 if (!health.ClashEnabled || health.ClashTeam != team || health.CurrentHealth <= 0 ||
                     health.ClashLife is not (ClashLife.Alive or ClashLife.Waiting))
                     continue;
@@ -156,6 +159,7 @@ namespace Unity.MP_FPS {
                 parents[Root(mesh.indices[i + 1])] = root;
                 parents[Root(mesh.indices[i + 2])] = root;
             }
+            // 用最近的出生点顶点找到整片连通区域。与战区不相连的导航区域不参与底图。
             int island = Root(nearest);
             var bounds = new Bounds(mesh.vertices[nearest], Vector3.zero);
             for (int i = 0; i < mesh.vertices.Length; i++)
@@ -182,6 +186,7 @@ namespace Unity.MP_FPS {
                          walkable[pixel + Resolution])
                     pixels[pixel] = Edge;
             }
+            // 可行走像素和一圈边缘像素完成后生成纹理。之后更新玩家标记无需重新画底图。
             var texture = new Texture2D(Resolution, Resolution, TextureFormat.RGBA32, false) {
                 name = "Classic Dust II minimap", filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp
             };
@@ -196,6 +201,7 @@ namespace Unity.MP_FPS {
 
         private static void Rasterize(bool[] walkable, Vector2 a, Vector2 b, Vector2 c) {
             float area = Side(a, b, c);
+            // 俯视投影面积太小的三角形不画。再统一顶点绕向，用像素测试填出能走的区域。
             if (Mathf.Abs(area) < .0001f) return;
             if (area < 0) (b, c) = (c, b);
             var min = Vector2.Min(a, Vector2.Min(b, c));

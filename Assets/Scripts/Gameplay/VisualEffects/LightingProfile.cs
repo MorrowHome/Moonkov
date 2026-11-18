@@ -7,9 +7,11 @@ namespace Unity.MP_FPS {
     public class LightingProfile : ScriptableObject {
         [Header("Skybox")] public Material skybox;
         [Header("Sun Light")] public Light sun;
+        // 环境光和直射太阳分别配置。管方向的光源引用与背景光、雾的参数都由同一份场景配置给出。
         [Header("Ambient")] public AmbientMode ambientMode = AmbientMode.Skybox;
         public Color ambientLight = Color.gray;
         public float ambientIntensity = 1f;
+        // 雾参数支持颜色和距离或密度，由 Unity 使用选定的雾模式解释。同一地图换配置时能一起应用。
         [Header("Fog")] public bool fog;
         public FogMode fogMode = FogMode.Exponential;
         public Color fogColor = Color.gray;

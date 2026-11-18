@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Unity.MP_FPS {
     [CreateAssetMenu(menuName = "Moonkov/Corpse Presentation")]
     public sealed class CorpsePresentationSettings : ScriptableObject {
+        // 角色编号对应数组里的外观。Death 是用来在场景里保存最后姿势的片段。
         public GameObject[] CharacterVisuals;
         public AnimationClip Death;
     }

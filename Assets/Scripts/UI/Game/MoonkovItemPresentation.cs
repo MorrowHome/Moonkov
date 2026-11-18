@@ -27,6 +27,7 @@ namespace Unity.MP_FPS.Client {
             };
         }
 
+        // 界面重复用同一个格子画不同物品时先去掉旧分类。空槽或未知物品不会继承上一件的底色。
         public static void ApplyCategory(VisualElement element, string code) {
             string previous = element.GetClasses()
                 .FirstOrDefault(c => c.StartsWith("item-category-", StringComparison.Ordinal));
@@ -35,6 +36,7 @@ namespace Unity.MP_FPS.Client {
             if (code != null) element.AddToClassList(CategoryClass(code));
         }
 
+        // 先从补给和战术物品的真正规则取数值，再拼成可显示的短句。多个页面因此可以读到同一效果。
         public static string Effect(string code) {
             if (code == EnergyGrenadeRules.Code)
                 return MoonkovLocalization.Text("3s FUSE / 6m BLAST / UP TO 480 DAMAGE");
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS.Client {
             return MoonkovLocalization.Text(action) + " / " + Effect(code);
         }
 
+        // 同型号物品可能剩下不同电量、弹药或防护。这里用物品实例的状态补充目录里看不到的变化。
         public static string ItemState(InventoryItem item) {
             if (item == null) return "";
             if (item.Code == "energy_shield_generator") return MoonkovLocalization.Text("RETIRED EQUIPMENT");
@@ -124,6 +127,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 改装台和详情共享同一套模块代价说明。模块实际生效方式仍由武器数据和库存中的模块掩码决定。
         public static string ModuleTradeoff(string code) {
             switch (code) {
                 case "halo_capacitor": return "Recovery speed -26%";
@@ -136,6 +140,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 给悬浮卡或商品详情返回使用目的。数量、占格和重量由调用方另外展示。
         public static string Purpose(string code) {
             string purpose;
             switch (code) {

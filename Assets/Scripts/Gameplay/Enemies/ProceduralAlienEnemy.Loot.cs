@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
         private bool m_LootDropped;
 
         private void DropAlienLoot() {
+            // 一次死亡只尝试掉落一次。死亡状态可能持续多拍，避免按帧生成多个相同容器。
             if (m_LootDropped) return;
             m_LootDropped = true;
             var manager = GhostGameObject.EntityManager;
@@ -15,8 +16,10 @@ namespace Unity.MP_FPS {
             if (query.IsEmptyIgnoreFilter) return;
             var loot = manager.GetComponentObject<RaidLootContainers>(query.GetSingletonEntity());
             if (!loot.Initialized) return;
+            // 物种和是否 Boss 决定可采集种类，由本局随机源生成真实库存。
             var inventory = AlienHarvest.Create(profile.Boss, loot.LootRandom, profile.Species.ToString());
             var point = transform.position;
+            // 墙上和头顶死亡也把残骸放到脚下找到的地面，并让外观朝向地面法线。
             if (!UnityEngine.Physics.Raycast(point + Vector3.up * .1f, Vector3.down, out var floor, 100,
                     LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore))
                 return;

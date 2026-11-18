@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
             RecoveryPerSecond = 8,
             EnergyPerShield = .5f;
 
+        // 只挡被划为外部战斗的种类。缺氧、营养不良和其他身体损耗不需要先过光环。
         public static bool Blocks(RaidDamageKind kind) {
             return kind == RaidDamageKind.Bullet || kind == RaidDamageKind.Explosion || kind == RaidDamageKind.Melee ||
                    kind == RaidDamageKind.Fire;
@@ -33,10 +34,12 @@ namespace Unity.MP_FPS {
             RaidDamageKind kind,
             float3 impact = default) {
             if (!float.IsFinite(incoming) || incoming <= 0) return 0;
+            // 玩家正在举盾仍要核对活着、能用光环和允许的伤害种类。条件不满足时把原伤害原样给调用者。
             if (!state.HaloDefending || !HaloEnergyRules.CanDefend(state) || !Alive(state) || !Blocks(kind))
                 return incoming;
             float absorbed = HaloEnergyRules.Spend(ref state, incoming);
             if (absorbed <= 0) return incoming;
+            // 真的扣了护盾能量就发受击序号、强度与点位。哪怕完全挡住，也要播护盾命中并中断相应动作。
             state.ShieldHitSequence++;
             state.ShieldHitStrength = Mathf.Clamp01(absorbed / Capacity * 3);
             state.ShieldHitPoint = math.all(math.isfinite(impact)) && math.lengthsq(impact) > .001f

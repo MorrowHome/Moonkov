@@ -2,6 +2,7 @@
 using Unity.Entities;
 
 namespace Unity.MP_FPS {
+    // 组件本身没有数据。启动单人服务器时加到 World，账本读写和一些只在单人启用的规则查它是否存在。
     public struct OfflineRaidMode : IComponentData {
     }
 }

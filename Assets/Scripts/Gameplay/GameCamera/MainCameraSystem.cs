@@ -9,10 +9,12 @@ namespace Unity.MP_FPS {
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial class MainCameraSystem : SystemBase {
+        // 客户端世界要存在相机实体才会运行此表现系统，加载中没有相机时不用空查。
         protected override void OnCreate() { RequireForUpdate<MainCamera>(); }
 
         protected override void OnUpdate() {
             if (MainCameraSingleton.Instance != null) {
+                // 先等实体变换相关任务完成，再把最新坐标和旋转送到真实 Camera。
                 EntityManager.CompleteAllTrackedJobs();
                 var mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainCamera>();
                 var mainCamera = SystemAPI.GetSingleton<MainCamera>();

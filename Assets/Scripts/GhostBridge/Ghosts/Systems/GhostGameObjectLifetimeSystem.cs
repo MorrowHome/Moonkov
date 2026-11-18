@@ -15,6 +15,7 @@ using UnityEngine.Jobs;
 using Hash128 = Unity.Entities.Hash128;
 using Object = UnityEngine.Object;
 
+// 正常的数据先随 Ghost 一起移除，这个关联还能留给清理系统。它记着那只场景物体在哪儿，可以在实体退场后销毁。
 public class GhostGameObjectLink : ICleanupComponentData {
     public GhostGameObject LinkedInstance;
 }
@@ -112,6 +113,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
         bool isServer = World.IsServer();
         int networkId = isClient ? SystemAPI.GetSingleton<NetworkId>().Value : 0;
         var prefabSystem = GhostEntityPrefabSystem.Instance(World);
+        // 进图期间先等预制件登记和管理器生成器。有了这两样，才开始给新到的 Ghost 建场景对应物件。
         if (!prefabSystem.PrefabsLoaded || ManagerGhostsSpawner.Instance == null) return; // other systems not ready yet
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         foreach (var (ghostGuid, ghostPrefabReference, ghost, localTransform, entity) in SystemAPI
@@ -120,6 +122,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
             // A client ghost can exist before its replicated identity is available.
             // Wait before creating or registering anything: a zero-key collision would abort
             // ECB playback and leave earlier registrations without their cleanup links.
+            // 客户端可能先看到实体，稍后才收到它真正的 GUID。这里等标识有效再登记，避免多个未就绪对象用同一个空键。
             if (!ghostGuid.ValueRO.Guid.IsValid) continue;
             var ghostPrefabGuid = ghostPrefabReference.ValueRO.PrefabGuid;
             var ghostRootPrefabGuid = ghostPrefabReference.ValueRO.PrefabRootGuid;
@@ -132,6 +135,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 #if UNITY_EDITOR || DEBUG
                     instance.name = $"{(isClient ? "[Client]" : "[Server]")} {ghostPrefab.name}";
 #endif
+                    // 同一个预制件能在客户端和服务端各生成一份。父节点挂到对应的场景树，退局和查看层级时好区分。
                     instance.transform.parent = isClient
                         ? GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform
                         : GhostBridgeBootstrap.Instance.ServerGameObjectHierarchy.transform;
@@ -141,6 +145,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                     var ghostGameObject = instance.GetComponent<GhostGameObject>();
                     ghostGameObject.SetPrefabAssetGuid(ghostPrefabGuid, ghostRootPrefabGuid);
                     ghostGameObject.SetGuid(ghostGuid.ValueRO.Guid);
+                    // 列表下标是 ECS 实体与场景 Transform 之间的快速索引。登记时连两份列表一起加，之后批量读坐标能一一对应。
                     ghostGuid.ValueRW.LocalGhostIndex = m_GhostGameObjectList.Count;
 #if UNITY_EDITOR || DEBUG
                     instance.name += $" [{ghostGuid.ValueRO.Guid}]";
@@ -156,6 +161,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                     m_GhostEntityList.Add(entity);
                     m_RebuildGhostGameObjectTransformAccessArray = true;
                     if (isServer) {
+                        // 服务端仍需要角色的碰撞和玩法脚本。视觉渲染和动画在这里关掉，再按脚本声明的端去掉其余客户端组件。
                         instance.GetComponentsInChildren(true, m_RetrievedRenderers);
                         foreach (var renderer in m_RetrievedRenderers) renderer.enabled = false;
                         instance.GetComponentsInChildren(m_RetrievedAnimators);
@@ -223,6 +229,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                     ecb.RemoveComponent<GhostGameObjectDeferredActivation>(entity); // Clean up the component
                     continue;
                 }
+                // 阶段由实例用途和当前 World 决定。每个端先建立管理器，客户端再识别由本机网络编号控制的角色。
                 bool isManager = ghostGameObject.TryGetComponent<IGhostManager>(out _);
                 var role = isServer ? MultiplayerRole.Server : MultiplayerRole.ClientProxy;
                 if (isClient && SystemAPI.HasComponent<GhostOwner>(entity))
@@ -232,6 +239,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                 bool allowedToActivate = false;
                 if (isServer) { allowedToActivate = isManager || m_NumManagersCreated >= numExpectedManagers; } else {
                     // isClient
+                    // 实体被同步到客户端还可能只是服务器刚建出来的壳。等服务端标记完成，再按依赖顺序让客户端表现开始工作。
                     if (ghostGuid.ServerLinked) {
                         bool isLocalPlayer = role == MultiplayerRole.ClientOwned &&
                                              SystemAPI.HasComponent<PredictedPlayerGhost>(entity);
@@ -251,6 +259,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                         ghostGameObject.LinkGhost(World, entity, role);
                         m_NumDeferredGhosts--;
                         OnGhostPrefabSpawned?.Invoke(ghostGameObject.Guid, ghostGameObject, this);
+                        // 绑定成功后移除等待标签，换成活动标记。同一对象下一帧就不会再进一次绑定循环。
                         ecb.RemoveComponent<GhostGameObjectDeferredActivation>(entity);
                         ecb.AddComponent<GhostGameObjectActive>(entity);
                         if (ghostGameObject.ActivateOnLinked) ghostGameObject.gameObject.SetActive(true);
@@ -281,6 +290,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     }
 
     private void CompleteTransformJobs() {
+        // 更新索引、采纳预测对象或回收场景物体前，先取得本 World 内读写 Transform 的系统并等作业结束。
         m_ClientTransformSystem ??= World.GetExistingSystemManaged<ClientGhostTransformApplySystem>();
         m_ServerTransformSystem ??= World.GetExistingSystemManaged<ServerGhostTransformRetrieveSystem>();
         CompleteKnownTransformJobs();
@@ -292,6 +302,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     }
 
     public void EnsureTransformAccessArrayUpToDate() {
+        // 对象增删才需要重建批量访问数组。平时复用上次的数组，省下每帧重新收集一遍 Transform 的开销。
         if (!m_RebuildGhostGameObjectTransformAccessArray) return;
         PostUpdateRemoveStaleGhostGameObjectsFromList();
         RebuildGhostGameObjectTransformAccessArray();
@@ -308,6 +319,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     }
 
     // Adopt a locally predicted object into the normal ghost lifetime bookkeeping.
+    // 本机可能在服务端确认之前就摆出了投射物外观。认领时把原外观登记进正式 Ghost 表，保持同一只物体继续运动。
     public void AdoptPredictedGhost(Entity entity, GhostGameObject instance) {
         CompleteTransformJobs();
         var guid = EntityManager.GetComponentData<GhostGameObjectGuid>(entity);
@@ -324,6 +336,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
     private void StripComponent<T>(T componentInterface, MonoBehaviour component) where T : IStripComponent {
         switch (componentInterface.StripBehaviour) {
+            // 脚本可以要求只停用、移除该脚本或移除整个子物体。服务端和客户端用同一套规则裁剪各自不需要的分支。
             case ComponentStripBehaviour.DisableComponent: component.enabled = false; break;
             case ComponentStripBehaviour.DestroyComponent: GameObject.DestroyImmediate(component); break;
             case ComponentStripBehaviour.DestroyGameObject: GameObject.DestroyImmediate(component.gameObject); break;
@@ -373,6 +386,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 #if VERBOSE_GHOST_LIFETIME_EVENTS
         Debug.Log($"{World.Name} OnGhostGameObjectDestroyed {guid}");
 #endif
+        // 销毁时先让 GUID 查找失效，并给顺序列表留空位。真正压缩和重算下标等到安全阶段集中做。
         m_GhostGameObjects.Remove(guid);
         for (int i = 0; i < m_GhostGameObjectList.Count; i++)
             if (m_GhostGameObjectList[i] != null && m_GhostGameObjectList[i].Guid == guid) {
@@ -399,6 +413,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
             if (ghost == null || !EntityManager.Exists(entity) ||
                 !EntityManager.HasComponent<GhostGameObjectGuid>(entity))
                 continue;
+            // 把有效实体和场景物体一起往前压，重写它们的下标。否则列表中间出现空洞后，读坐标作业可能取到另一个对象。
             var guid = EntityManager.GetComponentData<GhostGameObjectGuid>(entity);
             guid.LocalGhostIndex = count;
             EntityManager.SetComponentData(entity, guid);

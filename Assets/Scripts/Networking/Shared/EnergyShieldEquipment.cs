@@ -24,12 +24,14 @@ namespace Unity.MP_FPS {
             return style == 1 ? "scout_rig" : style == 2 ? "rig" : style == 3 ? "field_rig" : null;
         }
 
+        // 老档未保存氧气时使用负一占位，首次装备按满氧读。普通数值再限制到资源的合法范围。
         private static float Load(float value) { return value == -1 ? 100 : EnergyShieldRules.Resource(value); }
 
         // Like SaveActiveAmmo: server resource changes do not invalidate structural inventory actions.
         // Call before every move/drop/death/settlement/checkpoint, before a subtree leaves this graph.
         public static void Flush(ref PredictedPlayerGhost state, InventoryGraph graph) {
             if (!state.ProtectionInitialized || graph == null) return;
+            // 余量按角色上记住的旧物品 ID 写回。不能只从当前装备槽找，否则换装备时旧氧气会误写给新项圈。
             var dome = state.HeadDomeItem.Length > 0 ? graph.Find(state.HeadDomeItem.ToString()) : null;
             if (dome != null && IsHeadDome(dome.Code)) dome.SuitOxygen = EnergyShieldRules.Resource(state.Oxygen);
         }
@@ -42,6 +44,7 @@ namespace Unity.MP_FPS {
             var dome = graph?.Equipped("Helmet");
             if (!IsHeadDome(dome?.Code)) dome = null;
             string domeId = dome?.Id ?? "";
+            // 只有未初始化或真的换了项圈时才从物品读氧气。同一件装备随 tick 正常消耗，不被旧快照重新加满。
             if (!state.ProtectionInitialized || state.HeadDomeItem != new FixedString64Bytes(domeId)) {
                 state.Oxygen = dome == null ? 0 : Load(dome.SuitOxygen);
                 state.HeadDomeItem.CopyFromTruncated(domeId);
@@ -57,6 +60,7 @@ namespace Unity.MP_FPS {
         }
 
         // AI and real players share this exact rule; caller owns alive/active/connected eligibility.
+        // 一次更新先同步装备，再让能量按时推进，最后把保护资源写回物品。真人和人机复用这条顺序。
         public static void Tick(
             ref PredictedPlayerGhost state,
             InventoryGraph graph,

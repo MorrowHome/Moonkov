@@ -7,6 +7,7 @@ namespace Unity.MP_FPS {
         private float m_Next;
 
         public static bool PainfulStatus(in PredictedPlayerGhost state) {
+            // 缺氧、饥渴、部位失去功能等持续状态都能让角色发出不适声。这段逻辑只读取玩家状态作为声音的输入。
             const SurvivalEffects painful = SurvivalEffects.Hypoxia | SurvivalEffects.Starving |
                                             SurvivalEffects.Dehydrated | SurvivalEffects.ArmDisabled |
                                             SurvivalEffects.LegDisabled | SurvivalEffects.AbdomenDisabled;
@@ -15,6 +16,7 @@ namespace Unity.MP_FPS {
         }
 
         public bool Observe(float healthFraction, bool alive, bool painfulStatus, bool hurtCry, float now) {
+            // 已经在呻吟的角色需要恢复到更高的血量才退出。两个进入和退出阈值分开后，轻微血量波动不会频繁启停。
             bool active = alive && (painfulStatus || healthFraction <= (Active ? .35f : .28f));
             if (!active) {
                 Reset();
@@ -25,6 +27,7 @@ namespace Unity.MP_FPS {
                 m_Next = now + FirstDelay;
             }
             // Let the short impact cry finish without silencing an entire short bleeding episode.
+            // 短促受击声优先，持续的不适稍后再响。每次呻吟之后用更长的间隔安排下一声。
             if (hurtCry) m_Next = now + FirstDelay;
             if (now < m_Next) return false;
             m_Next = now + RepeatDelay;

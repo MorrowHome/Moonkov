@@ -30,9 +30,11 @@ namespace Unity.MP_FPS {
             bool firstPerson,
             float dt,
             uint weapon = DollSingerWeapons.Halo) {
+            // 盾完全收回后无需建立或刷新表现。开始举盾或正在收起才处理动画和材质状态。
             if (!active && m_Deployment <= 0) return;
             if (!m_Renderer && !Build()) return;
             m_Deployment = Mathf.MoveTowards(m_Deployment, active ? 1 : 0, Mathf.Max(0, dt) / (active ? .25f : .2f));
+            // 用展开进度把小光环从头部移到罩住全身的位置，并扩大到指定半径。除以父级缩放后大小仍按世界单位计算。
             float eased = m_Deployment * m_Deployment * (3 - 2 * m_Deployment);
             transform.position = Vector3.Lerp(head, center, eased);
             transform.rotation = Quaternion.identity;
@@ -44,6 +46,7 @@ namespace Unity.MP_FPS {
             color.a = 1;
             m_Properties.SetColor("_HaloColor", color);
             m_Properties.SetVector("_HaloArtworkRect", m_Appearance.ForWeapon(weapon).ArtworkRect);
+            // 各人的能量、受击和第一人称状态通过材质属性块写入。角色之间可以共享同一个材质却有独立颜色和动画。
             m_Properties.SetVector("_HaloState",
                 new Vector4(eased, Mathf.Clamp01(energy), Mathf.Max(0, hitAge), firstPerson ? 1 : 0));
             m_Properties.SetVector("_HaloHit", hitPoint);
@@ -58,6 +61,7 @@ namespace Unity.MP_FPS {
         private bool Build() {
             m_Appearance = HaloAppearanceCatalog.Current;
             if (!m_Appearance || !m_Appearance.Artwork) return false;
+            // 首次出现盾时建网格和材质。其他角色开始防御时只借共享资源，避免同一个图样反复建多份。
             if (!s_Mesh) {
                 var shader = Resources.Load<Shader>("Moonkov/HaloDefense");
                 if (!shader || !shader.isSupported) return false;

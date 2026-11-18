@@ -7,6 +7,7 @@ namespace Unity.MP_FPS {
     public static class MoonkovInventoryAudio {
         public static SoundDef ForItem(string code, MoonkovAudioLibrary library) {
             if (!library) return null;
+            // 先从物品目录查种类，再用种类选常用材质音。例如背包用布料，电池和大部分装备偏金属。
             var definition = InventoryCatalog.Get(code);
             if (definition == null) return library.Equipment;
             switch (definition.Kind) {
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS {
             if (!library || graph == null || command == null) return null;
             var item = graph.Find(command.ItemId);
             if (item == null) return null;
+            // 进出装备位有专用穿戴声。布包仍用布料声音，其余动作就回到物品种类的选择结果。
             if (command.Operation == InventoryOperation.Move && (command.Parent == InventoryCatalog.Equipment ||
                                                                  item.Parent == InventoryCatalog.Equipment)) {
                 var kind = InventoryCatalog.Get(item.Code)?.Kind;

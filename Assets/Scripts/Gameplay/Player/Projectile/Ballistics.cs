@@ -9,6 +9,7 @@ namespace Unity.MP_FPS {
         // and old definitions without a falloff interval retain their original behavior.
         public static float DamageAtDistance(WeaponData weapon, float distance) {
             if (!weapon) return 0;
+            // 范围伤害由爆点到目标的距离计算。直击武器没配置有效衰减区间时则用固定伤害。
             if (weapon.Behavior == ProjectileBehavior.AreaOfEffect ||
                 weapon.DamageFalloffEnd <= weapon.DamageFalloffStart)
                 return weapon.Damage;
@@ -17,6 +18,7 @@ namespace Unity.MP_FPS {
             return weapon.Damage * Mathf.Lerp(1, Mathf.Clamp01(weapon.MinimumDamageFraction), fraction);
         }
 
+        // 弹体位置由初始位置、匀速项和重力项直接算。隔了几帧也能在指定时间重现同一条曲线。
         public static Vector3 Position(Vector3 origin, Vector3 velocity, float gravity, float age) {
             return origin + velocity * age + Vector3.down * (0.5f * gravity * age * age);
         }
@@ -42,6 +44,7 @@ namespace Unity.MP_FPS {
             if (distance < 0.00001f) return false;
             int count;
             while (true) {
+                // 从这一段起点到终点扫出有半径的碰撞体。结果缓冲装满就加大再查，避免被垫在最前面的无效碰撞漏掉真正目标。
                 count = scene.SphereCast(from, radius, travel / distance, results, distance, mask,
                     QueryTriggerInteraction.Ignore);
                 if (count < results.Length) break;
@@ -50,6 +53,7 @@ namespace Unity.MP_FPS {
             float nearest = float.MaxValue;
             for (int i = 0; i < count; ++i) {
                 var candidate = results[i];
+                // 跳过发射者自己的模型，剩下的候选按实际距离取第一个。
                 if (ignoredRoot != null && candidate.collider.transform.IsChildOf(ignoredRoot)) continue;
                 if (candidate.distance >= nearest) continue;
                 nearest = candidate.distance;

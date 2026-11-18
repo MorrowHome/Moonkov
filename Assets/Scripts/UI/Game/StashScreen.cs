@@ -102,6 +102,7 @@ namespace Unity.MP_FPS.Client {
                         "A compact energy resource retrieved from lunar supply caches. Kept in storage between expeditions."
                 }
             };
+            // 只有预览才向汇总模板增加样例装备。正式玩家的物品通过 ContainerInventoryView 接收真实库存。
             if (m_Preview) {
                 var all = new List<Stack>(m_Stacks);
                 all.AddRange(PreviewEquipment());
@@ -152,6 +153,7 @@ namespace Unity.MP_FPS.Client {
             bool visible,
             bool busy,
             string error = null) {
+            // 以菜单当前显示的库存为准汇总资源。队列预测出的本地变化会同时体现在顶栏，回执后来校正。
             var displayed = m_Preview ? null : PlayerProfileClient.MenuInventory;
             if (displayed != null) {
                 dust = displayed.Count("dust");
@@ -167,6 +169,7 @@ namespace Unity.MP_FPS.Client {
             Label("stashDustCount").text = Number(dust);
             Label("stashAlloyCount").text = Number(alloy);
             Label("stashCellsCount").text = Number(cells);
+            // 尚有确认的库存命令时让同步状态可见。界面刷新失败提示来自账号或库存客户端。
             bool pending = !m_Preview && PlayerProfileClient.MenuInventoryPending > 0;
             string failure = error ?? (m_Preview ? null : PlayerProfileClient.MenuInventoryError?.Message);
             MoonkovLocalization.Set(Label("stashSyncStatus"),
@@ -221,6 +224,7 @@ namespace Unity.MP_FPS.Client {
             string search = (m_Search.value ?? "").Trim();
             foreach (var stack in m_Stacks) {
                 var placement = m_Layout.Items[stack.Name];
+                // 模板中的一类物资从零变有时，之前留的位置现在可能被别的格子使用。重新找个空位来显示这一组。
                 bool becameAvailable = !placement.Available && stack.Quantity > 0;
                 placement.Available = stack.Quantity > 0;
                 if (becameAvailable && placement.InStorage &&
@@ -250,6 +254,7 @@ namespace Unity.MP_FPS.Client {
                 ownedStacks == 0
                     ? "Recover supplies on the Moon. Extract successfully to bring them home."
                     : "Try another category or search term.");
+            // 过滤或物品用完后若原来选中的条目已经看不到，取消详情焦点，别让右侧留着旧数量。
             if (m_Selected != null && !m_Visible.Contains(m_Selected))
                 Select(null);
             else if (m_Selected != null) Label("stashInspectQuantity").text = Number(m_Selected.Quantity);

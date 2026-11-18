@@ -33,6 +33,7 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
     protected override void OnUpdate() {
         m_GhostTransformWriteHandle.Complete();
         var lifeTimeSystem = GhostGameObjectLifetimeSystem.ServerInstance;
+        // 先确保实体列表和场景物体相互对应，再按当前数量准备一块输出给工作线程。对象数量改变时多余的旧数组会释放。
         lifeTimeSystem.EnsureTransformAccessArrayUpToDate();
         if (!m_GhostGameObjectTransforms.IsCreated ||
             m_GhostGameObjectTransforms.Length != lifeTimeSystem.GhostGameObjectList.Count) {
@@ -55,6 +56,7 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
         public void Execute(int index, TransformAccess transform) {
             if (transform.isValid)
                 GhostTransformsArray[index] = new LocalTransform {
+                    // 工作线程只并行采集位置和旋转。实际写到 ECS 组件的操作，在下一段系统遍历中完成。
                     Position = transform.position,
                     Rotation = transform.rotation
                 };
@@ -69,6 +71,7 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
 public partial class ServerGhostTransformWriteSystem : SystemBase {
     protected override void OnUpdate() {
         // update server ghosts with gameobject positions
+        // 这个属性会等采集作业结束。随后按各 Ghost 的本地下标把对应结果写到 LocalTransform，其他字段沿用原值。
         var transforms = ServerGhostTransformRetrieveSystem.Instance.GhostTransformsArray;
         if (transforms.Length == 0) return;
         foreach (var (localTransform, ghostGuid) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<GhostGameObjectGuid>>()

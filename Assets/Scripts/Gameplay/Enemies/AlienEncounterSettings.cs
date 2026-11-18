@@ -10,11 +10,13 @@ namespace Unity.MP_FPS {
         [Serializable]
         public sealed class Spawn {
             public AlienCreatureProfile Profile;
+            // 每个遭遇槽位同时指定玩法数值和 Ghost 预制体。服务端靠引用中的 GUID 找到已烘焙实体。
             public GhostSpawner.GhostReference Prefab = new();
             public Vector3 Position;
             [Range(-180, 180)] public float Yaw;
 
             [Tooltip("Spider encounter: attach at Position along SurfaceNormal and wait before pouncing.")]
+            // 贴顶伏击有朝向和多个备选挂点，服务端逐个确认哪个满足附近和隐蔽条件。
             public bool Ambush;
 
             public Vector3 SurfaceNormal = Vector3.up;
@@ -53,9 +55,11 @@ namespace Unity.MP_FPS {
         public bool Enabled => enableAliens;
 
         // A low population cap must not silently remove later species from selection.
+        // 槽数量和允许同时活几只是独立概念。保持所有槽位可被轮询，才能有不同物种轮番出现。
         public int Count => encounters?.Length ?? 0;
         public int MaximumAliens => Mathf.Clamp(maximumAliens, 0, 16);
         public int MaximumBosses => Mathf.Clamp(maximumBosses, 1, 2);
+        // 总预算在一局内用完即停，同时存活上限只限制这一拍还可不可以生成新个体。
         public int MaximumTotalSpawns => Mathf.Max(0, maximumTotalSpawns);
         public int SpawnsPerEncounter => Mathf.Max(1, spawnsPerEncounter);
         public int MaximumSpawnsPerCheck => Mathf.Clamp(maximumSpawnsPerCheck, 1, 8);

@@ -21,6 +21,7 @@ namespace Unity.MP_FPS {
             var mesh = renderer.sharedMesh;
             var materials = renderer.sharedMaterials;
             char[] flags = new char[Mathf.Min(mesh.subMeshCount, materials.Length)];
+            // 扫一遍子网格的材质名，给皮肤与服装子网格打标记。后面选采样点时，避免让头发等附件把装备尺寸撑大。
             for (int i = 0; i < flags.Length; i++) {
                 string name = materials[i] ? materials[i].name : "";
                 bool body = name.Equals("Body", StringComparison.OrdinalIgnoreCase);
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS {
             var key = (mesh, new string(flags));
 #if UNITY_EDITOR
             // Meshes and material assignments can change in live authoring previews.
+            // 编辑器预览可能刚换网格或材料，所以试配时重新取数据。真正游戏才用跨实例缓存，避免玩家一多就反复读同一网格。
             if (!Application.isPlaying) return new EnergyShieldFittingData(mesh, flags);
 #endif
             if (!Cache.TryGetValue(key, out var data)) Cache.Add(key, data = new EnergyShieldFittingData(mesh, flags));
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS {
             return result.ToArray();
         }
 
+        // 给定某个角色的头和颈骨骼编号，从已有样本中挑受它们影响的顶点。不同模型的骨骼下标不同，缓存也按这两个编号区分。
         public int[] Neck(int neck, int head) {
             if (neckSamples.TryGetValue((neck, head), out int[] samples)) return samples;
             var selected = new List<int>();

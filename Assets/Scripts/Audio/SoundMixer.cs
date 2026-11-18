@@ -60,6 +60,7 @@ public class SoundMixer {
         m_AudioMixer = audioMixer;
 
         // Set up mixer groups
+        // 按枚举名在实际 AudioMixer 资源里找分组。声源用枚举下标去查，缺专用分组的声音会走默认输出。
         string[] subBussNames = SoundMixerGroup.GetNames(typeof(SoundMixerGroup));
         MixerGroups = new AudioMixerGroup[subBussNames.Length];
         for (int i = 0; i < subBussNames.Length; i++)
@@ -75,6 +76,7 @@ public class SoundMixer {
     /// </summary>
     /// <param name="masterVolume">Master volume multiplier (0-1)</param>
     public void Update(float masterVolume) {
+        // 这里把几个线性音量倍率乘好，再换成混音器参数接受的分贝。菜单、效果、音乐的上限按各自设置处理。
         m_AudioMixer.SetFloat("MasterVolume",
             DecibelFromAmplitude(Mathf.Clamp(soundMasterVol.FloatValue, 0.0f, 1.0f) * masterVolume));
         m_AudioMixer.SetFloat("MusicVolume",
@@ -95,6 +97,7 @@ public class SoundMixer {
     }
 
     private float DecibelFromAmplitude(float amplitude) {
+        // 接近静音时直接用固定的最低分贝。这样零音量也不必拿来算对数。
         if (amplitude < m_SoundAmplitudeCutoff) return -60.0f;
         return 6.0f * Mathf.Log(amplitude) / Mathf.Log(2.0f);
     }

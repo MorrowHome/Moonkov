@@ -11,7 +11,9 @@ namespace Unity.MP_FPS.Client {
         private bool m_FacilityRecords;
 
         private bool TryPresentResearchTasks() {
+            // 账号拿到研究进度才使用研究主线视图。用户转去查设施资料时跳过它，走终端其余分支。
             if (PlayerProfileClient.ResearchQuests == null || m_FacilityRecords) return false;
+            // 任务视图接收读取、领取、结局和章节回看这些回调。进度兑现及持久化在 PlayerProfileClient。
             m_ResearchTasks = new ResearchQuestView(m_Root, () => PlayerProfileClient.ResearchQuests,
                 PlayerProfileClient.AdvanceResearchQuestAsync, Prepare, () => {
                     m_FacilityRecords = true;
@@ -29,6 +31,7 @@ namespace Unity.MP_FPS.Client {
 
         private bool TryPresentCampaignTasks() {
             var progress = PlayerProfileClient.Campaign;
+            // 单人战役只对带对应进度的离线档案显示。线上账号用自己的任务和设施说明。
             if (!PlayerProfileClient.IsOffline || progress == null) return false;
             TerminalLayout.Populate(m_Content, "Tasks");
             var stylesheet = Resources.Load<StyleSheet>("Moonkov/UI/CampaignChapterOne");
@@ -48,6 +51,7 @@ namespace Unity.MP_FPS.Client {
             side.Q<Label>(className: "terminal-heading").text = current?.Title ?? "调查记录已保存";
             side.Q<Label>(className: "terminal-meter-name").text = "调查进度";
             side.Q<Label>(className: "terminal-copy").text = "Theophilus 研究站失联。公司派清理队调查事故，回收研究样本。沈禾留在作业船保障舱，通过通信提供支持。";
+            // 以已保存任务列表计算百分比。正在调查看起来已完成的步骤也要等撤离存档确认。
             int complete = CampaignCatalog.Tasks.Count(t => progress.CompletedTasks.Contains(t.Id));
             m_Content.Q<ArcMeter>().Value = complete / (float)CampaignCatalog.PlannedMainTaskCount;
             m_Content.Q<Label>("missionCareerCount").text = "已保存 " + complete + " 项";
@@ -58,6 +62,7 @@ namespace Unity.MP_FPS.Client {
             var wide = m_Content.Q<VisualElement>(className: "terminal-wide");
             wide.Clear();
             m_CampaignTasks?.Dispose();
+            // 把独立的章节列表装到右侧，并把继续按钮接回准备流程。终端仍负责整体导航。
             m_CampaignTasks = new CampaignChapterView(wide, () => CampaignScene.ReadProgress(), Prepare, "准备出战");
             if (m_FacilityRecords)
                 ActionButton(side, ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => {

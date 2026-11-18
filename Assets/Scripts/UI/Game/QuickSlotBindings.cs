@@ -25,12 +25,14 @@ namespace Unity.MP_FPS.Client {
 
         public void UseProfile(string scope) {
             scope ??= "";
+            // 同档案范围内反复刷新要保留本局绑定。换了范围才清掉选中状态，并从对应存储读取初始值。
             if (scope == m_Scope) return;
             m_Scope = scope;
             Selected = -1;
             Reason = null;
             m_Fists = false;
             m_Saved = scope.Length == 0 ? new QuickSlotSave() : m_Store.Load(scope) ?? new QuickSlotSave();
+            // 注入或读取的绑定可能不符合当前格数。遇到不完整数据从空栏开始，避免读到错误槽或越界。
             if (m_Saved.Items?.Length != Count || m_Saved.Codes?.Length != Count) m_Saved = new QuickSlotSave();
             for (int i = 0; i < Count; i++)
                 if (m_Saved.Items[i]?.Length > 64 || m_Saved.Codes[i]?.Length > 64) {
@@ -55,6 +57,7 @@ namespace Unity.MP_FPS.Client {
             for (int i = 0; i < slots.Length; i++) {
                 var item = graph.Equipped(slots[i]);
                 if (!CanBind(graph, item)) item = null;
+                // 前四格由当前装备重新生成。槽里换了物品时连选中状态一起清，避免一次按键继续作用到不同武器。
                 if (m_Saved.Items[i] != item?.Id || m_Saved.Codes[i] != item?.Code) {
                     changed = true;
                     if (Selected == i) Selected = -1;
@@ -99,6 +102,7 @@ namespace Unity.MP_FPS.Client {
             }
             // A snapshot may be replaced between pointer-down and drop. Resolve the
             // current authoritative item by ID, rather than requiring object identity.
+            // 按下到松开间可能收到新快照。用物品编号重新拿当前对象，之后再核对代码和可用位置。
             var current = graph?.Find(item?.Id);
             if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || current == null || current.Code != item.Code ||
                 !CanBind(graph, current)) {
@@ -106,6 +110,7 @@ namespace Unity.MP_FPS.Client {
                 return false;
             }
             item = current;
+            // 一件道具在后五格只留一条绑定。拖到新槽会清掉同一件物品的旧绑定。
             for (int i = EquipmentSlots; i < Count; i++)
                 if (m_Saved.Items[i] == item.Id)
                     ClearEntry(i);
@@ -138,6 +143,7 @@ namespace Unity.MP_FPS.Client {
         public void Deselect() { Selected = -1; }
 
         public void Validate(InventoryGraph graph) {
+            // 物品已经用完、移到够不到的位置或掉落时取消当前选中。即使找到同型号另一件，也等玩家重新绑定。
             if (Selected >= 0 && !Available(Selected, graph)) {
                 Selected = -1;
                 Reason = "Item unavailable. Equip it or bind another item.";
@@ -165,6 +171,7 @@ namespace Unity.MP_FPS.Client {
         public int NextWeaponSlot(InventoryGraph graph, int direction, int equippedSlot) {
             if (graph == null || direction == 0) return -1;
             int step = Math.Sign(direction);
+            // 滚轮从当前武器格出发，按方向循环看前四个装备格。跳过空格和自己，避免滚轮意外选中消耗品。
             int current = Selected >= 0 && Selected < EquipmentSlots ? Selected : equippedSlot - 1;
             if (current < 0 || current >= EquipmentSlots) current = step > 0 ? -1 : EquipmentSlots;
             // Equipment already supplies every weapon in 1–4; 5–9 may repeat them or hold consumables.

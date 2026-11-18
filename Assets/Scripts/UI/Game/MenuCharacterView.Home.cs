@@ -24,6 +24,7 @@ namespace Unity.MP_FPS.Client {
 
         internal void PlayHomeReaction() {
             if (m_Disposed || !m_HomePose || m_Settings == null || HomeReactionActive) return;
+            // 把一次双击锁成一个完整演出。下一次轮到下一个姿势，正在演时收到的点击先忽略。
             m_HomeReaction = m_NextHomeReaction;
             m_NextHomeReaction = m_NextHomeReaction == HomeReaction.Sniper
                 ? HomeReaction.Heart
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS.Client {
             m_HomeReactionTime += dt;
             float age = HomeGestureAge;
             bool sniper = m_HomeReaction == HomeReaction.Sniper && age >= 0 && age < HomeGestureSeconds;
+            // 狙击展示进入或退出都要重算光环外观。先恢复此前骨骼并清掉上一段开火效果。
             if (sniper != m_HomeSniperShowing) {
                 m_Gestures?.RestoreBeforeAnimation();
                 m_HomeSniperShowing = sniper;
@@ -45,6 +47,7 @@ namespace Unity.MP_FPS.Client {
                 ApplyEquipmentVisualState();
             }
             float returnAge = age - HomeGestureSeconds;
+            // 动作段结束后还有转回去的时间。关闭动态效果时可以直接恢复，旧姿势和表情也在这里清理。
             if (returnAge >= (m_HomeReducedMotion ? 0 : HomeTurnSeconds)) {
                 m_HomeMotions?.RestoreBeforeAnimation();
                 m_HomeMotions?.RestoreExpressions();
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS.Client {
         private void ApplyHomeReactionPose(float dt) {
             if (!HomeReactionActive || HomeGestureAge < 0 || HomeGestureAge >= HomeGestureSeconds) return;
             float age = HomeGestureAge;
+            // 动作在底层待机上逐渐变重，再在结束前淡出。静态模式直接显示清晰的姿势。
             float weight = m_HomeReducedMotion
                 ? 1
                 : Mathf.SmoothStep(0, 1, Mathf.Min(age / .24f, (HomeGestureSeconds - age) / .3f));
@@ -80,6 +84,7 @@ namespace Unity.MP_FPS.Client {
 
         private void PlayHomeShot() {
             if (!m_HomeSniperShowing || m_HomeShotFired || HomeGestureAge < HomeShotSeconds) return;
+            // 演出时间持续跨过开火点时只播一次特效与声音，后续帧不再重复。
             m_HomeShotFired = true;
             m_EquipmentSniper?.SetNetworkState(0, false, 0, 0, 0, 0);
             if (!m_HomeReducedMotion) {

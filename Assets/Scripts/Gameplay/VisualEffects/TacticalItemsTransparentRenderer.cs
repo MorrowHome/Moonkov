@@ -25,6 +25,7 @@ namespace Unity.MP_FPS {
             if (disposed) return;
             // EditMode preview fixtures can invoke Awake manually without a native OnDestroy.
             // Retire a stale subscription before invoking any delegate on a destroyed owner.
+            // 所属的表现物销毁后，应先取消这份相机订阅。临时预览退出也能避免在旧对象上继续查询粒子。
             if (!owner) {
                 Dispose();
                 return;
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS {
             // Base camera renders world effects once; HUD/first-person overlay cameras do not repeat them.
             if (data && data.renderType == CameraRenderType.Overlay) return;
             int uiLayers = LayerMask.GetMask("UI", "ServerPlayer", "ClientPlayer", "FirstPersonOverlay");
+            // 看不到世界层的相机就没有烟要画。叠加相机和只画菜单的层不会重复提交一遍透明效果。
             if ((camera.cullingMask & ~uiLayers) == 0) return;
             var renderer = data ? data.scriptableRenderer : pipeline.scriptableRenderer;
             if (renderer != null) renderer.EnqueuePass(pass);
@@ -62,6 +64,7 @@ namespace Unity.MP_FPS {
 
             public override void RecordRenderGraph(RenderGraph graph, ContextContainer frameData) {
                 var resources = frameData.Get<UniversalResourceData>();
+                // 需要一份有效的相机深度让烟雾和场景正确遮挡。只有可用的渲染目标才进入这一步。
                 if (resources.isActiveTargetBackBuffer || !resources.cameraDepthTexture.IsValid()) return;
                 var camera = frameData.Get<UniversalCameraData>();
                 var rendering = frameData.Get<UniversalRenderingData>();

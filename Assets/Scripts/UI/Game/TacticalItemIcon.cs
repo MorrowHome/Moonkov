@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Client {
     public sealed class TacticalItemIcon : VisualElement {
         private readonly string m_Code;
 
+        // 从图标需要的物品代码确定外框和颜色。图标是快捷栏的视觉部分，不决定操作是否可用。
         public TacticalItemIcon(string code) {
             m_Code = code;
             pickingMode = PickingMode.Ignore;
@@ -21,6 +22,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void Draw(MeshGenerationContext context) {
+            // 先按布局宽高计算绘制比例。不够画时提前结束，等面板正常布局后再重绘。
             float w = contentRect.width, h = contentRect.height;
             if (w < 2 || h < 2) return;
             var p = context.painter2D;
@@ -49,6 +51,7 @@ namespace Unity.MP_FPS.Client {
             p.MoveTo(c + Vector2.up * s * (needle ? -.44f : -.4f));
             p.LineTo(c + Vector2.up * s * -.26f);
             p.Stroke();
+            // 用中间的短线、斜线或圆环进一步区分针剂、陷阱和其他道具。显示时可沿用同样尺寸。
             if (needle) {
                 p.BeginPath();
                 p.MoveTo(c + new Vector2(-.22f, .3f) * s);

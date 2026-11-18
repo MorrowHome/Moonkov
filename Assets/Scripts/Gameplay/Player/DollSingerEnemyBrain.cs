@@ -9,6 +9,7 @@ using UnityEngine.AI;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
+    // 行动是这段时间想完成的事。Approaching 等掩体子状态记录的是这件事在执行到哪一步。
     public enum PmcAction {
         Scavenge,
         Extract,
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS {
     }
 
     // A sound identifies a place, not an opponent or a firing solution.
+    // 机器、枪声之类只说明哪里有动静。更新线索可打断搜刮，不凭它获得精确枪线。
     public static class PmcSoundClue {
         public static bool Hear(DollSingerEnemyBrain brain, string id, Vector3 position, double now) {
             if (brain == null || string.IsNullOrEmpty(id) || brain.IsClashBot || brain.Leaving ||
@@ -53,6 +55,7 @@ namespace Unity.MP_FPS {
 
     // The observer only remembers positions it could actually see. Turning away
     // does not erase the clue before detonation or track it through walls.
+    // 记忆保存最后一处真正看见的手雷位置和时效。转开视线不立刻忘掉，手雷也不会隔墙自动跟踪。
     public struct PmcGrenadeAwareness {
         private ulong m_ObservedId, m_DangerId;
         private double m_ObservedSince, m_LastObservation, m_RecognizedAt;
@@ -85,6 +88,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 逃离方向不能在起点先靠近爆炸点。几何检查对每条候选路线单独做。
     public static class PmcGrenadeRules {
         public static bool Finite(Vector3 point) {
             return float.IsFinite(point.x) && float.IsFinite(point.y) && float.IsFinite(point.z);
@@ -127,6 +131,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 以实际走过的地面距离更新体力。卡在墙前或原地走动作，不按请求速度来记。
     public static class PmcSprintRules {
         // An exhausted raider walks to recover, but may still attempt to flee an explosive.
         public static bool Allows(bool clash, PmcAction action, bool exhausted) {
@@ -159,6 +164,7 @@ namespace Unity.MP_FPS {
 
     // A fallback entry is not a real extraction point. Keep a raider present
     // while a nearby human could watch it disappear from the map.
+    // 找不到正式出口时可回入口离场，但如果附近真人会目击到角色消失，要等可安全退出的窗口。
     public static class PmcLocalExitRules {
         public const float NearbyRange = 30, SightRange = 100, AimedSightRange = 1000;
         private const float AimedConeDot = .990268f; // Eight degrees around the current view.
@@ -216,6 +222,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 持续区域风险沿观察过的位置和结束时间保存，方便 AI 选择必须中断当前动作的避险行为。
     public static class PmcHazardRules {
         public static bool Active(
             bool clash,
@@ -236,6 +243,7 @@ namespace Unity.MP_FPS {
 
     // Returns true when the shared status action consumed this update. The
     // caller supplies its real safety/position check and otherwise handles medicine.
+    // 止血或灭火能获得独立的治疗阶段。等待安全窗口并持续验证条件，真正完成才更新状态。
     public static class PmcSelfTreatment {
         public static bool Advance(DollSingerEnemyBrain brain, bool eligible, bool bleeding, bool burning, double now) {
             if (!eligible) {
@@ -274,6 +282,7 @@ namespace Unity.MP_FPS {
 
     // A minority of ordinary raid actors carry the same physical shield item as
     // players. Tutorial and bounty encounters retain their existing loadouts.
+    // 普通远征 AI 有机会穿真实的护具。扣掉的充能或损耗留在物品上，死亡时可由尸体继承。
     public static class PmcProtectionLoadout {
         public const float ShieldChance = 1f / 3f;
 
@@ -295,6 +304,7 @@ namespace Unity.MP_FPS {
 
     // These instant inventory actions still wait for a safe opening and cannot
     // overlap the actor's own search, treatment, extraction, or hazard response.
+    // 换电池、穿装备等短操作也要查手头有没有正在搜刮、治疗或读条。用同一条件避免重叠做两件事。
     public static class PmcResourceActions {
         public static bool SafeWindow(
             DollSingerEnemyBrain brain,
@@ -327,6 +337,7 @@ namespace Unity.MP_FPS {
 
     // A shield and a halo draw from the same physical cells. Leave a full
     // magazine's accessible energy before spending any cell on protection.
+    // 护盾与枪用同一类电池。优先留出可访问的一仓火力所需能量，再考虑给护盾充。
     public static class PmcShieldSupply {
         public const float RechargeThreshold = 25;
 
@@ -355,6 +366,7 @@ namespace Unity.MP_FPS {
 
     // The suit and refill are real carried items. NPCs use the same atmosphere,
     // oxygen drain and atomic refill transaction as a player.
+    // 生存所需时间、氧气区与补氧物品复用玩家规则。AI 也会因为缺氧受伤或考虑离场。
     public static class PmcLifeSupport {
         public const float RefillThreshold = 40, DepartureThreshold = 20;
 
@@ -441,6 +453,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 一次补氧失败按库存版本记录。物资没变之前无需每帧尝试同一件拿不出的东西。
     public struct PmcOxygenFailure {
         private bool m_Failed;
         private int m_Version;
@@ -456,6 +469,7 @@ namespace Unity.MP_FPS {
 
     // Food and water use the player's real items, timing and inventory version.
     // Starvation and hypoxia continue while the action is underway.
+    // 开吃后记下所选食物和库存版本。时间走完仍要确认物品有效，饥饿与缺水在动作中照常变化。
     public static class PmcNutrition {
         public const float UseThreshold = 35, DangerThreshold = 20, DepartureThreshold = 10;
 
@@ -555,6 +569,7 @@ namespace Unity.MP_FPS {
 
     // An inaccessible backpack cell cannot be re-attempted every frame while
     // the physical inventory and weapon's energy cost remain unchanged.
+    // 装填失败的条件不只与库存有关。换武器或配件使每发能耗改变后，也有理由重新尝试。
     public struct PmcReloadFailure {
         private bool m_Failed;
         private int m_Version, m_Cost;
@@ -574,6 +589,7 @@ namespace Unity.MP_FPS {
         public void Clear() { m_Failed = false; }
     }
 
+    // 电池在背包里不等于手能用到。需要先通过库存移动放到口袋或可用装备槽。
     public static class PmcReloadInventory {
         public static bool Prepare(InventoryGraph inventory, int energyPerRound) {
             string rig = inventory.Equipped("ChestRig")?.Id;
@@ -610,6 +626,7 @@ namespace Unity.MP_FPS {
         public void Clear() { m_Failed = false; }
     }
 
+    // 药品必须在可使用区域才能开始治疗。AI 身上有药但拿不到时也要遵守库存移动限制。
     public static class PmcMedicalInventory {
         public static InventoryItem FindAccessible(InventoryGraph inventory) {
             return inventory?.Items.FirstOrDefault(item => item.Quantity > 0 && inventory.MedicalAccessible(item));
@@ -649,6 +666,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 优先适合当前距离且仍有可用能量的枪。切换有分开的阈值，在边界附近不反复横跳。
     public static class PmcWeaponTactics {
         internal static bool PrefersCloseRange(uint weapon) {
             return weapon is DollSingerWeapons.Shotgun or DollSingerWeapons.Thorn or DollSingerWeapons.Cicada;
@@ -697,6 +715,7 @@ namespace Unity.MP_FPS {
         }
     }
 
+    // 受击但不知道攻击者在哪时，按已知出口或自身朝向找安全方向，避免隔墙猜到精确射手。
     public static class PmcUnknownAttack {
         public static bool NeedsEvasion(bool clash, bool hasContact, double lastDamage, double now) {
             return !clash && !hasContact && double.IsFinite(lastDamage) && double.IsFinite(now) && now >= lastDamage &&
@@ -735,6 +754,7 @@ namespace Unity.MP_FPS {
         public double LastReported = -100;
     }
 
+    // 服务端为每个机器人各保留一份脑状态，包含真实库存、观察缓存、掩体阶段和寻路索引。网络只同步表现和结算所需部分。
     public sealed class DollSingerEnemyBrain : IComponentData {
         public Entity Target;
         public InventoryGraph Inventory;

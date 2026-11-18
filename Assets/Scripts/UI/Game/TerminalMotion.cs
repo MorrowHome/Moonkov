@@ -68,15 +68,18 @@ namespace Unity.MP_FPS.Client {
             float delay = 0,
             Action done = null,
             string channel = null) {
+            // 同一控件的同类动画重启时先停掉前一次。这样新淡入的元素不会被旧回调把透明度写回去。
             if (channel != null && s_Channels.TryGetValue((owner, channel), out var previous)) {
                 previous.Pause();
                 s_Channels.Remove((owner, channel));
             }
+            // 静态预览仍应用最终帧并跑完成回调。调用方不会因为没有播放动画而卡在等待状态。
             if (!Animate(owner)) {
                 step(1);
                 done?.Invoke();
                 return null;
             }
+            // 用非缩放时间决定开始和结束。暂停游戏或帧率变化不要求动画像玩法模拟那样逐 tick 推进。
             double start = Now + delay;
             step(0);
             IVisualElementScheduledItem item = null;
@@ -122,6 +125,7 @@ namespace Unity.MP_FPS.Client {
             float dx = 0,
             float dy = 18) {
             foreach (var child in parent.Children()) {
+                // 逐项入场只覆盖看得见且不自带绘制动画的元素。跳过隐藏元素后不额外占用排队时间。
                 if (child is AnimatedPainter || child.resolvedStyle.display == DisplayStyle.None) continue;
                 Reveal(child, delay, dx, dy);
                 delay += stagger;
@@ -134,6 +138,7 @@ namespace Unity.MP_FPS.Client {
             char[] chars = new char[target.Length];
             int seed = 0;
             Tween(label, duration, t => {
+                // 文字逐步从占位字符变回原字符串。空格和分隔符先保留，结束时给本地化交回原文。
                 int solved = Mathf.FloorToInt(target.Length * OutCubic(t));
                 seed++;
                 for (int i = 0; i < target.Length; i++)
@@ -206,6 +211,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         // Colour overloads of FillGradient drop alpha, so gradients go through explicit alpha keys.
+        // 颜色和透明度要分别写进渐变。否则某些 UI 画笔只会插值颜色，丢掉透明端。
         internal static Gradient Keys(Color a, Color b) {
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(a, 0), new GradientColorKey(b, 1) },
@@ -316,6 +322,7 @@ namespace Unity.MP_FPS.Client {
             RegisterCallback<DetachFromPanelEvent>(_ => m_Tick?.Pause());
         }
 
+        // 装饰只在自己需要继续动画且允许动效的环境里要求重绘。静态页面可以继续用最后画出的内容。
         private void Tick() {
             if (Animating && TerminalMotion.Animate(this)) MarkDirtyRepaint();
         }

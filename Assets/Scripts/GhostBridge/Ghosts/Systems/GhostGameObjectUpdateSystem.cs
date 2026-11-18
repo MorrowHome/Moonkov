@@ -46,6 +46,7 @@ public static class GhostGameObjectUpdateSystem {
 #pragma warning disable UDR0001
     private static Dictionary<Type, SystemBase> s_GhostUpdateSystemByType = new(); // This is cleared from Reset
 #pragma warning restore UDR0001
+    // 开始新的一局先清对旧 World 的系统引用，再调用 GatherWorldSystems 登记各端的新实例。
     public static void Reset() { s_GhostUpdateSystemByType.Clear(); }
 
     // World 启动时先记录每种更新接口该交给哪个 ECS 系统。之后新绑定的 Ghost 可以按接口注册。
@@ -132,6 +133,7 @@ public partial class GhostGameObjectUpdateServerSystem : GhostGameObjectUpdateSy
 #endif
     }
 
+    // 如果销毁请求发生在当前回调以外，先排进服务端队列。轮到服务端更新时再调用需要命令缓冲的正式删除入口。
     public static void AddGhostForPendingDestroy(GhostGameObject ghost) {
         if (Instance != null) {
             var instance = Instance as GhostGameObjectUpdateServerSystem;
@@ -142,6 +144,7 @@ public partial class GhostGameObjectUpdateServerSystem : GhostGameObjectUpdateSy
     protected override void OnBeforeGhostUpdates() {
         // any pending objects to delete?
         if (m_ObjectsPendingDestroy != null && m_ObjectsPendingDestroy.Count > 0) {
+            // 开始更新前先处理待删对象。这样本轮其余 Ghost 脚本就不会继续操作这些已经准备退场的实体。
             int count = m_ObjectsPendingDestroy.Count;
             for (int i = 0; i < count; i++) {
                 var ghost = m_ObjectsPendingDestroy[i];
@@ -165,6 +168,7 @@ public partial class GhostGameObjectPhysicsUpdateServerSystem : GhostGameObjectU
     }
 
     protected override void OnAfterGhostUpdates() {
+        // 服务端物理更新结束才压缩对象列表。在这之前逻辑可能一直读同一批下标，统一时点更新便于保持对齐。
         GhostGameObjectLifetimeSystem.ServerInstance.PostUpdateRemoveStaleGhostGameObjectsFromList();
     }
 }

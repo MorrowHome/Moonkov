@@ -21,6 +21,7 @@ namespace Unity.MP_FPS {
                 ResetRaidCinematics();
                 return;
             }
+            // 换局重置记住的玩家镜头。旧局已经活过或死亡的状态不能影响新局开场。
             if (m_ObservedRaid != m_Snapshot.RaidId) {
                 m_ObservedRaid = m_Snapshot.RaidId;
                 m_Cinematic?.Stop();
@@ -35,6 +36,7 @@ namespace Unity.MP_FPS {
                                                                             m_Snapshot.Phase == RaidPhase.Active &&
                                                                             m_HadLivingCamera && hasPlayer &&
                                                                             ghost.CurrentHealth <= 0);
+            // 进入死亡段后继续把这段演出走完。首次触发时收掉会挡画面的地图、任务详情和背包。
             if (dead || m_Cinematic is { DeathActive: true }) {
                 m_Cinematic ??= new RaidCameraTransition(transform);
                 if (!m_Cinematic.DeathActive) {
@@ -49,12 +51,14 @@ namespace Unity.MP_FPS {
             }
             bool playable = m_Snapshot.Phase == RaidPhase.Active && (!clash || (m_Clash is { HasSnapshot: true } &&
                 m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive));
+            // 倒地玩家仍可能被救起。继续保留视角数据，等确认为死亡才进入死亡镜头。
             bool downed = clash && m_Clash is { HasSnapshot: true } && m_Clash.Snapshot.Life == ClashLife.Downed;
             if (!hasPlayer || (ghost.CurrentHealth <= 0 && !downed)) {
                 m_Cinematic?.Stop();
                 PresentCinematicCurtain();
                 return;
             }
+            // 新角色出现时通过 ECS 到 GameObject 的链接重新找相机。角色对象没准备好就先等。
             if (owner != m_CinematicOwner || !m_CinematicSource) {
                 m_CinematicOwner = owner;
                 m_CinematicSource = null;
@@ -67,6 +71,7 @@ namespace Unity.MP_FPS {
             if (!m_CinematicSource) return;
             m_Cinematic ??= new RaidCameraTransition(transform);
             if (!m_Cinematic.Deploying) m_Cinematic.Capture(m_CinematicSource);
+            // 记录真实角色位置及其物理场景。后续镜头围绕正确的身体位置放置，场景遮挡也用同一物理场景判断。
             m_Cinematic.CaptureBody(m_World.EntityManager.GetComponentData<LocalTransform>(owner).Position,
                 m_CinematicSource.gameObject.scene.GetPhysicsScene());
             m_HadLivingCamera |= ghost.CurrentHealth > 0;

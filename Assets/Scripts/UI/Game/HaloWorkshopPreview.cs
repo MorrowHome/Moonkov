@@ -78,6 +78,7 @@ namespace Unity.MP_FPS.Client {
             m_ChargedRounds = chargedRounds;
             var previousSource = m_Source;
             ResolveSource();
+            // 切到没有可用预览资源的武器时释放原来的展示。窗口可以继续显示数值和不可预览提示。
             if (!Available) {
                 ReleaseStage();
                 return;
@@ -124,12 +125,14 @@ namespace Unity.MP_FPS.Client {
                     float duration = m_Demo == Demo.Charge
                         ? m_ChargeDuration
                         : .5f + (m_DemoShotCount - 1) * m_ShotInterval;
+                    // 一段演示到头后重建静态模型，再降低轮询频率。停在详情页不会一直以演示帧率画图。
                     if (m_DemoElapsed >= duration) {
                         m_Demo = Demo.None;
                         BuildModel();
                         m_Timer?.Every(100);
                     } else {
                         if (m_Demo == Demo.Shot) {
+                            // 按经过时间计算应该显示多少次光效。帧率较低时也能补上落在上一帧与这一帧之间的事件。
                             int due = Mathf.Min(m_DemoShotCount, 1 + Mathf.FloorToInt(m_DemoElapsed / m_ShotInterval));
                             while (m_DemoShots < due) FireDemoShot();
                         }
@@ -141,6 +144,7 @@ namespace Unity.MP_FPS.Client {
                 if (!float.IsFinite(viewport.x) || !float.IsFinite(viewport.y) || viewport.x < 2 || viewport.y < 2)
                     viewport = new Vector2(384, 384);
                 if (EnsureTarget(viewport)) m_Dirty = true;
+                // 模型、尺寸或视角没有变化就继续显示已有的纹理，省去多余的 URP 相机提交。
                 if (!m_Dirty) return;
                 // Same fixed front view for every mask: a shape change cannot alter framing.
                 m_Camera.aspect = (float)m_Target.width / m_Target.height;
@@ -190,6 +194,7 @@ namespace Unity.MP_FPS.Client {
             m_DemoElapsed = 0;
             m_DemoRounds = demo == Demo.Shot ? m_ChargedRounds : Mathf.Min(m_ChargedRounds, m_Capacity);
             m_DemoShots = 0;
+            // 演示次数依展示武器和模块而变，也受预览里可用的弹量限制。扣掉的是预览数据，不动库存。
             m_DemoShotCount = Mathf.Min(m_ChargedRounds,
                 WeaponCode != "shotgun" && ((HaloModule)Modules & HaloModule.PulseController) != 0 ? 3 : 1);
             if (demo == Demo.Shot) FireDemoShot();
@@ -209,6 +214,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void CreateStage() {
+            // 真正的纹理预览需要图形设备。处理失败时用可用性回调让按钮关闭，不把失败的舞台留在画面上。
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
                 throw new InvalidOperationException("A graphics device is required for the real halo preview.");
             string name = ScenePrefix + ++s_StageSequence;
@@ -320,6 +326,7 @@ namespace Unity.MP_FPS.Client {
             m_Modules.Step(dt);
         }
 
+        // 尺寸变化时重新构造相机的颜色目标。以控件的宽高算分辨率，小窗还可以复用上一次分配的目标。
         private bool EnsureTarget(Vector2 viewport) {
             float scale = Mathf.Min(2f, MaximumResolution / Mathf.Max(viewport.x, viewport.y));
             int width = Mathf.Clamp(Mathf.CeilToInt(viewport.x * scale / 8) * 8, 16, MaximumResolution);
@@ -417,6 +424,7 @@ namespace Unity.MP_FPS.Client {
             m_Target = null;
         }
 
+        // 相机、模型、材质和临时场景都属于活着的改装页。隐藏或销毁后收回，避免多次进入积累资源。
         private void ReleaseStage() {
             ReleaseTarget();
             if (m_Stage != null) {

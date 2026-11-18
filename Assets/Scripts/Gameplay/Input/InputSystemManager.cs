@@ -38,6 +38,7 @@ public class InputSystemManager : Singleton<InputSystemManager> {
 
     public override void Awake() {
         base.Awake();
+        // 管理器跨场景存活，因此可以持续接到新插入设备的事件。销毁时取消监听，并停用仍由它维护的各套控制动作。
         InputSystem.onDeviceChange += OnDeviceChange;
         PairInitialUsers();
     }
@@ -67,6 +68,7 @@ public class InputSystemManager : Singleton<InputSystemManager> {
     }
 
     private void EnsureDevicePaired(InputDevice device) {
+        // 第一次配对安排键盘和鼠标。后续设备事件只处理还没配对的设备，避免把一只鼠标重复绑给不同 InputUser。
         if (m_HasPairedInitialUserDevices && InputUser.GetUnpairedInputDevices().Contains(device)) {
             if (TryFindUserWithLostDevice(device, out var user))
                 Debug.Log($"[InputSystemManager]: Re-pairing device {device.name} user index {user.index}");
@@ -76,6 +78,7 @@ public class InputSystemManager : Singleton<InputSystemManager> {
     }
 
     private InputUser PairDeviceWithUser(InputDevice device) {
+        // 为该设备创建输入用户和独立动作表，再按设备类型激活控制方案。客户端读取用户的表就能拿到正确的键位。
         var user = InputUser.PerformPairingWithDevice(device);
         Debug.Log($"[InputSystemManager]: Pairing device {device.name} user index {user.index} id {user.id}");
         var gameControls = new InputSystem_Actions();
@@ -103,6 +106,7 @@ public class InputSystemManager : Singleton<InputSystemManager> {
     private void PairInitialUsers() {
         if (Keyboard.current != null) {
             var newUser = PairDeviceWithUser(Keyboard.current);
+            // 键盘和鼠标通常属于同一个本机玩家。鼠标配给刚刚建好的键盘用户，移动和转视角就能从同一组 controls 读取。
             if (Mouse.current != null) InputUser.PerformPairingWithDevice(Mouse.current, newUser);
         }
         m_HasPairedInitialUserDevices = true;

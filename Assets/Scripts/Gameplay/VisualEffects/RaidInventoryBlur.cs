@@ -25,6 +25,7 @@ namespace Unity.MP_FPS {
                 Clear();
                 return;
             }
+            // 背包发布的目标相机一换，先解除旧相机订阅，再接现在这台。保持一份局内背景模糊即可。
             if (s_Driver != null && s_Driver.Camera != camera) Clear();
             s_Driver ??= new Driver(camera);
             s_Driver.PublishedAt = Time.realtimeSinceStartupAsDouble;
@@ -50,6 +51,7 @@ namespace Unity.MP_FPS {
 
             private void BeginCamera(ScriptableRenderContext context, Camera camera) {
                 if (m_Disposed) return;
+                // 界面意外关闭也能收尾。停止刷新一小段时间后由相机回调释放它自己。
                 if (!Camera || !Camera.isActiveAndEnabled || Time.realtimeSinceStartupAsDouble - PublishedAt > .25) {
                     Clear();
                     return;
@@ -103,6 +105,7 @@ namespace Unity.MP_FPS {
                 descriptor.name = "Inventory blur / horizontal half resolution";
                 descriptor.width = Mathf.Max(1, width / 2);
                 descriptor.height = Mathf.Max(1, height / 2);
+                // 先水平模糊到一个临时纹理，再垂直模糊，避免同一读写目标互相覆盖。两步合起来得到平滑的背景。
                 var intermediate = graph.CreateTexture(descriptor);
                 descriptor.name = "Inventory blur / live world";
                 descriptor.width = width;

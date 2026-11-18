@@ -66,6 +66,7 @@ namespace Unity.MP_FPS.Client {
             bool practice = PlayerProfileClient.IsTutorialPractice;
             bool onShip = m_Root.ClassListContains("terminal-is-ship");
             bool inStorage = m_Root.ClassListContains("terminal-is-loadout");
+            // 教学卡只占用船舱或仓库准备空间。其他页面不刷新任务提示，也不会干扰玩家正在看的菜单。
             bool visible = (onShip || inStorage) && state != null && (active || practice) &&
                            !PlayerProfileClient.IsLan && !PlayerProfileClient.RaidActive &&
                            GameSettings.Instance?.GameState == GlobalGameState.MainMenu;
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS.Client {
             if (!visible || m_Busy || m_Root.resolvedStyle.display == DisplayStyle.None) return;
             bool hasBrief = active && onShip && state.IntroPage < TutorialRules.Introduction.Length;
             if (!hasBrief) m_ShowBrief = false;
+            // 同一张卡从船舱位置移到仓库内容流里。保留进度和信息，避免切页生成两份卡同时工作。
             if (inStorage != m_Inline) {
                 m_Inline = inStorage;
                 m_Card.EnableInClassList("tutorial-inline", inStorage);
@@ -83,12 +85,14 @@ namespace Unity.MP_FPS.Client {
                     m_Root.Add(m_Card);
             }
             var inventory = PlayerProfileClient.Inventory;
+            // 提示属于产生它的单人档案和库存版本。换档或物资发生变化后丢掉旧结论再检查缺什么。
             if (m_Message != null && (m_MessageStore != PlayerProfileClient.OfflineStore ||
                                       m_MessageInventoryVersion != (inventory?.Version ?? -1)))
                 m_Message = null;
             int prep = TutorialRules.Preparation(inventory);
             bool ready = prep == Ready;
             bool canLocate = inStorage && m_RevealStorageItem != null && FindStorageTarget(inventory, prep) != null;
+            // 装备、电池和药可以在仓库自然配齐。观察到新的准备位后写入教学进度，同一时间只写一次。
             if (active && !m_Observing && (state.CompletedSteps & prep) != prep) ObservePreparation(prep);
             MoonkovLocalization.Set(m_Title,
                 m_ShowBrief ? "BRIEFING" : practice ? "TRAINING PRACTICE" : "NEW PLAYER TRAINING");
@@ -135,6 +139,7 @@ namespace Unity.MP_FPS.Client {
             var inventory = PlayerProfileClient.Inventory;
             if (inventory == null) return;
             int prep = TutorialRules.Preparation(inventory);
+            // 已经配好时前往准备出发。否则仍留在补装备的流程，用缺失项引导玩家去看仓库。
             if (prep == Ready)
                 m_CheckDeparture();
             else if (!m_Inline)
@@ -142,6 +147,7 @@ namespace Unity.MP_FPS.Client {
             else if (FindStorageTarget(inventory, prep) is string target) m_RevealStorageItem?.Invoke(target);
         }
 
+        // 找出优先缺的物品在仓库中的编号。用编号滚到真实位置，玩家可自己决定如何穿戴或收纳。
         private static string FindStorageTarget(InventoryGraph inventory, int prep) {
             if (inventory == null || prep == Ready) return null;
             return inventory.Items.Find(item => item.Parent == InventoryCatalog.Stash &&

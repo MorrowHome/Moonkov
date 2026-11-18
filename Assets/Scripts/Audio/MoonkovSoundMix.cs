@@ -11,6 +11,7 @@ public static class MoonkovSoundMix {
     public static void NotifyWeapon() { s_WeaponUntil = Time.unscaledTime + .08f; }
 
     public static float Gain(SoundDef.MixRole role) {
+        // 枪声响后先维持短暂压低，再按经过的真实时间恢复。环境声压得更多，服装和动作声保留一些细节。
         float recovery = Mathf.Clamp01((Time.unscaledTime - s_WeaponUntil) / .35f);
         if (role == SoundDef.MixRole.Ambience) return Mathf.Lerp(.53f, 1, recovery);
         if (role == SoundDef.MixRole.Foley) return Mathf.Lerp(.86f, 1, recovery);

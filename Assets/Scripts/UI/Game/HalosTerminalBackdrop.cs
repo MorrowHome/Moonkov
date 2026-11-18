@@ -188,6 +188,7 @@ namespace Unity.MP_FPS.Client {
 
         public void Present(bool visible, bool reducedMotion) {
             if (m_Disposed) return;
+            // 可见性或减弱动画设置变化时才重配动画状态。重复报告同一个状态不会把动画重新开播。
             bool changed = m_Visible != visible || m_ReducedMotion != reducedMotion;
             m_ReducedMotion = reducedMotion;
             m_Host.EnableInClassList("halos-reduced-motion", reducedMotion);
@@ -196,6 +197,7 @@ namespace Unity.MP_FPS.Client {
             m_Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             m_Tick.Pause();
             m_LastTick = double.NaN;
+            // 画面不再显示时停掉声音并清理开场覆盖层，避免进入仓库或进局后仍听到登录背景。
             if (!visible) {
                 m_Audio?.Suspend();
                 HideIntro();
@@ -263,6 +265,7 @@ namespace Unity.MP_FPS.Client {
             double step = double.IsNaN(m_LastTick) ? 0 : Math.Max(0, Math.Min(.1, now - m_LastTick));
             m_LastTick = now;
             m_Elapsed += step;
+            // 减弱动画用可读的静态状态把流程走完，登录仍能通知外层转场。
             if (m_ReducedMotion) {
                 m_Audio?.Present(HalosAccessAudio.Stage.Login, 0, (float)step);
                 return;
@@ -277,6 +280,7 @@ namespace Unity.MP_FPS.Client {
             int frame = m_Loading
                 ? (int)(m_Elapsed * SourceRate) % LoadingLoopFrames
                 : (int)(m_IntroElapsed * SourceRate);
+            // 用开场同一进度决定画面和音效阶段。背景已经显露时就进入登录的音轨，不需要独立的计时器。
             var audioStage = !IntroPending || frame >= RevealFrame ? HalosAccessAudio.Stage.Login :
                 frame >= ShutterFrame ? HalosAccessAudio.Stage.Shutter :
                 frame >= ClearFrame ? HalosAccessAudio.Stage.Blackout :
@@ -350,6 +354,7 @@ namespace Unity.MP_FPS.Client {
 
         private void PresentSignal(int frame) {
             // Transform/opacity updates at 30 Hz; text layout is unaffected by noise flicker.
+            // 信号故障效果按两帧一拍更新。若还在同一拍，保留上次的样式，避免每次定时循环都乱跳。
             if (frame / 2 == m_SignalFrame / 2 && m_SignalFrame >= 0) return;
             if (m_SignalFrame < 0) m_NextGlitchFrame = frame + 90;
             m_SignalFrame = frame;
@@ -422,6 +427,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void FinishIntro() {
+            // 结束通知每次开场只做一次。点击跳过和动画自然到尾都可以经过这里。
             if (m_Intro == null || m_IntroPlayed) return;
             m_IntroPlayed = true;
             m_Stage.style.display = DisplayStyle.None;

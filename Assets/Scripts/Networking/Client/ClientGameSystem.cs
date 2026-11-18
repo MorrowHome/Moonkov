@@ -19,6 +19,7 @@ namespace Unity.MP_FPS {
     public partial struct ClientGameSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<PlayerEntityPrefabs>();
+            // 客户端 World 有单独的随机状态。这里用它给不带画面的薄客户端测试 Bot 加名称前缀。
             uint randomSeed = (uint)DateTime.Now.Millisecond;
             var randomEntity = state.EntityManager.CreateEntity();
             state.EntityManager.AddComponentData(randomEntity, new FixedRandom {
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS {
         }
 
         public void OnUpdate(ref SystemState state) {
+            // 客户端看到禁止角色动态接触的标记时移除它，让当前 World 的角色控制按正常接触处理。
             if (SystemAPI.HasSingleton<DisableCharacterDynamicContacts>())
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<DisableCharacterDynamicContacts>());
             HandleSendJoinRequest(ref state);
@@ -34,12 +36,14 @@ namespace Unity.MP_FPS {
 
         // 有 NetworkId 只表示网络接通，还需要发一次入场请求。NetworkStreamInGame 在这里也当作已发出请求的标记，真正领到角色还要等服务端。
         private void HandleSendJoinRequest(ref SystemState state) {
+            // 在线账号必须先通过后端领到战局票。领票还没完成时留给下次更新，避免先发一条空凭据请求。
             if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan &&
                 string.IsNullOrEmpty(ConnectionSettings.Instance.GameJoinTicket))
                 return;
             if (!SystemAPI.TryGetSingletonEntity<NetworkId>(out var clientEntity) ||
                 SystemAPI.HasComponent<NetworkStreamInGame>(clientEntity))
                 return;
+            // NetCode 发送 RPC 的入口是临时实体。消息组件装内容，SendRpcCommandRequest 标记这条消息需要发送。
             var joinRequestEntity = state.EntityManager.CreateEntity(ComponentType.ReadOnly<ClientJoinRequestV2Rpc>(),
                 ComponentType.ReadWrite<SendRpcCommandRequest>());
             string playerName = GameSettings.Instance.PlayerName;
@@ -55,6 +59,7 @@ namespace Unity.MP_FPS {
             clientJoinRequestRpc.LoginToken = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
                 ? PlayerProfileClient.Token
                 : ConnectionSettings.Instance.GameJoinTicket;
+            // 薄客户端不从主档带电池。请求中的携带量、玩法版本、同伴人数和重连标记都要按模式填写，服务端还会校验。
             clientJoinRequestRpc.CarryCells = state.WorldUnmanaged.IsThinClient() ? 0 : PlayerProfileClient.CarryCells;
             clientJoinRequestRpc.Mode = GameSettings.Instance.RequestedMode;
             clientJoinRequestRpc.RulesVersion = GameSettings.Instance.RequestedRulesVersion;

@@ -27,6 +27,7 @@ namespace Unity.MP_FPS {
             m_RequiresBreathableAir = requiresBreathableAir;
         }
 
+        // 保存接头的局部位置，所以场景移动设备时接头仍随设备走。
         public void ConfigureConnection(Vector3 localPoint, bool requireClearConnection = true) {
             if (!float.IsFinite(localPoint.x) || !float.IsFinite(localPoint.y) || !float.IsFinite(localPoint.z))
                 throw new System.ArgumentException("Supply connector must have finite local coordinates.");
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS {
 
         public static float SampleSupply(Vector3 position, bool breathable) {
             float rate = 0;
+            // 略过断电、关闭、环境不满足或速率无效的站。供氧查询不应该从这些站得到补给。
             foreach (var zone in s_Zones) {
                 if (!zone || !zone.isActiveAndEnabled || !zone.m_Powered || !zone.m_Box || !zone.m_Box.enabled ||
                     (zone.m_RequiresBreathableAir && !breathable) || !float.IsFinite(zone.m_RefillPerSecond) ||
@@ -66,12 +68,14 @@ namespace Unity.MP_FPS {
                 var half = zone.m_Box.size * .5f;
                 if (Mathf.Abs(local.x) <= half.x && Mathf.Abs(local.y) <= half.y && Mathf.Abs(local.z) <= half.z) {
                     // Only actors inside the small supply volume pay for a physical connection check.
+                    // 先确认人在触发范围内，再按需要查接头附近有没有墙。这样物理检测只花在可能连接的人身上。
                     if (zone.m_RequiresClearConnection && (!float.IsFinite(zone.m_ConnectionPoint.x) ||
                                                            !float.IsFinite(zone.m_ConnectionPoint.y) ||
                                                            !float.IsFinite(zone.m_ConnectionPoint.z) ||
                                                            UnityEngine.Physics.Linecast(position, zone.ConnectionPoint,
                                                                zone.m_ConnectionMask, QueryTriggerInteraction.Ignore)))
                         continue;
+                    // 在重叠的两个补氧站范围里取较快的一个，避免摆放两个盒子就把速度叠加。
                     rate = Mathf.Max(rate, zone.m_RefillPerSecond);
                 }
             }

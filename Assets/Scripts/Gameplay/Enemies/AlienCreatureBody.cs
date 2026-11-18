@@ -79,6 +79,7 @@ namespace Unity.MP_FPS {
                     localSoundSystem);
             m_Mask = LayerMask.GetMask("Default", "Ground");
             Motor = new SurfaceMotor(owner.position, owner.rotation, m_Mask, m_Scale);
+            // 按物种选择身体解法。长脚按步态算关节，链状身体用连续节段，蜘蛛的脚单独找落点。
             if (profile.IsUpright) {
                 m_StiltRig = new StiltWalkerRig(owner, profile, m_Scale, render, m_Mask);
             } else if (profile.IsChain) {
@@ -109,6 +110,7 @@ namespace Unity.MP_FPS {
                 m_Branch = new BranchCreatureRig(owner, m_Mask, m_BranchShape, profile.BranchSpecies, render);
                 if (render && profile.Boss) m_BossSilhouette = new AlienBossSilhouette(owner, profile, m_Scale);
             }
+            // 身体命中体挂在单独的根下。能在不创建客户端外观的服务器上照样生成形状。
             m_HitRoot = new GameObject("Alien authoritative body hitboxes").transform;
             m_HitRoot.SetParent(owner, false);
             m_HitRoot.gameObject.layer = hitLayer;
@@ -139,6 +141,7 @@ namespace Unity.MP_FPS {
             s.bristleLength *= scale;
         }
 
+        // 先缓存当前这招的类型、时间和生命变化，身体姿态、流体与音效随后共用这份输入。
         /// <summary>Call before Tick/Observe with authoritative action age in seconds.
         /// Both peers solve the same attack silhouette; audio observes client snapshots only.</summary>
         public void SetCombatPresentation(
@@ -162,10 +165,12 @@ namespace Unity.MP_FPS {
         }
 
         // Called once per rendered snapshot, independently of the visual rig LOD.
+        // 声音不跟着昂贵的骨架降频。屏幕外也能按已收到的事件听见异形攻击。
         public void ObserveAttackAudio(in ProceduralAlienEnemy.State state, in AlienCombatPattern pattern) {
             m_Feedback?.ObserveAttackDetails(state, pattern, AttackSocket);
         }
 
+        // 服务器把 AI 的移动向量投影到当前贴附表面的前后和左右，交给实际身体马达。
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid) {
             m_HitReaction?.Restore();
             if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.FaceHugger) {
@@ -229,6 +234,7 @@ namespace Unity.MP_FPS {
             Motor.SetAttachedPose(position, rotation);
         }
 
+        // 先更新每种物种自己的肢体，再按需求打开或关闭更吃性能的液体外形。
         private void UpdateRig(Vector2 input, float speed, float yaw, float dt, bool liquid, float action) {
             m_Clock += dt;
             m_LiquidReaction = AlienLiquidMotion.Evaluate(m_Profile, m_CombatAction, m_ActionTime, m_WindupDuration,
@@ -329,6 +335,7 @@ namespace Unity.MP_FPS {
             m_VoidAppearance?.Update(m_LiquidReaction);
         }
 
+        // 长脚和覆面虫的液体外壳贴着已算好的骨架运行。不开这层时仍可以用普通网格表现。
         private void UpdateArticulatedFluid(bool liquid, float dt) {
             if (!m_Render) return;
             if (liquid) {
@@ -337,6 +344,7 @@ namespace Unity.MP_FPS {
             } else { m_ArticulatedFluid?.Fluid.SetVisible(false); }
         }
 
+        // 攻击只调整需要出招的足对。其它脚保留实际支撑点，前足抬起时身体不会像整体悬空。
         private void SolveSpiderCombatPose() {
             float strikeTime = Mathf.Clamp01(m_ActionTime / Mathf.Max(.01f, m_StrikeDuration));
             float windup = m_CombatAction == AlienAction.Windup
@@ -408,6 +416,7 @@ namespace Unity.MP_FPS {
             return t * t * (3 - 2 * t);
         }
 
+        // 给可受击的节段先生成一批可重用碰撞体，之后用当前骨架姿势来摆，不逐帧重建。
         private void BuildHitboxes(int layer) {
             Sphere(layer);
             if (m_StiltRig != null || m_Chain != null) Sphere(layer);
@@ -513,6 +522,7 @@ namespace Unity.MP_FPS {
             m_Branch?.ResetContacts();
         }
 
+        // 角色释放时一并清理声音、命中体和动态外形。服务端可能没创建显示资源，清理时要容许为空。
         public void Dispose() {
             m_HitReaction?.Restore();
             m_BossSilhouette?.Dispose();

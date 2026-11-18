@@ -156,6 +156,7 @@ namespace Unity.MP_FPS {
             RefreshViewport();
             Show(true);
             double now = Time.realtimeSinceStartupAsDouble;
+            // 尚未完成批准或没有对局快照时显示连接状态并禁用按钮。旧地图数据也清空，防止混入其他对局。
             if (!data.Approved || !data.HasSnapshot) {
                 m_Map.ResetData();
                 Visible(m_SenseLayer, false);
@@ -181,6 +182,7 @@ namespace Unity.MP_FPS {
             MoonkovLocalization.Set(Label("clashLobbyTitle"), s.IsSolo ? "SOLO BOUNTY CLASH" : "BOUNTY CLASH");
             MoonkovLocalization.Set(Label("clashSoloInfo"),
                 "OFFLINE STASH / You against three AI duos. Death loses equipment; extraction keeps loot. Equip your next loadout in the stash.");
+            // 等待、准备和部署都用大厅组件。状态正式进入可玩阶段后切战斗 HUD，角色或战局结束才显示结果。
             bool lobby = s.Phase == ClashPhase.Lobby || s.Phase == ClashPhase.Preparing ||
                          s.Phase == ClashPhase.Deploying;
             bool ended = BountyClashRules.Ended(s.Life) || s.Phase == ClashPhase.Finished,
@@ -197,6 +199,7 @@ namespace Unity.MP_FPS {
             m_Resize.SetEnabled(!s.IsSolo && editable && s.IsLeader && !pending);
             m_Leave.SetEnabled(!s.IsSolo && editable && s.LocalTeamId >= 0 && !pending);
             m_Copy.SetEnabled(!s.IsSolo && s.LocalTeamId >= 0 && s.InviteCode.Length > 0);
+            // 队伍变了用快照回填队伍人数。用无通知设置，避免刷新下拉框又请求改一次容量。
             if (m_LastTeam != s.LocalTeamId) {
                 m_LastTeam = s.LocalTeamId;
                 if (s.TeamCapacity > 0)
@@ -228,6 +231,7 @@ namespace Unity.MP_FPS {
             int rowIndex = 0, teamIndex = 0, markerIndex = 0;
             bool localRow = false;
             m_LocalReady = false;
+            // 名单根据服务器授权的状态填充。无法识别名字的敌方只显示参赛者类别，地图与队友栏另做筛选。
             foreach (var row in data.Participants.Values) {
                 if (rowIndex < m_LobbyRows.Length) {
                     if (row.IsBot)
@@ -250,6 +254,7 @@ namespace Unity.MP_FPS {
                 if (teamIndex < 3)
                     MoonkovLocalization.Set(m_TeamRows[teamIndex++], "{0} / {1}", row.Name.ToString(), status);
                 if (row.IsLocal || markerIndex >= 3 || !hasLocal || !camera) continue;
+                // 把队友坐标投到本地相机屏幕，镜头背后的人不显示。边缘位置压进安全范围，姓名和距离仍能看清。
                 var marker = m_Markers[markerIndex++];
                 var point = camera.WorldToViewportPoint((Vector3)row.Position + Vector3.up * .9f);
                 bool visible = point.z > 0 && !BountyClashRules.Ended(row.Life);
@@ -264,6 +269,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_LobbyRows.Length; i++) Visible(m_LobbyRows[i], i < rowIndex);
             for (int i = 0; i < m_TeamRows.Length; i++) Visible(m_TeamRows[i], i < teamIndex);
             for (; markerIndex < 3; markerIndex++) Visible(m_Markers[markerIndex], false);
+            // 必须入队且已收到自己的成员行才能准备。单人局还要等人机导航准备好。
             m_Ready.SetEnabled(editable && s.LocalTeamId >= 0 && localRow && !pending &&
                                (!s.IsSolo || s.SoloNavigationReady));
             MoonkovLocalization.Set(m_Ready, m_LocalReady ? "NOT READY" : "READY");
@@ -304,6 +310,7 @@ namespace Unity.MP_FPS {
                 s.IsCarrier ? "[{0}] DARK SIGHT / [RMB] BOOST / {1:0.0}s" : "[{0}] DARK SIGHT",
                 RaidKeyBindings.DisplayName(RaidKey.ViewOrDarkSight), s.SenseRemaining);
             Label("clashSense").tooltip = MoonkovLocalization.Text("125 m CLOUDS / 75 m INSTINCT WHILE IN DARK SIGHT");
+            // 只有连着且实际处于战斗的本地角色才更新导航地图。大厅、观战和断开沿用清空状态。
             if (!lobby && !ended && s.Connected && hasLocal)
                 m_Map.Present(s, data.Participants.Values, local, hasLocal, localForward);
             else
@@ -327,6 +334,7 @@ namespace Unity.MP_FPS {
                             : s.Phase != ClashPhase.Finished
                                 ? "Your deployment is over. The shared match is still running; no redeployment into this roster."
                                 : "The match has ended. Check your inventory before preparing the next round.");
+            // 个人结束不一定等于比赛结束。服务器允许开启下一局且库存已经保存时才开放继续。
             m_Next.SetEnabled(((s.IsSolo && ended) || s.Phase == ClashPhase.Finished) && s.CanStartNext && !saving &&
                               !pending);
         }

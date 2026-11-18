@@ -92,10 +92,12 @@ namespace Unity.MP_FPS {
             LanRoomServer server = null;
             LanPeerRoom peerRoom = null;
             try {
+                // 开房要等旧出战和结算恢复成功。端口和房主身份初始化期间一有错误就回收已开对象，不公开半成品房间。
                 await persistence.RecoverAsync();
                 ct.ThrowIfCancellationRequested();
                 server = new LanRoomServer(persistence, name, mode, capacity, port, gamePort, peerRoom: crossNetwork);
                 if (crossNetwork) {
+                    // 跨网房另外生成一场房间用的 DTLS 证书和 ICE 控制通道。普通 LAN 仍用 UDP 找房及 TCP 房间请求。
                     var identity = await Task.Run(LanPeerIdentity.Create, ct);
                     ct.ThrowIfCancellationRequested();
                     peerRoom = new LanPeerRoom(server, identity);
@@ -121,6 +123,7 @@ namespace Unity.MP_FPS {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             RequireRoomAvailable();
             string credential = GetCredential();
+            // 普通 LAN 加入把当前角色、姿态和本机凭据发给房主。拿到有效快照和房主档案后才进入房间页面。
             var reply = await LanProtocol.SendAsync(address, port, new LanRequest {
                 Action = "join", Credential = credential, Name = playerName,
                 CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex
@@ -148,6 +151,7 @@ namespace Unity.MP_FPS {
             ct.ThrowIfCancellationRequested();
             RequireRoomAvailable();
             var invite = LanPeerInvitation.Decode(text, false);
+            // 跨网身份按房主 ID 从本机种子派生。在同一个房主那里能找回原档案，换不同房主不会发相同凭据。
             using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(GetCredential(true)));
             string credential = BitConverter
                 .ToString(hmac.ComputeHash(Encoding.ASCII.GetBytes("Moonkov.FriendRoom.v1/" + invite.HostId)))
@@ -163,6 +167,7 @@ namespace Unity.MP_FPS {
                 EnsurePump();
                 var reply = await room.JoinAsync(invite, request, replyReady, stop.Token);
                 stop.Token.ThrowIfCancellationRequested();
+                // 信令和 DTLS 成功之后，还要用房间返回的协议、房 ID、房主 ID 和邀请匹配，避免接错房或带错档。
                 if (reply.Room?.Protocol != LanProtocol.Version || reply.Room.Id != invite.RoomId ||
                     reply.Room.HostId != invite.HostId || reply.Profile?.Profile == null)
                     throw new InvalidDataException("跨网房间响应无效。");
@@ -181,6 +186,7 @@ namespace Unity.MP_FPS {
 
         private static void Enter(LanReply reply) {
             PlayerProfileClient.LeaveOffline();
+            // 每次切房递增本地代数。请求回来时即使用的是同一个静态客户端，也能看出结果属于老房间。
             s_Generation++;
             s_LaunchedRound = 0;
             s_Failures = 0;
@@ -204,6 +210,7 @@ namespace Unity.MP_FPS {
             Room = reply.Room ?? Room;
             MemberId = reply.MemberId ?? MemberId;
             Ticket = reply.Ticket;
+            // 轮询常常只返回成员和阶段。只有实际附带档案才换库存页面，但房间和入场票每次都根据房主回应更新。
             if (reply.Profile != null) {
                 Profile = reply.Profile;
                 PlayerProfileClient.ApplyLanProfile();
@@ -220,6 +227,7 @@ namespace Unity.MP_FPS {
             object payload = null,
             bool ready = false,
             CancellationToken ct = default) {
+            // 会带正式装备进局的模式，准备或开场前等待菜单库存队列确认。临时装备玩法不依赖仓库出装。
             if (!ArenaMatch.UsesTemporaryKit(Room?.Mode ?? RaidGameMode.Expedition) &&
                 (action == "start" || (action == "ready" && ready)))
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
@@ -241,6 +249,7 @@ namespace Unity.MP_FPS {
                     if (action == "start" && s_PeerRoom?.HasManualOffer == true)
                         throw new InvalidOperationException("请先完成或取消当前邀请。");
                     reply = await Task.Run(() => server.Handle(request), linked.Token);
+                // 房主本人走本机方法，跨网来宾复用控制 driver，LAN 来宾发 TCP。协议绕不同路线，房主的裁决代码仍相同。
                 } else if (s_PeerRoom != null) { reply = await s_PeerRoom.SendAsync(request, linked.Token); } else {
                     reply = await LanProtocol.SendAsync(Address, Port, request, linked.Token);
                 }
@@ -275,6 +284,7 @@ namespace Unity.MP_FPS {
                     else if (Room.Members.Any(m => m.Id == MemberId && m.InGame)) await ReturnedToMenuAsync();
                 }
             } catch (OperationCanceledException) { } catch (Exception ex) {
+                // 暂时接不到房主不立刻退房。连续失败后若仍在地图，先交给 GameManager 停该局，再清房间状态。
                 if (++s_Failures >= 3) {
                     Error = "与房主的连接已中断。" + ex.Message;
                     Changed?.Invoke();
@@ -288,6 +298,7 @@ namespace Unity.MP_FPS {
 
         public static async Task ReturnedToMenuAsync() {
             if (!Active) return;
+            // 回到菜单先告诉房主释放本轮信息，再拉一次完整档，界面显示本局落盘后的库存。
             try {
                 await RequestAsync("returned");
                 await RequestAsync("profile");
@@ -298,6 +309,7 @@ namespace Unity.MP_FPS {
             if (s_Closing) return;
             if (!afterWorldShutdown) await PlayerProfileClient.FlushMenuInventoryAsync(CancellationToken.None);
             // Worlds must have released their deployment receipts before the host store closes.
+            // 手动关房需要先停战局，给存档上下文收尾机会。直接关掉房主档会中断正在写的结算。
             if (!afterWorldShutdown && Active && GameSettings.Instance.GameState != GlobalGameState.MainMenu)
                 throw new InvalidOperationException("请先返回主菜单，再关闭或离开房间。");
             if (Active && !IsHost)
@@ -306,6 +318,7 @@ namespace Unity.MP_FPS {
                 }
             s_Closing = true;
             try {
+                // 切到下一代再清连接与档案，尚未返回的旧请求因代数不匹配不能重新把这个房间加回来。
                 s_Generation++;
                 var server = Server;
                 Server = null;
@@ -338,6 +351,7 @@ namespace Unity.MP_FPS {
             Profile = null;
             Ticket = MemberId = null;
             if (server == null) return;
+            // 直接停止编辑器或退出时可能跳过正常菜单流程。在 Unity 线程先拿到上下文和任务，再等数据写完后释放档案锁。
             var shutdowns = new List<Task>();
             foreach (var world in World.All) {
                 if (!world.IsCreated) continue;
@@ -377,6 +391,7 @@ namespace Unity.MP_FPS {
             using var cancel = timeout.Token.Register(socket.Close);
             byte[] query = Encoding.UTF8.GetBytes(LanProtocol.DiscoveryQuery);
             try {
+                // 扫描局域网同时发给回环、通用广播和每张卡的子网广播。只短时收集回应，再按房间 ID 去重。
                 var destinations = new HashSet<IPAddress> { IPAddress.Broadcast, IPAddress.Loopback };
                 foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces()
                              .Where(n => n.OperationalStatus == OperationalStatus.Up))
@@ -399,6 +414,7 @@ namespace Unity.MP_FPS {
                             room.Members.Length > 32 || !int.TryParse(room.Address, out int port) || port < 1 ||
                             port > 65535 || string.IsNullOrEmpty(room.Id))
                             continue;
+                        // 能接的 IP 以实际发出发现回应的地址为准。房间正文只提供端口，避免正文中的另一地址被误信。
                         room.Address = packet.RemoteEndPoint.Address + ":" + port;
                         rooms[room.Id] = room;
                     } catch (JsonException) { }

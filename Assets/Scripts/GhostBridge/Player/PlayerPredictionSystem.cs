@@ -28,6 +28,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
     protected override void OnCreate() {
         base.OnCreate();
+        // 一次预测过程中要整理本机指令。这个原生列表按 World 生命周期复用，每拍清空内容，World 退场时才释放内存。
         m_ProcessedClientInputCommands = new NativeList<ClientCommandInput>(32, Allocator.Persistent);
     }
 
@@ -59,12 +60,14 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
         // {
         //     return;
         // }
+        // 一个画面帧可能重算不止一拍，也可能只算当前拍的一部分。先记下这是预测的哪一步，用它安排读输入、移动和最终动画。
         bool isFirstPredictionTick = networkTime.IsFirstPredictionTick;
         bool isFinalPredictionTick = networkTime.IsFinalPredictionTick;
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         float dt = World.Time.DeltaTime;
         float frameDT = UnityEngine.Time.deltaTime;
         s_PlayerMovementTick = tick;
+        // Simulate 表示 NetCode 让这个对象在当前预测拍参与运算。先推进冷却和已开始的装填，才能判断这一拍新操作是否符合时序。
         foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>()) {
             HaloModuleFire.AdvanceTimers(ref predictedPlayer.ValueRW, dt);
             if (predictedPlayer.ValueRO.ControllerState.IsReloadingState) {
@@ -76,6 +79,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
         // ensure controller has been initialised
         foreach (var (predictedPlayer, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithEntityAccess()
+                     // 预测移动需要场景里的角色控制器。等桥接物体生成后把它的引用补到实体上，后面的查询就可以直接取。
                      .WithAll<Simulate, GhostGameObjectLink>().WithNone<PlayerControllerLink>()) {
             var gameObjectLink = SystemAPI.ManagedAPI.GetComponent<GhostGameObjectLink>(entity);
             if (gameObjectLink.LinkedInstance != null &&
@@ -86,16 +90,19 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
         // pull out the client input
         // we process the input and create a list of commandInputs that need to be processed by the movement code
         // the movement code processes the inputs in order
+        // 先收集这一拍需要的输入，再统一推进角色。这样输入实体和实际的角色实体可以分别生成、分别查询。
         m_ProcessedClientInputCommands.Clear();
         var commands = m_ProcessedClientInputCommands;
         var clientCommandInputBufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>(true);
         foreach (var (predictedClient, entity) in SystemAPI.Query<RefRW<PredictedClientInput>>().WithEntityAccess()
+                     // 只收这一台机器掌管的输入 Ghost。别的玩家主要通过服务器快照在这里呈现。
                      .WithAll<GhostOwnerIsLocal, Simulate>()) {
             // GameDebug.BurstLog("[PlayerPredictionSystem] PredictedClientInput is Simulate");
             if (!clientCommandInputBufferLookup.TryGetBuffer(entity, out var inputCommands) ||
                 inputCommands.Length == 0)
                 continue;
             if (isFirstPredictionTick) {
+                // 预测批次刚开始时，把本机处理起点设到当前拍之前。随后根据这次要模拟的 tick 从历史缓冲读指令。
                 predictedClient.ValueRW.LastProcessedServerTick = tick - 1;
 
                 // the server might have missed some input if the snapshot is running behind
@@ -144,12 +151,14 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         HaloEnergyRules.SetDefense(ref predictedPlayer.ValueRW,
                             input.HaloDefense && !input.FireSuppressed && !input.FreeLooking);
                         predictedPlayer.ValueRW.LocalLookYawPitchDegrees = input.LookYawPitchDegrees;
+                        // 先让换装请求更新手里武器，再查该武器和模块的配置。切换这一拍会影响能不能开枪以及弹量记在哪一格。
                         bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
                             WeaponManager.Instance.WeaponRegistry);
                         var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(
                             predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
                         if (weaponData != null) {
                             var playerGhost = controllerLink.Controller.GetComponent<PlayerGhost>();
+                            // 相机交来瞄准方向，角色控制器拿自己的发射位置与武器距离算出效果射线。实际伤害仍由服务器碰撞结算。
                             var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
                             predictedPlayer.ValueRW.AimPoint = aimPoint;
                             bool wantsToReload = input.Reload;
@@ -166,6 +175,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, weaponData.MagazineSize);
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
+                            // 本机应用和服务器通用的开火规则，通过后推进预测中的冷却、光环能量和开火编号。收到快照后这些状态可被校正。
                             if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input, switchedWeapon,
                                     dt / commands.Length)) {
                                 HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, dt);
@@ -173,6 +183,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRW.LastShotTick = commandInput.Tick.TickIndexForValidTick;
                                 bool aimed = !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) ||
                                              input.Aim;
+                                // 散布用武器、瞄准状态和开火的 tick 计算。预测重跑同一发时，能得到与第一次一致的偏移。
                                 if (weaponData.Type == WeaponType.Hitscan) {
                                     shotRay = new Ray(shotRay.origin,
                                         WeaponSpread.Direction(shotRay.direction, weaponData, 0,
@@ -199,6 +210,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                         Vector3 endPoint = eyePosition + aimDirection * weaponData.HitscanRange;
                                         Debug.DrawLine(shotOriginPosition, endPoint, Color.cyan, 0.3f);
                                     }
+                                // 飞行弹体第一次完整预测才有自己的本机物体。服务器以后同步同一发时，可以根据身份接管原来的表现。
                                 } else if (weaponData.Type == WeaponType.Projectile &&
                                            networkTime.IsFirstTimeFullyPredictingTick) {
                                     for (int pellet = 0;
@@ -215,6 +227,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 }
                             }
                         }
+                        // 先把手里武器变化过的弹量写回对应槽，再让控制器按输入和受伤后的移动能力累加这一拍的位移。
                         DollSingerWeapons.StoreAmmo(ref predictedPlayer.ValueRW);
                         FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                             ref predictedPlayer.ValueRW.AccumulatedMovement,
@@ -237,6 +250,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 // apply
                 // if tick batching is not allowed then we need to request an apply every tick
                 // otherwise it will happen on the last tick anyway
+                // 默认每拍应用移动，因为位移请求还要过真实碰撞。开启批处理时可以攒几拍，在这一帧的最后一步应用。
                 predictedPlayer.ValueRW.RequestApplyMovement = !allowTickBatching;
             } else if (logPredictionWarnings) {
                 Debug.LogWarning("[PlayerPredictionSystem] Player is simulated but there are no commands to process");
@@ -258,6 +272,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     controllerLink.Controller.NeedsLiftCarry(predictedPlayer.ValueRO.ControllerState)) {
                     controllerLink.Controller.ApplyMovementUpdate(ref predictedPlayer.ValueRW.ControllerState,
                         controllerConsts, predictedPlayer.ValueRO.AccumulatedMovement, applyDT);
+                    // 本机同时有服务器时，可用功能开关比对同一完整 tick 的位置。最后一步可能只模拟了部分时间，跳过它才能做同一时间的对照。
                     if (checkForPredictionErrors && !isFinalPredictionTick)
                         // check for prediction accuracy
                         // we avoid the final tick as it's almost certainly partial
@@ -280,6 +295,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     predictedPlayer.ValueRW.AccumulatedMovement = float3.zero;
                 } else {
                     // we should just apply our current state
+                    // 没有要执行的位移时也同步控制器的位置和方向，并重新检查着地，避免采用上一拍的过期接触状态。
                     controllerLink.Controller.ApplyPosRotImmediate(predictedPlayer.ValueRO.ControllerState);
                     controllerLink.Controller.GroundedCheck(ref predictedPlayer.ValueRW.ControllerState,
                         controllerConsts);
@@ -289,6 +305,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 controllerLink.Controller.ApplyAnimatorState(in predictedPlayer.ValueRO.ControllerState,
                     controllerConsts, frameDT);
         }
+        // 遍历结束才把新角色控制器链接写入 World，避免枚举过程中途改变匹配对象。
         ecb.Playback(EntityManager);
     }
 

@@ -8,6 +8,7 @@ using UnityEngine;
 [ResetOnPlayMode("InvokeAndClearStaticCallbacks")]
 public abstract class GhostSingleton : GhostMonoBehaviour {
 #pragma warning disable UDR0001
+    // 各类管理器用这一条静态入口集中接受退局清理通知。调用完清空委托，避免上一局的引用跟着进入下一局。
     protected static Action OnResetStaticState; // This is cleared from InvokeAndClearStaticCallbacks
 #pragma warning restore UDR0001
 
@@ -58,6 +59,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
         return false;
     }
 
+    // 服务器有自己的管理器。客户端的本机对象和代理对象共享 ClientProxy 下同一个管理器，因为它们属于同一客户端 World。
     public static T GetInstanceByRole(MultiplayerRole role) {
         //all clients should be obtaining the same client instance regardless of if they are local or remote
         if (role != MultiplayerRole.Server) role = MultiplayerRole.ClientProxy;
@@ -85,6 +87,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
         return false;
     }
 
+    // 需要这个管理器的对象有时比管理器先初始化。已有实例就直接调用，否则挂到对应端的等待队列，绑定时一次发完。
     public static void OnInitialise(MultiplayerRole role, OnInitialiseCallback callback) {
         if (TryGetInstanceByRole(role, out var instance)) { callback(instance); } else {
             if (s_InitialiseLookup.TryGetValue(role, out var existingCallback)) callback = existingCallback + callback;
@@ -115,6 +118,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
         if (roleToUnregister != MultiplayerRole.Server) roleToUnregister = MultiplayerRole.ClientProxy;
 
         // This is the instance-specific cleanup. It only removes itself.
+        // 晚到的销毁事件只移走这个旧实例自己的登记。原键上若已经是新实例，它会继续可用。
         if (s_InstanceLookup.ContainsKey(roleToUnregister) && s_InstanceLookup[roleToUnregister] == this)
             s_InstanceLookup.Remove(roleToUnregister);
 
@@ -125,6 +129,7 @@ public abstract class GhostSingleton<T> : GhostSingleton where T : GhostMonoBeha
     protected virtual void OnDestroy() {
         // This ensures that if the object is destroyed abruptly (like during world teardown),
         // it still cleans up its own entry from the static dictionary.
+        // 场景可能直接卸载而没走正常的桥接销毁。OnDestroy 会兜底清理，已清过的对象跳过。
         if (GhostGameObject == null || !GhostGameObject.GhostPreDestroyCalled) OnGhostPreDestroy();
     }
 }

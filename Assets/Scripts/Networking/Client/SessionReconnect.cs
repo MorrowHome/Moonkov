@@ -16,6 +16,7 @@ namespace Unity.MP_FPS {
         public static int SecondsRemaining =>
             Math.Max(0, (int)Math.Ceiling((s_Deadline - DateTime.UtcNow).TotalSeconds));
 
+        // 记录存在、时间没过、仍是原账号并且属于在线模式时，菜单才可以使用这条重连信息。
         public static bool Available =>
             s_CanResume && SecondsRemaining > 0 && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan &&
             !string.IsNullOrEmpty(s_AccountScope) && s_AccountScope == PlayerProfileClient.LocalPreferenceScope;
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS {
         }
 
         public static void Remember(CreationType route) {
+            // 只记住加入远端的连接方式。单人和开本机房的生命周期由它们各自管理。
             s_CanResume = route == CreationType.ConnectAndJoin || route == CreationType.JoinRelay;
             s_Route = route;
             s_Address = ConnectionSettings.Instance.IPAddress;
@@ -37,6 +39,7 @@ namespace Unity.MP_FPS {
             s_AccountScope = PlayerProfileClient.LocalPreferenceScope;
         }
 
+        // 断开后只打开一次短时窗口。重复收到断开信号不能重新计时，否则 UI 会比服务器保留角色更久。
         public static void Offer() {
             if (s_CanResume && s_Deadline == default) s_Deadline = DateTime.UtcNow.AddSeconds(90);
         }
@@ -48,6 +51,7 @@ namespace Unity.MP_FPS {
 
         public static CreationType Restore() {
             if (!Available) throw new InvalidOperationException("重连时限已过，请等待原战局结算后重新出击。");
+            // 把地址、会话码和玩法放回正常加载要读的设置。返回的入口类型还会决定重新走直连还是中继。
             ConnectionSettings.Instance.IPAddress = s_Address;
             ConnectionSettings.Instance.Port = s_Port;
             ConnectionSettings.Instance.SessionCode = s_Code;

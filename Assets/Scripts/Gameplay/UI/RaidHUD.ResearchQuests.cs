@@ -71,6 +71,7 @@ namespace Unity.MP_FPS {
             var quest = live && manager.HasComponent<ResearchQuestClientState>(entity)
                 ? manager.GetComponentData<ResearchQuestClientState>(entity).Snapshot
                 : default;
+            // 新局还没有适用快照时先撤掉旧提示、设备外观和持续交互，按键不会留在上个目标。
             if (quest.RaidId != raid || quest.Active == 0) {
                 m_ResearchSnapshot = default;
                 m_ResearchField.Clear();
@@ -82,6 +83,7 @@ namespace Unity.MP_FPS {
             }
             m_ResearchSnapshot = quest;
             m_ResearchField.Present(quest);
+            // 研究故事提示在每场有自己的播放记录。换局后重新判断该放哪些提示，当前局中不重复放。
             if (m_StoryRaid != raid) {
                 m_StoryRaid = raid;
                 m_StoryPlayed = 0;
@@ -121,6 +123,7 @@ namespace Unity.MP_FPS {
                         target = id;
                     }
                 }
+            // 第一次按下时锁定设备。之后只有同一个目标还能续报，准星移动到另一台时先释放原操作。
             if (!m_ResearchHold.HasValue && target.HasValue && held &&
                 m_InteractionBindings.Operate.WasPressedThisFrame()) {
                 m_ResearchHold = target;
@@ -129,6 +132,7 @@ namespace Unity.MP_FPS {
             if (m_ResearchHold.HasValue) {
                 if (target != m_ResearchHold) { ReleaseResearchHold(); } else if (Time.unscaledTime >=
                  m_ResearchNextHold) {
+                    // 服务器收到定时续报才持续计算设备进度。HUD 显示的进度来自服务端同步，客户端不自行判成功。
                     Send(new ResearchQuestHoldRpc { RaidId = raid, Device = target.Value, Pressed = true });
                     m_ResearchNextHold = Time.unscaledTime + .1f;
                 }
@@ -161,6 +165,7 @@ namespace Unity.MP_FPS {
         }
 
         private void PlayFieldCue(FieldCue flag, bool triggered, string cue) {
+            // 同一条提示由快照里的条件触发。标志已记录时跳过，即使随后收到含相同条件的快照。
             if (!triggered || (m_StoryPlayed & flag) != 0) return;
             m_StoryPlayed |= flag;
             m_ResearchRadio.EnqueueStory(cue, Chinese);

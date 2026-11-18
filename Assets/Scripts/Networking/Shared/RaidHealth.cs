@@ -57,6 +57,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 按部位上限夹住实际生命值，再重算总量。任何调用者更新一个部位后，都能读到一致的存活状态。
         public static void Set(ref PredictedPlayerGhost state, BodyPart part, float value) {
             value = Mathf.Clamp(value, 0, Maximum(state, part));
             switch (part) {
@@ -71,6 +72,7 @@ namespace Unity.MP_FPS {
             Synchronize(ref state);
         }
 
+        // 出生初始化玩家七个部位及对应的生存相关字段。不同模式的血量倍率在 Maximum 中一起应用。
         public static void Initialize(ref PredictedPlayerGhost state) {
             state.PendingBulletWound = 0;
             state.PendingBulletWoundSource = default;
@@ -88,6 +90,7 @@ namespace Unity.MP_FPS {
             Synchronize(ref state);
         }
 
+        // 角色可否行动与各部位余量分开。头胸是生死门槛，其他部位损坏主要影响动作。
         private static void Synchronize(ref PredictedPlayerGhost state) {
             if (state.ClashEnabled) {
                 state.HeadHealth = Mathf.Min(state.HeadHealth, Maximum(state, BodyPart.Head));
@@ -123,6 +126,7 @@ namespace Unity.MP_FPS {
                 return 0;
             float before = state.CurrentHealth;
             if (!state.BodyHealthInitialized) { state.CurrentHealth = Mathf.Max(0, before - amount); } else {
+                // 先把命中部位可承受的部分扣完，再将剩余伤害按比例给其他仍有血的部位。
                 float local = Mathf.Min(Get(state, part), amount);
                 Set(ref state, part, Get(state, part) - local);
                 float overflow = amount - local;
@@ -137,6 +141,7 @@ namespace Unity.MP_FPS {
                     }
                 }
             }
+            // 记录伤害部位、显示量和 tick 给 HUD、表现与动作打断用。生理扣血和被敌人击中用不同的细分序号。
             state.LastHitPart = part;
             state.LastDamageAmount = amount;
             state.LastHitTick = tick;
@@ -183,6 +188,7 @@ namespace Unity.MP_FPS {
 
         // Called only by the server immediately after the controller changes to landed.
         // The pending flag prevents replaying an event until input processing clears it.
+        // 只有首次进入落地状态才按高度对两腿分摊伤害。重复调用不能因同一个落地事件连扣。
         public static float ApplyLandingDamage(
             ref PredictedPlayerGhost state,
             bool wasLanding,
@@ -232,6 +238,7 @@ namespace Unity.MP_FPS {
             if (!EnergyShieldRules.Alive(state) || !float.IsFinite(amount) || amount <= 0 ||
                 (part != BodyPart.Auto && Maximum(part) <= 0))
                 return 0;
+            // 一次攻击先完整过护盾，再看是否按比例分摊到各部位。不能先分成七份再扣七次光环能量。
             float remaining = EnergyShieldRules.Absorb(ref state, amount, tick, kind, impactPoint);
             // Gel armor modifies combat damage reaching tissue. It does not
             // reduce oxygen deprivation or the physical impact of a fall.
@@ -258,6 +265,7 @@ namespace Unity.MP_FPS {
 
         // A shield-only hit is real, but a team-protected or otherwise rejected
         // impact must not produce a hit confirmation or mark.
+        // 根据攻击前后身体或盾的实际变化给命中反馈。友军被保护没有变化就不该显示命中确认。
         public static byte ImpactFlags(in PredictedPlayerGhost before, in PredictedPlayerGhost after) {
             if (!(before.CurrentHealth > 0) || (!(after.CurrentHealth < before.CurrentHealth) &&
                                                 after.ShieldHitSequence == before.ShieldHitSequence))
@@ -285,6 +293,7 @@ namespace Unity.MP_FPS {
         }
 
         // One total budget across the body. Never reconstruct a destroyed part or a lost Clash health cap.
+        // 被动回复只加还活着且缺血的部位。不复活归零的身体部位。
         public static float Regenerate(ref PredictedPlayerGhost state, float amount) {
             if (!float.IsFinite(amount) || amount <= 0 || !state.BodyHealthInitialized || state.CurrentHealth <= 0 ||
                 state.TacticalPoisonSeconds > 0 || (state.ClashEnabled && state.ClashLife != ClashLife.Alive))
@@ -309,6 +318,7 @@ namespace Unity.MP_FPS {
             return state.CurrentHealth - before;
         }
 
+        // 在背包、版本和目标部位核对完成后才扣医疗物品。止血和恢复值由具体物品规则决定。
         public static Inventory.InventoryError UseMedical(
             ref PredictedPlayerGhost state,
             Inventory.InventoryGraph inventory,
@@ -364,6 +374,7 @@ namespace Unity.MP_FPS {
             return RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds > 0 ? 1.5f : 1);
         }
 
+        // 多个互斥动作共享这套手上是否空闲的判断。某些入口允许远端外放光环，所以可按用途带选项。
         public static bool HandsBusy(in PredictedPlayerGhost state, bool allowAnchoredHalo = false) {
             return GrenadeHandling.Occupied(state) || state.HaloDefenseHeld ||
                    (HaloTransferRules.Occupied(state) && !(allowAnchoredHalo && HaloSupportRules.Anchored(state) &&
@@ -395,6 +406,7 @@ namespace Unity.MP_FPS {
                 : total;
         }
 
+        // 控制器更新前就限制按键组合，避免角色状态不允许的时候仍执行冲刺、装填或射击。
         public static PlayerInput RestrictInput(in PredictedPlayerGhost state, PlayerInput input) {
             if (GrenadeHandling.Occupied(state)) {
                 input.SetFlag(PlayerInput.InputFlag.Shoot, false);
@@ -436,6 +448,7 @@ namespace Unity.MP_FPS {
 
         // The server uses its query hit position, body yaw and controller capsule,
         // never a client-reported body part. Headless servers need no animated bones.
+        // 优先用实际命中的玩家部位碰撞信息，缺少时根据命中点在胶囊中的位置回退到身体区域。
         public static BodyPart ResolveHit(PlayerGhost target, Collider collider, Vector3 point) {
             if (collider.TryGetComponent<PlayerHitRegion>(out var region)) return region.Part;
             if (target == null || target.Controller == null) return BodyPart.Chest;

@@ -68,6 +68,7 @@ namespace Unity.MP_FPS {
             m_FirstPerson = owned && firstPerson;
             m_OwnedCamera = ownedCamera;
             bool head = snapshot.HeadDomeEquipped;
+            // 戴上头盔这一刻单独记时间。之后渲染用这个时间平滑带出面罩，保持戴着的时候不用重新开动画。
             if (head && !m_HeadEquipped) m_VisorEquippedAt = Time.unscaledTime;
             m_HeadEquipped = head;
             m_ShieldEquipped = snapshot.HaloEquipped;
@@ -89,6 +90,7 @@ namespace Unity.MP_FPS {
                 m_RestoreSequence = snapshot.ShieldRestoreSequence;
                 m_HasSequence = true;
             } else {
+                // 各类盾变化用自己的序号，客户端只消费更晚的反馈。同一快照同时有碎盾和受击时，声音按更新处理里的次序取一条。
                 bool hit = NewSequence(snapshot.ShieldHitSequence, ref m_HitSequence),
                     broken = NewSequence(snapshot.ShieldBreakSequence, ref m_BreakSequence),
                     restored = NewSequence(snapshot.ShieldRestoreSequence, ref m_RestoreSequence);
@@ -112,6 +114,7 @@ namespace Unity.MP_FPS {
 
         // Optional inventory-portrait bridge; uses real item values, not a second loadout model.
         public void PresentInventory(InventoryGraph graph) {
+            // 仓库预览直接读实际装备栏，填成表现层能理解的几项角色字段。局内角色的同一套外观类就能画菜单里的预览。
             var head = graph?.Equipped("Helmet");
             var snapshot = new PredictedPlayerGhost {
                 CurrentHealth = 1, HeadDomeEquipped = EnergyShieldEquipment.IsHeadDome(head?.Code),
@@ -140,6 +143,7 @@ namespace Unity.MP_FPS {
                 EnergyShieldRendering.Register(this);
                 return true;
             }
+            // 先找到人形 Animator 和头部骨骼，再创建材质和运行时装备物体。基准骨骼缺失时等资源就绪后再试。
             var animator = GetComponentInChildren<Animator>();
             if (!animator || !animator.isHuman) return false;
             var shader = Resources.Load<Shader>("Moonkov/EnergyShield");
@@ -252,6 +256,7 @@ namespace Unity.MP_FPS {
             var center = (feet + m_Head.position) * .5f;
             var color = m_PreviewHaloColor ??
                         (m_DefenseHalo ? m_DefenseHalo.ColorForWeapon(m_DefenseWeapon) : new Color(1, .18f, .42f));
+            // 碰撞点可能在角色内部或球外。拿中心到撞击的方向投到护盾球面，这样闪烁出现在罩子上。
             var impactDirection = m_Impact - center;
             var surfaceImpact = center +
                                 (impactDirection.sqrMagnitude > .001f
@@ -303,6 +308,7 @@ namespace Unity.MP_FPS {
         }
 
         internal bool InView(Camera camera, Plane[] planes) {
+            // 渲染前先检查是否有可见部件，再用相机层和包围盒筛选。相机看不到时就不用提交折射绘制。
             if (!HasSurfaces) return false;
             return Visible(m_ShellRenderer) || Visible(m_VisorRenderer) || Visible(m_ApertureRenderer);
 
@@ -354,6 +360,7 @@ namespace Unity.MP_FPS {
         }
 
         public void DisposePresentation() {
+            // 清理时先解除渲染订阅并恢复物体可见性，再释放本物体的材质、节点和共享网格引用。
             EnergyShieldRendering.Unregister(this);
             SetHidden(false);
             m_Cameras.Clear();

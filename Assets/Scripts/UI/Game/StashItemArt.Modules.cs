@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client {
     public sealed partial class StashItemArt {
+        // 先按物种选择外形和颜色。多个器官共用主体画法，细部线条再体现外观差异。
         private void SpeciesOrgan(int species) {
             uint color = species == 4 ? 0xbf8b4eu :
                 species == 5 || species == 7 ? 0x678d68u :
@@ -93,6 +94,7 @@ namespace Unity.MP_FPS.Client {
             Ring(0xe9ca75, 3, 78, 23, 8);
         }
 
+        // 按模块枚举找独立 sprite。装配收益用规则算，这里只确定图标能否从资源加载。
         private bool SetModuleArtwork(StashArtKind kind) {
             HaloModule module;
             switch (kind) {
@@ -107,6 +109,7 @@ namespace Unity.MP_FPS.Client {
             }
             m_HasPhysicalIcon = true;
             var sprite = DollSinger.HaloModuleVisual.Artwork(module);
+            // 对应贴图加载不到时返回失败。外层可以继续画程序图形，不让仓库因图标缺失打不开。
             if (!sprite) {
                 tooltip = MoonkovLocalization.Text("Appearance preview unavailable.");
                 return true;

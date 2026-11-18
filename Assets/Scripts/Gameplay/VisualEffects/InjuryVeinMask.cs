@@ -10,11 +10,13 @@ namespace Unity.MP_FPS {
         internal static Texture2D Retain() {
             s_Users++;
             if (s_Texture) return s_Texture;
+            // 血管与血点由固定随机种子生成。相同代码在不同机器上会得到相同图案，整张纹理只建一次。
             const int size = 512;
             var pixels = new Color32[size * size];
             var random = new System.Random(73951);
             float Next(float low, float high) { return Mathf.Lerp(low, high, (float)random.NextDouble()); }
 
+            // 计算线段附近每个像素的覆盖量，再写到对应颜色通道。着色器可以分别控制血管和血点的可见性。
             void Stamp(Vector2 a, Vector2 b, float width, int channel) {
                 a *= size;
                 b *= size;
@@ -47,6 +49,7 @@ namespace Unity.MP_FPS {
                         .normalized;
                     var next = p + direction * (length / 12);
                     Stamp(p, next, width * Mathf.Lerp(1, .5f, step / 11f), 0);
+                    // 血管沿带小抖动的方向逐段生长，中间分出更细的岔。限制递归层数让生成由固定的小批次组成。
                     if (depth > 0 && (step == 3 || step == 7)) {
                         float side = random.Next(2) == 0 ? -1 : 1;
                         Grow(next, (direction + new Vector2(-direction.y, direction.x) * side * .9f).normalized,

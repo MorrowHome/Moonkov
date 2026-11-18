@@ -38,6 +38,7 @@ namespace Unity.MP_FPS.Client {
 
         private void SetCrop(Image layer) {
             if (m_Frosted == null) return;
+            // 玻璃所在位置和舞台图片使用同一屏幕坐标。以相对位置算取样区域，模糊图能对上背后的人物。
             Rect stage = m_StageImage.worldBound, card = layer.worldBound;
             if (stage.width <= 0 || stage.height <= 0 || card.width <= 0 || card.height <= 0) return;
             var uv = new Rect((card.xMin - stage.xMin) / stage.width, (stage.yMax - card.yMax) / stage.height,
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS.Client {
             }
             var viewport = m_StageImage.contentRect.size;
             if (viewport.x < 2 || viewport.y < 2) return;
+            // 模糊不用全分辨率。缩小目标纹理并给最长一边设上限，在小队持续渲染时控制额外开销。
             float scale = Mathf.Min(.4f, MaxEdge / Mathf.Max(viewport.x, viewport.y));
             int width = Mathf.Max(1, Mathf.RoundToInt(viewport.x * scale));
             int height = Mathf.Max(1, Mathf.RoundToInt(viewport.y * scale));
@@ -60,9 +62,11 @@ namespace Unity.MP_FPS.Client {
                 m_Horizontal = CreateTexture("Squad glass horizontal", width, height);
                 m_Frosted = CreateTexture("Squad glass backdrop", width, height);
             }
+            // 临时改变 GPU 当前渲染目标前先记住原值。模糊之后恢复，后续界面可以照常绘制。
             var previous = RenderTexture.active;
             m_Material.SetVector(BlurStep, new Vector4(3.4f / viewport.x, 0, 0, 0));
             m_Material.SetFloat(ApplyTint, 0);
+            // 第一遍只横向模糊，第二遍纵向并加玻璃染色。所有玻璃层最后复用同一张处理过的图。
             Graphics.Blit(frame, m_Horizontal, m_Material, 0);
             m_Material.SetVector(BlurStep, new Vector4(0, 3.4f / viewport.y, 0, 0));
             m_Material.SetFloat(ApplyTint, 1);
@@ -83,6 +87,7 @@ namespace Unity.MP_FPS.Client {
 
         private void ReleaseTextures() {
             if (m_Frosted == null) return;
+            // 准备释放纹理时先断开 UI 对它的引用。舞台下次出图可以提供新的目标，不留已销毁的资源。
             foreach (var layer in m_Layers) layer.image = null;
             m_Horizontal.Release();
             m_Frosted.Release();

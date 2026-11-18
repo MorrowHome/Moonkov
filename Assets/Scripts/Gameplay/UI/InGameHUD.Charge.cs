@@ -35,6 +35,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             InventoryGraph graph = null;
+            // 只有装备有光环的角色才需要库存查询，用当前客户端 World 建一次，换局后要释放并重建。
             if (!m_ChargeQueryCreated) {
                 m_ChargeInventoryQuery =
                     m_EntityManager.CreateEntityQuery(typeof(RaidClientState), typeof(RaidInventoryClientState));
@@ -45,12 +46,14 @@ namespace Unity.MP_FPS {
                 var inventory =
                     m_EntityManager.GetComponentObject<RaidInventoryClientState>(m_ChargeInventoryQuery
                         .GetSingletonEntity());
+                // 只有本局有效战斗阶段的库存可用来算电池剩余。旧图与新局快照错位时先记未知。
                 if (snapshot.Phase == RaidPhase.Active && inventory.RaidId == snapshot.RaidId) graph = inventory.Graph;
             }
             var weapon =
                 WeaponManager.Instance.WeaponRegistry.GetWeaponData(player.EquippedWeaponID, player.EquippedModules);
             var status = m_ChargeFeedback.Update(player, weapon, graph,
                 !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked, Time.unscaledTime);
+            // 共享能量模式让生命监视区处理提示。旧的装弹文案在兼容模式仍可继续用。
             if (player.HaloEnergyInitialized) {
                 // The shared energy belongs to the existing medical scanner HUD.
                 m_LastChargeNotice = status.Notice;
@@ -58,6 +61,7 @@ namespace Unity.MP_FPS {
                 m_ChargeWeaponPanel.style.display = DisplayStyle.None;
                 return;
             }
+            // 状态改变立即更新，连续变化的倒计时限频刷新。画面之间可保留已有提示。
             if (status.Notice != m_LastChargeNotice || Time.unscaledTime >= m_NextChargeText) {
                 PresentChargeStatus(m_RootElement, status);
                 if (status.Notice == HaloChargeNotice.Charging)

@@ -14,6 +14,7 @@ namespace Unity.MP_FPS {
         public struct Node {
             public Vector3 Point;
             public Vector3 Normal;
+            // 导航点记录表面接触点。身体中心还要沿该点法线抬高到体型对应的高度。
             public Vector3 BodyPosition(float scale) { return Point + Normal * (SurfaceMotor.Height * scale); }
         }
 
@@ -39,6 +40,7 @@ namespace Unity.MP_FPS {
             public string LastFailure { get; internal set; }
             public bool HasPath => Cursor < Path.Count;
 
+            // 每只怪保存自己的路径进度、堵住的边和重算时间。换图或体型变化时启动新的查询状态。
             public void Clear() {
                 Path.Clear();
                 Blocked.Clear();
@@ -93,6 +95,7 @@ namespace Unity.MP_FPS {
 
         public bool Contains(Vector3 position) { return worldBounds.Contains(position); }
 
+        // 挑覆盖当前出生位置的导航图。初始化时兼顾对象已经加载但静态列表还没建的情况。
         public static AlienSurfaceNavigation Find(Vector3 position) {
             // Covers Edit Mode fixtures and Enter Play with domain reload disabled.
             // Discovery runs once, never once per enemy tick; later loads register normally.
@@ -108,6 +111,7 @@ namespace Unity.MP_FPS {
             return null;
         }
 
+        // 只在设置的区域里采样地面、墙与顶。碰到查询预算或节点限制时保留旧图，避免半张图遮掉可走路线。
         /// <summary>Authoring only. Samples real colliders within a bounded region; failure leaves
         /// the previous graph intact. Caller owns dirtying/saving its scene after success.</summary>
         public bool Bake(
@@ -278,10 +282,12 @@ namespace Unity.MP_FPS {
             bodyGoal = motor != null ? motor.Current.Position : goal;
             if (route == null || motor == null || !isActiveAndEnabled || nodes.Length == 0 || !Finite(goal))
                 return false;
+            // 离开表面后身体需要先重新贴住。这个时候从旧路线继续追点不能决定可靠的下一步。
             if (motor.Detached) {
                 route.LastFailure = "Detached";
                 return false;
             }
+            // 路线依赖图版本和怪物体型。任何一项变化意味着旧路径的距离或空隙可能失效。
             if (route.Owner != this || route.Revision != m_Revision || Mathf.Abs(route.Scale - motor.Size) > .001f) {
                 route.Clear();
                 route.Owner = this;
@@ -317,6 +323,7 @@ namespace Unity.MP_FPS {
                     : new Node {
                         Point = motor.Current.Position - motor.Current.Up * motor.BodyHeight, Normal = motor.Current.Up
                     };
+                // 运行中门等实体可以挡住烘焙时原本畅通的边。标成临时阻塞后丢弃路线，下次绕开它。
                 if (!Traverse(from, next, motor.Size, sampleSpacing, out _)) {
                     if (route.Cursor > 0) BlockLink(route, route.Path[route.Cursor - 1], route.Path[route.Cursor]);
                     route.Path.Clear();
@@ -340,6 +347,7 @@ namespace Unity.MP_FPS {
             int start = Nearest(origin, Vector3.zero, scale, false);
             if (start < 0) return false;
             // Topological reachability first; candidate contacts still need current support/visibility.
+            // 先找从当前位置在图上连通的面，再挑朝下的可挂点。隔一堵墙的近天花板不会因为直线近就入选。
             bool[] reachable = new bool[nodes.Length];
             var pending = new Queue<int>();
             pending.Enqueue(start);
@@ -373,6 +381,7 @@ namespace Unity.MP_FPS {
             route.Path.Clear();
             route.Cursor = 0;
             EnsureAdjacency();
+            // 起点要符合当前贴面朝向且能走过去。终点靠近目标并有身体支撑即可。
             int start = Nearest(pose.Position, pose.Up, scale, true);
             int end = Nearest(goal, Vector3.zero, scale, false);
             if (start < 0 || end < 0) {
@@ -395,6 +404,7 @@ namespace Unity.MP_FPS {
             route.Costs[start] = 0;
             Push(route, start, 0);
             int expanded = 0;
+            // 从累计路程加上到目标的直线距离优先扩展节点。到达后顺父节点一路倒推并翻转成路径。
             while (route.Heap.Count > 0 && expanded++ < MaximumNodes * 8) {
                 int current = Pop(route);
                 if (route.Closed[current]) continue;
@@ -407,6 +417,7 @@ namespace Unity.MP_FPS {
                 }
                 route.Closed[current] = true;
                 foreach (int edge in m_Adjacency[current]) {
+                    // 路线只沿烘焙过且未临时标记堵塞的边前进。动态障碍会让相邻路线在不同帧有所变化。
                     if (route.Blocked.Contains(edge)) continue;
                     int next = Other(links[edge], current);
                     if (route.Closed[next]) continue;
@@ -442,6 +453,7 @@ namespace Unity.MP_FPS {
 
         private bool Traverse(Node a, Node b, float scale, float spacing, out float cost) {
             cost = Vector3.Distance(a.Point, b.Point);
+            // 同平面上的两点测线段空间与表面连续。两个法线差很多则按墙角运动计算。
             float dot = Vector3.Dot(a.Normal, b.Normal);
             if (dot > .94f)
                 return Mathf.Abs(Vector3.Dot(b.Point - a.Point, a.Normal)) < .16f * scale + .035f &&
@@ -465,6 +477,7 @@ namespace Unity.MP_FPS {
                                b.Normal * ((planeB - dot * planeA) / denominator);
             float angle = Vector3.SignedAngle(a.Normal, b.Normal, axis);
             Vector3 entry, center, radius;
+            // 内角和外角需要不同的绕角圆心。按弧线采多个位置查身体空间，确认真能转过去。
             if (convex) {
                 center = intersection;
                 radius = a.Normal * height;
@@ -529,6 +542,7 @@ namespace Unity.MP_FPS {
                 QueryTriggerInteraction.Ignore);
         }
 
+        // 烘焙阶段为射线和碰撞探测设有次数上限，防止大范围密采样长时间卡住。
         private bool SpendQuery() {
             if (m_QueryBudget < 0) return true;
             if (m_QueryBudget > 0) {

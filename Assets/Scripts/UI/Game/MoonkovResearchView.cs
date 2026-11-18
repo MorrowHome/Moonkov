@@ -34,6 +34,7 @@ namespace Unity.MP_FPS.Client {
             m_Catalog = Root.Q<ScrollView>("researchChoices");
             m_Content = Root.Q<ScrollView>("researchContent");
             m_Confirm = Root.Q<Button>("researchConfirm");
+            // 研究列表以已注册的定义为准。统一的条目结构可以按科目画分组，也能显示月核分支。
             foreach (var research in AlienBiology.Research) {
                 if (research == AlienBiology.MooncoreResearch || research.Branch == 0) {
                     var group = new Label();
@@ -113,6 +114,7 @@ namespace Unity.MP_FPS.Client {
                     complete ? "Completed" :
                     choice.Definition.CanAfford(graph) ? "Materials ready" : "Materials needed");
             }
+            // 月核有先研究、后制造的两步。根据当前永久解锁值决定当前页显示谁的材料列表。
             bool mooncore = selected == AlienBiology.MooncoreResearch,
                 unlocked = graph != null && selected.Unlocked(graph);
             bool fabricate = mooncore && s_Fabricating;
@@ -166,6 +168,7 @@ namespace Unity.MP_FPS.Client {
                     m_Materials[i].Present(recipe.Materials[i],
                         graph == null ? -1 : recipe.Stored(graph, recipe.Materials[i]), recipe.Quantities[i]);
             }
+            // 详细数值依赖本次选择和已经解锁的研究。这个组合没变时可以保持原来的对照。
             if (graph != null && (m_NumberCode != selected.Code || m_NumberBranches != graph.HaloResearchBranches ||
                                   m_NumberLevel != graph.HaloResearchLevel)) {
                 Numbers(selected, graph);
@@ -176,6 +179,7 @@ namespace Unity.MP_FPS.Client {
             Root.Q("researchNumbers").EnableInClassList("research-hidden", graph == null);
             string error = graph == null ? "unavailable" : null;
             if (fabricate && graph != null)
+                // 把制造按相同库存规则试算一次，拿准备提示和按钮状态。真正确认仍要送订单处理。
                 error = ShopRules.Apply(graph,
                     new ShopCommand {
                         RequestId = Guid.Empty.ToString("D"), ExpectedVersion = graph.Version,
@@ -286,6 +290,7 @@ namespace Unity.MP_FPS.Client {
         private void Confirm() {
             if (m_Busy || m_Pending || m_Graph == null) return;
             bool fabricate = s_Selected == AlienBiology.MooncoreResearch.Code && s_Fabricating;
+            // 月核已解锁时，第一次点击只让界面切到制造页。选好配方后确认，才发对应制造命令。
             if (!fabricate && s_Selected == AlienBiology.MooncoreResearch.Code &&
                 AlienBiology.MooncoreResearch.Unlocked(m_Graph)) {
                 Stage(true);

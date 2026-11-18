@@ -122,6 +122,7 @@ namespace Unity.MP_FPS {
             m_TacticalWorld = m_TacticalQuery.IsEmptyIgnoreFilter
                 ? null
                 : EntityManager.GetComponentObject<TacticalServerWorld>(m_TacticalQuery.GetSingletonEntity());
+            // 悬赏有独立的对局注册表和入场条件。满足时提前转到悬赏循环，不继续推进普通远征人群。
             if (BountyClashRuntime.Enabled(EntityManager)) {
                 if (ClashSoloRuntime.TryGetRegistry(EntityManager, out var registry) && MoonRaidMap.Active != null) {
                     UpdateClashBots(MoonRaidMap.Active, registry, SystemAPI.Time.ElapsedTime);
@@ -141,6 +142,7 @@ namespace Unity.MP_FPS {
             var map = MoonRaidMap.Active;
             double now = SystemAPI.Time.ElapsedTime;
             // Reference identity also detects an unloaded Unity object that now compares equal to null.
+            // Unity 对象销毁后比较起来可能像 null。这里用对象身份识别地图确实换过，从而清理上局。
             if (!ReferenceEquals(m_Map, map) || (map != null && map.EnemyCount <= 0 && m_NavData != null)) {
                 DestroyEnemies();
                 ReleaseNavigation();
@@ -149,7 +151,9 @@ namespace Unity.MP_FPS {
                 ResetPopulation();
             }
             if (map == null || map.EnemyCount <= 0) return;
+            // 正式驱动 AI 之前要有可寻路场景。异步网格还没就绪时晚几拍启动，不在未知地形发出直走指令。
             if (!NavigationReady(map, now)) return;
+            // 刷新潜在目标和队伍信息按较低频率，具体碰撞移动仍每拍推进。
             if (now >= m_NextTargets) {
                 CollectTargets(now);
                 UpdateExpeditionSquads(now);
@@ -172,6 +176,7 @@ namespace Unity.MP_FPS {
                     deaths.DestroyEntity(entity);
                     continue;
                 }
+                // 随行队友和创建它的玩家同进同出。主人不再是有效局内参与者就清掉队友输入和实体。
                 if (brain.IsCompanion && !CompanionOwnerActive(brain)) {
                     RetireEnemy(entity, brain);
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
@@ -186,6 +191,7 @@ namespace Unity.MP_FPS {
                 // 机器人和玩家在角色系统里读的是同一种输入。这里给出这一拍想做什么，后面的系统执行它。
                 input.ValueRW.Input = Think(entity, brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
                     (float)SystemAPI.Time.DeltaTime);
+                // 安全撤离只移除角色并清掉记分项，不把活人撤离变成一个可搜的尸体。
                 if (brain.Extracted) {
                     // Successful extraction removes this raid actor, without producing a corpse.
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
@@ -193,6 +199,7 @@ namespace Unity.MP_FPS {
                     RetireEnemy(entity, brain);
                 }
             }
+            // 先完成当前遍历，再批量落实实体销毁。剩余人数变动之后才能判断是否补刷。
             deaths.Playback(EntityManager);
             UpdatePopulation(map, now);
             UpdateCompanionPopulation(map, now);
@@ -215,6 +222,7 @@ namespace Unity.MP_FPS {
             LeaderboardManager.RetireRaidActor(EntityManager.GetComponentData<GhostOwner>(entity).NetworkId);
         }
 
+        // 用场景边界与玩法路线约束构建范围。大地图用较粗的采样，研究站等局部再单独补细节。
         private bool NavigationReady(MoonRaidMap map, double now) {
             if (m_NavInstance.valid) return MissionNavigationReady();
             if (m_Build != null) {
@@ -269,6 +277,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 建立可被 AI 感知的候选和声音表。收集位置、身体姿势和动作事件供各观察者独立判定。
         private void CollectTargets(double now) {
             m_Targets.Clear();
             m_Events.Clear();
@@ -362,6 +371,7 @@ namespace Unity.MP_FPS {
             foreach (var entity in m_ExpiredTracks) m_Tracks.Remove(entity);
         }
 
+        // 射线查询需要确认目标属于对应角色，并且实际中间没障碍。挡在前面的墙才决定是否看到目标。
         private bool ClearSight(Transform root, Vector3 eye, Vector3 targetPoint, Entity target) {
             if (SmokeVisibility.Blocked(m_TacticalWorld, root.gameObject.scene.GetPhysicsScene(), eye, targetPoint))
                 return false;
@@ -383,6 +393,7 @@ namespace Unity.MP_FPS {
             return hit != null && hit.IsChildOf(targetRoot.transform);
         }
 
+        // 导航点只在目标变化、间隔到了或移动停滞时重算。路线不全就退回决策，不把角色传送到目标。
         private void UpdatePath(DollSingerEnemyBrain brain, Vector3 position, Vector3 goal, double now) {
             if (now < brain.NextPath && HorizontalDistance(brain.Goal, goal) < 3) return;
             brain.NextPath = now + .6 + brain.Seed % 7 * .03;
@@ -433,6 +444,7 @@ namespace Unity.MP_FPS {
             brain.NextMission = brain.NextDecision = brain.NextCover = 0;
         }
 
+        // 到达一个拐点再沿下一个方向移动。路线耗尽就给零方向，留机会让选目标逻辑更新。
         private static Vector3 FollowPath(DollSingerEnemyBrain brain, Vector3 position) {
             while (brain.Corner < brain.CornerCount &&
                    HorizontalDistance(position, brain.Corners[brain.Corner]) < .7f &&
@@ -448,6 +460,7 @@ namespace Unity.MP_FPS {
             return new Vector2(a.x - b.x, a.z - b.z).magnitude;
         }
 
+        // 阵亡后把真实掉落交给本局容器，记录角色类型和位置给客户端生成对应尸体外观。
         private void DropCorpse(DollSingerEnemyBrain brain, LocalTransform pose, double now, int characterIndex) {
             using var profile = s_DropProfile.Auto();
             Vector3 position = pose.Position;

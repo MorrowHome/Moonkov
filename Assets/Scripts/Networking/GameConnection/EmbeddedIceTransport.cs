@@ -55,6 +55,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         public EmbeddedIceTransport(int receiveCapacity = 256) {
             // An Editor's build target does not identify its host OS. Dedicated
             // servers also have their own RuntimePlatform values on the same OS.
+            // 看实际运行平台，运行在 macOS 的编辑器即使选了 Windows 构建目标也要找 macOS 插件。独立服还有自己的平台枚举。
             var platform = Application.platform;
             if (platform != RuntimePlatform.WindowsEditor && platform != RuntimePlatform.WindowsPlayer &&
                 platform != RuntimePlatform.WindowsServer && platform != RuntimePlatform.OSXEditor &&
@@ -64,6 +65,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             if (receiveCapacity < 8 || receiveCapacity > 4096)
                 throw new ArgumentOutOfRangeException(nameof(receiveCapacity));
             int abi;
+            // 创建句柄前核对原生库的接口版本。机器缺库或带了旧库时尽早报错，不让后面的调用用错内存布局。
             try { abi = Native.mice_abi_version(); } catch (DllNotFoundException ex) {
                 throw new InvalidOperationException("本地 P2P 组件缺失或无法加载，请完整更新游戏后重试。", ex);
             }
@@ -84,10 +86,12 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             // libjuice destruction can wait for an outstanding native DNS resolver.
             if (!string.IsNullOrEmpty(bindAddress) && !IPAddress.TryParse(bindAddress, out _))
                 throw new ArgumentException("ICE bind address must be an IP literal.", nameof(bindAddress));
+            // 地址解析放在外层的可超时流程。原生连接使用纯 IP，关闭句柄时不会卡在一个尚未返回的 DNS。
             if (!string.IsNullOrEmpty(stunHost) && !IPAddress.TryParse(stunHost, out _))
                 throw new ArgumentException("Resolve the STUN hostname before creating an ICE peer.", nameof(stunHost));
             lock (m_Gate) {
                 ThrowIfDisposed();
+                // 原生层返回 peer ID，C# 为它生成 UTP 的逻辑端点并双向登记。收包用 ID 找端点，发包时反过来找。
                 int id = Native.mice_add_peer(m_Handle, bindAddress, stunHost, stunPort);
                 Check(id, "add peer");
                 var endpoint = MakeEndpoint(id);
@@ -101,6 +105,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             lock (m_Gate) {
                 ThrowIfDisposed();
                 var endpoint = GetEndpoint(peer);
+                // 只在原生成功移除后清掉索引。之后再有该端点的包就不会转发给另一个 peer。
                 Check(Native.mice_remove_peer(m_Handle, peer), "remove peer");
                 m_Endpoints.Remove(peer);
                 m_Peers.Remove(endpoint);
@@ -150,6 +155,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             lock (m_Gate) {
                 ThrowIfDisposed();
                 // One complete SDP exchange. Do not log it: it contains session credentials.
+                // 候选没有收齐前不要交换部分信息。这份连接描述还包含本次连接用的凭据，调用者只通过信令送给允许的对端。
                 if (!IsGatheringComplete(peer))
                     throw new InvalidOperationException("Wait for ICE candidate gathering to finish.");
                 var description = new StringBuilder(4096);
@@ -161,6 +167,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         public void SetRemoteDescription(int peer, string description) {
             if (string.IsNullOrWhiteSpace(description))
                 throw new ArgumentException("ICE description is empty.", nameof(description));
+            // 对端的描述先按长度和格式限制，再交给原生解析。实际连通性由后续的 ICE 状态推进。
             ValidateText(description, 4095, nameof(description));
             lock (m_Gate) {
                 ThrowIfDisposed();
@@ -194,6 +201,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
                 if (m_CloseAfterDriver) throw new ObjectDisposedException(nameof(EmbeddedIceTransport));
                 if (m_Attached) throw new InvalidOperationException("An ICE context can belong to only one driver.");
                 var wrapper = new EmbeddedIceNetworkInterface(this, ownsTransport).WrapToUnmanaged();
+                // 驱动包装持有这份传输后记录所有权。不能用第二个包装同时读写同一份 UTP 暂存状态。
                 m_Attached = true;
                 return wrapper;
             }
@@ -202,12 +210,14 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
         internal void ReleaseDriver(bool ownsTransport) {
             lock (m_Gate) {
                 m_Attached = false;
+                // 官方战局驱动拥有其连接，退出直接销毁。好友房驱动只是借来开一局，除非关房已经请求等待释放。
                 if (ownsTransport || m_CloseAfterDriver) Dispose();
             }
         }
 
         internal void CloseAfterDriver() {
             lock (m_Gate) {
+                // 关房时战局可能还在销毁。先留个待关标记，由 driver 放下包装之后再关原生句柄。
                 if (m_Attached)
                     m_CloseAfterDriver = true;
                 else
@@ -219,6 +229,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
             lock (m_Gate) {
                 ThrowIfDisposed();
                 fixed (byte* buffer = m_ReceiveBuffer) {
+                    // 每次更新最多搬一批且受接收队列容量限制。未知 peer 或装不下的包计入丢弃，不能继续挤队列。
                     for (int i = 0;
                          i < MaxPacketsPerUpdate && arguments.ReceiveQueue.Count < arguments.ReceiveQueue.Capacity;
                          i++) {
@@ -238,6 +249,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
                             AdapterDrops++;
                             continue;
                         }
+                        // 上层连接只看到抽象端点。把该 peer 的数据和端点放在同一包里，UTP 才能交给正确连接。
                         packet.EndpointRef = endpoint;
                         packet.AppendToPayload(buffer, size);
                     }
@@ -251,6 +263,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
                 for (int i = 0; i < arguments.SendQueue.Count; i++) {
                     var packet = arguments.SendQueue[i];
                     if (packet.Length == 0) continue;
+                    // 从端点反查原生 peer，再将包的有效负载送出。发失败交给 UDP 上层判断是否需要重传，这里统一取下已处理的包。
                     if (m_Peers.TryGetValue(packet.EndpointRef, out int peer)) {
                         int result = Native.mice_send(m_Handle, peer,
                             (IntPtr)((byte*)packet.GetUnsafePayloadPtr() + packet.Offset), packet.Length);
@@ -264,6 +277,7 @@ namespace Unity.MP_FPS.EmbeddedNetworking {
 
         public void Dispose() {
             lock (m_Gate) {
+                // 在互斥锁内关闭原生句柄并清两张映射。收发与增删对端共用这把锁，避免访问已关闭的句柄。
                 m_Handle?.Dispose();
                 m_Endpoints.Clear();
                 m_Peers.Clear();

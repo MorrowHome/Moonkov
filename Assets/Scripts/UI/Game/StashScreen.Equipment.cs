@@ -62,6 +62,7 @@ namespace Unity.MP_FPS.Client {
             };
         }
 
+        // 这是为模板装备区建立的槽按钮。图案能显示汇总样例，与当前仓库的真实装备控制器分开。
         private void BuildEquipment() {
             var stage = m_Root.Q<VisualElement>("stashCharacterStage");
             var equipment = m_Root.Q<VisualElement>("stashEquipment");
@@ -109,6 +110,7 @@ namespace Unity.MP_FPS.Client {
             RefreshEquipment();
         }
 
+        // 从模板的 StashLoadout 读每一槽，再通知角色连线用新的状态重画。无装备时清掉旧图标。
         private void RefreshEquipment() {
             foreach (var pair in m_Slots) {
                 var item = Equipped(pair.Key);
@@ -133,6 +135,7 @@ namespace Unity.MP_FPS.Client {
             var window = m_Terminal.Windows.Open(SlotName(slot), null, true);
             bool available = false;
             foreach (var stack in m_Stacks) {
+                // 挑选时先过滤掉没有数量或类型不符的堆叠。替换时如果旧装备没处放，执行层会拒绝本次选择。
                 if (stack.Quantity <= 0 || !m_Loadout.Accepts(stack.Name, slot)) continue;
                 available = true;
                 var item = stack;
@@ -170,6 +173,7 @@ namespace Unity.MP_FPS.Client {
         private void HoverSlot(LoadoutSlot slot, Stack stack) {
             m_HoverSlot = slot;
             foreach (var pair in m_Slots) {
+                // 拖动时只有指针命中的槽显示颜色。绿红状态由同一配装规则计算，松手时还会按实际目标检查。
                 bool hover = pair.Key == slot;
                 pair.Value.EnableInClassList("stash-slot-drop-valid", hover && m_Loadout.CanEquip(stack.Name, slot));
                 pair.Value.EnableInClassList("stash-slot-drop-invalid", hover && !m_Loadout.CanEquip(stack.Name, slot));

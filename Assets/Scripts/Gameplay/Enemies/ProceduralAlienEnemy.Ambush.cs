@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
             bool hurt = health < m_LastHealth - .01f;
             m_LastHealth = health;
             var manager = GhostGameObject.EntityManager;
+            // 伏击等待时定时寻找目标，已经蓄力或出手时不重选，攻击意图可以预期。
             if (m_Clock >= m_NextSense && m_Action != AlienAction.Windup && m_Action != AlienAction.Strike) {
                 Sense();
                 m_NextSense = m_Clock + .15f;
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS {
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
             // The encounter has a physical navigation boundary; do not pursue through
             // walls outside it, or acquire the precise position of an unseen target.
+            // 伏击有活动空间边界，线索跑出这一块可导航区域后不继续隔墙追精确坐标。
             if (remembered && m_Navigation && !m_Navigation.Contains(m_LastSeen)) remembered = false;
             float age = m_Clock - m_ActionStarted;
             float distance = living && m_Visible ? Vector3.Distance(AimPoint, ContactPoint(m_Target)) : float.MaxValue;
@@ -47,11 +49,13 @@ namespace Unity.MP_FPS {
                 ChangeAction(AlienAction.Strike);
                 m_StrikeHit = false;
                 m_StrikeOrigin = m_Body.Motor.Current.Position;
+                // 用固定飞行时长和预警时记的落点反算起飞速度，再交给身体马达处理真实飞行。
                 float flightTime = Mathf.Max(.2f, profile.SpiderStrikeSeconds);
                 var velocity = (m_StrikePoint - m_StrikeOrigin) / flightTime + Vector3.up * (10 * flightTime);
                 m_Body.Launch(Vector3.ClampMagnitude(velocity, 18));
             } else if (m_Action == AlienAction.Strike && age >= Mathf.Max(.2f, profile.SpiderStrikeSeconds)) {
                 ChangeAction(AlienAction.Recover);
+            // 收招要等计时结束并重新有表面接触，再开始找新的挂点。
             } else if (m_Action == AlienAction.Recover && age >= Mathf.Max(.3f, profile.SpiderRecovery) &&
                        !m_Body.Motor.Detached) { BeginReposition(remembered ? m_LastSeen : m_Spawn); } else if
                 (m_Action != AlienAction.Windup && m_Action != AlienAction.Strike && m_Action != AlienAction.Recover) {
@@ -84,6 +88,7 @@ namespace Unity.MP_FPS {
             float speed = 0, yaw = 0;
             if (m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Reposition) {
                 var destination = m_Action == AlienAction.Reposition ? m_RepositionGoal : m_LastSeen;
+                // 追击、搜索和换位都拿表面路的下一点。没有路线时不沿直线硬闯。
                 if (m_Navigation &&
                     m_Navigation.TryGetSteering(m_Route, m_Body.Motor, destination, m_Clock, out var waypoint)) {
                     intent = Vector3.ProjectOnPlane(waypoint - m_Body.Motor.Current.Position, m_Body.Motor.Current.Up)
@@ -100,6 +105,7 @@ namespace Unity.MP_FPS {
             if (m_Action == AlienAction.Strike && !m_StrikeHit && m_Clock - m_ActionStarted >= .06f && living) {
                 var committed = m_StrikePoint - m_StrikeOrigin;
                 var current = ContactPoint(m_Target) - m_StrikeOrigin;
+                // 玩家已经离开原来的扑击扇区就不给碰撞补偿，留有真实闪避空间。
                 if (Vector3.Angle(committed, current) < 50) {
                     uint before = m_Hits;
                     TryStrike();
@@ -108,6 +114,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 优先挑连得上的天花板挂点。找不到就回出生挂点，过一小段时间再重查。
         private void BeginReposition(Vector3 target) {
             m_RepositionGoal = m_Spawn;
             if (m_Navigation && m_Clock >= m_NextPerch) {

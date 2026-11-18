@@ -37,6 +37,7 @@ public class GhostSpawner : MonoBehaviour {
         [SerializeField] [HideInInspector] private Hash128 m_GhostGuid;
 
         public bool OnValidate() {
+            // 场景保存的是 Addressables 资源引用，同时把它的 GUID 缓存给运行时代码。生成前可以很快判断引用是否配置完整。
             bool validReference = GhostPrefab != null && GhostPrefab.RuntimeKeyIsValid();
             m_GhostGuid = validReference ? new Hash128(GhostPrefab.AssetGUID) : new Hash128();
             return validReference;
@@ -279,6 +280,7 @@ public class GhostSpawner : MonoBehaviour {
     // this means the GhostGameObjectLifetimeSystem can pick up the newly spawned ghost entities
     // at the start of the next frame and initialise them before the next GhostSend
     public virtual void LateUpdate() {
+        // 资源登记包含异步加载。出生标记要等到登记结束再试，避免刚进地图还没有模板就开始生成。
         if (GhostEntityPrefabSystem.ServerInstance != null && !GhostEntityPrefabSystem.ServerInstance.PrefabsLoaded)
             return;
         if (GhostBridgeManager.Instance.IsServerListening())
@@ -288,6 +290,7 @@ public class GhostSpawner : MonoBehaviour {
             if (RandomiseRotation) spawnRotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
             m_GhostSpawned = false;
             if (GhostPrefabReference.GhostGuid.IsValid) {
+                // 部分地图物体只能在功能开关启用时出现。未开就标记这一处已经处理，普通生成器不用留场继续重试。
                 if (FeatureToggle.IsAllowedByFeature(LockedBehindFeature)) {
                     var prefabEntity = FindGhostPrefabEntity(GhostPrefabReference);
                     if (prefabEntity != Entity.Null) {
@@ -297,6 +300,7 @@ public class GhostSpawner : MonoBehaviour {
                         m_GhostSpawned = SpawnGhostPrefab(prefabEntity, transform.position, spawnRotation, GhostNetGUID,
                             UniformScaleOverride ? transform.localScale.x : 1.0f, (entity, ecb) => {
                                 OnGhostPrefabSpawned(entity, ecb);
+                                // 实体刚创建时可以写入这一个出生点的额外配置。这些写入和生成请求使用同一份命令缓冲。
                                 foreach (var customiser in s_GhostSpawnerCustomisers)
                                     customiser.OnGhostPrefabSpawned(entity, ecb);
                             });
@@ -317,6 +321,7 @@ public class GhostSpawner : MonoBehaviour {
             } else {
                 Debug.LogError($"[SCENEGHOSTSPAWNER] Update: GhostPrefabReference invalid for {GetCachedName()}", this);
             }
+            // 多数出生点生成一次就完成。只在创建成功后拆掉出生点，找不到资源时暂时保留并留待下次重试。
             if (!m_PersistSpawnerAfterSpawn) {
                 if (m_GhostSpawned)
                     // spawner no longer needed
@@ -392,6 +397,7 @@ public class GhostSpawner : MonoBehaviour {
         }
 
         // do we have an active ecb? If so, let's use that
+        // 在某个 Ghost 更新中生成时沿用现成的命令缓冲。回调之外调用则新建一个，记录完后当场交给服务端执行。
         var ecb = GhostGameObject.UpdateEntityCommandBuffer;
         bool ecbNeedsPlayback = false;
         if (!ecb.IsCreated) {
@@ -402,6 +408,7 @@ public class GhostSpawner : MonoBehaviour {
         if (GhostBridgeManager.Instance.IsServerListening())
             //if (ServerConnectionSystem.Instance.IsPlaying)
         {
+            // 从服务端的模板复制实体后，先给它初始坐标、缩放和网络标识。生命周期系统读到这些值后才创建对应表现。
             var instance = ecb.Instantiate(prefabEntity);
             ecb.SetComponent(instance, new LocalTransform {
                 Position = spawnPos,

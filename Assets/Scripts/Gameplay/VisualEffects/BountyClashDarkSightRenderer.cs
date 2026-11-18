@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
             bool presence,
             BountyClashClientState authorizedCache,
             double now) {
+            // 暗视接收当前玩家的世界相机。相机换了就重新建立渲染订阅，旧相机不能继续显示这局的感知结果。
             if (!ownedCamera || ownedCamera.cameraType != CameraType.Game || authorizedCache == null) {
                 ClearImmediate();
                 return;
@@ -87,6 +88,7 @@ namespace Unity.MP_FPS {
 
             internal void Publish(bool view, bool boosted, bool sensed, BountyClashClientState data, double now) {
                 if (disposed) return;
+                // 把这一帧的暗视和感知开关与服务器授权数据一起缓存。关闭暗视的瞬间丢掉结果，只有颜色能够淡出。
                 cache = data;
                 boost = view && boosted;
                 presence = view && sensed;
@@ -138,6 +140,7 @@ namespace Unity.MP_FPS {
                 if (additional && additional.renderType == CameraRenderType.Overlay) return;
                 double now = Time.realtimeSinceStartupAsDouble;
                 if (wanted && now - publishedAt > .2) Stop(); // Missing HUD publication fails closed.
+                // 渲染前又检查缓存是否仍是存活、已入场和正在进行的比赛。缓存失效或过期就停止感知，避免卡在上一次画面。
                 if (wanted && (cache == null || !cache.Approved || !cache.HasSnapshot || !cache.Snapshot.Connected ||
                                cache.Snapshot.Life != ClashLife.Alive || cache.Snapshot.Phase != ClashPhase.Active))
                     Stop();
@@ -163,6 +166,7 @@ namespace Unity.MP_FPS {
                                        cache.Sense.Remaining - (float)Math.Max(0, now - cache.SenseReceivedAt) > 0;
                 if (authorizedBoost)
                     for (int i = 0; i < cache.Contacts.Length && count < contacts.Length; i++) {
+                        // 只把保持有效的接触点投影到相机。镜头后面或屏幕外的点不进入这帧的材质参数。
                         if (!cache.ContactVisible(i, now)) continue;
                         var contact = cache.Contacts[i];
                         Vector3 world = contact.Position;
@@ -269,6 +273,7 @@ namespace Unity.MP_FPS {
             public override void RecordRenderGraph(RenderGraph graph, ContextContainer frameData) {
                 var resources = frameData.Get<UniversalResourceData>();
                 var camera = frameData.Get<UniversalCameraData>();
+                // 只对绑定的目标相机做全屏效果，并且需要可读取的中间颜色。材质接收场景颜色、深度和已授权提示点，再输出到新的颜色纹理。
                 if (camera.camera != Owner || resources.isActiveTargetBackBuffer || !material || Blend <= 0) return;
                 var source = resources.activeColorTexture;
                 var descriptor = graph.GetTextureDesc(source);

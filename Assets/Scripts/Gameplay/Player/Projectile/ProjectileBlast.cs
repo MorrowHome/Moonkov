@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS {
     public static class ProjectileBlast {
+        // 中心一小圈保持满伤害，从这个范围边沿向外逐渐下降，到爆炸半径处归零。
         private const float InnerRadiusFraction = .25f;
 
         // Authoritative projectile impacts run serially on the main thread.
@@ -20,6 +21,7 @@ namespace Unity.MP_FPS {
             return damage * Mathf.Min(1, (1 - distance / radius) / (1 - InnerRadiusFraction));
         }
 
+        // 一只角色可以有多个身体碰撞体。选择其中离爆点最近的实物表面，单用角色根坐标会低估大体型。
         private static Vector3 ClosestBodyPoint(Transform root, Vector3 origin) {
             var point = root.position + Vector3.up * .8f;
             float nearest = float.PositiveInfinity;
@@ -79,6 +81,7 @@ namespace Unity.MP_FPS {
                 if (health.CurrentHealth <= 0) continue;
                 var point = ClosestBodyPoint(root.transform, origin);
                 float amount = DamageAt(damage, radius, Vector3.Distance(origin, point));
+                // 先确认距离衰减结果，再检查爆点到这个表面是否被障碍挡住。两项都通过才按一次爆炸伤害结算。
                 if (amount <= 0 || !EnergyGrenadePhysics.ClearSight(scene, origin, point, root.transform)) continue;
                 var before = health;
                 // A blast is one combat impact; the unified damage entry splits residual tissue damage.
@@ -89,6 +92,7 @@ namespace Unity.MP_FPS {
                 if (impact == 0) continue;
                 victims++;
                 // Self damage is real, but cannot confirm an opponent hit or kill.
+                // 自伤会真实扣血，但不发对敌人命中确认。
                 if (!BountyClashDamage.IsSelf(world, entity, source)) flags |= impact;
             }
             return victims;

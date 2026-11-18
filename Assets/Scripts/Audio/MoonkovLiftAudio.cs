@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         public void Update(Transform cabin, float travel, float gate, float now) {
             var library = MoonkovAudio.Library;
             if (!library || !cabin) return;
+            // 第一帧只记录舱体和门的位置。途中进入场景时，静止在任意位置的部件不会被误认为刚启动。
             if (!m_Initialized) {
                 m_Initialized = true;
                 m_Travel = travel;
@@ -18,12 +19,14 @@ namespace Unity.MP_FPS {
                 m_TravelUntil = m_GateUntil = now;
                 return;
             }
+            // 两次状态之间有一点移动就延长短时窗口。快照暂时没变化时，循环音仍能连续跟着真正的开门或移动。
             if (Mathf.Abs(travel - m_Travel) > .00001f) m_TravelUntil = now + .15f;
             if (Mathf.Abs(gate - m_Gate) > .00001f) m_GateUntil = now + .15f;
             m_Travel = travel;
             m_Gate = gate;
             bool moving = now < m_TravelUntil, opening = now < m_GateUntil;
             var position = cabin.position + Vector3.up;
+            // 开始和停止运动拿来播单次提示。电机和门分别维护循环句柄，池子忙时按间隔再次申请。
             if (moving != m_Travelling)
                 MoonkovAudio.PlayWeaponLayer(moving ? library.LiftStart : library.LiftStop, position, .8f, 1,
                     follow: cabin);

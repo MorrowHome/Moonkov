@@ -23,6 +23,7 @@ public enum MultiplayerRole {
     ClientAll
 };
 
+// 这里的 GUID 让两个 World 里的对应对象能互相认出。LocalGhostIndex 只索引本端表，不用跨网络保持同一个下标。
 public struct GhostGameObjectGuid : IComponentData {
     [GhostField] public Hash128 Guid;
     [GhostField] public bool ServerLinked;
@@ -31,6 +32,7 @@ public struct GhostGameObjectGuid : IComponentData {
     public int LocalGhostIndex;
 }
 
+// 实体和场景对象之间的位置同步用这份临时数据。切换回来时可先保存一个位置偏差，再慢慢把它消掉。
 public struct GhostGameObjectTransformSync : IComponentData {
     public bool DisableTransformSync;
 
@@ -200,6 +202,7 @@ public class GhostGameObject : MonoBehaviour {
         m_World = world;
         m_LinkedEntity = linkedGhostEntity;
         m_Role = role;
+        // 有所有者的 Ghost 记下连接编号。角色的本机输入、相机和 RPC 路由可以据此区别哪个玩家在控制它。
         if (EntityManager.HasComponent<GhostOwner>(linkedGhostEntity)) {
             // let's store this owner
             var owner = EntityManager.GetComponentData<GhostOwner>(linkedGhostEntity);
@@ -208,9 +211,11 @@ public class GhostGameObject : MonoBehaviour {
         // collect ghost monobehaviour components
         GetComponentsInChildren(m_GhostMonoBehaviours);
         foreach (var ghostBehaviour in m_GhostMonoBehaviours) ghostBehaviour.SetGhostGameObject(this);
+        // 需要位置同步的场景物体才挂桥接组件。服务端从这些组件挑需要回写坐标的实体，客户端据同一个标记更新表现体。
         if (RequireTransformSync) EntityManager.AddComponent<GhostGameObjectTransformSync>(linkedGhostEntity);
         if (role == MultiplayerRole.Server) {
             var ghostGuid = ReadGhostComponentData<GhostGameObjectGuid>();
+            // 服务端先完成自己的绑定，再通过 Ghost 字段告诉客户端。客户端生命周期系统会等该标记到达后才发布这个物体。
             ghostGuid.ServerLinked = true;
 
             // do we have a parent specified?
@@ -274,6 +279,7 @@ public class GhostGameObject : MonoBehaviour {
         Debug.Assert(Parent == null);
 
         // we need to look up the parent and make sure it's attached properly
+        // 父物体可能比子物体晚到。找到同一 World 中已绑定的父 Ghost 后，再接层级并清掉等待挂接标记。
         if (TryFindWorldGhost(ghostGuid.ParentGuid, out var instance) && instance.IsGhostLinked()) {
             Parent = instance;
             Parent.AddChildGhost(this);
@@ -404,6 +410,7 @@ public class GhostGameObject : MonoBehaviour {
     }
 
     public void OnGhostPreDestroy() {
+        // 销毁以前先解开子 Ghost 的 Transform。子物体由它自己的实体决定何时结束，这一步避免 Unity 随父物体一起删除它。
         m_GhostPreDestroyCalled = true;
 
         // disconnect any children
@@ -415,6 +422,7 @@ public class GhostGameObject : MonoBehaviour {
                     // the child ghost (until it's ready)
                     child.transform.parent = null;
         if (m_GhostMonoBehaviours != null) {
+            // 把销毁通知分发给每个脚本，让它们释放资源和订阅。之后注销周期回调，下一帧更新就不会再碰到已销毁的对象。
             foreach (var ghostBehaviour in m_GhostMonoBehaviours) ghostBehaviour.OnGhostPreDestroy();
             if (Role == MultiplayerRole.Server) {
                 UnregisterAllUpdates<IEarlyUpdateServer>();
@@ -499,6 +507,7 @@ public class GhostGameObject : MonoBehaviour {
     public void BroadcastRPC<T>(T rpcCommand) where T : unmanaged, IRpcCommand {
         Debug.Assert(UpdateEntityCommandBuffer.IsCreated, "BroadcastRPC is only valid during an update");
         if (Role == MultiplayerRole.Server) {
+            // RPC 通过临时实体交给 NetCode。服务器广播时给它放入消息数据和广播请求，真正发包在后面的网络系统中完成。
             var rpcEntity = UpdateEntityCommandBuffer.CreateEntity();
             UpdateEntityCommandBuffer.AddComponent(rpcEntity, (T)rpcCommand);
             UpdateEntityCommandBuffer.AddComponent(rpcEntity, new SendRpcCommandRequest());
@@ -559,6 +568,7 @@ public class GhostGameObject : MonoBehaviour {
                         var targetGUID = (Hash128)targetProperty.GetValue(receivedRPC);
 
                         // is this RPC directed at this object?
+                        // 收到定向消息要按实例 GUID 取。同一台机器可以有许多相同类型的设备，只有被点到的那个会消费这条消息。
                         if (targetGUID == Guid) {
                             rpc = receivedRPC;
                             UpdateEntityCommandBuffer.DestroyEntity(rpcEntity);
@@ -576,6 +586,7 @@ public class GhostGameObject : MonoBehaviour {
         return false;
     }
 
+    // 有些逻辑只想遍历已收到的同类消息。这个方法把数据交给回调，不改收件列表，实际取走消息走 ConsumeRPC。
     public void IterateRPC<T>(Action<T> callback) where T : unmanaged, IRpcCommand {
         Debug.Assert(UpdateEntityCommandBuffer.IsCreated, "IterateRPC is only valid during an update");
         if (GhostGameObjectRPCReceiveSystem.TryGetInstance(World, out var rpcSystem)) {
@@ -598,6 +609,7 @@ public class GhostGameObject : MonoBehaviour {
         m_GhostTransformUpdatesEnabled = enable;
         var transformSync = ReadGhostComponentData<GhostGameObjectTransformSync>();
         transformSync.DisableTransformSync = !enable;
+        // 本机控制或预测会让画面位置与收到的实体位置短暂不同。重新启用同步时存下当前偏差，表现系统接下来分几帧抹平。
         if (enable && interpolateError) {
             Debug.Assert(EntityManager.HasComponent<LocalTransform>(m_LinkedEntity),
                 "[GHOSTGAMEOBJECT] EnableGhostTransformUpdates - ghost doesn't have a LocalTransform component");
@@ -619,6 +631,7 @@ public class GhostGameObject : MonoBehaviour {
         foreach (var renderer in s_RendererComponents) renderer.enabled = false;
     }
 
+    // 普通实体被清理时，可能还剩专供清理流程用的组件。检查 GUID 组件仍在，才能把它当成一个可访问的完整 Ghost。
     public bool GhostEntityExists() {
         if (m_World == null || !m_World.IsCreated) return false;
 
@@ -641,6 +654,7 @@ public class GhostGameObject : MonoBehaviour {
         EntityManager.SetComponentData(LinkedEntity, data);
     }
 
+    // 需要配合 ECS 当前更新的写入先记录到命令缓冲。系统遍历结束再执行这些修改，避免遍历时突然改动查询结果。
     public void WriteGhostComponentDataECB<T>(in T data) where T : unmanaged, IComponentData {
         Debug.Assert(UpdateEntityCommandBuffer.IsCreated, "WriteGhostComponentDataECB is only valid during an Update");
         UpdateEntityCommandBuffer.SetComponent(LinkedEntity, data);
@@ -664,6 +678,7 @@ public class GhostGameObject : MonoBehaviour {
         Debug.Assert(UpdateInterfaceType == typeof(IUpdateServer),
             "DestroyEntity is only valid from an UpdateServer call");
         OnGhostPreDestroy();
+        // 服务器负责删除实体并同步它的消失。场景物体先解绑、从本端索引移除，再立刻关掉自己的 GameObject。
         UpdateEntityCommandBuffer.DestroyEntity(m_LinkedEntity);
         m_LinkedEntity = Entity.Null;
         GhostGameObjectLifetimeSystem.ServerInstance.OnGhostGameObjectDestroyed(Guid);
@@ -696,6 +711,7 @@ public class GhostGameObject : MonoBehaviour {
                 : UpdateInterface.GetCurrentInterpolationTick();
         } else {
             // we aren't in an update, but we can get this information direct from a system
+            // 客户端里的远端表现按插值时刻看世界，服务端按自己的模拟 tick。回调之外没有缓存的更新时钟时，回到所在 World 查。
             if (TryReadSingleton<NetworkTime>(out var networkTime))
                 return Role == MultiplayerRole.Server
                     ? networkTime.ServerTick.TickIndexForValidTick

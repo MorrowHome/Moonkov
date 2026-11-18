@@ -38,9 +38,11 @@ namespace Unity.MP_FPS {
         // Not named Values: a member cannot share a name with the nested type above (CS0102).
         private static Values Configuration {
             get {
+                // 几个菜单和网络入口会反复取配置。同一次运行缓存第一次读到的值，避免每次打开页面都读磁盘。
                 if (s_Values != null) return s_Values;
                 try {
                     // Windows: next to the executable. macOS: next to the .app, outside its bundle.
+                    // 配置和可执行文件一起发。macOS Player 的数据路径在应用包里，所以还要上一层找应用包旁的文件。
                     string directory = Path.GetDirectoryName(Application.dataPath);
                     if (Application.platform == RuntimePlatform.OSXPlayer) directory = Path.GetDirectoryName(directory);
                     string path = Path.Combine(directory, FileName);
@@ -48,6 +50,7 @@ namespace Unity.MP_FPS {
                         ? JsonConvert.DeserializeObject<Values>(File.ReadAllText(path))
                         : new Values();
                     if (s_Values == null) s_Values = new Values();
+                    // 可根据 HTTPS 账号服务推出同域的好友信令地址。显式提供信令地址时，以随包配置为准。
                     if (string.IsNullOrWhiteSpace(s_Values.FriendSignalingUrl) &&
                         Uri.TryCreate(s_Values.AccountServiceUrl, UriKind.Absolute, out var publicUrl) &&
                         publicUrl.Scheme == Uri.UriSchemeHttps)
@@ -59,6 +62,7 @@ namespace Unity.MP_FPS {
 #if UNITY_EDITOR
                 // Local development must not replace the settings shipped to players.
                 try {
+                    // 编辑器开发配置只覆盖明确填写过的字段。空字段继续用随包值，因此本机测试不用改发给玩家的那份配置。
                     string editorPath = Path.Combine(Path.GetDirectoryName(Application.dataPath), EditorFileName);
                     if (File.Exists(editorPath)) {
                         var overrides = JsonConvert.DeserializeObject<Values>(File.ReadAllText(editorPath));
@@ -111,8 +115,10 @@ namespace Unity.MP_FPS {
         /// usual case and costs nothing.
         /// </summary>
         public static async Task<string> ResolveAsync(string address) {
+            // 输入已经是 IP 时直接返回，连接不必等待 DNS。域名则在真正进场前查地址。
             if (string.IsNullOrWhiteSpace(address) || IPAddress.TryParse(address, out _)) return address;
             try {
+                // 这个入口挑 IPv4 地址。解析异常或没找到时记下原因，后续端点解析和连接等待还会处理失败。
                 var candidates = await Dns.GetHostAddressesAsync(address);
                 foreach (var candidate in candidates)
                     if (candidate.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)

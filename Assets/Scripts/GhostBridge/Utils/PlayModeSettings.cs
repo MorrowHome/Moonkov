@@ -20,6 +20,7 @@ public class PlayModeSettingsHandler {
         public bool ShowEditorVisuals;
     }
 
+    // 每项编辑器开关都有默认值。按当前电脑保存的值组装一份设置后，生成器就能决定试玩时是否保留场景预览。
     public static PlayModeSettings GetEditorSettings() {
         return new PlayModeSettings {
             SaveOpenScenesOnPlay = EditorPrefs.GetBool(k_SaveOpenScenesOnPlayKey, true),
@@ -30,6 +31,7 @@ public class PlayModeSettingsHandler {
         };
     }
 
+    // 设置页写回的是本机 EditorPrefs。场景文件和存档不需要记录开发者的试玩偏好。
     public static void SetEditorSettings(PlayModeSettings settings) {
         EditorPrefs.SetBool(k_SaveOpenScenesOnPlayKey, settings.SaveOpenScenesOnPlay);
         EditorPrefs.SetBool(k_AutomaticallyPlayCurrentLevelKey, settings.AutomaticallyPlayCurrentLevel);

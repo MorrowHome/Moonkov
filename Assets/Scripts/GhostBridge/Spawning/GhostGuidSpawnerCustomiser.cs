@@ -11,6 +11,7 @@ public class GhostGuidSpawnerCustomiser : MonoBehaviour, IGhostSpawnerCustomiser
     }
 
 #if UNITY_EDITOR
+    // 指定使用固定标识时，由编辑器按层级位置等信息求 GUID 并序列化。运行中的生成器直接读取保存的值。
     public void OnValidate() { Guid = GhostGameObject.GenerateNewHashOnNameDepthAndSiblingIndex(gameObject); }
 #endif
 }

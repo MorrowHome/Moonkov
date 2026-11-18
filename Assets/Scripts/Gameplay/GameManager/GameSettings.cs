@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
 
     public class GameSettings : INotifyBindablePropertyChanged {
         // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
+        // 角色编号也会存到档案和网络消息里。菜单用同一编号找预览资源，进入战局后服务端用它挑角色模板。
         public const int DollSingerCharacterIndex = 2;
         public const int HatsuneMikuCharacterIndex = 3;
         public const int ShianCharacterIndex = 4;
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS {
         private const string k_PlayerCharacterKey = "Moonkov.PlayerCharacter";
         private const string k_ExpeditionCompanionKey = "Moonkov.ExpeditionCompanions";
 
+        // 同行机器人数量是本机的偏好，存到 PlayerPrefs。读取和写入都按远征允许的数量夹紧，旧配置越界也能正常使用。
         public int ExpeditionCompanionCount {
             get => Mathf.Clamp(PlayerPrefs.GetInt(k_ExpeditionCompanionKey, 0), 0, RaidRules.MaxCompanions);
             set => PlayerPrefs.SetInt(k_ExpeditionCompanionKey, Mathf.Clamp(value, 0, RaidRules.MaxCompanions));
@@ -85,6 +87,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 同一玩法的规则升级时会改变版本。入场请求会带上它，服务端能在开局前发现玩家与房主使用的规则不一致。
         public int RequestedRulesVersion =>
             RequestedMode switch {
                 RaidGameMode.BountyClash => BountyClashRules.Version,
@@ -94,6 +97,7 @@ namespace Unity.MP_FPS {
             };
 
         private GameSettings() {
+            // 启动时先用已保存的本机选项。还没有用户配置时才取默认值，专用服则可以用启动参数指定玩法。
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
             m_PlayerCharacter =
                 NormalizeCharacterIndex(PlayerPrefs.GetInt(k_PlayerCharacterKey, DollSingerCharacterIndex));
@@ -125,6 +129,7 @@ namespace Unity.MP_FPS {
             get => m_GameState;
             set {
                 if (m_GameState == value) return;
+                // 全局状态控制主菜单、加载画面与局内界面的显示。这几个样式都是从当前状态算出来的，需要明确通知它们重新取值。
                 m_GameState = value;
                 Notify(MainMenuStylePropertyName);
                 Notify(LoadingScreenStylePropertyName);
@@ -138,6 +143,7 @@ namespace Unity.MP_FPS {
             get => m_MainMenuState;
             set {
                 if (m_MainMenuState == value) return;
+                // 同在主菜单内时，这个值再决定显示菜单本身还是建房、加入、输入地址等弹窗。
                 m_MainMenuState = value;
                 Notify(MainMenuStylePropertyName);
                 Notify(JoinSessionStylePropertyName);
@@ -212,6 +218,7 @@ namespace Unity.MP_FPS {
             set {
                 if (m_IsPauseMenuOpen == value) return;
                 m_IsPauseMenuOpen = value;
+                // 暂停菜单打开会释放鼠标。暂停关闭时，背包或地图仍在用鼠标的话就继续保持可见。
                 Utils.SetCursorVisible(value || RaidHUD.PointerRequested);
                 Notify(PauseMenuStylePropertyName);
                 Notify(MobileControlsOpacityPropertyName);
@@ -247,6 +254,7 @@ namespace Unity.MP_FPS {
                 PlayerPrefs.SetInt(k_PlayerCharacterKey, characterIndex);
                 PlayerPrefs.Save();
                 Notify();
+                // 选中角色变更时先落本机偏好，再通知预览或入场准备界面切换。非法的角色号已经在写入之前换成默认主角。
                 PlayerCharacterChanged?.Invoke(characterIndex);
             }
         }

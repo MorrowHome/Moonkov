@@ -69,6 +69,7 @@ namespace Unity.MP_FPS {
                       (tier == AlienThreatTier.Boss ? 450 : tier == AlienThreatTier.Elite ? 120 : 0);
         }
 
+        // 比较上次观察与现在的动作、攻击序号、血量，挑需要新触发的声音。
         public void Observe(AlienAction action, float actionTime, uint attackSequence, float health, Vector3 position) {
             if (m_Disposed) return;
             if (!m_HasState) {
@@ -119,6 +120,7 @@ namespace Unity.MP_FPS {
             m_Health = health;
         }
 
+        // 根据脚真正接触或身体真实位移判断接触声。能在墙上走的物种也沿自己的表面坐标播放。
         public void Tick(
             SurfaceMotor motor,
             PredictiveFeet feet,
@@ -176,6 +178,7 @@ namespace Unity.MP_FPS {
 
         private float Range(float min, float max) { return min + (float)m_Random.NextDouble() * (max - min); }
 
+        // 用距离决定要不要算更细的抓地、湿动和呼吸类声音。远处保留基本声音就能读出动作。
         private void TickDetails(SurfaceMotor motor, AlienAction action, float dt) {
             var position = motor.Current.Position;
             if (m_Health <= 0 || action == AlienAction.Dead || action == AlienAction.Ambush ||
@@ -245,6 +248,7 @@ namespace Unity.MP_FPS {
                 : MoonkovAudio.CanHearDetail(position, range);
         }
 
+        // 同一类别用对应句柄管理。换声音时可替换旧句柄，避免多个旧循环一直叠加。
         private bool Play(
             Cue cue,
             Vector3 position,
@@ -284,6 +288,7 @@ namespace Unity.MP_FPS {
             m_Handles[index] = null;
         }
 
+        // 怪物离场要停掉仍在播放的声音，已经生成但没再进 Tick 的实例也要清。
         public void Dispose() {
             if (m_Disposed) return;
             m_Disposed = true;

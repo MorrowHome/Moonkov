@@ -53,6 +53,7 @@ namespace Unity.MP_FPS {
         internal readonly HashSet<Entity> ClassicDeaths = new();
         public readonly Dictionary<Entity, Player> Players = new();
 
+        // 首次开赛等本轮允许的玩家数量，或等加入窗口走完。这样先到的房主不会太早进入首回合。
         public bool FirstRoundReady(double now, int expected) {
             return Players.Count > 0 && (Players.Count >= expected || now >= m_LoadDeadline);
         }
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 竞技场和经典爆破都使用比赛临时装备。退房不会把临时配发物写进远征仓库。
         public static bool UsesTemporaryKit(RaidGameMode mode) {
             return mode is RaidGameMode.Arena or RaidGameMode.Classic;
         }
@@ -90,6 +92,7 @@ namespace Unity.MP_FPS {
         private double m_LoadDeadline;
         private int m_NextId;
 
+        // 登记房间成员后才分席位及队伍。经典按空位排队伍，竞技场的参赛者是各自对抗。
         public Player Join(Entity connection, string memberId, string name, int character, double now) {
             if (Phase == ArenaPhase.Finished || Classic?.Round > 0 ||
                 Players.Count >= (Classic == null ? Capacity : ClassicMatch.Capacity) ||
@@ -109,6 +112,7 @@ namespace Unity.MP_FPS {
             return seat;
         }
 
+        // 有充分玩家或等候条件满足后开场。实时计时到期时，按当前分数决定最后结果。
         public void Tick(double now, int expectedPlayers) {
             if (Phase == ArenaPhase.Waiting && Players.Count > 0 &&
                 (Players.Count >= Math.Max(2, expectedPlayers) || now >= m_LoadDeadline)) {
@@ -122,6 +126,7 @@ namespace Unity.MP_FPS {
             if (Phase == ArenaPhase.Fighting && (Players.Count < 2 || now >= Deadline)) Finish();
         }
 
+        // 记录观战和重生时刻，并给符合条件的攻击者算击杀分。比赛已结束时不再改变结果。
         public void RecordKill(int attacker, Player victim) {
             if (Phase != ArenaPhase.Fighting || attacker == victim.Id) return;
             foreach (var player in Players.Values) {
@@ -133,6 +138,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 收局时固定赢家或平局，供全体客户端结算。不存在跨局长期加分。
         private void Finish() {
             Phase = ArenaPhase.Finished;
             if (Players.Count == 0) return;
@@ -154,6 +160,7 @@ namespace Unity.MP_FPS {
             return graph;
         }
 
+        // 免费补给仍走背包版本和实际容量。临时装备模式也不能发无定义或超过包能装的物资。
         public static InventoryError Issue(InventoryGraph graph, string code, int version) {
             if (graph.Version != version) return InventoryError.Stale;
             var definition = InventoryCatalog.Get(code);

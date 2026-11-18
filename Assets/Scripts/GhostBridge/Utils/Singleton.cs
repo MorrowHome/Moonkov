@@ -29,19 +29,23 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
 
     public virtual void Awake() {
         if (s_Instance != null) Debug.LogError($"[Singleton::Awake] {typeof(T).ToString()} instance already exists");
+        // 组件创建时先设置实例，再通知等候者。回调里的代码就能直接访问这个刚登记好的对象。
         s_Instance = this as T;
         foreach (var callback in s_InitialisationCallbacks) callback(s_Instance);
         s_InitialisationCallbacks.Clear();
+        // 需要跨场景共用的组件可以声明常驻，例如输入设备管理器。普通单例随它所在的场景结束。
         if (Persistent) DontDestroyOnLoad(gameObject);
     }
 
     public virtual void OnDestroy() {
+        // 销毁的组件只有在仍是登记对象时才清掉指针。如果已有另一份实例接班，它保留自己的登记。
         if (s_Instance == this) {
             s_Instance = null;
             s_InitialisationCallbacks.Clear();
         }
     }
 
+    // 依赖者可以提前登记，等 Awake 把实例准备好。已有实例时直接回调，调用方用同一种写法兼容两种顺序。
     public static void OnInitialise(OnInitialiseCallback callback) {
         if (s_Instance != null)
             callback(s_Instance);
@@ -61,6 +65,7 @@ public abstract class AutoSingleton<T> : Singleton<T> where T : MonoBehaviour {
 #endif
                ) {
                 Debug.Log($"Creating new instance of type {typeof(T).Name}");
+                // AutoSingleton 首次被访问时可以建场景物体，并让 Unity 添加对应组件。普通编辑态会只返回已存在的实例。
                 var singleton = new GameObject();
                 var newInstance = singleton.AddComponent<T>();
                 singleton.name = typeof(T).ToString();

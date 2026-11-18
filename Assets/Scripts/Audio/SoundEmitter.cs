@@ -125,6 +125,7 @@ public class SoundEmitter {
     /// Unreserves the emitter and kills it, making it available for reallocation.
     /// </summary>
     public void UnreserveAndKill() {
+        // 彻底清理时先解除保留。之后 Kill 才能把任务和它握着的声源都放回可借状态。
         Reserved = ReservedInfo.FreeAfterPlaybackCompletes;
         Kill(); // Stop all SoundGameObjects and kills emitter
     }
@@ -142,6 +143,7 @@ public class SoundEmitter {
     /// Stops the sound emitter, handling SoundGameObjects based on reservation status.
     /// </summary>
     public void Stop() {
+        // 只停一会儿的常驻声音可以继续占着声源，重新响时少一次借用。普通一次性声音停止时立即还给池。
         if (Reserved != ReservedInfo.ReservedEmitterAndAudioSources)
             KillSoundGameObjects(); // Kill SoundGameObjects, allowing other emitters to use them
         else
@@ -172,6 +174,7 @@ public class SoundEmitter {
                 0; // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
         else
 #endif
+            // 某一声的调用者可以在 SoundInfo 里面覆盖空间感。没有覆盖时用配置里的距离设置，再把结果传给每一层声源。
             spatialBlend = Mathf.Clamp01(SoundDefOverrideInfo.SpatialBlend ?? m_SoundDef.DistanceInfo.SpatialBlend);
         foreach (var soundGameObject in ActiveSoundGameObjects)
             soundGameObject.TriggerAudioSource(m_ListenerTransform, m_SoundDef, this, spatialBlend, mixerGroups);
@@ -184,10 +187,12 @@ public class SoundEmitter {
     /// <returns>True if the emitter is still active, false if it should be removed</returns>
     public bool Update(AudioMixerGroup[] mixerGroups, Transform listener = null) {
         if (!Active) return false;
+        // 淡出走到零就结束这个发声任务。下一步每帧更新不必再检查已经听不见的声源。
         if (FadeOutTime.GetValue() == 0.0f) {
             Kill(); // Emitter fadeout is complete. So stop and optionally kill the emitter (unless reserved) and optionally stop all audio sources
             return false;
         }
+        // 菜单相机和玩家相机换听者时，正在播放的每层声源也要换参考点。距离衰减和遮挡随后会从新位置算。
         if (listener && listener != m_ListenerTransform) {
             m_ListenerTransform = listener;
             foreach (var source in ActiveSoundGameObjects) source.RefreshListener(listener);
@@ -196,6 +201,7 @@ public class SoundEmitter {
         foreach (var soundGameObject in ActiveSoundGameObjects) {
             bool fatal = false;
             soundGameObject.Update(this, m_RepeatCount, ref activeAudioSourceCounter, ref fatal);
+            // 跟随目标销毁时可能连带删掉声源对象。修复池里的坏项并解除这个任务的占用，避免一处坏引用阻塞下次播放。
             if (fatal == true) // AudioSource's GameObject has been destroyed (likely attached to a parent GameObject that has been destroyed). Stop all sounds and recover
             {
                 ValidateSoundGameObjects();
@@ -205,6 +211,7 @@ public class SoundEmitter {
         }
         if (activeAudioSourceCounter > 0) // An AudioSource is still playing?
             return true;
+        // 一层播完时还要等其他同时播放的层。全部结束再开始下一轮重复，整声播完才回收任务。
         if (m_RepeatCount > 1) // All audio sources have finished playing for this emitter. Handle Repeat
         {
             m_RepeatCount--;
@@ -222,6 +229,7 @@ public class SoundEmitter {
     public void FadeOut(float fadeOutTime) {
         if (fadeOutTime == 0.0f) { FadeOutTime.SetValue(0.0f); } else {
             FadeOutTime.SetValue(1.0f);
+            // 渐弱只改变共享的音量系数。各声源在下一帧按照同一个淡出进度相乘，叠层可以一起退出。
             FadeOutTime.MoveTo(0.0f, fadeOutTime);
         }
     }

@@ -25,11 +25,13 @@ namespace Unity.MP_FPS {
 
         private void Update() {
             if (GameSettings.Instance == null) return;
+            // 常驻对象可能同时陪客户端经过主菜单和战局。只有现在处在菜单并且登陆动画退开，才挂船舱循环音。
             bool menu = SceneManager.GetActiveScene().name == GameManager.MainMenuSceneName &&
                         GameSettings.Instance.GameState != GlobalGameState.InGame;
             if (menu && !m_MenuActive) EnsureListener();
             m_MenuActive = menu;
             bool ship = menu && !m_AccessVisible;
+            // 同一个房间里反复 Update 只复用当前的声音。场景或登陆状态切换才重新播放或让底音淡出。
             if (ship == m_OnShip) return;
             m_OnShip = ship;
             if (ship) {
@@ -49,6 +51,7 @@ namespace Unity.MP_FPS {
             if (camera == null) return;
             var listener = camera.GetComponent<AudioListener>();
             if (listener == null) return;
+            // 退出战局时本机角色的听者可能被销毁，恢复菜单相机的听者后才能重新收听船内声音。
             listener.enabled = true;
             m_System?.SetListenerTransform(listener.transform);
         }

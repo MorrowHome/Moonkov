@@ -10,6 +10,7 @@ using UnityEngine.Rendering;
 using Random = Unity.Mathematics.Random;
 
 namespace Unity.MP_FPS {
+    // 服务端和客户端创建自己的 ECS 随机数单例。系统从所属 World 取这个随机源，生成位置等值时会推进随机状态。
     /// <summary>
     /// This data structure wraps Unity.Mathematics.Random in a singleton,
     /// so that ECS can use it to generate random numbers
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS {
 
         public static string GetLocalIPAddress() {
             var host = Dns.GetHostEntry(Dns.GetHostName());
+            // 本机接口可能有多个地址。这里依次挑一个可用的非回环 IPv4，供需要显示本机地址的地方读取。
             foreach (var ip in host.AddressList)
                 if (ip.AddressFamily == AddressFamily.InterNetwork && !ip.Equals(IPAddress.Loopback))
                     return ip.ToString();
@@ -108,6 +110,7 @@ namespace Unity.MP_FPS {
         }
 
         public static void SetCursorVisible(bool isVisible) {
+            // 恢复鼠标操作需要同时解除锁定和显示指针。回到战斗时两项一起关，避免看见光标却拖不动，或有输入但看不见。
             var mode = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
             if (Cursor.lockState != mode) Cursor.lockState = mode;
             if (Cursor.visible != isVisible) Cursor.visible = isVisible;

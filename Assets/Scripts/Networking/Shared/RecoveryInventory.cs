@@ -24,6 +24,7 @@ namespace Unity.MP_FPS.Inventory {
             return new RecoveryInbox { Version = Version, Batches = Batches.Select(b => b.Clone()).ToList() };
         }
 
+        // 已在仓库的物品不能又出现在待领箱，回收各批自己的结构也必须有效。领取前先查这个整体条件。
         public InventoryError Validate(InventoryGraph account) {
             if (Version < 1 || Batches == null || Batches.Count > 2 || account == null ||
                 account.Validate() != InventoryError.None || account.Find("stash") == null ||
@@ -49,6 +50,7 @@ namespace Unity.MP_FPS.Inventory {
     }
 
     public static class RecoveryInventory {
+        // 拖进仓库的是容器和它的完整子树。收集每个后代 ID 后才能完整搬走，再从来源批移除。
         private static HashSet<string> Tree(InventoryGraph source, string id) {
             var ids = new HashSet<string> { id };
             for (int depth = 0; depth < InventoryCatalog.MaxDepth; depth++)
@@ -58,6 +60,7 @@ namespace Unity.MP_FPS.Inventory {
             return ids;
         }
 
+        // 先为顶层物品找格子并保留子物品关系。失败时整个子树仍在原批次，不会把包和包里的东西拆散。
         private static bool Import(
             InventoryGraph account,
             InventoryGraph source,
@@ -116,12 +119,14 @@ namespace Unity.MP_FPS.Inventory {
                     item.MissionRecovered = true;
                 }
             }
+            // 首次回收奖励按此前已领取的标记算差集。反复带出同类任务物不会再发这份首次奖励。
             int added = facts & ~next.MissionFirsts;
             int dust = bonusDust + ((added & MissionInventory.FirstRecovery) != 0 ? 10 : 0) +
                        ((added & MissionInventory.FirstMooncore) != 0 ? 30 : 0) +
                        ((added & MissionInventory.FirstArchive) != 0 ? 20 : 0);
             next.MissionFirsts |= facts;
             var result = new RecoveryInbox { Version = inbox.Version + 1 };
+            // 尝试保存每个随身顶层装备。放不下就将剩余物品图留在待领箱，等待玩家整理，而不是抹掉战利品。
             foreach (var top in cargo.Items.Where(i => i.Parent == "equipment" || i.Parent == "pockets").ToArray())
                 Import(next, cargo, top);
             if (cargo.Items.Any(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root)) result.Batches.Add(cargo);
@@ -151,6 +156,7 @@ namespace Unity.MP_FPS.Inventory {
             pending = null;
             if (request == null || inbox == null || inbox.Validate(account) != InventoryError.None)
                 return InventoryError.Invalid;
+            // 两边版本都要和界面刚看到的相同。并发取走回收物后，拿着旧 ID 的请求需要刷新再试。
             if (request.ExpectedVersion != account.Version || request.ExpectedRecoveryVersion != inbox.Version)
                 return InventoryError.Stale;
             var next = account.Clone();
@@ -164,6 +170,7 @@ namespace Unity.MP_FPS.Inventory {
             }
             if (!found) return InventoryError.Missing;
             if (!moved) return inbox.ItemCount() == 0 ? InventoryError.Missing : InventoryError.Full;
+            // 领取成功后只移除已经空的批次。保留剩余没格放的物品并同步更新双方版本。
             result.Batches.RemoveAll(b => !b.Items.Any(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root));
             result.Version++;
             next.Version++;

@@ -68,9 +68,11 @@ namespace Unity.MP_FPS {
 
         private static uint s_NextPredictionId = 1;
         public static uint GetNextPredictionID() { return s_NextPredictionId++; }
+        // 统一提供当前有效的角色镜头。拥有者和普通网络观察者并不一定有相同的显示对象。
         public Camera GetPlayerCamera() { return m_PlayerCamera; }
 
         // 从角色身上的稳定锚点发出射线，再根据镜头提供的瞄准点检查开火方向。
+        // 服务器或离线对象也需要稳定的开火锚点。视角提供瞄准意图，枪口射线再按本角色位置、头高和探身重新算。
         public Ray GetShotRay(in PlayerInput input, float range, out Vector3 aimPoint) {
             var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) *
                             Vector3.forward;
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS {
         }
 
         // 服务器即使把角色藏起来也要判定头部命中，所以用独立的碰撞体跟随角色姿势。
+        // 真实头部占位按角色所在世界的层创建。代理不能靠主胶囊移动，但仍需要可供客户端准星查询的表面。
         public void CreateHeadHitbox(int layer) {
             if (m_HeadHitbox != null) return;
             var animator = m_Animator3P != null ? m_Animator3P : GetComponentInChildren<Animator>(true);
@@ -145,6 +148,7 @@ namespace Unity.MP_FPS {
             UpdateHeadHitbox();
         }
 
+        // 同步身体胶囊尺寸与头手位置。专用服务器没有动画更新时走稳定的锚点，客户端能跟可见骨骼。
         private void UpdateHeadHitbox() {
             if (m_HeadHitbox == null) return;
             var capsule = Controller.CharacterController;
@@ -169,6 +173,7 @@ namespace Unity.MP_FPS {
             PlaceArm(m_RightArmHitbox, 1);
         }
 
+        // 同一物理场景中查询射线上所有碰撞，过滤发射者自身并找最近一个。候选装满时宁可跳过任意选择。
         public bool RaycastShot(Ray ray, float range, int mask, out RaycastHit nearest) {
             var physics = gameObject.scene.GetPhysicsScene();
             int count;
@@ -220,6 +225,7 @@ namespace Unity.MP_FPS {
             m_Animator3P.SetFloat(AimPitchHash, normalizedPitch);
         }
 
+        // Host 有服务器和客户端两份角色。按角色归属设置能查到哪一层，并在各自管理器登记。
         public override void OnGhostLinked() {
             // Host server and client replicas share a PhysX scene. Hitboxes on the
             // other timeline must never push this movement controller during prediction.
@@ -239,6 +245,7 @@ namespace Unity.MP_FPS {
                 var spawnSfx = isClientOwned ? MoonkovAudio.Library?.DeployConfirm : m_SpawnSFX;
                 if (spawnSfx != null) GameManager.Instance.SoundSystem.CreateEmitter(spawnSfx, transform.position);
             }
+            // 自己有可操作镜头，另建跟随头部的 AudioListener 并临时关掉场景里启用的其他监听器。远端只更新角色外观。
             if (isClientOwned) {
                 var predictedPlayer = ReadGhostComponentData<PredictedPlayerGhost>();
                 PlayerIndex = predictedPlayer.InputIndex;
@@ -258,6 +265,7 @@ namespace Unity.MP_FPS {
                     a.enabled = false;
                 }
                 GameManager.Instance.SoundSystem.SetListenerTransform(listening);
+            // 远端角色用快照位姿，不启动人物碰撞马达。其可查询的代理部位由链接后的物件提供。
             } else if (Role == MultiplayerRole.ClientProxy) {
                 // no physics required
                 Controller.CharacterController.enabled = false;
@@ -275,6 +283,7 @@ namespace Unity.MP_FPS {
             if (PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager)) playerManager.Unregister(this);
         }
 
+        // 离开自己角色时恢复原监听器并重新设置当前音频监听位置，回主界面也能听到声音。
         /// <summary>
         /// Puts the AudioListeners back the way they were before this client took ownership.
         /// Without it, the owned listener dies with the ghost while
@@ -311,6 +320,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 使用角色专门的视角组件时直接接过去。否则才初始化通用摄像机预制体。
         private void CreateClientCamera() {
             //Disable current camera
             var existingCamera = FindAnyObjectByType<Camera>();
@@ -348,6 +358,7 @@ namespace Unity.MP_FPS {
             m_OtherPlayerVisuals.transform.localRotation = Quaternion.identity;
         }
 
+        // 服务端的动画定位信息只在允许的误差范围内校正。它跟常规预测的移动不是同一个入口。
         public bool SetPlayerPositionFromRPC(float3 rpcPosition, float positionErrorSq) {
             var predictedPlayerGhost = ReadGhostComponentData<PredictedPlayerGhost>();
             var controllerState = predictedPlayerGhost.ControllerState;

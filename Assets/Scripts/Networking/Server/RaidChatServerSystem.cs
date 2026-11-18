@@ -42,6 +42,7 @@ namespace Unity.MP_FPS {
                 : EntityManager.GetComponentObject<BountyClashWorld>(m_Clash.GetSingletonEntity()).Match;
             bool enabled = m_Offline.IsEmptyIgnoreFilter && (clash == null || !clash.IsSolo);
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
+            // 本局不允许聊天时把曾经开放的客户端状态撤回，界面不会继续用上次频道权限发送。
             if (!enabled && m_Announced.Count > 0) {
                 foreach (var connection in m_Announced.Keys)
                     if (EntityManager.Exists(connection) &&
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS {
             }
             string match = clash?.MatchId;
             int epoch = clash?.Epoch ?? 0;
+            // 比赛换轮次后使用新的聊天会话标识，已发送消息与限频状态都重新开始。
             if (match != m_Match || epoch != m_Epoch) {
                 m_Match = match;
                 m_Epoch = epoch;
@@ -70,6 +72,7 @@ namespace Unity.MP_FPS {
                 : EntityManager.GetComponentObject<RaidPersistenceContext>(m_Persistence.GetSingletonEntity());
             m_Members.Clear();
             if (enabled)
+                // 每帧从真实连接和角色重建成员列表。队伍、账号昵称和存活不从发送 RPC 信任。
                 foreach (var (joined, id, connection) in SystemAPI.Query<RefRO<JoinedClient>, RefRO<NetworkId>>()
                              .WithAll<NetworkStreamInGame>().WithNone<NetworkStreamRequestDisconnect>()
                              .WithEntityAccess()) {
@@ -111,6 +114,7 @@ namespace Unity.MP_FPS {
                 }
             foreach (var member in m_Members.Values) {
                 bool team = member.Team >= 0;
+                // 个人队伍频道资格变了才通知。常规聊天消息与权限通知分开编号，以免彼此覆盖。
                 if (m_Announced.TryGetValue(member.Connection, out bool prior) && prior == team) continue;
                 Result(ecb, member.Connection, 0, RaidChatResult.Ready, team);
                 m_Announced[member.Connection] = team;
@@ -128,6 +132,7 @@ namespace Unity.MP_FPS {
                 received.ValueRW.Consume();
                 var r = request.ValueRO;
                 var source = received.ValueRO.SourceConnection;
+                // 只给这一局的成员发送信息。接下来核对当前会话与递增请求号，旧局或重复请求会被拒绝。
                 if (m_Members.TryGetValue(source, out var sender)) {
                     if (!m_Budgets.TryGetValue(source, out var budget))
                         m_Budgets.Add(source, budget = new RaidChatBudget());
@@ -161,6 +166,7 @@ namespace Unity.MP_FPS {
             ecb.Playback(EntityManager);
         }
 
+        // 名字也要走文本规格检查并裁剪长度。画面上不把后端昵称当作可直接执行的内容。
         private static FixedString64Bytes CleanName(FixedString64Bytes name) {
             var result = default(FixedString64Bytes);
             result.CopyFromTruncated(
@@ -168,6 +174,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 处理结果只回原发件人，消息才按照全场或小队频道发给符合资格的成员。
         private void Result(
             EntityCommandBuffer ecb,
             Entity connection,

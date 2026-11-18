@@ -53,6 +53,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public void Refresh(bool enabled) {
+            // 输入控制器决定玩家是否正在调灯。界面只在该状态下开放，平时不抢瞄准操作。
             bool visible = m_Input && m_Input.LightAdjusting;
             m_Root.EnableInClassList("halo-hidden", !visible);
             if (!visible) {
@@ -63,6 +64,7 @@ namespace Unity.MP_FPS.Client {
                 MoonkovLocalization.Set(m_Hint,
                     "Release {0} to close. Tap {0} to switch the light. Changes are saved automatically.",
                     RaidKeyBindings.DisplayName(RaidKey.Light));
+            // 首次打开或灯的编码变化时才回填滑块。无通知设置避免回填的值又被当成用户修改。
             if (!m_Visible || m_LastSettings != m_Input.LightingSettings) {
                 m_LastSettings = m_Input.LightingSettings;
                 m_Range.SetValueWithoutNotify(HaloLighting.Range(m_LastSettings, m_Halo.lightRange));
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS.Client {
                 MoonkovLocalization.Set(m_IdleValue, "{0}%", m_Idle.value);
                 MoonkovLocalization.Set(m_AimValue, "{0}%", m_Aim.value);
             }
+            // 只展示当前预览的那套参数。切腰射和瞄准的页签也同步切对应灯光供玩家对照。
             bool aiming = m_Input.LightPreviewAiming;
             m_IdleControls.EnableInClassList("halo-hidden", aiming);
             m_AimControls.EnableInClassList("halo-hidden", !aiming);
@@ -88,6 +91,7 @@ namespace Unity.MP_FPS.Client {
         private void Reset() { m_Input.LightingSettings = 0; }
 
         private void Store() {
+            // 几项调整被编码到一个值，由输入逻辑继续保存或同步。强度回读一次让滑块显示量化后真正使用的值。
             m_Input.LightingSettings = HaloLighting.Pack(m_Range.value, m_Idle.value, m_Aim.value, m_AimRange.value);
             m_Idle.SetValueWithoutNotify(HaloLighting.IdlePercent(m_Input.LightingSettings));
             m_Aim.SetValueWithoutNotify(HaloLighting.AimPercent(m_Input.LightingSettings));

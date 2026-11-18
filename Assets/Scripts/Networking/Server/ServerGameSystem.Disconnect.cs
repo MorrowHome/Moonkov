@@ -13,6 +13,7 @@ namespace Unity.MP_FPS {
             if (MoonRaidMap.Active == null || ClashEnabled(ref state) ||
                 SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>())
                 return;
+            // 这里只看真的带了远征会话的连接。断线时先尝试保留，条件不满足就按失败交给结算。
             using var query =
                 state.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection), typeof(RaidSession));
             using var connections = query.ToEntityArray(Allocator.Temp);
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS {
         private bool RetainDisconnectedRaid(ref SystemState state, Entity connection) {
             var manager = state.EntityManager;
             var context = Persistence(ref state);
+            // 在线断线才走这一套暂存。也要确认已认证、正在行动且地图上还有活角色，才有东西可恢复。
             if (SystemAPI.HasSingleton<OfflineRaidMode>() || SystemAPI.HasSingleton<LanRaidMode>() ||
                 !manager.HasComponent<JoinedClient>(connection) ||
                 !context.Profiles.TryGetValue(connection, out var profile))
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS {
                 manager.GetComponentData<PredictedPlayerGhost>(joined.PlayerEntity).CurrentHealth <= 0)
                 return false;
             var holder = manager.CreateEntity();
+            // 替身保存原会话、角色引用和重连期限。它没有活的网络流，只让 ECS 还能找到这批出战数据。
             manager.AddComponentData(holder, new RaidDetached { Deadline = SystemAPI.Time.ElapsedTime + 90 });
             manager.AddComponentData(holder, session);
             manager.AddComponentData(holder, joined);
@@ -49,12 +52,14 @@ namespace Unity.MP_FPS {
                 return false;
             }
             if (context.Inventories.TryGetValue(holder, out var inventory)) {
+                // 断线取消手上仍在读条的动作，关闭搜刮窗口。恢复时保留已确认库存，但不能继续占着箱子或消耗尚未用完的道具。
                 inventory.CancelActions();
                 inventory.OpenedLootId = -1;
                 manager.AddComponentObject(holder, inventory);
             }
             if (manager.HasBuffer<LinkedEntityGroup>(connection)) {
                 var links = manager.GetBuffer<LinkedEntityGroup>(connection);
+                // 从旧连接的关联组移除角色。否则 NetCode 清理它时会连正想保留的角色一并销毁。
                 for (int i = links.Length - 1; i >= 0; i--)
                     if (links[i].Value == joined.PlayerEntity)
                         links.RemoveAt(i);
@@ -66,6 +71,7 @@ namespace Unity.MP_FPS {
                 manager.SetComponentData(player,
                     new PlayerClientCommandInputLookup { ClientCommandInputEntity = Entity.Null });
             }
+            // 没玩家连接时把角色暂交给服务器。移除旧连接的 RaidSession 后，随后那次常规断线回调不会又把同一局结算为死亡。
             manager.SetComponentData(player, new GhostOwner { NetworkId = 0 });
             // Prevent the later disconnect event from settling the transferred raid again.
             manager.RemoveComponent<RaidSession>(connection);
@@ -94,6 +100,7 @@ namespace Unity.MP_FPS {
                 bool living = manager.Exists(joined.PlayerEntity) &&
                               manager.HasComponent<PredictedPlayerGhost>(joined.PlayerEntity) && manager
                                   .GetComponentData<PredictedPlayerGhost>(joined.PlayerEntity).CurrentHealth > 0;
+                // 光凭玩家身份还不能恢复。重连期限、本局倒计时、活动阶段和角色存活都要通过。
                 if (manager.GetComponentData<RaidDetached>(holder).Deadline <= SystemAPI.Time.ElapsedTime ||
                     session.Phase != RaidPhase.Active || !living || session.TimeLeft <= 0)
                     return false;
@@ -106,12 +113,14 @@ namespace Unity.MP_FPS {
                 ecb.AddComponent(connection, session);
                 ecb.AddComponent(connection, joined);
                 if (context.Inventories.TryGetValue(connection, out var inventory)) {
+                    // 新客户端没有旧连接的库存和遗体标记，强制从完整快照补起。
                     inventory.LastSentVersion = -1;
                     inventory.LastSentLootVersion = -1;
                     inventory.NextDeathBagResync = 0;
                     manager.AddComponentObject(connection, inventory);
                 }
                 int owner = manager.GetComponentData<NetworkId>(connection).Value;
+                // 用新连接的 NetworkId 新建输入 Ghost 并改角色归属，角色本身和档案仍是原局的。
                 var input = ecb.Instantiate(SystemAPI.GetSingleton<PlayerEntityPrefabs>().ClientInputEntityPrefab);
                 ecb.SetComponent(input, new GhostOwner { NetworkId = owner });
                 ecb.AddBuffer<ClientCommandInput>(input);
@@ -143,6 +152,7 @@ namespace Unity.MP_FPS {
                             0;
                 if (!dead && session.ValueRO.TimeLeft > 0 && detached.ValueRO.Deadline > SystemAPI.Time.ElapsedTime)
                     continue;
+                // 离线期限先到了且该局还有剩余时间，也收作失败；本局时间用尽则收作超时。两者共用远征结算。
                 FinishRaid(ref state, ecb, holder,
                     dead || session.ValueRO.TimeLeft > 0 ? RaidPhase.Dead : RaidPhase.TimedOut);
                 ecb.DestroyEntity(holder);
@@ -159,6 +169,7 @@ namespace Unity.MP_FPS {
             // Transfer the current carried inventory while JoinedClient and the
             // player's transform still exist. BeginSave snapshots the remainder,
             // including items moved into/out of the secure case during this raid.
+            // 无法保留时先用服务器此刻的背包和角色位置生成尸体物资。扣掉掉落后只将余下受保护的物品写回档案。
             DropDeathInventory(ref state, connection);
             if (manager.HasComponent<JoinedClient>(connection))
                 ResearchQuestRuntime.Finish(state.World,

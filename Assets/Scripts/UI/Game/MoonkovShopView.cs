@@ -108,9 +108,11 @@ namespace Unity.MP_FPS.Client {
             if (!m_Busy && !m_Disposed) Render();
         }
 
+        // 商品未加载或库存客户端暂停接收命令时，购买入口保持禁用。各子页面共用同一判断。
         private bool Ready => !m_Busy && m_Offers != null && PlayerProfileClient.CanQueueMenuInventory;
 
         private void Render() {
+            // 库存回执断开时优先显示重同步入口。等队列可继续后，再按现有库存尝试交易。
             if (PlayerProfileClient.MenuInventoryNeedsRetry)
                 Status("Inventory confirmation is interrupted. Retry synchronization first.");
             else if (PlayerProfileClient.MenuInventoryPending > 0)
@@ -140,6 +142,7 @@ namespace Unity.MP_FPS.Client {
             m_Retry.style.display = PlayerProfileClient.MenuInventoryNeedsRetry && !m_Busy
                 ? DisplayStyle.Flex
                 : DisplayStyle.None;
+            // 研究、购买、出售和应急补给各自更新自己的区块。买东西与研究都读同一份菜单库存。
             if (m_Tab == 3) {
                 Research();
                 return;
@@ -234,6 +237,7 @@ namespace Unity.MP_FPS.Client {
                 foreach (var item in graph.Items.Where(i => m_Offers.Any(o => o.Code == i.Code)).ToArray()) {
                     var offer = m_Offers.First(o => o.Code == item.Code);
                     rows++;
+                    // 直接出售会移走物品，因此箱包有内容或光环还装模块时先要求清空。随身装备和应急物资也有各自的售卖限制。
                     string detail = graph.Children(item.Id).Any()
                         ?
                         InventoryCatalog.Get(item.Code).Container
@@ -286,6 +290,7 @@ namespace Unity.MP_FPS.Client {
             var order = new VisualElement();
             order.AddToClassList("terminal-shop-order");
             row.Add(order);
+            // 应急资格由商品规则从实际库存推导。按钮仍要等当前档案能接受库存操作。
             bool eligible = ShopCatalog.CanClaim(PlayerProfileClient.MenuInventory);
             var claim = MoonkovTerminal.ActionButton(order, eligible ? "CLAIM FREE KIT" : "WEAPON ALREADY OWNED",
                 () => Order(ShopOperation.Emergency, null, null, 0), "terminal-primary");
@@ -307,6 +312,7 @@ namespace Unity.MP_FPS.Client {
         private async void Execute(ShopCommand command) {
             if (command == null || !Ready || m_Disposed) return;
             try {
+                // 交易和移动进同一个菜单库存队列。使用本地预览给反馈，服务端或本地存档的处理结果负责最终校正。
                 var confirmation = PlayerProfileClient.QueueMenuTradeAsync(command, m_Offers);
                 Status("Syncing inventory…");
                 Render();
@@ -330,6 +336,7 @@ namespace Unity.MP_FPS.Client {
 
         private async void Retry() {
             if (m_Disposed || m_Busy) return;
+            // 重试先继续确认挂起的命令。这样不会因为玩家重按购买按钮而多生成一份订单。
             try {
                 await PlayerProfileClient.FlushMenuInventoryAsync(m_Stop.Token);
                 if (!m_Disposed) Status("");

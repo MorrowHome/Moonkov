@@ -36,6 +36,7 @@ namespace Unity.MP_FPS {
             return BountyClashRuntime.CanAct(manager, player);
         }
 
+        // 每发攻击记录出手时的角色和阵营。如果发射后角色死亡、掉线或实体回收，伤害还要按这份归属算。
         public static ClashDamageSource Capture(World world, Entity actor) {
             if (world == null || !world.IsCreated || !world.EntityManager.Exists(actor)) return default;
             var manager = world.EntityManager;
@@ -65,6 +66,7 @@ namespace Unity.MP_FPS {
             return source;
         }
 
+        // 只有网络编号的旧调用会尝试找回实际角色，然后取得同样的快照。单靠名字无法判自伤和友伤。
         public static ClashDamageSource Capture(World world, int networkId) {
             var source = new ClashDamageSource { NetworkId = networkId };
             if (world == null || !world.IsCreated || networkId == 0) return source;
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS {
             return source;
         }
 
+        // 优先比对可确认的真实角色引用。网络编号可能被重用，不能让旧攻击错误认成新玩家的自伤。
         public static bool IsSelf(World world, Entity victim, ClashDamageSource source) {
             var manager = world.EntityManager;
             if (source.ParticipantId > 0 && manager.HasComponent<ClashPlayer>(victim)) {
@@ -141,6 +144,7 @@ namespace Unity.MP_FPS {
             return source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
         }
 
+        // 按玩法的当前受击阵营和攻击时携带的来源判友军保护。世界伤害与同队攻击不应走同一判断。
         public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) {
             if (source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) && TeamProtected(source, victim,
                     manager.GetComponentData<OnlineRaidMember>(victim).Team))
@@ -167,6 +171,7 @@ namespace Unity.MP_FPS {
             return Apply(world, victim, Capture(world, sourceNetworkId), part, amount, tick, kind, impactPoint);
         }
 
+        // 所有攻击先判断目标可受伤以及模式允许，再交给分部位、护盾处理。返回实际扣除血量，其他系统可据此加声效或记分。
         public static float Apply(
             World world,
             Entity victim,
@@ -232,6 +237,7 @@ namespace Unity.MP_FPS {
             return damaged;
         }
 
+        // 真实扣血后把攻击归给与当前轮次相符的参赛者。生命周期和队伍变动不应凭旧状态刷新本局记分。
         private static bool ApplyClashAttribution(
             EntityManager manager,
             Entity victim,

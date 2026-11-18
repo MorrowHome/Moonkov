@@ -34,6 +34,7 @@ namespace Unity.MP_FPS {
         private readonly List<Vector3> m_Vertices = new(700);
         private readonly List<int> m_Triangles = new(3000);
 
+        // 根据体型和大小准备头、步态和躯干。纯移动和碰撞也用同一套关节位置。
         public StiltWalkerRig(Transform owner, AlienCreatureProfile profile, float scale, bool render, int mask) {
             m_Profile = profile;
             m_Scale = scale;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS {
             m_MaskFace = MeshObject("Narrow bone face", m_HeadMesh, m_Bone).transform;
         }
 
+        // 用上一帧身体运动和当前攻击阶段算迈向哪里或有没有抬手。关节解算后再生成各段姿态。
         public void Tick(
             SurfaceMotor motor,
             AlienAction action,
@@ -163,6 +165,7 @@ namespace Unity.MP_FPS {
             if (m_Root) m_Root.SetActive(visible);
         }
 
+        // 候选脚点向下找支撑，单独处理不平的地面，让腿不会把全身方向硬拉过去。
         private Vector3 Foot(Vector3 target) {
             return UnityEngine.Physics.Raycast(target + Vector3.up * .5f, Vector3.down, out var hit, 1.2f, m_Mask,
                 QueryTriggerInteraction.Ignore)
@@ -184,6 +187,7 @@ namespace Unity.MP_FPS {
             return go;
         }
 
+        // 把这一拍保存在段列表上的手、脚和身体线段画出来。游戏规则使用的是骨段位置。
         private void Draw() {
             m_Vertices.Clear();
             m_Triangles.Clear();
@@ -247,6 +251,7 @@ namespace Unity.MP_FPS {
             return mesh;
         }
 
+        // 预览或怪物离场时清理这里拥有的姿态网格、材质和根对象。
         public void Dispose() {
             Destroy(m_Root);
             Destroy(m_Mesh);

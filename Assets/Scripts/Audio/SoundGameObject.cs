@@ -179,6 +179,7 @@ public class SoundGameObject {
     public bool Update(SoundEmitter soundEmitter, int repeatCount, ref int count, ref bool fatal) {
         fatal = false;
         if (m_Active == false) return false;
+        // 播放任务可能还在，但跟随的物体已经被销毁。用 fatal 把这种情况告知上一层，它会检查池对象并归还任务。
         if (m_AudioSource == null) // GameObject has been destroyed.
         {
             fatal = true;
@@ -188,6 +189,7 @@ public class SoundGameObject {
         // A delayed or scheduled source reports isPlaying == false until its start time.
         // Treating that as "finished" used to kill the emitter before it ever made a sound,
         // so any SoundDef using DelayMin/DelayMax or StopDelay was silently dropped.
+        // 预约时间到之前，Unity 还会报告声源没有在播。把等待中的声源也算在使用中，才能等到声音真正开始。
         if (m_PendingStartDsp > 0.0) {
             if (AudioSettings.dspTime < m_PendingStartDsp) {
                 count++;
@@ -265,6 +267,7 @@ public class SoundGameObject {
         m_AudioSource.priority = soundDef.Priority;
 
         // Get clip from list based on index type (random, user, sequencial..)
+        // 播放开始前先固定这次用的片段和随机音高。音高从音分换成播放倍率，1200 音分对应翻倍。
         uint clipIndex = GetClipIndex(soundDef, soundEmitter);
         m_AudioSource.clip = soundDef.Clips[(int)clipIndex];
 
@@ -288,6 +291,7 @@ public class SoundGameObject {
         m_Volume = Random.Range(vMin, vMax);
 
         // Set loop on / off (Update code will count down the number of loops required and stop when necessary)
+        // AudioSource 按循环方式播放，代码再用样本位置的回绕次数限制实际循环次数。配置为零时可以一直循环到调用方停止它。
         m_AudioSource.loop = soundDef.RepeatInfo.LoopCount != 1; // True if loopcount!=1
         // (0 = infinite. 1 = play once. 2 = play twice...)
         m_CurrentLoopCount = soundDef.RepeatInfo.LoopCount;
@@ -299,6 +303,7 @@ public class SoundGameObject {
         // Set start sample offset position
         float startPercentOffset = Random.Range(soundDef.StartStopInfo.StartOffsetPercentMin,
             soundDef.StartStopInfo.StartOffsetPercentMax) / 100.0f;
+        // 播放偏移以片段长度的比例给出，换成样本编号后能跳到想播放的位置。单次覆盖常用来截取装填动作的一小段。
         startPercentOffset = Mathf.Clamp(soundDefOverrideData.StartOffsetFraction ?? startPercentOffset, 0, .999f);
         m_AudioSource.timeSamples = (int)((float)m_AudioSource.clip.samples * startPercentOffset);
         m_AudioSource.dopplerLevel = soundDef.DistanceInfo.DopplerScale;
@@ -319,6 +324,7 @@ public class SoundGameObject {
         // Start sample with delay if required
         // If we also have a stopDelay time (stop the audioSource after n seconds), use PlayScheduled and SetScheduledEndTime
         float delay = Random.Range(soundDef.StartStopInfo.DelayMin, soundDef.StartStopInfo.DelayMax);
+        // 用音频系统自己的 DSP 时钟预约开播和停播。画面帧率抖动时，声音的开始和结束仍按自己的时刻处理。
         float stopAfter = soundDefOverrideData.StopAfterSeconds ?? soundDef.StartStopInfo.StopDelay;
         if (stopAfter > 0) {
             double startTime = AudioSettings.dspTime;
@@ -385,6 +391,7 @@ public class SoundGameObject {
         if (!m_CalculateDistance || m_ListenerTransform == null) return;
         var position = GetPosition();
         var listenerPosition = m_ListenerTransform.position;
+        // 三个距离曲线各管一件事。低通和高通决定哪些频率更明显，空间感曲线决定这个声源听起来有多像在具体位置。
         float dist = Vector3.Distance(position, listenerPosition);
         var distanceInfo = m_SoundDef.DistanceInfo;
         if (m_LowPassFilter != null && m_LowPassFilter.enabled) {
@@ -446,6 +453,7 @@ public class SoundGameObject {
 
     private uint GetClipIndex(SoundDef soundDef, SoundEmitter soundEmitter) {
         uint clipIndex = 0;
+        // 先按音效的规则选片。调用者指定、随机或顺序轮播共用同一片段表，最后都取得片段表范围内的编号。
         if (soundDef.PlaybackType == SoundDef.PlaybackTypes.User) {
             clipIndex = soundEmitter.UserClipIndex;
             clipIndex %= (uint)soundDef.Clips.Count;
@@ -466,6 +474,7 @@ public class SoundGameObject {
     // 有距离感的声音会抽样检查到听者之间是否被挡住。滤波和音量逐步靠近目标，避免跨过遮挡边缘时声音突然跳变。
     private void UpdateOcclusion() {
         if (!m_SoundDef.Occlusion || m_SpatialBlendValue <= .5f || !m_ListenerTransform) return;
+        // 所有声源共用每帧遮挡射线额度。每个声源自己记下次采样时间，这样开枪和角色很多时也能控制物理查询数量。
         if (s_OcclusionFrame != Time.frameCount) {
             s_OcclusionFrame = Time.frameCount;
             s_OcclusionBudget = 6;
@@ -482,6 +491,7 @@ public class SoundGameObject {
                     QueryTriggerInteraction.Ignore);
                 for (int i = 0; i < count; i++) {
                     var hit = s_Obstacles[i];
+                    // 刚从听者身体出发，射线可能擦到玩家自己。还要排除发声对象的子物件，剩下真正在听者与声源之间的障碍才算遮挡。
                     if (hit.distance < .3f || hit.collider.transform.IsChildOf(m_ListenerTransform.root) ||
                         (m_PositionType == PositionType.ParentTransform && m_Parent &&
                          hit.collider.transform.IsChildOf(m_Parent.transform)))

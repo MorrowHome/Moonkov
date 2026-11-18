@@ -49,6 +49,7 @@ namespace Unity.MP_FPS.Client {
             m_Dirty = true;
         }
 
+        // 鼠标位移控制独立预览的旋转。停留在背景模式时，月球继续按配置自动换角度。
         public void Rotate(Vector2 delta) {
             m_Yaw = Mathf.Repeat(m_Yaw + delta.x * .3f, 360);
             m_Pitch = Mathf.Clamp(m_Pitch + delta.y * .25f, -80, 80);
@@ -76,12 +77,14 @@ namespace Unity.MP_FPS.Client {
                     visible = false;
                     break;
                 }
+            // 从层级上检查实际可见性。UI 被隐藏时不继续保留月球预览场景。
             if (!visible) {
                 ReleaseStage();
                 return;
             }
             if (m_Disposed || m_Settings == null || m_Settings.Mesh == null || m_Settings.Material == null) return;
             if (!Paused && TerminalMotion.Animate(Element)) Advance(dt);
+            // 独立预览有自己的更新频率。多次定时调用不需要每次都提交相机渲染。
             if (now < m_NextFrame) return;
             m_NextFrame = now + (Observing ? 1.0 / 30 : 1.0 / 15);
             if (m_Camera == null) CreateStage();
@@ -155,6 +158,7 @@ namespace Unity.MP_FPS.Client {
                 m_Camera.aspect = aspect;
                 m_Dirty = true;
             }
+            // 只有面板尺寸要求变化才重建目标纹理。不同大小的预览都使用同一份基础配置。
             if (m_Target == null || m_Target.width != width || m_Target.height != height) {
                 ReleaseTarget();
                 var descriptor = new RenderTextureDescriptor(width, height, RenderTextureFormat.ARGB32, 24)
@@ -197,6 +201,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 离开后停掉相机和临时月球对象，释放纹理。再次进入可从配置重新建舞台。
         private void ReleaseStage() {
             ReleaseTarget();
             if (m_Stage != null) {

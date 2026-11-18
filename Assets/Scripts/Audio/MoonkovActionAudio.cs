@@ -21,12 +21,14 @@ namespace Unity.MP_FPS {
         }
 
         public SoundDef Observe(int raid, uint request, bool active, bool failed, SoundDef error) {
+            // 动作发起时保存本局编号和请求号。只有匹配的回执才能触发音效，前一局的迟到消息直接略过。
             if (m_Request == 0 || raid != m_Raid || request != m_Request) return null;
             if (failed) {
                 Reset();
                 return error;
             }
             if (active) {
+                // 处理中可能多次收到剩余时间。开始声只在第一份活动状态出现，完成或失败则清掉记录等下一次操作。
                 if (m_Started) return null;
                 m_Started = true;
                 return m_Start;

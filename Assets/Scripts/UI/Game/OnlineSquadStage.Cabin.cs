@@ -53,6 +53,7 @@ namespace Unity.MP_FPS.Client {
             DeckLight(1);
         }
 
+        // 观察窗分成框架、玻璃开口和灯带。按多段轮廓拼出斜角，避免整个窗面被实心网格挡住。
         private void BuildObservationWindow(
             Material hull,
             Material frame,
@@ -91,6 +92,7 @@ namespace Unity.MP_FPS.Client {
             exterior.localScale = new Vector3(10.6f, 10.6f, 1);
         }
 
+        // 用同类轮廓描述每层窗框。调整窗口大小时，可以让内外边界使用同一套折线结构。
         private static Vector2[] WindowContour(float width, float bottom, float top, float cutX, float cutY) {
             return new[] {
                 new Vector2(-width + cutX, bottom), new Vector2(width - cutX, bottom),
@@ -127,6 +129,7 @@ namespace Unity.MP_FPS.Client {
             Surface(name, CabinMesh(name, vertices, triangles), material);
         }
 
+        // 把轮廓和面顶点变成预览所用的网格。记录新建资产，关闭页面后能一次释放。
         private Mesh CabinMesh(string name, Vector3[] vertices, int[] triangles) {
             var mesh = new Mesh { name = "Squad " + name, hideFlags = HideFlags.HideAndDontSave };
             mesh.vertices = vertices;
@@ -201,6 +204,7 @@ namespace Unity.MP_FPS.Client {
             light.cullingMask = 1 << StageLayer;
         }
 
+        // 每次舞台生成的材质和网格不属于项目资源。结束预览时逐个回收这些临时对象。
         private void ReleaseCabinAssets() {
             foreach (var material in m_CabinMaterials) Destroy(material);
             m_CabinMaterials.Clear();

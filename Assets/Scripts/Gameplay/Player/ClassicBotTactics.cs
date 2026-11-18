@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         public readonly Vector3? Approach;
         public readonly bool Guard;
 
+        // 一份命令同时有要到的地方、到了看哪里、要不要守角，以及路上可选的经过点。
         public ClassicBotOrder(Vector3 goal, Vector3 watch, bool guard = false, Vector3? approach = null) {
             Goal = goal;
             Watch = watch;
@@ -70,6 +71,7 @@ namespace Unity.MP_FPS {
         private int m_AttackSite, m_CarrierSlot, m_RecoveryBot, m_DefuseBot;
         private double m_DefuseChoiceUntil, m_RecoveryChoiceUntil;
 
+        // 新回合重置上一轮包点、任务人选和队友报告，最初的分路再根据回合和持包席位安排。
         public void BeginRound(int round, int carrierSlot) {
             Array.Clear(Roster, 0, Roster.Length);
             Array.Clear(m_Contacts, 0, m_Contacts.Length);
@@ -85,6 +87,7 @@ namespace Unity.MP_FPS {
 
         private static int SeatIndex(int team, int slot) { return team * ClassicMatch.TeamSize + slot; }
 
+        // 按队伍加席位更新已上场且活着的角色。枪声变化和当前位置可供队伍调度计算。
         public void Observe(
             Entity actor,
             int id,
@@ -112,6 +115,7 @@ namespace Unity.MP_FPS {
 
         public bool Alive(ClassicBot bot) { return Roster[SeatIndex(bot.Team, bot.Slot)].Alive; }
 
+        // 按队伍记被看见的敌方席位出现在哪一侧和线索失效时间。过期或离场角色的报告不再算压力。
         public void Report(int team, int observedSeat, Vector3 position, ClassicDust2Map map, double now) {
             float distanceA = (position - map.Site(0)).sqrMagnitude;
             float distanceB = (position - map.Site(1)).sqrMagnitude;
@@ -138,6 +142,7 @@ namespace Unity.MP_FPS {
                 m_RecoveryChoiceUntil = 0;
             }
             if (rules.Phase == ClassicPhase.Planted) {
+                // 已下包时优先处理拆包人选。有人正在操作就固定给当前人，没人操作才挑路线合适的机器人。
                 if (rules.HoldActor != 0) {
                     m_DefuseBot = rules.HoldActor < 0 ? rules.HoldActor : 0;
                     m_DefuseChoiceUntil = 0;
@@ -163,6 +168,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 找目标距离要看可走路线。两个候选差距很小时保留原派出的人，减少来回换任务。
         private int NearestBot(int team, Vector3 goal, int current) {
             float nearest = float.PositiveInfinity;
             float nearestFallback = float.PositiveInfinity;
@@ -201,6 +207,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 同一队按席位分多个进出路线和守位方向。即使目标点相同，也尽量不让所有机器人堆到同一条路。
         public ClassicBotOrder Order(ClassicBot bot, ClassicMatch rules, ClassicDust2Map map) {
             bool attacking = bot.Team == rules.AttackTeam;
             if (rules.Phase == ClassicPhase.Planted) {

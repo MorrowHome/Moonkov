@@ -51,12 +51,14 @@ namespace Unity.MP_FPS.Inventory {
             return Branch == 0 ? graph.HaloResearchLevel > 0 : (graph.HaloResearchBranches & Branch) != 0;
         }
 
+        // 研究只从合规仓库物品扣材料。随身物品和临时补给不能当免费研究来源。
         public static bool CanSpend(InventoryGraph graph, InventoryItem item, string code) {
             return item.Code == code && graph.RootOf(item.Id) == "stash" && !item.EmergencySupply &&
                    (!MissionInventory.IsArtifact(code) ||
                     (item.MissionRecovered && MissionInventory.ValidSource(item)));
         }
 
+        // 用同一条件统计每种所需材料。界面看到能否解锁和真正写库按一样的材料清单。
         public int Stored(InventoryGraph graph, string code) {
             return graph.Items.Where(i => CanSpend(graph, i, code)).Sum(i => i.Quantity);
         }
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS.Inventory {
             return Materials.Select((code, index) => Stored(graph, code) >= Quantities[index]).All(value => value);
         }
 
+        // 基础研究更新一级标记，分支研究按各自位记录。下次读档可比较已经完成的分支。
         public void Unlock(InventoryGraph graph) {
             if (Branch == 0)
                 graph.HaloResearchLevel = 1;
@@ -133,6 +136,7 @@ namespace Unity.MP_FPS.Inventory {
 
         // Upright variants share the contractile heart item and its existing food,
         // Chinese text, icon and research integration; no new inventory code needed.
+        // 不同类型对应可以搜出的器官。部分同来源变体共享一项掉落定义。
         public static AlienOrganDefinition Species(string species) {
             return Organs.FirstOrDefault(o => o.Species == (species == "StiltWalker" ? "Tentacle" : species));
         }
@@ -141,6 +145,7 @@ namespace Unity.MP_FPS.Inventory {
             return Research.FirstOrDefault(r => r.Code == code);
         }
 
+        // 异形食物效果用同步字段的高位编码。界面取效果显示时不需要传整个器官定义。
         public static AlienFoodEffect Effect(ushort modules) { return (AlienFoodEffect)(modules >> 12); }
 
         public static string Activity(AlienFoodEffect effect) {

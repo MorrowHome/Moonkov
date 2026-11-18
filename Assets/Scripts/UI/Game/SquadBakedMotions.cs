@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.Client {
             if (asset == null) throw new InvalidOperationException("Missing squad motions: " + rig);
             string text = asset.text;
             int hash = text.GetHashCode();
+            // 同一角色的多个预览可以共享已读的动作数据。资源变了换新缓存，实际骨骼对象仍是每个模型自己的。
             if (!Libraries.TryGetValue(character, out var cached) || cached.Hash != hash) {
                 var data = JsonUtility.FromJson<Library>(text);
                 if (data.version != 1 || data.rig != rig || data.motions?.Length != 4 || data.bones == null)
@@ -70,10 +71,12 @@ namespace Unity.MP_FPS.Client {
             m_From = new Quaternion[m_Bones.Length];
             m_Current = new Quaternion[m_Bones.Length];
             for (int i = 0; i < m_Bones.Length; i++) {
+                // 导出的骨骼名字要能在当前模型里找到。记录初始局部旋转，切动作前可恢复，不把前一帧重复叠上去。
                 if (!hierarchy.TryGetValue(m_Library.bones[i], out m_Bones[i]))
                     throw new InvalidOperationException("Missing squad bone: " + m_Library.bones[i]);
                 m_Current[i] = m_Bind[i] = m_Bones[i].localRotation;
             }
+            // 模型可能只提供部分表情形态。逐个查实际存在项并保存原权重，结束后能还原角色表情。
             foreach (var renderer in animator.GetComponentsInChildren<SkinnedMeshRenderer>(true)) {
                 var mesh = renderer.sharedMesh;
                 if (!mesh) continue;
@@ -101,6 +104,7 @@ namespace Unity.MP_FPS.Client {
         public void Apply(int pose, double time, float dt, bool settle, float overlay = 1) {
             pose = Mathf.Clamp(pose, 0, 3);
             if (pose != m_Pose) {
+                // 切换动作需要从当前画面接上。把当前每根骨骼的旋转记为起点，再平滑追向新动作。
                 Array.Copy(m_Current, m_From, m_Bones.Length);
                 m_Pose = pose;
                 m_Blend = 0;
@@ -111,6 +115,7 @@ namespace Unity.MP_FPS.Client {
             float phase = (float)(time % motion.seconds / motion.seconds);
             float frame = phase * (motion.frames - 1);
             int a = (int)frame, b = Mathf.Min(a + 1, motion.frames - 1);
+            // 每帧按骨骼顺序存四元数的四个分量。用相邻两帧插值，比直接跳到离散帧顺滑。
             int stride = m_Bones.Length * 4;
             for (int i = 0; i < m_Bones.Length; i++) {
                 var q = Quaternion.Slerp(Read(motion.rotations, a * stride + i * 4),
@@ -120,6 +125,7 @@ namespace Unity.MP_FPS.Client {
                     ? m_Current[i]
                     : Quaternion.Slerp(m_Bones[i].localRotation, m_Current[i], overlay);
             }
+            // 眨眼和脸部表情按动作周期变化。静态展示不推进临时眨眼，防止角色停在半个表情上。
             float blink = settle ? 0 : Mathf.Clamp01(1 - Mathf.Abs(phase - .82f) / .035f) * 90;
             float expressionBlend = settle ? 1 : 1 - Mathf.Exp(-dt * 14);
             for (int i = 0; i < m_Expressions.Count; i++) {

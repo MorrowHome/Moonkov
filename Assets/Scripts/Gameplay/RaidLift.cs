@@ -122,6 +122,7 @@ namespace Unity.MP_FPS {
             if (!Ready || stop < -1 || stop > 1) return AirlockFeedback.Unavailable;
             var state = State;
             if (state.Phase != RaidLiftPhase.Docked) return AirlockFeedback.Equalizing;
+            // 层站的按钮指定固定楼层。轿厢内的按钮用 -1 表示去当前楼层的对面。
             byte destination = (byte)(stop < 0 ? 1 - state.Dock : stop);
             if (state.Dock == destination) return AirlockFeedback.Accepted;
             if (Obstructed(state.Dock)) return AirlockFeedback.Obstructed;
@@ -146,6 +147,7 @@ namespace Unity.MP_FPS {
                     state.Gate = Mathf.MoveTowards(state.Gate, 0, dt / m_GateSeconds);
                     if (state.Gate == 0) state.Phase = RaidLiftPhase.Travelling;
                     break;
+                // 门完全闭合后才允许升降。抵达后先记新楼层，再进入开门状态。
                 case RaidLiftPhase.Travelling:
                     state.Travel = Mathf.MoveTowards(state.Travel, state.Destination, dt / m_TravelSeconds);
                     if (state.Travel == state.Destination) {
@@ -153,6 +155,7 @@ namespace Unity.MP_FPS {
                         state.Phase = RaidLiftPhase.Opening;
                     }
                     break;
+                // 开门完成才回到可接收下一次呼叫的停靠状态。动作没完不接受新楼层。
                 case RaidLiftPhase.Opening:
                     state.Gate = Mathf.MoveTowards(state.Gate, 1, dt / m_GateSeconds);
                     if (state.Gate == 1) state.Phase = RaidLiftPhase.Docked;
@@ -187,6 +190,7 @@ namespace Unity.MP_FPS {
             float travel = m_PoseTravel;
             float gate = m_PoseGate;
             byte dock = travel == 1 ? (byte)1 : (byte)0;
+            // 客户端跟随收到的进度，仍先把自己画面的门关好再挪轿厢。延迟下也能保持门和轿厢的先后关系。
             if (travel != State.Travel) {
                 gate = Mathf.MoveTowards(gate, 0, dt / m_GateSeconds * 1.35f);
                 if (gate == 0) travel = Mathf.MoveTowards(travel, State.Travel, dt / m_TravelSeconds * 1.35f);
@@ -200,6 +204,7 @@ namespace Unity.MP_FPS {
         private void ApplyPose(float travel, float gate, byte dock) {
             m_PoseTravel = travel;
             m_PoseGate = gate;
+            // 网络进度是标准化的 0 到 1。显示层把它换算为平滑的真实高度，门、缆绳和传动轴跟着更新。
             float rise = Mathf.SmoothStep(0, m_Rise, travel);
             m_Cabin.localPosition = m_LowerPosition + Vector3.up * rise;
             foreach (var leaf in m_CabinLeaves) leaf.Apply(dock == 0 || m_OppositeCabinLeaves.Length == 0 ? gate : 0);
@@ -212,10 +217,12 @@ namespace Unity.MP_FPS {
             foreach (var screw in m_Screws) screw.localRotation = Quaternion.AngleAxis(driveRotation, Vector3.up);
             if (m_DriveShaft) m_DriveShaft.localRotation = Quaternion.AngleAxis(-driveRotation, Vector3.forward);
             m_PreviousFloorY = m_FloorY;
+            // 保存上一拍与当前轿厢地板的世界高度，角色无需挂成轿厢子物体也能通过 CarryHeight 随行。
             m_FloorY = m_Floor.transform.TransformPoint(m_Floor.center + Vector3.up * (m_Floor.size.y * .5f)).y;
             if (Application.isPlaying) UnityEngine.Physics.SyncTransforms();
         }
 
+        // 防夹只看当前楼层门口感应区，忽略电梯自己的部件。感应区缺失或结果太多时保守不关。
         private bool Obstructed(byte dock) {
             var sensor = dock == 0 ? m_LowerAperture : m_UpperAperture;
             if (!sensor || !sensor.enabled) return true;
@@ -237,6 +244,7 @@ namespace Unity.MP_FPS {
             foreach (var lift in s_Active) {
                 if (!lift || !lift.Ready) continue;
                 float movement = lift.m_FloorY - lift.m_PreviousFloorY;
+                // 必须靠近电梯原来的地板高度，并且脚踩在轿厢范围内，才会跟它移动。路过门口的人不受影响。
                 if (movement == 0 || Mathf.Abs(feet.y - lift.m_PreviousFloorY) > .18f) continue;
                 var floor = lift.m_Floor;
                 var local = floor.transform.InverseTransformPoint(feet) - floor.center;

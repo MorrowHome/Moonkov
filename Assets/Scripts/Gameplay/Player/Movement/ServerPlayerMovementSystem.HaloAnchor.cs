@@ -16,12 +16,14 @@ namespace Unity.MP_FPS {
             in PlayerInput input,
             bool fresh,
             float dt) {
+            // 只在新到的按下边沿放置或切模式。长按和上一拍重复的指令不应反复切换。
             bool place = fresh && input.HaloAnchor && !state.HaloAnchorLatched;
             bool cycle = fresh && input.HaloMode && !state.HaloModeLatched;
             if (fresh) {
                 state.HaloAnchorLatched = input.HaloAnchor;
                 state.HaloModeLatched = input.HaloMode;
             }
+            // 还没锚定时，先看是否要召回正在外放的光环。空闲且检查通过才开始新的锚定，默认先照明。
             if (!HaloSupportRules.Anchored(state)) {
                 if (!place) return false;
                 if (HaloTransferRules.Occupied(state))
@@ -39,6 +41,7 @@ namespace Unity.MP_FPS {
                        !HaloSupportRules.Within(HaloTransferRules.Anchor(state), state.HaloTransferPoint,
                            HaloSupportRules.LeashRange)) { HaloTransferRules.Recall(ref state); } else {
                 if (cycle) {
+                    // 模式改变时清掉上一个模式的哨戒目标和开火等待。不能把旧目标直接拿来开火。
                     state.HaloDeploymentMode = HaloSupportRules.NextMode(state.HaloDeploymentMode);
                     state.HaloSentryTarget = Entity.Null;
                     state.HaloSentrySearchRemaining = 0;
@@ -73,6 +76,7 @@ namespace Unity.MP_FPS {
             var forward = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0) *
                           Vector3.forward;
             if (Vector3.Dot(forward, delta.normalized) < .5f) return false;
+            // 放置从角色计算的位置往准星方向找表面，再抬高一段作为锚点。还要有空间容纳光环，并能从出发位置看到它。
             if (!physics.Raycast(from, delta.normalized, out var hit, HaloSupportRules.PlacementRange,
                     s_ShootableLayerMask, QueryTriggerInteraction.Ignore) || hit.normal.y < .35f)
                 return false;
@@ -81,6 +85,7 @@ namespace Unity.MP_FPS {
                 s_ShootableLayerMask, QueryTriggerInteraction.Ignore) == 0;
         }
 
+        // 哨戒隔一小段时间挑可见的最近敌人。友军、出了范围和被墙挡住的目标跳过。
         private Entity FindSentryTarget(Entity actor, in PredictedPlayerGhost state) {
             var best = Entity.Null;
             float nearest = HaloSupportRules.SentryRange * HaloSupportRules.SentryRange;
@@ -123,6 +128,7 @@ namespace Unity.MP_FPS {
             out Ray ray) {
             ray = default;
             var target = state.HaloSentryTarget;
+            // 挑中目标不保证这一拍能射。开火前再次检查能量、绳长、目标状态和视线。
             if (!HaloSupportRules.ReadySentry(ref state, weapon) || !ActiveTransferActor(actor, false) ||
                 !HaloSupportRules.Within(HaloTransferRules.Anchor(state), state.HaloTransferPoint,
                     HaloSupportRules.LeashRange) || !EntityManager.HasComponent<PredictedPlayerGhost>(target) ||

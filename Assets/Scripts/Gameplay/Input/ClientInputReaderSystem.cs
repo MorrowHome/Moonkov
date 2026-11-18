@@ -19,6 +19,7 @@ public partial class ClientInputReaderSystem : SystemBase {
         var playerForward = new float3(0, 0, 1);
 
         // 1. Find the local player entity and its server-authored spawn facing.
+        // 用 GhostOwnerIsLocal 找这台机器控制的角色。开局或重生时，需要用它同步过来的朝向初始化鼠标累计角度。
         foreach (var (transform, ghost, owner, entity) in SystemAPI
                      .Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>, RefRO<GhostOwnerIsLocal>>()
                      .WithEntityAccess()) {
@@ -51,6 +52,7 @@ public partial class ClientInputReaderSystem : SystemBase {
             _transferGestureHeld = false;
             _transferTarget = HaloTransferCandidate = Entity.Null;
         }
+        // 实体上有网络字段和所有者，设备操作则由场景里的表现脚本管理。经 GhostGameObjectLink 才能从实体找到持有键鼠输入的那个对象。
         if (_dollSingerInput == null && currentLocalPlayer != Entity.Null &&
             EntityManager.HasComponent<GhostGameObjectLink>(currentLocalPlayer)) {
             var link = EntityManager.GetComponentObject<GhostGameObjectLink>(currentLocalPlayer);
@@ -65,6 +67,7 @@ public partial class ClientInputReaderSystem : SystemBase {
             movementInput.ValueRW = new ClientMovementInput();
             // 打开背包或暂停时得让服务器知道这一帧的开火被屏蔽。可在界面内保留哪些能力由 HUD 和角色表现一起决定。
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
+            // 角色表现尚未连上时，也要明确交出停火的输入。否则可能走到简单模板的键位读取，在菜单开着时使用上一段操作。
             if (blocked && _dollSingerInput == null) {
                 var suppressed = new PlayerInput();
                 suppressed.SetFlag(PlayerInput.InputFlag.FireSuppressed, true);
@@ -74,9 +77,11 @@ public partial class ClientInputReaderSystem : SystemBase {
             }
             if (_dollSingerInput != null) {
                 var playerInput = new PlayerInput { HaloLightingSettings = _dollSingerInput.LightingSettings };
+                // 先判断当前镜头与动作能不能接受按键，再分别决定移动、瞄准和开火。调光等特殊界面可以用自己的预览状态。
                 bool canRead = !blocked && _dollSingerInput.CanReadPlayerInput;
                 playerInput.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,
                     !_dollSingerPresentation.ReadOwnedLight(canRead));
+                // 身体转向与自由观察拆开存。只转头查看四周时，身体前进方向和射击方向还有独立的原值可用。
                 playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(ref _accumulatedLook,
                     out playerInput.FreeLookOffset, !canRead);
                 playerInput.Lean =
@@ -95,6 +100,7 @@ public partial class ClientInputReaderSystem : SystemBase {
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
+                // 武器手被别的动作占用、暗视界面、选中工具或只转头时，都把这一帧开火关掉。服务端仍会检查手里物品和角色是否允许射击。
                 bool canFire = canRead && _dollSingerPresentation.WeaponHandsAvailable && !RaidHUD.DarkSightRequested &&
                                !RaidHUD.QuickSlotToolSelected && !playerInput.FreeLooking;
                 playerInput.SetFlag(PlayerInput.InputFlag.FireSuppressed, !canFire);
@@ -116,16 +122,19 @@ public partial class ClientInputReaderSystem : SystemBase {
                     ((canRead && _dollSingerInput.DefenseHeld && !RaidHUD.QuickSlotToolSelected) ||
                      (RaidHUD.InventoryDefenseAllowed && DollSingerInput.DefenseButtonHeld)));
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
+                // 本机相机提供准星指向的世界坐标。服务端随后从角色自己的发射点算弹道并判定伤害。
                 playerInput.AimPoint =
                     _dollSingerPresentation.CaptureAimPoint(_accumulatedLook,
                         weapon != null ? weapon.HitscanRange : 100f);
                 ReadHaloTransfer(currentLocalPlayer, equipped, canFire, ref playerInput);
+                // 教学和光环充能提示先看到本机这一帧的操作。写入两个 ECS 组件后，发送系统会继续把动作放进网络命令。
                 TutorialRuntime.Observe(playerInput);
                 InGameHUD.ObserveHaloChargeInput(playerInput, equipped);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
                 continue;
             }
+            // 还拿不到正式角色的输入脚本时，走模板 Input System 映射。它只采一些通用键位，正式角色的高级操作在上面的分支。
             var user = InputSystemManager.GetFirstInputUser();
             if (user.valid) {
                 var controls = (InputSystem_Actions)user.actions;

@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
         private readonly Vector3[] m_Curve = new Vector3[13];
         private Quaternion m_BodyRotation;
 
+        // 先创建身体关节和视觉需要的网格。背甲轮廓做得比普通平面更明显，俯视也能读出方向。
         public FaceHuggerRig(Transform owner, float scale, bool render) {
             m_Size = scale / .45f;
             if (!render) return;
@@ -52,6 +53,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 把脚的支撑点和表面姿势变成各指节。附着时切到围住目标头侧的抓握姿势。
         public void Tick(SurfaceMotor.Pose surface, PredictiveFeet feet, AlienAction action, float age, float clock) {
             bool gripping = action == AlienAction.Attached;
             float size = gripping ? 1 : m_Size;
@@ -135,6 +137,7 @@ namespace Unity.MP_FPS {
             return go;
         }
 
+        // 沿实际关节点铺小段网格，更新一整条腿的外形。
         private void DrawLimbs(float size) {
             m_Vertices.Clear();
             m_Indices.Clear();
@@ -152,6 +155,7 @@ namespace Unity.MP_FPS {
             m_Limbs.RecalculateBounds();
         }
 
+        // 外层可以按指头编号和沿指距离取采样坐标，碰撞和液体表现可跟着同一关节位置。
         public Vector3 FingerPoint(int finger, float t) {
             int a = finger * FingerPoints;
             float u = 1 - t;
@@ -159,6 +163,7 @@ namespace Unity.MP_FPS {
                    Joints[a + 3] * (t * t * t);
         }
 
+        // 用半径逐渐变化的管段画指节，沿着骨架转向。
         private void Tube(Vector3[] points, float start, float end, Matrix4x4 inverse, bool knuckles) {
             const int sides = 8;
             int first = m_Vertices.Count;

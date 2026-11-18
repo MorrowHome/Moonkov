@@ -150,6 +150,7 @@ namespace Unity.MP_FPS.Client {
             m_Weight = m_Root.Q<Label>("inventoryWeight");
             m_ContainerPane = m_Root.Q<ScrollView>("containerPane");
             var stashPlaceholder = m_Root.Q<VisualElement>("stashPane");
+            // 仓库模式把右栏留给个人仓储，局内模式才用它画搜刮目标。两者共用中间的随身容器和左边的装备槽。
             m_StashPane = showStash ? m_LootPane : stashPlaceholder;
             stashPlaceholder.RemoveFromHierarchy();
             if (showStash) {
@@ -293,6 +294,7 @@ namespace Unity.MP_FPS.Client {
             int searchTotal = -1,
             IReadOnlyList<RaidSearchFootprint> searchFootprints = null) {
             if (m_Disposed) return;
+            // 更换箱子、库存消失或上一步失败时，取消还没发的连续转移。剩下的物品不能按旧场景继续搬。
             if (graph == null || m_LootId != lootId || (operationCompleted && message != null)) ClearQuickTransfers();
             if (OperationAudioEnabled && m_Busy && operationCompleted) {
                 if (message != null)
@@ -323,9 +325,11 @@ namespace Unity.MP_FPS.Client {
             m_CorpseEquipmentSlots = corpseEquipmentSlots == null
                 ? null
                 : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
+            // 只有处理方确认本次操作结束，界面才解除忙碌。搜索揭示等快照还可以在等待搬运期间刷新显示。
             if (operationCompleted) m_Busy = false;
             // 搜刮揭示新物品时，手里那件还在原位就保持拖动。等松手再摆好剩下的格子。
             if (changed && m_Drag != null && m_Drag.CanRetain(graph)) {
+                // 记住下次要重画的布局。这一帧只刷新数值，让手上被抓住的按钮继续接收松手事件。
                 m_DeferredLayout = layout;
                 RefreshSnapshotValues();
             } else if (changed) {
@@ -333,6 +337,7 @@ namespace Unity.MP_FPS.Client {
                 CancelDrag();
                 Render();
                 m_RenderedLayout = layout;
+            // 坐标和父容器都一样时，不需要重建视图。即使版本号变化，也可直接更新数量、电量和提示。
             } else {
                 m_DeferredLayout = null;
                 RefreshSnapshotValues();
@@ -378,6 +383,7 @@ namespace Unity.MP_FPS.Client {
             ReleaseCorpsePortrait();
         }
 
+        // 仓库和背包的角色小窗都有自己的预览场景。窗口隐藏后会把它们释放，再打开时根据当前状态重建。
         private void ReleaseOperatorPortrait() {
             if (m_Character == null) return;
             m_Character.Element.RemoveFromHierarchy();
@@ -424,6 +430,7 @@ namespace Unity.MP_FPS.Client {
                 button.EnableInClassList("inventory-equipped", item != null);
                 button.EnableInClassList("inventory-selected", item != null && item.Id == m_SelectedItemId);
             }
+            // 数据还没回来时先画空容器占位，看到名字不代表玩家真的带了这些装备。
             if (m_Graph == null) {
                 MoonkovLocalization.Set(m_Weight, "Waiting for inventory snapshot");
                 MoonkovLocalization.Set(m_Message, "Loading carried inventory from the server…");
@@ -441,6 +448,7 @@ namespace Unity.MP_FPS.Client {
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash) {
+                // 只有玩家携带可放入光环的研究物资时，才提供光环收纳形态。若已经装入，优先展开装着它的那个光环。
                 var cargo = m_Graph.Items.Find(item =>
                     InventoryCatalog.IsHaloResearchCargo(item.Code) && m_Graph.Carried(item));
                 if (cargo != null) {
@@ -475,6 +483,7 @@ namespace Unity.MP_FPS.Client {
                     m_LootId >= RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" :
                     "SUPPLY CACHE / " + (m_LootId + 1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
+            // 重建会重新打开仍存在的已展开容器。复制一份编号列表来遍历，原列表可在过程中清掉已经消失的容器。
             foreach (string id in new List<string>(m_Open)) {
                 var item = m_Graph.Find(id);
                 if (item == null)
@@ -518,6 +527,7 @@ namespace Unity.MP_FPS.Client {
                 var gridParent = wrapper;
                 var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id))
                     .ToArray();
+                // 尸体等容器允许把物品在界面上排得更紧凑。这组坐标只负责画格子，鼠标落位还要按真正的库存规则找到可用位置。
                 var displayed = compact ? CompactLoot(entries, region.Width) : entries.ToDictionary(e => e.Id, e => e);
                 int rows = compact
                     ? Math.Max(1,
@@ -565,6 +575,7 @@ namespace Unity.MP_FPS.Client {
                         tile.tooltip += MoonkovLocalization.Format(
                             $" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
                     tile.RemoveManipulator(tile.clickable);
+                    // 拖起时按物品 ID 从最新数据查一遍。建按钮时捕获的对象可能已经被后来的快照替换。
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
                         () => {
                             if (HaloModules.IsWeapon(captured.Code) && m_Stash)
@@ -578,6 +589,7 @@ namespace Unity.MP_FPS.Client {
                     m_Tiles[entry.Id] = tile;
                     Position(tile, displayed[entry.Id], grid.Cell);
                 }
+                // 未知物品只画快照给出的占格，已经揭示的由真实物品按钮表示。第一个还未知的格子高亮为当前搜索项。
                 if (item.Id == LootInventoryExchange.Root && m_SearchFootprints != null) {
                     bool current = true;
                     foreach (var footprint in m_SearchFootprints) {
@@ -632,6 +644,7 @@ namespace Unity.MP_FPS.Client {
         private string Path(string id) {
             var parts = new List<string>();
             var item = m_Graph.Find(id);
+            // 沿着 Parent 往外找，就能得到物品所在的多层容器路径。最大深度与库存规则一致。
             for (int n = 0; item != null && n < InventoryCatalog.MaxDepth; n++) {
                 parts.Insert(0, InventoryCatalog.Get(item.Code).Name);
                 item = m_Graph.Find(item.Parent);
@@ -641,6 +654,7 @@ namespace Unity.MP_FPS.Client {
 
         private void OpenContainer(InventoryItem item, bool remember = true) {
             if (!InventoryCatalog.Get(item.Code).Container) return;
+            // 每个容器只开一个浮窗。重画时可借用已记录的编号打开，真正关窗后会从记录里移除。
             if (remember && !m_Open.Add(item.Id)) return;
             var window = m_Windows.Open(InventoryCatalog.Get(item.Code).Name.ToUpperInvariant());
             window.AddToClassList("inventory-container-window");
@@ -788,6 +802,7 @@ namespace Unity.MP_FPS.Client {
             var amount = new IntegerField("QUANTITY") { value = Mathf.Max(1, item.Quantity / 2), isDelayed = true };
             window.Add(amount);
             MoonkovTerminal.ActionButton(window, "SPLIT", () => {
+                // 拆分出来的堆叠将是另一件物品。先在原容器中试找空位，再提交数量和位置。
                 var split = item.Clone();
                 split.Id = Guid.NewGuid().ToString("D");
                 if (!m_Graph.FindSpace(split, item.Parent, out string region, out int x, out int y)) {
@@ -809,6 +824,7 @@ namespace Unity.MP_FPS.Client {
                     MoonkovLocalization.Set(m_Message, m_ReadOnlyReason);
                     return;
                 }
+                // 局内同时点多件时，用物品 ID 去重排队。服务端每确认一件后才继续下一件。
                 if (m_QuickTransfers.Any(intent => intent.ItemId == item.Id)) return;
                 if (m_QuickTransfers.Count >= 32) return;
                 m_QuickTransfers.Enqueue(new QuickTransferIntent
@@ -851,6 +867,7 @@ namespace Unity.MP_FPS.Client {
                 var item = m_Graph.Find(intent.ItemId);
                 // Keep the original direction. An item already taken must never be
                 // sent back on the next receipt, even after a partial stack merge.
+                // 重新读取这件东西目前在哪。它已被拿走或换边时，跳过旧意图，防止反方向把它搬回去。
                 if (item == null || m_Graph.Carried(item) != intent.FromCarried) {
                     m_QuickTransfers.Dequeue();
                     continue;
@@ -905,6 +922,7 @@ namespace Unity.MP_FPS.Client {
                     error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString());
                 return;
             }
+            // 先按操作类型确定音效，标记等待并把命令交给外层。最终显示仍由外层处理结果后的快照更新。
             m_OperationSound = MoonkovInventoryAudio.ForMove(m_Graph, command, MoonkovAudio.Library);
             m_Busy = true;
             MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…");
@@ -996,6 +1014,7 @@ namespace Unity.MP_FPS.Client {
             }
 
             public bool CanRetain(InventoryGraph graph) {
+                // 只有抓着的物品仍在同一容器、同一格且朝向相同，才保留拖动。数量等变化可刷新，位置变化需要重画。
                 var current = m_Item == null ? null : graph?.Find(m_Item.Id);
                 return current != null && current.Parent == m_Item.Parent && current.Region == m_Item.Region &&
                        current.X == m_Item.X && current.Y == m_Item.Y && current.Rotated == m_Item.Rotated;
@@ -1064,6 +1083,7 @@ namespace Unity.MP_FPS.Client {
                     return;
                 }
                 if (evt.button != 0) return;
+                // 带修饰键的左键走连续收纳，普通左键进入可能的点击或拖动。右键显示菜单已经在上面单独处理。
                 if (evt.ctrlKey || evt.shiftKey) {
                     m_View.CancelDrag();
                     if (m_Item != null) m_View.QuickTransfer(m_Item);
@@ -1077,6 +1097,7 @@ namespace Unity.MP_FPS.Client {
                 m_Pointer = evt.pointerId;
                 m_Start = m_Last = evt.position;
                 m_Rotated = m_Item?.Rotated ?? false;
+                // 记住抓住图标的相对位置。旋转和跨格子拖动时，鼠标仍能抓在图标对应位置。
                 var rect = target.worldBound;
                 m_Grab = new Vector2(Mathf.Clamp01((m_Start.x - rect.x) / rect.width),
                     Mathf.Clamp01((m_Start.y - rect.y) / rect.height));
@@ -1102,6 +1123,7 @@ namespace Unity.MP_FPS.Client {
                 m_Last = evt.position;
                 evt.StopImmediatePropagation();
                 if (m_View.m_ReadOnlyReason != null || m_View.m_Busy) return;
+                // 超过很小的位移才算拖动。少量手抖仍视为点击。
                 if (m_Item == null || (!m_Active && Vector2.Distance(m_Start, m_Last) < 4)) return;
                 if (!m_Active) {
                     m_Active = true;
@@ -1133,6 +1155,7 @@ namespace Unity.MP_FPS.Client {
                     targetGrid.Element.RemoveFromClassList("inventory-drop-invalid");
                 }
                 // Later grids are open windows and visually above the underlying container.
+                // 后加入的格子一般是更上层的浮窗。先试它们，免得在浮窗里松手却命中背后的背包。
                 for (int n = m_View.m_Grids.Count - 1; n >= 0; n--) {
                     var grid = m_View.m_Grids[n];
                     if (!VisibleDropTarget(grid.Element, m_Last)) continue;
@@ -1147,6 +1170,7 @@ namespace Unity.MP_FPS.Client {
                         ? 0
                         : Mathf.FloorToInt(local.y / grid.Cell) -
                           Mathf.FloorToInt(m_Grab.y * (m_Rotated ? def.Width : def.Height));
+                    // 紧凑排列的视图坐标只用于显示。拖进去时向库存查询实际可用空位。
                     if (grid.AutoPlace) {
                         var placement = m_Item.Clone();
                         placement.Rotated = m_Rotated;
@@ -1165,6 +1189,7 @@ namespace Unity.MP_FPS.Client {
                                 m_Command.TargetId = entry.Id;
                                 break;
                             }
+                    // 同一个落点在同一库存版本里只需试一次。变了格位、方向、目标或库存，再用副本检查并调整绿框。
                     if (!SamePlacement(m_ValidatedCommand, m_Command)) {
                         m_PlacementError = m_View.m_Graph.Clone().TryApply(m_Command);
                         m_ValidatedCommand = m_Command;
@@ -1237,6 +1262,7 @@ namespace Unity.MP_FPS.Client {
                     return;
                 }
                 m_Last = evt.position;
+                // 先判断松手处是不是快捷栏，只有没被快捷栏处理才尝试发搬运命令。先重算落点，避免使用上一帧的绿色预览。
                 bool quickDrop = m_View.QuickSlotDrop?.Invoke(m_Item, m_Last) == true;
                 Preview();
                 var command = m_Command;
@@ -1263,6 +1289,7 @@ namespace Unity.MP_FPS.Client {
             }
 
             public void Cancel() {
+                // 当前拖动结束时一起释放指针、定时滚动、备用松手处理和视觉状态，后续事件才不会引用旧格子。
                 if (m_View.m_Drag != this) return;
                 m_View.QuickSlotDragPreview?.Invoke(null, default);
                 m_ReleaseRecovery?.Pause();

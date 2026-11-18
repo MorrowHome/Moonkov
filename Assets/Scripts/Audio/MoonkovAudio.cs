@@ -12,6 +12,7 @@ namespace Unity.MP_FPS {
 
         public static MoonkovAudioLibrary Library {
             get {
+                // 所有场景共享同一个音效资源表。第一次真正需要时加载并缓存，后续按钮和世界音效只做字段查找。
                 if (!s_Loaded) {
                     s_Loaded = true;
                     s_Library = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
@@ -50,6 +51,7 @@ namespace Unity.MP_FPS {
             if (!Application.isPlaying || game == null || game.IsHeadless || sound == null || sound.Clips == null ||
                 sound.Clips.Count == 0)
                 return null;
+            // 跟随物体时把世界位置换算到它的局部坐标。空间混合、音高和开始结束位置到这一声才覆盖，原 SoundDef 仍能给其他音效复用。
             var info = new SoundSystem.SoundInfo {
                 SoundDefinition = sound, SoundTransform = follow,
                 Position = follow ? follow.InverseTransformPoint(position) : position,
@@ -63,6 +65,7 @@ namespace Unity.MP_FPS {
 
         public const float WorldWeaponGain = .57f;
 
+        // 本机枪声贴近听者播放，旁人的枪声使用世界位置和较低的基础音量。远近衰减仍交给声音池。
         public static SoundSystem.SoundInfo PlayWeaponReport(
             SoundDef sound,
             Vector3 position,
@@ -89,6 +92,7 @@ namespace Unity.MP_FPS {
 
         public static void BindUI(VisualElement root) {
             if (root == null || !s_BoundRoots.Add(root)) return;
+            // 根节点在事件下传时提前找即将激活的按钮。键鼠与键盘确认都能绑定，后来动态加进页面的按钮也会经过根节点。
             root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             root.RegisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
@@ -103,6 +107,7 @@ namespace Unity.MP_FPS {
 
         /// <summary>Forget roots whose panel is gone so the bound set does not grow forever.</summary>
         public static void PruneBoundRoots() {
+            // 窗口切换后没有挂在 Panel 上的根节点要解除监听。遍历副本可以一边查看一边从原集合移除。
             foreach (var root in new List<VisualElement>(s_BoundRoots))
                 if (root.panel == null)
                     UnbindUI(root);
@@ -131,6 +136,7 @@ namespace Unity.MP_FPS {
         private static void OnHover(PointerOverEvent evt) {
             var button = ButtonFor(evt);
             if (button == null || !button.enabledInHierarchy || Time.unscaledTime - s_LastHover < .1f) return;
+            // 全界面的悬浮声共用节奏。鼠标快速扫过一排按钮时会限频，避免同一小段时间叠太多提示。
             s_LastHover = Time.unscaledTime;
             Play(Library?.Hover, Vector3.zero);
         }
@@ -151,6 +157,7 @@ namespace Unity.MP_FPS {
         }
 
         public static void ApplyVolumes() {
+            // 总音量从听者入口应用，音乐、效果和菜单再按各自偏好送给 AudioMixer。玩家每调一次滑块就重新应用这些值。
             AudioListener.volume = MasterVolume;
             if (SoundMixer.soundSFXVol != null)
                 SoundMixer.soundSFXVol.Value =

@@ -24,6 +24,7 @@ namespace Unity.MP_FPS {
             Refresh();
         }
 
+        // 先有上一次生命值才能比较真实受伤量。剧烈的倒地等状态可阻止叠加轻微受击。
         public void Observe(float currentHealth, float maxHealth, bool suppressed) {
             if (!float.IsFinite(currentHealth)) return;
             if (initialized && currentHealth > 0 && currentHealth < health - .01f && !suppressed) {
@@ -39,6 +40,7 @@ namespace Unity.MP_FPS {
         }
 
         // Called after a form change, never per shot. Only generated visual roots belong here.
+        // 角色切换外形后重新收集可偏移的渲染根。碰撞和玩法骨架不跟着改。
         public void Refresh() {
             Restore();
             roots.Clear();
@@ -58,6 +60,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 每帧先还原上一帧前保存的姿势。否则同一个偏移逐帧施加会把模型越推越远。
         public void Restore() {
             if (!applied) return;
             foreach (var pose in roots)
@@ -66,6 +69,7 @@ namespace Unity.MP_FPS {
             applied = false;
         }
 
+        // 短暂冲量随时间衰减，只加在身体显示位置和旋转上。
         public void Present(float deltaTime, Vector3 pivot, Vector3 up, Vector3 forward, float scale, bool boss) {
             age += Mathf.Max(0, deltaTime);
             float pulse = Pulse * (boss ? .35f : 1f);

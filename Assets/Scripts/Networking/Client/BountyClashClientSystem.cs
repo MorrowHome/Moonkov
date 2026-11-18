@@ -40,6 +40,7 @@ namespace Unity.MP_FPS {
 
         // 比赛重开会换轮次。排行榜行和状态快照分别到达，所以只合并属于同一轮和同一序号的数据。
         public void Receive(ClashSnapshotRpc value, double now) {
+            // 先确认比赛轮次，再看比赛 ID 和快照序号。旧轮次的计时、角色状态或准备结果不能覆盖新局。
             if (HasSnapshot && value.Epoch < Snapshot.Epoch) return;
             if (HasSnapshot && value.Epoch == Snapshot.Epoch &&
                 (!value.MatchId.Equals(Snapshot.MatchId) || value.Sequence <= Snapshot.Sequence))
@@ -48,6 +49,7 @@ namespace Unity.MP_FPS {
             Snapshot = value;
             ReceivedAt = now;
             HasSnapshot = true;
+            // 切局时重置还没回执的点按、感知状态和追踪目标。那些编号都是旧比赛的，带过来会让新局看起来已经操作过。
             if (changed) {
                 PendingRequest = 0;
                 NextRequest = value.AcknowledgedRequest;
@@ -68,8 +70,10 @@ namespace Unity.MP_FPS {
                 m_ViewStoppedThrough = System.Math.Max(m_ViewStoppedThrough, ObservedSenseSequence);
                 Sense.Presence = false;
             } else if (value.SenseRemaining <= 0) { StopBoost(); }
+            // 服务端快照带已处理的请求号。它追上正在等待的操作时才解锁按钮；长时间无回执也会超时释放。
             if (value.AcknowledgedRequest >= PendingRequest) PendingRequest = 0;
             Participants.Clear();
+            // 排行榜的行先进入暂存字典。直到状态头收到同一个比赛、轮次和序号，才把它们放进要显示的名单。
             foreach (var row in m_Incoming.Values)
                 if (row.Epoch == value.Epoch && row.MatchId.Equals(value.MatchId) && row.Sequence == value.Sequence)
                     Participants[row.ParticipantId] = row;
@@ -87,6 +91,7 @@ namespace Unity.MP_FPS {
             if (row.ParticipantId < 1 || (HasSnapshot && (row.Epoch < Snapshot.Epoch || (row.Epoch == Snapshot.Epoch &&
                     (!row.MatchId.Equals(Snapshot.MatchId) || row.Sequence < Snapshot.Sequence)))))
                 return;
+            // 暂存区也有玩家数量上限。先淘汰较早的行，再决定是否能加入这张新榜，防止内存积累。
             if (m_Incoming.Count >= BountyClashRules.MaxPlayers && !m_Incoming.ContainsKey(row.ParticipantId)) {
                 m_StaleRows.Clear();
                 foreach (var pair in m_Incoming)
@@ -113,6 +118,7 @@ namespace Unity.MP_FPS {
             Sense = value;
             SenseReceivedAt = now;
             ClearVisibleContacts();
+            // 仅开启查看时可有基础感知提示，但显示加强目标还要求玩家活着、携带赏金且本地仍按住加强。
             bool presenceAllowed = m_ViewRequested && CarrierAlive && value.Sequence > m_ViewStoppedThrough;
             if (!presenceAllowed) {
                 Sense.Presence = false;
@@ -129,6 +135,7 @@ namespace Unity.MP_FPS {
                 if (m_IncomingContactSequence <= value.Sequence) ClearIncomingContacts();
                 return;
             }
+            // 目标消息先到的话存起来，等匹配的感知头数据确认目标数再显示。
             if (m_IncomingContactSequence == value.Sequence)
                 for (int i = 0; i < Contacts.Length; i++)
                     if (m_IncomingContacts[i].Count == value.ContactCount) {
@@ -150,6 +157,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             if (value.Sequence <= m_BoostStoppedThrough) return;
+            // 碰到更新一批目标时先清旧批次。之后填入它自己的槽位，只有目标序号、感知头和声明数一致才可见。
             if (value.Sequence > m_IncomingContactSequence) {
                 ClearIncomingContacts();
                 m_IncomingContactSequence = value.Sequence;
@@ -166,6 +174,7 @@ namespace Unity.MP_FPS {
         // Repeated held-input frames do not move stop barriers. Only a stop transition
         // invalidates output; headers arriving while stopped advance their own barrier.
         public void SetSenseInput(bool view, bool boost) {
+            // 加强感知必须依附在感知视图里。松开按键要清本轮结果，持续按住则不反复改允许通过的消息序号。
             boost &= view;
             if (!view) {
                 if (m_ViewRequested || m_BoostRequested) StopView();
@@ -186,6 +195,7 @@ namespace Unity.MP_FPS {
             // Base-view Presence remains valid until its own header expires or view stops.
         }
 
+        // 退出整个视图会连加强状态一起清掉。松开加强只清目标时，基础感知仍可继续到自己的有效期。
         public void StopView() {
             StopBoost();
             m_ViewRequested = false;
@@ -209,6 +219,7 @@ namespace Unity.MP_FPS {
             ClearIncomingContacts();
         }
 
+        // 目标是短暂线索，超时就不再显示。读取时还核对它确实属于当前正在展示的感知批次。
         public bool ContactVisible(int index, double now) {
             return SenseVisible(now) && Contacts[index].Sequence == Sense.Sequence &&
                    Contacts[index].Count == Sense.ContactCount && Contacts[index].ValidFor > 0 &&
@@ -242,6 +253,7 @@ namespace Unity.MP_FPS {
                 received.ValueRW.Consume();
                 var value = rpc.ValueRO;
                 data.ApprovalReceived = true;
+                // 服务端说接受还不够，回来的玩法和规则版本必须也是这次想进的模式，加载才能往下继续。
                 data.Approved = value.Accepted && value.Mode == GameSettings.Instance.RequestedMode &&
                                 value.RulesVersion == GameSettings.Instance.RequestedRulesVersion;
                 data.ApprovalReason = value.Reason.Length > 0
@@ -258,6 +270,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 所有网络状态用同一帧现实时间记录到达时刻。HUD 可以据此平滑倒计时和控制线索过期。
             double now = UnityEngine.Time.realtimeSinceStartupAsDouble;
             foreach (var (rpc, received, entity) in SystemAPI
                          .Query<RefRO<ClashParticipantRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess()) {

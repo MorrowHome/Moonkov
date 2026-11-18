@@ -34,6 +34,7 @@ namespace Unity.MP_FPS {
             var phase = EnergyShieldRules.Alive(state) && state.HaloEquipped
                 ? state.HaloTransferPhase
                 : HaloTransferPhase.Idle;
+            // 记录光环刚离开头部的位置。若开始返回，也从它目前画出来的位置起步，不跳回目标再走。
             if (phase != m_Phase) {
                 if (m_Phase == HaloTransferPhase.Idle && m_Halo && m_Halo.haloVisual)
                     m_Position = m_Departure = m_Halo.haloVisual.position;
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS {
             var recipient = m_Recipient ? m_Recipient.RestingAnchor : m_Point;
             var towardHome = Vector3.ProjectOnPlane(home - recipient, Vector3.up).normalized;
             var dock = HaloSupportRules.Anchored(m_State) ? m_Point : recipient + towardHome * .52f + Vector3.up * .08f;
+            // 快照给剩余秒数，客户端用收到之后的时间往前演一小段弧线。没有额外在本地扣能量。
             float remaining = Mathf.Max(0, m_Remaining - (Time.time - m_SampledAt));
             Vector3 desired;
             if (m_Phase == HaloTransferPhase.Returning) {
@@ -77,6 +79,7 @@ namespace Unity.MP_FPS {
             m_Halo.haloVisual.position = m_Position;
             m_Halo.haloVisual.rotation = Quaternion.LookRotation(Vector3.up,
                 towardHome.sqrMagnitude > .01f ? towardHome : transform.forward);
+            // 锚点光环不用画到队友的连线。哨戒随瞄准点转，照明按部署模式点亮。
             if (HaloSupportRules.Anchored(m_State)) {
                 if (m_State.HaloDeploymentMode == HaloDeploymentMode.Sentry &&
                     ((Vector3)m_State.AimPoint - m_Position).sqrMagnitude > .01f)
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS {
                 SetLines(false);
                 return;
             }
+            // 传输线沿光环到角色之间的弧线更新。返航时淡出，输送能量时才有沿线流动的粒子线。
             EnsureLines();
             if (!m_Lines[0]) return;
             float fade = m_Phase == HaloTransferPhase.Returning ? remaining / HaloTransferRules.ReturnSeconds : 1;
@@ -108,6 +112,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 定点护盾按锚点画范围，协防按队友位置画。能量和命中强度来自最新状态。
         private void PresentShield(float dt) {
             bool area = m_State.HaloDeploymentMode == HaloDeploymentMode.Shield;
             bool active = m_Phase == HaloTransferPhase.Sending &&
@@ -130,6 +135,7 @@ namespace Unity.MP_FPS {
             return Vector3.Lerp(start, end, t) + Vector3.up * (Mathf.Sin(t * Mathf.PI) * .13f);
         }
 
+        // 只有实际需要画传输时才准备线渲染器，用原光环现有的材质保持颜色一致。
         private void EnsureLines() {
             if (m_Lines[0] || !m_Halo.beamCore || !m_Halo.beamCore.sharedMaterial) return;
             for (int i = 0; i < m_Lines.Length; i++) {
@@ -156,6 +162,7 @@ namespace Unity.MP_FPS {
                     line.enabled = visible;
         }
 
+        // 状态退出后清掉线与护盾，并放回角色自己的光环，让正常瞄准动作接手。
         public void ResetPresentation() {
             if (m_Phase != HaloTransferPhase.Idle && m_Halo && m_Halo.haloVisual) {
                 m_Halo.haloVisual.position = m_Halo.RestingAnchor;

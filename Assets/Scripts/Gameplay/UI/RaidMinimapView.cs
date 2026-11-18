@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
             }
             if (!Visible) m_Panel.style.display = DisplayStyle.Flex;
             bool changedMap = m_Map != map;
+            // 地图换到新的场景时重新取得共享卫星底图。旧场景的物资与补氧点不能沿用。
             if (changedMap) {
                 m_Map = map;
                 tacticalMap.TryGetSatellite(out m_Surface, out m_SurfaceXZ);
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS {
             m_Position = position;
             m_TakenMask = takenMask;
             var heading = new Vector2(forward.x, forward.z);
+            // 视角方向几乎没有地面分量时沿用上一个方向。避免玩家往脚下看时箭头突然转向。
             if (heading.sqrMagnitude <= .001f)
                 heading = m_Forward;
             else
@@ -72,6 +74,7 @@ namespace Unity.MP_FPS {
                 var delta = map.NearestExtraction(position) - position;
                 MoonkovLocalization.Set(m_Distance, "EXIT / {0:0} m", new Vector2(delta.x, delta.z).magnitude);
             }
+            // 只旋转视角时底图并不移动。背景与标记分层，玩家位置变化才要求重画背景。
             if (changedMap || moved) m_Backdrop.MarkDirtyRepaint();
             if (changedMap || moved || turned || changedLoot || refresh) m_Overlay.MarkDirtyRepaint();
         }
@@ -84,6 +87,7 @@ namespace Unity.MP_FPS {
             BountyClashMapView.DrawSatellite(context, m_Surface, topLeft, bottomRight);
         }
 
+        // 以角色地面坐标为原点，按小图范围和实际尺寸换算。箭头和场景标记使用相同的比例。
         /// <summary>North (+Z) is up; the same square projection is used for terrain and all markers.</summary>
         public static Vector2 Project(Vector3 world, Vector3 origin, Vector2 size) {
             return new Vector2((.5f + (world.x - origin.x) / (HalfRange * 2)) * size.x,
@@ -113,6 +117,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Map.LootPositions.Length && i < RaidLootContainers.FirstDeathBagId; i++) {
                 var point = Project(m_Map.LootPositions[i], origin, size);
                 if (!Inside(point, size, 8)) continue;
+                // 普通箱子空了也保留位置。用空箱标记体现服务端更新后的状态。
                 bool empty = (m_TakenMask & (1UL << i)) != 0;
                 painter.strokeColor = empty ? new Color(.56f, .6f, .63f, .65f) : SupplyColor;
                 painter.fillColor = new Color(.06f, .07f, .08f, .9f);
@@ -125,6 +130,7 @@ namespace Unity.MP_FPS {
             var stations = OxygenRefillZone.ActiveZones;
             for (int i = 0; i < stations.Count; i++) {
                 var station = stations[i];
+                // 补氧站来自全局注册列表。这里只显示与本局地图同场景的条目，防止叠加了其他加载场景的图标。
                 if (!station || station.gameObject.scene != m_Map.gameObject.scene) continue;
                 var point = Project(station.transform.position, origin, size);
                 if (Inside(point, size, 8)) DrawOxygenMarker(painter, point);
@@ -133,6 +139,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < m_Map.ExtractionCount; i++) {
                 if (!m_Map.TryExtractionPosition(i, out var point)) continue;
                 var exit = Project(point, origin, size);
+                // 最近撤离点在小地图画面之外时还能在边缘指一个方向。其他不在范围内的撤离点先跳过。
                 if (!Inside(exit, size, 12)) {
                     // One edge arrow keeps distant alternatives from crowding the map.
                     if (i != nearest) continue;

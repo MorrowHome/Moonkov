@@ -38,12 +38,14 @@ namespace Unity.MP_FPS {
                 code == "nocturne" ? Nocturne : None;
         }
 
+        // 玩法状态存紧凑的槽位数字，库存用文字区域名。同一映射用于找道具和校验装填期间的移动请求。
         private static string Slot(int slot) {
             return slot == 1 ? "Primary" :
                 slot == 2 ? "Secondary" :
                 slot == MeleeInventory.EquipmentIndex ? MeleeInventory.Slot : "Pistol";
         }
 
+        // 旧物品可能没存弹药，负数时按基础武器容量初始化。显式的零表示确实打空了。
         private static int Ammo(InventoryItem item, InventoryGraph graph, WeaponRegistry registry) {
             var weapon = registry.GetWeaponData(WeaponId(item?.Code), (ushort)HaloModules.Mask(graph, item));
             if (item == null || weapon == null) return 0;
@@ -61,6 +63,7 @@ namespace Unity.MP_FPS {
             else if (state.EquippedWeaponSlot == 3) state.PistolAmmo = state.CurrentAmmo;
         }
 
+        // 切换或入库前，先用实例 ID 找正在拿的那一把。传统弹药保存到道具，使用共享能量池时则留在角色能量状态。
         public static void SaveActiveAmmo(ref PredictedPlayerGhost state, InventoryGraph graph) {
             var item = graph?.Find(state.EquippedWeaponItem.ToString());
             if (!state.HaloEnergyInitialized && item != null &&
@@ -87,6 +90,7 @@ namespace Unity.MP_FPS {
 
         // Energy is reserved at the start of a timed charge. Do not let an
         // inventory transaction replace its physical weapon before completion.
+        // 充能开始后已经预留资源。若库存能移走当前武器或把另一把塞进同槽，完成时资源就可能结给错的武器。
         public static bool BlocksReloadWeaponMove(
             in PredictedPlayerGhost state,
             InventoryOperation operation,
@@ -136,6 +140,7 @@ namespace Unity.MP_FPS {
                 state.SecondaryModules |= (ushort)HaloModule.AlienSurge;
                 state.PistolModules |= (ushort)HaloModule.AlienSurge;
             }
+            // 当前槽失去有效武器时，按剩余装备顺序挑能用的一个。没有枪时仍可落到近战或空手。
             int slot = state.EquippedWeaponSlot;
             var active = slot > 0 ? graph?.Equipped(Slot(slot)) : null;
             if (slot != MeleeInventory.EquipmentIndex && WeaponId(active?.Code) == None) {
@@ -169,6 +174,7 @@ namespace Unity.MP_FPS {
                 registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
         }
 
+        // 只在允许换手时响应快捷输入。不同槽位的武器状态分开，先保存旧槽再加载新槽，避免两把武器共用同一份弹药读数。
         public static bool TryEquip(ref PredictedPlayerGhost state, in PlayerInput input, WeaponRegistry registry) {
             if (!state.InventoryWeapons || state.CurrentHealth <= 0f || state.ControllerState.IsReloadingState ||
                 HaloTransferRules.Occupied(state) || input.HaloTransfer)
@@ -200,6 +206,7 @@ namespace Unity.MP_FPS {
                 return false;
             var item = MeleeInventory.Equipped(graph);
             // Empty hands are an equipment mode, never a fabricated inventory item.
+            // 近战请求也要和库存实际装备的实例对应。两边都空才代表空手模式。
             if ((item?.Id ?? "") != (itemId ?? "")) return false;
             SaveActiveAmmo(ref state, graph);
             state.EquippedWeaponSlot = MeleeInventory.EquipmentIndex;
@@ -235,6 +242,7 @@ namespace Unity.MP_FPS {
 
         // Successful extraction ends the playable raid immediately. Settle rounds
         // already paid for before destroying the player and saving their loadout.
+        // 旧武器弹仓模式下，成功离场前可以把已支付的装填量结算到正确的物品。物品 ID、槽位或类型对不上就放弃。
         public static bool CompleteExtractedCharge(
             ref PredictedPlayerGhost state,
             InventoryGraph graph,

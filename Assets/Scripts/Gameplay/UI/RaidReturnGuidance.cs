@@ -14,6 +14,7 @@ namespace Unity.MP_FPS {
         }
 
         public bool Update(int raid, float seconds, bool active, bool extracting, bool canPresent, float now) {
+            // 每一局有自己的提醒记录。局号变化就允许新局从头提醒，不沿用上一局响过的最后一分钟。
             if (raid != m_Raid) {
                 Reset();
                 m_Raid = raid;
@@ -22,11 +23,13 @@ namespace Unity.MP_FPS {
                 ? seconds <= 60 ? 3 : seconds <= 120 ? 2 : seconds <= 300 ? 1 : 0
                 : 0;
             // A hidden HUD keeps only the most urgent reminder; never queue obsolete warnings.
+            // 只有提醒变得更紧急且当前有地方显示时才触发。正在撤离不需要再叫玩家返回。
             bool announce = Stage > m_Announced && canPresent && !extracting;
             if (announce) {
                 m_Announced = Stage;
                 m_RevealUntil = now + 8;
             }
+            // 早期提醒只展开几秒。时间更紧时持续显示方向，也不会不断重播声音。
             ShowBeacon = Stage >= 2 || (Stage > 0 && now < m_RevealUntil);
             return announce;
         }

@@ -16,9 +16,11 @@ public partial class ClientInputSenderSystem : SystemBase {
         // needs commands for the future input tick so they reach the server on time.
         // 输入要送到服务器将来会处理的那一拍。网络延迟高时，本机正在预测的 ServerTick 可能落在它后面，此处按 InputTargetTick 排队。
         var tick = networkTime.InputTargetTick;
+        // 网络时钟尚无有效 tick 时先不排命令。客户端预测和服务端据 tick 对齐，没编号的输入没法正确对应一拍。
         if (tick.IsValid) {
             var previousTick = m_PreviouslySentTick;
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
+            // 打开暂停等界面时清掉之前尚未合并的动作，避免关闭后突然补出一次开枪或跳跃。
             var inProgressCommandInput = blocked ? default : m_InProgressCommandInput;
             var bufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>();
             foreach (var (input, entity) in SystemAPI.Query<RefRO<ClientMovementInput>>().WithAll<ClientCommandInput>()
@@ -28,6 +30,7 @@ public partial class ClientInputSenderSystem : SystemBase {
                     // 开启一条新指令，用这帧的移动等连续状态，再合并上一段积下来的跳跃、单发开火等瞬时操作。
                     // this is a new tick.
                     var commandInput = new ClientCommandInput
+                        // 一个 tick 说明服务器何时执行操作，另一个记本机观看的是哪一拍的远端场景。发出的命令会一起保存这两个时刻，因为它们各有自己的节奏。
                         { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick };
                     commandInput.SetFrom(in input.ValueRO);
                     commandInput.UpdateFrom(inProgressCommandInput, false);
@@ -46,12 +49,14 @@ public partial class ClientInputSenderSystem : SystemBase {
                     // even though it's been sent, we add it again, so that the prediction
                     // system has the very latest data for this tick
                     if (buffer.GetDataAtTick(tick, out var existingCommandData) && existingCommandData.Tick == tick) {
+                        // 同一拍内从游戏切到界面时，用屏蔽后的新输入覆盖缓冲。普通游戏帧才合并，保留短按的边沿事件。
                         if (blocked)
                             existingCommandData.SetFrom(in input.ValueRO);
                         else
                             existingCommandData.UpdateFrom(in input.ValueRO);
                         buffer.AddCommandData(existingCommandData);
                     } else {
+                        // 缓冲可能已经清掉了这条历史数据。用此刻读到的指令补一个明确的本拍条目，让预测有可读的输入。
                         // Recover a pruned command so prediction always has this tick.
                         var command = new ClientCommandInput
                             { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick };

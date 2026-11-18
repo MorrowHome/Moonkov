@@ -8,6 +8,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS {
     public sealed partial class OfflineProfileStore {
         private static void ValidateTutorial(SaveData save) {
+            // 旧档缺教学栏可以初始化。建过教学回执后仍找不到栏位，则认为原进度损坏，防止把它变回初始状态。
             if (save.Tutorial == null) {
                 if (save.Receipts.ContainsKey("tutorial/schema-v1"))
                     throw new InvalidDataException("Tutorial state is missing.");
@@ -21,6 +22,7 @@ namespace Unity.MP_FPS {
         public TutorialProgress ReadTutorial() {
             lock (m_Lock) {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+                // 读档返回教学副本。任务页面只能通过更新入口写入页码或动作。
                 return new TutorialProgress {
                     Version = m_Save.Tutorial.Version, Status = m_Save.Tutorial.Status,
                     IntroPage = m_Save.Tutorial.IntroPage, CompletedSteps = m_Save.Tutorial.CompletedSteps,
@@ -33,6 +35,7 @@ namespace Unity.MP_FPS {
             lock (m_Lock) {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
                 if (m_Save.Tutorial.Status != TutorialStatus.Active) return;
+                // 入参的每一位表示已经完成的一项动作。只接收已定义的位，当前状态也要是教学进行中。
                 if ((steps & ~TutorialRules.AllSteps) != 0) throw new ArgumentOutOfRangeException(nameof(steps));
                 var next = Copy();
                 if (skip) next.Tutorial.Status = TutorialStatus.Skipped;
@@ -55,6 +58,7 @@ namespace Unity.MP_FPS {
                 if (m_Save.Tutorial.Status != TutorialStatus.Active) return "当前没有进行中的教学。";
                 if (m_Save.Recovery.ItemCount() > 0) return "请先领取待接收物品，再检查补给。";
                 string key = "tutorial/supply/" + m_Save.Tutorial.SupplyCycle;
+                // 以本轮教学补给标识查回执，同一轮只补一次，反复进准备页面不会再领。
                 if (m_Save.Receipts.ContainsKey(key)) return "本轮补给已领取。请整理装备后出战。";
                 var next = Copy();
                 var graph = next.Inventory;
@@ -64,6 +68,7 @@ namespace Unity.MP_FPS {
                         return "仓库空间不足，请先整理仓库。";
                     changed = true;
                 }
+                // 只补到教学最低要求，已有物资则不用发对应项。任一物品放不下都不提交这份副本。
                 foreach (var supply in new[] { (code: "cells", minimum: 3), (code: "medkit", minimum: 1) }) {
                     int missing = Math.Max(0, supply.minimum - graph.Count(supply.code));
                     if (missing == 0) continue;
@@ -80,6 +85,7 @@ namespace Unity.MP_FPS {
 
         private static void FinishTutorialAttempt(SaveData save, bool extracted) {
             if (save.Tutorial.Status != TutorialStatus.Active) return;
+            // 教学通关要撤离并且完成这一章。未成功可进入新补给轮，方便整理后重试。
             if (extracted && save.Campaign.CompletedTasks.Contains("CM03")) {
                 save.Tutorial.Status = TutorialStatus.Completed;
             } else {

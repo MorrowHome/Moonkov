@@ -16,6 +16,7 @@ public partial class ClientInputReaderSystem {
         input.SetFlag(PlayerInput.InputFlag.HaloMode, allowed && _dollSingerInput.HaloModeHeld);
         input.SetFlag(PlayerInput.InputFlag.HaloScan, allowed && _dollSingerInput.HaloScanHeld);
         bool held = allowed && _dollSingerInput.TransferHeld && !input.FreeLooking && !input.FireSuppressed;
+        // 可供 HUD 高亮的队友候选每帧重算。已经按下转移时使用的目标另存，准星稍移也能维持这次选择。
         HaloTransferCandidate = Entity.Null;
         var camera = _dollSingerPresentation.OwnedCamera;
         if (allowed && camera && HaloTransferRules.CanSend(sender) && !HaloTransferRules.Occupied(sender)) {
@@ -25,12 +26,14 @@ public partial class ClientInputReaderSystem {
             foreach (var (candidate, identity, owner, entity) in SystemAPI
                          .Query<RefRO<PredictedPlayerGhost>, RefRO<GhostInstance>, RefRO<GhostOwner>>()
                          .WithEntityAccess()) {
+                // 先筛能接收保护的队友和真正有网络身份的实体。候选还得在光环锚点的作用距离里。
                 if (entity == local || identity.ValueRO.ghostId <= 0 ||
                     !HaloSupportRules.CanProtect(candidate.ValueRO) ||
                     !HaloTransferRules.Teammates(sender, candidate.ValueRO, true, owner.ValueRO.NetworkId > 0))
                     continue;
                 Vector3 to = HaloTransferRules.Anchor(candidate.ValueRO);
                 if (!HaloTransferRules.InRange(from, to)) continue;
+                // 点积越接近一，候选越靠近准星中央。找到更靠中的目标后，还要查两个锚点之间有没有墙。
                 float dot = Vector3.Dot(camera.transform.forward, (to - camera.transform.position).normalized);
                 if (dot <= best) continue;
                 var delta = to - from;
@@ -46,6 +49,7 @@ public partial class ClientInputReaderSystem {
         if (!held) _transferTarget = Entity.Null;
         _transferGestureHeld = held;
         input.SetFlag(PlayerInput.InputFlag.HaloTransfer, held);
+        // 防守键在按住转移时才随指令发。只有目标仍能读出 Ghost 身份，才把具体接收人字段写进去。
         input.SetFlag(PlayerInput.InputFlag.HaloGuard, held && _dollSingerInput.GuardHeld);
         if (held && EntityManager.HasComponent<GhostInstance>(_transferTarget)) {
             var target = EntityManager.GetComponentData<GhostInstance>(_transferTarget);

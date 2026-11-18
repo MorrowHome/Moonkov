@@ -10,6 +10,7 @@ namespace Unity.MP_FPS {
             // Reset IsHit flag for all players at the start of the frame.
             // This ensures any hit from the PREVIOUS frame is cleared before
             // any new hits from the CURRENT frame are processed.
+            // 放在帧首清的是给表现系统看的瞬时标记，实际血量和上次命中的编号仍保留。
             foreach (var playerGhost in SystemAPI.Query<RefRW<PredictedPlayerGhost>>())
                 if (playerGhost.ValueRO.ControllerState.IsHit)
                     playerGhost.ValueRW.ControllerState.IsHit = false;

@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
             m_State = state;
             Element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible || state == null) return;
+            // 换会话要清掉此前消息的序号和临时提示。输入框填当前会话保留的草稿，避免显示错局。
             if (m_Session != state.Session) {
                 m_Session = state.Session;
                 m_LastSequence = 0;
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS {
                 m_LastSequence = state.LastSequence;
                 m_VisibleUntil = Time.unscaledTime + 10;
             }
+            // 新消息、反馈或语言变更才重画文本。正在等回执时不反复覆盖用户草稿。
             if (m_Revision != state.Revision || m_Locale != locale) {
                 m_Revision = state.Revision;
                 m_Locale = locale;
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS {
             m_ScrollToEnd |= changed && open;
             Element.EnableInClassList("chat-open", open);
             m_Composer.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+            // 只显示历史消息时让鼠标穿过聊天区域。主动打开输入后才允许滚动旧消息。
             m_History.pickingMode = open ? PickingMode.Position : PickingMode.Ignore;
             m_History.Query<VisualElement>().ForEach(element =>
                 element.pickingMode = open ? PickingMode.Position : PickingMode.Ignore);
@@ -109,6 +112,7 @@ namespace Unity.MP_FPS {
             m_History.verticalScrollerVisibility = open ? ScrollerVisibility.Auto : ScrollerVisibility.Hidden;
             if (open && changed) {
                 m_Keyboard = Keyboard.current;
+                // 打开时记下原来的输入法开关，关闭后恢复。这样中文聊天不会长期改变其他界面的键盘状态。
                 if (m_Keyboard != null) {
                     m_PriorIme = m_Keyboard.imeSelected.isPressed;
                     m_Keyboard.onIMECompositionChange += Composition;
@@ -145,6 +149,7 @@ namespace Unity.MP_FPS {
 
         private void KeyDown(KeyDownEvent evt) {
             if (!m_Open) return;
+            // 刚结束一次组词的帧也算输入法操作。候选确认动作不能顺便发送聊天。
             bool ime = m_Composing || m_ImeFrame == Time.frameCount;
             if (evt.keyCode == KeyCode.Escape && !ime) {
                 m_Cancel();
@@ -178,6 +183,7 @@ namespace Unity.MP_FPS {
             m_ScrollToEnd = false;
             float scroll = m_History.scrollOffset.y;
             m_History.Clear();
+            // 界面收起时只展示最近五条，打开时能看整个缓冲列表。阅读旧记录时保留滚动位置。
             int first = m_Open ? 0 : Math.Max(0, m_State.Messages.Count - 5);
             for (int i = first; i < m_State.Messages.Count; i++) {
                 var message = m_State.Messages[i];

@@ -14,6 +14,7 @@ namespace Unity.MP_FPS {
         private bool m_ResonanceReported;
         private double m_NextResonanceCheck;
 
+        // 装着光环来到对应位置时检查共鸣条件。服务器记录玩家实际停留，不靠 UI 点亮来决定研究是否完成。
         private void CheckHaloResonance(Vector3 player, double now) {
             if (m_ResonanceReported || now < m_NextResonanceCheck) return;
             m_NextResonanceCheck = now + 1;
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 现场危险按当前位置和服务端时间推进。不满足本局状态或区域条件时跳过，避免离开后还继续受同一个区域影响。
         private void UpdateHazards(Vector3 player, double now, uint tick) {
             bool lower = Active(ResearchQuest.NoWayBack);
             if (!lower && (!Active(ResearchQuest.EndOfTransmission) || m_Result.SystemsDisabled)) return;
@@ -57,6 +59,7 @@ namespace Unity.MP_FPS {
             Notice("discharge", now);
         }
 
+        // 手部读条结束来到此处分发真实设备结果。各设备需要的任务状态和输出不同。
         private void CompleteFieldDevice(ResearchDevice device, double now) {
             switch (device) {
                 case ResearchDevice.LowerSeal:
@@ -98,6 +101,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 操作有声响的设备可触发 AI 听觉线索。按设备去重，反复按同一个键不会反复惊动周围异形。
         private void AlertAliens(ResearchDevice device) {
             var anchor = Anchor(device);
             if (anchor == null || !m_AnnouncedDevices.Add(device)) return;

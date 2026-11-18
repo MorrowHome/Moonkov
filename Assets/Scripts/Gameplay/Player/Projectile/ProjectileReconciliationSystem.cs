@@ -23,12 +23,14 @@ namespace Unity.MP_FPS {
             int localPlayerNetworkId = networkIdComponent.Value;
             foreach (var (projectileData, entity) in SystemAPI.Query<RefRO<Projectile.ProjectileData>>()
                          .WithNone<GhostGameObjectLink>().WithEntityAccess()) {
+                // 需要接管本机预测对象的只有自己发射的弹体。看到别人的弹体由正常 Ghost 生命周期生成它的模型。
                 if (projectileData.ValueRO.OwnerNetworkId != localPlayerNetworkId) continue;
                 uint serverInputTick = projectileData.ValueRO.SpawnTick;
                 Projectile.PredictedProjectileInfo bestMatchInfo = null;
 
                 // Find the closest predicted projectile within the window.
                 foreach (var prediction in Projectile.PredictedProjectiles)
+                    // 同时对拍、武器和弹丸序号。多弹丸同拍出手时，仍能找到每一颗对应的预测对象。
                     if (prediction.Instance != null && prediction.SpawnTick == serverInputTick &&
                         prediction.WeaponID == projectileData.ValueRO.WeaponID &&
                         prediction.PelletIndex == projectileData.ValueRO.PelletIndex) {
@@ -44,6 +46,7 @@ namespace Unity.MP_FPS {
 
                         // 2. Schedule adding a temporary component to signal LinkGhost call needed
                         //    (We'll handle the actual LinkGhost call after ECB playback)
+                        // 先登记已有对象要被接管。等 EntityCommandBuffer 写进链接组件后，才调用正式的 Ghost 绑定。
                         ecb.AddComponent<NeedsLinking>(entity); // NeedsLinking is a simple struct IComponentData {}
 
                         // Remove from the prediction list (this uses the *static* list from Projectile)
@@ -91,6 +94,7 @@ namespace Unity.MP_FPS {
             for (int i = Projectile.PredictedProjectiles.Count - 1; i >= 0; i--) {
                 var predictedProjectileInfo = Projectile.PredictedProjectiles[i];
                 // Time-based expiry also handles tick-rate changes and stalled prediction.
+                // 等不到服务端确认的弹体通过时间超时释放，即使网络时钟停住也不会常驻。
                 if (UnityEngine.Time.time - predictedProjectileInfo.CreatedAt > 2f) {
                     if (predictedProjectileInfo.Instance != null) Object.Destroy(predictedProjectileInfo.Instance);
                     Projectile.PredictedProjectiles.RemoveAt(i);

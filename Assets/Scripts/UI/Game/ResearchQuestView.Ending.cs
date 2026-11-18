@@ -20,6 +20,7 @@ namespace Unity.MP_FPS.Client {
             if (m_ChooseEnding == null || m_StoryEvent != null || m_ChapterOverlay != null ||
                 !ResearchQuestRules.DecisionAvailable(saved))
                 return;
+            // 结局还没选时，先满足最后的章节回看条件。已经保存过结果就可以直接看对应尾声。
             if (saved.Ending == ResearchEnding.None && m_ReviewStory != null &&
                 !ResearchQuestRules.StoryReviewed(saved, ResearchStoryChapter.Originals)) {
                 OpenStory(ResearchStoryChapter.Originals);
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS.Client {
         private void CloseEnding() { CloseEnding(false); }
 
         private void CloseEnding(bool completed) {
+            // 结束结局面板前先等正在保存的步骤。避免关闭导致回执更新已不存在的播放器。
             if (m_StorySaving || (!completed && m_EndingPlayer?.Saving == true)) return;
             m_Radio.Stop();
             m_StoryEvent?.RemoveFromHierarchy();
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS.Client {
             scroll.AddToClassList("research-story-scroll");
             m_StoryEvent.Add(scroll);
             var main = Box(scroll, "research-ending-content");
+            // 存档里的结果一旦存在，直接展示那个结果。候选按钮只在还没作出选择时构建。
             if (selected != ResearchEnding.None) {
                 m_EndingPlayer = new ResearchStoryPlayer(main, ResearchSceneLibrary.Epilogue(selected), m_Radio, () => {
                     CloseEnding(true);
@@ -116,6 +119,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void SelectEnding(ResearchEnding ending) {
+            // 选择某一项只是记住当前预览。正在送这次决定时不会跳去另一项。
             if (m_StorySaving) return;
             m_EndingPreview = ending;
             UpdateEndingSelection();
@@ -133,6 +137,7 @@ namespace Unity.MP_FPS.Client {
 
         private async void ConfirmEnding() {
             if (m_StorySaving || m_EndingPreview == ResearchEnding.None) return;
+            // 确认时固定选择并锁住控件，等异步保存。回执成功才刷新为存档认可的分支。
             var ending = m_EndingPreview;
             m_StorySaving = true;
             m_StoryError = false;

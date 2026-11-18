@@ -18,6 +18,7 @@ namespace Unity.MP_FPS {
         private void Sense(DollSingerEnemyBrain brain, Transform root, Vector3 eye, float range, double now) {
             float elapsed = brain.LastSenseTime < 0 ? .1f : Mathf.Max(.001f, (float)(now - brain.LastSenseTime));
             // A server hitch must age memory, but must not count as uninterrupted visual exposure.
+            // 记忆衰减按真正经过的时间。确认目标只累加一小段，服务器卡顿不等于持续盯了一整秒。
             float observationStep = Mathf.Min(.2f, elapsed);
             brain.LastSenseTime = now;
             ObserveGrenades(brain, root, eye, now);
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS {
             float glareSight = HaloLightGlareRules.SightScale(brain.LightGlare);
             bool blinded = ExpeditionFlashBlinded(brain, now);
             var facing = Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward;
+            // 每轮先把上一轮的立即可见去掉，随着时间衰减可疑度和信心。下面重新观测到才恢复。
             foreach (var contact in brain.Contacts.Values) {
                 contact.Visible = false;
                 contact.Suspicion = Mathf.Max(0, contact.Suspicion - elapsed * .28f);
@@ -49,12 +51,14 @@ namespace Unity.MP_FPS {
                 float distance = offset.magnitude;
                 float angle = Vector3.Angle(facing, offset);
                 float cone = now - brain.LastDamage < 2 ? 95 : m_Tuning.HalfViewAngle;
+                // 普通远征对真人设置单独视角和识别策略，其他对象则仍按常规距离和光照处理。
                 bool recognizePlayer = brain.IsExpeditionRaider && candidate.PlayerControlled;
                 float sightRange = recognizePlayer
                     ? Mathf.Max(range, m_Tuning.ExpeditionPlayerSightRange) * Mathf.Max(.9f, light)
                     : range * light;
                 if (recognizePlayer) cone = Mathf.Max(cone, m_Tuning.ExpeditionPlayerHalfViewAngle);
                 if (distance > sightRange * glareSight || angle > cone) continue;
+                // 角色可只露头、露身体或露下身。把露在哪作为候选瞄准点，而不是固定朝中心穿过掩体。
                 int exposed = 0;
                 var visibleAim = candidate.AimOffset;
                 if (candidate.Alien || recognizePlayer) {
@@ -92,6 +96,7 @@ namespace Unity.MP_FPS {
                     ? Vector3.ClampMagnitude((candidate.Position - contact.LastVisualPosition) / visualGap, 8)
                     : Vector3.zero;
                 contact.Velocity = continuous ? Vector3.Lerp(contact.Velocity, observedVelocity, .65f) : Vector3.zero;
+                // 真人符合当前识别条件时直接确认，其它候选根据清晰度、距离和暴露逐步积累。
                 if (recognizePlayer) { contact.Suspicion = 1; } else {
                     float clarity = Mathf.Lerp(1.5f, .45f, distance / Mathf.Max(1, sightRange));
                     clarity *= exposed / 3f * Mathf.Lerp(1, .65f, angle / Mathf.Max(1, cone));
@@ -117,6 +122,7 @@ namespace Unity.MP_FPS {
             }
             if (brain.SensorBatch != m_SensorBatch) {
                 brain.SensorBatch = m_SensorBatch;
+                // 另处理枪声、脚步及操作等线索，听到但看不见时只更新有误差的位置和可信程度。
                 foreach (var sensor in m_Events) {
                     if (!CanObserveOpponent(brain, sensor.Source) || !EntityManager.Exists(sensor.Source) ||
                         !EntityManager.HasComponent<GhostGameObjectLink>(sensor.Source))
@@ -148,6 +154,7 @@ namespace Unity.MP_FPS {
                         if (!contact.HadVisualSample || error <= visualUncertainty) {
                             var bias = contact.HearingBias * error;
                             if (!blocked) bias.y = 0;
+                            // 短时复用估计偏差。重复听到同样的枪声可以加深怀疑，但不能靠重复平均出准确落点。
                             contact.Position = sensor.Position + bias;
                             contact.PositionUncertainty = error;
                             contact.Velocity = Vector3.zero;
@@ -186,6 +193,7 @@ namespace Unity.MP_FPS {
             brain.Target = selected;
             brain.Visible = selected != Entity.Null && brain.Contacts[selected].Visible;
             brain.Confidence = selected == Entity.Null ? 0 : brain.Contacts[selected].Confidence;
+            // 换了目标就清走旧目标的反应计时和射击计划，不把原来安稳的火线套用到新人身上。
             if (previous != selected) ResetContactTactics(brain, now);
             if (selected == Entity.Null) {
                 brain.ObservedVelocity = Vector3.zero;
@@ -224,6 +232,7 @@ namespace Unity.MP_FPS {
                    status.FlashUntil > now;
         }
 
+        // 记录角色目前观察到的火、毒等区域危险。离开区域会分别处理记忆与即时伤害状态。
         private void ObserveHazardArea(DollSingerEnemyBrain brain, Transform root, double now) {
             uint id = 0;
             Vector3 position = default;
@@ -265,6 +274,7 @@ namespace Unity.MP_FPS {
             brain.HazardRadius = radius;
         }
 
+        // 看见飞行或落地的手雷才进入避险记忆。随后按最后观察点避开它，不能自动追踪墙后的运动。
         private void ObserveGrenades(DollSingerEnemyBrain brain, Transform root, Vector3 eye, double now) {
             if (brain.IsClashBot || !root) {
                 brain.Grenade.Miss();

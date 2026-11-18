@@ -13,6 +13,7 @@ namespace Unity.MP_FPS {
         // Sample only the final visible perception result, never a hidden live transform.
         private void ObserveTargetMotion() {
             float elapsed = m_Clock - m_TargetSampleAt;
+            // 只用真正看见的连续采样估算目标速度，失去视线立即丢掉跟踪速度。
             if (!m_Visible) {
                 m_MotionTarget = Entity.Null;
                 m_ObservedTargetVelocity = Vector3.zero;
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS {
 
         private bool TryChooseAttack(byte phase, out AlienCombatPattern next) {
             next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
+            // 普通怪主要按物种轮换招法。当前距离让普通招式碰不到时，部分种类再挑喷吐。
             if (!profile.Boss) {
                 // A pulse outside its actual radius used to strand the slime in empty attacks.
                 if (profile.Species == AlienSpecies.Slime && !CanBeginSpeciesAttack(next) &&
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS {
                     next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
                 return CanBeginSpeciesAttack(next);
             }
+            // 巨蛛先试近身扫击。目标离得远且路径合法时才考虑突进或按情况用远程喷吐。
             if (profile.IsSpiderBoss) {
                 if (TryBossPattern(AlienAttackKind.SpiderRake, phase, m_NextBossSweep, out next)) return true;
                 var target = ContactPoint(m_Target);
@@ -62,6 +65,7 @@ namespace Unity.MP_FPS {
             return TryBossPattern(AlienAttackKind.MucusSpit, phase, m_NextBossSpit, out next);
         }
 
+        // 每种 Boss 招式保留自己的恢复时间和空间要求，不能用另一个招式的剩余间隔算它。
         private bool TryBossPattern(AlienAttackKind kind, byte phase, float readyAt, out AlienCombatPattern pattern) {
             pattern = AlienCombatPattern.For(profile, phase, m_Attacks + 1, kind);
             if (m_Clock < readyAt) return false;
@@ -76,6 +80,7 @@ namespace Unity.MP_FPS {
             return Mathf.Abs(target.y - (transform.position.y - m_Body.Motor.BodyHeight + 1)) <= 1.5f;
         }
 
+        // 突进前沿真实体型扫线路并检查落点与沿途地面，确保出招不会直冲墙或悬崖。
         private bool TrySpiderRushLanding(Vector3 origin, Vector3 target, out Vector3 landing) {
             landing = default;
             var direction = Vector3.ProjectOnPlane(target - origin, Vector3.up).normalized;
@@ -101,6 +106,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 先准备攻击特有的参数，再写决定好的目标、朝向与冷却。之后预警与命中依据同一组值。
         private bool CommitAttack(AlienCombatPattern next, byte phase) {
             bool head = next.Kind == AlienAttackKind.FaceLeap || next.Kind == AlienAttackKind.MucusSpit;
             var target = head ? TargetHead(m_Target).position : m_LastSeen - Vector3.up;

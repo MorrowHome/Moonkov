@@ -41,6 +41,7 @@ public class FirstPersonController : MonoBehaviour {
         Falling
     }
 
+    // 这份可回滚状态记的是角色在某一拍的姿势、速度和动作。重算某一拍时先从旧状态出发，再重新读这一拍的输入。
     public struct ControllerState {
         public enum StateFlag {
             Jump = 1 << 0,
@@ -165,6 +166,7 @@ public class FirstPersonController : MonoBehaviour {
         }
     }
 
+    // 控制常量是角色的走跑速度、重力、碰撞层和动画参数。同样状态和输入要和同样常量配对，预测和服务器才容易一致。
     public struct ControllerConsts {
         public struct StateConsts {
             public float Speed;
@@ -218,6 +220,7 @@ public class FirstPersonController : MonoBehaviour {
     // Explicit opt-in for map previews: reuse the motor without creating a network world.
     [SerializeField] [HideInInspector] private bool m_StandalonePreview;
 
+    // 无网络场景也可显式借用角色马达。正式角色则用已链接的 Ghost 识别自己在哪套物理世界。
     public void ConfigureStandalonePreview(FirstPersonController source) {
         m_StandalonePreview = true;
         GroundedOffset = source.GroundedOffset;
@@ -260,6 +263,7 @@ public class FirstPersonController : MonoBehaviour {
         DollSingerStances.Apply(m_Controller, stance, m_StandingHeight, m_StandingCenter);
     }
 
+    // 只给站在移动轿厢的人补一个高度差。跳起来后就跟随自己的速度，不能被电梯吸住。
     private float LiftCarryOffset(in ControllerState state) {
         if (state.MovementType != MovementType.Standing || !m_Controller || !m_Controller.enabled) return 0;
         var feet = (Vector3)state.CurrentPosition + (Quaternion)state.CurrentRotation * m_Controller.center -
@@ -275,6 +279,7 @@ public class FirstPersonController : MonoBehaviour {
         in ControllerConsts consts,
         in float3 accumulatedMovement,
         float deltaTime) {
+        // 碰撞前先确定胶囊高度和电梯随行偏移。角色下一步走不走得过去，得用新的身体尺寸来判断。
         DollSingerStances.Apply(m_Controller, state.Stance, m_StandingHeight, m_StandingCenter);
         state.CurrentPosition.y += LiftCarryOffset(state);
         ApplyMove(ref state, consts, accumulatedMovement, deltaTime);
@@ -290,6 +295,7 @@ public class FirstPersonController : MonoBehaviour {
 #if ENABLE_MOVEMENT_DIAGNOSTICS
             Debug.Log($"SetMovementType to {(int)type} (from {(int)state.MovementType})");
 #endif
+            // 每次进入新的移动状态重新计时。开始下落时清零本次落差，后续只累计这一次掉下去的距离。
             bool wasUpdatingFallHeight = ShouldUpdateFallHeight(state.MovementType);
             state.PreviousMovementType = state.MovementType;
             state.MovementType = type;
@@ -350,6 +356,7 @@ public class FirstPersonController : MonoBehaviour {
             float testRadius = m_Controller.radius;
             var testStart = new Vector3(currentPos.x + controllerCentre.x, currentPos.y + +controllerCentre.y,
                 currentPos.z + controllerCentre.z);
+            // 用球体向下扫跟角色胶囊同宽的区域。角色脚刚压到台阶边缘时，中心的一根射线可能漏判。
             int numHits = Physics.SphereCastNonAlloc(testStart, testRadius, Vector3.down, m_GroundCheckRaycastResults,
                 GroundedOffset, consts.GroundLayers, QueryTriggerInteraction.Ignore);
 
@@ -360,6 +367,7 @@ public class FirstPersonController : MonoBehaviour {
             int closestHitIndex = -1;
             for (int i = 0; i < numHits; ++i) {
                 var raycastResult = m_GroundCheckRaycastResults[i];
+                // 房主同时有服务器实体和客户端角色外观。找地面时拒绝另一套世界的角色碰撞，免得踩到同一个角色的另一份。
                 if (!m_StandalonePreview && PlayerGhost &&
                     GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
                     !GhostGameObject.BroadClientServerRolesMatch(ghost.Role, PlayerGhost.Role))
@@ -368,6 +376,7 @@ public class FirstPersonController : MonoBehaviour {
 #if DEBUG_RENDER_MOVEMENT
                     Debug.DrawLine(raycastResult.point, raycastResult.point + raycastResult.normal, Color.red, k_DebugRenderingTimeout);
 #endif
+                // 最平的命中决定脚下坡度，最近的命中决定是什么表面。两者用途不同，例如脚步声使用材质。
                 float dot = math.dot(raycastResult.normal, k_UpVector);
                 if (dot > largestDot) //select the most upright normal to avoid issues with corner collisions looking like a slope
                 {
@@ -409,6 +418,7 @@ public class FirstPersonController : MonoBehaviour {
 
     public void GroundedCheck(ref ControllerState state, in ControllerConsts consts) {
         bool isGrounded = UpdateGround(state, consts, out var groundCollision);
+        // 从下落到踩地这一次才标记为落地事件。站着却没地面表示走出边缘，需要进入 Falling。
         if (isGrounded && state.MovementType == MovementType.Falling) {
             state.JumpTimeoutDelta = consts.LandingTimeout;
             state.Land = true;
@@ -432,6 +442,7 @@ public class FirstPersonController : MonoBehaviour {
         }
     }
 
+    // 其他玩家已经有插值后的位姿，直接把它送进显示对象。他们的移动不用本机重新碰撞。
     public void ApplyInterpolatedClientState(
         ref ControllerState state,
         in ControllerConsts consts,
@@ -444,6 +455,7 @@ public class FirstPersonController : MonoBehaviour {
         transform.SetPositionAndRotation(state.CurrentPosition, state.CurrentRotation);
     }
 
+    // 先消费只播一遍的事件，再更新每帧连续变化的动画参数。这样连续的移动姿态和开火、落地不会互相覆盖。
     public void ApplyAnimatorState(in ControllerState state, in ControllerConsts consts, float deltaTime) {
         if (m_PlayerGhost == null || m_PlayerGhost.GhostGameObject == null)
             return; //Return if the ghost has not been linked
@@ -574,6 +586,7 @@ public class FirstPersonController : MonoBehaviour {
         stateConsts.AnimationMotionScale = 0.4f;
 
         // Freeze after teleport for a second
+        // 传送刚发生时给一段暂停走动的时间，避免缓存中的输入把角色又移出落点。
         if (state.TeleportFreeze > 0f)
             state.TeleportFreeze -= deltaTime;
         else
@@ -605,6 +618,7 @@ public class FirstPersonController : MonoBehaviour {
             if (!input.ThirdPerson) {
                 if (!state.FreeLooking) state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
                 state.RotationVelocity = 0f;
+            // 第三人称能把镜头绕到身体侧面。攻击或瞄准时身体朝镜头，移动时可转向运动方向，闲置绕看不带动身体。
             } else if (faceView || input.Aim || state.MovementSpeed > 0f) {
                 // Third person walks towards camera-relative input; aiming keeps the body facing the view.
                 float targetYaw = state.YawDegrees;
@@ -624,11 +638,13 @@ public class FirstPersonController : MonoBehaviour {
         }
 
         // View yaw and body yaw are independent: using the turning body would rotate the input twice.
+        // 将摇杆或按键方向换算成世界方向。自由观察例外，人物继续以身体朝向走，转头不会顺便改变走路方向。
         var rotQuat = state.FreeLooking ? state.CurrentRotation : quaternion.RotateY(math.radians(state.YawDegrees));
         var localMove = new float3(input.MoveInput.x, 0f, input.MoveInput.y);
 
         // Normalize it to get a pure direction vector with a length of 1.
         // This is the crucial step.
+        // 输入只负责选方向，另外计算的速度决定走多快。归一化后斜按两个方向不会比直走快。
         var localDir = math.normalizesafe(localMove);
 
         // Rotate movement by the view, regardless of which way the body currently faces.
@@ -650,6 +666,7 @@ public class FirstPersonController : MonoBehaviour {
         state.Aiming = input.Aim;
         state.HaloLightEnabled = input.HaloLightEnabled;
         state.HaloLightingSettings = HaloLighting.Sanitize(input.HaloLightingSettings);
+        // 瞄准和低姿态不能冲刺。自由观察和探身的角度也在入口限制，双方使用同一个可预测范围。
         state.Sprinting = input.Sprint && !input.Aim && state.Stance == DollSingerStance.Standing;
         state.FirstPersonView = !input.ThirdPerson;
         state.FreeLooking = state.FirstPersonView && input.FreeLooking;
@@ -661,6 +678,7 @@ public class FirstPersonController : MonoBehaviour {
             : 0f;
     }
 
+    // 先检查所请求的新姿态能否放进场景，再由输入、姿态、重力算出这一小段的速度与位移。
     public static void AccumulateMovement(
         ref ControllerState state,
         ref float3 accumulatedMovement,
@@ -684,6 +702,7 @@ public class FirstPersonController : MonoBehaviour {
         float inputMagnitude = math.length(input.MoveInput);
 
         // apply analog deadzone
+        // 输入幅度低于阈值按没操作处理。超过这个阈值使用当前走或跑速度，本段没有按摇杆幅度连续缩放。
         inputMagnitude = inputMagnitude >= 0.4f ? 1f : 0f;
         float applyTargetSpeed = modifiedTargetMoveSpeed * inputMagnitude;
         float blendAlpha = deltaTime * stateConsts.SpeedChangeRate;
@@ -715,6 +734,7 @@ public class FirstPersonController : MonoBehaviour {
             }
                 break;
         }
+        // 这里只累加想走的位移，可能还会合并同一拍的其他操作。之后 ApplyMove 才让碰撞体真正移动。
         accumulatedMovement += moveDelta * deltaTime;
         state.MovementRequest = accumulatedMovement;
 #if DEBUG_RENDER_MOVEMENT
@@ -727,6 +747,7 @@ public class FirstPersonController : MonoBehaviour {
         in ControllerConsts consts,
         in float3 accumulatedMovement,
         float deltaTime) {
+        // 物件的姿势可能还停在预测前或传送前的位置。移动起点要先对齐这拍状态中的位置，才不会从旧位置再算一次。
         var posDelta = (Vector3)state.CurrentPosition - transform.position;
         if (posDelta.sqrMagnitude > 0f) {
             MovementLog($"{name} - Reset Teleport to {state.CurrentPosition} (from {(float3)transform.position})");
@@ -741,12 +762,14 @@ public class FirstPersonController : MonoBehaviour {
             // prevents errors of moving when controller is disabled or GameObject inactive
             if (m_Controller != null && m_Controller.enabled && gameObject.activeInHierarchy)
                 // just apply our move as normal
+                // CharacterController 在游戏场景里实际推一次胶囊。撞墙后的真实位置可能和刚才累加出的目标不一样。
                 m_Controller.Move(movementToApply);
         }
 
         // apply rotation
         transform.rotation = state.CurrentRotation;
         if (ShouldUpdateFallHeight(state.MovementType)) {
+            // 用实际移动后的高度差累加落差，便于服务器的落地结算。撞到平台意味着这一段下落到此为止。
             float fallDist = state.CurrentPosition.y - transform.position.y;
             state.FallHeight += fallDist;
         }
@@ -816,6 +839,7 @@ public class FirstPersonController : MonoBehaviour {
                     AccumulateGravity(ref state, in consts, deltaTime);
                 else
                     //fully in standing state reset gravity to a minimal fall speed to keep player aligned on ground (necessary for uneven terrain)
+                    // 稳定站立时仍留少量向下速度，让沿斜地走时脚贴住地面。
                     state.JumpFallSpeed = consts.StandingFallSpeed;
             }
                 break;
@@ -830,6 +854,7 @@ public class FirstPersonController : MonoBehaviour {
                 else
                     state.Fall = true;
                 AccumulateGravity(ref state, in consts, deltaTime);
+                // 竖直速度过零时由向上跳切到落下，落地检查随后才重新接受地面碰撞。
                 var newMovementState = state.JumpFallSpeed >= 0f ? MovementType.Jumping : MovementType.Falling;
                 SetMovementType(ref state, newMovementState);
             }
@@ -869,6 +894,7 @@ public class FirstPersonController : MonoBehaviour {
         Quaternion spawnRotation,
         int pelletIndex = 0,
         ushort modules = 0) {
+        // 回滚后一拍可能被客户端重算。同拍同武器同弹丸已创建时直接复用，别让同一秒内出现重复弹体。
         foreach (var shot in Projectile.PredictedProjectiles)
             if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId && shot.PelletIndex == pelletIndex)
                 return;
@@ -901,6 +927,7 @@ public class FirstPersonController : MonoBehaviour {
         bool jumped = false;
         if (input.Jump && state.Stance == DollSingerStance.Standing && state.JumpTimeoutDelta <= 0f) {
             // the square root of H * -2 * G = how much velocity needed to reach desired height
+            // 起跳速度由配置的跳高与重力反推。先记一个跳起事件，再让后续步长逐渐施加重力。
             state.JumpFallSpeed = math.sqrt(consts.JumpHeight * -2f * consts.Gravity); // 6
             SetMovementType(ref state, MovementType.Jumping);
             state.Jump = true;

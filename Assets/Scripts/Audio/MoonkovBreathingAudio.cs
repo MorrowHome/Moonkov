@@ -10,11 +10,13 @@ namespace Unity.MP_FPS {
                 Reset();
                 return false;
             }
+            // 刚进入可听状态先留一点起始时间。体力骤降时可以把下一声拉近，其他状态变化等到下一口气再选节奏。
             if (!m_Audible) {
                 m_Audible = true;
                 m_Next = now + .45f;
             } else if (breath.Exerted && !m_Exerted) { m_Next = System.Math.Min(m_Next, now + .08f); }
             m_Exerted = breath.Exerted;
+            // 声音已经被受击、咳嗽或上一口气占用时，延后采样时间。人声结束后从新节奏继续。
             if (voiceBusy) {
                 m_Next = System.Math.Max(m_Next, now + .2f);
                 return false;

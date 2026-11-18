@@ -35,6 +35,7 @@ public class Interpolator {
         SetValue(startValue);
     }
 
+    // 当场设置起值与终值，并清掉计时。淡出中途需要急停或复位时，用它直接回到指定音量。
     public void SetValue(float value) {
         m_StartValue = value;
         m_TargetValue = value;
@@ -43,6 +44,7 @@ public class Interpolator {
     }
 
     public void MoveTo(float target, float time) {
+        // 新目标先从上一段插值此刻的值开始。音量正在变化时重新下指令，也能从已经听到的声音接着变化。
         m_StartValue = GetValue();
         m_TargetValue = target;
         m_StartTime = Time.realtimeSinceStartup;
@@ -62,6 +64,7 @@ public class Interpolator {
         float now = Time.realtimeSinceStartup;
         float timeToLive = m_TargetTime - now;
         if (timeToLive <= 0.0f) return m_TargetValue;
+        // 经过时间先换算为零到一的比例，再过指定曲线。最后乘以起点与终点的差值，就得到这一帧要用的音量。
         float t = (now - m_StartTime) / (m_TargetTime - m_StartTime);
         t = GetNormalizedCurveValue(m_Type, t);
         return m_StartValue + (m_TargetValue - m_StartValue) * t;

@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
         private RifleFeedbackLibrary m_WeaponAudio;
 
         public void Server_RequestHaloMark(int owner, uint tick, Vector3 position) {
+            // 服务器按射手编号记住最新已经生成的标记，重复或更早的命中 tick 不会再发一遍。
             if (owner <= 0 || (m_LastMarkTicks.TryGetValue(owner, out uint last) && (int)(tick - last) <= 0)) return;
             m_LastMarkTicks[owner] = tick;
             m_HaloMarkQueue.Enqueue(new ClientHaloMarkRpc
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS {
         }
 
         public void UpdateServer(float deltaTime) {
+            // 服务器玩法脚本可以先登记这一拍要发的表现。轮到管理器的更新再统一包装成 RPC 发送。
             while (m_HaloMarkQueue.Count > 0) GhostGameObject.BroadcastRPC(m_HaloMarkQueue.Dequeue());
             while (m_RifleImpactQueue.Count > 0) GhostGameObject.BroadcastRPC(m_RifleImpactQueue.Dequeue());
             while (_vfxQueue.Count > 0) {
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS {
                 if (!m_HaloMarks) m_HaloMarks = gameObject.AddComponent<HaloHitMarkerFeedback>();
                 m_HaloMarks.Present(mark);
             }
+            // 弹着点会带发射者和命中标志。视觉层可以给所有接收到的人画效果，给射手的确认则按本机拥有者来决定。
             while (GhostGameObject.ConsumeRPC(out ClientRifleImpactRpc impact))
                 RifleImpacts.Present(impact, true, IsOwnedShooter(impact.OwnerNetworkId));
             while (GhostGameObject.ConsumeRPC(out ClientSpawnVfxRpc rpc)) {
@@ -96,6 +99,7 @@ namespace Unity.MP_FPS {
                     continue;
 
                 // This is for a remote player. Find them and spawn the effect.
+                // 根据网络编号找到那一个角色，再从它当前的武器点或服务器给的部署位置生成效果。
                 if (PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientAll, out var allPlayersManager) &&
                     allPlayersManager.TryGetPlayersByRole(MultiplayerRole.ClientAll, out var allPlayers) &&
                     allPlayers.Count > 0)
@@ -133,6 +137,7 @@ namespace Unity.MP_FPS {
                     return;
                 }
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                // 正式角色有自己的开枪反馈和枪位。支持的角色先走专用表现，传统预制件再使用模板的枪口特效。
                 if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger)) {
                     dollSinger.PlayShot(aimPoint, weaponId, shotTick, haloDeployed, shotOrigin);
                     return;
@@ -156,6 +161,7 @@ namespace Unity.MP_FPS {
                 try {
                     var vfxInstance = await weaponData.MuzzleFlashVfxPrefab.GhostPrefab.InstantiateAsync(
                         spawnPoint.position, spawnPoint.rotation, spawnPoint).Task;
+                    // 异步加载期间角色可能已经离场或资源没生成。只有真正拿到实例才摆位置与方向，并给它一个短寿命。
                     if (vfxInstance == null) {
                         Debug.LogWarning("Cannot spawn muzzle flash: vfx instance is null");
                         return;

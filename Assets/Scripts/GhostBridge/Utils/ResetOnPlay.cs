@@ -20,6 +20,7 @@ public sealed class ResetOnPlayModeAttribute : Attribute {
 public static class DomainReloadGuard {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void OnEnterRuntime() {
+        // 正常进 Play 会随域重载重建静态变量。开启跳过域重载后，才按特性名单补做相应的静态清理。
         if (!EditorSettings.enterPlayModeOptionsEnabled ||
             !EditorSettings.enterPlayModeOptions.HasFlag(EnterPlayModeOptions.DisableDomainReload))
             return;
@@ -32,6 +33,7 @@ public static class DomainReloadGuard {
         foreach (var t in classes) {
             var attrs = t.GetCustomAttributes<ResetOnPlayModeAttribute>();
             foreach (var a in attrs) {
+                // 用特性中写着的方法名查静态函数。每种类型可以为自己清理实例、回调或设备资源，找不到时输出提示。
                 var method = t.GetMethod(a.ResetMethodName,
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (method != null)
@@ -49,6 +51,7 @@ public static class DomainReloadGuard {
     private static IEnumerable<Type> FindClassesNeedingReset() {
         return AppDomain.CurrentDomain.GetAssemblies()
             // unfortunately this is the only "adequate" way to filter lots of out-of-project assemblies (that get loaded via references)
+            // 只从游戏和项目编辑器程序集找带该标记的类型。工具包和外部库的静态状态由它们自己管理。
             .Where(a => a.FullName.StartsWith("Assembly-CSharp")).SelectMany(a => a.GetTypes()).Where(t =>
                 !t.ContainsGenericParameters && (!t.IsAbstract || IsStaticClass(t)) &&
                 t.GetCustomAttributes<ResetOnPlayModeAttribute>().Any());

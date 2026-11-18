@@ -34,6 +34,7 @@ namespace Unity.MP_FPS {
                     SetClassicBuyMenu(!m_ClassicBuyOpen);
             if (!buy && match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && gamepadPressed)
                 SetInventory(!m_InventoryVisible);
+            // 记分板是按住才显示。打字、聊天和暂停时这些按键不再作为玩法输入。
             bool scoreboard = !ChatInputBlocked && !typing && !paused && RaidKeyBindings.Held(RaidKey.Scoreboard);
             bool inventoryPressed = RaidKeyBindings.Pressed(RaidKey.Inventory);
             if (match.Alive && !m_ArenaFinished && !ChatInputBlocked && !typing && !paused && inventoryPressed) {
@@ -54,6 +55,7 @@ namespace Unity.MP_FPS {
                         .GetSingletonEntity());
                 if (inventory.Sequence != m_ClassicPurchaseSequence) {
                     m_ClassicPurchaseSequence = inventory.Sequence;
+                    // 买枪结果从库存快照回传。只有编号对得上这次买枪，才更新购买页的成功或失败提示。
                     if (inventory.RequestId == m_InventoryRequestId) {
                         m_ClassicPurchaseMessage = inventory.Error == Inventory.InventoryError.None
                             ? null
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS {
             PresentTimedAction();
             m_ArenaResult.style.display = m_ArenaFinished && !paused ? DisplayStyle.Flex : DisplayStyle.None;
             if (m_ArenaFinished) Utils.SetCursorVisible(true);
+            // 服务端指明此处有可做的安放或拆除操作，界面再看玩家是否正在输入菜单。接管共享按键时暂时不触发搜刮。
             bool canUse = fighting && match.Alive && match.Use != ClassicUse.None && !paused && !m_InventoryVisible &&
                           !ChatInputBlocked && Application.isFocused;
             PresentClassicLoot(data.Received && match.Alive && (buy || fighting) && !paused && !scoreboard &&
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS {
                 m_ClassicHeld = held;
                 m_NextClassicUse = now + .25;
             }
+            // 包的位置由快照给出，客户端只造一个看得见的标记并移除碰撞。真实目标由房主维护。
             if (match.BombVisible && !m_ClassicBomb) {
                 m_ClassicBomb = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 m_ClassicBomb.name = "Bomb";
@@ -109,6 +113,7 @@ namespace Unity.MP_FPS {
             ClassicDust2Map.Active?.PresentSupplyCacheMask(match.CacheMask);
             PresentClassicTeamStatus(m_ClassicStatusA, match.AliveMaskA, match.AttackTeam == 0, match.Team != 0);
             PresentClassicTeamStatus(m_ClassicStatusB, match.AliveMaskB, match.AttackTeam == 1, match.Team != 1);
+            // 不管自己是哪一队，都把己方状态排在左边。进攻或防守身份读取当前回合，随房主换边。
             var left = match.Team == 0 ? m_ClassicStatusA : m_ClassicStatusB;
             var right = match.Team == 0 ? m_ClassicStatusB : m_ClassicStatusA;
             if (m_ArenaHud.IndexOf(left) != 0) {
@@ -157,6 +162,7 @@ namespace Unity.MP_FPS {
             available &= m_PlayerQuery.CalculateEntityCount() == 1;
             var position = available ? m_PlayerQuery.GetSingleton<LocalTransform>().Position : default;
             SelectWorldInteraction(available, false, position, bags, out int nearest, out float distance);
+            // 补给箱、掉落与尸体共用远征的选中和搜索流程。安放或拆弹抢占操作时不会走到这里。
             if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame()) {
                 OpenLootContainer(nearest);
                 available = false;

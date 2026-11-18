@@ -27,6 +27,7 @@ namespace Unity.MP_FPS {
                                          ex is InvalidCastException) {
                 throw new InvalidDataException("Single-player save has an invalid format marker.", ex);
             }
+            // 当前格式要求正文带完整章节数据。旧档允许缺失并在后面迁移，但不能让新档缺字段也被读成初始状态。
             if (format != 4) return;
             var campaign = document.GetValue("Campaign", StringComparison.OrdinalIgnoreCase) as JObject;
             if (campaign == null) throw new InvalidDataException("Format 4 chapter data is missing or invalid.");
@@ -43,6 +44,7 @@ namespace Unity.MP_FPS {
         private static void ValidateCampaign(SaveData save) {
             // Missing in old formats means a fresh chapter, never historical
             // MissionFirsts or old stash fragments being interpreted as story.
+            // 旧档第一次打开时可创建章节进度；当前格式下丢了章节块属于档案损坏。
             if (save.Campaign == null) {
                 if (save.Format >= 4)
                     throw new InvalidDataException("Single-player chapter state is missing from a format 4 save.");
@@ -65,6 +67,7 @@ namespace Unity.MP_FPS {
         public CampaignProgress ReadCampaign() {
             lock (m_Lock) {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+                // UI 拿到的是章节副本，只能通过显式追踪命令写回，不会在内存里误改战局事实。
                 return CampaignRules.Clone(m_Save.Campaign);
             }
         }
@@ -73,6 +76,7 @@ namespace Unity.MP_FPS {
             lock (m_Lock) {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
                 var next = Copy();
+                // 局内任务可能已经推到后续节点，但仓库档等撤离才写事实。允许追踪这个尚未入档的目标，追踪本身不会替它完成。
                 if (remove) { CampaignRules.Untrack(next.Campaign, taskId); } else if (RaidActive &&
                  CampaignCatalog.Find(taskId) != null && !next.Campaign.CompletedTasks.Contains(taskId)) {
                     // The server-run may already have opened a later step while
@@ -106,6 +110,7 @@ namespace Unity.MP_FPS {
             target.PrimaryTracked = source.PrimaryTracked;
             target.SecondaryTracked = new List<string>(source.SecondaryTracked);
             target.TrackingSuppressed = source.TrackingSuppressed;
+            // 移植追踪偏好时保留更新程度更高的版本。加载回退也不让界面重新跳回玩家之前取消的目标。
             target.PreferenceRevision = Math.Max(target.PreferenceRevision, source.PreferenceRevision);
         }
 
@@ -117,11 +122,13 @@ namespace Unity.MP_FPS {
             var run = CampaignRules.Clone(payload.CampaignProgress);
             if (m_LoadingCheckpoints != 0)
                 throw new InvalidDataException("Chapter results cannot commit before the world has finished loading.");
+            // 局内版本和出战时存下的版本对齐后才能收下运行快照，避免旧场景的任务编号写入新版进度。
             if (next.ActiveCampaignVersion != run.ContentVersion || CampaignRules.Validate(run) != null)
                 throw new InvalidDataException("Chapter settlement does not match its deployment content.");
 
             // A once-observed sample or archive is not a successful return.
             // Recheck its real identity and provenance in the frozen inventory.
+            // 曾捡起任务样本只说明路上拿过。要完成带出目标，仍需在定格的撤离背包找到同一个有正确来源的样本。
             foreach (string taskId in new[] { "CM03", "CM04" }) {
                 var definition = CampaignCatalog.Find(taskId);
                 int recover = Array.FindIndex(definition.Nodes, node => node.Id == "recover");
@@ -133,6 +140,7 @@ namespace Unity.MP_FPS {
                     item.MissionRecovered || !MissionInventory.ValidSource(item)) {
                     // Preserve the ordinary return instead of claiming the lost
                     // item or trapping the entire stash in a save retry.
+                    // 丢样本只回退依赖它的带出节点。普通背包和不相关任务可以照常结算，无需整次出战反复重试。
                     int extract = Array.FindIndex(definition.Nodes, node => node.Kind == CampaignObjectiveKind.Extract);
                     run.NodeMasks[taskId] = mask & ~(1 << recover) & ~(1 << extract);
                     run.CompletedTasks.Remove(taskId);

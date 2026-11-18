@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
 
     [Serializable]
     public sealed class AirlockSettings {
+        // 外侧和内侧是两个固定目标气压；真正随时间变化的是舱里的 PressureKPa。
         [Min(0)] public float OutsidePressureKPa;
         [Min(1)] public float InsidePressureKPa = 101.325f;
         [Range(0, 1)] public float SupplyOxygenFraction = .21f;
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS {
         [Min(0)] public float BreathableOxygenPartialPressureKPa = 15;
         [Min(.1f)] public float InteractionDistanceM = 3;
 
+        // 规则在开始前拒绝无效气压、时间和密封阈值。比如门的行程时间为零会让每帧步长算坏。
         public bool IsValid =>
             Finite(InsidePressureKPa) && InsidePressureKPa > 0 && Finite(OutsidePressureKPa) &&
             OutsidePressureKPa >= 0 && OutsidePressureKPa <= InsidePressureKPa && Finite(SupplyOxygenFraction) &&
@@ -60,8 +62,10 @@ namespace Unity.MP_FPS {
 
     [Serializable]
     public struct AirlockState {
+        // 开度 0 表示门板关到位，1 表示开到头；Opening 表示门接下来往哪边走，开度还可能在路上。
         public float PressureKPa, OuterFraction, InnerFraction;
         public bool OuterOpening, InnerOpening, Equalizing, TargetInside;
+        // 版本跟着可观察的状态变化更新。同一个气闸的快照可据此舍弃乱序到达的旧包。
         public uint Revision;
         public AirlockFeedback Feedback;
     }
@@ -89,9 +93,11 @@ namespace Unity.MP_FPS {
             bool outerObstructed = false,
             bool innerObstructed = false) {
             if (!Settings.IsValid) return AirlockFeedback.Unavailable;
+            // 自动循环会接管接下来的关门、调压和开门，期间只允许取消，避免新指令和它抢状态。
             if (m_Cycle.HasValue && command != AirlockCommand.CancelEqualization) return AirlockFeedback.Equalizing;
             switch (command) {
                 case AirlockCommand.OpenOuter:
+                    // 有人想直接开外门时，先确认内门密封，再确认舱压和舱外压差足够小。内门按相同道理处理。
                     if (!InnerSealed) return AirlockFeedback.OtherDoorNotSealed;
                     if (State.Equalizing) return AirlockFeedback.Equalizing;
                     return Mathf.Abs(State.PressureKPa - Settings.OutsidePressureKPa) <=
@@ -105,6 +111,7 @@ namespace Unity.MP_FPS {
                            Settings.OpeningPressureToleranceKPa
                         ? AirlockFeedback.Accepted
                         : AirlockFeedback.PressureMismatch;
+                // 关门的条件在这里主要是防夹。直接调压的条件更严，两侧都密封才行。
                 case AirlockCommand.CloseOuter:
                     return outerObstructed ? AirlockFeedback.Obstructed : AirlockFeedback.Accepted;
                 case AirlockCommand.CloseInner:
@@ -114,6 +121,7 @@ namespace Unity.MP_FPS {
                     return OuterSealed && InnerSealed ? AirlockFeedback.Accepted : AirlockFeedback.DoorsNotSealed;
                 case AirlockCommand.CycleOuter:
                     if (State.Equalizing) return AirlockFeedback.Equalizing;
+                    // 请求自动出舱时，先判断下一步能否安全关内门。舱压会在后续 Tick 慢慢调整。
                     return !InnerSealed && innerObstructed ? AirlockFeedback.Obstructed : AirlockFeedback.Accepted;
                 case AirlockCommand.CycleInner:
                     if (State.Equalizing) return AirlockFeedback.Equalizing;
@@ -127,6 +135,7 @@ namespace Unity.MP_FPS {
             AirlockCommand command,
             bool outerObstructed = false,
             bool innerObstructed = false) {
+            // Check 只回答能不能做。Request 才更新目标状态，并把接受或拒绝原因写进状态。
             var s = State;
             s.Feedback = Check(command, outerObstructed, innerObstructed);
             if (s.Feedback == AirlockFeedback.Accepted)
@@ -169,6 +178,7 @@ namespace Unity.MP_FPS {
             bool inside = m_Cycle == AirlockCommand.CycleInner;
             bool outerSealed = state.OuterFraction <= Settings.SealedFractionTolerance && !state.OuterOpening;
             bool innerSealed = state.InnerFraction <= Settings.SealedFractionTolerance && !state.InnerOpening;
+            // 对侧门刚收到关闭命令也可能还在移动。看开度和方向一起确认密封后才进入下一步。
             if (inside ? !outerSealed : !innerSealed) return;
             float target = inside ? Settings.InsidePressureKPa : Settings.OutsidePressureKPa;
             if (Mathf.Abs(state.PressureKPa - target) <= Settings.OpeningPressureToleranceKPa) {
@@ -178,6 +188,7 @@ namespace Unity.MP_FPS {
                     state.OuterOpening = true;
                 m_Cycle = null;
                 state.Feedback = AirlockFeedback.Accepted;
+            // 如果目标侧的气压已匹配，会直接开始开门；还差一截才进入调压，且此时两边都得密封。
             } else if (outerSealed && innerSealed) {
                 state.TargetInside = inside;
                 state.Equalizing = true;
@@ -215,6 +226,7 @@ namespace Unity.MP_FPS {
             if (!innerHeld)
                 s.InnerFraction = Mathf.MoveTowards(s.InnerFraction, s.InnerOpening ? 1 : 0,
                     dt / Settings.DoorTravelSeconds);
+            // 用内外最大压差除以配置秒数当作调压速度。起始气压离目标越近，剩下的调压时间越短。
             if (s.Equalizing) {
                 if (s.OuterOpening || s.InnerOpening || s.OuterFraction > Settings.SealedFractionTolerance ||
                     s.InnerFraction > Settings.SealedFractionTolerance) {
@@ -232,9 +244,11 @@ namespace Unity.MP_FPS {
                     }
                 }
             }
+            // 门已经打开时，舱内气压直接跟对应一侧一致。此时再保留密封舱内的气压会给角色判错氧气。
             if (s.OuterFraction > Settings.SealedFractionTolerance)
                 s.PressureKPa = Settings.OutsidePressureKPa;
             else if (s.InnerFraction > Settings.SealedFractionTolerance) s.PressureKPa = Settings.InsidePressureKPa;
+            // 到达目标或门关到位的这一拍，给自动循环一次机会进入下一阶段。
             s.PressureKPa = Mathf.Clamp(s.PressureKPa, Settings.OutsidePressureKPa, Settings.InsidePressureKPa);
             AdvanceCycle(ref s);
             if (s.PressureKPa != State.PressureKPa || s.OuterFraction != State.OuterFraction ||

@@ -37,6 +37,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             // Count rendered frames, independent of prediction ticks and timeScale.
+            // UI 运行一次算一帧。把这一小段真实经过的时间累计起来，再除帧数换成 FPS。
             m_TelemetrySeconds += Time.unscaledDeltaTime;
             m_TelemetryFrames++;
             if (m_TelemetryVisible && m_TelemetrySeconds < .5f) return;
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS {
             int fps = m_TelemetrySeconds > 0 ? Mathf.RoundToInt(m_TelemetryFrames / m_TelemetrySeconds) : 0;
             m_TelemetrySeconds = 0;
             m_TelemetryFrames = 0;
+            // 从现在的客户端 World 找连接，并先区分单人和局域网。上一局留下的句柄和包统计一起释放。
             if (m_TelemetryWorld != m_World) {
                 DisposeTelemetry();
                 if (m_World != null && m_World.IsCreated) {
@@ -71,6 +73,7 @@ namespace Unity.MP_FPS {
         private void ReadTelemetryNetwork(out string ping, out string loss, out string method) {
             ping = loss = "Measuring";
             method = TelemetryConnectionMethod();
+            // 单人有内部 World，但没有需要展示的公网往返延迟和丢包。显示本地状态更清楚。
             if (m_TelemetryOffline) {
                 ping = "Local";
                 loss = "Not applicable";
@@ -106,6 +109,7 @@ namespace Unity.MP_FPS {
                 m_TelemetryReceived = packets.NumPacketsReceived;
                 m_TelemetryLastPacket = packets.NumPacketsReceived > 0 ? now : double.NegativeInfinity;
             }
+            // 还没收到过一份快照时保留采集中的文案。显示零丢包会让人以为已经测完。
             if (packets.NumPacketsReceived == 0) return;
             // A connected transport can stop delivering snapshots before its timeout expires.
             // 连接可能还没超时，但已经收不到新快照。持续无数据就暂停展示旧延迟和丢包值。
@@ -116,6 +120,7 @@ namespace Unity.MP_FPS {
             if (float.IsFinite(ack.EstimatedRTT) && ack.EstimatedRTT >= 0)
                 ping = Mathf.RoundToInt(ack.EstimatedRTT).ToString(CultureInfo.InvariantCulture) + " ms";
             // Session-wide downstream snapshot loss. Do not count low-FPS clobbering or late packets as network loss.
+            // 这是会话期间的下行快照丢包比例。用 Netcode 已有统计，不主动发额外测量包。
             loss = (packets.NetworkPacketLossPercent * 100).ToString("0.0", CultureInfo.InvariantCulture) + "%";
         }
 

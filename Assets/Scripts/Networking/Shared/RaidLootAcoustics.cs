@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
             bool searching,
             double now,
             ref double nextSoundAt) {
+            // 搜刮状态首先由活角色当前动作判断。未搜索或间隔没到时不发新声音序号。
             player.LootSearching = searching && player.CurrentHealth > 0;
             if (!player.LootSearching || now < nextSoundAt) return;
             Mark(ref player);
@@ -18,6 +19,7 @@ namespace Unity.MP_FPS {
         }
 
         public static void Mark(ref PredictedPlayerGhost player) {
+            // 搜索声作为递增事件传给其他系统，零留给从未触发。回绕时跳过零。
             player.LootSearchSequence = unchecked(player.LootSearchSequence + 1);
             if (player.LootSearchSequence == 0) player.LootSearchSequence = 1;
         }
@@ -28,6 +30,7 @@ namespace Unity.MP_FPS {
         public const float HearingRange = 8f;
 
         public static void Mark(ref PredictedPlayerGhost player) {
+            // 真实开始吃喝或治疗时独立增加另一个事件流。音频若发现新序号即可播一次短声。
             player.ConsumableUseSequence = unchecked(player.ConsumableUseSequence + 1);
             if (player.ConsumableUseSequence == 0) player.ConsumableUseSequence = 1;
         }

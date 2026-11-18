@@ -34,7 +34,9 @@ public class SoundGameObjectPool {
         SoundGameObjectList = new List<SoundGameObject>();
         m_SourceHolder =
             new GameObject(parentGameObjectName); // All SoundGameObjects are instantiated under this parent.
+        // 菜单和战局共用同一批声源。池子挂在常驻父节点下，播放期间跟随别的物体，归还时再接回池。
         GameObject.DontDestroyOnLoad(m_SourceHolder);
+        // 初始化时把所有槽位连成一圈，并记下还可借多少。发声任务据此决定还有没有足够的声源叠出完整音效。
         AvailableSoundObjectCount = maxSoundGameObjects;
         SoundGameObject lastAllocated = null;
         for (int i = 0; i < maxSoundGameObjects; i++) {
@@ -80,6 +82,7 @@ public class SoundGameObjectPool {
     /// <returns>True if replacement was successful, false if the old object wasn't found</returns>
     public bool Replace(SoundGameObject oldSGO, SoundGameObject newSGO) {
         for (int i = 0; i < SoundGameObjectList.Count; i++)
+            // 声源被跟随对象一并销毁后，用新对象补同一个位置。链表里原来指向旧对象的链接也要指到新对象。
             if (SoundGameObjectList[i] == oldSGO) {
                 SoundGameObjectList[i] = newSGO; // Replace SoundGameObject with new
                 // (required if parent destroys the SoundGameObject)

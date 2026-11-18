@@ -35,6 +35,7 @@ namespace Unity.MP_FPS {
         private readonly List<ExpeditionAgent> m_ExpeditionAgents = new(12);
         private int m_NextExpeditionSquadId;
 
+        // 生成时记录队伍 ID、队员序号和队长。仇友关系与队形使用这一份身份数据。
         private void SetExpeditionSquad(
             Entity actor,
             int squad,
@@ -56,6 +57,7 @@ namespace Unity.MP_FPS {
         }
 
         private void UpdateExpeditionSquads(double now) {
+            // 先收集本拍的存活队伍成员和位置，再给每个机器人更新队友资料。玩家队长与 AI 队长都在列表里。
             m_ExpeditionAgents.Clear();
             foreach (var (squad, pose, health, entity) in SystemAPI
                          .Query<RefRO<ExpeditionSquadMember>, RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
@@ -89,6 +91,7 @@ namespace Unity.MP_FPS {
                         brain.HasSquadLeader = true;
                         brain.SquadLeaderPosition = ally.Position;
                         brain.SquadLeaderYaw = ally.Yaw;
+                        // 同队队长开始撤离时，将当前出口和入口回退标记传给队员，并让其尽快调整计划。
                         if (ally.Brain is { Leaving: true } leader && !brain.Leaving) {
                             brain.Leaving = true;
                             brain.RaidExit = leader.RaidExit;
@@ -103,6 +106,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 找同队正在交火且能保持有效枪线的人，只有有人掩护才给另一个开换位窗口。
         private bool TryGetExpeditionCoveringAlly(
             DollSingerEnemyBrain brain,
             Vector3 position,
@@ -123,6 +127,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 横移和出手前检查真正的火线与友军近身空间，不把队友模型当透明。
         private bool ExpeditionShotLaneClear(
             DollSingerEnemyBrain brain,
             Transform root,
@@ -145,6 +150,7 @@ namespace Unity.MP_FPS {
                    (brain.IsCompanion && brain.SquadSlot == 2 ? 160 : brain.SquadSlot % 2 == 0 ? 80 : -80);
         }
 
+        // 以队长的位置和朝向计算队员侧后方目标。离得过远先归队，近处则分散守位置。
         private Vector3 FollowSquadGoal(DollSingerEnemyBrain brain, Vector3 position, double now) {
             if (!brain.HasSquadLeader) return position;
             if (now < brain.NextCover) return brain.TacticalGoal;

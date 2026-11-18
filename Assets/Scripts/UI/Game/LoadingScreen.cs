@@ -30,6 +30,7 @@ namespace Unity.MP_FPS.Client {
                 dataSourcePath = new PropertyPath(GameSettings.LoadingScreenStylePropertyName),
                 bindingMode = BindingMode.ToTarget
             });
+            // 进度和当前阶段说明都由 LoadingData 提供。加载界面负责消费这些值，场景加载系统负责更新。
             root.Q<ProgressBar>().SetBinding("value", new DataBinding {
                 dataSource = LoadingData.Instance,
                 dataSourcePath = new PropertyPath(LoadingData.LoadingProgressPropertyName),
@@ -47,6 +48,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Update() {
             if (m_Hint == null || !(m_Root.resolvedStyle.width > 0)) return;
+            // 界面面板的单位会跟屏幕尺寸一起缩放。用已布局的宽度换成合适的文字大小，保持加载提示能看清。
             float scale = Mathf.Max(1, m_Root.resolvedStyle.width / Mathf.Max(1, Screen.width));
             if (Mathf.Approximately(scale, m_HintScale)) return;
             m_HintScale = scale;
@@ -54,6 +56,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void PresentAnimation() {
+            // 只在全局状态真正进入加载后展示演出。界面结束加载时停掉背景过渡。
             bool loading = GameSettings.Instance.GameState == GlobalGameState.Loading;
             if (loading)
                 MoonkovLocalization.Set(m_Hint, "Hold {0} to defend. Press {1} to deploy halo. Hold {2} to scan.",

@@ -109,6 +109,7 @@ namespace Unity.MP_FPS.Client {
                 string invite = await LanRoomClient.PeerRoom.InviteAsync(m_Stop.Token);
                 if (!m_Disposed) GUIUtility.systemCopyBuffer = invite;
             }, "正在获取跨网地址…", ""));
+            // 手动跨网加入要互传邀请和回执。房主贴回执后交给现有房间对象确认，这里只处理剪贴板和等待状态。
             Bind("lanPeerAccept", () => Run(() => {
                 LanRoomClient.PeerRoom.AcceptReply(GUIUtility.systemCopyBuffer);
                 return Task.CompletedTask;
@@ -128,6 +129,7 @@ namespace Unity.MP_FPS.Client {
                     "正在等待房主完成地图加载。"));
             Bind("lanLeave", () => Run(async () => { await LanRoomClient.LeaveAsync(); }, "正在离开房间…", "已离开房间。"));
             Bind("lanEquipment", () => Run(async () => {
+                // 准备后再打开装备要先取消准备，并向房间取档。避免房主按早先确认的装备直接发车。
                 if (LanRoomClient.Ready) await LanRoomClient.RequestAsync("ready", ready: false, ct: m_Stop.Token);
                 await LanRoomClient.RequestAsync("profile", ct: m_Stop.Token);
                 m_Modal.AddToClassList("lan-hidden");
@@ -156,6 +158,7 @@ namespace Unity.MP_FPS.Client {
             var target = host ?? m_Root;
             m_Entry.EnableInClassList("lan-entry-docked", host != null);
             if (m_Entry.parent == target) return;
+            // 同一个好友房按钮会跟着菜单区域移动。进入仓库时靠近登出按钮，其他时候放回房间页根节点。
             if (host == null) {
                 target.Insert(0, m_Entry);
                 return;
@@ -177,6 +180,7 @@ namespace Unity.MP_FPS.Client {
             RefreshViewport();
             Present();
             FocusPage();
+            // 人在房间且角色预览配置变了就同步给房主。不在需要同步的准备页时，按当前目录刷新可加入房间。
             if (LanRoomClient.Active && LanRoomClient.Room.Phase == LanRoomPhase.Lobby && AppearancePending())
                 Run(() => LanRoomClient.RequestAsync("appearance", ct: m_Stop.Token), "正在同步角色配置…", "角色配置已更新。");
             else
@@ -195,6 +199,7 @@ namespace Unity.MP_FPS.Client {
         private void Key(KeyDownEvent evt) {
             if (evt.keyCode != KeyCode.Escape) return;
             evt.StopPropagation();
+            // 依当前层级处理 Esc。申请进行中先撤申请，尚未加入且在子页时先回列表，最后才关闭窗口。
             if (m_JoiningPeer != null) {
                 CancelPeerJoin();
                 return;
@@ -238,6 +243,7 @@ namespace Unity.MP_FPS.Client {
             if (m_Busy) return;
             m_Mode = mode;
             LanRoomPresentation.Mode(m_Root, mode);
+            // 模式切换会改变房间允许的人数。输入框保留已选人数，但限制在新模式的合法范围。
             var capacity = m_Root.Q<IntegerField>("lanCapacity");
             capacity.value = Mathf.Clamp(capacity.value, 2, LanRoomServer.CapacityFor(mode));
         }
@@ -265,6 +271,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private async void Run(Func<Task> action, string waiting, string success) {
+            // 房间的进入、创建和修改操作一次只跑一个。开始操作就取消正在搜房的任务，成功或失败都刷新一次界面。
             if (m_Busy || m_Disposed) return;
             CancelRoomSearch();
             m_Busy = true;
@@ -349,8 +356,10 @@ namespace Unity.MP_FPS.Client {
             m_Root.Q("lanEmptyState").AddToClassList("lan-hidden");
             m_Root.Q("lanRefresh").SetEnabled(false);
             try {
+                // 本地目录搜索同一网络的房间地址。跨网目录走房间申请，选中行只提交加入请求，等房主同意。
                 if (m_BrowseLocal) {
                     var rooms = await LanRoomClient.DiscoverAsync(search.Token);
+                    // 刷新结果可能在切换目录后才回来。只把它交给仍在等待它的那次搜索。
                     if (m_SearchRooms == search)
                         LanRoomPresentation.Rooms(m_Root, rooms, room => Run(() => {
                             string[] endpoint = room.Address.Split(':');
@@ -417,6 +426,7 @@ namespace Unity.MP_FPS.Client {
                     PoseIndex = LanRoomClient.PoseIndex
                 });
             m_Squad.SetVisible(!m_Modal.ClassListContains("lan-hidden"));
+            // 是否已经加入由房间客户端给出。离开原房间时回到浏览页并重新搜一遍，避免继续操作已离开的房间。
             if (active) { m_Page = LanRoomPage.Lobby; } else if (m_Page == LanRoomPage.Lobby) {
                 m_Page = LanRoomPage.Browse;
                 m_Root.schedule.Execute(RefreshRooms);

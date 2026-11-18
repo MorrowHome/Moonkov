@@ -30,12 +30,15 @@ namespace Unity.MP_FPS {
             bool stimulated,
             bool canAct = true,
             float carriedWeight = 0) {
+            // 首次用或读取无效数值时初始化为满。阈值与耗时之后按合法正时间推进。
             if (!state.Initialized || !float.IsFinite(state.Value)) Reset(ref state);
             if (!float.IsFinite(dt) || dt <= 0) return;
+            // 无法行动或有体力药效时重置疲劳。减速和恢复仍由服务端回传的这份状态决定。
             if (!canAct || stimulated) {
                 Reset(ref state);
                 return;
             }
+            // 实际连续冲刺使耐力下降并重置休息等待。负重越多这一步扣得越快。
             if (sprinting) {
                 state.Value = Math.Max(0,
                     state.Value - DrainPerSecond * RaidEncumbrance.SprintDrain(carriedWeight) * dt);
@@ -46,6 +49,7 @@ namespace Unity.MP_FPS {
                 }
                 return;
             }
+            // 等待可能在一帧中结束，只将余下时间用于恢复。耗尽后到恢复门槛才重新进入非疲劳。
             float usable = Math.Max(0, dt - state.RestDelay);
             state.RestDelay = Math.Max(0, state.RestDelay - dt);
             state.Value = Math.Min(Capacity,

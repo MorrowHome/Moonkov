@@ -67,6 +67,7 @@ namespace Unity.MP_FPS {
             m_ArenaResult.Add(exit);
             m_ArenaResult.style.display = DisplayStyle.None;
             m_Root.Add(m_ArenaResult);
+            // 经典爆破拿有买价的物品做商店列表。自由竞技场则用免费补给规则，不把两边的物品限制混起来。
             m_ArenaDefinitions = InventoryCatalog.Definitions.Values
                 .Where(item => m_ClassicHud ? ClassicMatch.Price(item) > 0 : ArenaArmory.Available(item))
                 .OrderBy(item => item.Kind).ThenBy(item => item.Name).ToArray();
@@ -84,6 +85,7 @@ namespace Unity.MP_FPS {
                 m_ClassicOffers = m_ArenaDefinitions.Select(item => new ShopOffer {
                     Code = item.Code, Name = item.Name, BuyDust = ClassicMatch.Price(item), SellDust = 0
                 }).ToArray();
+                // 经典爆破复用仓库商店的购买界面，点击回调却指向本局的临时库存。
                 m_ClassicShop =
                     new MoonkovShopPurchaseView(TakeClassicSupply, quantityLimit: ClassicMatch.PurchaseLimit);
                 m_ArenaArmory.Add(m_ClassicShop.Element);
@@ -169,6 +171,7 @@ namespace Unity.MP_FPS {
             }
 
             public void Present(in ClassicSnapshotV4Rpc match, int team) {
+                // 每队的进攻方身份可随回合换边。成员记录按原团队和席位取，换边不用重新记击杀和死亡。
                 bool attacking = match.AttackTeam == team;
                 m_Column.EnableInClassList("classic-scoreboard-attackers", attacking);
                 m_Column.EnableInClassList("classic-scoreboard-defenders", !attacking);
@@ -220,6 +223,7 @@ namespace Unity.MP_FPS {
             if (inventory.Graph == null) return;
             uint requestId = NextManualActionRequest();
             var code = new Collections.FixedString64Bytes(m_ArenaDefinitions[m_ArenaItems.index].Code);
+            // 取补给和买物品都带请求编号及当前库存版本。房主收到后才决定给不给，再用快照更新背包。
             if (Send(new ArenaSupplyRpc
                     { Code = code, RequestId = requestId, Quantity = 1, ExpectedVersion = inventory.Graph.Version })) {
                 TrackInventoryAudio(MoonkovAudio.Library?.Equipment);
@@ -251,6 +255,7 @@ namespace Unity.MP_FPS {
                 PresentClassicHud();
                 return;
             }
+            // 读取自由竞技场自己的房主快照。局内分数和剩余时间用它，角色能否用按键还要同时看自己的生命状态。
             var state = m_World.EntityManager.GetComponentData<ArenaClientState>(m_StateQuery.GetSingletonEntity());
             var match = state.Snapshot;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
@@ -258,6 +263,7 @@ namespace Unity.MP_FPS {
             bool fighting = alive && match.Phase == ArenaPhase.Fighting;
             m_ArenaFinished = state.Received && match.Phase == ArenaPhase.Finished;
             PresentArenaResultSound(m_ArenaFinished, match.Won, match.Draw);
+            // 失去当前角色或比赛结束时收起操作界面。之后恢复角色会重新看同一套输入条件。
             if ((m_ArenaFinished || !alive) && m_InventoryVisible) SetInventory(false);
             if (!m_ArenaFinished && alive && m_Snapshot.RaidId > 0 && !ChatInputBlocked &&
                 !GameSettings.Instance.IsPauseMenuOpen &&
@@ -320,6 +326,7 @@ namespace Unity.MP_FPS {
                 m_ClassicScoreboard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (visible) m_ClassicScoreboard.BringToFront();
             }
+            // 队伍表只在可见且有新快照时改文字。按住打开不会每个渲染帧都重写所有席位。
             if (!visible || m_ClassicBoardSequence == data.Sequence) return;
             m_ClassicBoardSequence = data.Sequence;
             ref readonly var match = ref data.Snapshot;

@@ -9,6 +9,7 @@ namespace Unity.MP_FPS {
     /// </summary>
     public struct JoinedClient : IComponentData {
         public Entity PlayerEntity;
+        // 角色实体可以死后再次生成，名字和选择的角色编号随连接保留，复活用这些值重建。
         public FixedString64Bytes PlayerName;
         public int CharacterIndex;
     }
@@ -35,6 +36,7 @@ namespace Unity.MP_FPS {
         /// <summary>The <see cref="FirstPersonCharacterControl"/> entity for this <see cref="NetworkId"/> index.</summary>
         public Entity CharacterControllerEntity;
 
+        // 命令缓冲刚登记的实体要等回放才有最终 ID。这个非零编号告诉更新函数该把回放后的引用补回哪一格。
         /// <summary>If != default, need to remap this to the entity.</summary>
         public NetworkId OwnerNetworkId;
     }

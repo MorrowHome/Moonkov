@@ -21,6 +21,7 @@ namespace Unity.MP_FPS {
             bool launch = m_Events.Launch(state);
             bool impact = m_Events.Impact(state);
             int pulse = pattern.PulseAt(state.ActionTime);
+            // 首包只用来记服务器走到了第几拍，随后新到的变化才算事件。
             if (!m_HasAttackSnapshot) {
                 m_HasAttackSnapshot = true;
                 m_DetailSequence = state.AttackSequence;
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS {
                 m_DetailPulse = state.Action == AlienAction.Strike ? pulse : -1;
                 return; // Joining an active attack must not replay its launch or old pulses.
             }
+            // 判断序号前后顺序，防止较旧的快照重新触发已经消费过的攻击。
             if (state.AttackSequence != 0 && m_DetailSequence != 0 &&
                 unchecked((int)(state.AttackSequence - m_DetailSequence)) < 0)
                 return;
@@ -40,6 +42,7 @@ namespace Unity.MP_FPS {
                 Play(Cue.AttackMotion, socket, spit ? .9f : .8f, spit ? library?.AlienSpit : library?.AlienSwing);
             }
             if (impact) Play(Cue.AttackImpact, state.ImpactPoint, .9f, library?.AlienImpact, true);
+            // 只播放眼前这次节拍。丢了中间的包也不把错过的多声命中堆在同一帧。
             if (state.Action == AlienAction.Strike && state.AttackSequence != 0 && state.ActionTime <= pattern.Active &&
                 pulse > m_DetailPulse) {
                 m_DetailPulse = pulse; // Only the current pulse; never catch up a burst of missed snapshots.
@@ -60,6 +63,7 @@ namespace Unity.MP_FPS {
                     case AlienAttackKind.LeechDrain: Play(Cue.Grip, socket, .6f, library?.AlienGrip); break;
                 }
             }
+            // 覆面虫抓住时可按间隔追加抓附声，脱离时把这一循环收掉。
             if (state.Action == AlienAction.Attached && (entry || Time.unscaledTime >= m_GripAt)) {
                 Play(Cue.Grip, socket, entry ? .8f : .45f, library?.AlienGrip);
                 m_GripAt = Time.unscaledTime + 1.25f;
@@ -69,6 +73,7 @@ namespace Unity.MP_FPS {
             m_DetailAction = state.Action;
         }
 
+        // 重型、湿滑和普通表面的接触声从各自音色取，再按听距调整。
         private void PlayContact(Vector3 position, float gain) {
             var library = MoonkovAudio.Library;
             bool wet = m_Species == AlienSpecies.Slime || m_Species == AlienSpecies.Leech ||

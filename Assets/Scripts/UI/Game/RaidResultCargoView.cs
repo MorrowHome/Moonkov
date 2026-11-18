@@ -12,6 +12,7 @@ namespace Unity.MP_FPS.Client {
         public RaidResultCargoView(ScrollView host) {
             m_Host = host;
             m_Host.focusable = true;
+            // 手柄和键盘焦点在清单上时，上下移动可以滚动列表。到顶部或底部再让普通导航继续处理。
             m_Host.RegisterCallback<NavigationMoveEvent>(evt => {
                 if (m_Host.panel?.focusController.focusedElement != m_Host) return;
                 float direction = evt.direction == NavigationMoveEvent.Direction.Down ? 1 :
@@ -27,12 +28,14 @@ namespace Unity.MP_FPS.Client {
 
         public void Present(RaidResultManifest manifest) {
             string locale = MoonkovLocalization.CurrentLocaleCode;
+            // 同一份清单且语言不变时保留当前滚动位置。换清单或译文后才从头排出来。
             if (m_Presented && ReferenceEquals(manifest, m_Manifest) && locale == m_Locale) return;
             m_Presented = true;
             m_Manifest = manifest;
             m_Locale = locale;
             m_Host.Clear();
             m_Host.scrollOffset = UnityEngine.Vector2.zero;
+            // 结果快照可能先于清单到。还在等待用加载提示，已收到且无物资时才显示没有物资。
             if (manifest == null) {
                 Message("Waiting for cargo manifest...");
                 return;
@@ -55,6 +58,7 @@ namespace Unity.MP_FPS.Client {
         private void AddGroup(string title, bool returned) {
             bool heading = false;
             foreach (var item in m_Manifest.Items) {
+                // 同种物资可以有带回和丢失两种数量。每组只画其中有数量的内容，空组不用多占一行标题。
                 int quantity = returned ? item.Returned : item.Lost;
                 if (quantity <= 0) continue;
                 if (!heading) {

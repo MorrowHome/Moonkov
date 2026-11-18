@@ -13,6 +13,7 @@ namespace Unity.MP_FPS.Client {
                 m_PointerTarget = Vector2.zero;
                 return;
             }
+            // 把鼠标移到屏幕左、中、右时分别近似映射成 -1、0、1。这样后面各图层只需乘自己的位移系数。
             m_PointerTarget = new Vector2(Mathf.Clamp(point.x / 960 - 1, -1, 1), Mathf.Clamp(point.y / 540 - 1, -1, 1));
         }
 
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS.Client {
                 ResetParallax();
                 return;
             }
+            // 切舱或打开平板期间把视差目标拉回中心。平时用 SmoothDamp 追向指针，松开输入也能自然回来。
             var target = IsMoving || IsOpening || m_TabletState > 0 ? Vector2.zero : m_PointerTarget;
             m_Parallax = Vector2.SmoothDamp(m_Parallax, target, ref m_ParallaxVelocity, .24f, Mathf.Infinity, dt);
         }
@@ -35,6 +37,7 @@ namespace Unity.MP_FPS.Client {
             bool animate = Animate;
             var offset = animate ? m_Parallax : Vector2.zero;
             // Overscan covers the outer movement, including diagonal pointer travel.
+            // 底图略放大给边缘留出空间。近处的角色和窗外月球用不同方向与幅度，移动才有前后层次。
             float scale = animate ? 1.04f : 1;
             m_ParallaxLayer.style.scale = new Scale(new Vector3(scale, scale, 1));
             m_ParallaxLayer.style.translate = new Translate(offset.x * 20, offset.y * 12);

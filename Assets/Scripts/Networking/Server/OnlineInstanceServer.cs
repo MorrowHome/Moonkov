@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
         public readonly System.Collections.Generic.HashSet<string> DeployedAccounts = new();
 
         public LocalTransform Spawn(int team, LocalTransform candidate) {
+            // 队伍第一位玩家确定小队的出生点。后面按已分配人数给位置加偏移，方便队友在一起又不重叠。
             if (!m_TeamSpawns.TryGetValue(team, out var origin)) m_TeamSpawns.Add(team, origin = candidate);
             m_TeamCounts.TryGetValue(team, out int slot);
             m_TeamCounts[team] = slot + 1;
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS {
 
     public static class OnlineInstanceServer {
         public static string InstanceId => Environment.GetEnvironmentVariable("MOON_INSTANCE_ID");
+        // 只有调度服务启动且带了实例号的服务器才属于官方按局实例，好友房与本机单人跳过报就绪。
         public static bool Managed => !string.IsNullOrEmpty(InstanceId);
 
         private sealed class Config {
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS {
             using var http = new HttpClient
                 { BaseAddress = new Uri(config.BackendUrl.TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(10) };
             http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
+            // 报告已准备好的实例号、版本和是否可用 P2P。后台据此决定对等待的队伍开放入场。
             using var content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceEvent {
                 InstanceId = InstanceId, Kind = "ready", Protocol = Online.OnlineNetworkProtocol.Version,
                 IceAvailable = OnlineIceServer.Available, IceHostId = OnlineIceServer.HostId,
@@ -50,6 +53,7 @@ namespace Unity.MP_FPS {
             }), Encoding.UTF8, "application/json");
             using var response = await http.PostAsync("internal/instances/event", content);
             response.EnsureSuccessStatusCode();
+            // 后台确认接收就绪事件后再开协商轮询，让已分配到本场的客户端交换连接参数。
             OnlineIceServer.Start();
             Debug.Log("[Online] Fresh instance ready: " + InstanceId);
         }

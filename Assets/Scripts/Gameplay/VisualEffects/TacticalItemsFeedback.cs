@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
             LocalOwner = default;
         }
 
+        // 本机动作进度和世界中已经生成的物件走不同消息。持有、使用和可见性的本机数据由这一入口更新。
         public static void SetOwner(TacticalItemOwnerRpc owner) {
             var previous = LocalOwner;
             LocalOwner = owner;
@@ -179,6 +180,7 @@ namespace Unity.MP_FPS {
         public void Present(in TacticalWorldStateRpc state) {
             // Epoch 用来分开不同批次的战术物件。每个物件还检查消息序号，已移除的道具不会被晚到的旧包重新建出来。
             if (state.Epoch < m_Epoch || (state.Id == 0 && state.Phase != TacticalWorldPhase.Removed)) return;
+            // 切到新的战局时期先清理上一批表现。整批移除用特殊的零 ID，普通物件各用独立身份和序号。
             if (state.Epoch > m_Epoch) {
                 Clear();
                 m_Epoch = state.Epoch;
@@ -202,6 +204,7 @@ namespace Unity.MP_FPS {
                 m_Visuals[state.Id] = visual;
             }
             bool change = visual.Root == null || state.Phase != visual.State.Phase;
+            // 同一物件从飞行变成陷阱或持续区域时要换外观节点。阶段相同就沿用原节点，只更新位置、时间和声音。
             if (change) {
                 if (visual.Root) Release(visual.Root);
                 visual.Root = new GameObject("Tactical " + state.Kind + " / " + state.Phase);
@@ -270,6 +273,7 @@ namespace Unity.MP_FPS {
             if (!s_Active) return false;
             float depth = 0;
             foreach (var visual in s_Active.m_Visuals.Values) {
+                // 烟区效果要从物件列表找当前仍有效的烟雾。不同阶段即使沿用同一个 ID，也不再进入烟雾这条渲染路径。
                 if (visual.State.Phase != TacticalWorldPhase.Smoke) continue;
                 float remaining = visual.State.Remaining - (Time.time - visual.Received);
                 if (remaining <= 0) continue;
@@ -308,6 +312,7 @@ namespace Unity.MP_FPS {
         }
 
         private void DrawAimPreview() {
+            // 只有当前可操作并选中了道具时才显示本地操作预览。使用中的服务端计时接管以后，用确认进度驱动画面。
             bool visible = !m_PresentationBlocked && m_Selected != null && Camera.main &&
                            Cursor.lockState == CursorLockMode.Locked && LocalOwner.Remaining <= 0;
             m_Preview.SetActive(visible);
@@ -535,6 +540,7 @@ namespace Unity.MP_FPS {
                 Moon.MoonSilverPrintSubject.Protect(m_Held);
             }
             m_Held.SetActive(true);
+            // 错过角色创建时稍后再找本机角色和右手。第一视角与第三视角可以各自把手持道具摆到正确位置。
             if ((!m_Owner || !m_RightHand) && Time.time >= m_NextOwnerSearch) {
                 m_NextOwnerSearch = Time.time + 1;
                 foreach (var candidate in FindObjectsByType<DollSingerNetworkPresentation>(FindObjectsInactive.Exclude))

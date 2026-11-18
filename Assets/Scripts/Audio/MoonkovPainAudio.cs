@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
         private float m_NextTime;
 
         public bool Observe(uint impactTick, bool alive, float now) {
+            // 第一份快照只记受击编号。之后收到新命中时先推进编号，即使没到可播放时间也不会在稍后重复补响。
             if (!m_Initialized) {
                 m_Initialized = true;
                 m_Tick = impactTick;
@@ -15,6 +16,7 @@ namespace Unity.MP_FPS {
             }
             bool impact = MoonkovPlayerAudio.NewTick(impactTick, ref m_Tick);
             if (!impact || !alive || now < m_NextTime) return false;
+            // 伤痛声有独立的最短间隔。近距离自动连发时每一枪仍可更新受伤，但角色人声可以只响适当次数。
             m_NextTime = now + MinimumInterval;
             return true;
         }

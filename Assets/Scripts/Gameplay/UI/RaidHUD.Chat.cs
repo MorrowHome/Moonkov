@@ -35,11 +35,13 @@ namespace Unity.MP_FPS {
         private bool CloseChatForEscape() {
             if (m_ChatView == null || (!m_ChatView.IsOpen && Time.frameCount > m_ChatGuardFrame)) return false;
             // The text field handles IME cancellation first; the pause action must still be consumed.
+            // 输入法还在组词时由文本控件处理 Esc。这里返回已处理，防止同一键打开暂停菜单。
             if (!m_ChatView.Composing) CloseChat();
             return true;
         }
 
         private void CloseChat() {
+            // 聊天关闭那一帧仍守住玩法输入。立即释放会让确认文字的鼠标或按键同时落到武器上。
             m_ChatView?.SetOpen(false);
             m_ChatGuardFrame = Time.frameCount + 1;
             if (GameSettings.Instance != null)
@@ -48,6 +50,7 @@ namespace Unity.MP_FPS {
         }
 
         private void UpdateChat() {
+            // 切局换 World 时重建聊天查询和会话基准。旧局的输入框和消息状态不会继续用于当前连接。
             if (m_ChatWorld != m_World) {
                 if (m_ChatWorld != null && m_ChatWorld.IsCreated) m_ChatQuery.Dispose();
                 m_ChatWorld = m_World;
@@ -72,6 +75,7 @@ namespace Unity.MP_FPS {
             if (visible && !m_ChatView.IsOpen && ChatOpenPressed && Time.frameCount > m_ChatGuardFrame) {
                 m_ChatView.SetOpen(true);
                 m_ChatGuardFrame = Time.frameCount + 1;
+                // 打开输入框时结束可能在持续的玩法操作。随后鼠标归聊天，手上的旧按住状态不会继续。
                 RaidQuickSlotInput.ReleasePrimary();
                 CancelMissionHold();
                 CancelClashRevive();
@@ -87,6 +91,7 @@ namespace Unity.MP_FPS {
             if (data == null || data.PendingRequest != 0 || m_World == null || !m_World.IsCreated ||
                 !m_ConnectionQuery.HasSingleton<NetworkId>())
                 return;
+            // 先用同一套规则清理消息并检查频道可用。通过才分配请求编号和准备发送。
             var result = RaidChatRules.Normalize(data.Draft, out string text);
             if (data.Channel == RaidChatChannel.Team && !data.TeamAvailable) result = RaidChatResult.NoTeam;
             if (result != RaidChatResult.Accepted) {
@@ -105,6 +110,7 @@ namespace Unity.MP_FPS {
                 });
             manager.AddComponentData(entity,
                 new SendRpcCommandRequest { TargetConnection = m_ConnectionQuery.GetSingletonEntity() });
+            // 记住正在等的编号与发送时间。关掉输入框后仍能从客户端聊天数据看到最终回执。
             data.PendingRequest = request;
             data.PendingAt = m_World.Time.ElapsedTime;
             data.Feedback = RaidChatResult.Ready;

@@ -28,6 +28,7 @@ namespace Unity.MP_FPS {
             var maximum = Vector2.one * float.NegativeInfinity;
             int samples = 0;
             var renderers = animator.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            // 角色衣服和身体由不同网格组成。用符合骨骼权重的颈部样本估尺寸，再根据当前角色把同一款项圈摆到合适位置。
             foreach (var renderer in renderers) {
                 var mesh = renderer.sharedMesh;
                 if (!mesh || renderer.name.Contains("Runtime")) continue;
@@ -73,6 +74,7 @@ namespace Unity.MP_FPS {
             m_CollarLocalFrame = Quaternion.Inverse(anchor.rotation) * frame;
         }
 
+        // 按量到的尺寸搭项圈部件，通用本体和造型细节放在可单独开关的节点上。佩戴不同款式时可以切换这些节点。
         private void BuildCollar(Material material, Material indicator) {
             Color navy = new(.055f, .075f, .15f), gold = new(.83f, .65f, .32f), lavender = new(.51f, .43f, .76f);
             Color highlight = new(.75f, .68f, .93f), ink = new(.035f, .025f, .055f);
@@ -152,6 +154,7 @@ namespace Unity.MP_FPS {
             return piece;
         }
 
+        // 运行时随颈和头骨骼更新佩戴位置。拟合结果沿用已算好的半径，角色每帧动起来只更新姿态。
         private void UpdateCollarPose() {
             var anchor = m_Neck ? m_Neck : m_Head;
             WorldPose(m_Collar, anchor.TransformPoint(m_CollarOffset), anchor.rotation * m_CollarLocalFrame,

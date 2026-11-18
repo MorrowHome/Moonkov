@@ -36,6 +36,7 @@ namespace Unity.MP_FPS {
         public void Present(in EnergyGrenadeStateRpc state, float elapsed = 0) {
             if (!Warmup()) return;
             Effect effect = null;
+            // 先按这颗手雷的 ID 查池中是否已有对象，再记一个空位。更新消息到来时能继续原有的尾迹。
             int empty = -1;
             for (int i = 0; i < m_Pool.Length; i++) {
                 if (m_Pool[i] != null && m_Pool[i].Active && m_Pool[i].Id == state.Id) {
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS {
                 }
                 if (empty < 0 && (m_Pool[i] == null || !m_Pool[i].Active)) empty = i;
             }
+            // 确定是新物件时才取空槽并清理旧尾迹。只在收到的状态看起来刚投出时才给它播投掷声。
             if (effect == null) {
                 if (empty < 0) return;
                 effect = m_Pool[empty] ??= CreateEffect(empty);
@@ -63,10 +65,12 @@ namespace Unity.MP_FPS {
             if (effect.Exploded) return;
             effect.Origin = state.Position;
             effect.Velocity = state.Velocity;
+            // 从插值时刻带来的延迟估计换算成当前表现时间，限制补偿长度。这样第一帧位置能接近所见场景，迟到很久的消息不会让特效飞太远。
             effect.PoseTime = Time.time - Mathf.Clamp(elapsed, 0, .3f);
             effect.Remaining = state.Remaining;
             effect.Root.position = state.Position;
             if (state.Exploded != 0) {
+                // 引爆时停止尾迹，启动火花并给爆炸设独立寿命。服务端消息里原来的飞行剩余时间就不再控制视觉对象。
                 effect.Exploded = true;
                 effect.Age = 0;
                 effect.Trail.emitting = false;
@@ -85,6 +89,7 @@ namespace Unity.MP_FPS {
         private void Update() {
             foreach (var effect in m_Pool) {
                 if (effect == null || !effect.Active) continue;
+                // 到期只隐藏池里的对象，下一颗雷还能借用。飞行期间以权威位置和速度向前显示，已经停住的雷固定留在收到的位置。
                 if (Time.time > effect.Expire) {
                     effect.Active = false;
                     effect.Root.gameObject.SetActive(false);

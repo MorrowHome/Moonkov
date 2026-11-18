@@ -9,6 +9,7 @@ namespace Unity.MP_FPS.Client {
         public MeleeWeaponKind PreviewMeleeWeapon { get; private set; }
 
         private void SelectMeleeInventory(InventoryGraph graph) {
+            // 仓库没有实时角色，按选中的物品代码判断近战外观。没选中光环又没有近战武器时显示徒手。
             var kind = MeleeInventory.Kind(graph?.Find(PreviewWeaponItemId)?.Code);
             PreviewMeleeWeapon = EquippedPreviewWeapon == DollSingerHaloAim.HaloWeapon.None
                 ? kind == MeleeWeaponKind.None ? MeleeWeaponKind.Fists : kind
@@ -17,6 +18,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void SelectMeleeSnapshot(in PredictedPlayerGhost snapshot) {
+            // 局内已有服务器同步的当前武器，直接听快照。不必用仓库的默认选择重新猜一次。
             PreviewMeleeWeapon = (MeleeWeaponKind)snapshot.MeleeWeapon;
             PresentMeleeEquipment();
         }
@@ -25,6 +27,7 @@ namespace Unity.MP_FPS.Client {
             if (m_Model == null || m_Animator == null) return;
             if (m_EquipmentMelee == null && PreviewMeleeWeapon != MeleeWeaponKind.None) {
                 m_EquipmentMelee = m_Model.AddComponent<DollSingerMeleePresentation>();
+                // 复用正式近战的取姿势能力，关闭它的运行更新。预览会在自己需要时送表现数据。
                 m_EquipmentMelee.enabled = false;
                 var source = m_Settings.HaloSource
                     ? m_Settings.HaloSource.GetComponent<DollSingerMeleePresentation>()

@@ -13,6 +13,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS {
     public static class PmcLootRules {
+        // 先看角色是否真的活着、健康到可以搜、没有刚受伤或手忙。不能只因为到了箱子旁就开始计时。
         public static bool CanSearch(in PredictedPlayerGhost health, double lastDamage, double now) {
             return !RaidHealth.HandsBusy(health) && now - lastDamage >= 1;
         }
@@ -88,6 +89,7 @@ namespace Unity.MP_FPS {
                 .ThenBy(pair => pair.Key).Take(4).Select(pair => pair.Key).ToArray();
         }
 
+        // 拾取优先级按当前缺什么算。电池、护盾、医药和生存品有各自用途，容量也会约束能拿多少。
         private static float Value(
             InventoryItem item,
             bool needCells,
@@ -128,6 +130,7 @@ namespace Unity.MP_FPS {
 
         // All moves use the same versioned transaction as a player. The candidate list
         // holds IDs because a successful transaction replaces both inventory trees.
+        // 准备搜刮事务时先记物品实例 ID。成功交换可能换掉两边的库存树，继续遍历旧物品引用会读到过期数据。
         public static int TakeAvailable(
             InventoryGraph inventory,
             InventoryGraph cache,
@@ -246,6 +249,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 回入口消失前，检查是否有玩家很近或从更远处直接看着它。要在可能被目击的情况下保留角色。
         private bool LocalExitObserved(Vector3 position, PhysicsScene scene) {
             m_LocalExitObservers.Clear();
             foreach (var target in m_Targets) {
@@ -290,6 +294,7 @@ namespace Unity.MP_FPS {
 
         private static readonly Profiling.ProfilerMarker s_SelectCacheProfile = new("Moonkov.Pmc.SelectCache");
 
+        // 空闲时通过距离和可走路线挑箱子。附近抽屉、尸体等按另一组条件找到，不会预先知道里面都有什么。
         private Vector3 SelectCache(DollSingerEnemyBrain brain, Vector3 position, MoonRaidMap map) {
             using var profile = s_SelectCacheProfile.Auto();
             var loot = PmcLootContainers();
@@ -376,6 +381,7 @@ namespace Unity.MP_FPS {
                 AdvanceClashObjective(brain, position, eye, now);
                 return;
             }
+            // 动作条件失效就清掉进度。稍后恢复时必须按新观察重新开始。
             if (brain.Action == PmcAction.Scavenge && !PmcLootRules.CanSearch(health, brain.LastDamage, now)) {
                 brain.LootUntil = 0;
                 brain.CacheObstructedSince = -1;
@@ -385,6 +391,7 @@ namespace Unity.MP_FPS {
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil <= 0 && now >= brain.NextNearbyLootScan &&
                 !PmcLootRules.IsNearbyLoot(loot, brain.Cache)) {
                 brain.NextNearbyLootScan = now + 1;
+                // 走路时隔一会留意未搜的尸体和地上物品，通过近距离视线后才切目标。
                 foreach (int id in PmcLootRules.NearbyLoot(loot, position, brain.VisitedCaches)) {
                     if (!PmcLootRules.TryPosition(map.LootPositions, loot, id, out var target) ||
                         WorldBlocked(eye, target))
@@ -411,6 +418,7 @@ namespace Unity.MP_FPS {
                 bool corpse = PmcLootRules.IsHumanCorpse(loot, brain.Cache);
                 bool ground = PmcLootRules.IsDroppedItem(loot, brain.Cache);
                 bool localTarget = drawer || corpse || ground;
+                // 近处对象按三维交互距离与遮挡检查，固定箱还限制楼层高度。隔着墙或楼板站近不算到达。
                 bool reachable = localTarget
                     ? Vector3.Distance(position, cachePosition) <= RaidRules.PickupRange &&
                       !WorldBlocked(eye, cachePosition)
@@ -428,11 +436,13 @@ namespace Unity.MP_FPS {
                 }
                 brain.CacheObstructedSince = -1;
                 if (brain.LootUntil == 0) {
+                    // 开始搜索记录结束时间和面向点，同时向场内发布可被听到的搜刮事件。
                     brain.LootUntil = now + m_Tuning.LootSearchSeconds;
                     brain.LootLookPoint = cachePosition;
                     RaidLootAcoustics.Mark(ref health);
                 }
                 if (now < brain.LootUntil) return;
+                // 读条结束这次才允许向容器拿取，并按是否允许携带装备或补给走共用库存规则。
                 int transferred = 0;
                 if (loot != null && loot.Containers.TryGetValue(brain.Cache, out var cache)) {
                     bool equipShield = !TutorialRuntime.Enabled(EntityManager);
@@ -447,6 +457,7 @@ namespace Unity.MP_FPS {
                 brain.LootUntil = 0;
                 brain.NextDecision = brain.NextPath = 0;
             }
+            // 撤离要求到出口范围且脱离战斗，暂时受压或正在被看到要等。入口回退还要查是否会被观察到消失。
             bool extracting = brain.Action == PmcAction.Extract &&
                               HorizontalDistance(position, brain.RaidExit) <= map.ExtractionRadius &&
                               Mathf.Abs(position.y - brain.RaidExit.y) <= 3 && !brain.Visible &&

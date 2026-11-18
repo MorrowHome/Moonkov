@@ -32,6 +32,7 @@ namespace Unity.MP_FPS {
         }
 
         private bool Ready() {
+            // 界面结束后即使回调晚到也跳过。试听可以注入另一套声音系统，正式界面则等 GameManager 和声音库就绪。
             if (m_Disposed) return false;
             if (m_System != null) return m_Library != null;
             var game = GameManager.Instance;
@@ -43,6 +44,7 @@ namespace Unity.MP_FPS {
 
         public void Present(Stage stage, float intensity, float deltaTime) {
             if (!Ready()) return;
+            // 只有阶段真的切换，才停掉旧底噪并起过渡声。同一阶段继续进来时，只调整已经在播的环境层。
             if (m_Stage != stage) {
                 Stop(ref m_Bed, .025f);
                 m_RoomGain = 0;
@@ -55,6 +57,7 @@ namespace Unity.MP_FPS {
                 } else if (stage == Stage.Shutter) { Shutter(false); }
                 m_Stage = stage;
             }
+            // 终端生成时按画面强度调整电流底噪，进到登录阶段则把舱室声慢慢推高。都与画面阶段共用时间。
             if (stage == Stage.Build) { Bed(m_Library.AccessCarrier, .25f + .75f * intensity * intensity); } else if
                 (stage == Stage.Login) {
                 m_RoomGain = Mathf.MoveTowards(m_RoomGain, 1, Mathf.Max(0, deltaTime) / .6f);
@@ -92,6 +95,7 @@ namespace Unity.MP_FPS {
 
         public void LoginFlicker() {
             // Only actual brightness changes can trigger a sound, at least 3.5 s apart.
+            // 登录故障声依附实际亮度闪动，并限制两次之间的时间。这样定时到了也要等画面有动作时才响。
             if (!Ready() || m_Stage != Stage.Login || m_LoginAge < m_NextGlitch) return;
             Replace(ref m_Glitch, m_Library.AccessGlitch);
             m_NextGlitch = m_LoginAge + 3.5f + ++m_GlitchIndex % 4 * .8f;
@@ -114,6 +118,7 @@ namespace Unity.MP_FPS {
             sound = null;
         }
 
+        // 自动登录等流程可直接跳过开场。先收掉之前响的弹窗与切黑声，再切到登录阶段。
         public void SkipIntro() {
             StopPops();
             Stop(ref m_Transition, .025f);
@@ -123,6 +128,7 @@ namespace Unity.MP_FPS {
             m_Stage = Stage.Login;
         }
 
+        // 暂时离开画面只停止声音。回到界面时仍记得弹过哪些窗口，可以从原阶段接回。
         public void Suspend() {
             Stop(ref m_Bed, 0);
             StopPops();

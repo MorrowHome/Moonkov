@@ -44,6 +44,7 @@ namespace Unity.MP_FPS {
         }
 
         protected override void OnUpdate() {
+            // 悬赏状态与常规远征的异形刷新隔开。模式启用时清掉之前的遭遇，避免留一批先前地图的怪。
             if (BountyClashRuntime.Enabled(EntityManager)) {
                 if (!m_ClashSuppressed) {
                     ResetEncounters();
@@ -56,6 +57,7 @@ namespace Unity.MP_FPS {
             if (!m_TutorialModeQuery.IsEmptyIgnoreFilter) return;
             var settings = AlienEncounterSettings.Active;
             double now = SystemAPI.Time.ElapsedTime;
+            // 换地图场景后活动配置对象会变。重置本局槽位、预算与起始轮询位置。
             if (!ReferenceEquals(settings, m_Settings)) {
                 ResetEncounters();
                 m_Settings = settings;
@@ -63,6 +65,7 @@ namespace Unity.MP_FPS {
                 if (settings) m_NextEncounter = m_Random.Next(Mathf.Max(1, settings.Count));
             }
             if (!settings) return;
+            // 人口和候选点不用每帧查。按间隔检查一次，地图几何查询的开销更稳定。
             if (now < m_NextCheck) return;
             m_NextCheck = now + 1;
             SynchronizeEncounters(settings, now);
@@ -79,6 +82,7 @@ namespace Unity.MP_FPS {
             foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
                          .WithEntityAccess()) {
                 if (health.ValueRO.CurrentHealth <= 0) continue;
+                // 场上角色都参与占位判断，只有真实玩家的方向参与出生可见性判断。
                 bool player = EntityManager.HasComponent<GhostOwner>(entity) &&
                               EntityManager.GetComponentData<GhostOwner>(entity).NetworkId > 0 &&
                               !EntityManager.HasComponent<DollSingerEnemy>(entity) &&
@@ -94,6 +98,7 @@ namespace Unity.MP_FPS {
                     Position = pose.ValueRO.Position, Forward = forward, CheckVisibility = player
                 });
             }
+            // 没有真实玩家或预制体还未装入当前世界就暂停生成。预制体缺失的那一拍不耗费刷新次数。
             if (!hasPlayer || !GhostEntityPrefabSystem.TryGetServerInstance(out var prefabs) || !prefabs.PrefabsLoaded)
                 return;
             UnityEngine.Physics.SyncTransforms();
@@ -104,17 +109,20 @@ namespace Unity.MP_FPS {
                 var state = m_Encounters[index];
                 if (!CanSpawnEncounter(settings, state, now)) continue;
                 var spawn = settings[index];
+                // 这次槽位的位置找不到或资源没好，延后下次尝试。只有确实创建了实体才扣预算。
                 state.ReadyAt = now + settings.RetryDelay;
                 if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
                 if (spawn.Profile.Boss &&
                     (m_AliveBossCount >= settings.MaximumBosses || HasSpawnedBoss(settings, spawn.Profile)))
                     continue;
+                // 伏击与 Boss 槽一局只触发一次。普通怪死亡后仍可按槽位设置补刷。
                 if ((spawn.Ambush || spawn.Profile.Boss) && state.SpawnCount > 0) continue;
                 var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
                 if (prefab == Entity.Null ||
                     !TrySelectPosition(settings, spawn, state, out var position, out var rotation))
                     continue;
                 float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
+                // 候选通过检查后才复制网络实体，设置姿势、无客户端所有者的编号和首次同步状态。
                 var entity = EntityManager.Instantiate(prefab);
                 int id = m_NextId--;
                 EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotation(position, rotation));
@@ -136,6 +144,7 @@ namespace Unity.MP_FPS {
                 spawnedThisCheck++;
                 m_NextEncounter = (index + 1) % settings.Count;
                 // Ghost presentation is linked later; reserve this position immediately.
+                // 新怪的模型和碰撞体还没链接，先把它的位置占上，防同一次检查又选中同一个点。
                 m_Observers.Add(new RaidSpawnObserver { Position = position });
                 LeaderboardManager.AddPlayer(id, new FixedString64Bytes(spawn.Profile.CreatureName));
                 if (m_AliveCount >= settings.MaximumAliens || m_TotalSpawned >= settings.MaximumTotalSpawns ||
@@ -173,6 +182,7 @@ namespace Unity.MP_FPS {
                 });
         }
 
+        // 观察角色是否刚死亡，开始计算槽位补刷时间。已死的旧实体仍交给它自己的表现流程收尾。
         private void RefreshPopulation(AlienEncounterSettings settings, double now) {
             m_AliveCount = 0;
             m_AliveBossCount = 0;
@@ -199,6 +209,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 优先尝试附近已配置的出生点。限制现场物理检查次数，并在候选之间旋转起点。
         private bool TrySelectPosition(
             AlienEncounterSettings settings,
             AlienEncounterSettings.Spawn spawn,
@@ -288,6 +299,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 贴顶生成点要能挂住、站位附近有人且不会直接暴露。角色还要按表面法线摆正。
         private bool TryAmbushPosition(
             AlienEncounterSettings settings,
             AlienEncounterSettings.Spawn spawn,
@@ -356,6 +368,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 检查实际体型而非只查头部的小球。长身体还要沿将要出现的方向确认支撑和空间。
         private static bool HasBodyClearance(
             AlienCreatureProfile profile,
             float scale,

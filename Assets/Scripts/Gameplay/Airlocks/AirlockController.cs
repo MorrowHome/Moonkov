@@ -15,6 +15,7 @@ namespace Unity.MP_FPS {
 
         public void Apply(float fraction) {
             if (!Motion) return;
+            // 用小于等于 1 的开度在门板的关闭和打开位姿间插值。多扇门板共用一个开度，所以移动保持同步。
             Motion.SetLocalPositionAndRotation(Vector3.Lerp(ClosedPosition, OpenPosition, fraction),
                 Quaternion.Slerp(ClosedRotation, OpenRotation, fraction));
         }
@@ -86,6 +87,7 @@ namespace Unity.MP_FPS {
             Present();
         }
 
+        // 舱内区绑定实时气压，建筑内部固定为内侧气压。给舱内更高的采样优先级，避免重叠时把减压中的舱误判成室内。
         private void WireRooms() {
             if (m_ChamberZone)
                 m_ChamberZone.Configure(m_AirlockId + ".CHAMBER", 0, m_Settings.SupplyOxygenFraction, 100, this);
@@ -107,6 +109,7 @@ namespace Unity.MP_FPS {
             WireRooms();
         }
 
+        // 门口也可以放一段空气查询区来连接相邻体积。实际开门到一定程度才由 Present 启用。
         public void ConfigureApertureBridges(BreathableZone outer, BreathableZone inner) {
             m_OuterBridge = outer;
             m_InnerBridge = inner;
@@ -116,6 +119,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Update() {
+            // 没有网络世界时现场自己推进规则；有网络时状态走专用的同步系统。
             if (!AirlockNetworkContext.HasNetworkWorlds) TickAuthoritative(Time.deltaTime);
             Present();
         }
@@ -125,12 +129,14 @@ namespace Unity.MP_FPS {
             if (!Ready) return;
             var s = State;
             float step = dt / m_Settings.DoorTravelSeconds;
+            // 关门既检查固定门框，也检查下一小步门板经过的区域。后者能看到侧向移动的门板会不会推到人。
             bool outerClose = !s.OuterOpening && s.OuterFraction > 0 && (Obstructed(m_OuterAperture) ||
                                                                          ActorSweep(m_OuterPanels, s.OuterFraction,
                                                                              Mathf.Max(0, s.OuterFraction - step)));
             bool innerClose = !s.InnerOpening && s.InnerFraction > 0 && (Obstructed(m_InnerAperture) ||
                                                                          ActorSweep(m_InnerPanels, s.InnerFraction,
                                                                              Mathf.Max(0, s.InnerFraction - step)));
+            // 关门遇阻后规则可能反开，因此这一拍也检查反开路径。反方向也有人时门停住。
             bool outerOpen = (s.OuterOpening || outerClose) && s.OuterFraction < 1 &&
                              ActorSweep(m_OuterPanels, s.OuterFraction, Mathf.Min(1, s.OuterFraction + step));
             bool innerOpen = (s.InnerOpening || innerClose) && s.InnerFraction < 1 &&
@@ -155,6 +161,7 @@ namespace Unity.MP_FPS {
                 : AirlockFeedback.Unavailable;
         }
 
+        // 按钮提交时先做即时防夹；指令接受后，门在后续每一拍仍会继续做防夹检测。
         public AirlockFeedback RequestAuthoritative(AirlockCommand command) {
             if (!Ready) return AirlockFeedback.Unavailable;
             var result = m_Rules.Request(command, OuterCloseBlocked(command), InnerCloseBlocked(command));
@@ -175,6 +182,7 @@ namespace Unity.MP_FPS {
                 new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
             int count = UnityEngine.Physics.OverlapBoxNonAlloc(sensor.transform.TransformPoint(sensor.center), half,
                 m_Overlap, sensor.transform.rotation, ~0, QueryTriggerInteraction.Ignore);
+            // 缓冲装满时查询可能没返回所有对象。保守当成被挡，别在看不全的情况下关门。
             if (count == m_Overlap.Length) return true;
             for (int i = 0; i < count; i++) {
                 var hit = m_Overlap[i];
@@ -208,6 +216,7 @@ namespace Unity.MP_FPS {
                     var scale = box.transform.lossyScale;
                     var half = Vector3.Scale(box.size * .5f,
                         new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+                    // 先扫门板途中经过的位置，再测目标位置有没有重叠。既防止中途扫到角色，也防止下一帧直接嵌进去。
                     int n = UnityEngine.Physics.BoxCastNonAlloc(center, half, delta.normalized, m_Sweep, rotation,
                         delta.magnitude, ~0, QueryTriggerInteraction.Ignore);
                     if (n == m_Sweep.Length) return true;
@@ -241,6 +250,7 @@ namespace Unity.MP_FPS {
                 m_LastInner = s.InnerFraction;
                 moved = true;
             }
+            // 门板的位置改完后同步给物理查询。接下来的人物和射线要检到新门板，而不是下一物理帧前的旧位置。
             if (moved && Application.isPlaying) UnityEngine.Physics.SyncTransforms();
             if (s.Revision != m_LastRevision) {
                 m_LastRevision = s.Revision;
@@ -258,6 +268,7 @@ namespace Unity.MP_FPS {
             return match;
         }
 
+        // 空气声需要连通。相同空气区可以传声，舱和室内之间则要等内门真正开出缝。
         public static bool AirConnected(string a, string b) {
             if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return false;
             if (a == b) return true;

@@ -109,10 +109,12 @@ namespace Unity.MP_FPS.Client {
                 m_Track.SetEnabled(false);
                 return;
             }
+            // 没选过任务时先选档案里跟踪的可用任务，否则默认主线的当前任务。全都完成时仍可看最后一条记录。
             if (m_Selected == null)
                 m_Selected = CampaignRules.Available(progress, progress.PrimaryTracked)
                     ? progress.PrimaryTracked
                     : CampaignRules.CurrentMain(progress) ?? CampaignCatalog.Tasks[CampaignCatalog.Tasks.Length - 1].Id;
+            // 任务记录、跟踪偏好、所选条目和界面忙碌都会影响画面。把它们一起比较，内容没变时保留当前行和焦点。
             string signature = progress.Revision + "/" + progress.PreferenceRevision + "/" + m_Selected + "/" + m_Busy +
                                "/" + m_Error;
             foreach (var task in CampaignCatalog.Tasks)
@@ -128,6 +130,7 @@ namespace Unity.MP_FPS.Client {
                 m_States[task.Id].text = StateText(state);
                 m_Rows[task.Id].Q<Label>(className: "campaign-task-name").text =
                     state == CampaignTaskStatus.Locked && task.Chapter > 1 ? "后续调查" : task.Title;
+                // 锁定条目还能占位，但不能选做当前目标。后续章节未解锁时只显示通用标题。
                 m_Rows[task.Id].SetEnabled(state != CampaignTaskStatus.Locked);
                 m_Rows[task.Id].EnableInClassList("campaign-selected", task.Id == m_Selected);
                 m_Rows[task.Id].EnableInClassList("campaign-complete", completed);
@@ -140,6 +143,7 @@ namespace Unity.MP_FPS.Client {
             m_Status.text = StateText(selectedStatus);
             m_Briefing.text = selected.Briefing;
             m_Nodes.Clear();
+            // 选中的任务再按规则算当前步骤。已做过的步骤仍留在列表，可分清哪些是历史和下一步。
             var current = CampaignRules.CurrentNode(progress, selected.Id);
             for (int i = 0; i < selected.Nodes.Length; i++) {
                 var node = selected.Nodes[i];
@@ -175,6 +179,7 @@ namespace Unity.MP_FPS.Client {
             if (m_Busy || m_Disposed) return;
             var progress = m_Read();
             if (progress == null || m_Selected == null) return;
+            // 同一个按钮能设跟踪或取消。先按最新档案决定这次意图，再等存档确认，失败可重试。
             bool remove = progress.PrimaryTracked == m_Selected && !progress.TrackingSuppressed;
             m_Busy = true;
             m_Error = null;

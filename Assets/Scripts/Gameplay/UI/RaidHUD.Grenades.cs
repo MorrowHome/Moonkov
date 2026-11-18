@@ -41,6 +41,7 @@ namespace Unity.MP_FPS {
 
         private bool SendGrenade(GrenadeCommand command, string item = null, bool low = false) {
             var graph = QuickGraph;
+            // 手雷动作顺序依赖前一次确认。还在等待动作时不再并发发请求，每次都带当前库存版本和手持编号。
             if (graph == null || m_GrenadeRequest != 0) return false;
             uint request = NextManualActionRequest();
             if (!Send(new RaidGrenadeThrowRpc {
@@ -68,6 +69,7 @@ namespace Unity.MP_FPS {
                 QuickTyping(m_Root.panel?.focusController.focusedElement as UnityEngine.UIElements.VisualElement))
                 return true;
             if (phase == GrenadePhase.Safe && !m_GrenadeButtonHeld && (primaryPressed || secondaryPressed)) {
+                // 根据按下的一侧选择游戏里的投掷动作。记住哪枚键启动，只等那枚键松开才请求完成。
                 bool low = !primaryPressed && secondaryPressed;
                 if (SendGrenade(GrenadeCommand.Prime, low: low)) {
                     m_GrenadeButtonHeld = true;
@@ -91,6 +93,7 @@ namespace Unity.MP_FPS {
         }
 
         private void UpdateGrenades(bool active) {
+            // 换局清空手雷状态、上次按键和排队等待的武器切换。旧局操作不能在新局得到补发。
             if (m_GrenadeRaid != m_Snapshot.RaidId || m_GrenadeWorld != m_World) {
                 m_GrenadeRaid = m_Snapshot.RaidId;
                 m_GrenadeWorld = m_World;
@@ -100,6 +103,7 @@ namespace Unity.MP_FPS {
                 m_GrenadeNextSlot = 0;
             }
             var inventory = QuickInventory;
+            // 从最新库存回执收尾请求。准备失败时清空松手队列，否则会存下一次无效的动作。
             if (m_GrenadeRequest != 0 && inventory != null && inventory.RequestId >= m_GrenadeRequest) {
                 if (inventory.Error != InventoryError.None) {
                     QuickNotice("手雷操作未完成");
@@ -128,6 +132,7 @@ namespace Unity.MP_FPS {
             }
             bool menu = !active || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                         !Application.isFocused || Cursor.lockState != CursorLockMode.Locked;
+            // 菜单打开时停止读取玩法按键。手上已有道具就按当前游戏状态做收回或丢弃处理。
             if (phase != GrenadePhase.None && menu) {
                 m_GrenadeButtonHeld = false;
                 m_GrenadeReleaseQueued = false;
@@ -154,6 +159,7 @@ namespace Unity.MP_FPS {
             if (!equip || QuickBusy || QuickGraph == null) return;
             // Prefer the selected throwable; otherwise take the first accessible grenade.
             var selected = m_QuickBindings?.SelectedItem(QuickGraph);
+            // 先尝试快捷栏目前选中的可用手雷。没有时，再找随身库存第一件符合规则的手雷。
             if (!GrenadeHandling.Accessible(QuickGraph, selected))
                 selected = QuickGraph.Items.Find(item => GrenadeHandling.Accessible(QuickGraph, item));
             if (selected != null) EquipGrenade(selected);

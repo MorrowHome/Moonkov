@@ -15,6 +15,7 @@ namespace Unity.MP_FPS {
         public bool Reloading => active >= 0 && states[active].ControllerState.IsReloadingState;
 
         private void Initialize() {
+            // 独立场景首次用到武器才建局部电池库存和各武器的试用弹仓。
             if (battery != null) return;
             battery = InventoryGraph.Create(starter: false);
             battery.AddSupply("cells", 4, "pockets");
@@ -49,16 +50,19 @@ namespace Unity.MP_FPS {
             int index = (int)gesture - 5;
             var weapon = registry.GetWeaponData((uint)(index + 6));
             ref var state = ref states[index];
+            // 换到新手势时，旧武器若正在排队连发就清掉，新武器开始自己的取出时间。
             if (active != index) {
                 if (active >= 0) HaloModuleFire.Reset(ref states[active]);
                 active = index;
                 HaloModuleFire.BeginEquip(ref state, weapon);
             }
+            // 所有武器的恢复时间都随时间走，当前手里那把才实际执行装填或射击。
             for (int i = 0; i < states.Length; i++) HaloModuleFire.AdvanceTimers(ref states[i], deltaTime);
             if (state.ControllerState.IsReloadingState) {
                 state.ReloadTimer = Mathf.Max(0, state.ReloadTimer - deltaTime);
                 if (state.ReloadTimer == 0) DollSingerWeapons.CompleteReload(ref state, weapon);
             }
+            // 从这个场景的临时库存取电池量，先开始动作，计时结束后才增加可用弹药。
             if (!state.ControllerState.IsReloadingState && (reload || state.CurrentAmmo == 0) &&
                 battery.TryRecharge(state.CurrentAmmo, weapon.MagazineSize, weapon.EnergyPerRound, out int target)) {
                 HaloReload.Begin(ref state, weapon, target);
@@ -72,6 +76,7 @@ namespace Unity.MP_FPS {
                 shotTick++;
                 HaloModuleFire.CommitShot(ref state, weapon, deltaTime);
             }
+            // 将枪械状态写入同一个角色外观接口。展演中也能复用正式对局的装填进度和射击动画。
             halo.SetNetworkWeapon(gesture, state.CurrentAmmo, state.ControllerState.IsReloadingState,
                 HaloReload.Progress(state, weapon), shotTick, reloadTick, state.ReloadTargetAmmo, 0,
                 weapon.MagazineSize, state.BurstSequence);

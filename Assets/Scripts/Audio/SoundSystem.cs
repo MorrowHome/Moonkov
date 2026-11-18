@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
+// 专用服可以照常调用同一套接口。这里用空操作返回，不创建声源也不占用混音器，服务端仍继续跑玩法。
 /// <summary>
 /// Initializes the null sound system with the specified parameters.
 /// This implementation performs no operations.
@@ -97,6 +98,7 @@ public class SoundSystem : ISoundSystem {
         int maxSoundEmitters,
         SoundGameObjectPool soundGameObjectPool,
         AudioMixer mixer) {
+        // 初始化一个新系统时清掉之前的播放时间和上一片段。限频与避免连播同一片都从新的系统状态开始计。
         m_LastStarted.Clear();
         m_LastClip.Clear();
         SoundGameObjects = soundGameObjectPool; // 
@@ -114,6 +116,7 @@ public class SoundSystem : ISoundSystem {
 
     // Ownership teardown must also reclaim already-fading sources whose caller dropped its handle.
     public void StopAttachedTo(Transform owner) {
+        // 角色退场时反查当前挂在其子物体上的声源。已经开始淡出的声源也在活动列表里，可以随角色一次性清理。
         if (!owner) return;
         for (int i = m_SoundEmitterActiveList.Count - 1; i >= 0; i--) {
             var emitter = m_SoundEmitterActiveList[i];
@@ -156,6 +159,7 @@ public class SoundSystem : ISoundSystem {
     /// <param name="fadeOutTime">Time in seconds to fade out (default 0 for immediate stop)</param>
     /// <returns>True if the sound was stopped successfully, false if invalid</returns>se = Stop failed</returns>
     public bool Stop(SoundInfo soundInfo, float fadeOutTime = 0.0f) {
+        // 停止前确认句柄仍属于同一笔任务。池对象被下一个声音借走以后，旧停止请求就不会把新声音停掉。
         if (soundInfo == null || soundInfo.Handle == null || !soundInfo.Handle.IsValid()) return false;
         if (fadeOutTime == 0)
             // Route through Kill() so the emitter is also dropped from the active list.
@@ -295,6 +299,7 @@ public class SoundSystem : ISoundSystem {
         if (soundInfo == null || soundInfo.SoundDefinition == null) return null;
         var definition = soundInfo.SoundDefinition;
         if (definition.Clips == null || definition.Clips.Count == 0) return null;
+        // 池有有限的实体声源。确定某个三维声音在听觉范围外会完全静音时，播放入口可以直接跳过这次申请。
         var origin = soundInfo.SoundTransform
             ? soundInfo.SoundTransform.TransformPoint(soundInfo.Position)
             : soundInfo.Position;
@@ -351,6 +356,7 @@ public class SoundSystem : ISoundSystem {
         else
             soundEmitter.CopyOverrideDataFromSoundDef(soundInfo.SoundDefinition);
         soundEmitter.SetVolume(volume); // Must be set before the very first DSP block.
+        // 上一片段按音效配方记。就算换了另一个池槽，也能避免同一个音效连续抽到完全相同的录音。
         if (definition.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast && definition.Clips.Count > 1) {
             int index = Random.Range(0, definition.Clips.Count);
             if (m_LastClip.TryGetValue(definition, out int last) && index == last)
@@ -360,6 +366,7 @@ public class SoundSystem : ISoundSystem {
         if (Play(soundEmitter, soundInfo.Position, soundInfo.SoundTransform) == true) {
             m_LastStarted[definition] = Time.unscaledTime;
             m_LastClip[definition] = (int)soundEmitter.UserClipIndex;
+            // 近处枪响告诉 MoonkovSoundMix 短时压低环境和衣物声。远处枪响仍按位置播放，且不会挤下本机所有环境声。
             if (definition.Role == SoundDef.MixRole.Weapon && m_ListenerTransform &&
                 (origin - m_ListenerTransform.position).sqrMagnitude < 144)
                 MoonkovSoundMix.NotifyWeapon();
@@ -404,6 +411,7 @@ public class SoundSystem : ISoundSystem {
 
     private void UpdateActiveSoundEmitters() {
         for (int i = 0; i < m_SoundEmitterActiveList.Count; i++)
+            // 源对象的回收由每帧更新推进。任务报告结束后把它移出活动列表，下一次借用还能找到它。
             if (m_SoundEmitterActiveList[i].Update(m_SoundMixer.MixerGroups, m_ListenerTransform) == false) {
                 m_SoundEmitterActiveList.RemoveAt(i); // Emitter is no longer active. Remove it from active list.
                 i--;

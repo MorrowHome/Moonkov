@@ -32,6 +32,7 @@ namespace Unity.MP_FPS {
                 if (!IsHuman(actor)) continue;
                 var state = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
                 bool fresh = TryReadTransferInput(actor, tick, out var input);
+                // 扫描按下时只触发一次。通过冷却等条件才扣能量并分配新的扫描序号。
                 bool press = fresh && input.HaloScan && !state.HaloScanLatched;
                 bool changed = (fresh && state.HaloScanLatched != input.HaloScan) || state.HaloScanCooldown > 0;
                 if (fresh) state.HaloScanLatched = input.HaloScan;
@@ -45,6 +46,7 @@ namespace Unity.MP_FPS {
                 }
                 if (changed) EntityManager.SetComponentData(actor, state);
                 if (!m_HaloScans.TryGetValue(actor, out var sweep)) continue;
+                // 扫描期间突然失去光环、死亡或离场时停掉当前波，不继续发后面的位置。
                 if (!EnergyShieldRules.Alive(state) || !state.HaloEquipped || !ActiveTransferActor(actor, false)) {
                     sweep.Count = sweep.Sent = 0;
                     continue;
@@ -60,6 +62,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 关联发起角色的 Ghost 和连接。只给这个玩家发自己的扫描波与命中列表。
         private void BeginHaloScan(Entity actor, in PredictedPlayerGhost state, ref EntityCommandBuffer ecb) {
             if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return;
             var identity = EntityManager.GetComponentData<GhostInstance>(actor);
@@ -89,6 +92,7 @@ namespace Unity.MP_FPS {
                     sweep.Arrival[i] = sweep.Arrival[i - 1];
                     sweep.Targets[i] = sweep.Targets[i - 1];
                 }
+                // 记录扫描起始时观察到的目标位置和出生编号。客户端收到后能画本次波的接触点。
                 sweep.Contacts[index] = new HaloScanContactRpc {
                     OwnerGhostId = identity.ghostId,
                     OwnerSpawnTick = identity.spawnTick.SerializedData, Sequence = state.HaloScanSequence,

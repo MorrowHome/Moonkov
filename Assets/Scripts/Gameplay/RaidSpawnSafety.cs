@@ -15,6 +15,7 @@ namespace Unity.MP_FPS {
     public static class RaidSpawnSafety {
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
 
+        // 候选点先向下找地面。站得下、斜坡没太陡且胶囊空间没被占，才能当作一个落脚点。
         public static bool TryGroundPosition(
             Vector3 candidate,
             float radius,
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 候选点离观察者太近直接放弃。再按距离、朝向与遮挡检查对方能否看到将要出生的角色。
         public static bool IsSafeFromObservers(
             Vector3 position,
             IReadOnlyList<RaidSpawnObserver> observers,
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS {
                     QueryTriggerInteraction.Ignore) || Vector3.Angle(floor.normal, Vector3.up) > 18)
                 return false;
             normal = floor.normal;
+            // 箱子的朝向和地面坡度一起算。接下来按实际朝向检查四角是否有同一平面的支撑。
             var rotation = Quaternion.FromToRotation(Vector3.up, normal) * Quaternion.Euler(0, yaw, 0);
             // All four skid corners must have support on the same floor, away from ledges.
             for (int x = -1; x <= 1; x += 2)
@@ -85,6 +88,7 @@ namespace Unity.MP_FPS {
                     return false;
                 if (Mathf.Abs(Vector3.Dot(support.point - corner, normal)) > .12f) return false;
             }
+            // 物资箱本体要避开障碍物，至少有一条长边旁能站人交互，避免摆出有箱子却够不着的位置。
             position = floor.point + normal * .35f;
             if (UnityEngine.Physics.CheckBox(position + normal * .035f, new Vector3(.58f, .31f, .43f), rotation,
                     s_WorldMask, QueryTriggerInteraction.Ignore))

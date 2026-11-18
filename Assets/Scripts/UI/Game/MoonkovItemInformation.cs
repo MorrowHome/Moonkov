@@ -48,6 +48,7 @@ namespace Unity.MP_FPS.Client {
             if (definition == null) return;
             if (registry) WeaponRegistry = registry;
             MoonkovLocalization.Set(m_Title, definition.Name);
+            // 普通消耗品从物品说明取用途和效果，模块用独立的收益和代价。数值上色只改变显示，不参与规则。
             bool module = HaloModules.FromCode(item.Code) != HaloModule.None;
             string detail = module
                 ? MoonkovLocalization.Text(MoonkovItemPresentation.ModulePurpose(item.Code))
@@ -96,6 +97,7 @@ namespace Unity.MP_FPS.Client {
                     ? WeaponManager.Instance.WeaponRegistry
                     : Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings")?.WeaponRegistry;
             var mask = HaloModules.Mask(graph, item);
+            // 同一型号有不同模块和研究效果。把当前武器 ID 和已生效的模块掩码一起交给注册表才能得到实际数值。
             var weapon = WeaponRegistry ? WeaponRegistry.GetWeaponData(id, (ushort)mask) : null;
             if (!weapon) {
                 m_Summary.text = MoonkovLocalization.Text("Weapon data is unavailable.");
@@ -116,6 +118,7 @@ namespace Unity.MP_FPS.Client {
                 pellets > 1
                     ? $"{weapon.Damage * pellets:0.##} <color=#b0b4ba>({weapon.Damage:0.##} × {pellets})</color>"
                     : $"{weapon.Damage:0.##}");
+            // 连发显示同一组连发中的间隔。整组之间的等待时间单独显示，避免把两个节奏混在一起。
             Stat(1, "SHOT INTERVAL", $"{(weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs):0.###} s");
             Stat(2, "ENERGY PER ROUND", Mathf.Max(1, weapon.EnergyPerRound).ToString());
             Stat(3, weapon.Type == WeaponType.Projectile ? "PROJECTILE SPEED" : "RANGE",

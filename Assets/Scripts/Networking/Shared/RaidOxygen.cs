@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
                    state.Oxygen < Capacity;
         }
 
+        // 便携补氧增加项圈资源并清重新窒息等待。返回实际加了多少，而不是直接采用物品标的数量。
         public static float Refill(ref PredictedPlayerGhost state, float amount) {
             if (!CanRefill(state) || !float.IsFinite(amount) || amount <= 0) return 0;
             float before = Mathf.Max(0, state.Oxygen);
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS {
                                             state.OxygenSupplyPerSecond < state.OxygenDrainPerSecond);
         }
 
+        // HUD 用净消耗速度估计剩余时间。处于有氧区或仍在净补充时，没有耗尽倒计时。
         public static float RemainingSeconds(in PredictedPlayerGhost state) {
             float netDrain = state.OxygenDrainPerSecond - state.OxygenSupplyPerSecond;
             return state.BreathableAir || !float.IsFinite(netDrain) || !float.IsFinite(state.Oxygen) || netDrain <= 0
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS {
                    float.IsFinite(state.OxygenDrainPerSecond) && state.OxygenDrainPerSecond >= 0;
         }
 
+        // 预计补满的时间也按净供给算，室外补氧站可能一边供一边耗。无净增长就不显示补满倒计时。
         public static float RefillSeconds(in PredictedPlayerGhost state) {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(state.Oxygen) ||
                 (state.ProtectionInitialized && !state.HeadDomeEquipped))
@@ -87,6 +90,7 @@ namespace Unity.MP_FPS {
             float exertion = moving
                 ? state.ControllerState.Sprinting ? parameters.SprintingMultiplier : parameters.WalkingMultiplier
                 : 1;
+            // 走跑影响真空耗氧，进入可呼吸环境就不用项圈储备。氧气循环器和特殊食物效果按下方规则改变消耗。
             state.OxygenDrainPerSecond = atmosphere.Breathable ? 0 : Capacity / parameters.OutdoorSeconds * exertion;
             if (sealedReserve && float.IsFinite(equipmentDrainMultiplier))
                 state.OxygenDrainPerSecond *= Mathf.Clamp(equipmentDrainMultiplier, .75f, 1);
@@ -96,6 +100,7 @@ namespace Unity.MP_FPS {
                 ? parameters.AirRefillPerSecond
                 : 0;
             // Overlapping sources do not multiply supply. A station can also supply a sealed suit in vacuum.
+            // 环境和站点重叠时取更强供给，避免同一人站在两个点旁异常快速补满。没佩戴储氧装备时没有项圈可以加。
             state.OxygenSupplyPerSecond =
                 sealedReserve ? Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond)) : 0;
             if (!sealedReserve) state.Oxygen = 0;
@@ -103,6 +108,7 @@ namespace Unity.MP_FPS {
             // 这一帧里可能先用完存氧、后进入缺氧。只把氧气用完后的那段时间算进缺氧宽限与伤害。
             float exhaustedTime = netDrain > 0 ? Mathf.Max(0, dt - state.Oxygen / netDrain) : 0;
             state.Oxygen = Mathf.Clamp(state.Oxygen - netDrain * dt, 0, Capacity);
+            // 能呼吸或还有氧气时清累计缺氧。持续真空且资源耗尽后才累计倒计时，过宽限只对新增的缺氧时间扣胸部生命。
             if (atmosphere.Breathable || exhaustedTime <= 0) {
                 state.HypoxiaSeconds = 0;
                 state.OxygenGraceRemaining = !atmosphere.Breathable && netDrain > 0 && state.Oxygen <= 0

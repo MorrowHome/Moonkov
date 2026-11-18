@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
         Expired
     }
 
+    // 客户端发送按钮和会话内编号，不发目标灯的开关值，服务器从实际按钮定义决定操作内容。
     public struct LightSwitchRequestRpc : IRpcCommand {
         public FixedString128Bytes ButtonId;
         public ulong Session;
@@ -61,6 +62,7 @@ namespace Unity.MP_FPS {
                 : null;
         }
 
+        // 没有战局 World 时可操作本地场景。正式联网时必须等已知服务端会话，发 RPC 后等待反馈。
         public static bool Press(World world, LightSwitchButton button) {
             if (!button || !button.isActiveAndEnabled) return false;
             if (world == null && !AirlockNetworkContext.HasNetworkWorlds) return button.Press();
@@ -134,6 +136,7 @@ namespace Unity.MP_FPS {
                 return LightSwitchFeedback.Unavailable;
             var position = (Vector3)em.GetComponentData<LocalTransform>(player).Position;
             if (!button.InRange(position)) return LightSwitchFeedback.OutOfRange;
+            // 距离够仍要能从人物眼前看到开关。服务器用同一场景做遮挡检查，再真正触发按钮。
             if (!new RaidInteractionTarget(button).VisibleFrom(position + Vector3.up * 1.5f))
                 return LightSwitchFeedback.Obstructed;
             return button.Press() ? LightSwitchFeedback.Accepted : LightSwitchFeedback.Unavailable;
@@ -151,6 +154,7 @@ namespace Unity.MP_FPS {
                     !EntityManager.HasComponent<NetworkStreamRequestDisconnect>(connection)) {
                     m_Requests.TryGetValue(connection, out uint prior);
                     var feedback = LightSwitchFeedback.Expired;
+                    // 匹配当前服务端会话与更大的请求号才考虑执行。一个连接还有最短按键间隔。
                     if (r.Session == m_Session && r.RequestId > prior) {
                         m_Requests[connection] = r.RequestId;
                         double now = SystemAPI.Time.ElapsedTime;
@@ -167,6 +171,7 @@ namespace Unity.MP_FPS {
                 }
                 ecb.DestroyEntity(entity);
             }
+            // 定时扫描启用按钮对应的灯路。旧连接只收变化，新连接需拿全当前状态。
             if (SystemAPI.Time.ElapsedTime >= m_NextBroadcast) {
                 m_NextBroadcast = SystemAPI.Time.ElapsedTime + .2;
                 m_Visited.Clear();
@@ -179,6 +184,7 @@ namespace Unity.MP_FPS {
                             !button.Controls.TryGetPowered(id, out bool on))
                             continue;
                         var key = (button.SwitchId, id);
+                        // 灯的开关值变化时才生成新修订，发送当前状态无需按历史点击次序重放。
                         bool changed = !m_Snapshots.TryGetValue(key, out var snapshot) || snapshot.Powered != on;
                         if (changed) {
                             snapshot = new LightSwitchStateRpc {
@@ -233,6 +239,7 @@ namespace Unity.MP_FPS {
         protected override void OnUpdate() {
             var state = EntityManager.GetComponentObject<LightSwitchClientState>(m_State);
             SystemAPI.TryGetSingletonEntity<NetworkId>(out var connection);
+            // 换连接或收到新服务端会话时清上次的序号、目标和灯路缓存，新的快照自行重建显示。
             if (connection != m_Connection) {
                 state.Session = 0;
                 state.NextRequest = state.PendingRequest = 0;
@@ -254,6 +261,7 @@ namespace Unity.MP_FPS {
                         m_Applied.Clear();
                     }
                     var key = (r.ButtonId.ToString(), r.LightId.ToString());
+                    // 每一对按钮和灯都按最新修订接受，存入待应用。旧快照晚到不能把关掉的灯再点亮。
                     if (!state.Snapshots.TryGetValue(key, out var old) || r.Revision > old.Revision) {
                         state.Snapshots[key] = r;
                         m_Applied.Remove(key);
@@ -280,6 +288,7 @@ namespace Unity.MP_FPS {
                 ecb.DestroyEntity(entity);
             }
             // Host shares the scene with its server World: never replay a toggle there.
+            // 房主场景已经由服务器直接改过。来宾才需要把汇总后的灯状态应用到自己的显示对象。
             if (!AirlockNetworkContext.HasServer) {
                 foreach (var batch in m_Batches.Values) {
                     batch.On.Clear();
@@ -319,6 +328,7 @@ namespace Unity.MP_FPS {
             if (!controls || entries.Count == 0) return;
             string[] ids = new string[entries.Count];
             for (int i = 0; i < entries.Count; i++) ids[i] = entries[i].Key.Item2;
+            // 按同一灯光控制器把所有开启或关闭一起提交，减少相同场景反复刷新。成功后才标记对应已应用。
             if (!controls.TryApply(ids, on ? LightCommand.SetOn : LightCommand.SetOff)) return;
             foreach (var entry in entries) m_Applied[entry.Key] = entry.Button;
         }

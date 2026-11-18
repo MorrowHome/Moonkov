@@ -24,6 +24,7 @@ namespace Unity.MP_FPS.Client {
                 dataSourcePath = new PropertyPath(GameSettings.StartHostStylePropertyName),
                 bindingMode = BindingMode.ToTarget
             });
+            // 端口通过双向绑定写进连接配置。开服流程等待弹窗时，可以读取确认后的同一份端口值。
             var portInputField = m_StartHostPopUp.Q<TextField>(UIElementNames.PortInputField);
             portInputField.SetBinding("value", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
@@ -32,6 +33,7 @@ namespace Unity.MP_FPS.Client {
             });
             m_StartButton = m_StartHostPopUp.Q<Button>(UIElementNames.StartButton);
             m_StartButton.clicked += OnStartPressed;
+            // 端口格式不对时先挡住确认，避免开服请求拿到无效端点。
             m_StartButton.SetBinding("enabledSelf", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
                 dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsNetworkEndpointValid)),
@@ -57,6 +59,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private static void OnCancelPressed() {
+            // 玩家取消时结束等待并恢复已配置的端点。没有确认的输入不进入下一次开服尝试。
             GameSettings.Instance.CancellableUserInputPopUp.SetCanceled();
             ConnectionSettings.Instance.IPAddress = ConnectionSettings.ConfiguredAddress;
             ConnectionSettings.Instance.Port = ConnectionSettings.ConfiguredPort;

@@ -22,6 +22,7 @@ namespace Unity.MP_FPS.Client {
             m_Kind = kind;
             pickingMode = PickingMode.Ignore;
             AddToClassList("vitals-cell");
+            // 光环一栏使用实际武器贴图。其他生命资源按自己的图形模板绘制，每一格表示当前值下应不应该点亮。
             if (kind == 4) {
                 m_Image = new Image { scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
                 m_Image.AddToClassList("vitals-halo-art");
@@ -29,6 +30,7 @@ namespace Unity.MP_FPS.Client {
             } else { generateVisualContent += Draw; }
         }
 
+        // 按武器编号从资源取对应图标。第一次加载后缓存，武器能量变化不需要再读图片。
         public static Texture2D HaloArtwork(uint weapon) {
             int index = Mathf.Clamp((int)weapon - (int)DollSingerWeapons.Halo, 0, HaloNames.Length - 1);
             return HaloTextures[index]
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS.Client {
         public void Present(bool filled, Color tint, bool ready) {
             Filled = filled;
             Tint = tint;
+            // 武器轮廓用透明度区分点亮、空置与尚未准备。程序画出的其他图形使用同一套状态。
             if (m_Image != null)
                 m_Image.tintColor = filled ? Color.white : new Color(.65f, .65f, .65f, ready ? .3f : .15f);
             else

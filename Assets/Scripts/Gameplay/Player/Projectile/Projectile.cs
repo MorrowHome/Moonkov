@@ -13,6 +13,7 @@ using UnityEngine.SceneManagement;
 namespace Unity.MP_FPS {
     // One ghost per shot. Clients evaluate the trajectory; only the server applies damage.
     public class Projectile : GhostMonoBehaviour, IUpdateServer, IPhysicsUpdateServer, IUpdateClient {
+        // 快照保留弹道起点和初速度，以及用于匹配的武器、发射拍和弹丸序号。服务器另外保存这发的伤害归属。
         public struct ProjectileData : IComponentData {
             [GhostField] public int OwnerNetworkId;
             public ClashDamageSource DamageSource; // Server-only release-time attribution.
@@ -63,6 +64,7 @@ namespace Unity.MP_FPS {
         private float m_HaloTrailSeconds;
         private static Material s_BulletMaterial;
 
+        // 本地先以当前玩家信息补齐一份暂用的弹道数据，等实际 Ghost 出现再接到它身上。
         public void InitializePrediction(
             uint weaponId,
             Vector3 origin,
@@ -154,6 +156,7 @@ namespace Unity.MP_FPS {
             m_HaloVisual.SetFlight(tail, head);
         }
 
+        // 用当前 World 查这发属于哪个角色。命中查询跳过它的碰撞体，服务端压制判断也需要知道发射者。
         private void ResolveShooter(bool server) {
             if (m_Shooter != null || GhostGameObject == null || !GhostGameObject.IsGhostLinked()) return;
             var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
@@ -197,6 +200,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 本机预测和服务器对齐服务器拍，观察者走自己的插值拍。从开火拍算经过的时间，使不同帧率能走同一弹道。
         private float NetworkAge(bool server) {
             if (!GhostGameObject.TryReadSingleton<NetworkTime>(out var time)) return m_Age;
             bool predicted = !server && Role == MultiplayerRole.ClientOwned;
@@ -212,6 +216,7 @@ namespace Unity.MP_FPS {
             if (m_Stopped) GhostGameObject.DestroyEntity();
         }
 
+        // 物理回调推进真正的弹体，命中或到时间就结束。更新后把位姿写回 Ghost。
         public void PhysicsUpdateServer(float deltaTime) {
             if (!m_Initialized || m_Stopped) return;
             Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(true)), true);
@@ -248,6 +253,7 @@ namespace Unity.MP_FPS {
                     if (server) ObserveNearMiss(scene, threatFrom, hit.point, hit.collider);
                     transform.position = hit.point;
                     Stop();
+                    // 两边都能让弹体飞到碰撞点。只有服务器结算命中，拥有者的本机碰撞仅能先播视觉反馈。
                     if (server) { Impact(hit); } else if (DollSingerWeapons.IsHalo(m_Data.WeaponID)) {
                         // Only the owner predicts impacts; observers consume the server's impact event.
                         bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() ||
@@ -264,6 +270,7 @@ namespace Unity.MP_FPS {
                 }
                 m_Age = nextAge;
                 transform.position = to;
+                // 已经飞过的路线攒一小段再发擦弹线索，避免每个很短的弹道子步重复扫附近 AI。
                 if (server && m_Age - threatAge >= .1f) {
                     ObserveNearMiss(scene, threatFrom, to, null);
                     threatFrom = to;
@@ -286,6 +293,7 @@ namespace Unity.MP_FPS {
                 ref s_NearMissHits);
         }
 
+        // 停止时先隐藏弹体和通知尾迹结束。服务器的实体销毁留到后续生命周期回调。
         private void Stop() {
             m_Stopped = true;
             if (m_Body != null) m_Body.enabled = false;
@@ -301,6 +309,7 @@ namespace Unity.MP_FPS {
             if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect) {
                 var scene = gameObject.scene.GetPhysicsScene();
                 var blast = hit.point + hit.normal * .03f;
+                // 范围武器在实际命中点稍向表面外算爆炸，随后发出爆炸声线索与已确认的表现事件。
                 ProjectileBlast.Apply(GhostGameObject.World, scene, blast, m_Weapon.AoeRadius, m_Weapon.Damage,
                     m_Data.DamageSource, GhostGameObject.GetCurrentTick(), out damageFlags);
                 RaidEnvironmentalNoise.EmitExplosion(GhostGameObject.World.EntityManager, scene, blast,

@@ -31,6 +31,7 @@ namespace Unity.MP_FPS {
 
         public void Add(uint tick, Vector3 pos, Quaternion rot) {
             // Store the new data at the current write index
+            // 缓冲满时覆盖最旧一项，记录长度固定，不会因战局持续时间越来越占内存。
             m_Buffer[m_WriteIndex] = new PlayerTickData(tick, pos, rot);
 
             // Move the write index to the next slot, wrapping around if necessary
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS {
             // Search backwards from the most recently added item to the oldest valid item.
             // This is important because m_WriteIndex points to the *next empty slot* (or the oldest item if full),
             // so the last written item is at (m_WriteIndex - 1).
+            // 从最近保存的状态往回扫。目标拍找不到时返回 false，调用者可新建这一拍的记录。
             for (int i = 0; i < m_CurrentSize; i++) {
                 // Calculate the actual index in the circular buffer.
                 // i = 0 corresponds to the newest item, i = m_CurrentSize - 1 corresponds to the oldest.
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS {
             // For UnityEngine.Vector3, you might use: (historyPos - currentPos).sqrMagnitude;
             // For System.Numerics.Vector3, you can use: Vector3.DistanceSquared(historyPos, currentPos);
             // or (historyPos - currentPos).LengthSquared();
+            // 比较留一点浮点误差余量。服务端和本机数值并不一定逐位相同，但游戏里足够近可以按同一处理解。
             if (positionDifferenceSquared > k_MatchPositionToleranceSquared)
                 return false; // Positions are too different
 

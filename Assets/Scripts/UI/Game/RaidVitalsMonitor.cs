@@ -94,6 +94,7 @@ namespace Unity.MP_FPS.Client {
             var signal = RaidVitalSignal.Read(state);
             m_Wave.Present(signal);
             int oxygen = signal.Ready ? RaidOxygen.DisplayPercent(state.Oxygen) : -1;
+            // 氧气真实值可不断变化，标签只在显示整数变化时改字，减少没有视觉变化的刷新。
             if (oxygen != m_LastOxygen) {
                 m_LastOxygen = oxygen;
                 if (panel != null && oxygen >= 0)
@@ -106,6 +107,7 @@ namespace Unity.MP_FPS.Client {
             Reserve(2, state.Hydration, signal.Ready);
             Reserve(3, state.Satiety, signal.Ready);
             Reserve(StaminaReserve, state.TacticalSprintStamina / TacticalSprintRules.Capacity * 100, signal.Ready);
+            // 只有角色状态可用且共享光环实际装备时启用能量栏。其他情况不展开这块屏幕空间。
             bool haloVisible = signal.Ready && state.HaloEnergyInitialized && state.HaloEquipped;
             if (m_HaloVisible != haloVisible) {
                 m_HaloVisible = haloVisible;
@@ -129,6 +131,7 @@ namespace Unity.MP_FPS.Client {
             }
             var appearance = HaloAppearanceCatalog.Current;
             uint haloWeapon = HaloAppearanceCatalog.CurrentWeapon(state);
+            // 武器型号改变才换轮廓贴图。持续扣能量只改变亮格数量和警告。
             if (haloWeapon != m_HaloWeapon) {
                 m_HaloWeapon = haloWeapon;
                 var artwork = RaidReserveIcon.HaloArtwork(haloWeapon);
@@ -137,6 +140,7 @@ namespace Unity.MP_FPS.Client {
             var haloColor = appearance ? appearance.ForWeapon(haloWeapon).Color : SignalColor;
             Reserve(4, haloPercent, haloVisible, haloColor);
             string warning = signal.Warning;
+            // 先看生命信号给出的主要警告。没有更急的内容才展示补氧、充能或疲劳等提示。
             if (string.IsNullOrEmpty(warning) && signal.Alive && state.Oxygen < RaidOxygen.Capacity &&
                 state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond)
                 warning = "OXYGEN REFILLING";
@@ -153,6 +157,7 @@ namespace Unity.MP_FPS.Client {
             int seconds = float.IsFinite(estimate) && estimate >= 0 && estimate < int.MaxValue - 1024
                 ? Mathf.CeilToInt(estimate)
                 : -1;
+            // 警告文字、宽限期和预计时间都相同时，不再重写当前界面。实际角色快照仍照常更新。
             if (m_LastWarning == warning && m_LastGrace == grace && m_LastOxygenSeconds == seconds) return;
             m_LastWarning = warning;
             m_LastGrace = grace;
@@ -193,6 +198,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Reserve(int index, float value, bool ready, Color color) {
             int filled = !ready ? 0 : RaidVitalSignal.ReserveCells(value, m_Reserves[index].Length);
+            // 每一条资源刻度只关心亮格数和颜色。数值没跨过显示分档时使用现有图标状态。
             if (m_Counts[index] == filled && m_Colors[index] == color) return;
             m_Counts[index] = filled;
             m_Colors[index] = color;
@@ -237,6 +243,7 @@ namespace Unity.MP_FPS.Client {
                         m_WasAnimating = false;
                         return;
                     }
+                // 只在有活的生命信号且选项允许时推进波形。不可见或静态时保留一帧，停止请求多余重绘。
                 bool animate = m_Signal.Ready && m_Signal.Alive && PlayerPrefs.GetInt(AnimatePreference, 1) != 0 &&
                                (!Application.isPlaying || !GameSettings.Instance.IsPauseMenuOpen);
                 if (!animate) {

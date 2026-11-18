@@ -160,6 +160,7 @@ namespace Unity.MP_FPS {
         public void Present(in ClientRifleImpactRpc impact, bool confirmed, bool owned) {
             Warmup();
             var profile = m_Library?.ForWeapon(impact.WeaponId);
+            // 把一次扣扳机和它的各颗弹丸分开追踪。每个落点能有特效，HUD 可把同一发的反馈合成一条。
             int shot = FindShot(impact);
             // 落点按发射者、射击 tick、武器和弹丸序号去重。同一发的确认如果改变了表面或位置，再在正确的位置补一个画面效果。
             int receipt = -1;
@@ -178,6 +179,7 @@ namespace Unity.MP_FPS {
                     Until = Time.unscaledTime + 6f, Position = impact.Position, Kind = impact.Kind
                 };
                 Emit((RifleImpactKind)impact.Kind, impact.Position, impact.Normal, profile, shot);
+            // 在本机先画的落点如果和服务器确认相差明显，就补画正确的地面或身体。这只影响表现，实际受伤已由服务器定。
             } else if (confirmed && !m_Receipts[receipt].Confirmed && (m_Receipts[receipt].Kind != impact.Kind ||
                                                                        Vector3.Distance(m_Receipts[receipt].Position,
                                                                            impact.Position) > .25f)) {
@@ -186,6 +188,7 @@ namespace Unity.MP_FPS {
             }
             if (!confirmed || m_Receipts[receipt].Confirmed) return;
             m_Receipts[receipt].Confirmed = true;
+            // 击中角色的回执才给射手的本机界面响确认。别人造成的伤害和打到环境的特效仍正常展示。
             if (!owned || (impact.DamageFlags & 1) == 0) return;
             bool killed = (impact.DamageFlags & 2) != 0;
             // 霰弹的多颗弹丸共享一次扳机的确认。普通命中可升级为击杀，后续同级或更低的确认不会再响。
@@ -204,6 +207,7 @@ namespace Unity.MP_FPS {
                 if (m_Shots[i].Until > Time.unscaledTime && m_Shots[i].Owner == impact.OwnerNetworkId &&
                     m_Shots[i].Tick == impact.ShotTick && m_Shots[i].Weapon == impact.WeaponId)
                     return i;
+            // 存放确认的环形表大小固定。过期或被覆盖的老枪击退出记录，避免打久后不断累积。
             int next = m_NextShot++ % m_Shots.Length;
             m_Shots[next] = new ShotReceipt {
                 Owner = impact.OwnerNetworkId, Tick = impact.ShotTick,

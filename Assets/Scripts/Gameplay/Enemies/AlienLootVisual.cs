@@ -9,9 +9,11 @@ namespace Unity.MP_FPS {
 
         public static GameObject Create(Transform parent, RaidCorpseRpc bag) {
             // A serialized Resources material keeps the exact keyword-free Lit variant in builds.
+            // 从 Resources 取可随构建装入的材质，给拾取残骸复用场景一致的灯光表现。
             var template = Resources.Load<Material>("Moonkov/AlienRemains");
             if (!template || !template.shader || !template.shader.isSupported)
                 throw new System.InvalidOperationException("Missing or unsupported Moonkov/AlienRemains material.");
+            // 用掉落编号命名远端能看见的对象，下面挂程序拼出的残骸外形。
             var root = new GameObject("Alien remains / " + bag.LootId);
             root.transform.SetParent(parent, false);
             root.transform.SetPositionAndRotation(bag.Position, bag.Rotation);
@@ -30,6 +32,7 @@ namespace Unity.MP_FPS {
             return root;
         }
 
+        // 这里复制了材质实例，移除掉落显示时一并释放。
         private void OnDestroy() {
             if (m_Material) Destroy(m_Material);
         }

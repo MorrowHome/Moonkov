@@ -41,6 +41,7 @@ namespace Unity.MP_FPS {
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        // 第一次需要本地化时订阅字符串表和字体变化。登录首屏可以在加载进行中创建界面。
         private static void Initialize() {
             if (s_Initialized || Application.isBatchMode) return;
             s_Initialized = true;
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 译文表到达后更新已绑定元素。已有字符串在初始资源慢时也能从原文补翻译。
         private static void StringTableChanged(StringTable table) {
             // Initial UI renders source text; refresh it once the asynchronous table arrives.
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Refresh();
@@ -100,6 +102,7 @@ namespace Unity.MP_FPS {
             s_PreparedFont = font;
         }
 
+        // 语言切换也会换字体。已明确使用美术字体或原样式的元素保持自身定义。
         private static void ApplyFont(TextElement element) {
             // A surface can own its source-font rendering while keeping string bindings.
             // In particular, LAN uses the source font to avoid shared SDF atlas edge artifacts.
@@ -128,6 +131,7 @@ namespace Unity.MP_FPS {
             // 连续选两次语言时，只有最后一次仍有效。等待初始化结束后用这个序号丢掉旧的选择。
             int request = ++s_LocaleRequest;
             try {
+                // 等初始化完成后才查可选语言。中间又选了别的语言时，用请求序号让这次回调失效。
                 var initialization = LocalizationSettings.InitializationOperation;
                 await initialization.Task;
                 if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return false;
@@ -147,6 +151,7 @@ namespace Unity.MP_FPS {
             if (string.IsNullOrEmpty(source)) return source;
             Initialize();
             var table = ReadyTable;
+            // 词条或整张表当前不可用时显示原文。这样缺资源也能继续进入界面。
             return table?.GetEntry(source)?.LocalizedValue ?? source;
         }
 
@@ -233,6 +238,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
+            // 格式参数中有原始文本时，在填进译好的模板前也翻译它。数量等原始值继续用原来的类型格式化。
             private object[] TranslateArguments() {
                 object[] args = new object[m_Arguments.Length];
                 for (int i = 0; i < args.Length; i++)
@@ -250,6 +256,7 @@ namespace Unity.MP_FPS {
                 Element.text = value;
             }
 
+            // 每个绑定跟着控件的面板生命周期。子页面卸载时释放订阅，避免后续语言变化更新已销毁的控件。
             private void Detached(DetachFromPanelEvent evt) { Dispose(); }
 
             public void Dispose() {

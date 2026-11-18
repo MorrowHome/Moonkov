@@ -49,6 +49,7 @@ namespace Unity.MP_FPS {
         }
 
         internal void Update() {
+            // 上一句还没有到预计片尾，就继续等它播完。播完再取队列中的下一个资源，缺失片段会跳过。
             if (m_Playback != null && Time.unscaledTimeAsDouble < m_End) return;
             m_Playback = null;
             if (m_Queue.Count == 0) return;
@@ -60,6 +61,7 @@ namespace Unity.MP_FPS {
             AudioClip clip = null;
             while (m_Queue.Count > 0 && !clip) clip = Resources.Load<AudioClip>(m_Queue.Dequeue());
             if (!clip) return;
+            // 第一次播放时建临时 SoundDef，后面只换里面的单个音频片段。对白沿用菜单音量通道。
             if (!m_Definition) {
                 m_Definition = ScriptableObject.CreateInstance<SoundDef>();
                 m_Definition.name = "Research quest radio";
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS {
             m_Definition.Clips.Add(clip);
             m_System = game.SoundSystem;
             m_Playback = m_System.CreateEmitter(m_Definition, Vector3.zero);
+            // 记录此次片段的预计片尾，下一帧据此判断该不该读下一个。界面退出能把队列和正在播放的片段一起停掉。
             m_End = Time.unscaledTimeAsDouble + clip.length;
         }
 

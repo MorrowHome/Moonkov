@@ -17,6 +17,7 @@ namespace Unity.MP_FPS.Client {
         private ResearchStoryChapter? PendingStory(ResearchQuestProgress saved) {
             if (m_ReviewStory == null || saved == null || saved.Ending != ResearchEnding.None) return null;
 
+            // 章节要先由任务规则解锁，并且存档没标记已读，才显示新内容徽标。
             bool Unread(ResearchStoryChapter chapter) {
                 return ResearchQuestRules.StoryAvailable(saved, chapter) &&
                        !ResearchQuestRules.StoryReviewed(saved, chapter);
@@ -42,6 +43,7 @@ namespace Unity.MP_FPS.Client {
                 ResearchQuest.NoWayBack => ResearchStoryChapter.Ultimatum,
                 _ => null
             };
+            // 交付任务不一定对应一个新章节。没有该章节或已经读完时继续普通的任务反馈。
             if (!chapter.HasValue || m_ReviewStory == null ||
                 !ResearchQuestRules.StoryAvailable(m_Read(), chapter.Value) ||
                 ResearchQuestRules.StoryReviewed(m_Read(), chapter.Value))
@@ -76,6 +78,7 @@ namespace Unity.MP_FPS.Client {
             for (int i = 0; i < m_Chapters.Length; i++) {
                 var chapter = (ResearchStoryChapter)i;
                 bool open = ResearchQuestRules.StoryAvailable(saved, chapter);
+                // 自己主动打开回看页时默认选最近能读的章节。来自任务交付的指定章节可以覆盖这个默认值。
                 if (open) defaultChapter = chapter;
                 var button = m_Chapters[i] = Button(row, "research-story-chapter", () => SelectStory(chapter));
                 button.name = "questStoryChapter" + i;
@@ -91,6 +94,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void SelectStory(ResearchStoryChapter chapter) {
+            // 章节的保存必须完成才能换到另一章。重复点当前章保留播放位置。
             if (m_ChapterPlayer?.Saving == true || m_Chapter == chapter ||
                 !ResearchQuestRules.StoryAvailable(m_Read(), chapter))
                 return;
@@ -108,6 +112,7 @@ namespace Unity.MP_FPS.Client {
             if (!ResearchQuestRules.StoryReviewed(m_Read(), chapter) && !await m_ReviewStory(chapter)) return false;
             if (m_Disposed) return true;
             m_Chapters[(int)chapter].EnableInClassList("research-story-unread", false);
+            // 有些任务一次开放两个连续章节。保存第一章后可以直接播放还没读的下一章。
             if (chapter == ResearchStoryChapter.Lucent &&
                 !ResearchQuestRules.StoryReviewed(m_Read(), ResearchStoryChapter.Recall)) {
                 m_ChapterPlayer = null;
@@ -115,6 +120,7 @@ namespace Unity.MP_FPS.Client {
                 return true;
             }
             CloseStory(true);
+            // 读完结局前的最后一章且还没选结局时，转到独立的选择窗口。已经选过则保留回看状态。
             if (chapter == ResearchStoryChapter.Originals && m_Read().Ending == ResearchEnding.None)
                 OpenEnding();
             else if (chapter == ResearchStoryChapter.Recruitment &&

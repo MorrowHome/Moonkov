@@ -58,6 +58,7 @@ namespace Unity.MP_FPS.Client {
         public void Present(RaidGameMode mode, bool offline) {
             RefreshViewport();
             bool clash = mode == RaidGameMode.BountyClash;
+            // 保留玩法和档案类型，重新检查用户能否进入每种玩法。选择按钮真正点击时还会再检查。
             m_Selected = mode;
             m_Offline = offline;
             m_Classic.style.display = offline ? DisplayStyle.Flex : DisplayStyle.None;
@@ -91,6 +92,7 @@ namespace Unity.MP_FPS.Client {
                     m_Opener = entry;
             m_Root.RemoveFromClassList("bounty-hidden");
             m_Container.BringToFront();
+            // 打开选择器时给当前模式的卡片焦点。当前项不可选时回到还能用的入口，键盘和手柄可以接着操作。
             if (m_Selected == RaidGameMode.Classic && m_Classic.enabledSelf)
                 m_Classic.Focus();
             else if (m_Selected == RaidGameMode.BountyClash && m_Clash.enabledSelf)
@@ -114,6 +116,7 @@ namespace Unity.MP_FPS.Client {
             m_Container.style.scale = new Scale(new Vector3(scale, scale, 1));
         }
 
+        // 关闭时把焦点还给打开它的按钮。同一选择器可从仓库或高级连接打开，记住入口才能回到原处。
         private void Close() {
             m_Root.AddToClassList("bounty-hidden");
             m_Opener?.Focus();

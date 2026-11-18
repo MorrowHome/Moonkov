@@ -17,6 +17,7 @@ namespace Unity.MP_FPS {
             out string reason,
             out bool emergency) {
             bool contact = brain.Target != Entity.Null && brain.Confidence > .2f;
+            // 低置信度的声响能触发调查。曾确认过的目标才进入守角或搜索，真正可见才准备交火。
             bool confirmed = contact && brain.Contacts.TryGetValue(brain.Target, out var memory) && memory.Confirmed;
             bool lowHealth = RaidHealth.DangerFraction(health) < m_Tuning.RetreatHealthFraction;
             int spareAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
@@ -25,6 +26,7 @@ namespace Unity.MP_FPS {
             var weapon =
                 WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
             int cost = weapon?.EnergyPerRound ?? 1;
+            // 决定装填前确认有能访问的电量，并且没有在同一库存版本下失败过。
             bool energy = weapon != null &&
                           !brain.ReloadFailure.Matches(brain.Inventory.Version, health.EquippedWeaponID, cost) &&
                           brain.Inventory.CellEnergy(true) >= (health.HaloEnergyInitialized ? 1 : cost);
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS {
             bool handsBusy = brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health);
             bool canPrepareMedical = !grenadeDanger && !hazardDanger && needsHealing && now >= brain.NextHeal &&
                                      !handsBusy && SafeToTreat(brain, position, now);
+            // 附近安全且手空时，可先把带来的药移动到能使用的位置。一次没成功便记录当前版本等库存变化。
             if (!brain.IsClashBot && canPrepareMedical && medical == null &&
                 !brain.MedicalFailure.Matches(brain.Inventory.Version)) {
                 medical = PmcMedicalInventory.Prepare(brain.Inventory);
@@ -57,6 +60,7 @@ namespace Unity.MP_FPS {
             // Keep deliberate departure (spent supplies, exhausted caches, timeout) latched.
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
+            // 资源少不一定马上撤。先判断是否带了真能用的补给，可治疗的受伤也可临时后退而非结束一局。
             bool lowOxygen = !brain.IsClashBot && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
             bool canRefillOxygen = lowOxygen && health.HeadDomeEquipped &&
                                    !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version) &&
@@ -71,6 +75,7 @@ namespace Unity.MP_FPS {
                                                             now - brain.SpawnTime > map.RaidDuration *
                                                             (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
+            // 没有更急的事时，先分配该做的小队或个人任务。队友离队太远会给归队更高分。
             bool follow = (brain.HasSquadLeader || brain.IsCompanion) && !brain.Leaving;
             var choice = brain.IsClashBot ? PmcAction.ClashObjective :
                 brain.Leaving ? PmcAction.Extract :
@@ -94,6 +99,7 @@ namespace Unity.MP_FPS {
 
             if (contact) {
                 if (brain.Visible) {
+                    // 有机会射击时先交火。换角度利用射击间歇或此前已有的合法路线，不同时放掉火力。
                     bool betweenBursts = now >= brain.BurstUntil && now < brain.NextBurst;
                     bool flanking = brain.Action == PmcAction.Flank && now - brain.ActionStarted < 6 &&
                                     HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
@@ -125,6 +131,7 @@ namespace Unity.MP_FPS {
                     if (flankOpening)
                         Consider(PmcAction.Flank, 64 + brain.Aggression * 8,
                             "change the firing angle after an inconclusive duel");
+                // 丢失对方几秒时可先看住最后一个出口，再去搜索。线索不可靠时只调查声音周围。
                 } else if (!brain.Leaving && confirmed && seenAge < ContactMemorySeconds(brain)) {
                     if (seenAge < holdAngleSeconds && brain.Suppression < .3f)
                         Consider(PmcAction.HoldAngle, 57, "watch the last exit briefly before committing to a search");
@@ -163,6 +170,7 @@ namespace Unity.MP_FPS {
             if ((bleeding || burning) && !hazardDanger && now >= brain.NextHeal && !handsBusy &&
                 SafeToTreat(brain, position, now))
                 Consider(PmcAction.Heal, 110, "stop burning or bleeding during a safe opening");
+            // 手雷和持续危险区令其它行动让位。更换方案的判断还会把这些当成可以抢占的紧急条件。
             if (hazardDanger) Consider(PmcAction.EvadeHazard, 190, "leave the harmful area");
             if (grenadeDanger) Consider(PmcAction.EvadeGrenade, 200, "move away from a visible explosive");
 
@@ -234,6 +242,7 @@ namespace Unity.MP_FPS {
             return PmcMedicalInventory.FindAccessible(inventory);
         }
 
+        // 目标可见、刚受到伤害或压制太强都不能原地用药。仍有接触记忆时还要查对方射线是否可能打过来。
         private bool SafeToTreat(DollSingerEnemyBrain brain, Vector3 position, double now) {
             if (brain.Visible || brain.Suppression >= .3f || now - brain.LastDamage < m_Tuning.HealSafetySeconds)
                 return false;
@@ -263,6 +272,7 @@ namespace Unity.MP_FPS {
                 if (previous <= 0 && brain.HealUntil > 0) RaidConsumableAcoustics.Mark(ref health);
                 return;
             }
+            // 启动治疗时选部位、记录药品和库存版本，并设置完成时间。按一次动作持续走完。
             if (brain.HealUntil <= 0) {
                 if (now < brain.NextHeal) return;
                 var medical = FindMedical(brain.Inventory);
@@ -278,6 +288,7 @@ namespace Unity.MP_FPS {
                 RaidConsumableAcoustics.Mark(ref health);
                 return;
             }
+            // 等待中物资换过就重新确认，避免用已经被挪走或消耗的药结算。
             if (brain.Inventory.Version != brain.HealInventoryVersion) {
                 brain.HealUntil = 0;
                 brain.HealItemId = null;

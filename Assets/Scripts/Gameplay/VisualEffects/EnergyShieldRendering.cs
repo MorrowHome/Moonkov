@@ -27,6 +27,7 @@ namespace Unity.MP_FPS {
         internal static void Register(EnergyShieldPresentation view) {
             if (!view || !view.isActiveAndEnabled || s_Views.Contains(view)) return;
             s_Views.Add(view);
+            // 第一个角色需要护具效果时才挂相机回调。后续角色只加入列表，最后一个退出后就能一起解绑。
             if (s_Subscribed) return;
             s_Pass = new ProtectionPass();
             s_Subscribed = true;
@@ -59,6 +60,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             // Visibility is paired for every camera, including a first-person overlay.
+            // 每个相机前先设置对应角色的可见性。渲染结束后恢复，避免本机第一视角隐藏的面罩影响其他相机。
             foreach (var view in s_Views) view.BeginCamera(camera);
             if (!camera || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null ||
                 (camera.cameraType != CameraType.Game && camera.cameraType != CameraType.SceneView))
@@ -82,6 +84,7 @@ namespace Unity.MP_FPS {
                     owner = view;
                 }
             }
+            // 当前相机至少有可见盾面、面罩或屏幕闪烁才提交渲染。远处或无盾装备的角色不会强制拷贝画面。
             if (!surfaces && pulse <= 0 && !visor) return;
             s_Pass.HasSurfaces = surfaces;
             s_Pass.Visor = visor;
@@ -129,6 +132,7 @@ namespace Unity.MP_FPS {
                 if (!surfaces && !pulse && !visor) return;
                 var target = resources.activeColorTexture;
                 var snapshot = TextureHandle.nullHandle;
+                // 可见面罩与盾面会用场景颜色做折射，所以为这帧做一份颜色副本。只有屏幕闪烁时可以直接叠画。
                 if (surfaces || visor) {
                     // 折射材质要读取描画护盾前的画面。先把相机颜色复制到单独纹理，绘制时读副本、写正式画面，避开读写同一目标。
                     // Refraction samples a separate graph-owned copy, never its write attachment.
@@ -156,6 +160,7 @@ namespace Unity.MP_FPS {
                     data.renderers = graph.CreateRendererList(new RendererListParams(
                         frameData.Get<UniversalRenderingData>().cullResults, drawing,
                         new FilteringSettings(RenderQueueRange.transparent)));
+                    // 告诉 RenderGraph 哪些透明网格会画、要读哪个深度。材质就能按遮挡和当前场景颜色对球盾做正确组合。
                     builder.UseRendererList(data.renderers);
                     builder.UseTexture(data.depth, AccessFlags.Read);
                 }

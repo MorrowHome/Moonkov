@@ -23,6 +23,7 @@ namespace Unity.MP_FPS {
             Palette(species, out m_Skin, out m_Plate, out m_Tissue);
         }
 
+        // 共用黑色液态材质也可按种类设不同皮层、甲和组织的颜色，让形态更易区分。
         private static void Palette(AlienSpecies species, out Color skin, out Color plate, out Color tissue) {
             skin = new Color(.23f, .28f, .30f);
             plate = new Color(.56f, .53f, .44f);
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS {
             material.SetColor("_TissueColor", m_Tissue);
         }
 
+        // 外形重建时由这里重新找生成的渲染器，并给它们配置材质。碰撞体和骨架保持可独立更新。
         public void Refresh() {
             if (!m_Style) return;
             m_Renderers.Clear();
@@ -116,6 +118,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 把当前的蓄力、爆发和恢复强度传给外观材质。反应实时变化，无需每帧创建新材质。
         public void Update(in SpiderLab.LiquidReaction reaction) {
             float charge = (reaction.Charge + reaction.Burst * .75f) * reaction.Strength;
             foreach (var material in m_ChargeMaterials)
@@ -126,6 +129,7 @@ namespace Unity.MP_FPS {
                     material.SetFloat(Charge, charge);
         }
 
+        // 释放为这只异形生成的材质，其他怪共用的原配置资源继续保留。
         public void Dispose() {
             foreach (var material in m_Owned)
                 if (material) {

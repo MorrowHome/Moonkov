@@ -67,6 +67,7 @@ namespace Unity.MP_FPS {
                     string name = materials[sub].name.Replace(" (Instance)", "");
                     bool isFace = name.Equals("Face", System.StringComparison.OrdinalIgnoreCase) ||
                                   name.Equals("head", System.StringComparison.OrdinalIgnoreCase);
+                    // 选脸、身体和头发网格参考头部外形。其他附件即使挂得很近，也不会影响密封面罩的尺寸。
                     if (!isFace && !name.Equals("Body", System.StringComparison.OrdinalIgnoreCase) &&
                         !name.Equals("Hair", System.StringComparison.OrdinalIgnoreCase))
                         continue;
@@ -115,6 +116,7 @@ namespace Unity.MP_FPS {
             // bottom of the helmet: doing so pushes the entire globe over the crown.
             float bottom = (inverse * (anchor.position - m_Head.position)).y;
             var center = (minimum + maximum) * .5f;
+            // 如果能得到独立的脸部范围，就把面罩中心和脸对齐。否则从已知的头部几何和骨骼尺寸回退。
             if (!float.IsInfinity(faceMinimum.y)) center.y = (faceMinimum.y + faceMaximum.y) * .5f;
             float radius = Mathf.Max(.10f, Mathf.Sqrt(RadiusSquared(center.y)) + .012f);
             // Main skull plus a small scalp clearance. Low side locks and tied
@@ -182,6 +184,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 佩戴状态、脸部锚点和密封参数共同决定面罩是否显示与跟随的位置。第一人称的内侧表现另交给相机渲染步骤。
         private void UpdateVisor() {
             var frame = m_Head.rotation * m_VisorLocalFrame;
             WorldPose(m_Visor, m_Head.position + frame * m_VisorOffset, frame, m_VisorSize);

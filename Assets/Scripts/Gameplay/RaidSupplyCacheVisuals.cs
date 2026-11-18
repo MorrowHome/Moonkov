@@ -17,6 +17,7 @@ namespace Unity.MP_FPS {
         private readonly MeshRenderer[] m_Indicators;
         private readonly bool[] m_EmptyState;
 
+        // 箱壳、托盘、锁扣等部件的网格和材质预先造好。每个箱只创建自己的对象与指示状态。
         public RaidSupplyCacheVisuals(Shader shader, int count) {
             m_Indicators = new MeshRenderer[count];
             m_EmptyState = new bool[count];
@@ -78,6 +79,7 @@ namespace Unity.MP_FPS {
             m_Indicator = light.Build("Raid supply cache / shared status inset");
         }
 
+        // 场景中的箱按下标装配，稍后用同一下标找库存提示灯。
         public GameObject Create(Transform parent, Vector3 position, int index, bool showInventoryIndicator = true) {
             var root = new GameObject("Supply cache " + (index + 1).ToString("00"));
             root.transform.SetParent(parent, false);
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS {
             return root;
         }
 
+        // 空箱时只切换指示灯外观，箱体保留在场景，和可搜刮容器的寿命一致。
         public void SetEmpty(int index, bool empty) {
             if (m_EmptyState[index] == empty) return;
             m_EmptyState[index] = empty;
@@ -153,6 +156,7 @@ namespace Unity.MP_FPS {
                 for (int i = 0; i < materials; i++) m_Triangles[i] = new List<int>();
             }
 
+            // 程序把带倒角的箱子部件拆成面来加。每个面记自己应使用的材质。
             public void Box(Vector3 center, Vector3 size, float bevel, int material) {
                 var half = size * .5f;
                 float b = Mathf.Min(bevel, Mathf.Min(half.x, Mathf.Min(half.y, half.z)) * .8f);
@@ -204,6 +208,7 @@ namespace Unity.MP_FPS {
                 }
             }
 
+            // 把顶点、法线和 UV 写进共用网格，材质分组分别写三角面。
             public Mesh Build(string name) {
                 var mesh = new Mesh { name = name, subMeshCount = m_Triangles.Length };
                 mesh.SetVertices(m_Vertices);

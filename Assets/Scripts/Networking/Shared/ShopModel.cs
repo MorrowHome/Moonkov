@@ -100,6 +100,7 @@ namespace Unity.MP_FPS.Inventory {
         // A catalogue can contain at most one offer per known inventory code.
         // Derive its bound from the shared definitions so new items cannot outgrow
         // an unrelated client-only limit.
+        // 在线报价先验证物品码、价格和条目唯一性。坏目录不能交给预览去算一笔玩家看不到的收费。
         public static bool ValidOffers(ShopOffer[] offers) {
             if (offers == null || offers.Length > InventoryCatalog.Definitions.Count) return false;
             var codes = new HashSet<string>(StringComparer.Ordinal);
@@ -112,6 +113,7 @@ namespace Unity.MP_FPS.Inventory {
 
         public static ShopOffer Find(string code) { return Offers.FirstOrDefault(o => o.Code == code); }
 
+        // 电池出售按实际可转移电量换算价值，非满电的一节不应当成满电卖。
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) {
             return BatteryEnergy.IsCell(item)
                 ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity
@@ -124,6 +126,7 @@ namespace Unity.MP_FPS.Inventory {
                    InventoryCatalog.Get(code)?.Kind == ItemKind.Melee;
         }
 
+        // 应急武器只面向既没长枪也没手枪的完整账号档。不能充成反复购买的入口。
         public static bool CanClaim(InventoryGraph graph) {
             return graph != null && graph.Find("stash") != null && !graph.Items.Any(i =>
                 InventoryCatalog.Get(i.Code)?.Kind == ItemKind.LongGun ||
@@ -138,6 +141,7 @@ namespace Unity.MP_FPS.Inventory {
         }
 
         // Preview uses the downloaded catalogue. Backend commits always use Apply above.
+        // 预览用玩家当前看到的报价算下一步库存，不改正式图。服务端执行时用它认可的目录与同样校验。
         public static string Preview(
             InventoryGraph graph,
             ShopCommand command,
@@ -159,8 +163,10 @@ namespace Unity.MP_FPS.Inventory {
             if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null ||
                 command == null || !Guid.TryParse(command.RequestId, out _))
                 return "shop_invalid";
+            // 提交必须基于已确认的库存版本，之后所有扣钱和放物只改副本，任何一步失败都不写入。
             if (command.ExpectedVersion != graph.Version) return "inventory_Stale";
             var copy = graph.Clone();
+            // 研究和制作复用商店原子事务，可扣指定来源材料，再增加解锁位或制造产物。
             if (command.Operation == ShopOperation.Research || command.Operation == ShopOperation.Fabricate) {
                 bool fabricate = command.Operation == ShopOperation.Fabricate;
                 var research = fabricate
@@ -184,12 +190,14 @@ namespace Unity.MP_FPS.Inventory {
                     return true;
                 }
 
+                // 每种材料先查够不够，再从合规物品堆取。任一材料缺少或产物放不下时放弃整份副本。
                 for (int i = 0; i < research.Materials.Length; i++)
                     if (!Spend(research.Materials[i], research.Quantities[i]))
                         return fabricate ? "fabrication_materials" : "research_materials";
                 if (fabricate) {
                     if (copy.AddSupply(research.Code, 1, "stash") != InventoryError.None) return "inventory_Full";
                 } else { research.Unlock(copy); }
+            // 应急发放同时给武器和必要电池。装备区容量和携带重量不够时尝试仓库。
             } else if (command.Operation == ShopOperation.Emergency) {
                 if (!string.IsNullOrEmpty(command.Code) || !string.IsNullOrEmpty(command.ItemId) ||
                     command.Quantity != 0)
@@ -218,6 +226,7 @@ namespace Unity.MP_FPS.Inventory {
                     // Free test supplies must not become an unlimited source of dust.
                     // Reuse the persisted emergency provenance so splitting, looting,
                     // deployment and settlement preserve the sale restriction.
+                    // 免费允许拿的补给会带来源标记。以后拆堆、出战、拾取也保留这个标志，避免转卖刷资源。
                     bool freeSupply = offer.BuyDust == 0 && offer.FreeSupplyRestricted;
                     int cost = offer.BuyDust * command.Quantity;
                     if (copy.Count("dust") < cost) return "shop_insufficient_dust";
@@ -228,6 +237,7 @@ namespace Unity.MP_FPS.Inventory {
                         if (stack.Quantity == 0) copy.Items.Remove(stack);
                         if (cost == 0) break;
                     }
+                    // 容器要逐件建自己的 ID 并找独立位置。普通物资走堆叠，两个流程都先验证仓库装得下。
                     if (definition.Container)
                         for (int i = 0; i < command.Quantity; i++) {
                             var purchased = new InventoryItem
@@ -248,6 +258,7 @@ namespace Unity.MP_FPS.Inventory {
                     if (item == null || item.Code != offer.Code || item.Quantity < command.Quantity)
                         return "inventory_Missing";
                     if (item.EmergencySupply) return "shop_emergency_supply";
+                    // 物品里还挂着模块时先要求卸下。卖掉父物品不能连未确认价格的子物品一起移除。
                     if (copy.Children(item.Id).Any()) return "shop_remove_modules_first";
                     if (copy.RootOf(item.Id) != "stash") return "shop_store_first";
                     int refund = ShopCatalog.SaleDust(item, command.Quantity, offer.SellDust);
@@ -257,6 +268,7 @@ namespace Unity.MP_FPS.Inventory {
                 } else { return "shop_invalid"; }
             }
             if (copy.Validate() != InventoryError.None) return "shop_invalid";
+            // 物品和价格改完后再验证整图。一次成功交易只推进一个版本，交给上层和订单回执一起存。
             copy.Version = graph.Version + 1;
             updated = copy;
             return null;

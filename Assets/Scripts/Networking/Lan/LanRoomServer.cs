@@ -93,6 +93,7 @@ namespace Unity.MP_FPS {
             participant = null;
             if (string.IsNullOrEmpty(ticket)) return false;
             lock (m_Lock) {
+                // 模式和阶段先对上才查入场票。返回给比赛的是当前成员名字和一份外观副本。
                 if (m_Disposed || m_Room.Mode != mode || m_Room.Phase != LanRoomPhase.Playing) return false;
                 var member =
                     m_Members.Values.FirstOrDefault(candidate => candidate.View.InGame && candidate.Ticket == ticket);
@@ -117,6 +118,7 @@ namespace Unity.MP_FPS {
             int character = 2,
             int pose = -1,
             int connection = 0) {
+            // 新成员只在准备室登记。先核对容量、身份和外观范围，再为该凭据打开对应房主档。
             if (m_Room.Phase != LanRoomPhase.Lobby) throw new InvalidOperationException("房间已开始对局，请等待本局结束。");
             if (m_Members.ContainsKey(credential)) throw new InvalidOperationException("此玩家已在房间中，请先退出原连接。");
             if (m_Members.Count >= m_Room.Capacity) throw new InvalidOperationException("房间已满。");
@@ -129,6 +131,7 @@ namespace Unity.MP_FPS {
                 }
             };
             m_Members.Add(credential, member);
+            // 初次回复包含新成员快照和完整档案。若档案读失败，把刚加入的人移出名单，把名额还回去。
             try { return Reply(member, true); } catch {
                 m_Members.Remove(credential);
                 throw;
@@ -140,6 +143,7 @@ namespace Unity.MP_FPS {
                 Id = m_Room.Id, HostId = m_Room.HostId, Name = m_Room.Name, Mode = m_Room.Mode,
                 Capacity = m_Room.Capacity,
                 GamePort = m_Room.GamePort, Phase = m_Room.Phase, Round = m_Room.Round,
+                // 整个响应都是副本。尤其房主自己的 UI 没经过网络序列化，不能让它拿到可直接修改的房间成员对象。
                 Members = m_Members.Values.Select(p => new LanMember {
                     Id = p.View.Id, Name = p.View.Name, Host = p.View.Host, Ready = p.View.Ready,
                     InGame = p.View.InGame,
@@ -162,6 +166,7 @@ namespace Unity.MP_FPS {
         private static void RefreshAppearance(Member member, LanProfileSnapshot profile) {
             var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.Profile.InventoryJson, LanProtocol.Json);
             var previous = member.View.Appearance;
+            // 角色和姿态由请求选择，装备外观从房主的真实库存提取。确认外观变化还会取消旧的准备状态。
             var next = LobbyAppearanceInventory.FromInventory(graph, previous.CharacterIndex, previous.PoseIndex);
             if (!next.SameAs(previous)) member.View.Ready = false;
             member.View.Appearance = next;
@@ -178,6 +183,7 @@ namespace Unity.MP_FPS {
                 if (request.Action == "join")
                     return Join(request.Credential, request.Name, false, request.CharacterIndex, request.PoseIndex,
                         connection);
+                // 除首次加入外，房间 ID、玩家凭据和实际连接编号必须同时匹配。不能用另一个房间的同名玩家取结果。
                 if (request.RoomId != m_Room.Id || request.Credential == null ||
                     !m_Members.TryGetValue(request.Credential, out var member) || member.Connection != connection)
                     throw new InvalidOperationException("房间已关闭或玩家已离开，请重新加入。");
@@ -195,6 +201,7 @@ namespace Unity.MP_FPS {
                             member.View.Ready = false;
                         }
                         return Reply(member, true);
+                    // 准备前核对旧局已结算。临时装备模式不需要占玩家真实仓库，所以不查这一条件。
                     case "ready":
                         RequireLobby();
                         if (!ArenaMatch.UsesTemporaryKit(m_Room.Mode) && Persistence.Read(member.View.Id).RaidActive)
@@ -221,6 +228,7 @@ namespace Unity.MP_FPS {
                             Persistence.SetTicket(player.Ticket, player.View.Id);
                         }
                         break;
+                    // 房主 Unity 服务端确认已开始监听后进入 Playing。来宾看到这个阶段才能拿刚签的票启动本局。
                     case "listening":
                         if (!member.View.Host || m_Room.Phase != LanRoomPhase.Preparing)
                             throw new InvalidOperationException("房间尚未进入地图加载阶段。");
@@ -241,6 +249,7 @@ namespace Unity.MP_FPS {
                         m_Members.Remove(member.Credential);
                         ResetRoundIfEmpty();
                         break;
+                    // 仓库写只允许在准备室，并要求本人取消准备。改完再从正式背包重新提取外观。
                     case "move":
                     case "trade":
                     case "recovery":
@@ -282,6 +291,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 所有参加本局的成员都离开战局后，房间才回到可准备状态，并把该轮的旧票全部撤销。
         private void ResetRoundIfEmpty() {
             if (m_Room.Phase != LanRoomPhase.Lobby && m_Members.Values.All(m => !m.View.InGame)) {
                 m_Room.Phase = LanRoomPhase.Lobby;
@@ -294,6 +304,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Expire(DateTime now) {
+            // 轮询也相当于心跳，长时间没回应的非房主释放席位和票。房主自己的生命周期由开关房管理。
             foreach (var pair in m_Members.Where(p => !p.Value.View.Host && (now - p.Value.Seen).TotalSeconds > 45)
                          .ToArray()) {
                 Persistence.RevokePlayer(pair.Value.View.Id);
@@ -307,6 +318,7 @@ namespace Unity.MP_FPS {
                 while (!m_Stop.IsCancellationRequested) {
                     var client = await m_Listener.AcceptTcpClientAsync().ConfigureAwait(false);
                     lock (m_Lock) {
+                        // 房间请求使用短 TCP 连接。监听端限制同时处理的请求数，每个连接也有读取和回复时限。
                         if (m_Disposed || m_Clients.Count >= 64) {
                             client.Dispose();
                             continue;
@@ -340,6 +352,7 @@ namespace Unity.MP_FPS {
             try {
                 while (!m_Stop.IsCancellationRequested) {
                     var packet = await m_Discovery.ReceiveAsync().ConfigureAwait(false);
+                    // 局域网 UDP 广播只查房间列表，回复仍要处于准备室。实际加入时再连房主提供的 TCP 端口。
                     if (Encoding.UTF8.GetString(packet.Buffer) != LanProtocol.DiscoveryQuery) continue;
                     byte[] bytes;
                     lock (m_Lock) {

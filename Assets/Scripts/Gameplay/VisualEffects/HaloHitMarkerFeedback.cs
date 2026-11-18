@@ -28,6 +28,7 @@ namespace Unity.MP_FPS {
 
         public void Present(ClientHaloMarkRpc rpc) {
             if (rpc.OwnerNetworkId <= 0 || !math.all(math.isfinite(rpc.Position))) return;
+            // 确认本机有存活角色并取得它正在看的相机。掉线或观战期间不能误用上一只角色的提示。
             if (!PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientOwned, out var manager) ||
                 !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players) || players.Count == 0)
                 return;
@@ -43,6 +44,7 @@ namespace Unity.MP_FPS {
             for (int i = 0; i < marks.Length; i++) {
                 var existing = marks[i];
                 if (existing != null && existing.Owner == rpc.OwnerNetworkId) {
+                    // 同一个来源只保留较新的命中。如果所有槽都在用，则回收最早过期的那个。
                     if (existing.Tick == rpc.ShotTick || (int)(rpc.ShotTick - existing.Tick) <= 0) return;
                     slot = i;
                     break;
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS {
         private void LateUpdate() {
             foreach (var mark in marks) {
                 if (mark == null || !mark.Root.gameObject.activeSelf) continue;
+                // 更新标记朝向和大小，远一些也可以读清楚。到时关闭物体，同一个槽能为后续消息复用。
                 float remaining = mark.Until - Time.unscaledTime;
                 if (remaining <= 0) {
                     mark.Root.gameObject.SetActive(false);

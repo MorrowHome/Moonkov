@@ -46,6 +46,7 @@ namespace Unity.MP_FPS {
         Unavailable
     }
 
+    // 服务端用阶段表示装置在飞、已布置、正生效或已移除。表现按阶段读同一对象 ID。
     public enum TacticalWorldPhase : byte {
         Flying,
         Armed,
@@ -66,6 +67,7 @@ namespace Unity.MP_FPS {
         public readonly TacticalItemKind Kind;
         public readonly float UseSeconds, Fuse, Radius, Lifetime;
 
+        // 类型决定道具有无投掷、布置或注射动作。规则表还提供读条、半径、引信和存续时间。
         public bool Throwable =>
             (Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke) || Kind == TacticalItemKind.Smoke ||
             Kind == TacticalItemKind.Flash || Kind == TacticalItemKind.PoisonBomb;
@@ -127,12 +129,14 @@ namespace Unity.MP_FPS {
                    kind == TacticalItemKind.Antidote || kind == TacticalItemKind.Regeneration;
         }
 
+        // 只有已携带并放在口袋或胸挂直下的战术物品可以直接拿。箱子和其他不可从手上取到的位置拒绝。
         public static bool Accessible(InventoryGraph graph, InventoryItem item) {
             return graph != null && item != null && item.Quantity > 0 && Find(item.Code) != null &&
                    graph.Carried(item) && (item.Parent == InventoryCatalog.Pockets ||
                                            item.Parent == graph.Equipped("ChestRig")?.Id);
         }
 
+        // 开始与完成使用都能用同一套库存校验。读条期间移动过物品，旧请求不会把新版本里的东西扣掉。
         public static InventoryError Validate(
             InventoryGraph graph,
             string id,
@@ -148,6 +152,7 @@ namespace Unity.MP_FPS {
         }
 
         public static InventoryError Take(InventoryGraph graph, string id, int version) {
+            // 真正生效时才扣一件，数量到零就删堆并提高版本。无效请求保留旧图。
             var error = Validate(graph, id, version, out _);
             if (error != InventoryError.None) return error;
             var item = graph.Find(id);
@@ -156,12 +161,14 @@ namespace Unity.MP_FPS {
             return InventoryError.None;
         }
 
+        // 只按虚拟道具种类与距离算基础伤害；遮挡与同队规则交给服务端玩法层。
         public static float BlastDamage(TacticalItemKind kind, float distance) {
             if (!float.IsFinite(distance) || distance < 0 || distance >= 8) return 0;
             return (kind == TacticalItemKind.Dynamite ? 650 : kind == TacticalItemKind.Frag ? 320 : 0) *
                    Math.Min(1, (8 - distance) / 6);
         }
 
+        // 靠近且朝向闪光才产生最强效果，距离与朝向各自贡献衰减。这是游戏里对画面和 AI 的同一基础强度。
         public static float FlashStrength(float distance, float facing) {
             if (!float.IsFinite(distance) || !float.IsFinite(facing) || distance < 0 || distance >= 12) return 0;
             return Math.Clamp((facing + .2f) / 1.05f, 0, 1) * Math.Clamp((12 - distance) / 8, 0, 1);
@@ -181,6 +188,7 @@ namespace Unity.MP_FPS {
             if (graph.Version != version) return InventoryError.Stale;
             var copy = graph.Clone();
             int budget = Math.Min(EnergyPerUse, available);
+            // 补给箱先给外层可访问、未充满的现有电池加电。每次使用的极限也受箱中剩余能源限制。
             foreach (var item in copy.Items) {
                 if (!BatteryEnergy.IsCell(item) || !copy.Carried(item) || (item.Parent != InventoryCatalog.Pockets &&
                                                                            item.Parent != copy.Equipped("ChestRig")
@@ -193,6 +201,7 @@ namespace Unity.MP_FPS {
                 supplied = add;
                 break;
             }
+            // 没有能补的电池才尝试装一节新电池。箱子余量不到一整节，或口袋与胸挂放不下，都不会改原箱。
             if (supplied == 0) {
                 // AddSupply enforces real grid capacity/weight; grant only whole lawful cells.
                 if (budget < BatteryEnergy.Capacity) return InventoryError.Full;
@@ -209,6 +218,7 @@ namespace Unity.MP_FPS {
                 supplied = 0;
                 return validation;
             }
+            // 返回试算成功的背包和实际应扣能量。调用方同时更新这两侧，任何一侧失败都不能消耗箱子。
             copy.Version = graph.Version + 1;
             result = copy;
             return InventoryError.None;

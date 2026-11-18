@@ -6,11 +6,13 @@ namespace Unity.MP_FPS {
         public const double TimeoutSeconds = 30;
         public const double EmptyWorldGraceSeconds = 1;
 
+        // 有目标数量时用已生成的 Ghost 比例显示进度。服务端没有上报任何 Ghost 时给它一秒时间，再允许真正的空场景走完加载。
         public static float ReplicationProgress(int serverCount, int instantiatedCount, double elapsedSeconds) {
             return serverCount > 0 ? Mathematics.math.saturate(instantiatedCount / (float)serverCount) :
                 elapsedSeconds >= EmptyWorldGraceSeconds ? 1f : 0f;
         }
 
+        // 连接错误按能采取的操作归类。握手超时可以核对地址，协议不匹配要对齐版本，认证被拒则需重新登录。
         public static string DisconnectMessage(NetworkStreamDisconnectReason reason) {
             return reason switch {
                 NetworkStreamDisconnectReason.Timeout or NetworkStreamDisconnectReason.MaxConnectionAttempts

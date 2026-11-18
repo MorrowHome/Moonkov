@@ -11,6 +11,7 @@ public class PredictedClientInputAuthoring : MonoBehaviour {
 public class PredictedClientInputBaker : Baker<PredictedClientInputAuthoring> {
     public override void Bake(PredictedClientInputAuthoring authoring) {
         var entity = GetEntity(TransformUsageFlags.None);
+        // 输入模板只带预测用的标记和进度数据。真正属于哪个连接、缓冲里有怎样的操作，要等入场以及客户端初始化后才确定。
         AddComponent<PredictedClientInput>(entity);
     }
 }

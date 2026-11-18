@@ -46,6 +46,7 @@ namespace Unity.MP_FPS {
                    save.Clash.Matches.Values.Any(m => m.DeploymentId == id.ToString("D"));
         }
 
+        // 注册记录归一化成固定的回执内容，同场重发可以验证名单、队伍和赏金标识全一致。
         private static string RegistrationHash(OfflineClashMatch match) {
             return Receipt(new LocalRegistration {
                 MatchId = match.MatchId, TokenId = match.TokenId, RulesVersion = match.RulesVersion,
@@ -56,6 +57,7 @@ namespace Unity.MP_FPS {
             });
         }
 
+        // 先把奖励标识转成标准 GUID 写法并整理成员列表，使相同事件即使序列化顺序不同也能认成同一条。
         private static RaidPersistenceContext.BountyRedemption CanonicalRedemption(
             RaidPersistenceContext.BountyRedemption request) {
             if (request == null || request.ExtractedDeploymentIds == null ||
@@ -69,6 +71,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 赏金事件要和这场比赛发出的 token、实际携带者和成功撤离名单对应。单人本地档只有本人出战记录。
         private static void ValidateAward(OfflineClashMatch match, RaidPersistenceContext.BountyRedemption award) {
             if (award.MatchId != match.MatchId || award.TokenId != match.TokenId ||
                 !award.ExtractedDeploymentIds.Contains(match.DeploymentId) ||
@@ -123,6 +126,7 @@ namespace Unity.MP_FPS {
                                                        p.DeploymentId == match.DeploymentId &&
                                                        p.TeamId == match.TeamId)))
                     throw new InvalidDataException("Invalid LAN Clash roster.");
+                // 读取档案时打开的比赛应与当前活动出战绑定，而且这份局内背包能解码。两个存档字段指向不同出战就拒绝。
                 if (match.State == "Open") {
                     if (ledger.ActiveMatchId != match.MatchId || save.DeploymentId != match.DeploymentId ||
                         match.Cells != save.CarriedCells)
@@ -134,6 +138,7 @@ namespace Unity.MP_FPS {
                 } else if (ledger.ActiveMatchId == match.MatchId) {
                     throw new InvalidDataException("Closed local Clash deployment is still active.");
                 }
+                // 已关闭的出战必须有结算证据，已兑换的奖励事件也只能出现一次。缺一项都可能导致重复发放。
                 if (match.State == "Closed" && !save.Receipts.ContainsKey(match.DeploymentId))
                     throw new InvalidDataException("Missing local Clash settlement receipt.");
                 if (match.Redemption != null) {
@@ -168,6 +173,7 @@ namespace Unity.MP_FPS {
                     (!lan && participants.Length != 1))
                     throw new InvalidDataException("Local Clash must register exactly its human profile.");
                 var human = participants.FirstOrDefault(p => p.PlayerId == m_Save.PlayerId);
+                // 登记整场名单后，从中找到自己的报名记录。只有它能绑定当前本机档案的出战编号。
                 if (human == null) throw new InvalidDataException("Clash roster does not contain the profile owner.");
                 CheckPlayer(human.PlayerId);
                 var match = new OfflineClashMatch {
@@ -187,6 +193,7 @@ namespace Unity.MP_FPS {
                         m_Save.Clash.Matches.Values.Any(m =>
                             m.TokenId == match.TokenId || m.DeploymentId == match.DeploymentId)))
                     throw new InvalidDataException("Local Clash match reuses an owned or closed deployment/token.");
+                // 登记下一场时上一次仅报名、未扣装的旧登记失效。真正进行中的工作仍需先结算。
                 var next = Copy();
                 if (next.Clash == null) next.Clash = new OfflineClashState();
                 SupersedeClashRegistration(next);
@@ -196,6 +203,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 出战、结算和退款都通过这一道查账。模式、版本、比赛、玩家及出战编号要属于同一条登记。
         private OfflineClashMatch Binding(RaidPersistenceContext.Deployment payload) {
             CheckPlayer(payload.PlayerId);
             if (payload.Mode != ClashMode || payload.RulesVersion != ClashVersion || payload.MatchId == null ||
@@ -238,6 +246,7 @@ namespace Unity.MP_FPS {
             try { match = Binding(payload); } catch (InvalidDataException ex) {
                 throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected, ex.Message);
             }
+            // 同场相同出战的重试允许读回已划装备。已经关账、活动出战不一致或携带数量改了都不能重新扣装。
             if (!RaidRules.ValidLoadout(payload.Cells) || m_Save.Receipts.ContainsKey(payload.DeploymentId) ||
                 m_Save.Clash.CurrentMatchId != match.MatchId ||
                 !(match.State == "Registered" || match.State == "Open") ||
@@ -257,6 +266,7 @@ namespace Unity.MP_FPS {
                 next.DeploymentId = payload.DeploymentId;
                 next.CarriedCells = payload.Cells;
                 next.RaidInventoryJson = RaidInventoryTransport.Encode(raid);
+                // 把比赛标为打开，与装备出战一起保存。下次启动才能知道哪个比赛当前拥有这批物品。
                 var opened = next.Clash.Matches[match.MatchId];
                 opened.State = "Open";
                 opened.Cells = payload.Cells;
@@ -271,6 +281,7 @@ namespace Unity.MP_FPS {
                 var award = CanonicalRedemption(request);
                 if (m_Save.Clash == null || !m_Save.Clash.Matches.TryGetValue(award.MatchId, out var match))
                     throw new InvalidDataException("Unknown local Clash award match.");
+                // 已登记过时只接受同一兑换内容。奖励先记录这场的撤离事件，等结算成功时才发实际物品。
                 ValidateAward(match, award);
                 string hash = Receipt(award);
                 if (match.Redemption != null) {
@@ -308,6 +319,7 @@ namespace Unity.MP_FPS {
                 m_Save.DeploymentId != payload.DeploymentId ||
                 !(payload.Outcome == "Extracted" || payload.Outcome == "Dead" || payload.Outcome == "TimedOut"))
                 throw new InvalidDataException("Local Clash settlement has no open deployment.");
+            // 单人只按本人规则发赏金。好友房按已登记队伍人数算奖励，但这次结果必须是对应的真实撤离事件。
             int bonus = 0;
             if (match.Redemption != null) {
                 if (payload.Outcome != "Extracted" || payload.BountyEventId != match.Redemption.ExtractionEventId ||
@@ -332,6 +344,7 @@ namespace Unity.MP_FPS {
                     raid.Count("alloy", true) != payload.Alloy || raid.Count("cells", true) != payload.Cells ||
                     raid.Items.Any(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
                     throw new InvalidDataException("Invalid local Clash extraction inventory.");
+                // 极速赏金用同一结算落仓机制，关掉远征首次物资奖励，只加本场已确认的赏金。
                 var result = RecoveryInventory.Settle(next.Inventory, next.Recovery, raid, out var stored,
                     out var pending, false, bonus);
                 if (result != InventoryError.None)
@@ -341,6 +354,7 @@ namespace Unity.MP_FPS {
             } else {
                 ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
             }
+            // 已领取标记、关比赛、清活动出战和库存回执一并提交。重复结算只能读回结果。
             var closed = next.Clash.Matches[match.MatchId];
             closed.State = "Closed";
             closed.AwardClaimed = bonus > 0;
@@ -357,6 +371,7 @@ namespace Unity.MP_FPS {
             if (m_Save.Receipts.ContainsKey(payload.DeploymentId) || match.State == "Cancelled") return Read();
             if (match.State == "Open" && (m_Save.Clash.ActiveMatchId != match.MatchId || match.Cells != payload.Cells))
                 throw new InvalidDataException("Local Clash abandonment mismatch.");
+            // 正在恢复已登记的撤离奖励时，要先继续正常结算。直接放弃会把属于这场的待发赏金抹掉。
             if (match.Redemption != null && !match.AwardClaimed)
                 throw new InvalidDataException(
                     "Local Clash extraction receipt recovery must complete before abandonment.");
@@ -379,6 +394,7 @@ namespace Unity.MP_FPS {
                 var match = Binding(payload);
                 if (m_Save.Receipts.ContainsKey(payload.DeploymentId) || match.State == "Cancelled") return Read();
                 if (match.State != "Open") return AbandonClash(payload);
+                // 退款只用于这场刚扣装却未领赏金的出战。用原出战背包走一次无额外赏金的带回流程。
                 if (m_Save.Clash.ActiveMatchId != match.MatchId || match.Cells != payload.Cells ||
                     match.Redemption != null)
                     throw new InvalidDataException("Local Clash refund does not own an unawarded deployment.");

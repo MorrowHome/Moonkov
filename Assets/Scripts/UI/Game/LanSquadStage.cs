@@ -67,8 +67,10 @@ namespace Unity.MP_FPS.Client {
         public void Present(LanRoomSnapshot room, string localId, string localName, LobbyAppearance preview) {
             m_Room = room;
             m_LocalId = localId;
+            // 还没加入时用本地设置展示一名预览角色。加入后按房主优先排序使用真实成员，房主可落在醒目的座位。
             m_Members = room?.Members?.OrderByDescending(m => m.Host).ToArray() ?? new[]
                 { new LanMember { Id = "local", Name = localName, Appearance = preview ?? new LobbyAppearance() } };
+            // 切到另一间房时默认显示自己所在那组。原有房间的数据更新则保持用户已切到的页。
             if (m_RoomId != room?.Id) {
                 m_RoomId = room?.Id;
                 int local = Array.FindIndex(m_Members, m => m.Id == localId);
@@ -85,6 +87,7 @@ namespace Unity.MP_FPS.Client {
         private void SelectPage(int page) {
             PageIndex = Mathf.Clamp(page, 0, PageCount - 1);
             Array.Clear(m_Slots, 0, 4);
+            // 多人房每页只给相机四个席位。编号按舞台位置安排，前两个成员放在靠中间的座位。
             int[] order = { 1, 2, 0, 3 };
             for (int j = 0; j < 4; j++) {
                 int index = PageIndex * 4 + j;
@@ -112,6 +115,7 @@ namespace Unity.MP_FPS.Client {
             m_PageLabel.text = $"{PageIndex + 1} / {PageCount}";
             m_Previous.SetEnabled(PageIndex > 0);
             m_Next.SetEnabled(PageIndex + 1 < PageCount);
+            // 隐藏时只存成员和页码，等重新可见才推进 3D 舞台，减少仓库界面的渲染负担。
             if (m_Visible) Stage.Present(m_Slots);
             AlignCards();
         }

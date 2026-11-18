@@ -54,6 +54,7 @@ namespace Unity.MP_FPS.UI {
                 InitializeEcs();
                 if (m_ClientWorld == null) return;
             }
+            // 赏金模式玩家失去角色时先满足观战条件。它自己的快照区分倒地、死亡和离场，通用倒计时先不接管。
             if (BountyClashRuntime.Enabled(m_EntityManager)) {
                 m_RespawnScreen.style.display = DisplayStyle.None;
                 // Downed players retain their owned character and camera. Only a missing
@@ -71,8 +72,10 @@ namespace Unity.MP_FPS.UI {
                 }
                 return;
             }
+            // 远征场景由战后结算负责后续。还活着时持续保存角色位置，失去角色时可供观战镜头使用。
             if (MoonRaidMap.Active != null) {
                 // Raid settlement replaces arena auto-respawn, while retaining its spectator camera.
+                // 地图换了，之前的身体位置对新场景没意义。等新角色出现后重新记住有效位置。
                 if (m_LastRaidMap != MoonRaidMap.Active) {
                     m_LastRaidMap = MoonRaidMap.Active;
                     m_HasLastRaidPosition = false;
@@ -97,6 +100,7 @@ namespace Unity.MP_FPS.UI {
                 }
                 return;
             }
+            // 通用玩法以本地拥有的角色是否存在决定复活 HUD。服务器重新生成该角色后立即收起倒计时。
             bool isPlayerAlive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
             if (isPlayerAlive) {
                 RespawnCamera.gameObject.SetActive(false);

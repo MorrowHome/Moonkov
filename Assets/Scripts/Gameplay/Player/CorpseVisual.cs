@@ -30,6 +30,7 @@ namespace Unity.MP_FPS {
         public bool Settled { get; private set; }
         public float FinishAge => m_End + (m_HairSpring != null ? 3f : 0f);
 
+        // 从当前尸体包围盒取相对准星更自然的瞄准点。弯倒或放平的角色仍能被选中。
         public Vector3 LootAimPoint(Camera camera) {
             if (!camera || m_Contacts == null || m_Contacts.Length == 0) return transform.position + Vector3.up * .25f;
             var ray = new Ray(camera.transform.position, camera.transform.forward);
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS {
             return m_LootBounds.ClosestPoint(ray.GetPoint(depth));
         }
 
+        // 从尸体快照创建外观，采用指定角色模型并把动画定位到服务器记录的经过时间。
         public static CorpseVisual Spawn(Transform parent, CorpsePresentationSettings settings, RaidCorpseRpc corpse) {
             using var profile = s_SpawnProfile.Auto();
             if (settings == null || settings.Death == null || settings.CharacterVisuals == null ||
@@ -106,6 +108,7 @@ namespace Unity.MP_FPS {
 
         private void Update() { SampleAge(m_InitialAge + (float)(Time.timeAsDouble - m_Start)); }
 
+        // 按已过时间采样身体和头发。较晚收到尸体时，飘带和头发的回算分到几帧，避免一帧卡住。
         public void SampleAge(float age) {
             if (Settled) return;
             using var profile = s_SampleProfile.Auto();
@@ -150,6 +153,7 @@ namespace Unity.MP_FPS {
             enabled = false;
         }
 
+        // 重算搜刮可对准的真实身体范围。用于渲染裁剪的超大包围盒不应用作交互位置。
         private void UpdateLootBounds() {
             if (m_Contacts == null || m_Contacts.Length == 0) return;
             // Culling bounds are deliberately enlarged; only the posed body defines its loot target.
@@ -158,6 +162,7 @@ namespace Unity.MP_FPS {
             m_LootBounds.Expand(.2f);
         }
 
+        // 向下找该部位的地面高度。若模型局部穿地，记录所需抬高量，最后统一把整具模型上移。
         private void IncludeGroundContact(Vector3 point) {
             if (m_PhysicsScene.Raycast(point + Vector3.up * 2, Vector3.down, out var hit, 5, s_GroundMask,
                     QueryTriggerInteraction.Ignore))
@@ -205,6 +210,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 死亡动作使用运行时 PlayableGraph，尸体回收时释放动画资源。
         private void OnDestroy() {
             if (m_Graph.IsValid()) m_Graph.Destroy();
         }

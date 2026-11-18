@@ -23,6 +23,7 @@ namespace Unity.MP_FPS {
         public bool VoicePlaying => m_EffortSound?.Handle?.IsValid() == true;
 
         public Cues Observe(in PredictedPlayerGhost state) {
+            // 首次观察某一轮近战状态时，只记武器和各事件序号。切换时期也以新快照为起点，之前挥过的动作不重新响。
             if (!m_Initialized || m_Epoch != state.MeleeEpoch) {
                 m_Initialized = true;
                 m_Epoch = state.MeleeEpoch;
@@ -39,6 +40,7 @@ namespace Unity.MP_FPS {
             bool cancel = m_Cancel != state.MeleeCancelSequence;
             m_Cancel = state.MeleeCancelSequence;
             m_Weapon = state.MeleeWeapon;
+            // 服务器开始攻击后还要等前摇走完。取消、换武器、死亡或暗视等状态会放下这次等待中的挥击声。
             if (attack) m_PendingSwing = true;
             bool alive = EnergyShieldRules.Alive(state);
             if (cancel || equip || !alive || state.ClashDarkSight) m_PendingSwing = false;
@@ -48,6 +50,7 @@ namespace Unity.MP_FPS {
                 MeleeRules.TryDefinition((MeleeWeaponKind)state.MeleeAttackWeapon, out var definition)) {
                 var timing = definition.Timing((MeleeAttackKind)state.MeleeAttack, state.MeleeCombo);
                 // Allow a slightly delayed snapshot, but never replay an already finished attack.
+                // 过前摇才响，允许网络把消息稍晚带到。完整的有效时间都过去时就把那次声音略过。
                 if (state.MeleeElapsed >= timing.Windup) {
                     m_PendingSwing = false;
                     if (state.MeleeElapsed < timing.Windup + timing.Active + .1f &&
@@ -86,6 +89,7 @@ namespace Unity.MP_FPS {
                     effort = m_EffortSound != null;
                 }
             }
+            // 碰撞音从已确认的命中位置播放，再根据击中或被挡选音色。挥击声则以发动的角色位置为基准。
             if ((cues & Cues.Hit) != 0)
                 MoonkovAudio.Play(state.MeleeHitBlocked ? library.MeleeBlocked : library.MeleeImpact,
                     state.MeleeHitPoint, .8f);

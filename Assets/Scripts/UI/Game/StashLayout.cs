@@ -29,11 +29,13 @@ namespace Unity.MP_FPS.Client {
             var item = Items[id];
             int w = rotated ? item.BaseHeight : item.BaseWidth;
             int h = rotated ? item.BaseWidth : item.BaseHeight;
+            // 先用旋转后的宽高检查边界，再检查格子重叠，拖动同一物品时跳过它自己。
             if (x < 0 || y < 0 || x + w > m_Columns || y + h > m_Rows) return false;
             var rect = new RectInt(x, y, w, h);
             foreach (var pair in Items) {
                 if (pair.Key == id) continue;
                 var other = pair.Value;
+                // 已经穿在装备槽里的物品不占仓储格。未出现的模板项同样不挡其他物品摆放。
                 if (!other.InStorage || !other.Available) continue;
                 if (rect.Overlaps(new RectInt(other.X, other.Y, other.Width, other.Height))) return false;
             }
@@ -42,6 +44,7 @@ namespace Unity.MP_FPS.Client {
 
         public bool TryMove(string id, int x, int y, bool rotated) {
             var item = Items[id];
+            // 位置和朝向一起校验。任何一项失败都保持之前坐标，避免从背包上把物品弄丢。
             if (item.Locked || !CanPlace(id, x, y, rotated)) return false;
             item.X = x;
             item.Y = y;

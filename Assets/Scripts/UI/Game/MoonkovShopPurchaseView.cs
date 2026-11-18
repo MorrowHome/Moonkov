@@ -22,6 +22,7 @@ namespace Unity.MP_FPS.Client {
         private readonly Button m_Purchase, m_Minus, m_Plus;
         private readonly Button[] m_Filters;
         private readonly MoonkovItemInformation m_Information, m_HoverInformation;
+        // 按商品代码缓存格子按钮。库存余额等更新时可以调整状态，不需要为每次变化重建格子。
         private readonly Dictionary<string, Button> m_Tiles = new();
         private readonly List<ShopOffer> m_Visible = new();
         private ShopOffer[] m_Offers;
@@ -118,6 +119,7 @@ namespace Unity.MP_FPS.Client {
                 m_OfferKey = key;
                 Rebuild();
             } else { RefreshSelection(); }
+            // 鼠标仍在商品上时，库存变动也可能改变研究数值，因此用最新库存刷新悬停卡。
             if (m_HoverCode != null) m_HoverInformation.Present(NewItem(m_HoverCode), graph);
         }
 
@@ -129,6 +131,7 @@ namespace Unity.MP_FPS.Client {
             m_Offers?.FirstOrDefault(offer => offer.Code == m_SelectedCode && offer.BuyDust >= 0);
 
         private bool Matches(ShopOffer offer) {
+            // 搜索前排除定义缺失或没有购买价的条目。剩余条目再按可见的名字和描述匹配。
             var definition = InventoryCatalog.Get(offer.Code);
             if (definition == null || offer.BuyDust < 0) return false;
             bool category = m_Filter == 0 ||
@@ -199,6 +202,7 @@ namespace Unity.MP_FPS.Client {
                 m_Grid.Add(tile);
                 m_Tiles.Add(offer.Code, tile);
             }
+            // 搜索条件改变后，原来的商品可能不在屏幕上。此时选第一件匹配项，列表为空时清掉详情。
             if (!m_Tiles.ContainsKey(m_SelectedCode ?? ""))
                 Select(m_Visible.FirstOrDefault()?.Code);
             else
@@ -213,6 +217,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Select(string code) {
             HideHover();
+            // 换商品时从单件重新开始。选中同一件只刷新余额和数量的限制。
             if (m_SelectedCode != code) {
                 m_SelectedCode = code;
                 m_QuantityValue = code == "cells" ? 3 : 1;
@@ -226,6 +231,7 @@ namespace Unity.MP_FPS.Client {
             var offer = Selected;
             bool selected = offer != null && m_Tiles.ContainsKey(offer.Code);
             m_Details.style.display = selected ? DisplayStyle.Flex : DisplayStyle.None;
+            // 价格和最大可买量从当前商品、余额与数量限制一起算。经典爆破可传入本局点数，仓库用月尘。
             var definition = selected ? InventoryCatalog.Get(offer.Code) : null;
             int maximum = selected
                 ? Math.Max(1, m_QuantityLimit?.Invoke(definition, m_BalanceOverride) ?? definition.MaxStack)
@@ -274,6 +280,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Purchase() {
             var offer = Selected;
+            // 确认时重新检查所选商品仍在列、关键信息齐全且币够。通过才把选择交给外部。
             if (!m_Disposed && m_CanTrade && offer != null && m_Tiles.ContainsKey(offer.Code) && m_Graph != null &&
                 (m_HasBalanceOverride ? m_BalanceOverride : m_Graph.Count("dust")) >= offer.BuyDust * m_QuantityValue) {
                 HideHover();
@@ -327,6 +334,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Hover(VisualElement target, string code, Vector2 position) {
             if (m_Disposed || target.panel == null) return;
+            // 鼠标在同一商品内移动只更新信息卡位置。变更商品时再重新装填详情。
             bool changed = m_HoverTarget != target || m_HoverCode != code;
             m_HoverTarget = target;
             m_HoverCode = code;

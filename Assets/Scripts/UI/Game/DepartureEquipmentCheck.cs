@@ -21,11 +21,14 @@ namespace Unity.MP_FPS.Client {
         }
 
         public static DepartureEquipmentCheck Read(InventoryGraph graph) {
+            // 档案没回来时用等候状态。这样加载中的空视图不会被当成玩家真的没有光环。
             if (graph == null) return new DepartureEquipmentCheck(DepartureEquipmentIssue.Loading);
+            // 光环要穿在装备槽里才算带上身。虽然箱包中可能也有光环，应急资格按单独的商品规则算。
             bool halo = graph.Items.Any(i => i.Parent == InventoryCatalog.Equipment &&
                                              (InventoryCatalog.Get(i.Code)?.Kind == ItemKind.LongGun ||
                                               InventoryCatalog.Get(i.Code)?.Kind == ItemKind.Pistol));
             if (!halo) return new DepartureEquipmentCheck(DepartureEquipmentIssue.Halo, ShopCatalog.CanClaim(graph));
+            // 治疗物资若放在战斗中够不到的容器里，同样需要回来整理。这里只给提示，继续出发由后续流程决定。
             return new DepartureEquipmentCheck(graph.Items.Any(graph.MedicalAccessible)
                 ? DepartureEquipmentIssue.None
                 : DepartureEquipmentIssue.Medicine);

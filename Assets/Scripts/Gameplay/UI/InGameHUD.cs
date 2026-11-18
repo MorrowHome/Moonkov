@@ -183,6 +183,7 @@ namespace Unity.MP_FPS {
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated) InitializeEcs();
 
             // Ensure the ECS systems are ready
+            // 客户端 World 可能已销毁或本地角色还在出生。找不到唯一拥有的角色时隐藏 HUD 并清理武器反馈。
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated ||
                 !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>()) {
                 // No local player entity found, hide the HUD. This occurs when the player is dead.
@@ -196,6 +197,7 @@ namespace Unity.MP_FPS {
             FitVitals(null);
             bool statusCheck = RaidKeyBindings.Held(RaidKey.Status);
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
+            // 打开背包或暂停时让生命体征 HUD 给页面让位。共享能量有自己的读数，因此分给它的高度会变化。
             m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
@@ -207,6 +209,7 @@ namespace Unity.MP_FPS {
                     WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID,
                         playerData.EquippedModules);
                 int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
+                // 光环的共享能量显示由生命监视区域承担。这里隐藏旧弹药面板，免得玩家看到两个不同口径的数字。
                 bool sharedHalo = playerData.HaloEquipped || DollSingerWeapons.IsHalo(playerData.EquippedWeaponID);
                 m_AmmoLabel.style.display = sharedHalo ? DisplayStyle.None : DisplayStyle.Flex;
 
@@ -277,6 +280,7 @@ namespace Unity.MP_FPS {
                 m_Reticle.style.display = DisplayStyle.None;
                 return;
             }
+            // 瞄准时切成光环自己的准星。只在腰射时让通用准星接管，否则两套记号会重叠。
             if (DollSingerWeapons.IsHalo(playerData.EquippedWeaponID) && playerData.ControllerState.Aiming) {
                 // The halo and its small local dot own the aiming sight.
                 m_Reticle.style.display = DisplayStyle.None;
@@ -284,6 +288,7 @@ namespace Unity.MP_FPS {
             }
 
             // Update Reticle Type
+            // 武器注册表决定用十字、圆环等哪种准星。应用一种样式前移除旧类型，切武器时不会叠出两个形状。
             string desiredClass = GetReticleClassName(weaponData.ReticleType);
 
             // Remove all reticle classes that are NOT the desired one.
@@ -311,10 +316,12 @@ namespace Unity.MP_FPS {
             bool isReloading = playerData.ControllerState.IsReloadingState;
             bool justFired = playerData.ControllerState.Shoot;
             bool isWeaponOnCooldown = playerData.WeaponCooldown < weaponData.CooldownInMs;
+            // 刚开火给准星保留极短的可见反馈。超过这个窗口还在冷却时才变灰。
             if (justFired) m_shotFeedbackTimer = k_ShotFeedbackDuration;
             bool greyReticleVisual = false;
 
             // Weapon reloading
+            // 装填时不能继续射击，立即清掉之前的开火反馈并变灰。
             if (isReloading) {
                 greyReticleVisual = true;
                 m_shotFeedbackTimer = 0f;

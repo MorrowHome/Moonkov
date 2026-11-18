@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 点选人体区域只更新目标，不会立即消耗药。确认后才把部位传给 RAID 的治疗入口。
         private void Select(BodyPart part) {
             m_Selected = part;
             m_Feedback = null;
@@ -107,6 +108,7 @@ namespace Unity.MP_FPS.Client {
             MoonkovLocalization.Set(m_Root.Q<Label>("healthOxygenTime"), m_Ready ? "EST. {0}" : "",
                 OxygenTimeText(state));
             string consequence = EffectText(RaidNutrition.Effects(state));
+            // 显示普通伤势之外，同时列出异形食物的临时后果和时间。健康状态全来自传入的角色快照。
             if (state.AlienFoodEffectSeconds > 0) {
                 if (!string.IsNullOrEmpty(consequence)) consequence += "\n";
                 consequence +=
@@ -121,6 +123,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void RenderActions() {
+            // 未收到状态、正在执行动作或没有能取到的物资时禁用操作。各按钮还会调用相同的治疗、营养或供氧规则。
             m_Treat.SetEnabled(m_Ready && !m_Busy && m_Heal != null && m_Medicines > 0 &&
                                RaidHealth.CanHeal(m_State, m_Selected));
             m_Eat.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Food > 0 &&
@@ -129,6 +132,7 @@ namespace Unity.MP_FPS.Client {
                                RaidNutrition.CanConsume(m_State, ConsumableCatalog.Get(m_WaterCode)));
             m_RefillOxygen.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_OxygenCanisters > 0 &&
                                       RaidOxygenConsumables.CanConsume(m_State, ConsumableCatalog.Get(m_OxygenCode)));
+            // 等待状态优先于普通反馈。只有不在操作时才显示上次结果或者为什么不能用药。
             string message = m_Busy ? m_BusyMessage ?? "USING ITEM" :
                 !string.IsNullOrEmpty(m_Feedback) ? m_Feedback :
                 !m_Ready ? "Waiting for health snapshot" :
@@ -139,6 +143,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         public static string OxygenAirText(in PredictedPlayerGhost state) {
+            // 可呼吸环境和氧气余额可能是两件事。按供给能否抵过消耗，分别给出保持、使用或正在补充的提示。
             bool refilling = state.Oxygen < RaidOxygen.Capacity &&
                              state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond;
             if (state.BreathableAir) return refilling ? "BREATHABLE / REFILLING" : "BREATHABLE / RESERVE HELD";
@@ -152,6 +157,7 @@ namespace Unity.MP_FPS.Client {
                 state.OxygenSupplyPerSecond > state.OxygenDrainPerSecond && RaidOxygen.ReceivingExternalSupply(state)
                     ? RaidOxygen.RefillSeconds(state)
                     : RaidOxygen.RemainingSeconds(state);
+            // 消耗净额不为正时没有预计耗尽时刻。其他情况再将剩余秒数四舍成界面上的分秒。
             if (float.IsPositiveInfinity(remaining)) return MoonkovLocalization.Text("NO NET DRAIN");
             int seconds = Mathf.CeilToInt(Mathf.Max(0, remaining));
             return MoonkovLocalization.Format($"{seconds / 60:00}:{seconds % 60:00}");

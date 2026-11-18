@@ -6,6 +6,7 @@ public interface IPredictedState : IBufferElementData {
 }
 
 public static class SequenceHelpers {
+    // tick 用无符号整数，长时间运行会绕回零。用差值位于半圈的哪一侧来认新旧，比直接比较两个数字适合这种编号。
     public static bool IsNewer(uint current, uint old) { return !(old - current < 1u << 31); }
 }
 
@@ -14,6 +15,7 @@ public static class PredictedStateUtility {
 
     public static bool GetStateAtTick<T>(this DynamicBuffer<T> stateArray, uint targetTick, out T state)
         where T : unmanaged, IPredictedState {
+        // 指定 tick 恰好没有记录时，遍历仍会挑它之前最近的一条。没有任何更早记录才返回失败。
         int beforeIdx = 0;
         uint beforeTick = 0;
         for (int i = 0; i < stateArray.Length; ++i) {
@@ -38,6 +40,7 @@ public static class PredictedStateUtility {
         uint oldestTick = 0;
         for (int i = 0; i < stateArray.Length; ++i) {
             uint tick = stateArray[i].Tick;
+            // 重复预测同一拍会替换旧记录。缓冲最多留固定数量，放不下时用这一拍盖掉最老的条目。
             if (tick == targetTick) {
                 // Already exists, replace it
                 stateArray[i] = state;

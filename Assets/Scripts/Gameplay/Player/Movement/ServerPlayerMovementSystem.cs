@@ -68,6 +68,7 @@ namespace Unity.MP_FPS {
         private float CarriedWeight(Inventory.InventoryGraph inventory) {
             if (inventory == null) return 0;
             var sample = m_CarriedWeights.GetValue(inventory, _ => new CarriedWeightSample());
+            // 库存结构版本没变时复用上次负重。重新算后按网络同步精度取整，避免客户端和服务器用到不同速度上限。
             if (sample.Version != inventory.Version || !ReferenceEquals(sample.Items, inventory.Items)) {
                 sample.Version = inventory.Version;
                 sample.Items = inventory.Items;
@@ -77,6 +78,7 @@ namespace Unity.MP_FPS {
             return sample.Weight;
         }
 
+        // 机器人自己的库存挂在脑组件，真人的库存挂在网络连接。二者最终都把库存交给同一套武器和负重规则。
         private Inventory.InventoryGraph WeaponInventory(Entity player) {
             if (EntityManager.HasComponent<DollSingerEnemyBrain>(player))
                 return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory;
@@ -108,6 +110,7 @@ namespace Unity.MP_FPS {
                 return false;
             var session = EntityManager.GetComponentData<RaidSession>(connection);
             var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
+            // 充能要属于当前战局，不能插进进行中的库存操作。扣电池成功后再让库存重发，并保留这次的预留量给计时。
             if (session.Phase != RaidPhase.Active || inventory.RaidId != session.RaidId || inventory.ActionPending ||
                 !HaloEnergyInventory.RechargeFirst(ref state, inventory.Graph, weapon))
                 return false;
@@ -175,6 +178,7 @@ namespace Unity.MP_FPS {
                 if (!clientCommandInputBufferLookup.TryGetBuffer(entity, out var buffer) || buffer.Length == 0)
                     continue;
                 predictedClient.ValueRW.BeginInputIndex = commands.Length;
+                // 第一次收到这个玩家输入时，从查到的指令起步。已有上次处理记录才从上次编号追赶。
                 if (predictedClient.ValueRO.LastProcessedServerTick == 0) {
                     // first frame, let's just get the latest data and set it
                     if (buffer.GetDataAtTick(new NetworkTick(serverTick), out var commandInput)) {
@@ -249,6 +253,7 @@ namespace Unity.MP_FPS {
             m_PlayerGhostLookup.Update(this);
             m_PredictedClientInputComponentLookup.Update(this);
             var predictedClientInputComponentLookup = m_PredictedClientInputComponentLookup;
+            // 采集网络指令后先准备查询角色和物理碰撞。Host 同一进程存在两套角色，使用各自的组件和碰撞层。
             var playerGhostLookup = m_PlayerGhostLookup;
             var projectileSpawnList = new NativeList<ProjectileSpawnData>(Allocator.Temp);
             var vfxSpawnList = new NativeList<VfxSpawnData>(Allocator.Temp);
@@ -267,6 +272,7 @@ namespace Unity.MP_FPS {
                 }
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>()) {
                 HaloModuleFire.AdvanceTimers(ref predictedPlayer.ValueRW, deltaTime);
+                // 已有的充能和装填先继续计时。这拍归零了才能把新入账的能量用于下一步射击。
                 if (predictedPlayer.ValueRO.ControllerState.IsReloadingState) {
                     var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(
                         predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
@@ -304,12 +310,14 @@ namespace Unity.MP_FPS {
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
                 if (predictedClient.InputCount > 0) {
                     // get movement index for the last frame we are going to process
+                    // 这一拍的装备、射击用最新一条有效输入。运动会稍后按这一拍收到的多段输入分摊时间。
                     var commandInput = commands[predictedClient.BeginInputIndex + predictedClient.InputCount - 1];
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRO.InputIndex, out var input)) {
                         input = RaidHealth.RestrictInput(predictedPlayer.ValueRO, input);
                         playerGhost.ServerMovementInput = input;
                     }
                     predictedPlayer.ValueRW.ControllerState.Shoot = false;
+                    // 先处理拿哪把武器，再根据实际武器和模块读参数。切换的这一拍有取枪等待。
                     bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
                         WeaponManager.Instance.WeaponRegistry);
                     if (switchedWeapon)
@@ -328,6 +336,7 @@ namespace Unity.MP_FPS {
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) &&
                                           predictedPlayer.ValueRO.CurrentAmmo <= 0;
                         bool halo = DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID);
+                        // 光环按装填键从库存预留电池能量。传统武器还可因空仓自动走旧的弹仓装填逻辑。
                         if (halo && wantsToReload && TryRechargeHalo(entity, ref predictedPlayer.ValueRW, weaponData)) {
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                             HaloEnergyRules.RefreshAmmo(ref predictedPlayer.ValueRW, weaponData);
@@ -336,6 +345,7 @@ namespace Unity.MP_FPS {
                             HaloReload.Begin(ref predictedPlayer.ValueRW, weaponData, weaponData.MagazineSize);
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
+                        // 部署在身外的哨戒光环也通过一次正式开火检查。真开火时以锚点当射线起点，记录它专用的事件拍。
                         bool sentryShot = TrySentryShot(entity, ref predictedPlayer.ValueRW, weaponData, serverTick,
                             out var sentryRay);
                         if (sentryShot || HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input,
@@ -354,6 +364,7 @@ namespace Unity.MP_FPS {
                             bool aimed = sentryShot ||
                                          !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) ||
                                          input.Aim;
+                            // 射线武器直接改这条射线的散布方向。弹体武器在生成每颗弹丸时按编号分别取散布。
                             if (weaponData.Type == WeaponType.Hitscan) {
                                 shotRay = new Ray(shotRay.origin,
                                     WeaponSpread.Direction(shotRay.direction, weaponData, 0,
@@ -368,6 +379,7 @@ namespace Unity.MP_FPS {
                                 VisualEffectManager.ServerInstance.Server_RequestVfx(shooterNetworkId,
                                     predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick, sentryShot,
                                     shotOriginPosition);
+                            // 发射时就记录伤害来源和归属。晚到的弹体命中也用这一发的身份来判断，而不看后来换了什么阵营或模式。
                             var shotSource = ResearchQuestRuntime.TagShot(World, entity,
                                 DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID), sentryShot,
                                 BountyClashDamage.Capture(World, entity));
@@ -389,6 +401,7 @@ namespace Unity.MP_FPS {
                                                     //skip hitting self
                                                     continue;
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO;
+                                                // 用碰撞体确定身体部位，再按距离衰减，把最终请求交给统一伤害入口做护盾、队伍关系和模式判断。
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 BountyClashDamage.Apply(World, hitGhostObject.LinkedEntity, shotSource,
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),
@@ -422,6 +435,7 @@ namespace Unity.MP_FPS {
                                     }
                                     break;
                                 }
+                                // 弹体记录射出时的所有者和生成编号，之后自己推进飞行。对应事件可供本机预测找到同一颗弹丸。
                                 case WeaponType.Projectile: {
                                     var prefabEntity =
                                         GhostSpawner.FindGhostPrefabEntity(weaponData.ProjectileGhostPrefab.GhostGuid);
@@ -498,6 +512,7 @@ namespace Unity.MP_FPS {
                                 predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 &&
                                 !predictedPlayer.ValueRO.ClashDarkSight);
                     }
+                    // 把刚起跳或刚落地的动作转成服务器 tick，远端看到新编号才播一次。
                     if (predictedPlayer.ValueRW.ControllerState.JumpTriggered) {
                         predictedPlayer.ValueRW.LastJumpTick = serverTick;
                         predictedPlayer.ValueRW.ControllerState.JumpTriggered = false;
@@ -516,6 +531,7 @@ namespace Unity.MP_FPS {
                 var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f ||
                     controllerLink.Controller.NeedsLiftCarry(predictedPlayer.ValueRO.ControllerState)) {
+                    // 落地和伤腿冲刺的后果放在真实碰撞移动后结算。移动请求被墙挡住时，不按原本想走的距离扣状态。
                     bool wasLanding = predictedPlayer.ValueRO.ControllerState.LandTriggered;
                     bool wasGrounded = predictedPlayer.ValueRO.ControllerState.MovementType ==
                                        FirstPersonController.MovementType.Standing;
@@ -538,8 +554,10 @@ namespace Unity.MP_FPS {
                          .Query<RefRW<LocalTransform>, RefRW<PredictedPlayerGhost>,
                              RefRO<PredictedPlayerControllerConsts>>()
                          .WithAll<Simulate, PlayerControllerLink, GhostGameObjectLink>().WithEntityAccess()) {
+                // 最后把碰撞后的姿势写回 ECS LocalTransform。这是快照和客户端回滚对齐的位置。
                 transform.ValueRW.Position = predictedPlayer.ValueRO.ControllerState.CurrentPosition;
                 transform.ValueRW.Rotation = predictedPlayer.ValueRO.ControllerState.CurrentRotation;
+                // 可选诊断把这一拍结果与历史记录比较。找到不同可定位具体哪一拍出现差异。
                 if (checkForPredictionErrors) {
                     if (MovementHistory.TryGetTick(serverTick, out var pos, out var rot))
                         // compare our calculation with the recorded

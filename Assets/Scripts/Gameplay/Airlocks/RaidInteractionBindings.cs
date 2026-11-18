@@ -16,6 +16,7 @@ namespace Unity.MP_FPS {
         private InputDevice m_Device;
 
         public RaidInteractionBindings() {
+            // 设备操作和搜刮可以共用一颗键，但保留两个动作给上层根据准星目标决定消费；查看走独立按键。
             Operate = m_Map.AddAction("Operate", InputActionType.Button);
             Operate.AddBinding(KeyboardPath(RaidKey.Interact));
             Operate.AddBinding("<Gamepad>/buttonWest");
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS {
             return "<Keyboard>/" + (Keyboard.current?[key].name ?? (key == Key.Digit0 ? "0" : key.ToString()));
         }
 
+        // 改键后只覆盖每个动作的键盘绑定，手柄的绑定继续可用。
         private void RefreshKeys() {
             string interact = KeyboardPath(RaidKey.Interact);
             Operate.ApplyBindingOverride(0, interact);
@@ -41,6 +43,7 @@ namespace Unity.MP_FPS {
             Inspect.ApplyBindingOverride(0, KeyboardPath(RaidKey.Inspect));
         }
 
+        // 有明显手柄或键鼠输入时记录最后使用的设备；微小摇杆漂移不会自动切换提示。
         public void ObserveDevice() {
             if (Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame &&
                 (Gamepad.current.buttonWest.wasPressedThisFrame || Gamepad.current.leftShoulder.wasPressedThisFrame ||
@@ -52,6 +55,7 @@ namespace Unity.MP_FPS {
                 m_Device = Keyboard.current;
         }
 
+        // 从当前设备实际绑定的控件生成显示名。设备暂时没被识别时退回动作的通用显示名。
         public string Label(InputAction action) {
             var device = m_Device ?? (InputDevice)Keyboard.current ?? Gamepad.current;
             for (int i = 0; i < action.controls.Count; i++) {
@@ -91,10 +95,12 @@ namespace Unity.MP_FPS {
             float range,
             Transform surface = null,
             Vector3? rangeAnchor = null) {
+            // 准星对准点和角色实际可到达的锚点可以不同，比如动画模型外形会动，服务端的交互距离仍围着固定位置算。
             var anchor = rangeAnchor ?? point;
             if (!camera || !camera.isActiveAndEnabled || Vector3.Distance(actor, anchor) > range) return -1;
             var delta = point - camera.transform.position;
             float angle = Vector3.Angle(camera.transform.forward, delta);
+            // 同一帧用同一个镜头和朝向挑多个目标时复用准星射线结果。
             if (s_RayFrame != Time.frameCount || s_RayCamera != camera || s_RayOrigin != camera.transform.position ||
                 s_RayForward != camera.transform.forward) {
                 s_RayFrame = Time.frameCount;
@@ -104,9 +110,11 @@ namespace Unity.MP_FPS {
                 s_HasRayHit = UnityEngine.Physics.Raycast(s_RayOrigin, s_RayForward, out s_RayHit, 8, s_Mask,
                     QueryTriggerInteraction.Ignore);
             }
+            // 射线正中目标给高分；擦边才用小角度辅助。角度按三维方向量，换屏幕比例不影响可选范围。
             bool direct = s_HasRayHit && surface &&
                           (s_RayHit.transform == surface || s_RayHit.transform.IsChildOf(surface));
             if (!direct && angle > AssistDegrees) return -1;
+            // 镜头看得见还不够，角色身边也得有条看得到锚点的线。第三人称镜头探出墙角时就不会隔墙操作。
             if (!Visible(camera.transform.position, point, surface) ||
                 !Visible(actor + Vector3.up * 1.4f, anchor, surface))
                 return -1;

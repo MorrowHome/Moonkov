@@ -83,12 +83,14 @@ namespace Unity.MP_FPS {
         internal IReadOnlyList<Tablet> Tablets => m_Tablets;
 
         internal bool Present(MoonRaidMap map, ulong session, int round) {
+            // 同一地图、战局和回合用同一批资料。换局或地图时卸掉旧模型，再重新摆。
             if (map == m_Map && session == m_Session && round == m_Round) return false;
             Dispose();
             if (!map || session == 0 || !map.LootVisual(0)) return true;
             m_Map = map;
             m_Session = session;
             m_Round = round;
+            // 战局编号和回合当随机种子。同一次对局复算时能拿到一致的资料和出生点分布。
             var random = new System.Random(unchecked((int)(session ^ (session >> 32)) + round * 397));
             var sites = ChooseSites(map.LootPositions, random);
             int[] records = ShuffledIndices(s_Records.Length, random);
@@ -115,6 +117,7 @@ namespace Unity.MP_FPS {
                 float extent = Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.right * half.x))) +
                                Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.up * half.y))) +
                                Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.forward * half.z)));
+                // 取模型边界沿箱面法线的最低点，再把它抬到托盘上。托盘有坡度时平板也能贴在上面。
                 float bottom = Vector3.Dot(up, mesh.TransformPoint(bounds.center) - pose.position) - extent;
                 pose.position -= up * bottom;
                 m_Tablets.Add(new Tablet(screen, records[i]));
@@ -127,6 +130,7 @@ namespace Unity.MP_FPS {
             var selected = new List<int>(count);
             int[] shuffled = ShuffledIndices(positions.Length, random);
             foreach (int index in shuffled) {
+                // 先尝试把平板放散，再补足数量。地图太紧凑达不到间距时，仍可在不同箱子上出现。
                 bool spaced = true;
                 foreach (int previous in selected)
                     if ((positions[previous] - positions[index]).sqrMagnitude < PreferredSpacing * PreferredSpacing) {
@@ -155,6 +159,7 @@ namespace Unity.MP_FPS {
             return order;
         }
 
+        // 场景转换时除了销毁模型，还要清空在 HUD 中可追踪的平板记录。
         public void Dispose() {
             foreach (var model in m_Models) {
                 if (!model) continue;

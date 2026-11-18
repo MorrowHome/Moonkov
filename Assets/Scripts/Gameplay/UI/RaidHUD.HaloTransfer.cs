@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
             var sender = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
             bool occupied = HaloTransferRules.Occupied(sender);
             var reader = m_World.GetExistingSystemManaged<ClientInputReaderSystem>();
+            // 动作在进行时显示已经锁定的对象。空闲时才读输入系统当前瞄准的候选，准星移动不影响已有目标提示。
             var target = occupied ? sender.HaloTransferTarget : reader?.HaloTransferCandidate ?? Entity.Null;
             bool hasTarget = m_World.EntityManager.HasComponent<PredictedPlayerGhost>(target);
             if (!occupied && (!hasTarget || !HaloTransferRules.CanSend(sender))) return;
@@ -20,6 +21,7 @@ namespace Unity.MP_FPS {
             m_Interaction.EnableInClassList("is-empty", false);
             bool gamepad = TutorialRuntime.UsingGamepad;
             MoonkovLocalization.Set(m_InteractionKey, gamepad ? "←" : RaidKeyBindings.DisplayName(RaidKey.Transfer));
+            // 部署在场景中时显示收回、模式和锚点距离。传给队友时则用角色快照计算双方距离和能量。
             if (occupied && HaloSupportRules.Anchored(sender)) {
                 MoonkovLocalization.Set(m_InteractionKey,
                     gamepad ? "RB+←" : RaidKeyBindings.DisplayName(RaidKey.DeployHalo));
@@ -53,6 +55,7 @@ namespace Unity.MP_FPS {
                 ? m_World.EntityManager.GetComponentData<PlayerGhost.PlayerData>(target).Name.ToString()
                 : "";
             if (string.IsNullOrEmpty(name)) name = MoonkovLocalization.Text("Teammate");
+            // 队友名字照原样显示，输入里的标签文本不会被当成格式代码。后面的百分比使用对方的光环容量换算。
             m_InteractionState.enableRichText = false;
             MoonkovLocalization.Set(m_InteractionState,
                 $"{name}  {HaloEnergyRules.Energy(receiver) / HaloEnergyRules.Maximum(receiver) * 100:0}%");

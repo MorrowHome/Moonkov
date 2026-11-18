@@ -18,6 +18,7 @@ namespace Unity.MP_FPS {
             var inventory = InventoryGraph.Create(false);
             inventory.Equipped("Primary").LoadedAmmo =
                 registry?.GetWeaponData(DollSingerWeapons.Halo)?.MagazineSize ?? 30;
+            // 教学与悬赏保留简单的初始装备，不进入远征的随机搭配。
             if (tutorial || clash) return inventory;
             string primary = ChoosePrimary(registry, ref random);
             string secondary = ChooseSecondary(registry, primary, ref random, true) ??
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS {
             return inventory;
         }
 
+        // 主武器先把有效条目洗牌，逐项取出。比赛开始后的连续生成有机会覆盖多种射程。
         private string ChoosePrimary(WeaponRegistry registry, ref Random random) {
             if (m_Next >= m_Count) {
                 Reset();
@@ -48,11 +50,13 @@ namespace Unity.MP_FPS {
 
         private static bool CloseRange(string code) { return code == "shotgun" || code == "cicada" || code == "thorn"; }
 
+        // 只从当前注册表有合法配置且是直接伤害的武器中挑选。范围爆炸另需更严格的选用条件。
         private static bool Available(WeaponRegistry registry, string code) {
             return registry?.GetWeaponData(DollSingerWeapons.WeaponId(code)) is
                 { Behavior: ProjectileBehavior.DirectDamage };
         }
 
+        // 先试和主武器互补的类型，没可用项再放宽条件。随机换选使有效候选都有机会。
         private static string ChooseSecondary(
             WeaponRegistry registry,
             string primary,
@@ -69,6 +73,7 @@ namespace Unity.MP_FPS {
             return chosen;
         }
 
+        // 找到有效装备后写物品代码和弹药。没合适类型就移除这个装备槽里的默认道具。
         private static void SetWeapon(InventoryGraph inventory, string slot, string code, WeaponRegistry registry) {
             var item = inventory.Equipped(slot);
             if (code == null) {

@@ -29,6 +29,7 @@ namespace Unity.MP_FPS {
         internal static Mesh Visor => s_Visor;
         internal static Mesh EnergyEar => s_EnergyEar;
 
+        // 第一位使用者建共享网格，后续角色只加引用计数。退场时减到零才真正销毁这些运行时资产。
         internal static void Retain() {
             if (s_Users++ > 0 && s_Sphere) return;
             s_Housing = HousingMesh();
@@ -71,6 +72,7 @@ namespace Unity.MP_FPS {
 
         internal static float HelmetProfile(float v) { return Mathf.Sqrt(Mathf.Max(0, 1 - Mathf.Pow(v * 2 - 1, 2))); }
 
+        // 面罩顶点根据网格上的归一化坐标求出弧形位置。拟合再把标准形状缩放到各自角色头部。
         internal static Vector3 VisorPoint(float u, float v) {
             float angle = u * Mathf.PI * 2;
             float radius = Mathf.Lerp(.17f, HelmetProfile(v), Mathf.SmoothStep(0, 1, v / .12f));
@@ -352,6 +354,7 @@ namespace Unity.MP_FPS {
                 new[] { 0, 1, 3, 1, 2, 3, 0, 3, 4 });
         }
 
+        // 用一套顶点与 UV 生成饰带。它用程序几何配合其他硬件网格，让动效能沿着同一形状挂接。
         private static Mesh RibbonMesh(string name, Vector3[] front, Vector2[] frontUV, int[] indices) {
             // Duplicate the back surface with opposite normals; folded fabric is visible from both sides.
             int count = front.Length;

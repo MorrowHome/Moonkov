@@ -162,11 +162,13 @@ namespace Unity.MP_FPS {
         private bool m_Disposed;
         public Task ShutdownTask { get; private set; } = Task.CompletedTask;
         public RaidPersistenceContext() : this((string)null) { }
+        // 临时装备玩法仍有上下文对象供上层调用，但里面没有持久化端和待发目录，结束后丢掉这局数据即可。
         internal static RaidPersistenceContext ForArena() { return new RaidPersistenceContext(true); }
         private RaidPersistenceContext(bool transient) { }
 
         public RaidPersistenceContext(OfflineProfileStore store) {
             m_Offline = store ?? throw new ArgumentNullException(nameof(store));
+            // 单人持久化使用本机档案提供的待发目录。加载后先补发这里记录的出战与结算。
             m_Outbox = store.OutboxDirectory;
             Directory.CreateDirectory(m_Outbox);
             ReplayOutbox();
@@ -174,6 +176,7 @@ namespace Unity.MP_FPS {
 
         public RaidPersistenceContext(LanPersistence lan) {
             m_Lan = lan ?? throw new ArgumentNullException(nameof(lan));
+            // 房主所有来宾存档由 LanPersistence 管。每个玩家的记录仍携带自己的出战 ID，这个上下文只负责调度。
             m_Outbox = lan.OutboxDirectory;
             m_ClashCapability = Task.FromResult(true);
             ReplayOutbox();
@@ -200,6 +203,7 @@ namespace Unity.MP_FPS {
             m_Http = handler == null ? new HttpClient() : new HttpClient(handler);
             m_Http.BaseAddress = url;
             m_Http.Timeout = TimeSpan.FromSeconds(10);
+            // 在线专用服务器通过内部接口读写账号。服务端身份配置仅在这一层使用，客户端登入凭据不会拿来执行结算。
             m_Http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
             m_ClashCapability = CheckClashCapabilityAsync();
             ReplayOutbox();
@@ -208,6 +212,7 @@ namespace Unity.MP_FPS {
         // 启动时从待发目录找上次未确认的写入。完整结算优先处理，只有找不到对应结算的出战记录才交给放弃或退款逻辑。
         private void ReplayOutbox() {
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
+            // 一次扣装、普通结算和赏金整组兑换各自有记录。恢复先加载终局结果，再检查是否有未完成的退款或弃局。
             ReplayBountyFinalizations();
             foreach (string file in Directory.GetFiles(m_Outbox, "*.json")) {
                 if (Guid.TryParse(Path.GetFileNameWithoutExtension(file), out var receiptId) &&
@@ -235,6 +240,7 @@ namespace Unity.MP_FPS {
                     !Guid.TryParse(payload.PlayerId, out _) || !RaidRules.ValidLoadout(payload.Cells))
                     throw new InvalidDataException("Invalid deployment journal: " + Path.GetFileName(file));
                 // A completed raid's exact settlement takes precedence over crash recovery.
+                // 已有完整结算时保持那份结果。只剩开局记录说明找不到最终结果，才请求放弃该局。
                 if (!Saves.ContainsKey(payload.DeploymentId)) Abandon(payload);
             }
             Debug.Log("[Raid] Persistent stash enabled. Pending receipts: " + Saves.Count);
@@ -253,12 +259,14 @@ namespace Unity.MP_FPS {
             Joins.Add(connection, new Join {
                 Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells,
                 ResumeOnly = resumeOnly, ExpeditionCompanions = expeditionCompanions,
+                // 入场认证和读仓库在后台处理。服务端 ECS 继续更新，下一帧 PollPersistence 再确认它完成没。
                 Task = ResolveJoinAsync(token)
             });
         }
 
         public void RefreshJoin(Join join) {
             join.NeedsRefresh = false;
+            // 办过的在线票只能消费一次。等旧结算时刷新档案应按已认证玩家 ID 读，同机档案端则可重新查原会话。
             join.Task = m_Http == null ? ResolveJoinAsync(join.Token) : RefreshAuthenticatedJoinAsync(join.Task.Result);
         }
 
@@ -277,6 +285,7 @@ namespace Unity.MP_FPS {
         }
 
         public void BeginSave(Entity connection, RaidSession session, ResearchQuestResult researchQuests = null) {
+            // 已有结算任务时只更新收到回执应通知的连接。冻结的物品和结果不重新构造。
             if (Saves.TryGetValue(session.SettlementId.ToString(), out var pending)) {
                 pending.Connection = connection;
                 pending.RaidId = session.RaidId;
@@ -292,6 +301,7 @@ namespace Unity.MP_FPS {
                 InventoryJson = Inventories.TryGetValue(connection, out var inventory)
                     ? JsonConvert.SerializeObject(inventory.Graph)
                     : null,
+                // 离线章节和通用研究是不同进度，只在相应模式带所需数据。临时玩法不会写入远征章节。
                 CampaignProgress =
                     m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
                         ? CampaignRules.Clone(campaign)
@@ -304,6 +314,7 @@ namespace Unity.MP_FPS {
         }
 
         public void BeginDeploy(Entity connection, int cells, Join join = null) {
+            // 给这一趟出战分一个全新的 ID。这个 ID 从扣装到网络重试和最终结算始终跟着同一笔装备。
             var payload = new Deployment {
                 PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells,
                 ResearchVersion = m_Offline == null && m_Lan == null ? ResearchQuestRules.DeploymentVersion : 0
@@ -319,6 +330,7 @@ namespace Unity.MP_FPS {
         // 先把完整请求写到临时文件并刷盘，然后换成正式文件名。同一个编号重试只能使用同一份内容，避免拿旧编号提交不同结果。
         private static void WriteJournal(string file, object payload) {
             if (File.Exists(file)) {
+                // 已有同名待发文件时对比结构化内容，不靠时间或文件大小判断。不同内容用同一个 ID 应视为冲突。
                 if (!Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken.Parse(File.ReadAllText(file)),
                         Newtonsoft.Json.Linq.JToken.FromObject(payload)))
                     throw new InvalidDataException("Outbox receipt conflicts with its immutable payload.");
@@ -336,6 +348,7 @@ namespace Unity.MP_FPS {
         // 本地先为这次出战留好恢复记录，再向档案请求划出装备。回包的玩家、出战编号和装备内容都要对得上，角色才允许带这套装备出生。
         public Task<Profile> DeployAsync(Deployment payload) {
             return Task.Run(async () => {
+                // 极速赏金要先确认参赛名单和每人出战配对。登记没成功就不写扣装记录也不发实际扣装请求。
                 await AwaitBountyRegistrationAsync(payload).ConfigureAwait(false);
                 WriteJournal(DeploymentFile(payload), payload);
                 var profile = await PostAsync(ProfilePath("deployments", payload.Mode), payload).ConfigureAwait(false);
@@ -353,6 +366,7 @@ namespace Unity.MP_FPS {
                 } catch (JsonException) {
                     throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Malformed deployment inventory.");
                 }
+                // 出战回包只应有随身库存，带仓库或世界箱子的图不合法。还要检查图结构和实际携带的电池数。
                 if (graph == null || graph.Find("stash") != null || graph.Find("loot") != null ||
                     graph.Validate() != Inventory.InventoryError.None || graph.Count("cells", true) != payload.Cells)
                     throw new LoadoutRejectedException(RaidLoadoutError.Rejected,
@@ -361,6 +375,7 @@ namespace Unity.MP_FPS {
             });
         }
 
+        // 给没完整结算的出战登记放弃任务。已有保存回执就不再加，避免旧连接正常结算后被清理回调当成弃局。
         public void Abandon(Deployment payload, bool startImmediately = true) {
             if (Saves.ContainsKey(payload.DeploymentId)) return;
             var save = new Save {
@@ -375,6 +390,7 @@ namespace Unity.MP_FPS {
             return save.AbandonedDeployment == null
                 ? SaveAsync(save.Payload)
                 : Task.Run(async () => {
+                    // 恢复时同一个出战可能要弃局或退款。只在档案确认了同一玩家之后，才删对应出战和退款记录。
                     var profile =
                         await PostAsync(
                             ProfilePath(save.AbandonedDeployment.Refund ? "deployments/refund" : "deployments/abandon",
@@ -393,6 +409,7 @@ namespace Unity.MP_FPS {
             return Task.Run(async () => {
                 string file = Path.Combine(m_Outbox, Guid.Parse(payload.SettlementId).ToString("N") + ".json");
                 WriteJournal(file, payload);
+                // 有赏金事件的结算先确认赏金归属，然后再发送个人库存结果。待发文件保存了整份请求，异常时可以原样重发。
                 await RedeemBeforeSaveAsync(payload).ConfigureAwait(false);
                 var profile = await PostAsync(ProfilePath("settlements", payload.Mode), payload).ConfigureAwait(false);
                 if (profile.PlayerId != payload.PlayerId)
@@ -405,12 +422,14 @@ namespace Unity.MP_FPS {
         }
 
         private async Task<Profile> PostAsync(string path, object payload) {
+            // 这里是统一请求的分流点，单人和 LAN 直接调档案对象，在线才发带服务端身份的 HTTP。
             if (m_Offline != null) return m_Offline.Request(path, payload);
             if (m_Lan != null) return m_Lan.Request(path, payload);
             using (var content =
                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false)) {
                 // Do not log request bodies: guest tokens and server keys are credentials.
+                // 服务器明确拒绝出装时，提取空间不足、缺电池等错误，让调用者区分应提示玩家和应自动重试的失败。
                 if (path.EndsWith("/deployments", StringComparison.Ordinal) &&
                     (response.StatusCode == HttpStatusCode.Conflict ||
                      response.StatusCode == HttpStatusCode.BadRequest ||
@@ -432,6 +451,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // World 即将销毁，先收集仍开的出战资料作为关闭期间所需数据。后台任务之后只读这些普通对象，不再查询 ECS。
         public void Dispose() {
             if (m_Disposed) return;
             m_Disposed = true;
@@ -460,6 +480,7 @@ namespace Unity.MP_FPS {
         private async Task FlushShutdownAsync(List<Task<Profile>> deploying, List<Save> saves) {
             try {
                 // A pending debit must resolve before its cancellation is acknowledged locally.
+                // 关闭时先等已发的扣装收尾，再处理退款、放弃或实际结算。未确认动作保留原文件，下次启动继续。
                 foreach (var task in deploying) {
                     try { await task.ConfigureAwait(false); } catch (Exception) {
                         /* journal retained */

@@ -10,6 +10,7 @@ namespace Unity.MP_FPS {
         private int m_Count, m_Next;
         public void Reset() { m_Count = m_Next = 0; }
 
+        // 将角色类型编号映射到该角色的 ECS 预制体。服务器可据此给不同阵营或席位生成外观。
         public static Entity Prefab(in PlayerEntityPrefabs prefabs, int characterIndex) {
             return characterIndex switch {
                 GameSettings.HatsuneMikuCharacterIndex => prefabs.HatsuneMikuEntityPrefab,
@@ -27,6 +28,7 @@ namespace Unity.MP_FPS {
             characterIndex = GameSettings.DollSingerCharacterIndex;
             if (m_Next >= m_Count) {
                 m_Count = m_Next = 0;
+                // 本轮只收场景实际加载过的角色资源。某个角色预制体缺失时，剩下几个仍能参加。
                 for (int index = GameSettings.DollSingerCharacterIndex;
                      index <= GameSettings.ShianCharacterIndex;
                      index++)
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS {
                     (m_Order[i], m_Order[other]) = (m_Order[other], m_Order[i]);
                 }
             }
+            // 每取一个轮到下一项，用尽之后再打乱。用同一个角色不强制绑定哪类行为或武器。
             characterIndex = m_Order[m_Next++];
             prefab = Prefab(prefabs, characterIndex);
             return prefab != Entity.Null;

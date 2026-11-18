@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client {
     public sealed partial class MoonkovTerminal {
         // The lobby and pause menu edit the same live settings and persistence path.
+        // 仓库和暂停菜单共用这组绑定。每个控件把操作直接送给对应偏好，调用方不用重写保存逻辑。
         internal static void BindSettings(VisualElement content, Action languageChanged = null) {
             BindViewSettings(content);
             new RaidKeyBindingView(content);
@@ -47,6 +48,7 @@ namespace Unity.MP_FPS.Client {
             });
         }
 
+        // 同一种滑块可控制不同范围的音量。进度颜色按自身上下限换算，拖动释放后再触发保存。
         private static void BindAudioSlider(VisualElement content, string name, string channel, float value) {
             var slider = content.Q<Slider>(name);
             slider.highValue = MoonkovAudio.MaximumVolume(channel);
@@ -75,6 +77,7 @@ namespace Unity.MP_FPS.Client {
             slider.RegisterCallback<DetachFromPanelEvent>(_ => PlayerPrefs.Save());
         }
 
+        // 读取当前视角配置填一次界面，随后只在玩家改值时更新。这里负责接线，角色控制器负责实际应用。
         private static void BindViewSettings(VisualElement content) {
             content.Q<VisualElement>(className: "archive-settings-page").styleSheets.Add(
                 Resources.Load<StyleSheet>("Moonkov/UI/ViewSettings"));

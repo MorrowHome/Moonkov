@@ -20,6 +20,7 @@ namespace Unity.MP_FPS {
             var site = RaidMissionSite.Active;
             if (!site || site.Anchors.Length == 0) return true;
             if (m_MissionNavInstance.valid) return true;
+            // 异步构建在后台推进。只在准备完成时注册网格并接通到主地形。
             if (m_MissionNavBuild != null) {
                 if (!m_MissionNavBuild.isDone) return false;
                 m_MissionNavInstance = NavMesh.AddNavMeshData(m_MissionNavData);
@@ -35,6 +36,7 @@ namespace Unity.MP_FPS {
                         if (!NavMesh.SamplePosition(point, out var coarse, 3, 1) ||
                             !NavMesh.SamplePosition(point, out var detailed, 3, 1 << MissionNavigationArea))
                             continue;
+                        // 在入口多个点尝试让粗网格与细网格连通。它们使用不同区域号，连接两端都需要能采样到。
                         var link = new NavMeshLinkData {
                             startPosition = coarse.position, endPosition = detailed.position,
                             width = 1, bidirectional = true, costModifier = -1, agentTypeID = settings.agentTypeID
@@ -45,6 +47,7 @@ namespace Unity.MP_FPS {
                 Debug.Log("[DollSinger AI] MC00 detailed navigation ready; boundary links=" + m_MissionNavLinks.Count);
                 return m_MissionNavInstance.valid;
             }
+            // 用设备锚点框住任务区，并扩出楼梯与平台，不用覆盖整张远征地图。
             m_MissionNavBounds = new Bounds(site.Anchors[0].Approach, Vector3.one);
             foreach (var anchor in site.Anchors) m_MissionNavBounds.Encapsulate(anchor.Approach);
             // Include both stair towers and their landings, beyond the equipment-room footprint.
@@ -69,6 +72,7 @@ namespace Unity.MP_FPS {
             build.agentHeight = 1.8f;
             build.agentClimb = .35f;
             build.agentSlope = 45;
+            // 仅任务区使用更精细的网格体素，解决粗网格会把窄梯踏面抹掉的问题。
             build.overrideVoxelSize = true;
             build.voxelSize = .15f;
             m_MissionNavData = new NavMeshData(build.agentTypeID) { name = "MC00 detailed mission navigation" };
@@ -77,6 +81,7 @@ namespace Unity.MP_FPS {
             return false;
         }
 
+        // 离场先取消未完成的构建，再移除连接和区域网格，旧地图的路线不会挂到下一局。
         private void ReleaseMissionNavigation() {
             if (m_MissionNavBuild != null && !m_MissionNavBuild.isDone && m_MissionNavData)
                 NavMeshBuilder.Cancel(m_MissionNavData);

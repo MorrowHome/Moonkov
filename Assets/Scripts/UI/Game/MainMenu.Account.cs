@@ -60,6 +60,7 @@ namespace Unity.MP_FPS.Client {
             m_MainMenu.Q<TextField>(UIElementNames.NameInputField).SetEnabled(false);
             m_MainMenu.Q<VisualElement>("InputPlayerName").style.display = DisplayStyle.None;
             m_ShowConnectionMenu = false;
+            // 已在单人档或好友房时可直接用本地资料。保存过的线上登录要再跟账号服务验证一次。
             m_AccountVerified = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan;
             m_BackToStash = new Button(ShowStash) { text = "BACK TO STASH" };
             m_ConnectionPanel.Insert(0, m_BackToStash);
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS.Client {
             m_LastStashGameState = GameSettings.Instance.GameState;
             GameSettings.Instance.propertyChanged += StashSettingsChanged;
             m_AccountConfigurationValid = false;
+            // 服务地址无法配置时先记录错误，关闭线上登录入口。切换单人档仍可用，不需要等服务修复。
             try { m_AccountServiceUrl = AccountServiceSettings.Configure(m_AccountServiceUrl); } catch (Exception ex) {
                 MoonkovLocalization.Set(m_AccountMessage, m_AccountError = ex.Message);
                 UpdateAccountPanel();
@@ -87,6 +89,7 @@ namespace Unity.MP_FPS.Client {
         // 线上登录恢复先经过验证，动画也要走到可以显示内容的阶段，仓库才会出现。帘幕还在动时暂时停用两边的输入。
         private void UpdateAccountPanel() {
             bool authenticated = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
+            // 只在首屏真正就绪且停留在主菜单的时刻推进登录过渡。进入加载界面时账号页不再接管屏幕。
             bool accessVisible = GameSettings.Instance.MainMenuSceneLoaded &&
                                  GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
                                  GameSettings.Instance.MainMenuState == MainMenuState.MainMenuScreen;
@@ -112,6 +115,7 @@ namespace Unity.MP_FPS.Client {
             canvas.EnableInClassList("archive-access-account", !loggedIn);
             canvas.AddToClassList("archive-login-plates");
             m_LoginAnimation.Present(!loggedIn && accessVisible, m_AccessReduceMotion.value);
+            // 同一个账号模式按钮在登录页、仓库和连接区之间移动，事件只绑一次。好友房入口也跟随当前区域。
             var modeHost = loggedIn
                 ? showStash ? m_MainMenu.Q("stashMenuActions") : m_ConnectionPanel
                 : m_AccountPanel.Q("accountSecondaryActions");
@@ -127,6 +131,7 @@ namespace Unity.MP_FPS.Client {
             m_ConnectionPanel.SetEnabled(!transitioning);
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
+            // 账号、人物、资源数字和错误统一从当前档案与连接状态传下去。仓库页本身无需知道账号如何验证。
             m_StashScreen.Present(PlayerProfileClient.DisplayName, GameSettings.Instance.PlayerCharacter,
                 PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells,
                 showStash, m_AccountBusy || transitioning,
@@ -166,6 +171,7 @@ namespace Unity.MP_FPS.Client {
         private async void RunAccountAction(bool register) {
             await AccountAction(async ct => {
                 MoonkovLocalization.Set(m_AccountMessage, register ? "Creating account..." : "Signing in...");
+                // 注册和登录共用一个入口。认证成功后把输入框里的密码清空，并通知转场可以进入仓库。
                 await PlayerProfileClient.AuthenticateAsync(m_AccountServiceUrl, m_Username.value, m_Password.value,
                     register, ct);
                 m_Password.value = "";
@@ -186,6 +192,7 @@ namespace Unity.MP_FPS.Client {
 
         // 同一个出发按钮有三条路径。好友房先开房间页，单人直接启动本地战局，线上先打开小队页等大家准备。
         private void ShowRaidPreparation() {
+            // 打开好友房只进入准备。单人出发则立即请求建立本地战局，线上小队留在菜单等待服务器给入场信息。
             if (PlayerProfileClient.IsLan) { m_LanRoom.Open(); } else if (PlayerProfileClient.IsOffline) {
                 GameManager.Instance.StartGameAsync(CreationType.Offline);
             } else {
@@ -211,6 +218,7 @@ namespace Unity.MP_FPS.Client {
             await AccountAction(async ct => {
                 m_ShowConnectionMenu = false;
                 if (PlayerProfileClient.IsOffline) {
+                    // 离开单人档前先把排队的库存修改刷完。完成后才清除本地会话并切回线上账号入口。
                     await PlayerProfileClient.FlushMenuInventoryAsync(ct);
                     PlayerProfileClient.LeaveOffline();
                     m_AccountVerified = false;
@@ -251,6 +259,7 @@ namespace Unity.MP_FPS.Client {
                     UpdateAccountPanel();
                 return;
             }
+            // 回到菜单时，用房间快照判断是否仍属于原小队。有房间就显示小队页，否则回自己的仓库。
             m_ShowConnectionMenu = OnlineLobbyClient.Snapshot?.Code != null;
             m_LobbyOpen = m_ShowConnectionMenu;
             if (PlayerProfileClient.IsLoggedIn)
@@ -276,6 +285,7 @@ namespace Unity.MP_FPS.Client {
             m_AccountError = null;
             m_AccountBusy = true;
             UpdateAccountPanel();
+            // 请求执行期间禁用重复操作。异常变成界面提示，结束后同一批请求才可恢复按钮。
             try { await action(lifetime.Token); } catch (OperationCanceledException) {
                 if (!lifetime.IsCancellationRequested)
                     MoonkovLocalization.Set(m_AccountMessage,

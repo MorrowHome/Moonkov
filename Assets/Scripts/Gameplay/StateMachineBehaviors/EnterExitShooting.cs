@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Unity.MP_FPS {
     public class EnterExitShooting : StateMachineBehaviour {
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+            // 这个标记供动画层使用，说明现在正处在这段射击姿势。
             animator.SetBool("IsShooting", true);
         }
 

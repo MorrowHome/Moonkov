@@ -14,14 +14,17 @@ namespace Unity.MP_FPS {
             var original = GetWeaponData(weaponID);
             // Attachments use the rifle/shotgun slots; biological research and
             // temporary organ buffs affect every halo. Cache runtime-only copies.
+            // 只有存在有效模块的光环才需要副本。基础设置和普通武器可直接使用资产。
             if (original == null || modules == 0 || !DollSingerWeapons.IsHalo(weaponID)) return original;
             // 缓存键的高位存武器编号，低 16 位存配件和效果。不同武器或不同配件组合对应各自的运行时参数。
             ulong key = ((ulong)weaponID << 16) | modules;
             if (m_ModuleVariants.TryGetValue(key, out var cached)) return cached;
+            // 改装作用于只在运行时存在的参数对象。两个玩家拿同一点数的武器，也不会把原配置资产改掉。
             var variant = Instantiate(original);
             variant.hideFlags = HideFlags.HideAndDontSave;
             variant.name = original.name + " (modules " + modules + ")";
             var mask = (HaloModule)modules;
+            // 同一改装槽的扩容、加速等组件按互斥分支计算。散布镜片只给兼容的霰弹光环。
             if ((mask & HaloModule.Capacitor) != 0) {
                 variant.MagazineSize = Mathf.CeilToInt(original.MagazineSize * 1.5f);
                 variant.ReloadTime *= 1.35f;
@@ -51,6 +54,7 @@ namespace Unity.MP_FPS {
                 variant.MagazineSize = Mathf.CeilToInt(variant.MagazineSize * 1.4f);
             if ((mask & HaloModule.BiologicalCharging) != 0) variant.ReloadTime *= .75f;
             if ((mask & HaloModule.BiologicalStability) != 0) variant.SpreadDegrees *= .7f;
+            // 临时食物效果也编码在掩码里，和长期配件一起算当前数值。
             switch (AlienBiology.Effect(modules)) {
                 case AlienFoodEffect.SilkFocus: variant.SpreadDegrees *= .6f; break;
                 case AlienFoodEffect.ContractilePower: variant.Damage *= 1.4f; break;
@@ -64,6 +68,7 @@ namespace Unity.MP_FPS {
             return variant;
         }
 
+        // 副本不作为资产写回。注册表卸载时统一销毁并清空缓存。
         private void OnDisable() {
             foreach (var weapon in m_ModuleVariants.Values)
                 if (weapon) {

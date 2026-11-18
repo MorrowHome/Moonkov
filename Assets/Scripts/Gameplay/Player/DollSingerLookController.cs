@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
     // Owned input response. The resulting look angle is sent through the existing
     // command path, so the camera and the following shot share the same direction.
     public struct HaloRecoilResponse {
+        // 刚产生的反冲先在待应用值，镜头真正抬起的部分才记入可恢复角度。两者分开可避免到达镜头上限后又往回多压。
         private float pending, recoverable, age, recoveryDelay, recoveryRate;
         private float returnFraction, pendingYaw, recoverableYaw;
         private uint sequence;
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS {
             };
         }
 
+        // 每次实际开火按武器、瞄准与放大倍率给相机加短促抬升。射速高时恢复也提前，不让多发都挤到画面上沿。
         public void Kick(uint weapon, float magnification, float shotInterval = .35f, bool aiming = true) {
             returnFraction = 1;
             float scale = aiming ? 1f / Mathf.Clamp(magnification, 1f, 12f) : 1f;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS {
             age = 0;
         }
 
+        // 有专门手感配置时用它确定强度、回收速度和左右跳动。横向位移由射击序号复算。
         public void Kick(
             uint weapon,
             float magnification,
@@ -68,6 +71,7 @@ namespace Unity.MP_FPS {
         public void Apply(ref float pitch, float downwardInput, float deltaTime) {
             if (deltaTime <= 0) return;
             // Only retain recovery for movement that actually passed the pitch limit.
+            // 接近俯仰上限时只应用剩余空间。已经被裁掉的反冲不给恢复逻辑使用。
             float kick = Mathf.Min(pending, Mathf.Max(0, pitch + 80f));
             pending = 0;
             pitch -= kick;
@@ -81,6 +85,7 @@ namespace Unity.MP_FPS {
             pitch = Mathf.Min(80f, pitch + recovery);
         }
 
+        // 把反冲与手动压枪叠在同一份本地视角。后续采样的射击方向因此和画面方向一致。
         public void Apply(ref float2 look, float2 playerDelta, float deltaTime) {
             if (deltaTime <= 0) return;
             float previousAge = age;
@@ -106,10 +111,12 @@ namespace Unity.MP_FPS {
 
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>
     public static class DollSingerLookController {
+        // 松开自由观察键时让头部偏角逐步回零，切回常规观察不瞬间跳视角。
         public static float2 ReturnFreeLook(float2 offset, float step) {
             return new float2(Mathf.MoveTowards(offset.x, 0f, step), Mathf.MoveTowards(offset.y, 0f, step));
         }
 
+        // 用按键区分普通转视角与只转头。计算探身后把镜头需要的旋转单独输出，身体随后移动也能保持同一视角。
         public static bool Update(
             ref float2 look,
             ref float2 freeLookOffset,

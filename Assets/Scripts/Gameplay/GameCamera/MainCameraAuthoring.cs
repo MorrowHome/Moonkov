@@ -8,6 +8,7 @@ namespace Unity.MP_FPS {
         public float Fov = 75f;
 
         public class Baker : Baker<MainCameraAuthoring> {
+            // Baker 把场景配置对接到动态实体。表现系统可以通过组件查询取姿势和视野。
             public override void Bake(MainCameraAuthoring authoring) {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new MainCamera(authoring.Fov));
@@ -23,6 +24,7 @@ namespace Unity.MP_FPS {
     /// </summary>
     public struct MainCamera : IComponentData {
         public MainCamera(float fov) { CurrentFov = BaseFov = fov; }
+        // 基础视野是配置值。另有 CurrentFov 留给当前画面使用。
         public float BaseFov;
         public float CurrentFov;
     }

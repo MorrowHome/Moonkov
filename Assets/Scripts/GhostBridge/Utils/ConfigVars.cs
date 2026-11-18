@@ -16,6 +16,7 @@ public class ConfigVarAttribute : Attribute {
 }
 
 public class ConfigVar {
+    // 通过名字集中查参数，调试配置和业务可以读同一个对象。DirtyFlags 能标记有哪些类别的值变化过。
     public static Dictionary<string, ConfigVar> ConfigVars;
     public static Flags DirtyFlags = Flags.None;
     private static bool s_Initialized = false;
@@ -169,6 +170,7 @@ public class ConfigVar {
 
     public float FloatValue => _floatValue;
 
+    // 扫描游戏程序集里标过特性的静态字段。名字、默认值和用途由标记提供，注册后把创建好的对象填回该字段。
     private static void InjectAttributeConfigVars() {
         var classes = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Assembly-CSharp"))
             .SelectMany(a => a.GetTypes());
@@ -181,6 +183,7 @@ public class ConfigVar {
                 if (!field.IsDefined(typeof(ConfigVarAttribute), false) &&
                     !field.IsDefined(typeof(FeatureToggleAttribute), false))
                     continue;
+                // 扫描器给全局字段注入共享值，因此要求字段本身是静态的。类型也必须和参数或特性开关一致。
                 if (!field.IsStatic) {
                     Debug.LogError("Cannot use ConfigVar attribute on non-static fields");
                     continue;
@@ -227,6 +230,7 @@ public class ConfigVar {
 
                         // does it exist already?
                         string featureName = $"feature.{name}";
+                        // 名字相同的功能开关可以已经由其他入口注册。复用同名对象，避免配置窗口和玩法各拿一份状态。
                         var existingFeature = FindFeatureToggle(featureName);
                         if (existingFeature != null) {
                             existingFeature.SetEnabled(featureAttr.Default);
@@ -248,6 +252,7 @@ public class ConfigVar {
 
     private void ResetToDefault() { Value = defaultValue; }
 
+    // 由调用者在需要的时候查值是否变过。混音系统可以只在音量参数改变时改一次混音器。
     public bool ChangeCheck() {
         if (!changed) return false;
         changed = false;

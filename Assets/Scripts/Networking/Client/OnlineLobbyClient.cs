@@ -18,6 +18,7 @@ namespace Unity.MP_FPS {
             string token = Token;
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl))
                 throw new InvalidOperationException("请先登录在线账号。");
+            // 刷新用 GET，准备、申请和开战等动作随 POST 发送。两条都带版本、角色和姿态，查看目录时才请求房间列表。
             using var request = new HttpRequestMessage(action == null ? HttpMethod.Get : HttpMethod.Post,
                 Address(s_BaseUrl,
                     (action == null ? "auth/lobby" : "auth/lobby/action") + "?character=" +
@@ -33,6 +34,7 @@ namespace Unity.MP_FPS {
             if (!response.IsSuccessStatusCode)
                 throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ??
                                                     "大厅服务暂不可用，请重试。");
+            // HTTP 返回时如果登入凭据已经变了，这份小队快照必须丢弃，即使返回码是成功。
             if (token != Token) throw new OperationCanceledException("登录账号已变更。");
             return JsonConvert.DeserializeObject<LobbySnapshot>(body) ?? throw new InvalidOperationException("大厅响应无效。");
         }
@@ -67,6 +69,7 @@ namespace Unity.MP_FPS {
 
         private static void SelectAccount() {
             string scope = PlayerProfileClient.LocalPreferenceScope;
+            // 菜单在不同账号中切换时仓库和小队都要隔离。这里一换作用域就清快照、错误、已尝试实例及重连窗口。
             if (s_Account != scope) {
                 Reset();
                 SessionReconnect.Dismiss();
@@ -81,6 +84,7 @@ namespace Unity.MP_FPS {
 
         public static async Task ActAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false) {
             SelectAccount();
+            // 准备与出发前等菜单库存请求全部确认。这样服务端核对的是最后确认过的出装。
             if (action.Action == "start" || (action.Action == "ready" && action.Ready))
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             s_Snapshot = await AccountClient.LobbyAsync(action, ct, browseRooms);
@@ -95,6 +99,7 @@ namespace Unity.MP_FPS {
         // 大厅处于就绪时才取分配好的服务器地址。校验协议和本人席位后设置加载参数，这一步还没在战局中生成玩家。
         public static void Join(bool retry = false) {
             var s = Snapshot;
+            // 轮询可能反复收到同一场已开好的战局。用已尝试实例号避免每次刷新都重新加载，手动重试才允许进同一个实例。
             if (s?.Phase != "Ready" || string.IsNullOrEmpty(s.Address) || (s.InstanceId == LastAttempt && !retry))
                 return;
             if (s.NetworkProtocol != OnlineNetworkProtocol.Version ||
@@ -111,6 +116,7 @@ namespace Unity.MP_FPS {
             s_PreserveFailedJoin = false;
             Error = null;
             // Always retain the public game entrance. P2P uses separate ICE endpoints.
+            // 公网入口仍留在设置中。实际走 P2P 时，GameConnection 会另从快照准备 ICE 端点。
             ConnectionSettings.Instance.IPAddress = s.Address;
             ConnectionSettings.Instance.Port = s.Port.ToString();
             ConnectionSettings.Instance.ConnectionError = null;
@@ -128,6 +134,7 @@ namespace Unity.MP_FPS {
         public static async Task ReturnedAsync() {
             bool preserve = s_PreserveFailedJoin;
             s_PreserveFailedJoin = false;
+            // 掉线仍可重连，或进场步骤尚未成功时，后端席位继续保留，返回菜单这一次不发送回房动作。
             if (!InInstance || SessionReconnect.Available || preserve) return;
             try {
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(12));
@@ -136,6 +143,7 @@ namespace Unity.MP_FPS {
             } catch (Exception ex) { Error = "等待服务器结算后返回队伍：" + ex.Message; }
         }
 
+        // 服务器尚未结算等情况会拒绝第一次回房。界面可重发 return，得到确认后再丢掉实例和重连信息。
         public static async Task RetryReturnAsync(CancellationToken ct) {
             await ActAsync(new LobbyAction { Action = "return" }, ct);
             SessionReconnect.Dismiss();

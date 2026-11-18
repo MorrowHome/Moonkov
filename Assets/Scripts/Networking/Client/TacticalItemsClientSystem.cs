@@ -12,6 +12,7 @@ namespace Unity.MP_FPS {
         protected override void OnCreate() {
             // Managed components need an instance: the generic default singleton stores null.
             var owner = EntityManager.CreateEntity();
+            // 用托管对象保存当前客户端的战术道具状态。每个 World 自己创建一份，局内 HUD 通过查询拿到它。
             EntityManager.AddComponentObject(owner, new TacticalItemClientState());
         }
 
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS {
             m_OwnsPresentation = OwnsPresentation();
             if (m_OwnsPresentation && !m_Feedback) m_Feedback = TacticalItemsFeedback.GetOrCreate();
             using var ecb = new EntityCommandBuffer(Collections.Allocator.Temp);
+            // 本人回执先更新这个 World 的进度和操作结果，只有绑定当前 HUD 的那个 World 还要更新屏幕表现。
             foreach (var (rpc, received, entity) in SystemAPI
                          .Query<RefRO<TacticalItemOwnerRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 var owner = rpc.ValueRO;
@@ -35,6 +37,7 @@ namespace Unity.MP_FPS {
                 if (current.Apply(owner) && m_OwnsPresentation) TacticalItemsFeedback.SetOwner(owner);
                 ecb.DestroyEntity(entity);
             }
+            // 场景状态消息包含客户端需要绘制的物体和效果。附加的 World 即使收到同类消息也不能重复放一次特效。
             foreach (var (rpc, received, entity) in SystemAPI
                          .Query<RefRO<TacticalWorldStateRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 if (m_OwnsPresentation) {
@@ -46,6 +49,7 @@ namespace Unity.MP_FPS {
             ecb.Playback(EntityManager);
         }
 
+        // 随 World 清理画面对象。只有刚才负责 HUD 的那个 World 才清全局持有者，防止一并关闭其他 World 时误擦主画面。
         protected override void OnDestroy() {
             if (m_Feedback) {
                 if (Application.isPlaying)

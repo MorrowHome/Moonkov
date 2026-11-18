@@ -7,10 +7,12 @@ using UnityEngine;
 /// </summary>
 public static class GameInput {
     // Recreate the actions each session so scene components can subscribe in OnEnable.
+    // 场景脚本进入 OnEnable 时就可能订阅操作，所以先在场景启动前构造 Actions 实例。
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void RuntimeInitializeOnLoad() { Actions = new InputSystem_Actions(); }
 
     // Input System resets action state at BeforeSceneLoad in Player builds.
+    // Player 读第一个场景前 Input System 会重新设置动作启用状态，因此在场景读完后统一启用这份共享映射。
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void EnableActions() { Actions.Enable(); }
 

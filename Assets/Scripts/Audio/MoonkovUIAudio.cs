@@ -21,12 +21,14 @@ namespace Unity.MP_FPS {
         private void Start() { Scan(); }
 
         private void Update() {
+            // 菜单与暂停时仍应能更新按钮声，所以定时用不受时间缩放影响的时钟。定期扫一次就足够发现新打开的文档。
             if (Time.unscaledTime < m_NextScan) return;
             Scan();
         }
 
         private void Scan() {
             m_NextScan = Time.unscaledTime + ScanInterval;
+            // 先清已经离开面板的监听，再找当前和暂时隐藏的文档。新页切出时就已有点击声和本地化。
             MoonkovAudio.PruneBoundRoots();
             var documents = FindObjectsByType<UIDocument>(FindObjectsInactive.Include);
             for (int i = 0; i < documents.Length; i++) {

@@ -15,12 +15,14 @@ namespace Unity.MP_FPS {
 
         private readonly Dictionary<int, ClashSquadPlan> m_ClashSquads = new(3);
 
+        // 任务依赖对局本轮有效的机器人信息。注册表取不到时不继续提交旧动作。
         private bool TryClashView(DollSingerEnemyBrain brain, out ClashBotView view) {
             view = null;
             return brain.IsClashBot && m_ClashRegistry != null && brain.ClashEpoch == m_ClashRegistry.Epoch &&
                    m_ClashRegistry.TryGetView(brain.ClashParticipantId, out view) && view.Epoch == brain.ClashEpoch;
         }
 
+        // 根据队友、对局阶段和当前优先目标选择任务。队友位置是允许共享的，敌人的即时位置仍由感知提供。
         private void PlanClashMission(
             DollSingerEnemyBrain brain,
             Vector3 position,
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS {
                 brain.Mission = ClashBotGoal.Hold;
         }
 
+        // 围着任务锚点取多个可走的接近位置，还要避开另一队友已占用的整段通道。
         private bool TryClashApproach(
             DollSingerEnemyBrain brain,
             Vector3 position,
@@ -141,6 +144,7 @@ namespace Unity.MP_FPS {
             return best < float.MaxValue;
         }
 
+        // 优先沿当前小队已经选好的出口协同撤离。环境变化或路不通时再重新选。
         private Vector3 SelectClashExit(DollSingerEnemyBrain brain, Vector3 position, ClashBotView view, double now) {
             if (!m_ClashSquads.TryGetValue(brain.ClashTeamId, out var squad)) {
                 squad = new ClashSquadPlan();
@@ -206,6 +210,7 @@ namespace Unity.MP_FPS {
             return position;
         }
 
+        // 站位、阶段、当前身体可操作等条件都通过后，才发送按下交互。离目标太远会继续调整路线。
         private void AdvanceClashObjective(DollSingerEnemyBrain brain, Vector3 position, Vector3 eye, double now) {
             brain.Interacting = false;
             if (!TryClashView(brain, out var view) || view.Phase != ClashPhase.Active || view.Life != ClashLife.Alive)
@@ -236,6 +241,7 @@ namespace Unity.MP_FPS {
                 SubmitClashIntent(brain, ClashIntent.Pickup, -1, now);
         }
 
+        // 机器人能表达想操作什么，但目标是否真的完成由同一对局规则负责。
         private void SubmitClashIntent(DollSingerEnemyBrain brain, ClashIntent intent, int target, double now) {
             if (now < brain.NextIntent || m_ClashRegistry == null) return;
             brain.NextIntent = now + .2;

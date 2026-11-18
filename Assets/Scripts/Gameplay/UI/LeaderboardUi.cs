@@ -102,9 +102,11 @@ namespace Unity.MP_FPS.UI {
 
         private void UpdateLeaderboardUI() {
             if (LeaderboardManager.Instance == null) return;
+            // 记分板直接读已有战绩。打开界面只将当前结果换成列表数据，不重新统计对局。
             var scores = LeaderboardManager.Instance.GetScores();
 
             // Sort scores: Kills descending, then Deaths ascending
+            // 先以击杀数排高低，击杀数相同时死亡少的在前。玩家姓名与网络 ID 用原来的记录。
             scores.Sort((a, b) => {
                 // Primary sort: Kills descending
                 int killComparison = b.Kills.CompareTo(a.Kills);
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS.UI {
             _items.Clear();
 
             // Add new entries
+            // 将记录转为列表行供 UI Toolkit 复用。视图的显示顺序由刚才的排序决定。
             foreach (var score in scores)
                 _items.Add(new ScoreUiPlayerInfo(score.NetworkId, score.PlayerName.ToString(), score.Kills,
                     score.Deaths));

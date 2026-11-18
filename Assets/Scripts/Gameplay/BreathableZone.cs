@@ -30,6 +30,7 @@ namespace Unity.MP_FPS {
 
         public bool AllowsSuitRefill { get => m_AllowsSuitRefill; set => m_AllowsSuitRefill = value; }
         public string AirspaceId => m_AirspaceId;
+        // 绑定了气闸就随实时状态取压。普通房间才直接读取 Inspector 配置的固定值。
         public float PressureKPa => m_Chamber ? m_Chamber.State.PressureKPa : m_PressureKPa;
 
         public void ConfigureFootprint(Vector2[] footprint) {
@@ -54,6 +55,7 @@ namespace Unity.MP_FPS {
         private static void ResetZones() { s_Zones.Clear(); }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        // 游戏开始时重新登记已经存在的空气区。静态列表重置后仍能找到场景里原本启用的对象。
         private static void RegisterLoadedZones() {
             foreach (var zone in FindObjectsByType<BreathableZone>())
                 if (zone.isActiveAndEnabled)
@@ -80,6 +82,7 @@ namespace Unity.MP_FPS {
                 if (!zone || !zone.isActiveAndEnabled || !zone.m_Box || !zone.m_Box.enabled ||
                     (Application.isPlaying && !Application.IsPlaying(zone.gameObject)))
                     continue;
+                // 先把玩家的位置换算到区域本地，再比较盒子与地面轮廓。区域旋转或缩放后也能正确判断。
                 var point = zone.transform.InverseTransformPoint(position);
                 var local = point - zone.m_Box.center;
                 var half = zone.m_Box.size * .5f;
@@ -92,6 +95,7 @@ namespace Unity.MP_FPS {
                 return false;
             }
             float pressure = selected.PressureKPa;
+            // 选中舱体时，含氧比例和呼吸阈值也从气闸配置取，跟实时气压配套。
             float fraction = selected.m_Chamber
                 ? selected.m_Chamber.Settings.SupplyOxygenFraction
                 : selected.m_OxygenFraction;
@@ -110,6 +114,7 @@ namespace Unity.MP_FPS {
             return true;
         }
 
+        // 盒子能圈住整个房间，地面多边形再裁掉房间凹进去的部分，减少门外被错算成室内。
         private bool ContainsFootprint(Vector3 point) {
             if (m_Footprint == null || m_Footprint.Length == 0) return true;
             if (m_Footprint.Length < 3) return false;

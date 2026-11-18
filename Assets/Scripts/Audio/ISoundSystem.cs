@@ -9,6 +9,7 @@ public interface ISoundSystem {
         SoundGameObjectPool soundGameObjectPool,
         AudioMixer mixer);
 
+    // 跟着角色或设备发声时传 Transform。带 localPosition 的版本可选物体上的发声点，传 Vector3 的版本则把声音留在世界某个位置。
     SoundSystem.SoundInfo CreateEmitter(SoundDef soundDef, Transform transform, float volume = 1);
     SoundSystem.SoundInfo CreateEmitter(SoundDef soundDef, Vector3 position, float volume = 1);
 
@@ -18,6 +19,7 @@ public interface ISoundSystem {
         Vector3 localPosition,
         float volume = 1);
 
+    // 需要在播放前自定义音高、空间感时，可以先构造 SoundInfo，再交给 PlayEmitter。拿到句柄的调用方还能让声音淡出或立即收回。
     bool PlayEmitter(SoundSystem.SoundInfo soundInfo, float volume = 1);
     void UpdateSoundSystem(bool muteSound = false);
     bool Stop(SoundSystem.SoundInfo soundInfo, float fadeOutTime = 0.0f);

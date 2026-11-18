@@ -92,6 +92,7 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour {
     [field: Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers { get; private set; }
 
+    // 把 Inspector 的各组速度、加速、转向和跳跃值汇总成一个结构。服务器移动和本地预测都可直接借用同一结构。
     /// <summary>Shared movement tuning for entity baking and offline gameplay previews.</summary>
     public FirstPersonController.ControllerConsts BuildControllerConsts() {
         return new FirstPersonController.ControllerConsts {
@@ -107,6 +108,7 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour {
             GroundedOffset = GroundedOffset,
             GroundLayers = GroundLayers,
             TerminalVelocity = TerminalVelocity,
+            // 地面有步行和冲刺参数。控制器从当前状态选一组，这会同时影响移动速度和动画跟随方式。
             Walk = new FirstPersonController.ControllerConsts.StateConsts {
                 Speed = WalkSpeed,
                 RotationSmoothTime = WalkRotationSmoothTime,
@@ -129,6 +131,7 @@ public class PredictedPlayerControllerConstsBaker : Baker<PredictedPlayerControl
     public override void Bake(PredictedPlayerControllerConstsAuthoring authoring) {
         var entity = GetEntity(TransformUsageFlags.None);
         AddComponent(entity, new PredictedPlayerControllerConsts {
+            // 烘焙时把参数装到实体上。角色运行时有一个无需回头查找场景组件的数值副本。
             ControllerConsts = authoring.BuildControllerConsts()
         });
     }

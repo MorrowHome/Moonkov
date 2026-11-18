@@ -10,6 +10,7 @@ namespace Unity.MP_FPS {
         private float m_ProgressTacticalDuration;
 
         private void CancelProgressAction() {
+            // 取消按钮先交给当前搜索或医疗。它们均未占用时，才发道具动作的取消。
             if (TimedActionActive)
                 CancelTimedAction();
             else if (QuickTacticalActionPending && !QuickTacticalCancelPending)
@@ -22,6 +23,7 @@ namespace Unity.MP_FPS {
                 return false;
             var owner = QuickOwner;
             if (QuickTacticalActionPending && !m_InventoryVisible) {
+                // 道具开始后用请求编号记住它的标准时长，之后用服务端剩余时间换成百分比。
                 if (m_ProgressTacticalRequest != owner.RequestId) {
                     m_ProgressTacticalRequest = owner.RequestId;
                     var item = QuickGraph?.Find(owner.ItemId.ToString());
@@ -35,12 +37,14 @@ namespace Unity.MP_FPS {
                     owner.Remaining, owner.Remaining > 0, true, QuickTacticalCancelPending);
                 return true;
             }
+            // 只有正在按住的设备才抢准星读条。直接从它的任务快照按节点编号拿进度。
             if (m_MissionHolding >= 0 && RaidMissionSite.Active && !m_InventoryVisible) {
                 int node = m_MissionHolding;
                 float progress = node < 4 ? m_MissionSnapshot.ProgressA[node] : m_MissionSnapshot.ProgressB[node - 4];
                 ShowProgress("OPERATING", progress, 0, false, false, false);
                 return true;
             }
+            // 撤离倒计时直接使用这局地图的总时间。判断真实结束由服务器，不由进度条画满触发。
             if (m_Snapshot.ExtractionRemaining >= 0 && MoonRaidMap.Active && !m_ClashMode && !m_InventoryVisible) {
                 ShowProgress("EXTRACTION",
                     1 - m_Snapshot.ExtractionRemaining / Mathf.Max(.01f, MoonRaidMap.Active.ExtractionSeconds),

@@ -54,6 +54,7 @@ namespace Unity.MP_FPS {
             m_Actor = actor;
             m_Root?.RemoveFromHierarchy();
             m_Rows.Clear();
+            // 提示叠在原 HUD 上，子元素都忽略鼠标事件。滚轮和按键由交互输入处理，提示层本身不截走鼠标。
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/AirlockPrompt");
             if (!tree || !document) return;
             tree.CloneTree(document.rootVisualElement);
@@ -86,6 +87,7 @@ namespace Unity.MP_FPS {
         }
 
         public void RefreshSelection(Camera camera, Vector3 actor, bool allowed, World world = null) {
+            // 暂停、没镜头或 HUD 不允许交互时收起提示并清掉旧选项，免得恢复时用到过期目标。
             if (m_Root == null || !camera || !allowed || Time.timeScale <= 0) {
                 Hide();
                 return;
@@ -101,6 +103,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             bool cycled = false;
+            // 同一画面更新里可能重复刷新候选。滚轮或方向键只消费一次，避免一下跳两项。
             if (m_LastInputFrame != Time.frameCount) {
                 m_LastInputFrame = Time.frameCount;
                 float wheel = Mouse.current == null ? 0 : Mouse.current.scroll.ReadValue().y;
@@ -116,6 +119,7 @@ namespace Unity.MP_FPS {
                 }
             }
             m_Root.AddToClassList("is-visible");
+            // 取世界按钮在屏幕上的位置，只更新标记坐标；较贵的文案更新按目标变化或短间隔触发。
             var viewport = camera.WorldToViewportPoint(m_Selection.Selected.Center);
             if (m_Root.resolvedStyle.width > 0 && m_Root.resolvedStyle.height > 0) {
                 m_Marker.style.left = viewport.x * m_Root.resolvedStyle.width - 21;
@@ -142,6 +146,7 @@ namespace Unity.MP_FPS {
             MoonkovLocalization.Set(m_Range, "DISTANCE {0:0.0} m",
                 Vector3.Distance(m_ActorPosition + Vector3.up, selected.Center));
             bool blocked;
+            // 同一模板给三类设备使用。气闸显示压差和门开度，升降梯显示楼层，灯组显示当前开关状态。
             if (selected.Airlock) {
                 var state = selected.Airlock.Owner.State;
                 MoonkovLocalization.Set(m_Pressure, "{0:0.0} kPa / OUT {1:0}% / IN {2:0}%", state.PressureKPa,
@@ -184,6 +189,7 @@ namespace Unity.MP_FPS {
             m_Feedback.EnableInClassList("is-blocked", blocked);
             m_Marker.EnableInClassList("is-blocked", blocked);
             int count = m_Selection.Choices.Count;
+            // 按钮数量没变就沿用现有行，只改选择和文案。视线移动时少销毁重建 UI 元素。
             if (m_Rows.Count != count) {
                 m_List.Clear();
                 m_Rows.Clear();
@@ -211,6 +217,7 @@ namespace Unity.MP_FPS {
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked)
                 return false;
             m_World = world;
+            // 焦点设备会优先吃掉交互键，即使它暂时不可用。按下一个没解锁的门旁边有物资时，不会顺手打开物资。
             bool pressed = m_Selection.Press(camera, actor, world);
             if (!HasSelection)
                 Hide();

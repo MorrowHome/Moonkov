@@ -15,6 +15,7 @@ using UnityEngine.SceneManagement;
 namespace Unity.MP_FPS {
     // All mutable tactical state belongs to this server World, not a static process singleton.
     public sealed class TacticalServerWorld : IComponentData {
+        // 飞行中、爆开后或摆在地上的状态独立存进这个对象，攻击者信息在创建时固定下来。客户端只收到它的显示快照。
         public sealed class Object {
             public uint Id;
             public int Owner;
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS {
             public int Energy;
         }
 
+        // 玩家读条时记录当时的角色、物品版本、受击与武器标记。完成前每个 tick 对照这些起始条件。
         public sealed class Use {
             public Entity Player;
             public int RaidId, Version;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS {
             public float Health;
         }
 
+        // 燃烧、出血、刺激、疲劳等都按角色挂记录和截止时间。持续伤害沿用原始来源，攻击者掉线后也不会丢掉归属。
         public sealed class Status {
             public double Fire, Poison, Bleed, Stamina, Antidote, Wire, Cough;
             public double FlashUntil;
@@ -221,12 +224,14 @@ namespace Unity.MP_FPS {
         private void UpdateTacticalItems(ref SystemState state, EntityCommandBuffer ecb) {
             var world = TacticalWorld(ref state);
             var map = MoonRaidMap.Active;
+            // 切换地图后清掉旧对象、读条和角色状态，再把新的世界标为当前场景。
             if (!ReferenceEquals(world.Map, map)) {
                 ClearTacticalItems(ref state, ecb);
                 world.Map = map;
             }
             double now = SystemAPI.Time.ElapsedTime;
             world.Now = now;
+            // 将射击系统留下的伤口记录接到持续流血状态，然后才处理本帧的新道具使用请求。
             TacticalConsumeBulletWounds(ref state, world, now);
             foreach (var (request, received, entity) in SystemAPI
                          .Query<RefRO<RaidTacticalItemActionRpc>, RefRO<ReceiveRpcCommandRequest>>()
@@ -236,12 +241,14 @@ namespace Unity.MP_FPS {
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection) &&
                     SystemAPI.HasComponent<RaidSession>(connection)) {
                     var inventory = GetRaidInventory(ref state, connection);
+                    // 与局内拖格共用编号。旧请求不会覆盖最近一次操作，当前 RaidId 不符也不会建立新读条。
                     if (r.RequestId > inventory.RequestId) {
                         inventory.RequestId = r.RequestId;
                         inventory.Error = InventoryError.Inaccessible;
                         world.Feedbacks[connection] = TacticalItemFeedback.Unavailable;
                         if (r.RaidId == inventory.RaidId &&
                             SystemAPI.GetComponent<RaidSession>(connection).RaidId == r.RaidId) {
+                            // 取消时释放关联的道具和手部状态。尚未提交的道具不会扣背包。
                             if (r.Action == TacticalItemAction.Cancel) {
                                 inventory.CancelActions();
                                 world.Uses.Remove(connection);
@@ -268,6 +275,7 @@ namespace Unity.MP_FPS {
                     continue;
                 }
                 var inventory = GetRaidInventory(ref state, connection);
+                // 逐帧重新核对角色、背包版本和物品操作仍属于本局。受击、开火、换弹或角色切换时判中止。
                 bool actorValid = TacticalActor(ref state, connection, out var player, out var health, out var root);
                 bool valid = actorValid && inventory.TacticalPending && inventory.RaidId == use.RaidId &&
                              inventory.Graph.Version == use.Version;
@@ -280,6 +288,7 @@ namespace Unity.MP_FPS {
                               health.CurrentHealth >= use.Health - .001f) && health.LastShotTick == use.Shot &&
                         health.LastGrenadeShotTick == use.Grenade && health.LastReloadTick == use.Reload &&
                         health.EquippedWeaponID == use.Weapon;
+                // 状态合法且还没读完就继续等。到点后移除等待记录，服务端调用一次实际生效，再把原因发回 HUD。
                 if (valid && now < use.Until) continue;
                 inventory.TacticalPending = false;
                 world.Uses.Remove(connection);
@@ -309,6 +318,7 @@ namespace Unity.MP_FPS {
             uint tick = SystemAPI.TryGetSingleton<NetworkTime>(out var time) && time.ServerTick.IsValid
                 ? time.ServerTick.TickIndexForValidTick
                 : 0;
+            // 先处理能抑制燃烧与毒气的区域。场上对象加入顺序不同也应得出同样效果。
             // Resolve suppressing clouds before fire/poison, independent of insertion order.
             foreach (var obj in world.Objects)
                 if (obj.Phase == TacticalWorldPhase.Choke && now < obj.Until)
@@ -320,6 +330,7 @@ namespace Unity.MP_FPS {
                             other.Until = now;
             for (int i = world.Objects.Count - 1; i >= 0; i--) {
                 var obj = world.Objects[i];
+                // 对象到期时可能从飞行转到爆炸或持续区域。处理完若仍是已过期状态，给客户端发删除并清服务端记录。
                 if (!obj.Scene.IsValid() || now >= obj.Until) {
                     if (obj.Scene.IsValid() && obj.Phase == TacticalWorldPhase.Flying &&
                         (obj.Definition.Kind == TacticalItemKind.Smoke ||
@@ -333,6 +344,7 @@ namespace Unity.MP_FPS {
                 }
                 if (obj.Phase == TacticalWorldPhase.Flying) {
                     var previous = obj.Velocity;
+                    // 投掷后用该地图真实物理场景更新位置和速度。不同道具是碰撞或到期变为范围效果，不由客户端画面触发。
                     EnergyGrenadePhysics.Step(obj.Scene, ref obj.Position, ref obj.Velocity, ref obj.Resting, dt,
                         now - obj.Created < .25 ? obj.Shooter : null, ref world.Hits);
                     bool hit =
@@ -344,13 +356,16 @@ namespace Unity.MP_FPS {
                         obj.Definition.Kind == TacticalItemKind.Dynamite)
                         obj.Until = now;
                 } else { TacticalArea(ref state, world, obj, now, tick); }
+                // 飞行较快，需要较频繁给客户端状态。放下的器具与区域更新稀一些，创建和删除时另发消息。
                 if (now >= obj.NextSnapshot) {
                     obj.NextSnapshot = now + (obj.Phase == TacticalWorldPhase.Flying ? .2 : .75);
                     TacticalBroadcast(ecb, world, obj, false);
                 }
             }
+            // 场上对象处理完，才统一计算这些状态的持续伤害、恢复和体力。避免同帧更新顺序使个别角色漏算。
             TacticalTickStatuses(ref state, world, now, dt, tick);
             TacticalTickSprint(ref state, world, now, SystemAPI.Time.DeltaTime);
+            // 每个人的读条结果、当前体力和剩余状态只回本人。多人共享的是先前发的场上物体消息。
             if (now >= world.NextOwnerSnapshot) {
                 world.NextOwnerSnapshot = now + .2;
                 foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>()
@@ -552,6 +567,7 @@ namespace Unity.MP_FPS {
                 if (target == null || now >= target.Until || !TacticalInteract(root, health, target, use.Action))
                     return InventoryError.Inaccessible;
                 if (use.Action == TacticalItemAction.Resupply) {
+                    // 补给箱能量和人物背包同时检查。新背包装得下这批电池才扣补给能源，不能先清箱子再发现没地方。
                     var error = TacticalItemRules.PrepareResupply(inventory.Graph, use.Version, target.Energy,
                         out var graph, out int energy);
                     if (error != InventoryError.None) return error;
@@ -581,6 +597,7 @@ namespace Unity.MP_FPS {
                 return InventoryError.Inaccessible;
             if (definition.Throwable && !TacticalThrow(root, health, world, out position, out velocity))
                 return InventoryError.Inaccessible;
+            // 目标点仍可用、世界容量够才扣物品。已经开始的放置不会抢占后来已被占用的位置。
             if ((definition.Deployable || definition.Throwable) &&
                 !TacticalCapacity(world, definition, use.Player, position))
                 return InventoryError.Full;
@@ -779,6 +796,7 @@ namespace Unity.MP_FPS {
             TacticalServerWorld.Object obj,
             double now,
             uint tick) {
+            // 投掷物根据临界阶段变成闪光、烟雾、持续范围或一次性爆炸。状态转完再决定保留多久供同步。
             if (obj.Definition.Kind == TacticalItemKind.Flash) {
                 TacticalFlash(state.EntityManager, world, obj, now);
                 RaidEnvironmentalNoise.EmitExplosion(state.EntityManager, obj.Scene, obj.Position,
@@ -823,6 +841,7 @@ namespace Unity.MP_FPS {
                     TacticalItemRules.BlastDamage(obj.Definition.Kind, Vector3.Distance(obj.Position, point));
                 if (damage <= 0 || !EnergyGrenadePhysics.ClearSight(obj.Scene, obj.Position, point, link.transform))
                     continue;
+                // 爆炸用真实距离与遮挡先筛目标，再交给共用伤害层。流血只由实际穿过护盾等保护而扣到血量的伤害触发。
                 float actual = BountyClashDamage.Apply(state.World, victim, obj.Source, BodyPart.Auto, damage, tick,
                     RaidDamageKind.Explosion);
                 if (actual > 0 && obj.Definition.Kind == TacticalItemKind.Frag)
@@ -879,6 +898,7 @@ namespace Unity.MP_FPS {
                     SmokeVisibility.Blocked(world, obj.Scene, obj.Position, eye))
                     continue;
                 var status = TacticalStatus(world, victim);
+                // 闪光强度会衰减。新的只在当时更强时覆盖旧状态，免得弱闪光反而把现有更强效果冲掉。
                 float remaining = status.FlashStrength * Mathf.Clamp01((float)(status.FlashUntil - now) / 4);
                 if (strength <= remaining) continue;
                 status.FlashStrength = strength;
@@ -902,6 +922,7 @@ namespace Unity.MP_FPS {
                 if (!root) continue;
                 var pos = root.transform.position;
                 if (!TacticalWithin(obj, pos, 0, root.gameObject.scene.GetPhysicsScene(), root.transform)) continue;
+                // 机关先等布置计时结束，再判断人物真的进了有效区域。触发后改为报警、绊线或持续状态。
                 if (obj.Phase == TacticalWorldPhase.Armed) {
                     if (now < obj.ArmAt || Mathf.Abs(pos.y - obj.Position.y) > TacticalItemRules.TrapVerticalTolerance)
                         continue;
@@ -918,6 +939,7 @@ namespace Unity.MP_FPS {
                 }
                 // Traps can still be triggered by everyone. Team protection only
                 // stops the harmful status, preserving choke's shared utility/cough.
+                // 触发装置和受其伤害分开。队友可触发，但同队保护会屏蔽对应的有害状态。
                 if (TacticalAreaBlockedByTeam(obj.Phase,
                         BountyClashDamage.TeamProtected(state.EntityManager, victim, obj.Source)))
                     continue;
@@ -941,6 +963,7 @@ namespace Unity.MP_FPS {
             }
         }
 
+        // 报警声也是 AI 可听的线索。敌人需处于同地图并符合听觉条件，忙于追敌或正离场的 PMC 不打断自己的决定。
         private void EmitTacticalAlarm(
             ref SystemState state,
             TacticalServerWorld world,
@@ -1091,6 +1114,7 @@ namespace Unity.MP_FPS {
             return health.CurrentHealth > 0 && (!health.ClashEnabled || health.ClashLife == ClashLife.Alive);
         }
 
+        // 从实际位置变化和控制状态判冲刺，更新耐力再同步给角色。被卡住或不能行动时不会算作正常连续奔跑。
         private void TacticalTickSprint(ref SystemState state, TacticalServerWorld world, double now, float dt) {
             if (!MoonRaidMap.Active) return;
             foreach (var (session, joined) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>()) {

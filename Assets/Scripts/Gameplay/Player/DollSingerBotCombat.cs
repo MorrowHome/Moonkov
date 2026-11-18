@@ -15,9 +15,11 @@ namespace Unity.MP_FPS {
             toward.y = 0;
             if (toward.sqrMagnitude < .01f) return Vector3.zero;
             toward.Normalize();
+            // 用目标方向的垂线算左或右，退开时再掺入少量后退量。
             var step = Vector3.Cross(Vector3.up, toward) * side;
             if (backAway) step -= toward * .5f;
             step.Normalize();
+            // 首选侧不通时试另一侧。两边都没导航面就停步，别往墙或平台之外移动。
             if (CanStep(position, step, filter)) return step;
             if (backAway)
                 step = -Vector3.Cross(Vector3.up, toward) * side - toward * .5f;
@@ -39,6 +41,7 @@ namespace Unity.MP_FPS {
                 QueryTriggerInteraction.Ignore);
         }
 
+        // 烟雾可能挡住目视但不会挡子弹，实墙两样都挡。需要判断看不看得见时同时问两者。
         public static bool Obscured(PhysicsScene scene, TacticalServerWorld tactical, Vector3 from, Vector3 to) {
             return WallBetween(scene, from, to) || SmokeVisibility.Blocked(tactical, scene, from, to);
         }

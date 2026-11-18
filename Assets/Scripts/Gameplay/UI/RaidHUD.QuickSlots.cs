@@ -123,6 +123,7 @@ namespace Unity.MP_FPS {
 
         private bool QuickBusy => QuickManualBusy || MeleeBusy;
 
+        // 快捷栏使用局内收到的库存。快照还属于上一局时不让物品通过可用检查，避免误发旧物品的动作。
         private RaidInventoryClientState QuickInventory =>
             m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
                 ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
@@ -191,6 +192,7 @@ namespace Unity.MP_FPS {
             if (!QuickCanBind || QuickTyping(evt.target as VisualElement) || evt.ctrlKey || evt.altKey ||
                 evt.commandKey)
                 return;
+            // 背包里数字键用于给鼠标指向的物品绑定。先检查焦点不是文本及修饰键未按，背包关上后数字键才转成切换。
             int slot = (int)evt.keyCode - (int)KeyCode.Alpha1;
             if (slot < 0 || slot >= QuickSlotBindings.Count) return;
             BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate);
@@ -252,6 +254,7 @@ namespace Unity.MP_FPS {
             CancelMeleeForSelection();
             m_QuickBindings.InitializeWeapons(QuickGraph);
             var item = m_QuickBindings.Select(number - 1, QuickGraph);
+            // 第四格是近战。没有实际武器道具时仍可把徒手当一个装备请求交给近战流程。
             if (m_QuickBindings.Fists(number - 1) && m_QuickBindings.Selected == number - 1) {
                 RaidQuickSlotInput.ReleasePrimary();
                 SendMelee(MeleeAction.Equip, equipmentSlot: MeleeInventory.EquipmentIndex);
@@ -263,6 +266,7 @@ namespace Unity.MP_FPS {
             }
             RaidQuickSlotInput.ReleasePrimary();
             int slot = QuickSlotBindings.WeaponSlot(QuickGraph, item);
+            // 匹配到投掷物就让手雷状态机处理。近战或枪械交给装备 RPC，普通补给等玩家按主要操作键才使用。
             if (GrenadeHandling.Throwable(item.Code)) {
                 EquipGrenade(item);
                 return 0;
@@ -280,6 +284,7 @@ namespace Unity.MP_FPS {
             var graph = QuickGraph;
             var item = m_QuickBindings.SelectedItem(graph);
             bool tool = item != null && QuickSlotBindings.WeaponSlot(graph, item) == 0;
+            // 从道具切回武器时先清掉旧的按住状态。换槽那一下不会顺带触发新武器。
             bool releasedTool = m_QuickWasTool && !tool;
             m_QuickWasTool = tool;
             if (releasedTool) RaidQuickSlotInput.ReleasePrimary();
@@ -302,6 +307,7 @@ namespace Unity.MP_FPS {
             var graph = QuickGraph;
             if (graph == null) return;
             uint request = NextManualActionRequest();
+            // 客户端有自己的手动操作编号，也会看到服务端上的道具请求号。这次编号必须领先两个来源。
             request = System.Math.Max(request, QuickOwner.RequestId + 1);
             m_InventoryRequestId = request;
             if (!Send(new RaidTacticalItemActionRpc {
@@ -325,6 +331,7 @@ namespace Unity.MP_FPS {
             if (m_QuickView == null) return;
             m_QuickActive = active && QuickAlive;
             string scope = QuickPreferenceScope;
+            // 局号、World 或档案范围变化时，重置本局绑定与尚待回执的状态。后续从新局的实际装备恢复前四格。
             if (m_QuickRaid != m_Snapshot.RaidId || m_QuickWorld != m_World || m_QuickProfileScope != scope) {
                 m_QuickRaid = m_Snapshot.RaidId;
                 m_QuickWorld = m_World;
@@ -345,12 +352,14 @@ namespace Unity.MP_FPS {
             if (!m_QuickActive) m_QuickBindings.Deselect();
             m_QuickBindings.Validate(graph);
             var owner = QuickOwner;
+            // 道具的角色回执和库存回执可能分开到。确认编号后可结束道具等待；库存一侧也确认后才解除背包等待。
             if (m_QuickTacticalRequest != 0 && owner.RequestId >= m_QuickTacticalRequest) {
                 m_QuickTacticalRequest = 0;
                 if (owner.Remaining <= 0 && m_InventoryRequestId == owner.RequestId &&
                     QuickInventory?.RequestId >= owner.RequestId)
                     m_InventoryRequestPending = false;
             }
+            // 跟踪相同请求的结果变化。开始、失败和完成只在读到新内容时提示，避免同一回执每帧响一次。
             if (m_QuickTrackedTacticalRequest != 0 && owner.RequestId == m_QuickTrackedTacticalRequest &&
                 (owner.RequestId != m_QuickOwnerRequest || owner.Feedback != m_QuickOwnerFeedback ||
                  owner.Error != m_QuickOwnerError)) {
@@ -381,6 +390,7 @@ namespace Unity.MP_FPS {
             else if (RaidQuickSlotInput.ScrolledThisFrame) m_QuickView.Reveal();
             bool cancelMenu = ChatInputBlocked || CinematicInputBlocked || MapInputBlocked || m_WasSettled ||
                               m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
+            // 菜单接管或玩家主动取消时发一次取消，等待服务器完成。在此期间不为同一个动作重复发请求。
             if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive ||
                                                                               (RaidKeyBindings.Pressed(
                                                                                    RaidKey.TiptoeOrCancel) &&

@@ -26,6 +26,7 @@ namespace Unity.MP_FPS.Client {
                     dataSourcePath = new PropertyPath(GameSettings.DirectConnectStylePropertyName),
                     bindingMode = BindingMode.ToTarget
                 });
+                // 地址输入和端口都直接绑定连接设置。等确认通过后，创建连接的代码会从同一处读取两个值。
                 var ipAddressInputField = m_DirectConnectPopUp.Q<TextField>(UIElementNames.IPAddressInputField);
                 ipAddressInputField.SetBinding("value", new DataBinding {
                     dataSource = ConnectionSettings.Instance,
@@ -40,6 +41,7 @@ namespace Unity.MP_FPS.Client {
                 });
                 m_ConfirmButton = m_DirectConnectPopUp.Q<Button>(UIElementNames.ConfirmButton);
                 m_ConfirmButton.clicked += OnConfirmPressed;
+                // 地址和端口组成的网络端点要合法才允许提交。这里负责格式门槛，连接是否成功要等网络结果。
                 m_ConfirmButton.SetBinding("enabledSelf", new DataBinding {
                     dataSource = ConnectionSettings.Instance,
                     dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsNetworkEndpointValid)),
@@ -59,12 +61,14 @@ namespace Unity.MP_FPS.Client {
             private static void OnConfirmPressed() { GameSettings.Instance.CancellableUserInputPopUp.SetResult(); }
 
             private static void CancelFromKeyboard(InputAction.CallbackContext context) {
+                // 只有窗口有焦点且当前确实是直连弹窗，Esc 才按取消处理。其他菜单自己负责它的返回键。
                 if (Application.isFocused && GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
                     GameSettings.Instance.MainMenuState == MainMenuState.DirectConnectPopUp)
                     OnCancelPressed();
             }
 
             private static void OnCancelPressed() {
+                // 取消唤醒等待中的连接流程，并把本次没确认的输入还原为已配置的地址和端口。
                 GameSettings.Instance.CancellableUserInputPopUp.SetCanceled();
                 ConnectionSettings.Instance.IPAddress = ConnectionSettings.ConfiguredAddress;
                 ConnectionSettings.Instance.Port = ConnectionSettings.ConfiguredPort;

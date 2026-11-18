@@ -12,6 +12,7 @@ namespace Unity.MP_FPS {
         private float m_Next;
 
         public void Begin(int raid, uint request, int loot, InventoryGraph baseline) {
+            // 切换战局后清除已见物品。打开新箱时先记录当时可见的物品，后来只用这份对照找新增。
             if (raid != m_Raid) Reset();
             Cancel();
             m_Raid = raid;
@@ -22,6 +23,7 @@ namespace Unity.MP_FPS {
         }
 
         public void Observe(RaidInventoryClientState state) {
+            // 认准当前战局、当前箱子以及本次请求编号。旧快照和上一个打开的箱子都可能晚到，先确认属于同一次再数。
             if (state.Graph == null || state.RaidId != m_Raid || state.RequestId < m_Request) return;
             if (state.LootId != m_Loot) {
                 Cancel();
@@ -53,6 +55,7 @@ namespace Unity.MP_FPS {
         }
 
         public bool TryPlay(float now) {
+            // 一份消息可能一次揭示好几件物品。先排队，再按间隔逐个发声，避免所有提示同时叠上来。
             if (m_Pending == 0 || now < m_Next) return false;
             m_Pending--;
             m_Next = now + 1.3f;

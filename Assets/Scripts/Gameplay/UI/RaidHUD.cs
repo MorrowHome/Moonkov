@@ -116,6 +116,7 @@ namespace Unity.MP_FPS {
 
         public static bool CloseInventory() {
             if (s_Active == null) return false;
+            // Input System 和 UI Toolkit 可能在同一帧各收到 Esc。记下已处理的帧，第二次就不会继续关下一层或打开暂停菜单。
             if (s_Active.m_MenuEscapeFrame == Time.frameCount) return true;
             if (!CloseActiveMenu()) return false;
             s_Active.m_MenuEscapeFrame = Time.frameCount;
@@ -124,6 +125,7 @@ namespace Unity.MP_FPS {
         }
 
         private static bool CloseActiveMenu() {
+            // 按面板优先级逐层检查。聊天先处理输入法，然后才是日志、地图和任务窗。背包内的浮窗由背包自己关。
             if (s_Active != null && s_Active.CloseChatForEscape()) return true;
             if (s_Active != null && s_Active.m_FieldRecordOpen) {
                 s_Active.SetFieldRecordOpen(false);
@@ -229,6 +231,7 @@ namespace Unity.MP_FPS {
             m_InventoryTitle = m_Root.Q<Label>(className: "raid-inventory-title");
             m_EquipmentHost = m_Root.Q("raidInventoryHost");
             m_HealthHost = m_Root.Q("raidHealthHost");
+            // 格子控件只负责收集拖放等操作。这里把局内搬运、用药、使用补给和丢弃接到 RaidHUD 的发送函数。
             m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical,
                 UseConsumable, DropItem);
             m_InventoryView.OperationAudioEnabled = false;
@@ -324,6 +327,7 @@ namespace Unity.MP_FPS {
 
         private void SelectHealth(bool health) {
             if ((m_InventoryRequestPending && !TimedActionActive) || m_HealthSelected == health) return;
+            // 背包装备页和健康页共享同一窗口。切到健康页就暂停格子操作和角色预览，切回来时再恢复。
             m_HealthSelected = health;
             m_EquipmentHost.style.display = health ? DisplayStyle.None : DisplayStyle.Flex;
             m_HealthHost.style.display = health ? DisplayStyle.Flex : DisplayStyle.None;
@@ -356,6 +360,7 @@ namespace Unity.MP_FPS {
                         .GetSingletonEntity());
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Graph != null)
                     foreach (var item in inventory.Graph.Items) {
+                        // 只计算玩家当下够得到的补给。按钮里的数量和默认物品类型，必须对应实际能从口袋或装备中取到的物品。
                         if (inventory.Graph.MedicalAccessible(item)) {
                             medicines += item.Quantity;
                             if (medicalRestore == 0)
@@ -443,6 +448,7 @@ namespace Unity.MP_FPS {
             var inventory =
                 m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
                     m_InventoryQuery.GetSingletonEntity());
+            // 搜索、整理、设备操作都可能推进请求号。拿大的一边加一，保证服务端能把这次请求和较早的操作分开。
             m_InventoryRequestId =
                 System.Math.Max(System.Math.Max(m_InventoryRequestId, m_MissionRequest), inventory.RequestId) + 1;
             return m_InventoryRequestId;
@@ -480,6 +486,7 @@ namespace Unity.MP_FPS {
         }
 
         private void BeginTimedAction() {
+            // 把发起请求时的编号记到读条状态，之后才能判断是哪一次搜索或用药被服务器接受。
             m_ActionRequestId = m_InventoryRequestId;
             m_ActionAccepted = m_ActionCancelPending = false;
             m_ActionFeedback = null;
@@ -500,6 +507,7 @@ namespace Unity.MP_FPS {
             bool visible = m_Snapshot.Phase == RaidPhase.Active && !GameSettings.Instance.IsPauseMenuOpen &&
                            !CinematicInputBlocked && !m_MapOpen && !m_MissionDetailsVisible &&
                            !m_CampaignJournalVisible && !m_ClashActionsBlocked && !DarkSightRequested;
+            // 有搜索或治疗时用这一套读条。空闲时把准星附近的空间让给机关、撤离、换弹等其他进度。
             if (!active && PresentOtherProgress(visible)) return;
             float remaining = (m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt) - Time.unscaledTime;
             m_ActionView.Present(active, m_ActionAccepted, m_ActionCancelPending, m_MedicalActive, remaining,
@@ -518,6 +526,7 @@ namespace Unity.MP_FPS {
             if (m_InventoryRequestPending && m_Snapshot.Phase == RaidPhase.Active && !visible)
                 if (!TimedActionActive && !QuickTacticalActionPending)
                     return;
+            // 关闭背包时先对仍在进行的搜索发取消。当前还有治疗或道具动作占用请求时，等空闲再通知房主关容器。
             if (!visible && m_DissectingLootId >= 0) CancelTimedAction();
             if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending))
                 MoonkovAudio.Play(
@@ -554,6 +563,7 @@ namespace Unity.MP_FPS {
                 m_CloseLootWhenIdle = false;
                 return;
             }
+            // 本地窗口已经收起，但对服务端的关容器请求可以稍后发。等原请求确认才发，避免用新的请求号盖过还在执行的动作。
             if (!TimedActionActive && !QuickTacticalActionPending && !m_InventoryRequestPending && RequestLoot(-1))
                 m_CloseLootWhenIdle = false;
         }
@@ -579,6 +589,7 @@ namespace Unity.MP_FPS {
                 var inventory =
                     m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
                         .GetSingletonEntity());
+                // 结果状态和物资清单来自不同的同步消息。只有局号和结局对应上才展示清单，先到的状态可先显示标题。
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Result?.Outcome == m_Snapshot.Phase)
                     manifest = inventory.Result;
             }
@@ -609,6 +620,7 @@ namespace Unity.MP_FPS {
             m_ResultBack.SetEnabled(m_ResultStep > 0);
             m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
             // Keep one owner for result actions; tutorial raids must return through the ship.
+            // 结算的最后一页才提供再出发。教学局保留返回船舱的入口，避免越过教程的后续步骤。
             m_Deploy.style.display = m_ResultStep == 2 && !m_TutorialConfigured ? DisplayStyle.Flex : DisplayStyle.None;
             m_Return.style.display = DisplayStyle.Flex;
             m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
@@ -705,6 +717,7 @@ namespace Unity.MP_FPS {
                 m_ResultStep = 0;
                 Utils.SetCursorVisible(false);
             }
+            // 这是首次进入结算的那一帧。将分页和焦点切到结束状态，之后只更新快照里的保存进度。
             if (settled && !m_WasSettled) {
                 m_ResultStep = 0;
                 if (m_Snapshot.Phase == RaidPhase.Extracted)
@@ -732,6 +745,7 @@ namespace Unity.MP_FPS {
                     m_Snapshot.LoadoutRequestId == m_DeployRequestId && !m_Snapshot.DeployPending &&
                     m_Snapshot.LoadoutError != RaidLoadoutError.None)
                     m_DeployRequestedRaid = 0;
+                // 服务端同步出发状态前，本机也记住已经点过出发，以免在快照到达前重复提交。
                 bool deploying = m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId;
                 m_Deploy.SetEnabled(!saving && !deploying);
                 if (OnlineLobbyClient.InInstance) MoonkovLocalization.Set(m_Deploy, "返回小队 · 下一局使用全新地图");
@@ -785,6 +799,7 @@ namespace Unity.MP_FPS {
                                    !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&
                                    !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
                                    Application.isFocused && UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            // 下面几种操作共享一枚按键。研究和任务设备先判断是否接管，再检查日志、战术道具、气闸和搜刮。
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
             SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest,
                 out distance, !haloBusy);
@@ -881,6 +896,7 @@ namespace Unity.MP_FPS {
                         batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) +
                         batteryGraph.Count("trauma_kit", true));
             }
+            // 撤离提示音按局记状态。进入或离开读条才放一次开始或取消声，最后几秒按间隔提示。
             if (m_ExtractionSoundRaid != m_Snapshot.RaidId) {
                 m_ExtractionSoundRaid = m_Snapshot.RaidId;
                 m_AudioExtracting = false;
@@ -902,6 +918,7 @@ namespace Unity.MP_FPS {
             m_ExtractionPanel.EnableInClassList("is-visible",
                 alive && !settled && showReturn && (extracting || returnBeacon));
             m_ExtractionTrack.style.display = DisplayStyle.None;
+            // 这里用房主同步的剩余时间计算撤离进度。客户端只负责画进度条。
             if (extracting)
                 m_ExtractionFill.style.width = Length.Percent(100 *
                                                               Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining /
@@ -993,6 +1010,7 @@ namespace Unity.MP_FPS {
                 m_ReceiptUntil = 0;
             } else {
                 // Only server snapshot increases earn a receipt. Opening or clicking a cache is not a pickup.
+                // 打开箱子只是开始搜索。等服务器快照里随身资源确实增加，才做拾取提示。
                 var gained = math.max(supplies - m_PreviousSupplies, 0);
                 m_PreviousSupplies = supplies;
                 if (math.any(gained > 0)) {
@@ -1073,6 +1091,7 @@ namespace Unity.MP_FPS {
             var inventory =
                 m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
                     m_InventoryQuery.GetSingletonEntity());
+            // 在新容器被确认前，只展示玩家身上的库存。先复制快照并移除旧搜刮内容，避免误把上一只容器当成这只。
             var carried = inventory.Graph?.Clone();
             carried?.Items.RemoveAll(item =>
                 item.Id == Inventory.LootInventoryExchange.Root ||
@@ -1107,6 +1126,7 @@ namespace Unity.MP_FPS {
             var inventory =
                 m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
                     m_InventoryQuery.GetSingletonEntity());
+            // 普通请求和读条动作的等待时间不同。超时后清理本地忙碌状态，仍用最后收到的库存显示，给下一次操作留下入口。
             if (m_InventoryRequestPending && Time.unscaledTime - m_InventoryRequestedAt >
                 (TimedActionActive ? m_ActionDuration + 5 : 5)) {
                 bool timedOut = TimedActionActive;
@@ -1145,9 +1165,11 @@ namespace Unity.MP_FPS {
                     inventory.MedicalItemId != null || (inventory.DissectingLootId >= 0 && m_LootOpenPending),
                     inventory.Error != Inventory.InventoryError.None, MoonkovAudio.Library?.Error);
                 MoonkovAudio.PlayWeaponLayer(cue, Vector3.zero, 1, 0);
+                // 旧回执可能在新动作发出去后抵达。用动作编号挡住旧的开始消息，避免读条跳回上一次搜索或治疗。
                 if ((inventory.MedicalItemId != null || inventory.DissectingLootId >= 0) &&
                     inventory.RequestId < m_ActionRequestId)
                     return;
+                // 服务端确认治疗后，用它给的剩余秒数重设读条。读条期间背包变只读，防止搬走正在使用的物品。
                 if (inventory.MedicalItemId != null) {
                     m_ActionAccepted = true;
                     m_MedicalActive = true;
@@ -1198,6 +1220,7 @@ namespace Unity.MP_FPS {
                      !RaidFurnitureLoot.IsFurniture(m_OpenedLootId)) ||
                     (inventory.LootId >= RaidLootContainers.FirstMissionCacheId &&
                      !RaidFurnitureLoot.IsFurniture(inventory.LootId));
+                // 通常靠请求号判断操作是否完成。已经打开的容器被服务端关掉时也要处理，否则窗口会继续停在旧容器上。
                 bool acknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId ||
                                     (wasOpen && inventory.LootId < 0);
                 if (acknowledged) m_InventoryRequestPending = false;
@@ -1248,6 +1271,7 @@ namespace Unity.MP_FPS {
                                      m_ActionFeedback != "ACTION CANCELLED";
                     m_ActionFeedbackUntil = Time.unscaledTime + 3;
                 }
+                // 健康页接收的是这次操作的结果。任务产物过期等错误额外交给任务 HUD 提示。
                 if (acknowledged) m_HealthView.Message(inventoryMessage ?? "");
                 if (missionCache && acknowledged && inventory.Error == Inventory.InventoryError.Inaccessible)
                     MissionNotice(m_MissionSnapshot.Phase == Missions.MissionPhase.Expired
@@ -1255,6 +1279,7 @@ namespace Unity.MP_FPS {
                         : inventoryMessage);
                 if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
                 // A self-use failure can be repeated by protection snapshots. It is not a close command.
+                // 只处理从打开容器变为没有容器的情况。普通随身库存快照也会用这个负编号，不能每收到一次就关闭整个背包。
                 if (inventory.LootId < 0 && wasOpen) {
                     if (inventory.Error == Inventory.InventoryError.Inaccessible)
                         m_LootErrorUntil = Time.unscaledTime + 3;
@@ -1292,6 +1317,7 @@ namespace Unity.MP_FPS {
                 m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
                     m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId = NextManualActionRequest();
+            // 同一个拖动命令可用于整理自己背包，也可用于跨容器搜刮。跨容器时服务端必须同时比对双方版本。
             bool sent = inventory.LootId >= 0
                 ? Send(new RaidLootMoveRpc {
                     RaidId = m_Snapshot.RaidId, LootId = inventory.LootId, ExpectedLootVersion = inventory.LootVersion,
@@ -1436,6 +1462,7 @@ namespace Unity.MP_FPS {
                 m_Snapshot.SaveState == RaidSaveState.Retrying)
                 return;
             uint requestId = m_Snapshot.LoadoutRequestId + 1;
+            // 请求带上已经结算的局号和想携带的电池数。成功发送后立即锁住出发按钮，等待房主确认配装。
             if (Send(new RaidDeployRpc {
                     SettledRaidId = m_Snapshot.RaidId, CarryCells = PlayerProfileClient.CarryCells,
                     RequestId = requestId

@@ -156,6 +156,7 @@ namespace Unity.MP_FPS {
             var snapshot = m_World.EntityManager.GetComponentData<RaidMissionClientState>(entity).Snapshot;
             site.Present(snapshot, live);
             RenderMissionResult(snapshot);
+            // 任务快照必须对得上当前战局，且有场景里的任务定义。准备或更新不完整时显示空状态。
             bool known = snapshot.RaidId == m_Snapshot.RaidId && snapshot.DefinitionIndex >= 0 &&
                          snapshot.DefinitionIndex < site.Definitions.Length && snapshot.OperationId.Length > 0;
             if (!known) {
@@ -183,6 +184,7 @@ namespace Unity.MP_FPS {
                 return false;
             }
             var definition = site.Definitions[snapshot.DefinitionIndex];
+            // 同一局的设施事件也可能切换。发现新行动编号就重置展示和声音的基准，旧任务的选择不能直接继承。
             if (m_MissionOperation != snapshot.OperationId.ToString()) {
                 SetMissionDetails(false);
                 m_MissionOperation = snapshot.OperationId.ToString();
@@ -205,6 +207,7 @@ namespace Unity.MP_FPS {
             if (m_MissionSnapshot.RaidId != snapshot.RaidId) m_MissionInspected.Clear();
             m_MissionSnapshot = snapshot;
             m_MissionRequest = Math.Max(m_MissionRequest, snapshot.RequestId);
+            // 本地请求号对得上且以前没处理过，才弹出对应的完成或失败反馈。同一个结果随多份快照抵达也只处理一次。
             if (snapshot.RequestId != 0 && snapshot.RequestId == m_MissionRequest &&
                 snapshot.RequestId != m_MissionFeedbackRequest && snapshot.Result != MissionActionResult.Started &&
                 snapshot.Result != MissionActionResult.Running) {
@@ -215,6 +218,7 @@ namespace Unity.MP_FPS {
                     ? (m_MissionRequestedAction ?? "设备操作") + "已完成"
                     : MissionFailureCopy(snapshot.Result));
             }
+            // 新内容可立即刷新，正常倒计时更新做限频。下面的输入处理仍逐帧运行。
             if (snapshot.Sequence != m_MissionSequence || Time.unscaledTime >= m_MissionNextPresentation) {
                 m_MissionSequence = snapshot.Sequence;
                 m_MissionNextPresentation = Time.unscaledTime + .25f;
@@ -236,6 +240,7 @@ namespace Unity.MP_FPS {
                 return false;
             }
             var local = m_PlayerQuery.GetSingleton<LocalTransform>();
+            // 研究主线可能使用同一位置和同一个交互键。已有研究操作占用时，此处停止按住，改把提示让给它。
             if (m_ResearchInputPriority) {
                 CancelMissionHold();
                 m_MissionInteraction.style.display = DisplayStyle.None;
@@ -259,9 +264,11 @@ namespace Unity.MP_FPS {
                     RaidInteractionAim.MissionSurface(node.Anchor));
                 if (score < 0) continue;
                 bool completed = (snapshot.CompletedMask & (1u << i)) != 0;
+                // 先检查节点的前置步骤。有些标签可先扫描，所以单独允许它们在主步骤前记入记录。
                 bool ready = node.RecordBeforePrerequisites ||
                              (snapshot.CompletedMask & node.Prerequisites) == node.Prerequisites;
                 int priority = completed ? 0 : !ready ? 1 : node.Kind == MissionObjectiveKind.Process ? 2 : 3;
+                // 当两个设备分数很近时用操作优先级打平。这样贴在一起的面板不会随很小的鼠标抖动不断抢焦点。
                 if (target >= 0 && (score < best - .05f ||
                                     (Mathf.Abs(score - best) <= .05f && priority <= targetPriority)))
                     continue;
@@ -303,6 +310,7 @@ namespace Unity.MP_FPS {
                     best = float.MaxValue;
                 }
             }
+            // 设施与箱子一样需要赢过当前准星目标。已按住的操作可继续保留，直到自身条件失效。
             bool selected = (target >= 0 || output) && !terminal &&
                             (best >= m_WorldFocusScore || m_MissionHolding >= 0);
             m_MissionInteraction.style.display = selected ? DisplayStyle.Flex : DisplayStyle.None;
@@ -351,6 +359,7 @@ namespace Unity.MP_FPS {
             m_MissionKey.style.display = done || process || !prerequisite ? DisplayStyle.None : DisplayStyle.Flex;
             m_MissionHoldTrack.style.display = m_MissionHolding == target ? DisplayStyle.Flex : DisplayStyle.None;
             m_MissionHoldFill.style.width = Length.Percent(Mathf.Clamp01(progress) * 100);
+            // 操作只在刚按下时开始，并检查是否做过和先前步骤。配置设备会开检查窗口，按住型设备才发开始。
             if (!done && !process && prerequisite && pressed && !m_MissionReleaseRequired) {
                 m_MissionReleaseRequired = true;
                 m_MissionNoticeUntil = 0;
@@ -366,6 +375,7 @@ namespace Unity.MP_FPS {
                 SendMission(MissionIntent.Begin, target);
                 m_MissionNextRenew = Time.unscaledTime + .25f;
             }
+            // 持续有效时隔一小段向服务端续报一次。玩家松开、离开或失去条件后就停止续报并取消。
             if (m_MissionHolding == target && held && Time.unscaledTime >= m_MissionNextRenew) {
                 SendMission(MissionIntent.Renew, target);
                 m_MissionNextRenew = Time.unscaledTime + .25f;
@@ -421,6 +431,7 @@ namespace Unity.MP_FPS {
 
         private void OpenMissionOutput(int id) {
             CancelMissionHold();
+            // 任务产物也按容器请求打开。服务端继续负责回收权限和这批产物的有效时间。
             if (!RequestLoot(id)) return;
             m_HealthSelected = false;
             m_EquipmentHost.style.display = DisplayStyle.Flex;
@@ -575,6 +586,7 @@ namespace Unity.MP_FPS {
             m_MissionLocation.text = $"{anchor.Region}  {layer}  直线 {Vector3.Distance(position, anchor.Position):0} 米";
             m_MissionTarget = anchor.Position;
             m_MissionTargetLabel = anchor.Region + "  " + (next >= 0 ? definition.Objectives[next].Name : "任务产物");
+            // 已经带着任务产物时把方向提示切到撤离点。带在身上只是完成了回收，还要把它真正带出战局。
             if (!ended && live && carried > 0 && MoonRaidMap.Active) {
                 var exit = MoonRaidMap.Active.NearestExtraction(position);
                 m_MissionTarget = exit + Vector3.up;
@@ -686,6 +698,7 @@ namespace Unity.MP_FPS {
                 m_MissionResult.text = "本次未安全带回任务产物；已有调查发现与首次奖励保留。";
                 return;
             }
+            // 撤离成功仍要观察保存进度。保存中、重试、仅限本次会话和已写入分别显示对应状态。
             if (m_Snapshot.SaveState == RaidSaveState.Saving) {
                 m_MissionResult.text = $"已撤离  正在保存 {snapshot.RecoveredArtifacts} 件任务产物，到账结果尚未确认。";
                 return;

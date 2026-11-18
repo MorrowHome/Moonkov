@@ -19,6 +19,7 @@ namespace Unity.MP_FPS.Inventory {
             new("Utility", 1, 1, ItemKind.UtilityModule)
         };
 
+        // 物品码换为内部模块标记。改装接口不能拿不认识的道具直接影响武器参数。
         public static HaloModule FromCode(string code) {
             // Keep Codes as the original cache-loot pool; this module requires fabrication.
             if (code == "halo_mooncore_recycler") return HaloModule.MooncoreRecycler;
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS.Inventory {
                 module == HaloModule.HitMarker ? "Utility" : "Shaping";
         }
 
+        // 安装先看这是可改装光环，随后检查该模块能否放到它指定的区域。
         public static bool Compatible(string weapon, string module) {
             var value = FromCode(module);
             if (!IsWeapon(weapon) || value == HaloModule.None) return false;
@@ -41,6 +43,7 @@ namespace Unity.MP_FPS.Inventory {
             return value != HaloModule.PulseController || weapon == "rifle" || weapon == "compact";
         }
 
+        // 逐个读取该武器附着的真实子物品。把合法模块合成位掩码，让战斗和模型同步不必每帧传整棵库存。
         public static HaloModule Mask(InventoryGraph graph, InventoryItem weapon) {
             if (graph == null || weapon == null) return HaloModule.None;
             var kind = InventoryCatalog.Get(weapon.Code)?.Kind;
@@ -55,6 +58,7 @@ namespace Unity.MP_FPS.Inventory {
             return result;
         }
 
+        // 商店和改装界面共用这些作用说明。真正的数值计算从对应武器参数与能量规则读取。
         public static string Description(string code) {
             switch (FromCode(code)) {
                 case HaloModule.Capacitor: return "Shared halo capacity +50%; recovery speed -26%.";

@@ -16,10 +16,12 @@ namespace Unity.MP_FPS {
             _fullScreenRenderPass = new FullScreenPassRendererFeature.FullScreenRenderPass(passName);
             // The URP pass defaults to BeforeRendering; the subsequent camera clear
             // would erase a camera overlay injected at that point.
+            // 全屏效果要排在正确的渲染阶段。放在清屏前刚画出来就会被清掉。
             _fullScreenRenderPass.renderPassEvent = injectionPoint;
             _fullScreenRenderPass.SetupMembers(material, passIndex, fetchActiveColor, bindDepthStencilAttachment);
         }
 
+        // 只将这个效果挂到传入的相机渲染器上，多个视图可以有不同效果。
         public void EnqueuePass(Camera camera) {
             camera.GetUniversalAdditionalCameraData().scriptableRenderer.EnqueuePass(_fullScreenRenderPass);
         }

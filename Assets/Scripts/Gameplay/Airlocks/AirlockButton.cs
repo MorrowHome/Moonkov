@@ -26,6 +26,7 @@ namespace Unity.MP_FPS {
         public Vector3 InteractionCenter => m_Collider ? m_Collider.bounds.center : transform.position;
         public string DisplayName => MoonkovLocalization.Text(m_Label);
 
+        // 按钮 ID 的最后一段之前表示同侧面板，准星选择会把它和同面板的其他按钮归在一起。
         public string BankSide =>
             string.IsNullOrEmpty(m_ButtonId) ? "" : m_ButtonId.Substring(0, Mathf.Max(0, m_ButtonId.LastIndexOf('.')));
 
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetRegistry() { s_Active.Clear(); }
 
+        // 登记进可交互列表，同时订阅所属气闸的状态变化。关闭组件时解绑，避免选到已经离场的面板。
         private void OnEnable() {
             m_Collider = GetComponent<Collider>();
             if (!s_Active.Contains(this)) s_Active.Add(this);
@@ -67,6 +69,7 @@ namespace Unity.MP_FPS {
             Refresh();
         }
 
+        // 拿角色胸口高度的位置测距，到按钮碰撞体最近的一点够近即可，适配不同大小的按钮。
         public bool InRange(Vector3 actor) {
             return m_Owner && m_Collider && m_Collider.enabled && isActiveAndEnabled &&
                    Vector3.Distance(actor + Vector3.up, m_Collider.ClosestPoint(actor + Vector3.up)) <=
@@ -88,6 +91,7 @@ namespace Unity.MP_FPS {
             return result;
         }
 
+        // 最终结果会临时保留在面板上。等待回执的状态不提前播成功音，也不当失败。
         public void ReceiveFeedback(AirlockFeedback result) {
             if (result == AirlockFeedback.Accepted)
                 MoonkovAudio.AirlockButtonPress();
@@ -105,6 +109,7 @@ namespace Unity.MP_FPS {
         }
 
         private void Refresh() {
+            // 短时反馈先显示刚才那次操作的结果；到期后再按气闸当下条件显示按钮能不能用。
             var feedback = m_FeedbackUntil > Time.unscaledTime ? m_LastFeedback :
                 m_Owner ? m_Owner.Check(m_Command) : AirlockFeedback.Unavailable;
             if (m_Status && m_Owner) {
@@ -116,6 +121,7 @@ namespace Unity.MP_FPS {
             if (m_Indicator) {
                 if (m_Block == null) m_Block = new MaterialPropertyBlock();
                 m_Indicator.GetPropertyBlock(m_Block);
+                // 自动循环按钮把等待或调压显示成橙色，让玩家能看出正在执行，而不是已经失败。
                 if (m_Command == AirlockCommand.CycleInner || m_Command == AirlockCommand.CycleOuter) {
                     var color = feedback == AirlockFeedback.Accepted
                         ? new Color(.2f, .92f, .55f)
@@ -159,6 +165,7 @@ namespace Unity.MP_FPS {
         }
 
         public static bool TryPressFromCamera(Camera camera, Vector3 actor, World world = null) {
+            // 优先执行现有提示面板选中的按钮；没有提示接管时，才从画面中心打射线找实体按钮。
             if (AirlockInteractionPrompt.TryPress(camera, actor, world)) return true;
             if (!camera || !UnityEngine.Physics.Raycast(camera.ViewportPointToRay(new Vector3(.5f, .5f)), out var hit,
                     4, ~0, QueryTriggerInteraction.Ignore))

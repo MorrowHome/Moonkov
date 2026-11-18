@@ -83,6 +83,7 @@ namespace Unity.MP_FPS {
                 if (!CampaignJournalAvailable || m_InventoryVisible || m_FieldRecordOpen ||
                     GameSettings.Instance.IsPauseMenuOpen)
                     return;
+                // 战役日志占用全屏指针和按键。打开时收掉地图、设施详情及按住操作，旧目标不在后台继续。
                 SetRaidMapOpen(false);
                 SetMissionDetails(false);
                 CancelMissionHold();
@@ -99,6 +100,7 @@ namespace Unity.MP_FPS {
         private void UpdateCampaignHUD(bool live) {
             if (m_CampaignHud == null) return;
             bool available = CampaignJournalAvailable;
+            // 从当前 World 读战役进度，已有值时每四分之一秒更新。界面无须每渲染帧读一遍存档阶段。
             if (!available) { m_CampaignProgress = null; } else if (m_CampaignProgress == null ||
                                                                     Time.unscaledTime >= m_CampaignNextRead) {
                 m_CampaignProgress = CampaignScene.ReadProgress(m_World);
@@ -114,6 +116,7 @@ namespace Unity.MP_FPS {
                 return;
             }
             m_CampaignResult.AddToClassList("campaign-hidden");
+            // 换局时清空已经发现的地点和待展示通信。新一局会根据新进度重新给提示。
             if (m_CampaignRadioRaid != m_Snapshot.RaidId) {
                 m_CampaignRadioRaid = m_Snapshot.RaidId;
                 m_CampaignCommunicationsShown.Clear();
@@ -127,6 +130,7 @@ namespace Unity.MP_FPS {
                 !ChatInputBlocked && !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 SetCampaignJournal(!m_CampaignJournalVisible);
             bool tracked = !progress.TrackingSuppressed && progress.PrimaryTracked != null;
+            // 先判断玩家是否开启跟踪。选择的任务已经完成或在等撤离时，任务规则可指向实际继续调查的主线。
             string id = tracked ? EffectiveCampaignTask(progress) : null;
             bool show = id != null && !m_InventoryVisible && !m_CampaignJournalVisible && !m_MissionDetailsVisible &&
                         !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen;
@@ -156,6 +160,7 @@ namespace Unity.MP_FPS {
                 var anchor = RaidMissionSite.Active ? RaidMissionSite.Active.Anchor(node?.AnchorId) : null;
                 bool undiscovered = anchor != null && anchor.Id != "entry" &&
                                     !m_CampaignDiscoveredAnchors.Contains(anchor.Id);
+                // 未发现的设备先给区域提示。走近、看向且视线能到才标成发现，再显示较准确的位置。
                 if (undiscovered && origin.HasValue && Camera.main &&
                     Vector3.Distance(origin.Value, anchor.Position) <= 12 &&
                     Vector3.Angle(Camera.main.transform.forward, anchor.Position - Camera.main.transform.position) <=
@@ -167,6 +172,7 @@ namespace Unity.MP_FPS {
                 if (undiscovered) m_CampaignHasDestination = false;
                 if (m_CampaignHasDestination && origin.HasValue) {
                     var from = origin.Value;
+                    // 距离是两点的直线距离。根据高度差提醒楼上或楼下，实际走法仍应看楼梯和通道。
                     float height = m_CampaignDestination.y - from.y;
                     string floor = height > 3 ? "楼上" : height < -3 ? "楼下" : "当前层附近";
                     m_CampaignLocation.text = m_CampaignDestinationName + "\n" + floor + "  直线 " +

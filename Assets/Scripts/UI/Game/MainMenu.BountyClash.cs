@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.Client {
 
         private void InitializeBountyModeUI() {
             m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), mode => {
+                // 好友房的模式由房主页面设置。这里的按钮只为普通单人和非好友房连接修改默认玩法。
                 if (PlayerProfileClient.IsLan) return;
                 GameSettings.Instance.RequestedMode = mode;
                 MoonkovTerminal.PresentCompanionPicker(m_MainMenu);
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS.Client {
             var mode = GameSettings.Instance.RequestedMode;
             bool clash = mode == RaidGameMode.BountyClash;
             bool offline = PlayerProfileClient.IsOffline;
+            // 普通线上小队从自己的房间页面选模式。仓库入口只在对应档案类型下可见。
             bool online = !offline && !PlayerProfileClient.IsLan;
             m_StashModeEntry.style.display = online ? DisplayStyle.None : DisplayStyle.Flex;
             m_ModePicker.Present(mode, offline);
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS.Client {
                                 ?
                                 "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
                                 : "Choose the game mode, then choose how to connect.");
+            // 有实际连接错误就优先显示错误。其余时候根据选择的模式解释准备阶段。
             MoonkovLocalization.Set(m_ModeStatus,
                 ConnectionSettings.Instance.ConnectionError ?? (clash
                     ?

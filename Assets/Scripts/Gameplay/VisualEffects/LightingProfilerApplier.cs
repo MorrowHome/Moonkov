@@ -6,6 +6,7 @@ namespace Unity.MP_FPS {
         [SerializeField] private LightingProfile profile;
 
         private void OnEnable() {
+            // 场景没分配配置就保持当前的 RenderSettings，并输出提示。启用一个有效实例时才整体套用它的光与雾。
             if (profile == null) {
                 Debug.LogWarning("LightingProfileApplier has no assigned profile.");
                 return;
@@ -25,6 +26,7 @@ namespace Unity.MP_FPS {
             RenderSettings.fogDensity = p.fogDensity;
             RenderSettings.fogStartDistance = p.fogStartDistance;
             RenderSettings.fogEndDistance = p.fogEndDistance;
+            // 场景天空盒和环境光改变后通知 Unity 更新环境照明。以后读取环境光的材质就能看到新设置。
             DynamicGI.UpdateEnvironment();
         }
     }

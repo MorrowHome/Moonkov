@@ -16,6 +16,7 @@ namespace Unity.MP_FPS {
         private float m_NextAlert;
 
         public static OxygenUrgency Urgency(in PredictedPlayerGhost state) {
+            // 告警要等有效的身体状态，并且玩家真的需要从服里用氧。进有氧区或死亡后都回到无告警状态。
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !RaidOxygen.NeedsSuitAir(state))
                 return OxygenUrgency.None;
             return state.Oxygen <= 0 ? OxygenUrgency.Depleted :
@@ -38,6 +39,7 @@ namespace Unity.MP_FPS {
                 Reset();
                 return false;
             }
+            // 恶化到更危险的档次立即提醒。一直处在一个档次时按该档次的间隔 重复提醒。
             bool alert = next > m_Urgency || now >= m_NextAlert;
             m_Urgency = next;
             if (alert)
@@ -55,6 +57,7 @@ namespace Unity.MP_FPS {
             float stamina = float.IsFinite(state.TacticalSprintStamina)
                 ? state.TacticalSprintStamina
                 : TacticalSprintRules.Capacity;
+            // 体力值先换算成疲劳程度，再和近战耐力、冲刺、受伤与缺氧合并。角色停下后也需要实际恢复，呼吸才变缓。
             float fatigue = 1 - Mathf.Clamp01(stamina / TacticalSprintRules.Capacity);
             if (state.MeleeEpoch != 0 && float.IsFinite(state.MeleeStamina))
                 fatigue = Mathf.Max(fatigue, 1 - Mathf.Clamp01(state.MeleeStamina / MeleeRules.StaminaCapacity));
@@ -70,6 +73,7 @@ namespace Unity.MP_FPS {
             else if (urgency == OxygenUrgency.Critical)
                 effort = Mathf.Max(effort, .75f);
             else if (urgency == OxygenUrgency.Low) effort = Mathf.Max(effort, .45f);
+            // 有自然空气且不累时无需播面罩呼吸。其余情况随疲劳提高呼吸音量并缩短间隔。
             if (state.BreathableAir && effort <= .01f) return default;
             bool exerted = effort >= .45f;
             float interval = exerted

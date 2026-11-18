@@ -28,6 +28,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         }
     }
 
+    // 同一个进程里的表现对象按 World 分成两棵树。客户端 World 和服务端 World 都能有某个网络对象，但各自更新各自那棵树。
     private GameObject m_ClientGameObjectHierarchy;
 
     public GameObject ClientGameObjectHierarchy {
@@ -66,6 +67,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         // we need to ensure the static driver constructor override
         // is cleared, otherwise we might end up with a relay network driver
         // when in Ip mode
+        // 驱动构造器是静态的，前一局使用的模式可能被带到下一局。重置时把覆盖配置清空，重连才能按新的传输选择建驱动。
         NetworkStreamReceiveSystem.DriverConstructor = null;
         if (Instance == null) return;
         Instance.DestroyMultiplayerWorlds();
@@ -83,6 +85,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
 #if UNITY_EDITOR
         LiveConversionEditorSettings.LiveConversionEnabled = false;
 #endif
+        // Unity 第一次启动时给普通场景留一个默认 World。专用服还会马上建 ServerWorld，因为 ServerScene 启动时就要从里面取监听驱动。
         var world = new World(defaultWorldName, WorldFlags.Game);
         World.DefaultGameObjectInjectionWorld = world;
         if (!IsServerOnly) return true;
@@ -113,6 +116,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
     }
 
+    // 这是先停更、后清理的路径。把 World 移出每帧更新列表并等它的作业完成，后续释放数据时不会还有作业拿着指针。
     private void SafelyQuitWorld(World world) {
         if (world != null) {
             world.QuitUpdate = true;
@@ -121,6 +125,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         }
     }
 
+    // 退场要同时收 ECS World 和场景树。最后清理桥接的静态回调，这样下一局可以登记新的一批管理器。
     public void DestroyMultiplayerWorlds() {
         if (ClientWorld != null) DestroyWorld(ClientWorld);
         if (ServerWorld != null) DestroyWorld(ServerWorld);
@@ -150,6 +155,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap {
         }
     }
 
+    // 客户端 World 自己有一份新生成的 GUID。它用于标识这一份客户端实例，随 World 的创建一起更新。
     private World CreateClientWorld() {
         ClientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
 

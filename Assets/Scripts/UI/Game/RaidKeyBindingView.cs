@@ -45,6 +45,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private void Begin(RaidKey action) {
+            // 再次点击同一个待录入的项目会取消。点另一个则先停止前一次的捕获。
             if (m_Capture != null && m_Action == action) {
                 Cancel();
                 return;
@@ -57,6 +58,7 @@ namespace Unity.MP_FPS.Client {
             m_Rows.Insert(m_Rows.IndexOf(button.parent) + 1, m_Status);
             MoonkovLocalization.Set(m_Status, "Press a key. Esc cancels.");
             Application.focusChanged += FocusChanged;
+            // 监听下一个键盘键，并在这段时间屏蔽它的原操作。Esc、超时和失焦都有退出路径。
             m_Capture = new InputActionRebindingExtensions.RebindingOperation().WithExpectedControlType<KeyControl>()
                 .WithControlsHavingToMatchPath("<Keyboard>/*").WithCancelingThrough("<Keyboard>/escape")
                 .WithMatchingEventsBeingSuppressed().WithTimeout(10).OnApplyBinding(Assign).OnComplete(Finish)
@@ -66,6 +68,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Assign(InputActionRebindingExtensions.RebindingOperation operation, string path) {
             var key = ((KeyControl)operation.selectedControl).keyCode;
+            // 区分硬保留键和已经被另一动作占用的键。检查失败时仅显示原因，不写回绑定。
             if (!RaidKeyBindings.CanAssign(m_Action, key)) {
                 MoonkovLocalization.Set(m_Status, "This key is reserved.");
             } else if (!RaidKeyBindings.TryAssign(m_Action, key, out var conflict)) {
@@ -79,6 +82,7 @@ namespace Unity.MP_FPS.Client {
 
         private void Finish(InputActionRebindingExtensions.RebindingOperation operation) {
             bool canceled = operation.canceled;
+            // 完成、取消或超时共用清理。解除焦点监听并释放捕获器，页面已经卸载时不再恢复按钮样式。
             m_Capture = null;
             Application.focusChanged -= FocusChanged;
             operation.Dispose();

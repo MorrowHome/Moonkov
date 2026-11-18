@@ -112,6 +112,7 @@ namespace Unity.MP_FPS.Client {
             }
         }
 
+        // 角色编号变化后按新资源建模型。之前拍摄的纹理和动画图跟旧角色一起释放，避免换人后画面残留。
         private void SelectCharacter(int characterIndex) {
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (m_Disposed || CharacterIndex == characterIndex) return;
@@ -363,6 +364,7 @@ namespace Unity.MP_FPS.Client {
             m_Clips[slot] = AnimationClipPlayable.Create(m_Graph, m_Settings.Motions[index]);
             m_Clips[slot].SetApplyFootIK(false);
             m_Clips[slot].SetApplyPlayableIK(true);
+            // 这里自己在 Advance 中推进采样时刻。新的 Clip 不让动画系统自动走时间，切页暂停与减弱效果都能直接控制。
             m_Clips[slot].SetSpeed(0);
             m_Graph.Connect(m_Clips[slot], 0, m_Mixer, slot);
             m_Indices[slot] = index;
@@ -388,6 +390,7 @@ namespace Unity.MP_FPS.Client {
             m_FadeSeconds = Mathf.Max(.01f, m_Settings.CrossfadeSeconds);
             if (next != 0 && !options.Loop && options.Weapon == 0)
                 m_FadeSeconds = Mathf.Min(m_FadeSeconds, Mathf.Max(.05f, clip.length * .25f));
+            // 保留还在播放的动作，在另一个槽准备下一段。过渡期间用两个槽的权重做平滑混合。
             SetClip(1 - m_Slot, next);
             m_Motion = next;
             m_Transition = true;
@@ -401,6 +404,7 @@ namespace Unity.MP_FPS.Client {
         }
 
         private int TakeAction() {
+            // 可选动作只收与当前装备兼容的条目。一轮随机列表用完再洗，避免短时间同一动作反复出现。
             if (m_ActionBag == null) {
                 var actions = new List<int>();
                 for (int i = 1; i < m_Settings.Motions.Length; i++)
@@ -434,11 +438,13 @@ namespace Unity.MP_FPS.Client {
                     visible = false;
                     break;
                 }
+            // 不可见视图不继续占用舞台和纹理。需要时会用同样的配置建回来。
             if (!visible) {
                 ReleaseStage();
                 return;
             }
             if (m_Camera == null) CreateStage();
+            // 关闭动态效果时，只在首次、尺寸或状态变化时渲染静态帧。首页的明确点击演出仍有专门处理。
             if ((!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion) &&
                 !HomeReactionActive) {
                 var size = Element.contentRect.size;
@@ -465,6 +471,7 @@ namespace Unity.MP_FPS.Client {
             m_Remaining -= dt;
             m_BaseTime += dt;
             var idle = m_Settings.Motions[0];
+            // 待机作为底层连续循环。上层动作仍能保留各自的播放时间和骨骼遮罩。
             m_BaseIdle.SetTime(m_BaseTime % idle.length);
             if (m_SharedStage != null)
                 AdvanceSquadPose(dt);
@@ -477,6 +484,7 @@ namespace Unity.MP_FPS.Client {
                     ? m_Times[i] % clip.length
                     : Math.Min(m_Times[i], clip.length));
             }
+            // 两个动作的权重加起来为一。混合结束后交换当前槽，下次继续复用另一边。
             if (m_Transition) {
                 m_Blend = Mathf.Min(1f, m_Blend + dt / m_FadeSeconds);
                 float weight = Mathf.SmoothStep(0, 1, m_Blend);
@@ -610,6 +618,7 @@ namespace Unity.MP_FPS.Client {
             float scale = Mathf.Min(m_Settings.ResolutionScale, maximum / Mathf.Max(width, height));
             int w = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16));
             int h = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(height * scale / 16f) * 16));
+            // 只有分辨率真的变了才重新分配渲染纹理。普通每帧渲染复用原来的目标。
             if (m_Target == null || m_Target.width != w || m_Target.height != h) {
                 ReleaseTarget();
                 var descriptor = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 24)
@@ -692,6 +701,7 @@ namespace Unity.MP_FPS.Client {
             m_ProtectionInventory = null;
         }
 
+        // 舞台关闭时要释放 PlayableGraph、纹理和模型。下一次打开重新建立隔离的预览资源。
         private void ReleaseStage() {
             ReleaseHomeReaction();
             ReleaseEquipmentVisuals();

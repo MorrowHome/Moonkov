@@ -11,6 +11,7 @@ namespace Unity.MP_FPS {
         private World m_InventoryCameraWorld;
 
         private void ClearInventoryBackdrop() {
+            // 关闭时连已经记录的拥有者和 World 一起清除。重开背包能从当前角色重新找到镜头。
             RaidInventoryBlur.Clear();
             m_InventoryCamera = null;
             m_InventoryCameraOwner = Entity.Null;
@@ -18,11 +19,13 @@ namespace Unity.MP_FPS {
         }
 
         private void UpdateInventoryBackdrop() {
+            // 只有活着且正常打开背包时才请求背景模糊。暂停、死亡和过渡镜头拥有各自显示状态。
             if (!m_InventoryVisible || !QuickAlive || CinematicInputBlocked || GameSettings.Instance.IsPauseMenuOpen ||
                 !TryGetLocalPlayerEntity(out var owner)) {
                 ClearInventoryBackdrop();
                 return;
             }
+            // 优先复用已知的本地相机。拥有者或 World 一变就重查，避免模糊用在观战或者上一局镜头上。
             if (!m_InventoryCamera || owner != m_InventoryCameraOwner || m_InventoryCameraWorld != m_World) {
                 m_InventoryCamera = null;
                 m_InventoryCameraOwner = owner;
