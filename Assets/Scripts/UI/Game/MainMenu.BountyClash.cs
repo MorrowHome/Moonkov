@@ -1,19 +1,16 @@
 // 把模式选择器接到仓库和高级连接页。选择结果写进 GameSettings.RequestedMode，出发流程随后读取它。好友房内用房间自己的选模式入口。
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-    public partial class MainMenu
-    {
+namespace Unity.MP_FPS.Client {
+    public partial class MainMenu {
         private BountyModeView m_ModePicker;
         private Label m_ModeStatus;
         private Label m_ModeHint;
         private IVisualElementScheduledItem m_ModeRefresh;
         private Button m_StashModeEntry;
-        private void InitializeBountyModeUI()
-        {
-            m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), mode =>
-            {
+
+        private void InitializeBountyModeUI() {
+            m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), mode => {
                 if (PlayerProfileClient.IsLan) return;
                 GameSettings.Instance.RequestedMode = mode;
                 MoonkovTerminal.PresentCompanionPicker(m_MainMenu);
@@ -23,31 +20,49 @@ namespace Unity.MP_FPS.Client
             m_StashModeEntry = m_ModePicker.CreateEntry(m_MainMenu.Q(className: "stash-footer"));
             m_ModeHint = m_MainMenu.Q<Label>(className: "stash-footer-hint");
             m_ModePicker.CreateEntry(m_MainMenu.Q("AdvancedConnection"));
-            m_ModeStatus = new Label { pickingMode = PickingMode.Ignore }; m_ModeStatus.AddToClassList("bounty-mode-message");
+            m_ModeStatus = new Label { pickingMode = PickingMode.Ignore };
+            m_ModeStatus.AddToClassList("bounty-mode-message");
             m_MainMenu.Q("AdvancedConnection").Add(m_ModeStatus);
             m_ModeRefresh = m_MainMenu.schedule.Execute(RefreshModePicker).Every(250);
             RefreshModePicker();
         }
-        private void RefreshModePicker()
-        {
+
+        private void RefreshModePicker() {
             var mode = GameSettings.Instance.RequestedMode;
             bool clash = mode == RaidGameMode.BountyClash;
             bool offline = PlayerProfileClient.IsOffline;
             bool online = !offline && !PlayerProfileClient.IsLan;
             m_StashModeEntry.style.display = online ? DisplayStyle.None : DisplayStyle.Flex;
             m_ModePicker.Present(mode, offline);
-            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, online ? "在线小队：1–4 人合作直接进图，或选择好友对抗；无需凑满人数。" : mode == RaidGameMode.Classic ? "沙2 5v5，空位由人机补齐" : clash && offline
-                ? "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
-                : "Choose the game mode, then choose how to connect.");
-            MoonkovLocalization.Set(m_ModeStatus, ConnectionSettings.Instance.ConnectionError ?? (clash
-                ? offline ? "SOLO BOUNTY CLASH / You against three AI duos. Prepare your offline loadout, then deploy."
-                    : "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
-                : mode == RaidGameMode.Classic ? "" : "Original expedition rules. Connection method does not change the game mode."));
+            if (m_ModeHint != null)
+                MoonkovLocalization.Set(m_ModeHint,
+                    online
+                        ? "在线小队：1–4 人合作直接进图，或选择好友对抗；无需凑满人数。"
+                        :
+                        mode == RaidGameMode.Classic
+                            ? "沙2 5v5，空位由人机补齐"
+                            :
+                            clash && offline
+                                ?
+                                "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
+                                : "Choose the game mode, then choose how to connect.");
+            MoonkovLocalization.Set(m_ModeStatus,
+                ConnectionSettings.Instance.ConnectionError ?? (clash
+                    ?
+                    offline
+                        ? "SOLO BOUNTY CLASH / You against three AI duos. Prepare your offline loadout, then deploy."
+                        : "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
+                    : mode == RaidGameMode.Classic
+                        ? ""
+                        : "Original expedition rules. Connection method does not change the game mode."));
         }
-        private void DisposeBountyModeUI()
-        {
-            m_ModeRefresh?.Pause(); m_ModePicker?.Dispose(); m_ModePicker = null;
-            m_ModeStatus?.RemoveFromHierarchy(); m_ModeStatus = null;
+
+        private void DisposeBountyModeUI() {
+            m_ModeRefresh?.Pause();
+            m_ModePicker?.Dispose();
+            m_ModePicker = null;
+            m_ModeStatus?.RemoveFromHierarchy();
+            m_ModeStatus = null;
         }
     }
 }

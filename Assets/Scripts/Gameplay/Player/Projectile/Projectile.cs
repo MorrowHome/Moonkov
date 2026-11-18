@@ -10,13 +10,10 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // One ghost per shot. Clients evaluate the trajectory; only the server applies damage.
-    public class Projectile : GhostMonoBehaviour, IUpdateServer, IPhysicsUpdateServer, IUpdateClient
-    {
-        public struct ProjectileData : IComponentData
-        {
+    public class Projectile : GhostMonoBehaviour, IUpdateServer, IPhysicsUpdateServer, IUpdateClient {
+        public struct ProjectileData : IComponentData {
             [GhostField] public int OwnerNetworkId;
             public ClashDamageSource DamageSource; // Server-only release-time attribution.
             [GhostField] public uint SpawnTick;
@@ -28,8 +25,7 @@ namespace Unity.MP_FPS
             [GhostField] public float3 InitialVelocity;
         }
 
-        public class PredictedProjectileInfo
-        {
+        public class PredictedProjectileInfo {
             public GameObject Instance;
             public uint SpawnTick;
             public uint WeaponID;
@@ -38,9 +34,9 @@ namespace Unity.MP_FPS
         }
 
         public static List<PredictedProjectileInfo> PredictedProjectiles = new();
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStaticState()
-        {
+        private static void ResetStaticState() {
             PredictedProjectiles.Clear();
             s_NearMissHits = null;
             if (s_BulletMaterial != null) Destroy(s_BulletMaterial);
@@ -54,6 +50,7 @@ namespace Unity.MP_FPS
         private bool m_Initialized;
         private bool m_Stopped;
         private RaycastHit[] m_Hits = new RaycastHit[16];
+
         // Ghost physics callbacks are serial on Unity's main thread. Share bounded scratch
         // storage so a burst does not allocate an array for every projectile.
         private static Collider[] s_NearMissHits;
@@ -66,32 +63,38 @@ namespace Unity.MP_FPS
         private float m_HaloTrailSeconds;
         private static Material s_BulletMaterial;
 
-        public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
-            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0, ushort modules = 0)
-        {
+        public void InitializePrediction(
+            uint weaponId,
+            Vector3 origin,
+            Quaternion rotation,
+            Transform shooter,
+            float elapsed = 0f,
+            uint shotTick = 0,
+            int pelletIndex = 0,
+            ushort modules = 0) {
             var player = shooter ? shooter.GetComponent<PlayerGhost>() : null;
-            m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,
+            m_Data = new ProjectileData {
+                WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,
                 PelletIndex = pelletIndex, ModuleMask = modules,
                 OwnerNetworkId = player && player.GhostGameObject ? player.GhostGameObject.Owner : 0,
-                InitialVelocity = rotation * Vector3.forward * WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed };
+                InitialVelocity = rotation * Vector3.forward *
+                                  WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed
+            };
             m_Shooter = shooter;
             Initialize(false);
             Advance(elapsed, false);
             UpdateHaloVisual();
         }
 
-        private void Initialize(bool server)
-        {
+        private void Initialize(bool server) {
             m_Weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(m_Data.WeaponID, m_Data.ModuleMask);
             m_HitMask = LayerMask.GetMask(server ? "ServerPlayer" : "ClientPlayer", "Ground", "Default");
-            if (server)
-            {
+            if (server) {
                 m_NearMissPlayerMask = LayerMask.GetMask("ServerPlayer");
                 m_NearMissWorldMask = LayerMask.GetMask("Ground", "Default");
             }
             m_Initialized = m_Weapon != null;
-            if (!server && m_Initialized && m_Weapon.ShowProjectileBody && m_Body == null)
-            {
+            if (!server && m_Initialized && m_Weapon.ShowProjectileBody && m_Body == null) {
                 var body = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 body.name = "Ballistic bullet";
                 var collider = body.GetComponent<Collider>();
@@ -100,8 +103,7 @@ namespace Unity.MP_FPS
                 body.transform.SetParent(transform, false);
                 var scale = transform.lossyScale;
                 body.transform.localScale = new Vector3(.035f / scale.x, .035f / scale.y, .12f / scale.z);
-                if (s_BulletMaterial == null)
-                {
+                if (s_BulletMaterial == null) {
                     s_BulletMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"))
                         { name = "Ballistic bullet (runtime)", hideFlags = HideFlags.DontSave };
                     s_BulletMaterial.SetColor("_BaseColor", new Color(.9f, .7f, .35f));
@@ -117,10 +119,10 @@ namespace Unity.MP_FPS
             if (!server) TryCreateHaloVisual();
         }
 
-        private void TryCreateHaloVisual()
-        {
+        private void TryCreateHaloVisual() {
             if (m_HaloVisual != null || !m_Initialized || m_Stopped || !m_Weapon.ShowProjectileBody ||
-                !DollSingerWeapons.IsHalo(m_Data.WeaponID)) return;
+                !DollSingerWeapons.IsHalo(m_Data.WeaponID))
+                return;
             // The projectile can arrive before its shooter ghost on an observer.
             if (m_Shooter == null) ResolveShooter(false);
             if (m_Shooter == null) return;
@@ -129,7 +131,9 @@ namespace Unity.MP_FPS
             var visuals = new GameObject("Halo projectile visuals");
             visuals.transform.SetParent(transform, false);
             m_HaloVisual = visuals.AddComponent<HaloProjectileVisual>();
-            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper, m_Data.PelletIndex == 0);
+            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver,
+                m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper,
+                m_Data.PelletIndex == 0);
             float limit = HaloProjectileVisual.TrailLengthLimit(m_Data.WeaponID == DollSingerWeapons.Revolver,
                 m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper);
             m_HaloTrailSeconds = Mathf.Min(Mathf.Max(.001f, source.networkBoltTrailSeconds),
@@ -138,8 +142,7 @@ namespace Unity.MP_FPS
             UpdateHaloVisual();
         }
 
-        private void UpdateHaloVisual()
-        {
+        private void UpdateHaloVisual() {
             if (m_HaloVisual == null || m_Stopped) return;
             // Keep the luminous trail outside the hands/eye; collision still starts at the real origin.
             float emergence = .55f / Mathf.Max(1, ((Vector3)m_Data.InitialVelocity).magnitude);
@@ -151,26 +154,32 @@ namespace Unity.MP_FPS
             m_HaloVisual.SetFlight(tail, head);
         }
 
-        private void ResolveShooter(bool server)
-        {
+        private void ResolveShooter(bool server) {
             if (m_Shooter != null || GhostGameObject == null || !GhostGameObject.IsGhostLinked()) return;
             var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
-            if (manager != null && manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll, out var players))
-                foreach (var player in players)
-                {
-                    if(player.GhostGameObject.World!=GhostGameObject.World)continue;
-                    bool captured=server&&(m_Data.DamageSource.ParticipantId>0 || BountyClashDamage.HasCapturedOnlineActor(m_Data.DamageSource) ||
-                        m_Data.DamageSource.ExpeditionActor != Entity.Null);
-                    bool same=captured ? BountyClashDamage.IsSelf(GhostGameObject.World,player.GhostGameObject.LinkedEntity,m_Data.DamageSource) : player.GhostGameObject.Owner==m_Data.OwnerNetworkId;
-                    if(same){m_Shooter=player.transform;m_ShooterEntity=player.GhostGameObject.LinkedEntity;break;}
+            if (manager != null &&
+                manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll,
+                    out var players))
+                foreach (var player in players) {
+                    if (player.GhostGameObject.World != GhostGameObject.World) continue;
+                    bool captured = server && (m_Data.DamageSource.ParticipantId > 0 ||
+                                               BountyClashDamage.HasCapturedOnlineActor(m_Data.DamageSource) ||
+                                               m_Data.DamageSource.ExpeditionActor != Entity.Null);
+                    bool same = captured
+                        ? BountyClashDamage.IsSelf(GhostGameObject.World, player.GhostGameObject.LinkedEntity,
+                            m_Data.DamageSource)
+                        : player.GhostGameObject.Owner == m_Data.OwnerNetworkId;
+                    if (same) {
+                        m_Shooter = player.transform;
+                        m_ShooterEntity = player.GhostGameObject.LinkedEntity;
+                        break;
+                    }
                 }
         }
 
-        public override void OnGhostLinked()
-        {
+        public override void OnGhostLinked() {
             m_Data = GhostGameObject.ReadGhostComponentData<ProjectileData>();
-            if (GhostGameObject.TryReadSingleton<ClientServerTickRate>(out var rates))
-            {
+            if (GhostGameObject.TryReadSingleton<ClientServerTickRate>(out var rates)) {
                 rates.ResolveDefaults();
                 m_TickDuration = 1f / rates.SimulationTickRate;
             }
@@ -180,18 +189,15 @@ namespace Unity.MP_FPS
             Initialize(server);
         }
 
-        private void Update()
-        {
-            if (m_Initialized && (GhostGameObject == null || !GhostGameObject.IsGhostLinked()))
-            {
+        private void Update() {
+            if (m_Initialized && (GhostGameObject == null || !GhostGameObject.IsGhostLinked())) {
                 TryCreateHaloVisual();
                 Advance(Mathf.Min(m_Weapon.ProjectileLifetime, m_Age + Time.deltaTime), false);
                 UpdateHaloVisual();
             }
         }
 
-        private float NetworkAge(bool server)
-        {
+        private float NetworkAge(bool server) {
             if (!GhostGameObject.TryReadSingleton<NetworkTime>(out var time)) return m_Age;
             bool predicted = !server && Role == MultiplayerRole.ClientOwned;
             var tick = server || predicted ? time.ServerTick : time.InterpolationTick;
@@ -201,14 +207,12 @@ namespace Unity.MP_FPS
             return Mathf.Max(0f, (ticks + fraction - 1f) * m_TickDuration);
         }
 
-        public void UpdateServer(float deltaTime)
-        {
+        public void UpdateServer(float deltaTime) {
             // GhostBridge destroys entities during its UpdateServer lifecycle phase.
             if (m_Stopped) GhostGameObject.DestroyEntity();
         }
 
-        public void PhysicsUpdateServer(float deltaTime)
-        {
+        public void PhysicsUpdateServer(float deltaTime) {
             if (!m_Initialized || m_Stopped) return;
             Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(true)), true);
             if (m_Age >= m_Weapon.ProjectileLifetime) Stop();
@@ -218,52 +222,52 @@ namespace Unity.MP_FPS
             GhostGameObject.WriteGhostComponentData(pose);
         }
 
-        public void UpdateClient(float deltaTime)
-        {
+        public void UpdateClient(float deltaTime) {
             if (!m_Initialized) return;
             TryCreateHaloVisual();
             Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(false)), false);
             UpdateHaloVisual();
         }
 
-        private void Advance(float targetAge, bool server)
-        {
+        private void Advance(float targetAge, bool server) {
             if (m_Stopped || targetAge <= m_Age) return;
             var scene = gameObject.scene.GetPhysicsScene();
-            Vector3 threatFrom = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
+            var threatFrom =
+                Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
             float threatAge = m_Age;
             // Sweep the entire travelled arc, including a stalled frame's path.
             // 补算这一帧之间的整条曲线，每小段扫一次碰撞。只检查终点会漏掉途中穿过的薄墙。
-            while (m_Age < targetAge)
-            {
+            while (m_Age < targetAge) {
                 float nextAge = Mathf.Min(targetAge, m_Age + 1f / 120f);
-                Vector3 from = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
-                Vector3 to = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, nextAge);
-                if (Ballistics.Sweep(scene, from, to, m_Weapon.ProjectileRadius, m_HitMask, m_Shooter, ref m_Hits, out var hit))
-                {
+                var from = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity,
+                    m_Age);
+                var to = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity,
+                    nextAge);
+                if (Ballistics.Sweep(scene, from, to, m_Weapon.ProjectileRadius, m_HitMask, m_Shooter, ref m_Hits,
+                        out var hit)) {
                     if (server) ObserveNearMiss(scene, threatFrom, hit.point, hit.collider);
                     transform.position = hit.point;
                     Stop();
-                    if (server) Impact(hit);
-                    else if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
-                    {
+                    if (server) { Impact(hit); } else if (DollSingerWeapons.IsHalo(m_Data.WeaponID)) {
                         // Only the owner predicts impacts; observers consume the server's impact event.
-                        bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() || Role == MultiplayerRole.ClientOwned;
+                        bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() ||
+                                     Role == MultiplayerRole.ClientOwned;
                         if (owned && VisualEffectManager.ClientInstance != null)
-                            VisualEffectManager.ClientInstance.RifleImpacts.Present(new ClientRifleImpactRpc
-                            { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                            VisualEffectManager.ClientInstance.RifleImpacts.Present(new ClientRifleImpactRpc {
+                                OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
                                 WeaponId = m_Data.WeaponID, PelletIndex = m_Data.PelletIndex,
-                                Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider) }, false, true);
-                    }
-                    else MoonkovAudio.Play(m_Weapon.WeaponImpactSfx, hit.point);
+                                Position = hit.point, Normal = hit.normal,
+                                Kind = (byte)RifleImpactSurface.Classify(hit.collider)
+                            }, false, true);
+                    } else { MoonkovAudio.Play(m_Weapon.WeaponImpactSfx, hit.point); }
                     return;
                 }
                 m_Age = nextAge;
                 transform.position = to;
-                if (server && m_Age - threatAge >= .1f)
-                {
+                if (server && m_Age - threatAge >= .1f) {
                     ObserveNearMiss(scene, threatFrom, to, null);
-                    threatFrom = to; threatAge = m_Age;
+                    threatFrom = to;
+                    threatAge = m_Age;
                 }
                 var velocity = Ballistics.Velocity(m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
                 if (velocity.sqrMagnitude > .00001f) transform.rotation = Quaternion.LookRotation(velocity);
@@ -272,68 +276,74 @@ namespace Unity.MP_FPS
             if (!server && m_Age >= m_Weapon.ProjectileLifetime) Stop();
         }
 
-        private void ObserveNearMiss(PhysicsScene scene, Vector3 from, Vector3 to, Collider impact)
-        {
+        private void ObserveNearMiss(PhysicsScene scene, Vector3 from, Vector3 to, Collider impact) {
             if (m_ShooterEntity == Entity.Null) ResolveShooter(true);
             if (m_Weapon.Behavior != ProjectileBehavior.DirectDamage || m_ShooterEntity == Entity.Null ||
-                GhostGameObject == null || !GhostGameObject.IsGhostLinked()) return;
-            ProjectileThreat.Observe(scene, GhostGameObject.World, m_ShooterEntity, m_Data.DamageSource,
-                from, to, impact, GhostGameObject.World.Time.ElapsedTime, m_NearMissPlayerMask, m_NearMissWorldMask, ref s_NearMissHits);
+                GhostGameObject == null || !GhostGameObject.IsGhostLinked())
+                return;
+            ProjectileThreat.Observe(scene, GhostGameObject.World, m_ShooterEntity, m_Data.DamageSource, from, to,
+                impact, GhostGameObject.World.Time.ElapsedTime, m_NearMissPlayerMask, m_NearMissWorldMask,
+                ref s_NearMissHits);
         }
 
-        private void Stop()
-        {
+        private void Stop() {
             m_Stopped = true;
             if (m_Body != null) m_Body.enabled = false;
             if (m_HaloVisual != null) m_HaloVisual.Stop();
         }
 
         // 确认命中后在这里分流。直接命中按距离和身体部位算伤害，范围武器交给爆炸规则。
-        private void Impact(RaycastHit hit)
-        {
+        private void Impact(RaycastHit hit) {
             var system = GhostGameObject.World.GetExistingSystemManaged<ServerPlayerMovementSystem>();
             var players = system.GetComponentLookup<PredictedPlayerGhost>();
             var owners = system.GetComponentLookup<GhostOwner>();
             byte damageFlags = 0;
-            if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect)
-            {
+            if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect) {
                 var scene = gameObject.scene.GetPhysicsScene();
-                Vector3 blast = hit.point + hit.normal * .03f;
-                ProjectileBlast.Apply(GhostGameObject.World, scene,
-                    blast, m_Weapon.AoeRadius, m_Weapon.Damage,
+                var blast = hit.point + hit.normal * .03f;
+                ProjectileBlast.Apply(GhostGameObject.World, scene, blast, m_Weapon.AoeRadius, m_Weapon.Damage,
                     m_Data.DamageSource, GhostGameObject.GetCurrentTick(), out damageFlags);
                 RaidEnvironmentalNoise.EmitExplosion(GhostGameObject.World.EntityManager, scene, blast,
-                    RaidEnvironmentalNoise.ProjectileExplosionId(GhostGameObject.LinkedEntity), GhostGameObject.World.Time.ElapsedTime);
-            }
-            else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
+                    RaidEnvironmentalNoise.ProjectileExplosionId(GhostGameObject.LinkedEntity),
+                    GhostGameObject.World.Time.ElapsedTime);
+            } else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target)) {
                 damageFlags = Damage(target, players, owners,
                     RaidHealth.ResolveHit(target.GetComponent<PlayerGhost>(), hit.collider, hit.point), hit.point);
+            }
             if (damageFlags != 0 && ((HaloModule)m_Data.ModuleMask & HaloModule.HitMarker) != 0)
-                VisualEffectManager.ServerInstance?.Server_RequestHaloMark(m_Data.OwnerNetworkId, m_Data.SpawnTick, hit.point);
-            if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
-            {
-                VisualEffectManager.ServerInstance?.Server_RequestRifleImpact(new ClientRifleImpactRpc
-                { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                VisualEffectManager.ServerInstance?.Server_RequestHaloMark(m_Data.OwnerNetworkId, m_Data.SpawnTick,
+                    hit.point);
+            if (DollSingerWeapons.IsHalo(m_Data.WeaponID)) {
+                VisualEffectManager.ServerInstance?.Server_RequestRifleImpact(new ClientRifleImpactRpc {
+                    OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
                     WeaponId = m_Data.WeaponID, PelletIndex = m_Data.PelletIndex,
-                    Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider), DamageFlags = damageFlags });
+                    Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider),
+                    DamageFlags = damageFlags
+                });
                 return;
             }
             if (m_Weapon.ProjectileHitVfxPrefab != null && m_Weapon.ProjectileHitVfxPrefab.GhostGuid.IsValid)
                 GhostSpawner.SpawnGhostPrefab(m_Weapon.ProjectileHitVfxPrefab, hit.point,
-                    Quaternion.LookRotation(hit.normal.sqrMagnitude > .001f ? hit.normal : Vector3.up), GhostGameObject.GenerateRandomHash());
+                    Quaternion.LookRotation(hit.normal.sqrMagnitude > .001f ? hit.normal : Vector3.up),
+                    GhostGameObject.GenerateRandomHash());
         }
 
-        private byte Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners, BodyPart part, Vector3 impactPoint)
-        {
+        private byte Damage(
+            GhostGameObject target,
+            ComponentLookup<PredictedPlayerGhost> players,
+            ComponentLookup<GhostOwner> owners,
+            BodyPart part,
+            Vector3 impactPoint) {
             if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity)) return 0;
             bool hasOwner = owners.HasComponent(target.LinkedEntity);
             int owner = hasOwner ? owners[target.LinkedEntity].NetworkId : int.MinValue;
-            if (BountyClashDamage.IsSelf(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource)) return 0;
+            if (BountyClashDamage.IsSelf(GhostGameObject.World, target.LinkedEntity, m_Data.DamageSource)) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
             var before = player.ValueRO;
             float damage = Ballistics.DamageAtDistance(m_Weapon, Vector3.Distance(m_Data.Origin, impactPoint));
-            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource,part,damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet,(Unity.Mathematics.float3)impactPoint);
+            BountyClashDamage.Apply(GhostGameObject.World, target.LinkedEntity, m_Data.DamageSource, part, damage,
+                GhostGameObject.GetCurrentTick(), RaidDamageKind.Bullet, (float3)impactPoint);
             return RaidHealth.ImpactFlags(before, player.ValueRO);
         }
     }

@@ -3,11 +3,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>One temporary rendering camera; the player camera continues updating its destination.</summary>
-    internal sealed class RaidCameraTransition : IDisposable
-    {
+    internal sealed class RaidCameraTransition : IDisposable {
         internal const float DeploymentSeconds = 4.5f;
         internal const float DeathSeconds = 4.6f;
         private readonly Camera m_Camera;
@@ -27,23 +25,21 @@ namespace Unity.MP_FPS
         public Camera Camera => m_Camera;
         public bool DeathActive { get; private set; }
         public bool DeathComplete => DeathActive && m_Time >= DeathSeconds;
-        public bool HidesHUD => Deploying || DeathActive && !DeathComplete;
+        public bool HidesHUD => Deploying || (DeathActive && !DeathComplete);
+
         // The fall and a brief grounded hold remain fully visible before eyelids close.
         public float BlackAlpha => DeathActive ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((m_Time - 2f) / 2.2f)) : 0;
 
-        public RaidCameraTransition(Transform owner)
-        {
+        public RaidCameraTransition(Transform owner) {
             var go = new GameObject("Raid transition camera");
             go.transform.SetParent(owner, false);
             m_Camera = go.AddComponent<Camera>();
             m_Camera.enabled = false;
         }
 
-        public void Capture(Camera source)
-        {
+        public void Capture(Camera source) {
             if (!source || source == m_Camera) return;
-            if (m_Source != source)
-            {
+            if (m_Source != source) {
                 RestoreSource();
                 m_Source = source;
                 m_SourceEnabled = source.enabled;
@@ -64,8 +60,7 @@ namespace Unity.MP_FPS
             to.volumeTrigger = m_Camera.transform;
         }
 
-        public void BeginDeployment(Bounds bounds)
-        {
+        public void BeginDeployment(Bounds bounds) {
             if (!m_Source) return;
             DeathActive = false;
             m_Time = 0;
@@ -81,10 +76,12 @@ namespace Unity.MP_FPS
             m_ApproachRotation = Quaternion.LookRotation(eye - m_Approach);
         }
 
-        public void TickDeployment(float deltaTime)
-        {
+        public void TickDeployment(float deltaTime) {
             if (!Deploying) return;
-            if (!m_Source) { Stop(); return; }
+            if (!m_Source) {
+                Stop();
+                return;
+            }
             RememberEye();
             m_Time += Mathf.Max(0, deltaTime);
             var eye = m_Source.transform.position;
@@ -103,21 +100,18 @@ namespace Unity.MP_FPS
             if (m_Time >= DeploymentSeconds) Stop();
         }
 
-        private void RememberEye()
-        {
+        private void RememberEye() {
             m_LastEye = m_Source.transform.position;
             m_LastLook = m_Source.transform.rotation;
             m_HasPose = true;
         }
 
-        public void CaptureBody(Vector3 feet, PhysicsScene physicsScene)
-        {
+        public void CaptureBody(Vector3 feet, PhysicsScene physicsScene) {
             m_LastFeet = feet;
             m_PhysicsScene = physicsScene;
         }
 
-        public void BeginDeath()
-        {
+        public void BeginDeath() {
             Deploying = false;
             DeathActive = true;
             m_Time = 0;
@@ -127,13 +121,12 @@ namespace Unity.MP_FPS
             var yaw = Quaternion.Euler(0, m_LastLook.eulerAngles.y, 0);
             var floor = m_LastFeet + yaw * new Vector3(.28f, .2f, .15f);
             int mask = LayerMask.GetMask("Default", "Ground");
-            if (m_PhysicsScene.IsValid() && m_PhysicsScene.Raycast(floor + Vector3.up, Vector3.down,
-                out var ground, 3, mask, QueryTriggerInteraction.Ignore))
+            if (m_PhysicsScene.IsValid() && m_PhysicsScene.Raycast(floor + Vector3.up, Vector3.down, out var ground, 3,
+                    mask, QueryTriggerInteraction.Ignore))
                 floor = ground.point + ground.normal * .2f;
             var delta = floor - m_DeathStart;
-            if (m_PhysicsScene.IsValid() && delta.sqrMagnitude > .001f &&
-                m_PhysicsScene.SphereCast(m_DeathStart, .12f, delta.normalized, out var obstruction,
-                    delta.magnitude, mask, QueryTriggerInteraction.Ignore))
+            if (m_PhysicsScene.IsValid() && delta.sqrMagnitude > .001f && m_PhysicsScene.SphereCast(m_DeathStart, .12f,
+                    delta.normalized, out var obstruction, delta.magnitude, mask, QueryTriggerInteraction.Ignore))
                 floor = m_DeathStart + delta.normalized * Mathf.Max(0, obstruction.distance - .03f);
             m_DeathEnd = floor;
             m_DeathLook = Quaternion.Euler(12, m_LastLook.eulerAngles.y, 76);
@@ -143,8 +136,7 @@ namespace Unity.MP_FPS
             m_Camera.transform.SetPositionAndRotation(m_DeathStart, m_LastLook);
         }
 
-        public void TickDeath(float deltaTime)
-        {
+        public void TickDeath(float deltaTime) {
             if (!DeathActive) return;
             m_Time = Mathf.Min(DeathSeconds, m_Time + Mathf.Max(0, deltaTime));
             if (!m_HasPose) return;
@@ -157,29 +149,27 @@ namespace Unity.MP_FPS
             m_Camera.enabled = true;
         }
 
-        public void Stop()
-        {
+        public void Stop() {
             Deploying = false;
             DeathActive = false;
-            if (m_Camera)
-            {
+            if (m_Camera) {
                 m_Camera.enabled = false;
                 m_Camera.tag = "Untagged";
             }
             RestoreSource();
         }
 
-        private void RestoreSource()
-        {
+        private void RestoreSource() {
             if (m_Source) m_Source.enabled = m_SourceEnabled;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Stop();
             if (!m_Camera) return;
-            if (Application.isPlaying) UnityEngine.Object.Destroy(m_Camera.gameObject);
-            else UnityEngine.Object.DestroyImmediate(m_Camera.gameObject);
+            if (Application.isPlaying)
+                UnityEngine.Object.Destroy(m_Camera.gameObject);
+            else
+                UnityEngine.Object.DestroyImmediate(m_Camera.gameObject);
         }
     }
 }

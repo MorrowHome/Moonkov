@@ -3,23 +3,43 @@ using Unity.Collections;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
-    public enum HaloChargeNotice { None, Waiting, Charging, Ready, Full, MoveCells, LowEnergy, Syncing }
+namespace Unity.MP_FPS {
+    public enum HaloChargeNotice {
+        None,
+        Waiting,
+        Charging,
+        Ready,
+        Full,
+        MoveCells,
+        LowEnergy,
+        Syncing
+    }
 
-    public readonly struct HaloChargeStatus
-    {
+    public readonly struct HaloChargeStatus {
         public readonly HaloChargeNotice Notice;
         public readonly float Remaining, Progress;
         public readonly int Ammo, Capacity, Energy, Cost;
-        public HaloChargeStatus(HaloChargeNotice notice, int ammo, int capacity, float remaining = 0,
-            float progress = 0, int energy = 0, int cost = 0)
-        { Notice = notice; Ammo = ammo; Capacity = capacity; Remaining = remaining; Progress = progress; Energy = energy; Cost = cost; }
+
+        public HaloChargeStatus(
+            HaloChargeNotice notice,
+            int ammo,
+            int capacity,
+            float remaining = 0,
+            float progress = 0,
+            int energy = 0,
+            int cost = 0) {
+            Notice = notice;
+            Ammo = ammo;
+            Capacity = capacity;
+            Remaining = remaining;
+            Progress = progress;
+            Energy = energy;
+            Cost = cost;
+        }
     }
 
     // Observes input and synchronized facts only; never reserves energy or predicts a refill.
-    public sealed class HaloChargeFeedback
-    {
+    public sealed class HaloChargeFeedback {
         private MoonkovReloadAudio m_Transitions;
         private uint m_Weapon;
         private FixedString64Bytes m_Item;
@@ -31,47 +51,63 @@ namespace Unity.MP_FPS
         private uint m_RechargeSequence;
         private bool m_HasRechargeSequence;
 
-        public void Reset()
-        {
-            m_Transitions = null; m_Weapon = 0; m_Item = default; m_EnergyGraph = null;
-            m_HasRechargeSequence = false; m_RechargeSequence = 0;
-            m_EmptyFireHeld = false; m_AttemptAt = float.NegativeInfinity; m_ReadyUntil = 0;
+        public void Reset() {
+            m_Transitions = null;
+            m_Weapon = 0;
+            m_Item = default;
+            m_EnergyGraph = null;
+            m_HasRechargeSequence = false;
+            m_RechargeSequence = 0;
+            m_EmptyFireHeld = false;
+            m_AttemptAt = float.NegativeInfinity;
+            m_ReadyUntil = 0;
         }
 
-        private void Context(in PredictedPlayerGhost player)
-        {
+        private void Context(in PredictedPlayerGhost player) {
             if (m_Weapon == player.EquippedWeaponID && m_Item.Equals(player.EquippedWeaponItem)) return;
-            Reset(); m_Weapon = player.EquippedWeaponID; m_Item = player.EquippedWeaponItem;
+            Reset();
+            m_Weapon = player.EquippedWeaponID;
+            m_Item = player.EquippedWeaponItem;
         }
 
-        public void ObserveInput(in PlayerInput input, in PredictedPlayerGhost player, float now)
-        {
+        public void ObserveInput(in PlayerInput input, in PredictedPlayerGhost player, float now) {
             Context(player);
             bool emptyFire = !player.HaloEnergyInitialized && input.Shoot && input.Aim && player.CurrentAmmo <= 0;
-            if ((input.Reload || emptyFire && !m_EmptyFireHeld) && !player.ControllerState.IsReloadingState &&
-                player.CurrentHealth > 0 && player.WeaponEquipRemaining <= 0 && player.InventoryWeapons && DollSingerWeapons.IsHalo(player.EquippedWeaponID) &&
-                now - m_AttemptAt >= .35f)
-            { m_AttemptAt = now; m_ReadyUntil = 0; }
+            if ((input.Reload || (emptyFire && !m_EmptyFireHeld)) && !player.ControllerState.IsReloadingState &&
+                player.CurrentHealth > 0 && player.WeaponEquipRemaining <= 0 && player.InventoryWeapons &&
+                DollSingerWeapons.IsHalo(player.EquippedWeaponID) && now - m_AttemptAt >= .35f) {
+                m_AttemptAt = now;
+                m_ReadyUntil = 0;
+            }
             m_EmptyFireHeld = emptyFire;
         }
 
-        public HaloChargeStatus Update(in PredictedPlayerGhost player, WeaponData weapon, InventoryGraph inventory, bool visible, float now)
-        {
+        public HaloChargeStatus Update(
+            in PredictedPlayerGhost player,
+            WeaponData weapon,
+            InventoryGraph inventory,
+            bool visible,
+            float now) {
             Context(player);
-            if (!visible || player.CurrentHealth <= 0 || !player.InventoryWeapons || !DollSingerWeapons.IsHalo(player.EquippedWeaponID) || weapon == null)
-            { Reset(); return default; }
+            if (!visible || player.CurrentHealth <= 0 || !player.InventoryWeapons ||
+                !DollSingerWeapons.IsHalo(player.EquippedWeaponID) || weapon == null) {
+                Reset();
+                return default;
+            }
             // 有共用光环能量时按同步的补能序号和余额显示。后面的兼容路径仍能按传统弹匣和待装弹量显示。
-            if (player.HaloEnergyInitialized)
-            {
-                if (m_HasRechargeSequence && m_RechargeSequence != player.HaloRechargeSequence)
-                { m_ReadyUntil = now + 1.5f; m_AttemptAt = float.NegativeInfinity; }
-                m_HasRechargeSequence = true; m_RechargeSequence = player.HaloRechargeSequence;
+            if (player.HaloEnergyInitialized) {
+                if (m_HasRechargeSequence && m_RechargeSequence != player.HaloRechargeSequence) {
+                    m_ReadyUntil = now + 1.5f;
+                    m_AttemptAt = float.NegativeInfinity;
+                }
+                m_HasRechargeSequence = true;
+                m_RechargeSequence = player.HaloRechargeSequence;
                 int current = Mathf.FloorToInt(HaloEnergyRules.Energy(player));
                 int maximum = Mathf.RoundToInt(HaloEnergyRules.Maximum(player));
-                if (player.ControllerState.IsReloadingState && player.HaloRechargeEnergy > 0)
-                {
+                if (player.ControllerState.IsReloadingState && player.HaloRechargeEnergy > 0) {
                     m_AttemptAt = float.NegativeInfinity;
-                    return new HaloChargeStatus(HaloChargeNotice.Charging, Mathf.Min(maximum, current + Mathf.RoundToInt(player.HaloRechargeEnergy)), maximum,
+                    return new HaloChargeStatus(HaloChargeNotice.Charging,
+                        Mathf.Min(maximum, current + Mathf.RoundToInt(player.HaloRechargeEnergy)), maximum,
                         Mathf.Max(0, player.ReloadTimer), HaloReload.Progress(player, weapon));
                 }
                 if (now < m_ReadyUntil) return new HaloChargeStatus(HaloChargeNotice.Ready, current, maximum);
@@ -80,16 +116,20 @@ namespace Unity.MP_FPS
                 if (inventory == null) return new HaloChargeStatus(HaloChargeNotice.Syncing, current, maximum);
                 if (now - m_AttemptAt < .2f) return new HaloChargeStatus(HaloChargeNotice.Waiting, current, maximum);
                 if (inventory.CellEnergy(accessibleOnly: true) <= 0)
-                    return new HaloChargeStatus(inventory.CellEnergy(carriedOnly: true) > 0 ? HaloChargeNotice.MoveCells : HaloChargeNotice.LowEnergy, current, maximum);
+                    return new HaloChargeStatus(
+                        inventory.CellEnergy(true) > 0 ? HaloChargeNotice.MoveCells : HaloChargeNotice.LowEnergy,
+                        current, maximum);
                 return new HaloChargeStatus(HaloChargeNotice.Waiting, current, maximum);
             }
             m_Transitions ??= new MoonkovReloadAudio();
             var transition = m_Transitions.Observe(player.LastReloadTick, player.EquippedWeaponID, player.CurrentAmmo,
                 player.ControllerState.IsReloadingState, true);
-            if ((transition & ReloadAudioEvent.Ready) != 0) { m_ReadyUntil = now + 1.5f; m_AttemptAt = float.NegativeInfinity; }
+            if ((transition & ReloadAudioEvent.Ready) != 0) {
+                m_ReadyUntil = now + 1.5f;
+                m_AttemptAt = float.NegativeInfinity;
+            }
             int capacity = weapon.MagazineSize;
-            if (player.ControllerState.IsReloadingState)
-            {
+            if (player.ControllerState.IsReloadingState) {
                 m_AttemptAt = float.NegativeInfinity;
                 float duration = HaloReload.Total(player, weapon);
                 return new HaloChargeStatus(HaloChargeNotice.Charging, player.ReloadTargetAmmo, capacity,
@@ -97,19 +137,24 @@ namespace Unity.MP_FPS
             }
             if (now < m_ReadyUntil) return new HaloChargeStatus(HaloChargeNotice.Ready, player.CurrentAmmo, capacity);
             if (now - m_AttemptAt >= 2.5f) return default;
-            if (player.CurrentAmmo >= capacity) return new HaloChargeStatus(HaloChargeNotice.Full, player.CurrentAmmo, capacity);
-            if (now - m_AttemptAt < .2f) return new HaloChargeStatus(HaloChargeNotice.Waiting, player.CurrentAmmo, capacity);
-            if (inventory != null && (!ReferenceEquals(inventory, m_EnergyGraph) || inventory.Version != m_EnergyVersion))
-            {
-                m_EnergyGraph = inventory; m_EnergyVersion = inventory.Version;
+            if (player.CurrentAmmo >= capacity)
+                return new HaloChargeStatus(HaloChargeNotice.Full, player.CurrentAmmo, capacity);
+            if (now - m_AttemptAt < .2f)
+                return new HaloChargeStatus(HaloChargeNotice.Waiting, player.CurrentAmmo, capacity);
+            if (inventory != null &&
+                (!ReferenceEquals(inventory, m_EnergyGraph) || inventory.Version != m_EnergyVersion)) {
+                m_EnergyGraph = inventory;
+                m_EnergyVersion = inventory.Version;
                 m_HasWeapon = inventory.Find(player.EquippedWeaponItem.ToString()) != null;
-                m_ReadyEnergy = inventory.CellEnergy(accessibleOnly: true); m_CarriedEnergy = inventory.CellEnergy(carriedOnly: true);
+                m_ReadyEnergy = inventory.CellEnergy(accessibleOnly: true);
+                m_CarriedEnergy = inventory.CellEnergy(true);
             }
             if (inventory == null || !m_HasWeapon)
                 return new HaloChargeStatus(HaloChargeNotice.Syncing, player.CurrentAmmo, capacity);
             int energy = m_ReadyEnergy, cost = Mathf.Max(1, weapon.EnergyPerRound);
             if (energy < cost)
-                return new HaloChargeStatus(m_CarriedEnergy >= cost ? HaloChargeNotice.MoveCells : HaloChargeNotice.LowEnergy,
+                return new HaloChargeStatus(
+                    m_CarriedEnergy >= cost ? HaloChargeNotice.MoveCells : HaloChargeNotice.LowEnergy,
                     player.CurrentAmmo, capacity, energy: energy, cost: cost);
             return new HaloChargeStatus(HaloChargeNotice.Waiting, player.CurrentAmmo, capacity);
         }

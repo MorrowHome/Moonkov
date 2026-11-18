@@ -4,47 +4,45 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.MP_FPS.Campaign;
 
-namespace Unity.MP_FPS.Client
-{
-    public sealed partial class MoonkovTerminal
-    {
+namespace Unity.MP_FPS.Client {
+    public sealed partial class MoonkovTerminal {
         private CampaignChapterView m_CampaignTasks;
         private ResearchQuestView m_ResearchTasks;
         private bool m_FacilityRecords;
 
-        private bool TryPresentResearchTasks()
-        {
+        private bool TryPresentResearchTasks() {
             if (PlayerProfileClient.ResearchQuests == null || m_FacilityRecords) return false;
             m_ResearchTasks = new ResearchQuestView(m_Root, () => PlayerProfileClient.ResearchQuests,
-                PlayerProfileClient.AdvanceResearchQuestAsync, Prepare, () =>
-                {
+                PlayerProfileClient.AdvanceResearchQuestAsync, Prepare, () => {
                     m_FacilityRecords = true;
                     CloseResearchTasks();
                     Render();
-                }, () => Navigate(0), PlayerProfileClient.ChooseResearchEndingAsync, PlayerProfileClient.ReviewResearchStoryAsync);
+                }, () => Navigate(0), PlayerProfileClient.ChooseResearchEndingAsync,
+                PlayerProfileClient.ReviewResearchStoryAsync);
             return true;
         }
 
-        private void CloseResearchTasks()
-        {
+        private void CloseResearchTasks() {
             m_ResearchTasks?.Dispose();
             m_ResearchTasks = null;
         }
 
-        private bool TryPresentCampaignTasks()
-        {
+        private bool TryPresentCampaignTasks() {
             var progress = PlayerProfileClient.Campaign;
             if (!PlayerProfileClient.IsOffline || progress == null) return false;
             TerminalLayout.Populate(m_Content, "Tasks");
             var stylesheet = Resources.Load<StyleSheet>("Moonkov/UI/CampaignChapterOne");
-            if (stylesheet != null && !m_Content.styleSheets.Contains(stylesheet)) m_Content.styleSheets.Add(stylesheet);
+            if (stylesheet != null && !m_Content.styleSheets.Contains(stylesheet))
+                m_Content.styleSheets.Add(stylesheet);
             var side = m_Content.Q<VisualElement>(className: "terminal-side");
             side.AddToClassList("campaign-terminal-side");
             var headings = side.Query<Label>(className: "terminal-eyebrow").ToList();
             if (headings.Count > 0) headings[0].text = "单人战役";
             var current = CampaignCatalog.Find(CampaignRules.CurrentMain(progress));
-            if (headings.Count > 1) headings[1].text = current == null ? "调查记录" :
-                "第" + (current.Chapter == 1 ? "一" : "二") + "章 " + current.ChapterTitle;
+            if (headings.Count > 1)
+                headings[1].text = current == null
+                    ? "调查记录"
+                    : "第" + (current.Chapter == 1 ? "一" : "二") + "章 " + current.ChapterTitle;
             if (headings.Count > 2) headings[2].text = "调查记录";
             side.Q<Label>(className: "terminal-title").text = "清理任务";
             side.Q<Label>(className: "terminal-heading").text = current?.Title ?? "调查记录已保存";
@@ -53,19 +51,25 @@ namespace Unity.MP_FPS.Client
             int complete = CampaignCatalog.Tasks.Count(t => progress.CompletedTasks.Contains(t.Id));
             m_Content.Q<ArcMeter>().Value = complete / (float)CampaignCatalog.PlannedMainTaskCount;
             m_Content.Q<Label>("missionCareerCount").text = "已保存 " + complete + " 项";
-            m_Content.Q<Label>("mooncoreKnowledge").text = progress.CompletedTasks.Contains("CM03") ? "月核样本已带回。" : "月核样本等待回收。";
-            m_Content.Q<Label>("archiveKnowledge").text = progress.CompletedTasks.Contains("CM04") ? "事故档案已带回。" : "事故档案等待回收。";
+            m_Content.Q<Label>("mooncoreKnowledge").text =
+                progress.CompletedTasks.Contains("CM03") ? "月核样本已带回。" : "月核样本等待回收。";
+            m_Content.Q<Label>("archiveKnowledge").text =
+                progress.CompletedTasks.Contains("CM04") ? "事故档案已带回。" : "事故档案等待回收。";
             var wide = m_Content.Q<VisualElement>(className: "terminal-wide");
             wide.Clear();
             m_CampaignTasks?.Dispose();
             m_CampaignTasks = new CampaignChapterView(wide, () => CampaignScene.ReadProgress(), Prepare, "准备出战");
             if (m_FacilityRecords)
-                ActionButton(side, ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => { m_FacilityRecords = false; Render(); });
-            var replay = new Button(async () =>
-            {
+                ActionButton(side, ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => {
+                    m_FacilityRecords = false;
+                    Render();
+                });
+            var replay = new Button(async () => {
                 if (m_Busy || PlayerProfileClient.IsTutorialPractice || PlayerProfileClient.RaidActive) return;
-                try { await PlayerProfileClient.BeginTutorialPracticeAsync(); Navigate(0); }
-                catch (System.Exception e) { m_Content.Q<Label>("archiveKnowledge").text = e.Message; }
+                try {
+                    await PlayerProfileClient.BeginTutorialPracticeAsync();
+                    Navigate(0);
+                } catch (System.Exception e) { m_Content.Q<Label>("archiveKnowledge").text = e.Message; }
             }) { text = "重玩新手教学" };
             replay.SetEnabled(!PlayerProfileClient.IsTutorialPractice && !PlayerProfileClient.RaidActive);
             side.Add(replay);

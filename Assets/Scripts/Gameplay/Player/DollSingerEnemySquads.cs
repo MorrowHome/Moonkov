@@ -7,24 +7,23 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
-namespace Unity.MP_FPS
-{
-    public struct ExpeditionSquadMember : IComponentData
-    {
+namespace Unity.MP_FPS {
+    public struct ExpeditionSquadMember : IComponentData {
         public int SquadId;
         public bool LanCoop;
 
-        public bool AlliedTo(int squad, bool lanCoop) => SquadId != 0 && SquadId == squad || LanCoop && lanCoop;
+        public bool AlliedTo(int squad, bool lanCoop) {
+            return (SquadId != 0 && SquadId == squad) || (LanCoop && lanCoop);
+        }
 
-        public static bool BelongsTo(EntityManager manager, Entity actor, int squad, bool lanCoop = false) =>
-            (squad != 0 || lanCoop) && manager.HasComponent<ExpeditionSquadMember>(actor) &&
-            manager.GetComponentData<ExpeditionSquadMember>(actor).AlliedTo(squad, lanCoop);
+        public static bool BelongsTo(EntityManager manager, Entity actor, int squad, bool lanCoop = false) {
+            return (squad != 0 || lanCoop) && manager.HasComponent<ExpeditionSquadMember>(actor) &&
+                   manager.GetComponentData<ExpeditionSquadMember>(actor).AlliedTo(squad, lanCoop);
+        }
     }
 
-    public partial class DollSingerEnemySystem
-    {
-        private struct ExpeditionAgent
-        {
+    public partial class DollSingerEnemySystem {
+        private struct ExpeditionAgent {
             public Entity Entity;
             public ExpeditionSquadMember Membership;
             public DollSingerEnemyBrain Brain;
@@ -36,39 +35,46 @@ namespace Unity.MP_FPS
         private readonly List<ExpeditionAgent> m_ExpeditionAgents = new(12);
         private int m_NextExpeditionSquadId;
 
-        private void SetExpeditionSquad(Entity actor, int squad, int slot, int size, Entity leader, bool lanCoop = false)
-        {
+        private void SetExpeditionSquad(
+            Entity actor,
+            int squad,
+            int slot,
+            int size,
+            Entity leader,
+            bool lanCoop = false) {
             var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(actor);
             brain.ExpeditionSquadId = squad;
             brain.SquadSlot = slot;
             brain.SquadSize = size;
             brain.SquadLeader = leader;
             brain.LanCompanion = lanCoop;
-            if (leader != Entity.Null)
-            {
+            if (leader != Entity.Null) {
                 brain.Action = PmcAction.FollowSquad;
                 brain.TacticalGoal = brain.Goal;
             }
             EntityManager.AddComponentData(actor, new ExpeditionSquadMember { SquadId = squad, LanCoop = lanCoop });
         }
 
-        private void UpdateExpeditionSquads(double now)
-        {
+        private void UpdateExpeditionSquads(double now) {
             m_ExpeditionAgents.Clear();
-            foreach (var (squad, pose, health, entity) in SystemAPI.Query<RefRO<ExpeditionSquadMember>,
-                         RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>().WithAll<Simulate>().WithEntityAccess())
-            {
+            foreach (var (squad, pose, health, entity) in SystemAPI
+                         .Query<RefRO<ExpeditionSquadMember>, RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithAll<Simulate>().WithEntityAccess()) {
                 if (health.ValueRO.CurrentHealth <= 0) continue;
                 var brain = EntityManager.HasComponent<DollSingerEnemyBrain>(entity)
-                    ? EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity) : null;
+                    ? EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity)
+                    : null;
                 var instance = EntityManager.HasComponent<GhostGameObjectLink>(entity)
-                    ? EntityManager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance : null;
-                m_ExpeditionAgents.Add(new ExpeditionAgent { Entity = entity, Membership = squad.ValueRO,
-                    Brain = brain, Position = pose.ValueRO.Position, Yaw = brain?.Yaw ?? health.ValueRO.ControllerState.YawDegrees,
-                    Root = instance ? instance.transform : null });
+                    ? EntityManager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance
+                    : null;
+                m_ExpeditionAgents.Add(new ExpeditionAgent {
+                    Entity = entity, Membership = squad.ValueRO,
+                    Brain = brain, Position = pose.ValueRO.Position,
+                    Yaw = brain?.Yaw ?? health.ValueRO.ControllerState.YawDegrees,
+                    Root = instance ? instance.transform : null
+                });
             }
-            foreach (var receiver in m_ExpeditionAgents)
-            {
+            foreach (var receiver in m_ExpeditionAgents) {
                 var brain = receiver.Brain;
                 if (brain == null) continue;
                 brain.HasSquadLeader = false;
@@ -76,16 +82,14 @@ namespace Unity.MP_FPS
                 // 队友报告按节奏交换。收到的是队友已经观察到的线索，仍需要自己确认视线才能开火。
                 bool share = now - brain.LastRadio >= .5;
                 if (share) brain.LastRadio = now;
-                foreach (var ally in m_ExpeditionAgents)
-                {
-                    if (ally.Entity == receiver.Entity || ally.Membership.SquadId != receiver.Membership.SquadId) continue;
-                    if (ally.Entity == brain.SquadLeader)
-                    {
+                foreach (var ally in m_ExpeditionAgents) {
+                    if (ally.Entity == receiver.Entity || ally.Membership.SquadId != receiver.Membership.SquadId)
+                        continue;
+                    if (ally.Entity == brain.SquadLeader) {
                         brain.HasSquadLeader = true;
                         brain.SquadLeaderPosition = ally.Position;
                         brain.SquadLeaderYaw = ally.Yaw;
-                        if (ally.Brain is { Leaving: true } leader && !brain.Leaving)
-                        {
+                        if (ally.Brain is { Leaving: true } leader && !brain.Leaving) {
                             brain.Leaving = true;
                             brain.RaidExit = leader.RaidExit;
                             brain.LocalRaidExit = leader.LocalRaidExit;
@@ -99,17 +103,19 @@ namespace Unity.MP_FPS
             }
         }
 
-        private bool TryGetExpeditionCoveringAlly(DollSingerEnemyBrain brain, Vector3 position, double now,
-            out Vector3 coveringPosition)
-        {
+        private bool TryGetExpeditionCoveringAlly(
+            DollSingerEnemyBrain brain,
+            Vector3 position,
+            double now,
+            out Vector3 coveringPosition) {
             coveringPosition = default;
             if (!brain.SquadPartnerNearby) return false;
             int coveringSlot = ((int)(now / 6) + brain.ExpeditionSquadId) % brain.SquadSize;
             if (brain.SquadSlot == coveringSlot) return false;
-            foreach (var ally in m_ExpeditionAgents)
-            {
-                if (ally.Membership.SquadId != brain.ExpeditionSquadId || ally.Brain == null || ally.Brain.SquadSlot != coveringSlot ||
-                    (ally.Position - position).sqrMagnitude > 45 * 45 || !IsCoveringAlly(ally.Entity, ally.Brain, brain, now))
+            foreach (var ally in m_ExpeditionAgents) {
+                if (ally.Membership.SquadId != brain.ExpeditionSquadId || ally.Brain == null ||
+                    ally.Brain.SquadSlot != coveringSlot || (ally.Position - position).sqrMagnitude > 45 * 45 ||
+                    !IsCoveringAlly(ally.Entity, ally.Brain, brain, now))
                     continue;
                 coveringPosition = ally.Position;
                 return true;
@@ -117,42 +123,48 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        private bool ExpeditionShotLaneClear(DollSingerEnemyBrain brain, Transform root, Vector3 eye, Vector3 direction, float range)
-        {
+        private bool ExpeditionShotLaneClear(
+            DollSingerEnemyBrain brain,
+            Transform root,
+            Vector3 eye,
+            Vector3 direction,
+            float range) {
             int count = root.gameObject.scene.GetPhysicsScene().SphereCast(eye, .09f, direction, m_Hits, range,
                 s_SightMask, QueryTriggerInteraction.Ignore);
             if (count == m_Hits.Length) return false;
             for (int i = 0; i < count; i++)
                 foreach (var ally in m_ExpeditionAgents)
-                    if (ally.Membership.AlliedTo(brain.ExpeditionSquadId, brain.LanCompanion) && ally.Root && ally.Root != root &&
-                        m_Hits[i].transform.IsChildOf(ally.Root)) return false;
+                    if (ally.Membership.AlliedTo(brain.ExpeditionSquadId, brain.LanCompanion) && ally.Root &&
+                        ally.Root != root && m_Hits[i].transform.IsChildOf(ally.Root))
+                        return false;
             return true;
         }
 
-        private static float SquadWatchYaw(DollSingerEnemyBrain brain) =>
-            brain.SquadLeaderYaw + (brain.IsCompanion && brain.SquadSlot == 2 ? 160 : brain.SquadSlot % 2 == 0 ? 80 : -80);
+        private static float SquadWatchYaw(DollSingerEnemyBrain brain) {
+            return brain.SquadLeaderYaw +
+                   (brain.IsCompanion && brain.SquadSlot == 2 ? 160 : brain.SquadSlot % 2 == 0 ? 80 : -80);
+        }
 
-        private Vector3 FollowSquadGoal(DollSingerEnemyBrain brain, Vector3 position, double now)
-        {
+        private Vector3 FollowSquadGoal(DollSingerEnemyBrain brain, Vector3 position, double now) {
             if (!brain.HasSquadLeader) return position;
             if (now < brain.NextCover) return brain.TacticalGoal;
             brain.NextCover = now + .8;
             var leader = brain.SquadLeaderPosition;
             var facing = Quaternion.Euler(0, brain.SquadLeaderYaw, 0);
             float side = brain.SquadSlot % 2 == 0 ? 1 : -1;
-            Vector3 formation = brain.IsCompanion && brain.SquadSlot == 2 ? new Vector3(0, 0, -7) : new Vector3(side * 4, 0, -4);
-            for (int attempt = 0; attempt < 4; attempt++)
-            {
+            var formation = brain.IsCompanion && brain.SquadSlot == 2
+                ? new Vector3(0, 0, -7)
+                : new Vector3(side * 4, 0, -4);
+            for (int attempt = 0; attempt < 4; attempt++) {
                 bool useLeaderPosition = attempt == 3;
                 if (useLeaderPosition && Vector3.Distance(position, leader) < 3) return position;
-                Vector3 offset = attempt switch
-                {
+                var offset = attempt switch {
                     0 => formation,
                     1 => new Vector3(-side * 3, 0, -3),
                     2 => new Vector3(0, 0, -3),
                     _ => Vector3.zero
                 };
-                Vector3 desired = leader + facing * offset;
+                var desired = leader + facing * offset;
                 if (NavMesh.SamplePosition(desired, out var sample, 2, m_Filter) &&
                     Mathf.Abs(sample.position.y - leader.y) < 1.2f &&
                     (useLeaderPosition || HorizontalDistance(sample.position, leader) >= 2.5f) &&

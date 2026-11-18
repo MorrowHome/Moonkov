@@ -4,84 +4,67 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-
-    namespace Unity.StarterKit.FPS
-    {
+namespace Unity.MP_FPS.Client {
+    namespace Unity.StarterKit.FPS {
         [RequireComponent(typeof(UIDocument))]
-        public class DirectConnectPopUp : MonoBehaviour
-        {
-            static class UIElementNames
-            {
+        public class DirectConnectPopUp : MonoBehaviour {
+            private static class UIElementNames {
                 public const string IPAddressInputField = "IPAddressField";
                 public const string PortInputField = "PortField";
                 public const string ConfirmButton = "ConfirmButton";
                 public const string CancelButton = "CancelButton";
             }
 
-            VisualElement m_DirectConnectPopUp;
-            Button m_ConfirmButton;
-            Button m_CancelButton;
+            private VisualElement m_DirectConnectPopUp;
+            private Button m_ConfirmButton;
+            private Button m_CancelButton;
 
-            void OnEnable()
-            {
+            private void OnEnable() {
                 m_DirectConnectPopUp = GetComponent<UIDocument>().rootVisualElement;
-
-                m_DirectConnectPopUp.SetBinding("style.display", new DataBinding
-                {
+                m_DirectConnectPopUp.SetBinding("style.display", new DataBinding {
                     dataSource = GameSettings.Instance,
                     dataSourcePath = new PropertyPath(GameSettings.DirectConnectStylePropertyName),
-                    bindingMode = BindingMode.ToTarget,
+                    bindingMode = BindingMode.ToTarget
                 });
-
                 var ipAddressInputField = m_DirectConnectPopUp.Q<TextField>(UIElementNames.IPAddressInputField);
-                ipAddressInputField.SetBinding("value", new DataBinding
-                {
+                ipAddressInputField.SetBinding("value", new DataBinding {
                     dataSource = ConnectionSettings.Instance,
                     dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IPAddress)),
-                    bindingMode = BindingMode.TwoWay,
+                    bindingMode = BindingMode.TwoWay
                 });
-
                 var portInputField = m_DirectConnectPopUp.Q<TextField>(UIElementNames.PortInputField);
-                portInputField.SetBinding("value", new DataBinding
-                {
+                portInputField.SetBinding("value", new DataBinding {
                     dataSource = ConnectionSettings.Instance,
                     dataSourcePath = new PropertyPath(nameof(ConnectionSettings.Port)),
-                    bindingMode = BindingMode.TwoWay,
+                    bindingMode = BindingMode.TwoWay
                 });
-
                 m_ConfirmButton = m_DirectConnectPopUp.Q<Button>(UIElementNames.ConfirmButton);
                 m_ConfirmButton.clicked += OnConfirmPressed;
-                m_ConfirmButton.SetBinding("enabledSelf", new DataBinding
-                {
+                m_ConfirmButton.SetBinding("enabledSelf", new DataBinding {
                     dataSource = ConnectionSettings.Instance,
                     dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsNetworkEndpointValid)),
-                    bindingMode = BindingMode.ToTarget,
+                    bindingMode = BindingMode.ToTarget
                 });
-
                 m_CancelButton = m_DirectConnectPopUp.Q<Button>(UIElementNames.CancelButton);
                 m_CancelButton.clicked += OnCancelPressed;
                 GameInput.Actions.UI.TogglePauseMenu.performed += CancelFromKeyboard;
             }
 
-            void OnDisable()
-            {
+            private void OnDisable() {
                 m_ConfirmButton.clicked -= OnConfirmPressed;
                 m_CancelButton.clicked -= OnCancelPressed;
                 GameInput.Actions.UI.TogglePauseMenu.performed -= CancelFromKeyboard;
             }
 
-            static void OnConfirmPressed() => GameSettings.Instance.CancellableUserInputPopUp.SetResult();
+            private static void OnConfirmPressed() { GameSettings.Instance.CancellableUserInputPopUp.SetResult(); }
 
-            static void CancelFromKeyboard(InputAction.CallbackContext context)
-            {
+            private static void CancelFromKeyboard(InputAction.CallbackContext context) {
                 if (Application.isFocused && GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
-                    GameSettings.Instance.MainMenuState == MainMenuState.DirectConnectPopUp) OnCancelPressed();
+                    GameSettings.Instance.MainMenuState == MainMenuState.DirectConnectPopUp)
+                    OnCancelPressed();
             }
 
-            static void OnCancelPressed()
-            {
+            private static void OnCancelPressed() {
                 GameSettings.Instance.CancellableUserInputPopUp.SetCanceled();
                 ConnectionSettings.Instance.IPAddress = ConnectionSettings.ConfiguredAddress;
                 ConnectionSettings.Instance.Port = ConnectionSettings.ConfiguredPort;

@@ -8,20 +8,30 @@ using UnityEngine.UIElements;
 using Unity.MP_FPS.Inventory;
 using PointerType = UnityEngine.UIElements.PointerType;
 
-namespace Unity.MP_FPS.Client
-{
+namespace Unity.MP_FPS.Client {
     // Presents authoritative snapshots. Dragging sends an intent; it never edits account quantities.
-    public sealed partial class ContainerInventoryView : IDisposable
-    {
+    public sealed partial class ContainerInventoryView : IDisposable {
         // One logical scale for every storage surface, independent of contents and layout passes.
         private const float StorageCellSize = 64;
-        private sealed class Grid
-        {
-            public string Parent, Region; public InventoryRegion Definition;
-            public VisualElement Element; public float Cell = StorageCellSize;
+
+        private sealed class Grid {
+            public string Parent, Region;
+            public InventoryRegion Definition;
+            public VisualElement Element;
+            public float Cell = StorageCellSize;
             public bool AutoPlace;
         }
-        private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
+
+        private readonly VisualElement m_Root,
+            m_Body,
+            m_CharacterStage,
+            m_CharacterPane,
+            m_LootPane,
+            m_ContainerPane,
+            m_StashPane,
+            m_Ghost,
+            m_Preview;
+
         private bool m_HaloCargoOpen;
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
@@ -31,10 +41,10 @@ namespace Unity.MP_FPS.Client
         private readonly TerminalWindows m_Windows;
         private readonly VisualTreeAsset m_ItemTemplate, m_ContainerTemplate, m_SlotTemplate;
         private readonly bool m_Stash;
-        private readonly List<Grid> m_Grids = new List<Grid>();
-        private readonly Dictionary<LoadoutSlot, Button> m_Slots = new Dictionary<LoadoutSlot, Button>();
-        private readonly Dictionary<string, VisualElement> m_Tiles = new Dictionary<string, VisualElement>();
-        private readonly HashSet<string> m_Open = new HashSet<string>();
+        private readonly List<Grid> m_Grids = new();
+        private readonly Dictionary<LoadoutSlot, Button> m_Slots = new();
+        private readonly Dictionary<string, VisualElement> m_Tiles = new();
+        private readonly HashSet<string> m_Open = new();
         private MenuCharacterView m_Character, m_CorpseCharacter;
         private VisualElement m_CorpseStage;
         private IVisualElementScheduledItem m_PortraitTimer;
@@ -46,22 +56,23 @@ namespace Unity.MP_FPS.Client
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
         private SoundDef m_OperationSound;
-        private sealed class QuickTransferIntent
-        {
+
+        private sealed class QuickTransferIntent {
             public string ItemId;
             public bool FromCarried;
         }
-        private readonly Queue<QuickTransferIntent> m_QuickTransfers = new Queue<QuickTransferIntent>();
+
+        private readonly Queue<QuickTransferIntent> m_QuickTransfers = new();
         private IVisualElementScheduledItem m_QuickTransferPump;
         private bool m_ProcessingQuickTransfer, m_QuickTransferSpaceBlocked;
         private string m_ReadOnlyReason;
-        private int m_SearchTotal=-1;
+        private int m_SearchTotal = -1;
         private IReadOnlyList<RaidSearchFootprint> m_SearchFootprints;
         private string m_SelectedItemId;
-        private int m_LootId=-1;
+        private int m_LootId = -1;
         private bool m_DroppedItem;
         private int m_CorpseCharacterIndex = -1;
-        private IReadOnlyDictionary<string,string> m_CorpseEquipmentSlots;
+        private IReadOnlyDictionary<string, string> m_CorpseEquipmentSlots;
         private int m_RenderedVersion = int.MinValue;
         private string m_RenderedLayout, m_DeferredLayout;
         private IVisualElementScheduledItem m_DeferredRender;
@@ -74,26 +85,36 @@ namespace Unity.MP_FPS.Client
         public bool OperationAudioEnabled { get; set; } = true;
         public Func<InventoryItem, bool> ShieldRechargeAvailable { get; set; }
         public Action<InventoryItem, Vector2> QuickSlotDragPreview { get; set; }
-        public void SetReadOnly(string reason)
-        {
+
+        public void SetReadOnly(string reason) {
             if (m_ReadOnlyReason == reason) return;
             if (reason != null) ClearQuickTransfers();
-            CancelDrag(); m_ReadOnlyReason = reason;
+            CancelDrag();
+            m_ReadOnlyReason = reason;
             MoonkovLocalization.Set(m_Message, reason ?? "");
             RefreshWorkshop();
         }
-        public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send,
-            Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null, Action<InventoryItem> drop = null)
-        {
-            m_Stash = showStash; m_Send = send; m_UseMedical = useMedical;
-            m_UseConsumable = useConsumable; m_Drop = drop;
+
+        public ContainerInventoryView(
+            VisualElement parent,
+            bool showStash,
+            Action<InventoryCommand> send,
+            Action<InventoryItem> useMedical = null,
+            Action<InventoryItem> useConsumable = null,
+            Action<InventoryItem> drop = null) {
+            m_Stash = showStash;
+            m_Send = send;
+            m_UseMedical = useMedical;
+            m_UseConsumable = useConsumable;
+            m_Drop = drop;
             m_Root = TerminalLayout.Clone("RaidContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-warehouse", showStash);
             m_Root.RemoveFromClassList("moonkov-controls-light");
             m_Root.AddToClassList("archive-ui");
             m_Root.RemoveFromClassList("archive-light");
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI"));
-            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme")); parent.Add(m_Root);
+            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme"));
+            parent.Add(m_Root);
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/RaidInventory"));
             m_ItemTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryItem");
             m_ContainerTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryContainer");
@@ -103,31 +124,35 @@ namespace Unity.MP_FPS.Client
             m_CharacterPane = m_Root.Q<VisualElement>("characterPane");
             m_CharacterStage = m_Root.Q<VisualElement>("characterStage");
             string[] slots = { "Helmet", "Shield", "ChestRig", "Pistol", "Backpack", "Primary", "Secondary", "Melee" };
-            for (int n = 0; n < slots.Length; n++)
-            {
+            for (int n = 0; n < slots.Length; n++) {
                 string slot = slots[n];
                 if (slot == "ChestRig" || slot == "Backpack") continue;
-                var button = m_Root.Q<Button>("inventorySlot" + slot) ?? (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
+                var button = m_Root.Q<Button>("inventorySlot" + slot) ??
+                             (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
                 button.name = "inventorySlot" + slot;
                 button.AddToClassList("inventory-slot-" + n);
                 MoonkovLocalization.Set(button.Q<Label>("slotLabel"), SlotLabel(slot));
                 if (button.parent == null) m_Root.Q("slotLayer").Add(button);
                 m_Slots.Add((LoadoutSlot)Enum.Parse(typeof(LoadoutSlot), slot), button);
                 button.RemoveManipulator(button.clickable);
-                button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () =>
-                {
-                    var item=m_Graph?.Equipped(slot);
-                    if (item!=null && InventoryCatalog.Get(item.Code).Container) OpenContainer(item); else ChooseSlot(slot);
+                button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () => {
+                    var item = m_Graph?.Equipped(slot);
+                    if (item != null && InventoryCatalog.Get(item.Code).Container)
+                        OpenContainer(item);
+                    else
+                        ChooseSlot(slot);
                 }));
-                m_Grids.Add(new Grid { Parent="equipment", Region=slot, Element=button, Definition=InventoryCatalog.Get("equipment").Regions.First(r => r.Id == slot) });
+                m_Grids.Add(new Grid {
+                    Parent = "equipment", Region = slot, Element = button,
+                    Definition = InventoryCatalog.Get("equipment").Regions.First(r => r.Id == slot)
+                });
             }
             m_Weight = m_Root.Q<Label>("inventoryWeight");
             m_ContainerPane = m_Root.Q<ScrollView>("containerPane");
             var stashPlaceholder = m_Root.Q<VisualElement>("stashPane");
             m_StashPane = showStash ? m_LootPane : stashPlaceholder;
             stashPlaceholder.RemoveFromHierarchy();
-            if (showStash)
-            {
+            if (showStash) {
                 var workshop = new Button(OpenWorkshop) { name = "inventoryHaloWorkshop" };
                 workshop.AddToClassList("inventory-halo-workshop");
                 MoonkovLocalization.Set(workshop, "HALO MODIFICATION");
@@ -138,7 +163,9 @@ namespace Unity.MP_FPS.Client
             }
             m_Message = m_Root.Q<Label>("inventoryHint");
             m_Ghost = m_Root.Q<VisualElement>("inventoryGhost");
-            m_Preview = new VisualElement { pickingMode=PickingMode.Ignore }; m_Preview.AddToClassList("inventory-drop"); m_Preview.style.display=DisplayStyle.None;
+            m_Preview = new VisualElement { pickingMode = PickingMode.Ignore };
+            m_Preview.AddToClassList("inventory-drop");
+            m_Preview.style.display = DisplayStyle.None;
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
             Application.focusChanged += FocusChanged;
             m_Windows = new TerminalWindows(m_Root, null);
@@ -148,100 +175,179 @@ namespace Unity.MP_FPS.Client
             m_PortraitSettings = GameSettings.Instance;
             if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged += PortraitCharacterChanged;
         }
-        private static Label Text(VisualElement parent, string text, string css)
-        { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "RETIRED EQUIPMENT" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST BADGE" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
-        public static StashArtKind Art(string code)
-        {
-            int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
-            if(organ>=0)return (StashArtKind)((int)StashArtKind.AlienSpider+organ);
-            switch (code) { case "regeneration_shot":return StashArtKind.RegenerationShot; case "oxygen_recycler":return StashArtKind.OxygenRecycler; case "glare_filter":return StashArtKind.GlareFilter; case "survey_multitool":return StashArtKind.SurveyMultitool; case "hemostatic_bandage":return StashArtKind.HemostaticBandage; case "rescue_kit":return StashArtKind.RescueKit; case "hydration_gel":return StashArtKind.HydrationGel; case "compressed_ration":return StashArtKind.CompressedRation; case "emergency_oxygen":return StashArtKind.EmergencyOxygen; case "flash_grenade":return StashArtKind.FlashGrenade; case "poison_bomb":return StashArtKind.PoisonBomb; case "team_tracker":return StashArtKind.TeamTracker; case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
-                case "alien_raw_meat":return StashArtKind.AlienMeat;
-                case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
-                case "alien_tissue":return StashArtKind.AlienTissue;
-                case "energy_head_dome":return StashArtKind.LifeSupportShroud;
-                case "energy_shield_generator":return StashArtKind.ShieldGenerator;
-                case "energy_sword":return StashArtKind.EnergySword;
-                case "dagger":return StashArtKind.CombatKnife;
-                case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
-                case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
-                case "energy_grenade":return StashArtKind.EnergyGrenade;
-                case "oxygen_canister":return StashArtKind.OxygenCanister;
-                case "med_gel":return StashArtKind.MedicalGel; case "trauma_kit":return StashArtKind.TraumaKit;
-                case "energy_gel":return StashArtKind.EnergyGel; case "protein_bar":return StashArtKind.ProteinBar;
-                case "electrolyte":return StashArtKind.Electrolyte; case "oxygen_reserve":return StashArtKind.OxygenReserve;
-                case "scout_rig":return StashArtKind.ScoutRig; case "field_rig":return StashArtKind.FieldRig;
-                case "sling_pack":return StashArtKind.SlingPack; case "cargo_pack":return StashArtKind.CargoPack;
-                case "circuit_board":return StashArtKind.CircuitBoard; case "copper_coil":return StashArtKind.CopperCoil;
-                case "ceramic_plate":return StashArtKind.CeramicPlate; case "optical_sensor":return StashArtKind.OpticalSensor;
-                case "data_drive":return StashArtKind.DataDrive; case "helium3_sample":return StashArtKind.HeliumSample;
-                case "mooncore_fragment":return StashArtKind.MooncoreFragment; case "mc00_archive_drive":return StashArtKind.MissionArchive;
-                case "quantum_core":return StashArtKind.QuantumCore; case "black_box":return StashArtKind.BlackBox;
-                case "shotgun":return StashArtKind.HaloShotgun;
-                case "sniper":return StashArtKind.HaloSniper;
-                case "cicada":return StashArtKind.HaloCicada;
-                case "trine":return StashArtKind.HaloTrine;
-                case "aegis":return StashArtKind.HaloAegis;
-                case "vesper":return StashArtKind.HaloVesper;
-                case "thorn":return StashArtKind.HaloThorn;
-                case "sundown":return StashArtKind.HaloSundown;
-                case "rondo":return StashArtKind.HaloRondo;
-                case "tempest":return StashArtKind.HaloTempest;
-                case "nocturne":return StashArtKind.HaloNocturne;
 
-                case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
-                case "halo_focus_lens":return StashArtKind.HaloFocusLens; case "halo_fan_array":return StashArtKind.HaloFanArray;
-                case "halo_pulse_controller":return StashArtKind.HaloPulseController; case "halo_hit_marker":return StashArtKind.HaloHitMarker;
-                case "halo_mooncore_recycler":return StashArtKind.HaloMooncoreRecycler;
-                case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
+        private static Label Text(VisualElement parent, string text, string css) {
+            var label = new Label { pickingMode = PickingMode.Ignore };
+            label.AddToClassList(css);
+            parent.Add(label);
+            MoonkovLocalization.Set(label, text);
+            return label;
         }
+
+        private static string SlotLabel(string slot) {
+            return slot == "SecureContainer" ? "保险箱" :
+                slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) :
+                slot == "Helmet" ? "COLLAR" :
+                slot == "Shield" ? "RETIRED EQUIPMENT" :
+                slot == "Melee" ? "MELEE" :
+                slot == "ChestRig" ? "CHEST BADGE" :
+                slot == "Primary" ? "PRIMARY" :
+                slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        }
+
+        public static StashArtKind Art(string code) {
+            int organ = Array.FindIndex(AlienBiology.Organs, o => o.Code == code);
+            if (organ >= 0) return (StashArtKind)((int)StashArtKind.AlienSpider + organ);
+            switch (code) {
+                case "regeneration_shot": return StashArtKind.RegenerationShot;
+                case "oxygen_recycler": return StashArtKind.OxygenRecycler;
+                case "glare_filter": return StashArtKind.GlareFilter;
+                case "survey_multitool": return StashArtKind.SurveyMultitool;
+                case "hemostatic_bandage": return StashArtKind.HemostaticBandage;
+                case "rescue_kit": return StashArtKind.RescueKit;
+                case "hydration_gel": return StashArtKind.HydrationGel;
+                case "compressed_ration": return StashArtKind.CompressedRation;
+                case "emergency_oxygen": return StashArtKind.EmergencyOxygen;
+                case "flash_grenade": return StashArtKind.FlashGrenade;
+                case "poison_bomb": return StashArtKind.PoisonBomb;
+                case "team_tracker": return StashArtKind.TeamTracker;
+                case "survey_compass": return StashArtKind.SurveyCompass;
+                case "laser_rangefinder": return StashArtKind.Rangefinder;
+                case "secure_case": return StashArtKind.SecureCase;
+                case "dust": return StashArtKind.Dust;
+                case "alloy": return StashArtKind.Alloy;
+                case "cells": return StashArtKind.Cell;
+                case "medkit": return StashArtKind.Medical;
+                case "alien_raw_meat": return StashArtKind.AlienMeat;
+                case "alien_neural_core":
+                case "alien_core":
+                    return StashArtKind.AlienOrgan;
+                case "alien_tissue": return StashArtKind.AlienTissue;
+                case "energy_head_dome": return StashArtKind.LifeSupportShroud;
+                case "energy_shield_generator": return StashArtKind.ShieldGenerator;
+                case "energy_sword": return StashArtKind.EnergySword;
+                case "dagger": return StashArtKind.CombatKnife;
+                case "helmet": return StashArtKind.Helmet;
+                case "rifle":
+                case "compact":
+                    return StashArtKind.HaloRifle;
+                case "pistol": return StashArtKind.HaloRevolver;
+                case "ration": return StashArtKind.Ration;
+                case "water": return StashArtKind.Water;
+                case "energy_grenade": return StashArtKind.EnergyGrenade;
+                case "oxygen_canister": return StashArtKind.OxygenCanister;
+                case "med_gel": return StashArtKind.MedicalGel;
+                case "trauma_kit": return StashArtKind.TraumaKit;
+                case "energy_gel": return StashArtKind.EnergyGel;
+                case "protein_bar": return StashArtKind.ProteinBar;
+                case "electrolyte": return StashArtKind.Electrolyte;
+                case "oxygen_reserve": return StashArtKind.OxygenReserve;
+                case "scout_rig": return StashArtKind.ScoutRig;
+                case "field_rig": return StashArtKind.FieldRig;
+                case "sling_pack": return StashArtKind.SlingPack;
+                case "cargo_pack": return StashArtKind.CargoPack;
+                case "circuit_board": return StashArtKind.CircuitBoard;
+                case "copper_coil": return StashArtKind.CopperCoil;
+                case "ceramic_plate": return StashArtKind.CeramicPlate;
+                case "optical_sensor": return StashArtKind.OpticalSensor;
+                case "data_drive": return StashArtKind.DataDrive;
+                case "helium3_sample": return StashArtKind.HeliumSample;
+                case "mooncore_fragment": return StashArtKind.MooncoreFragment;
+                case "mc00_archive_drive": return StashArtKind.MissionArchive;
+                case "quantum_core": return StashArtKind.QuantumCore;
+                case "black_box": return StashArtKind.BlackBox;
+                case "shotgun": return StashArtKind.HaloShotgun;
+                case "sniper": return StashArtKind.HaloSniper;
+                case "cicada": return StashArtKind.HaloCicada;
+                case "trine": return StashArtKind.HaloTrine;
+                case "aegis": return StashArtKind.HaloAegis;
+                case "vesper": return StashArtKind.HaloVesper;
+                case "thorn": return StashArtKind.HaloThorn;
+                case "sundown": return StashArtKind.HaloSundown;
+                case "rondo": return StashArtKind.HaloRondo;
+                case "tempest": return StashArtKind.HaloTempest;
+                case "nocturne": return StashArtKind.HaloNocturne;
+                case "halo_capacitor": return StashArtKind.HaloCapacitor;
+                case "halo_charge_bridge": return StashArtKind.HaloChargeBridge;
+                case "halo_focus_lens": return StashArtKind.HaloFocusLens;
+                case "halo_fan_array": return StashArtKind.HaloFanArray;
+                case "halo_pulse_controller": return StashArtKind.HaloPulseController;
+                case "halo_hit_marker": return StashArtKind.HaloHitMarker;
+                case "halo_mooncore_recycler": return StashArtKind.HaloMooncoreRecycler;
+                case "rig": return StashArtKind.ChestRig;
+                case "backpack": return StashArtKind.Backpack;
+                case "small_pack": return StashArtKind.ScoutPack;
+                default: return StashArtKind.None;
+            }
+        }
+
         // 收到新数据时，先区分是格子布局变了，还是电量、数量等值变了。后者原地更新，拖动中的按钮不会被删掉。
-        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false,
-            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null, int searchTotal=-1,IReadOnlyList<RaidSearchFootprint> searchFootprints=null)
-        {
+        public void Present(
+            InventoryGraph graph,
+            string message = null,
+            bool operationCompleted = true,
+            int lootId = -1,
+            bool droppedItem = false,
+            int corpseCharacterIndex = -1,
+            IReadOnlyDictionary<string, string> corpseEquipmentSlots = null,
+            int searchTotal = -1,
+            IReadOnlyList<RaidSearchFootprint> searchFootprints = null) {
             if (m_Disposed) return;
-            if (graph == null || m_LootId != lootId || operationCompleted && message != null) ClearQuickTransfers();
-            if (OperationAudioEnabled && m_Busy && operationCompleted)
-            {
-                if (message != null) MoonkovAudio.Error();
-                else MoonkovAudio.Play(m_OperationSound ? m_OperationSound : MoonkovAudio.Library?.Equipment, Vector3.zero);
+            if (graph == null || m_LootId != lootId || (operationCompleted && message != null)) ClearQuickTransfers();
+            if (OperationAudioEnabled && m_Busy && operationCompleted) {
+                if (message != null)
+                    MoonkovAudio.Error();
+                else
+                    MoonkovAudio.Play(m_OperationSound ? m_OperationSound : MoonkovAudio.Library?.Equipment,
+                        Vector3.zero);
             }
             if (operationCompleted) m_OperationSound = null;
             string layout = LayoutKey(graph);
-            if(searchFootprints!=null)layout+="/search/"+string.Join(";",searchFootprints.Select(f=>$"{f.Id}:{f.Region}:{f.X}:{f.Y}:{f.Width}:{f.Height}"));
+            if (searchFootprints != null)
+                layout += "/search/" + string.Join(";",
+                    searchFootprints.Select(f => $"{f.Id}:{f.Region}:{f.X}:{f.Y}:{f.Width}:{f.Height}"));
             bool corpseSlotsChanged = !SameCorpseSlots(m_CorpseEquipmentSlots, corpseEquipmentSlots);
-            bool changed = m_SearchTotal!=searchTotal || m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex || corpseSlotsChanged;
-            bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
-            m_SearchTotal=searchTotal;m_SearchFootprints=searchFootprints;
-            m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
+            bool changed = m_SearchTotal != searchTotal || m_RenderedVersion == int.MinValue ||
+                           m_RenderedLayout != layout || m_LootId != lootId || m_DroppedItem != droppedItem ||
+                           m_CorpseCharacterIndex != corpseCharacterIndex || corpseSlotsChanged;
+            bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) ||
+                                   (operationCompleted && m_Busy) || message != null;
+            m_SearchTotal = searchTotal;
+            m_SearchFootprints = searchFootprints;
+            m_Graph = graph;
+            m_LootId = lootId;
+            m_DroppedItem = droppedItem;
             if (m_Slots.TryGetValue(LoadoutSlot.Shield, out var retiredSlot))
                 retiredSlot.style.display = graph?.Equipped("Shield") != null ? DisplayStyle.Flex : DisplayStyle.None;
             m_CorpseCharacterIndex = corpseCharacterIndex;
-            m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
+            m_CorpseEquipmentSlots = corpseEquipmentSlots == null
+                ? null
+                : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
             if (operationCompleted) m_Busy = false;
             // 搜刮揭示新物品时，手里那件还在原位就保持拖动。等松手再摆好剩下的格子。
-            if(changed && m_Drag!=null && m_Drag.CanRetain(graph))
-            {
-                m_DeferredLayout=layout;
+            if (changed && m_Drag != null && m_Drag.CanRetain(graph)) {
+                m_DeferredLayout = layout;
+                RefreshSnapshotValues();
+            } else if (changed) {
+                m_DeferredLayout = null;
+                CancelDrag();
+                Render();
+                m_RenderedLayout = layout;
+            } else {
+                m_DeferredLayout = null;
                 RefreshSnapshotValues();
             }
-            else if(changed)
-            {
-                m_DeferredLayout=null;CancelDrag();Render();m_RenderedLayout=layout;
-            }
-            else {m_DeferredLayout=null;RefreshSnapshotValues();}
-            m_RenderedVersion=graph?.Version ?? -1;
-            if (m_PortraitShowing)
-            {
+            m_RenderedVersion = graph?.Version ?? -1;
+            if (m_PortraitShowing) {
                 PresentOperatorPortrait();
                 PresentCorpsePortrait();
             }
-            if (message != null) MoonkovLocalization.Set(m_Message, message);
+            if (message != null)
+                MoonkovLocalization.Set(m_Message, message);
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "");
             if (operationCompleted) m_WorkshopMessage = message;
             if (workshopChanged) RefreshWorkshop();
-            if (operationCompleted && !m_Busy && m_QuickTransfers.Count > 0)
-            {
+            if (operationCompleted && !m_Busy && m_QuickTransfers.Count > 0) {
                 // Continue after the HUD has finished processing this receipt. It may
                 // present the same snapshot twice, or close access in the same update.
                 m_QuickTransferPump?.Pause();
@@ -249,54 +355,76 @@ namespace Unity.MP_FPS.Client
                 m_QuickTransferPump = m_Root.schedule.Execute(ProcessQuickTransfers);
             }
         }
-        public void Show()
-        {
+
+        public void Show() {
             if (m_Disposed) return;
             m_PortraitShowing = true;
             PresentOperatorPortrait();
             PresentCorpsePortrait();
             m_PortraitTimer?.Resume();
         }
-        public void Suspend()
-        {
+
+        public void Suspend() {
             HideItemTooltip();
             ClearQuickTransfers();
             m_PortraitShowing = false;
             m_PortraitTimer?.Pause();
             ReleaseWorkshop();
-            CancelDrag(); m_HoveredItemId = m_SelectedItemId = null; m_Windows.CloseAll(); m_Open.Clear();
+            CancelDrag();
+            m_HoveredItemId = m_SelectedItemId = null;
+            m_Windows.CloseAll();
+            m_Open.Clear();
             ReleaseOperatorPortrait();
             ReleaseCorpsePortrait();
         }
-        private void ReleaseOperatorPortrait()
-        {
+
+        private void ReleaseOperatorPortrait() {
             if (m_Character == null) return;
-            m_Character.Element.RemoveFromHierarchy(); m_Character.Dispose(); m_Character = null;
+            m_Character.Element.RemoveFromHierarchy();
+            m_Character.Dispose();
+            m_Character = null;
             m_PortraitWeaponItem = null;
         }
-        private void Render()
-        {
+
+        private void Render() {
             HideItemTooltip();
-            ReleaseCorpsePortrait(); m_CorpseStage = null;
+            ReleaseCorpsePortrait();
+            m_CorpseStage = null;
             m_HoveredItemId = null;
-            m_Grids.RemoveAll(g => !m_Slots.Values.Any(s => ReferenceEquals(s, g.Element))); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
-            var loot=m_Graph?.Find(LootInventoryExchange.Root);
-            m_Root.EnableInClassList("inventory-with-loot",loot!=null);
-            m_LootPane.style.display=DisplayStyle.Flex;
-            m_CharacterPane.style.display=DisplayStyle.Flex;
-            m_Rebuilding=true; m_Windows.CloseAll(); m_Rebuilding=false;
-            foreach (var pair in m_Slots)
-            {
-                var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
+            m_Grids.RemoveAll(g => !m_Slots.Values.Any(s => ReferenceEquals(s, g.Element)));
+            m_Tiles.Clear();
+            m_ContainerPane.Clear();
+            m_StashPane.Clear();
+            m_LootPane.Clear();
+            var loot = m_Graph?.Find(LootInventoryExchange.Root);
+            m_Root.EnableInClassList("inventory-with-loot", loot != null);
+            m_LootPane.style.display = DisplayStyle.Flex;
+            m_CharacterPane.style.display = DisplayStyle.Flex;
+            m_Rebuilding = true;
+            m_Windows.CloseAll();
+            m_Rebuilding = false;
+            foreach (var pair in m_Slots) {
+                var item = m_Graph?.Equipped(pair.Key.ToString());
+                var button = pair.Value;
+                var art = button.Q<VisualElement>("art");
+                art.Clear();
                 MoonkovItemPresentation.ApplyCategory(button, item?.Code);
-                MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
-                if (item != null) { var icon = new StashItemArt(item.Code); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
-                button.tooltip = MoonkovLocalization.Text(SlotLabel(pair.Key.ToString())) + " / " + (item == null ? MoonkovLocalization.Text("EMPTY") : MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + "\n" + MoonkovItemPresentation.ItemState(item));
+                MoonkovLocalization.Set(button.Q<Label>("item"),
+                    m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
+                if (item != null) {
+                    var icon = new StashItemArt(item.Code);
+                    icon.AddToClassList("inventory-equipment-icon");
+                    art.Add(icon);
+                    m_Tiles[item.Id] = button;
+                }
+                button.tooltip = MoonkovLocalization.Text(SlotLabel(pair.Key.ToString())) + " / " + (item == null
+                    ? MoonkovLocalization.Text("EMPTY")
+                    : MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + "\n" +
+                      MoonkovItemPresentation.ItemState(item));
                 button.EnableInClassList("inventory-equipped", item != null);
                 button.EnableInClassList("inventory-selected", item != null && item.Id == m_SelectedItemId);
             }
-            if (m_Graph == null)
-            {
+            if (m_Graph == null) {
                 MoonkovLocalization.Set(m_Weight, "Waiting for inventory snapshot");
                 MoonkovLocalization.Set(m_Message, "Loading carried inventory from the server…");
                 AddContainer(m_ContainerPane, null, "POCKETS");
@@ -312,509 +440,850 @@ namespace Unity.MP_FPS.Client
             AddSpecialEquipment();
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
-            if (!m_Stash)
-            {
-                var cargo = m_Graph.Items.Find(item => InventoryCatalog.IsHaloResearchCargo(item.Code) && m_Graph.Carried(item));
-                if (cargo != null)
-                {
+            if (!m_Stash) {
+                var cargo = m_Graph.Items.Find(item =>
+                    InventoryCatalog.IsHaloResearchCargo(item.Code) && m_Graph.Carried(item));
+                if (cargo != null) {
                     var halo = m_Graph.Children(InventoryCatalog.Equipment)
                         .Where(item => InventoryCatalog.CanStoreHaloCargo(item.Code))
                         .OrderByDescending(item => item.Id == cargo.Parent).FirstOrDefault();
-                    if (halo != null)
-                    {
+                    if (halo != null) {
                         bool loaded = cargo.Region == InventoryCatalog.HaloCargoRegion.Id;
-                        if (loaded || m_HaloCargoOpen)
+                        if (loaded || m_HaloCargoOpen) {
                             AddContainer(m_ContainerPane, halo, ResearchQuestCopy.Text("光环收纳形态", "Halo storage form"),
                                 onlyRegion: InventoryCatalog.HaloCargoRegion);
-                        else
-                        {
-                            var transform = new Button(() => { m_HaloCargoOpen = true; Render(); });
+                        } else {
+                            var transform = new Button(() => {
+                                m_HaloCargoOpen = true;
+                                Render();
+                            });
                             transform.AddToClassList("terminal-button");
-                            MoonkovLocalization.Set(transform, ResearchQuestCopy.Text("切换光环收纳形态", "Open Halo storage form"));
+                            MoonkovLocalization.Set(transform,
+                                ResearchQuestCopy.Text("切换光环收纳形态", "Open Halo storage form"));
                             m_ContainerPane.Add(transform);
                         }
                     }
-                }
-                else m_HaloCargoOpen = false;
+                } else { m_HaloCargoOpen = false; }
             }
-            if (!m_Stash) RenderRaidLoot(loot);
-            else if(loot!=null)AddContainer(m_LootPane,loot,RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
-                : m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
+            if (!m_Stash)
+                RenderRaidLoot(loot);
+            else if (loot != null)
+                AddContainer(m_LootPane, loot,
+                    RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) :
+                    m_LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物" :
+                    m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" :
+                    m_LootId >= RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" :
+                    "SUPPLY CACHE / " + (m_LootId + 1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
-            foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
+            foreach (string id in new List<string>(m_Open)) {
+                var item = m_Graph.Find(id);
+                if (item == null)
+                    m_Open.Remove(id);
+                else
+                    OpenContainer(item, false);
+            }
         }
-        private void AddContainer(VisualElement pane, InventoryItem item, string title, HashSet<string> hidden = null, bool compact = false,
-            string corpseSlot = null, InventoryRegion onlyRegion = null)
-        {
-            var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
+
+        private void AddContainer(
+            VisualElement pane,
+            InventoryItem item,
+            string title,
+            HashSet<string> hidden = null,
+            bool compact = false,
+            string corpseSlot = null,
+            InventoryRegion onlyRegion = null) {
+            var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer");
+            pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
-            if (item?.Code == "stash" || item?.Code == "loot" && (!compact || m_SearchTotal>=0))
+            if (item?.Code == "stash" || (item?.Code == "loot" && (!compact || m_SearchTotal >= 0)))
                 group.Q("containerTitle").style.display = DisplayStyle.None;
             if (pane == m_ContainerPane && (title == "CHEST BADGE" || title == "BACKPACK" || title == "保险箱"))
-                AddContainerEquipmentSlot(group, item, title == "CHEST BADGE" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
+                AddContainerEquipmentSlot(group, item,
+                    title == "CHEST BADGE" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
             if (corpseSlot != null) AddCorpseContainerSlot(group, item, corpseSlot);
             var caption = group.Q<Label>("containerCaption");
-            if (item == null)
-            {
+            if (item == null) {
                 MoonkovLocalization.Set(caption, m_Graph == null ? "LOADING…" : "NOT EQUIPPED");
                 return;
             }
             var def = InventoryCatalog.Get(item.Code);
             caption.style.display = DisplayStyle.None;
             var regionRow = group.Q("containerRegions");
-            foreach (var region in onlyRegion == null ? def.Regions : new[] { onlyRegion })
-            {
+            foreach (var region in onlyRegion == null ? def.Regions : new[] { onlyRegion }) {
                 if (region.SlotKind.HasValue) continue;
-                var wrapper = new VisualElement(); wrapper.AddToClassList("inventory-region"); regionRow.Add(wrapper);
+                var wrapper = new VisualElement();
+                wrapper.AddToClassList("inventory-region");
+                regionRow.Add(wrapper);
                 if (onlyRegion == null) Text(wrapper, region.Id.ToUpperInvariant(), "inventory-region-title");
-                VisualElement gridParent = wrapper;
-                var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id)).ToArray();
+                var gridParent = wrapper;
+                var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id))
+                    .ToArray();
                 var displayed = compact ? CompactLoot(entries, region.Width) : entries.ToDictionary(e => e.Id, e => e);
-                int rows = compact ? Math.Max(1, displayed.Values.Select(e => e.Y + (e.Rotated ? InventoryCatalog.Get(e.Code).Width : InventoryCatalog.Get(e.Code).Height)).DefaultIfEmpty(1).Max()) : m_Graph.Rows(item.Id,region);
-                var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*StorageCellSize; visual.style.height=rows*StorageCellSize; gridParent.Add(visual);
+                int rows = compact
+                    ? Math.Max(1,
+                        displayed.Values
+                            .Select(e =>
+                                e.Y + (e.Rotated
+                                    ? InventoryCatalog.Get(e.Code).Width
+                                    : InventoryCatalog.Get(e.Code).Height)).DefaultIfEmpty(1).Max())
+                    : m_Graph.Rows(item.Id, region);
+                var visual = new StashGridVisual(region.Width, rows)
+                    { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) };
+                visual.AddToClassList("inventory-grid");
+                visual.style.width = region.Width * StorageCellSize;
+                visual.style.height = rows * StorageCellSize;
+                gridParent.Add(visual);
                 visual.name = "inventoryGrid" + item.Id + "-" + region.Id;
-                var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual, AutoPlace=compact }; m_Grids.Add(grid);
-                foreach (var entry in entries)
-                {
+                var grid = new Grid {
+                    Parent = item.Id, Region = region.Id, Definition = region, Element = visual, AutoPlace = compact
+                };
+                m_Grids.Add(grid);
+                foreach (var entry in entries) {
                     var captured = entry;
-                    var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem"); tile.name="inventoryItem"+entry.Id;
+                    var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem");
+                    tile.name = "inventoryItem" + entry.Id;
                     MoonkovItemPresentation.ApplyCategory(tile, entry.Code);
-                    var icon = new StashItemArt(entry.Code); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
+                    var icon = new StashItemArt(entry.Code);
+                    icon.AddToClassList("inventory-item-art");
+                    tile.Insert(1, icon);
                     var itemDef = InventoryCatalog.Get(entry.Code);
                     string itemName = ResearchQuestCopy.ItemName(entry.Code) ?? MoonkovLocalization.Text(itemDef.Name);
                     MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), itemName.Split(' ')[0].ToUpperInvariant());
-                    MoonkovLocalization.Set(tile.Q<Label>("quantity"), itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());
+                    MoonkovLocalization.Set(tile.Q<Label>("quantity"),
+                        itemDef.Container ? "OPEN ↗" :
+                        BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());
                     tile.EnableInClassList("inventory-selected", entry.Id == m_SelectedItemId);
-                    tile.tooltip=itemName + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    tile.tooltip = itemName + " / " + entry.Quantity +
+                                   MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
                     tile.tooltip += "\n" + MoonkovItemPresentation.Details(entry.Code);
                     string state = MoonkovItemPresentation.ItemState(entry);
                     if (!string.IsNullOrEmpty(state)) tile.tooltip += "\n" + state;
                     if (HaloModules.IsWeapon(entry.Code)) tile.tooltip += " / " + HaloModules.Summary(m_Graph, entry);
-                    if (HaloModules.FromCode(entry.Code) != HaloModule.None) tile.tooltip += " / " + MoonkovLocalization.Text(HaloModules.Description(entry.Code));
-                    if (BatteryEnergy.IsCell(entry)) tile.tooltip += MoonkovLocalization.Format($" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
+                    if (HaloModules.FromCode(entry.Code) != HaloModule.None)
+                        tile.tooltip += " / " + MoonkovLocalization.Text(HaloModules.Description(entry.Code));
+                    if (BatteryEnergy.IsCell(entry))
+                        tile.tooltip += MoonkovLocalization.Format(
+                            $" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
                     tile.RemoveManipulator(tile.clickable);
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
-                        () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
-                    visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, displayed[entry.Id], grid.Cell);
+                        () => {
+                            if (HaloModules.IsWeapon(captured.Code) && m_Stash)
+                                OpenModification(captured);
+                            else if (itemDef.Container)
+                                OpenContainer(captured);
+                            else
+                                Describe(captured);
+                        }));
+                    visual.Add(tile);
+                    m_Tiles[entry.Id] = tile;
+                    Position(tile, displayed[entry.Id], grid.Cell);
                 }
-                if(item.Id==LootInventoryExchange.Root && m_SearchFootprints!=null)
-                {
-                    bool current=true;
-                    foreach(var footprint in m_SearchFootprints)
-                    {
-                        if(m_Graph.Find(footprint.Id)!=null)continue;
-                        var block=new VisualElement {name="inventoryUnknown"+footprint.Id,pickingMode=PickingMode.Ignore};
-                        block.AddToClassList("field-search-hidden");block.EnableInClassList("field-search-current",current);current=false;
-                        block.style.left=footprint.X*grid.Cell;block.style.top=footprint.Y*grid.Cell;
-                        block.style.width=footprint.Width*grid.Cell;block.style.height=footprint.Height*grid.Cell;
+                if (item.Id == LootInventoryExchange.Root && m_SearchFootprints != null) {
+                    bool current = true;
+                    foreach (var footprint in m_SearchFootprints) {
+                        if (m_Graph.Find(footprint.Id) != null) continue;
+                        var block = new VisualElement
+                            { name = "inventoryUnknown" + footprint.Id, pickingMode = PickingMode.Ignore };
+                        block.AddToClassList("field-search-hidden");
+                        block.EnableInClassList("field-search-current", current);
+                        current = false;
+                        block.style.left = footprint.X * grid.Cell;
+                        block.style.top = footprint.Y * grid.Cell;
+                        block.style.width = footprint.Width * grid.Cell;
+                        block.style.height = footprint.Height * grid.Cell;
                         visual.Add(block);
                     }
                 }
             }
         }
-        private static void Position(VisualElement tile, InventoryItem item, float cell)
-        {
-            var def=InventoryCatalog.Get(item.Code); tile.style.left=item.X*cell; tile.style.top=item.Y*cell;
-            tile.style.width=(item.Rotated ? def.Height : def.Width)*cell; tile.style.height=(item.Rotated ? def.Width : def.Height)*cell;
+
+        private static void Position(VisualElement tile, InventoryItem item, float cell) {
+            var def = InventoryCatalog.Get(item.Code);
+            tile.style.left = item.X * cell;
+            tile.style.top = item.Y * cell;
+            tile.style.width = (item.Rotated ? def.Height : def.Width) * cell;
+            tile.style.height = (item.Rotated ? def.Width : def.Height) * cell;
         }
-        internal void RevealStorageItem(string id)
-        {
+
+        internal void RevealStorageItem(string id) {
             var item = m_Graph?.Find(id);
-            if (!m_Stash || item?.Parent != InventoryCatalog.Stash || m_Drag != null || !m_Tiles.TryGetValue(id, out var tile)) return;
+            if (!m_Stash || item?.Parent != InventoryCatalog.Stash || m_Drag != null ||
+                !m_Tiles.TryGetValue(id, out var tile))
+                return;
             tile.GetFirstAncestorOfType<ScrollView>()?.ScrollTo(tile);
             Describe(item);
         }
 
-        private void Describe(InventoryItem item)
-        {
+        private void Describe(InventoryItem item) {
             m_SelectedItemId = item.Id;
             foreach (var pair in m_Tiles) pair.Value.EnableInClassList("inventory-selected", pair.Key == item.Id);
-            var def=InventoryCatalog.Get(item.Code);
-            if (BatteryEnergy.IsCell(item)) MoonkovLocalization.Set(m_Message,
-                "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}",
-                def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent),
-                BatteryEnergy.Stored(item), item.Quantity * BatteryEnergy.Capacity, BatteryEnergy.Charge(item), BatteryEnergy.Capacity);
-            else MoonkovLocalization.Set(m_Message, "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
-                ResearchQuestCopy.ItemName(item.Code) ?? def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent), MoonkovItemPresentation.Details(item.Code));
+            var def = InventoryCatalog.Get(item.Code);
+            if (BatteryEnergy.IsCell(item))
+                MoonkovLocalization.Set(m_Message,
+                    "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}", def.Name, item.Quantity,
+                    def.Weight * item.Quantity, Path(item.Parent), BatteryEnergy.Stored(item),
+                    item.Quantity * BatteryEnergy.Capacity, BatteryEnergy.Charge(item), BatteryEnergy.Capacity);
+            else
+                MoonkovLocalization.Set(m_Message, "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
+                    ResearchQuestCopy.ItemName(item.Code) ?? def.Name, item.Quantity, def.Weight * item.Quantity,
+                    Path(item.Parent), MoonkovItemPresentation.Details(item.Code));
         }
-        private string Path(string id)
-        {
-            var parts=new List<string>(); var item=m_Graph.Find(id);
-            for (int n=0; item!=null && n<InventoryCatalog.MaxDepth; n++) { parts.Insert(0, InventoryCatalog.Get(item.Code).Name); item=m_Graph.Find(item.Parent); }
+
+        private string Path(string id) {
+            var parts = new List<string>();
+            var item = m_Graph.Find(id);
+            for (int n = 0; item != null && n < InventoryCatalog.MaxDepth; n++) {
+                parts.Insert(0, InventoryCatalog.Get(item.Code).Name);
+                item = m_Graph.Find(item.Parent);
+            }
             return string.Join(" / ", parts.ConvertAll(MoonkovLocalization.Text));
         }
-        private void OpenContainer(InventoryItem item, bool remember=true)
-        {
+
+        private void OpenContainer(InventoryItem item, bool remember = true) {
             if (!InventoryCatalog.Get(item.Code).Container) return;
             if (remember && !m_Open.Add(item.Id)) return;
-            var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name.ToUpperInvariant()); window.AddToClassList("inventory-container-window");
-            Text(window, Path(item.Parent), "inventory-caption"); AddContainer(window, item, "CONTENTS");
-            window.RegisterCallback<DetachFromPanelEvent>(_ => { if (!m_Rebuilding) m_Open.Remove(item.Id); m_Grids.RemoveAll(g=>!g.Definition.SlotKind.HasValue && g.Element.panel==null); });
+            var window = m_Windows.Open(InventoryCatalog.Get(item.Code).Name.ToUpperInvariant());
+            window.AddToClassList("inventory-container-window");
+            Text(window, Path(item.Parent), "inventory-caption");
+            AddContainer(window, item, "CONTENTS");
+            window.RegisterCallback<DetachFromPanelEvent>(_ => {
+                if (!m_Rebuilding) m_Open.Remove(item.Id);
+                m_Grids.RemoveAll(g => !g.Definition.SlotKind.HasValue && g.Element.panel == null);
+            });
         }
-        private void ChooseSlot(string slot)
-        {
-            if (m_Graph==null || m_Busy) return;
-            var window=m_Windows.Open(SlotLabel(slot), null, true);
-            var kind=InventoryCatalog.Get("equipment").Regions.First(r=>r.Id==slot).SlotKind;
-            foreach (var item in m_Graph.Items.Where(i=>InventoryCatalog.Get(i.Code).Kind==kind))
-            { var captured=item; MoonkovTerminal.ActionButton(window, InventoryCatalog.Get(item.Code).Name, ()=> { m_Windows.Close(window); Command(new InventoryCommand { ItemId=captured.Id, Parent="equipment", Region=slot }); }); }
-            var equipped=m_Graph.Equipped(slot);
-            if (equipped != null && HaloModules.IsWeapon(equipped.Code) && m_Stash)
-                MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(equipped); });
-            if (equipped!=null) MoonkovTerminal.ActionButton(window, "UNEQUIP / STORE", ()=> { m_Windows.Close(window); QuickTransfer(equipped); });
-        }
-        private void Context(InventoryItem item, Vector2 position)
-        {
-            var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
-            if (!m_Stash && m_UseConsumable != null && BatteryEnergy.IsCell(item))
-            {
-                var recharge = MoonkovTerminal.ActionButton(window, "RECHARGE HALO", () =>
-                {
-                    if (m_Busy || m_ReadOnlyReason != null || !(ShieldRechargeAvailable?.Invoke(item) ?? false)) return;
-                    m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
+
+        private void ChooseSlot(string slot) {
+            if (m_Graph == null || m_Busy) return;
+            var window = m_Windows.Open(SlotLabel(slot), null, true);
+            var kind = InventoryCatalog.Get("equipment").Regions.First(r => r.Id == slot).SlotKind;
+            foreach (var item in m_Graph.Items.Where(i => InventoryCatalog.Get(i.Code).Kind == kind)) {
+                var captured = item;
+                MoonkovTerminal.ActionButton(window, InventoryCatalog.Get(item.Code).Name, () => {
+                    m_Windows.Close(window);
+                    Command(new InventoryCommand { ItemId = captured.Id, Parent = "equipment", Region = slot });
                 });
-                recharge.SetEnabled(!m_Busy && m_ReadOnlyReason == null && (ShieldRechargeAvailable?.Invoke(item) ?? false));
-                recharge.tooltip = MoonkovLocalization.Text("Requires halo energy below maximum and a charged battery in pockets or an equipped badge.");
+            }
+            var equipped = m_Graph.Equipped(slot);
+            if (equipped != null && HaloModules.IsWeapon(equipped.Code) && m_Stash)
+                MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => {
+                    m_Windows.Close(window);
+                    OpenModification(equipped);
+                });
+            if (equipped != null)
+                MoonkovTerminal.ActionButton(window, "UNEQUIP / STORE", () => {
+                    m_Windows.Close(window);
+                    QuickTransfer(equipped);
+                });
+        }
+
+        private void Context(InventoryItem item, Vector2 position) {
+            var window = m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
+            if (!m_Stash && m_UseConsumable != null && BatteryEnergy.IsCell(item)) {
+                var recharge = MoonkovTerminal.ActionButton(window, "RECHARGE HALO", () => {
+                    if (m_Busy || m_ReadOnlyReason != null || !(ShieldRechargeAvailable?.Invoke(item) ?? false)) return;
+                    m_Windows.Close(window);
+                    m_Busy = true;
+                    m_UseConsumable(item);
+                });
+                recharge.SetEnabled(!m_Busy && m_ReadOnlyReason == null &&
+                                    (ShieldRechargeAvailable?.Invoke(item) ?? false));
+                recharge.tooltip = MoonkovLocalization.Text(
+                    "Requires halo energy below maximum and a charged battery in pockets or an equipped badge.");
             }
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
-                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
-                {
+                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () => {
                     if (m_Busy || m_ReadOnlyReason != null) return;
-                    m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
+                    m_Windows.Close(window);
+                    m_Busy = true;
+                    m_UseConsumable(item);
                 });
             else if (m_UseConsumable != null && ConsumableCatalog.Get(item.Code)?.Oxygen > 0 && m_Graph.Carried(item))
-                Text(window, "Move the oxygen canister to a pocket or equipped chest badge before use.", "inventory-caption");
+                Text(window, "Move the oxygen canister to a pocket or equipped chest badge before use.",
+                    "inventory-caption");
             if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
-                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
-                {
+                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () => {
                     if (m_Busy || m_ReadOnlyReason != null) return;
-                    m_Windows.Close(window); m_Busy = true; m_UseMedical(item);
+                    m_Windows.Close(window);
+                    m_Busy = true;
+                    m_UseMedical(item);
                 });
-            if (HaloModules.IsWeapon(item.Code) && m_Stash) MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
+            if (HaloModules.IsWeapon(item.Code) && m_Stash)
+                MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => {
+                    m_Windows.Close(window);
+                    OpenModification(item);
+                });
             if (m_Drop != null && !m_Stash && m_Graph.Carried(item))
-                MoonkovTerminal.ActionButton(window, "丢弃到地面 / DROP", () =>
-                {
-                    if(m_Busy || m_ReadOnlyReason!=null)return;
-                    m_Windows.Close(window);m_Busy=true;m_Drop(item);
+                MoonkovTerminal.ActionButton(window, "丢弃到地面 / DROP", () => {
+                    if (m_Busy || m_ReadOnlyReason != null) return;
+                    m_Windows.Close(window);
+                    m_Busy = true;
+                    m_Drop(item);
                 });
-            MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); OpenInspection(item); });
-            if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
-            MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });
+            MoonkovTerminal.ActionButton(window, "INSPECT", () => {
+                m_Windows.Close(window);
+                OpenInspection(item);
+            });
+            if (InventoryCatalog.Get(item.Code).Container)
+                MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", () => {
+                    m_Windows.Close(window);
+                    OpenContainer(item);
+                });
+            MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", () => {
+                m_Windows.Close(window);
+                QuickTransfer(item);
+            });
             if (InventoryCatalog.Get("equipment").Regions.Any(r => r.SlotKind == InventoryCatalog.Get(item.Code).Kind))
-                MoonkovTerminal.ActionButton(window, "EQUIP", ()=> { m_Windows.Close(window); foreach (var region in InventoryCatalog.Get("equipment").Regions) if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); break; } });
-            if (item.Quantity>1) MoonkovTerminal.ActionButton(window, "SPLIT STACK", ()=> { m_Windows.Close(window); Split(item); });
+                MoonkovTerminal.ActionButton(window, "EQUIP", () => {
+                    m_Windows.Close(window);
+                    foreach (var region in InventoryCatalog.Get("equipment").Regions)
+                        if (region.SlotKind == InventoryCatalog.Get(item.Code).Kind) {
+                            Command(new InventoryCommand
+                                { ItemId = item.Id, Parent = "equipment", Region = region.Id });
+                            break;
+                        }
+                });
+            if (item.Quantity > 1)
+                MoonkovTerminal.ActionButton(window, "SPLIT STACK", () => {
+                    m_Windows.Close(window);
+                    Split(item);
+                });
         }
-        private void OpenInspection(InventoryItem item)
-        {
+
+        private void OpenInspection(InventoryItem item) {
             Describe(item);
             var definition = InventoryCatalog.Get(item.Code);
             var window = m_Windows.Open(definition.Name);
             window.AddToClassList("archive-inspection-window");
             var content = TerminalLayout.Clone("Components/ItemInspection", "itemInspection");
             window.Add(content);
-            var art = new StashItemArt(item.Code); art.style.flexGrow = 1;
+            var art = new StashItemArt(item.Code);
+            art.style.flexGrow = 1;
             content.Q("inspectionArt").Add(art);
             MoonkovLocalization.Set(content.Q<Label>("inspectionTitle"), definition.Name);
             MoonkovLocalization.Set(content.Q<Label>("inspectionStats"), "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
-                definition.Name, item.Quantity, definition.Weight * item.Quantity, Path(item.Parent), definition.Width + " × " + definition.Height);
-            MoonkovLocalization.Set(content.Q<Label>("inspectionDetail"), MoonkovItemPresentation.Details(item.Code) + "\n" + MoonkovItemPresentation.ItemState(item));
+                definition.Name, item.Quantity, definition.Weight * item.Quantity, Path(item.Parent),
+                definition.Width + " × " + definition.Height);
+            MoonkovLocalization.Set(content.Q<Label>("inspectionDetail"),
+                MoonkovItemPresentation.Details(item.Code) + "\n" + MoonkovItemPresentation.ItemState(item));
             var actions = content.Q("inspectionActions");
-            var transfer = MoonkovTerminal.ActionButton(actions, "QUICK TRANSFER", () => { m_Windows.Close(window); QuickTransfer(item); });
+            var transfer = MoonkovTerminal.ActionButton(actions, "QUICK TRANSFER", () => {
+                m_Windows.Close(window);
+                QuickTransfer(item);
+            });
             transfer.SetEnabled(!m_Busy && m_ReadOnlyReason == null);
-            if (definition.Container) MoonkovTerminal.ActionButton(actions, "OPEN CONTAINER", () => { m_Windows.Close(window); OpenContainer(item); });
+            if (definition.Container)
+                MoonkovTerminal.ActionButton(actions, "OPEN CONTAINER", () => {
+                    m_Windows.Close(window);
+                    OpenContainer(item);
+                });
             if (m_Stash && HaloModules.IsWeapon(item.Code))
-                MoonkovTerminal.ActionButton(actions, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
+                MoonkovTerminal.ActionButton(actions, "MODIFY HALO", () => {
+                    m_Windows.Close(window);
+                    OpenModification(item);
+                });
         }
 
-        private void Split(InventoryItem item)
-        {
-            var window=m_Windows.Open("SPLIT STACK", null, true); var amount=new IntegerField("QUANTITY") { value=Mathf.Max(1,item.Quantity/2), isDelayed=true }; window.Add(amount);
-            MoonkovTerminal.ActionButton(window, "SPLIT", ()=>
-            {
-                var split=item.Clone(); split.Id=Guid.NewGuid().ToString("D");
-                if (!m_Graph.FindSpace(split, item.Parent, out var region, out var x, out var y)) { MoonkovLocalization.Set(m_Message, "No space in this container."); return; }
-                m_Windows.Close(window); Command(new InventoryCommand { Operation=InventoryOperation.Split, ItemId=item.Id, Parent=item.Parent, Region=region, X=x, Y=y, Rotated=item.Rotated, Quantity=amount.value });
+        private void Split(InventoryItem item) {
+            var window = m_Windows.Open("SPLIT STACK", null, true);
+            var amount = new IntegerField("QUANTITY") { value = Mathf.Max(1, item.Quantity / 2), isDelayed = true };
+            window.Add(amount);
+            MoonkovTerminal.ActionButton(window, "SPLIT", () => {
+                var split = item.Clone();
+                split.Id = Guid.NewGuid().ToString("D");
+                if (!m_Graph.FindSpace(split, item.Parent, out string region, out int x, out int y)) {
+                    MoonkovLocalization.Set(m_Message, "No space in this container.");
+                    return;
+                }
+                m_Windows.Close(window);
+                Command(new InventoryCommand {
+                    Operation = InventoryOperation.Split, ItemId = item.Id, Parent = item.Parent, Region = region,
+                    X = x, Y = y, Rotated = item.Rotated, Quantity = amount.value
+                });
             });
         }
-        private void QuickTransfer(InventoryItem item)
-        {
+
+        private void QuickTransfer(InventoryItem item) {
             if (item == null || m_Graph == null || m_Disposed) return;
-            if (!m_Stash && m_Graph.Find(LootInventoryExchange.Root) != null)
-            {
-                if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
+            if (!m_Stash && m_Graph.Find(LootInventoryExchange.Root) != null) {
+                if (m_ReadOnlyReason != null) {
+                    MoonkovLocalization.Set(m_Message, m_ReadOnlyReason);
+                    return;
+                }
                 if (m_QuickTransfers.Any(intent => intent.ItemId == item.Id)) return;
                 if (m_QuickTransfers.Count >= 32) return;
-                m_QuickTransfers.Enqueue(new QuickTransferIntent { ItemId = item.Id, FromCarried = m_Graph.Carried(item) });
+                m_QuickTransfers.Enqueue(new QuickTransferIntent
+                    { ItemId = item.Id, FromCarried = m_Graph.Carried(item) });
                 if (m_Busy) MoonkovLocalization.Set(m_Message, "正在收纳 {0} 项", m_QuickTransfers.Count);
                 ProcessQuickTransfers();
                 return;
             }
-            if(m_Graph.Find(LootInventoryExchange.Root)!=null && m_Graph.Carried(item))
-            {if(!AutoMove(item,LootInventoryExchange.Root))MoonkovLocalization.Set(m_Message, "No compatible free space in this cache.");return;}
-            if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) MoonkovLocalization.Set(m_Message, "No free space in storage."); return; }
-            foreach (string parent in m_Graph.QuickTransferContainers()) if (parent!=item.Parent && parent!=item.Id && AutoMove(item,parent)) return;
+            if (m_Graph.Find(LootInventoryExchange.Root) != null && m_Graph.Carried(item)) {
+                if (!AutoMove(item, LootInventoryExchange.Root))
+                    MoonkovLocalization.Set(m_Message, "No compatible free space in this cache.");
+                return;
+            }
+            if (m_Stash && m_Graph.Carried(item)) {
+                if (!AutoMove(item, "stash")) MoonkovLocalization.Set(m_Message, "No free space in storage.");
+                return;
+            }
+            foreach (string parent in m_Graph.QuickTransferContainers())
+                if (parent != item.Parent && parent != item.Id && AutoMove(item, parent))
+                    return;
             MoonkovLocalization.Set(m_Message, "No compatible free space.");
         }
-        private void ClearQuickTransfers()
-        {
+
+        private void ClearQuickTransfers() {
             m_QuickTransferPump?.Pause();
             m_QuickTransferPump = null;
             m_QuickTransfers.Clear();
             m_QuickTransferSpaceBlocked = false;
         }
+
         // 快捷收纳一次处理一件，按最新库存先尝试合并，再找空格。放不下就继续处理队列里后面的物品。
-        private void ProcessQuickTransfers()
-        {
+        private void ProcessQuickTransfers() {
             if (m_Busy || m_Disposed) return;
-            if (m_Graph == null || m_ReadOnlyReason != null || m_Graph.Find(LootInventoryExchange.Root) == null)
-            { ClearQuickTransfers(); return; }
-            while (m_QuickTransfers.Count > 0)
-            {
+            if (m_Graph == null || m_ReadOnlyReason != null || m_Graph.Find(LootInventoryExchange.Root) == null) {
+                ClearQuickTransfers();
+                return;
+            }
+            while (m_QuickTransfers.Count > 0) {
                 var intent = m_QuickTransfers.Peek();
                 var item = m_Graph.Find(intent.ItemId);
                 // Keep the original direction. An item already taken must never be
                 // sent back on the next receipt, even after a partial stack merge.
-                if (item == null || m_Graph.Carried(item) != intent.FromCarried)
-                { m_QuickTransfers.Dequeue(); continue; }
-                var parents = intent.FromCarried ? new[] { LootInventoryExchange.Root } : m_Graph.QuickTransferContainers().ToArray();
+                if (item == null || m_Graph.Carried(item) != intent.FromCarried) {
+                    m_QuickTransfers.Dequeue();
+                    continue;
+                }
+                string[] parents = intent.FromCarried
+                    ? new[] { LootInventoryExchange.Root }
+                    : m_Graph.QuickTransferContainers().ToArray();
                 InventoryCommand command = null;
                 for (int pass = 0; pass < 2 && command == null; pass++)
-                    foreach (string parent in parents)
-                    {
+                    foreach (string parent in parents) {
                         if (parent == item.Parent || parent == item.Id) continue;
-                        command = m_Graph.PlanQuickMove(item.Id, parent, mergeOnly: pass == 0, allowPartialMerge: true);
+                        command = m_Graph.PlanQuickMove(item.Id, parent, pass == 0, true);
                         if (command != null) break;
                     }
-                if (command == null)
-                {
-                    m_QuickTransfers.Dequeue(); m_QuickTransferSpaceBlocked = true;
+                if (command == null) {
+                    m_QuickTransfers.Dequeue();
+                    m_QuickTransferSpaceBlocked = true;
                     continue;
                 }
                 m_ProcessingQuickTransfer = true;
-                try { Command(command); }
-                finally { m_ProcessingQuickTransfer = false; }
+                try { Command(command); } finally { m_ProcessingQuickTransfer = false; }
                 return;
             }
-            if (m_QuickTransferSpaceBlocked)
-            {
-                m_QuickTransferSpaceBlocked = false; MoonkovAudio.Error();
+            if (m_QuickTransferSpaceBlocked) {
+                m_QuickTransferSpaceBlocked = false;
+                MoonkovAudio.Error();
                 MoonkovLocalization.Set(m_Message, "空间不足，未装下的物品留在原处。");
             }
         }
-        private bool AutoMove(InventoryItem item, string parent)
-        {
+
+        private bool AutoMove(InventoryItem item, string parent) {
             var command = m_Graph.PlanQuickMove(item.Id, parent);
             if (command == null) return false;
-            Command(command); return true;
-        }
-        private void Command(InventoryCommand command)
-        {
-            if (m_Busy || m_Graph==null) return;
-            if (!m_ProcessingQuickTransfer) ClearQuickTransfers();
-            if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
-            // 命令带着玩家实际看到的库存版本。先在副本试放，成功只表示可以发请求，真实库存等处理结果更新。
-            command.ExpectedVersion=m_Graph.Version;
-            var error=m_Graph.Clone().TryApply(command);
-            if (error!=InventoryError.None) { ClearQuickTransfers(); MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message,
-                error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString()); return; }
-            m_OperationSound = MoonkovInventoryAudio.ForMove(m_Graph, command, MoonkovAudio.Library);
-            m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); RefreshWorkshop(); m_Send(command);
-        }
-        private void FlushDeferredLayout()
-        {
-            if(m_DeferredLayout==null || m_Disposed || m_Drag!=null)return;
-            string layout=m_DeferredLayout;m_DeferredLayout=null;
-            Render();m_RenderedLayout=layout;
-            if(m_PortraitShowing){PresentOperatorPortrait();PresentCorpsePortrait();}
-        }
-        public void CancelDrag() => m_Drag?.Cancel();
-        private void FocusChanged(bool focused) { if (!focused) { HideItemTooltip(); CancelDrag(); } }
-        public bool Escape()
-        {
-            if (Application.isPlaying && m_EscapeHandledFrame==Time.frameCount) return true;
-            if (m_Drag!=null) { CancelDrag(); m_EscapeHandledFrame=Time.frameCount; return true; }
-            if (!m_Windows.CloseTop()) return false;
-            m_EscapeHandledFrame=Time.frameCount; return true;
-        }
-        public bool HandleKey(KeyDownEvent evt)
-        {
-            if (evt.keyCode==KeyCode.Escape && Escape()) { evt.StopImmediatePropagation(); return true; }
-            if (evt.keyCode==KeyCode.R && m_Drag!=null) { m_Drag.Rotate(); evt.StopImmediatePropagation(); return true; }
-            return false;
-        }
-        private void Key(KeyDownEvent evt) => HandleKey(evt);
-        public void Dispose()
-        {
-            m_DeferredRender?.Pause();m_DeferredLayout=null;
-            if (m_Disposed) return;
-            if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged -= PortraitCharacterChanged;
-            Suspend(); ReleaseItemTooltip(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
+            Command(command);
+            return true;
         }
 
-        private sealed class Drag : PointerManipulator
-        {
-            private readonly ContainerInventoryView m_View; private readonly Func<InventoryItem> m_Source;
+        private void Command(InventoryCommand command) {
+            if (m_Busy || m_Graph == null) return;
+            if (!m_ProcessingQuickTransfer) ClearQuickTransfers();
+            if (m_ReadOnlyReason != null) {
+                MoonkovLocalization.Set(m_Message, m_ReadOnlyReason);
+                return;
+            }
+            // 命令带着玩家实际看到的库存版本。先在副本试放，成功只表示可以发请求，真实库存等处理结果更新。
+            command.ExpectedVersion = m_Graph.Version;
+            var error = m_Graph.Clone().TryApply(command);
+            if (error != InventoryError.None) {
+                ClearQuickTransfers();
+                MoonkovAudio.Error();
+                MoonkovLocalization.Set(m_Message,
+                    error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString());
+                return;
+            }
+            m_OperationSound = MoonkovInventoryAudio.ForMove(m_Graph, command, MoonkovAudio.Library);
+            m_Busy = true;
+            MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…");
+            RefreshWorkshop();
+            m_Send(command);
+        }
+
+        private void FlushDeferredLayout() {
+            if (m_DeferredLayout == null || m_Disposed || m_Drag != null) return;
+            string layout = m_DeferredLayout;
+            m_DeferredLayout = null;
+            Render();
+            m_RenderedLayout = layout;
+            if (m_PortraitShowing) {
+                PresentOperatorPortrait();
+                PresentCorpsePortrait();
+            }
+        }
+
+        public void CancelDrag() { m_Drag?.Cancel(); }
+
+        private void FocusChanged(bool focused) {
+            if (!focused) {
+                HideItemTooltip();
+                CancelDrag();
+            }
+        }
+
+        public bool Escape() {
+            if (Application.isPlaying && m_EscapeHandledFrame == Time.frameCount) return true;
+            if (m_Drag != null) {
+                CancelDrag();
+                m_EscapeHandledFrame = Time.frameCount;
+                return true;
+            }
+            if (!m_Windows.CloseTop()) return false;
+            m_EscapeHandledFrame = Time.frameCount;
+            return true;
+        }
+
+        public bool HandleKey(KeyDownEvent evt) {
+            if (evt.keyCode == KeyCode.Escape && Escape()) {
+                evt.StopImmediatePropagation();
+                return true;
+            }
+            if (evt.keyCode == KeyCode.R && m_Drag != null) {
+                m_Drag.Rotate();
+                evt.StopImmediatePropagation();
+                return true;
+            }
+            return false;
+        }
+
+        private void Key(KeyDownEvent evt) { HandleKey(evt); }
+
+        public void Dispose() {
+            m_DeferredRender?.Pause();
+            m_DeferredLayout = null;
+            if (m_Disposed) return;
+            if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged -= PortraitCharacterChanged;
+            Suspend();
+            ReleaseItemTooltip();
+            m_Disposed = true;
+            Application.focusChanged -= FocusChanged;
+            m_Root.UnregisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
+            m_Windows.Dispose();
+            m_Root.RemoveFromHierarchy();
+        }
+
+        private sealed class Drag : PointerManipulator {
+            private readonly ContainerInventoryView m_View;
+            private readonly Func<InventoryItem> m_Source;
             private readonly Action m_Click, m_DoubleClick;
-            private InventoryItem m_Item; private int m_Pointer=-1; private bool m_Active,m_Rotated; private Vector2 m_Start,m_Last,m_Grab;
+            private InventoryItem m_Item;
+            private int m_Pointer = -1;
+            private bool m_Active, m_Rotated;
+            private Vector2 m_Start, m_Last, m_Grab;
             private InventoryCommand m_Command;
             private InventoryCommand m_ValidatedCommand;
             private InventoryError m_PlacementError;
             private int m_ClickCount;
             private IVisualElementScheduledItem m_Scroll, m_ReleaseRecovery;
-            public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
-            { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
-            public bool CanRetain(InventoryGraph graph)
-            {
-                var current=m_Item==null ? null : graph?.Find(m_Item.Id);
-                return current!=null && current.Parent==m_Item.Parent && current.Region==m_Item.Region &&
-                    current.X==m_Item.X && current.Y==m_Item.Y && current.Rotated==m_Item.Rotated;
+
+            public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick) {
+                m_View = view;
+                m_Source = source;
+                m_Click = click;
+                m_DoubleClick = doubleClick;
             }
-            public void RefreshItem() { if (m_Item != null) m_Item = m_View.m_Graph.Find(m_Item.Id); }
-            protected override void RegisterCallbacksOnTarget()
-            { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); target.RegisterCallback<PointerCancelEvent>(Cancelled); target.RegisterCallback<DetachFromPanelEvent>(Detached); }
-            protected override void UnregisterCallbacksFromTarget()
-            { Cancel(); target.UnregisterCallback<PointerEnterEvent>(Enter); target.UnregisterCallback<PointerLeaveEvent>(Leave); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); target.UnregisterCallback<PointerCancelEvent>(Cancelled); target.UnregisterCallback<DetachFromPanelEvent>(Detached); }
-            private void Enter(PointerEnterEvent evt)
-            {
-                var item = m_Source(); m_View.m_HoveredItemId = item?.Id;
+
+            public bool CanRetain(InventoryGraph graph) {
+                var current = m_Item == null ? null : graph?.Find(m_Item.Id);
+                return current != null && current.Parent == m_Item.Parent && current.Region == m_Item.Region &&
+                       current.X == m_Item.X && current.Y == m_Item.Y && current.Rotated == m_Item.Rotated;
+            }
+
+            public void RefreshItem() {
+                if (m_Item != null) m_Item = m_View.m_Graph.Find(m_Item.Id);
+            }
+
+            protected override void RegisterCallbacksOnTarget() {
+                target.RegisterCallback<PointerEnterEvent>(Enter);
+                target.RegisterCallback<PointerLeaveEvent>(Leave);
+                target.RegisterCallback<PointerDownEvent>(Down, TrickleDown.TrickleDown);
+                target.RegisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
+                target.RegisterCallback<PointerUpEvent>(Up, TrickleDown.TrickleDown);
+                target.RegisterCallback<PointerCaptureOutEvent>(Lost);
+                target.RegisterCallback<PointerCancelEvent>(Cancelled);
+                target.RegisterCallback<DetachFromPanelEvent>(Detached);
+            }
+
+            protected override void UnregisterCallbacksFromTarget() {
+                Cancel();
+                target.UnregisterCallback<PointerEnterEvent>(Enter);
+                target.UnregisterCallback<PointerLeaveEvent>(Leave);
+                target.UnregisterCallback<PointerDownEvent>(Down, TrickleDown.TrickleDown);
+                target.UnregisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
+                target.UnregisterCallback<PointerUpEvent>(Up, TrickleDown.TrickleDown);
+                target.UnregisterCallback<PointerCaptureOutEvent>(Lost);
+                target.UnregisterCallback<PointerCancelEvent>(Cancelled);
+                target.UnregisterCallback<DetachFromPanelEvent>(Detached);
+            }
+
+            private void Enter(PointerEnterEvent evt) {
+                var item = m_Source();
+                m_View.m_HoveredItemId = item?.Id;
                 if (evt.pointerType == PointerType.mouse && evt.pressedButtons == 0)
                     m_View.ShowItemTooltip(target, item, evt.position);
             }
-            private void Leave(PointerLeaveEvent evt)
-            {
+
+            private void Leave(PointerLeaveEvent evt) {
                 m_View.HideItemTooltip(target);
                 if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null;
             }
-            private void Down(PointerDownEvent evt)
-            {
+
+            private void Down(PointerDownEvent evt) {
                 m_View.HideItemTooltip();
-                if (m_View.m_Graph==null) { evt.StopImmediatePropagation(); return; }
-                if (evt.button==1 && m_View.m_Drag!=null) { m_View.CancelDrag(); evt.StopImmediatePropagation(); return; }
-                if (evt.button==0 && m_ReleaseRecovery!=null) Cancel();
+                if (m_View.m_Graph == null) {
+                    evt.StopImmediatePropagation();
+                    return;
+                }
+                if (evt.button == 1 && m_View.m_Drag != null) {
+                    m_View.CancelDrag();
+                    evt.StopImmediatePropagation();
+                    return;
+                }
+                if (evt.button == 0 && m_ReleaseRecovery != null) Cancel();
                 // Repeated down notifications must not restart a held gesture.
-                if (evt.button==0 && m_View.m_Drag==this && m_Pointer==evt.pointerId)
-                { evt.StopImmediatePropagation(); return; }
-                m_Item=m_Source();
-                if (evt.button==1) { if (m_Item!=null) m_View.Context(m_Item,evt.position); evt.StopImmediatePropagation(); return; }
-                if (evt.button!=0) return;
-                if (evt.ctrlKey || evt.shiftKey) { m_View.CancelDrag(); if (m_Item!=null) m_View.QuickTransfer(m_Item); evt.StopImmediatePropagation(); return; }
-                m_View.CancelDrag(); m_View.m_Drag=this; m_ClickCount=evt.clickCount; m_ValidatedCommand=null;
-                m_Pointer=evt.pointerId; m_Start=m_Last=evt.position; m_Rotated=m_Item?.Rotated ?? false;
-                var rect=target.worldBound; m_Grab=new Vector2(Mathf.Clamp01((m_Start.x-rect.x)/rect.width),Mathf.Clamp01((m_Start.y-rect.y)/rect.height)); target.CapturePointer(m_Pointer);
-                target.Focus(); evt.StopImmediatePropagation();
+                if (evt.button == 0 && m_View.m_Drag == this && m_Pointer == evt.pointerId) {
+                    evt.StopImmediatePropagation();
+                    return;
+                }
+                m_Item = m_Source();
+                if (evt.button == 1) {
+                    if (m_Item != null) m_View.Context(m_Item, evt.position);
+                    evt.StopImmediatePropagation();
+                    return;
+                }
+                if (evt.button != 0) return;
+                if (evt.ctrlKey || evt.shiftKey) {
+                    m_View.CancelDrag();
+                    if (m_Item != null) m_View.QuickTransfer(m_Item);
+                    evt.StopImmediatePropagation();
+                    return;
+                }
+                m_View.CancelDrag();
+                m_View.m_Drag = this;
+                m_ClickCount = evt.clickCount;
+                m_ValidatedCommand = null;
+                m_Pointer = evt.pointerId;
+                m_Start = m_Last = evt.position;
+                m_Rotated = m_Item?.Rotated ?? false;
+                var rect = target.worldBound;
+                m_Grab = new Vector2(Mathf.Clamp01((m_Start.x - rect.x) / rect.width),
+                    Mathf.Clamp01((m_Start.y - rect.y) / rect.height));
+                target.CapturePointer(m_Pointer);
+                target.Focus();
+                evt.StopImmediatePropagation();
             }
-            private void Move(PointerMoveEvent evt)
-            {
+
+            private void Move(PointerMoveEvent evt) {
                 if (m_Pointer < 0 && evt.pointerType == PointerType.mouse && evt.pressedButtons == 0)
                     m_View.ShowItemTooltip(target, m_Source(), evt.position);
-                if (m_Pointer<0 || evt.pointerId!=m_Pointer) return;
+                if (m_Pointer < 0 || evt.pointerId != m_Pointer) return;
                 // Input System can dispatch an unpressed move before the queued PointerUp.
                 // Let that event finish the drop before recovering a genuinely missed release.
                 // 同一批输入里，没按键的移动事件可能比松手先到。延后做兜底取消，给正常的松手事件机会提交落位。
-                if ((evt.pressedButtons & 1)==0)
-                {
+                if ((evt.pressedButtons & 1) == 0) {
                     m_ReleaseRecovery ??= target.schedule.Execute(Cancel);
-                    evt.StopImmediatePropagation(); return;
+                    evt.StopImmediatePropagation();
+                    return;
                 }
-                m_ReleaseRecovery?.Pause(); m_ReleaseRecovery=null;
-                m_Last=evt.position;
+                m_ReleaseRecovery?.Pause();
+                m_ReleaseRecovery = null;
+                m_Last = evt.position;
                 evt.StopImmediatePropagation();
                 if (m_View.m_ReadOnlyReason != null || m_View.m_Busy) return;
-                if (m_Item==null || !m_Active && Vector2.Distance(m_Start,m_Last)<4) return;
-                if (!m_Active)
-                {
-                    m_Active=true; target.style.opacity=.4f; var ghost=m_View.m_Ghost; ghost.Clear();
-                    var art=new StashItemArt(m_Item.Code); art.AddToClassList("inventory-item-art"); ghost.Add(art); ghost.style.display=DisplayStyle.Flex; ghost.BringToFront();
-                    m_Scroll=target.schedule.Execute(Scroll).Every(16);
+                if (m_Item == null || (!m_Active && Vector2.Distance(m_Start, m_Last) < 4)) return;
+                if (!m_Active) {
+                    m_Active = true;
+                    target.style.opacity = .4f;
+                    var ghost = m_View.m_Ghost;
+                    ghost.Clear();
+                    var art = new StashItemArt(m_Item.Code);
+                    art.AddToClassList("inventory-item-art");
+                    ghost.Add(art);
+                    ghost.style.display = DisplayStyle.Flex;
+                    ghost.BringToFront();
+                    m_Scroll = target.schedule.Execute(Scroll).Every(16);
                 }
-                Preview(); evt.StopImmediatePropagation();
+                Preview();
+                evt.StopImmediatePropagation();
             }
+
             // 从上往下找鼠标下可用的格子。预览同时记住请求版本和落位，变化时才重新用库存副本试放。
-            private void Preview()
-            {
+            private void Preview() {
                 m_View.QuickSlotDragPreview?.Invoke(m_Item, m_Last);
-                var def=InventoryCatalog.Get(m_Item.Code); float cell=40;
-                var point=m_View.m_Root.WorldToLocal(m_Last); var ghost=m_View.m_Ghost;
-                m_View.m_Preview.style.display=DisplayStyle.None; m_Command=null;
-                foreach (var targetGrid in m_View.m_Grids) { targetGrid.Element.RemoveFromClassList("inventory-drop-valid"); targetGrid.Element.RemoveFromClassList("inventory-drop-invalid"); }
+                var def = InventoryCatalog.Get(m_Item.Code);
+                float cell = 40;
+                var point = m_View.m_Root.WorldToLocal(m_Last);
+                var ghost = m_View.m_Ghost;
+                m_View.m_Preview.style.display = DisplayStyle.None;
+                m_Command = null;
+                foreach (var targetGrid in m_View.m_Grids) {
+                    targetGrid.Element.RemoveFromClassList("inventory-drop-valid");
+                    targetGrid.Element.RemoveFromClassList("inventory-drop-invalid");
+                }
                 // Later grids are open windows and visually above the underlying container.
-                for (int n=m_View.m_Grids.Count-1; n>=0; n--)
-                {
-                    var grid=m_View.m_Grids[n]; if (!VisibleDropTarget(grid.Element, m_Last)) continue;
-                    bool slot=grid.Definition.SlotKind.HasValue; var local=grid.Element.WorldToLocal(m_Last);
-                    cell=grid.Cell;
-                    int x=slot?0:Mathf.FloorToInt(local.x/grid.Cell)-Mathf.FloorToInt(m_Grab.x*(m_Rotated?def.Height:def.Width));
-                    int y=slot?0:Mathf.FloorToInt(local.y/grid.Cell)-Mathf.FloorToInt(m_Grab.y*(m_Rotated?def.Width:def.Height));
-                    if (grid.AutoPlace)
-                    {
-                        var placement = m_Item.Clone(); placement.Rotated = m_Rotated;
+                for (int n = m_View.m_Grids.Count - 1; n >= 0; n--) {
+                    var grid = m_View.m_Grids[n];
+                    if (!VisibleDropTarget(grid.Element, m_Last)) continue;
+                    bool slot = grid.Definition.SlotKind.HasValue;
+                    var local = grid.Element.WorldToLocal(m_Last);
+                    cell = grid.Cell;
+                    int x = slot
+                        ? 0
+                        : Mathf.FloorToInt(local.x / grid.Cell) -
+                          Mathf.FloorToInt(m_Grab.x * (m_Rotated ? def.Height : def.Width));
+                    int y = slot
+                        ? 0
+                        : Mathf.FloorToInt(local.y / grid.Cell) -
+                          Mathf.FloorToInt(m_Grab.y * (m_Rotated ? def.Width : def.Height));
+                    if (grid.AutoPlace) {
+                        var placement = m_Item.Clone();
+                        placement.Rotated = m_Rotated;
                         m_View.m_Graph.FindSpace(placement, grid.Parent, out _, out x, out y);
                     }
-                    m_Command=new InventoryCommand { ExpectedVersion=m_View.m_Graph.Version, ItemId=m_Item.Id, Parent=grid.Parent, Region=grid.Region, X=x,Y=y,Rotated=m_Rotated };
-                    if (!slot) foreach (var entry in m_View.m_Graph.Children(grid.Parent,grid.Region))
-                        if (entry.Id!=m_Item.Id && entry.Code==m_Item.Code && !def.Container && m_View.m_Tiles.TryGetValue(entry.Id,out var tile) && tile.worldBound.Contains(m_Last))
-                        { m_Command.Operation=InventoryOperation.Merge; m_Command.TargetId=entry.Id; break; }
-                    if (!SamePlacement(m_ValidatedCommand,m_Command))
-                    { m_PlacementError=m_View.m_Graph.Clone().TryApply(m_Command); m_ValidatedCommand=m_Command; }
-                    bool valid=m_PlacementError==InventoryError.None;
-                    if (slot || grid.AutoPlace) grid.Element.AddToClassList(valid?"inventory-drop-valid":"inventory-drop-invalid");
-                    else
-                    {
-                        var preview=m_View.m_Preview; grid.Element.Add(preview); preview.style.display=DisplayStyle.Flex;
-                        preview.style.left=x*grid.Cell; preview.style.top=y*grid.Cell; preview.style.width=(m_Rotated?def.Height:def.Width)*grid.Cell; preview.style.height=(m_Rotated?def.Width:def.Height)*grid.Cell;
-                        preview.EnableInClassList("inventory-drop-valid",valid); preview.EnableInClassList("inventory-drop-invalid",!valid);
+                    m_Command = new InventoryCommand {
+                        ExpectedVersion = m_View.m_Graph.Version, ItemId = m_Item.Id, Parent = grid.Parent,
+                        Region = grid.Region, X = x, Y = y, Rotated = m_Rotated
+                    };
+                    if (!slot)
+                        foreach (var entry in m_View.m_Graph.Children(grid.Parent, grid.Region))
+                            if (entry.Id != m_Item.Id && entry.Code == m_Item.Code && !def.Container &&
+                                m_View.m_Tiles.TryGetValue(entry.Id, out var tile) &&
+                                tile.worldBound.Contains(m_Last)) {
+                                m_Command.Operation = InventoryOperation.Merge;
+                                m_Command.TargetId = entry.Id;
+                                break;
+                            }
+                    if (!SamePlacement(m_ValidatedCommand, m_Command)) {
+                        m_PlacementError = m_View.m_Graph.Clone().TryApply(m_Command);
+                        m_ValidatedCommand = m_Command;
+                    }
+                    bool valid = m_PlacementError == InventoryError.None;
+                    if (slot || grid.AutoPlace) {
+                        grid.Element.AddToClassList(valid ? "inventory-drop-valid" : "inventory-drop-invalid");
+                    } else {
+                        var preview = m_View.m_Preview;
+                        grid.Element.Add(preview);
+                        preview.style.display = DisplayStyle.Flex;
+                        preview.style.left = x * grid.Cell;
+                        preview.style.top = y * grid.Cell;
+                        preview.style.width = (m_Rotated ? def.Height : def.Width) * grid.Cell;
+                        preview.style.height = (m_Rotated ? def.Width : def.Height) * grid.Cell;
+                        preview.EnableInClassList("inventory-drop-valid", valid);
+                        preview.EnableInClassList("inventory-drop-invalid", !valid);
                     }
                     break;
                 }
-                float w=(m_Rotated?def.Height:def.Width)*cell, h=(m_Rotated?def.Width:def.Height)*cell;
-                ghost.style.left=point.x-m_Grab.x*w; ghost.style.top=point.y-m_Grab.y*h; ghost.style.width=w; ghost.style.height=h;
+                float w = (m_Rotated ? def.Height : def.Width) * cell, h = (m_Rotated ? def.Width : def.Height) * cell;
+                ghost.style.left = point.x - m_Grab.x * w;
+                ghost.style.top = point.y - m_Grab.y * h;
+                ghost.style.width = w;
+                ghost.style.height = h;
             }
-            private static bool SamePlacement(InventoryCommand a, InventoryCommand b) => a!=null && b!=null &&
-                a.ExpectedVersion==b.ExpectedVersion && a.Parent==b.Parent && a.Region==b.Region && a.X==b.X && a.Y==b.Y &&
-                a.Rotated==b.Rotated && a.Operation==b.Operation && a.TargetId==b.TargetId;
-            private void Scroll()
-            {
-                foreach (var grid in m_View.m_Grids)
-                {
-                    var scroll=grid.Element.GetFirstAncestorOfType<ScrollView>(); if (scroll==null) continue; var rect=scroll.contentViewport.worldBound;
-                    if (!rect.Contains(m_Last)) continue; float speed=m_Last.y<rect.yMin+24?-7:m_Last.y>rect.yMax-24?7:0;
-                    if (speed==0) continue; scroll.scrollOffset=new Vector2(0,Mathf.Clamp(scroll.scrollOffset.y+speed,0,Mathf.Max(0,scroll.contentContainer.resolvedStyle.height-rect.height))); Preview(); break;
+
+            private static bool SamePlacement(InventoryCommand a, InventoryCommand b) {
+                return a != null && b != null && a.ExpectedVersion == b.ExpectedVersion && a.Parent == b.Parent &&
+                       a.Region == b.Region && a.X == b.X && a.Y == b.Y && a.Rotated == b.Rotated &&
+                       a.Operation == b.Operation && a.TargetId == b.TargetId;
+            }
+
+            private void Scroll() {
+                foreach (var grid in m_View.m_Grids) {
+                    var scroll = grid.Element.GetFirstAncestorOfType<ScrollView>();
+                    if (scroll == null) continue;
+                    var rect = scroll.contentViewport.worldBound;
+                    if (!rect.Contains(m_Last)) continue;
+                    float speed = m_Last.y < rect.yMin + 24 ? -7 : m_Last.y > rect.yMax - 24 ? 7 : 0;
+                    if (speed == 0) continue;
+                    scroll.scrollOffset = new Vector2(0,
+                        Mathf.Clamp(scroll.scrollOffset.y + speed, 0,
+                            Mathf.Max(0, scroll.contentContainer.resolvedStyle.height - rect.height)));
+                    Preview();
+                    break;
                 }
             }
-            public void Rotate() { if (m_Active) { m_Rotated=!m_Rotated; Preview(); } }
-            private void Up(PointerUpEvent evt)
-            {
-                if (m_Pointer<0 || evt.pointerId!=m_Pointer || evt.button!=0) return;
-                if (!m_Active)
-                {
-                    bool click=Vector2.Distance(m_Start,evt.position)<4 && target.worldBound.Contains(evt.position);
-                    Cancel(); evt.StopImmediatePropagation();
-                    if (click) { if (m_ClickCount>1) m_DoubleClick?.Invoke(); else m_Click?.Invoke(); }
+
+            public void Rotate() {
+                if (m_Active) {
+                    m_Rotated = !m_Rotated;
+                    Preview();
+                }
+            }
+
+            private void Up(PointerUpEvent evt) {
+                if (m_Pointer < 0 || evt.pointerId != m_Pointer || evt.button != 0) return;
+                if (!m_Active) {
+                    bool click = Vector2.Distance(m_Start, evt.position) < 4 &&
+                                 target.worldBound.Contains(evt.position);
+                    Cancel();
+                    evt.StopImmediatePropagation();
+                    if (click) {
+                        if (m_ClickCount > 1)
+                            m_DoubleClick?.Invoke();
+                        else
+                            m_Click?.Invoke();
+                    }
                     return;
                 }
-                m_Last=evt.position;
+                m_Last = evt.position;
                 bool quickDrop = m_View.QuickSlotDrop?.Invoke(m_Item, m_Last) == true;
-                Preview(); var command=m_Command; Cancel(); evt.StopImmediatePropagation();
+                Preview();
+                var command = m_Command;
+                Cancel();
+                evt.StopImmediatePropagation();
                 if (quickDrop) return;
-                if (command!=null) m_View.Command(command); else MoonkovLocalization.Set(m_View.m_Message, "Move cancelled. Item remains in its container.");
+                if (command != null)
+                    m_View.Command(command);
+                else
+                    MoonkovLocalization.Set(m_View.m_Message, "Move cancelled. Item remains in its container.");
             }
-            private void Lost(PointerCaptureOutEvent evt) { if (evt.target==target && evt.pointerId==m_Pointer) Cancel(); }
-            private void Cancelled(PointerCancelEvent evt) { if (evt.pointerId==m_Pointer) Cancel(); }
-            private void Detached(DetachFromPanelEvent evt) { m_View.HideItemTooltip(target); if (m_View.m_Drag==this) Cancel(); }
-            public void Cancel()
-            {
-                if (m_View.m_Drag!=this) return;
+
+            private void Lost(PointerCaptureOutEvent evt) {
+                if (evt.target == target && evt.pointerId == m_Pointer) Cancel();
+            }
+
+            private void Cancelled(PointerCancelEvent evt) {
+                if (evt.pointerId == m_Pointer) Cancel();
+            }
+
+            private void Detached(DetachFromPanelEvent evt) {
+                m_View.HideItemTooltip(target);
+                if (m_View.m_Drag == this) Cancel();
+            }
+
+            public void Cancel() {
+                if (m_View.m_Drag != this) return;
                 m_View.QuickSlotDragPreview?.Invoke(null, default);
-                m_ReleaseRecovery?.Pause(); m_ReleaseRecovery=null;
-                m_Scroll?.Pause(); m_Scroll=null; int pointer=m_Pointer; m_Pointer=-1;
-                if (pointer>=0 && target.HasPointerCapture(pointer)) target.ReleasePointer(pointer); target.style.opacity=1;
-                m_Active=false; if (m_View.m_Drag==this) m_View.m_Drag=null;
-                m_View.m_Ghost.style.display=DisplayStyle.None; m_View.m_Preview.style.display=DisplayStyle.None;
-                foreach (var targetGrid in m_View.m_Grids) { targetGrid.Element.RemoveFromClassList("inventory-drop-valid"); targetGrid.Element.RemoveFromClassList("inventory-drop-invalid"); }
-                if(m_View.m_DeferredLayout!=null)
-                {
+                m_ReleaseRecovery?.Pause();
+                m_ReleaseRecovery = null;
+                m_Scroll?.Pause();
+                m_Scroll = null;
+                int pointer = m_Pointer;
+                m_Pointer = -1;
+                if (pointer >= 0 && target.HasPointerCapture(pointer)) target.ReleasePointer(pointer);
+                target.style.opacity = 1;
+                m_Active = false;
+                if (m_View.m_Drag == this) m_View.m_Drag = null;
+                m_View.m_Ghost.style.display = DisplayStyle.None;
+                m_View.m_Preview.style.display = DisplayStyle.None;
+                foreach (var targetGrid in m_View.m_Grids) {
+                    targetGrid.Element.RemoveFromClassList("inventory-drop-valid");
+                    targetGrid.Element.RemoveFromClassList("inventory-drop-invalid");
+                }
+                if (m_View.m_DeferredLayout != null) {
                     m_View.m_DeferredRender?.Pause();
-                    m_View.m_DeferredRender=m_View.m_Root.schedule.Execute(m_View.FlushDeferredLayout);
+                    m_View.m_DeferredRender = m_View.m_Root.schedule.Execute(m_View.FlushDeferredLayout);
                 }
             }
         }

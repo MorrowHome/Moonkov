@@ -4,225 +4,281 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
-    public partial class DollSingerEnemySystem
-    {
-        private void EvaluateDecision(DollSingerEnemyBrain brain, Vector3 position, PredictedPlayerGhost health,
-            MoonRaidMap map, double now, out PmcAction best, out float score, out string reason, out bool emergency)
-        {
+namespace Unity.MP_FPS {
+    public partial class DollSingerEnemySystem {
+        private void EvaluateDecision(
+            DollSingerEnemyBrain brain,
+            Vector3 position,
+            PredictedPlayerGhost health,
+            MoonRaidMap map,
+            double now,
+            out PmcAction best,
+            out float score,
+            out string reason,
+            out bool emergency) {
             bool contact = brain.Target != Entity.Null && brain.Confidence > .2f;
             bool confirmed = contact && brain.Contacts.TryGetValue(brain.Target, out var memory) && memory.Confirmed;
             bool lowHealth = RaidHealth.DangerFraction(health) < m_Tuning.RetreatHealthFraction;
             int spareAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
-                (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) + (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);
-            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
-            int cost=weapon?.EnergyPerRound ?? 1;
-            bool energy = weapon != null && !brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,cost) &&
-                brain.Inventory.CellEnergy(carriedOnly: true) >= (health.HaloEnergyInitialized ? 1 : cost);
+                            (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) +
+                            (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);
+            var weapon =
+                WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
+            int cost = weapon?.EnergyPerRound ?? 1;
+            bool energy = weapon != null &&
+                          !brain.ReloadFailure.Matches(brain.Inventory.Version, health.EquippedWeaponID, cost) &&
+                          brain.Inventory.CellEnergy(true) >= (health.HaloEnergyInitialized ? 1 : cost);
             bool exhausted = !health.HaloEnergyInitialized && health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
             bool energyLow = health.HaloEnergyInitialized && health.HaloEnergy < cost;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
             float holdAngleSeconds = m_Tuning.HoldAngleSeconds;
             if (brain.IsExpeditionRaider && confirmed)
-                holdAngleSeconds = Mathf.Min(holdAngleSeconds, (position - brain.LastSeen).sqrMagnitude <= 24 * 24 ? .75f : 1.5f);
+                holdAngleSeconds = Mathf.Min(holdAngleSeconds,
+                    (position - brain.LastSeen).sqrMagnitude <= 24 * 24 ? .75f : 1.5f);
             bool needsHealing = NeedsHealing(health);
             var medical = needsHealing ? FindMedical(brain.Inventory) : null;
             bool grenadeDanger = !brain.IsClashBot && brain.Grenade.Active(now);
             bool hazardDanger = !brain.IsClashBot && brain.HazardDanger;
             bool handsBusy = brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health);
-            bool canPrepareMedical = !grenadeDanger && !hazardDanger && needsHealing && now >= brain.NextHeal && !handsBusy &&
-                SafeToTreat(brain, position, now);
-            if (!brain.IsClashBot && canPrepareMedical && medical == null && !brain.MedicalFailure.Matches(brain.Inventory.Version))
-            {
+            bool canPrepareMedical = !grenadeDanger && !hazardDanger && needsHealing && now >= brain.NextHeal &&
+                                     !handsBusy && SafeToTreat(brain, position, now);
+            if (!brain.IsClashBot && canPrepareMedical && medical == null &&
+                !brain.MedicalFailure.Matches(brain.Inventory.Version)) {
                 medical = PmcMedicalInventory.Prepare(brain.Inventory);
-                if (medical == null) brain.MedicalFailure.Record(brain.Inventory.Version);
-                else brain.MedicalFailure.Clear();
+                if (medical == null)
+                    brain.MedicalFailure.Record(brain.Inventory.Version);
+                else
+                    brain.MedicalFailure.Clear();
             }
-            bool potentialMedical = medical != null || !canPrepareMedical && PmcMedicalInventory.HasCarried(brain.Inventory);
+            bool potentialMedical =
+                medical != null || (!canPrepareMedical && PmcMedicalInventory.HasCarried(brain.Inventory));
             // A treatable injury requests temporary Retreat below, not permanent raid departure.
             // Keep deliberate departure (spent supplies, exhausted caches, timeout) latched.
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
             bool lowOxygen = !brain.IsClashBot && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
-            bool canRefillOxygen = lowOxygen && health.HeadDomeEquipped && !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version) &&
-                PmcLifeSupport.HasCarried(brain.Inventory);
+            bool canRefillOxygen = lowOxygen && health.HeadDomeEquipped &&
+                                   !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version) &&
+                                   PmcLifeSupport.HasCarried(brain.Inventory);
             bool lowNutrition = !brain.IsClashBot && PmcNutrition.Low(health, PmcNutrition.DangerThreshold);
             bool nutritionDeparture = lowNutrition && PmcNutrition.NeedsDeparture(health, brain.Inventory);
-            if (!brain.IsClashBot && !brain.IsCompanion && (exhausted || lowOxygen && !canRefillOxygen || nutritionDeparture ||
-                lowHealth && !bleeding && !burning && (!needsHealing || !potentialMedical) ||
-                brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
-                map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
+            if (!brain.IsClashBot && !brain.IsCompanion && (exhausted || (lowOxygen && !canRefillOxygen) ||
+                                                            nutritionDeparture ||
+                                                            (lowHealth && !bleeding && !burning &&
+                                                             (!needsHealing || !potentialMedical)) ||
+                                                            brain.LootedCaches >= m_Tuning.DesiredCaches ||
+                                                            now - brain.SpawnTime > map.RaidDuration *
+                                                            (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
-
             bool follow = (brain.HasSquadLeader || brain.IsCompanion) && !brain.Leaving;
-            PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract :
+            var choice = brain.IsClashBot ? PmcAction.ClashObjective :
+                brain.Leaving ? PmcAction.Extract :
                 follow ? PmcAction.FollowSquad : PmcAction.Scavenge;
             float utility = brain.IsClashBot && brain.Mission == ClashBotGoal.Rescue ? 99 : brain.Leaving ? 45 : 12;
-            string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission : brain.Leaving ? "bank loot / leave before raid timeout" :
+            string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission :
+                brain.Leaving ? "bank loot / leave before raid timeout" :
                 follow ? "advance with squad and watch the other approach" : "search supplies";
-            if (brain.HasSquadLeader && follow && !brain.Visible && (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
+            if (brain.HasSquadLeader && follow && !brain.Visible &&
+                (position - brain.SquadLeaderPosition).sqrMagnitude > 22 * 22)
                 utility = 62;
+
             // 当前行动小幅加分，防止两个分数接近时来回切。分数高出的紧急行为仍能胜出。
-            void Consider(PmcAction action, float value, string why)
-            {
+            void Consider(PmcAction action, float value, string why) {
                 if (brain.Action == action) value += 8;
                 if (value <= utility) return;
-                choice = action; utility = value; explanation = why;
+                choice = action;
+                utility = value;
+                explanation = why;
             }
 
-            if (contact)
-            {
-                if (brain.Visible)
-                {
+            if (contact) {
+                if (brain.Visible) {
                     bool betweenBursts = now >= brain.BurstUntil && now < brain.NextBurst;
                     bool flanking = brain.Action == PmcAction.Flank && now - brain.ActionStarted < 6 &&
-                        HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
-                    bool coveringAlly = brain.IsClashBot ? HasClashCoveringAlly(brain, now) :
-                        now >= brain.NextFlank && TryGetExpeditionCoveringAlly(brain, position, now, out _);
+                                    HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
+                    bool coveringAlly = brain.IsClashBot
+                        ? HasClashCoveringAlly(brain, now)
+                        : now >= brain.NextFlank && TryGetExpeditionCoveringAlly(brain, position, now, out _);
                     bool calm = !brain.Leaving && brain.Suppression < .3f && now - brain.LastDamage >= 3;
                     bool readyToFight = health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
-                        !energyLow && brain.Suppression <= .7f;
+                                        !energyLow && brain.Suppression <= .7f;
                     // Fire first. Reposition in a later burst pause, or finish an
                     // already chosen angle; fresh damage restores counterfire priority.
                     float flankDelay = brain.IsExpeditionRaider ? Mathf.Lerp(2.5f, 1.65f, brain.Aggression) : 8;
-                    bool enoughFireTime = !brain.IsExpeditionRaider || readyToFight && now - brain.VisibleSince >= 1;
+                    bool enoughFireTime = !brain.IsExpeditionRaider || (readyToFight && now - brain.VisibleSince >= 1);
                     bool squadFlank = calm && coveringAlly && betweenBursts && enoughFireTime;
-                    bool flankOpening = calm && (!brain.IsClashBot && !brain.SquadPartnerNearby || flanking || coveringAlly) &&
-                        (flanking || enoughFireTime && betweenBursts && brain.Action == PmcAction.Engage &&
-                            now >= brain.NextFlank && now - brain.ActionStarted > flankDelay);
+                    bool flankOpening = calm &&
+                                        ((!brain.IsClashBot && !brain.SquadPartnerNearby) || flanking ||
+                                         coveringAlly) && (flanking || (enoughFireTime && betweenBursts &&
+                                                                        brain.Action == PmcAction.Engage &&
+                                                                        now >= brain.NextFlank &&
+                                                                        now - brain.ActionStarted > flankDelay));
                     // An armed PMC should contest a visible opponent before minor
                     // pressure or routine flanking. Serious suppression still wins cover.
-                    Consider(PmcAction.Engage, (readyToFight && !squadFlank && !flankOpening ? 82 : 50) + brain.Aggression * 12,
+                    Consider(PmcAction.Engage,
+                        (readyToFight && !squadFlank && !flankOpening ? 82 : 50) + brain.Aggression * 12,
                         "confirmed opponent; prioritize deliberate return fire");
                     if (squadFlank)
                         Consider(PmcAction.Flank, 78, "partner has a firing window; take the other approach lane");
                     // Finish the chosen angle before reconsidering it; failed paths may abort it.
                     if (flankOpening)
-                        Consider(PmcAction.Flank, 64 + brain.Aggression * 8, "change the firing angle after an inconclusive duel");
-                }
-                else if (!brain.Leaving && confirmed && seenAge < ContactMemorySeconds(brain))
-                {
+                        Consider(PmcAction.Flank, 64 + brain.Aggression * 8,
+                            "change the firing angle after an inconclusive duel");
+                } else if (!brain.Leaving && confirmed && seenAge < ContactMemorySeconds(brain)) {
                     if (seenAge < holdAngleSeconds && brain.Suppression < .3f)
                         Consider(PmcAction.HoldAngle, 57, "watch the last exit briefly before committing to a search");
-                    else Consider(PmcAction.Search, 38 + brain.Confidence * 10, "search remembered motion and plausible exits");
+                    else
+                        Consider(PmcAction.Search, 38 + brain.Confidence * 10,
+                            "search remembered motion and plausible exits");
+                } else if (!brain.Leaving) {
+                    Consider(PmcAction.Investigate, 26 + brain.Confidence * 10,
+                        "investigate an uncertain sound, without a firing solution");
                 }
-                else if (!brain.Leaving)
-                    Consider(PmcAction.Investigate, 26 + brain.Confidence * 10, "investigate an uncertain sound, without a firing solution");
-
                 bool coverCycle = brain.Action == PmcAction.Cover && brain.HasCover &&
-                    brain.CoverPhase != PmcCoverPhase.Settling && !brain.PathFailed;
-                if (brain.Suppression > .3f || now - brain.LastDamage < 3 || brain.HasCover && seenAge < 4 || coverCycle)
+                                  brain.CoverPhase != PmcCoverPhase.Settling && !brain.PathFailed;
+                if (brain.Suppression > .3f || now - brain.LastDamage < 3 || (brain.HasCover && seenAge < 4) ||
+                    coverCycle)
                     Consider(PmcAction.Cover, coverCycle ? 90 : 55 + brain.Suppression * 30 + brain.Caution * 8,
                         "finish reaching cover or returning from a short peek");
-            }
-            else if (!brain.IsClashBot && !brain.Leaving && now < brain.MissionAlarmUntil)
+            } else if (!brain.IsClashBot && !brain.Leaving && now < brain.MissionAlarmUntil) {
                 Consider(PmcAction.Investigate, 35, "investigate the sound source");
+            }
 
             // Withdrawal stops pursuing stale contacts. A wounded raider can actually leave
             // once sight is broken, instead of being stuck in Retreat until all memory expires.
             if (PmcUnknownAttack.NeedsEvasion(brain.IsClashBot, contact, brain.LastDamage, now))
                 Consider(PmcAction.Retreat, 105, "move to safety after an unseen attack");
-            if ((lowHealth || exhausted || energyLow || lowOxygen || lowNutrition || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
-                Consider(PmcAction.Retreat, 110, (lowOxygen || lowNutrition) && !brain.Leaving ?
-                    "break contact to replenish survival supplies" : "break contact to survive and extract");
-            if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))
-                Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
+            if ((lowHealth || exhausted || energyLow || lowOxygen || lowNutrition ||
+                 (brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort))) && underThreat)
+                Consider(PmcAction.Retreat, 110,
+                    (lowOxygen || lowNutrition) && !brain.Leaving
+                        ? "break contact to replenish survival supplies"
+                        : "break contact to survive and extract");
+            if (health.ControllerState.IsReloadingState || (energy && ShouldReload(brain, health, position, now)))
+                Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76,
+                    "replenish the magazine during a safe opening");
             if (canPrepareMedical && medical != null)
                 Consider(PmcAction.Heal, lowHealth ? 108 : 84, "treat an injured body part with carried medicine");
-            if ((bleeding || burning) && !hazardDanger && now >= brain.NextHeal && !handsBusy && SafeToTreat(brain, position, now))
+            if ((bleeding || burning) && !hazardDanger && now >= brain.NextHeal && !handsBusy &&
+                SafeToTreat(brain, position, now))
                 Consider(PmcAction.Heal, 110, "stop burning or bleeding during a safe opening");
-
             if (hazardDanger) Consider(PmcAction.EvadeHazard, 190, "leave the harmful area");
             if (grenadeDanger) Consider(PmcAction.EvadeGrenade, 200, "move away from a visible explosive");
 
             // New confirmed danger must interrupt looting/search, regardless of their commitment.
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
-                brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal ||
-                brain.Action == PmcAction.ClashObjective || brain.Action == PmcAction.FollowSquad;
-            emergency = grenadeDanger || hazardDanger || brain.Action == PmcAction.EvadeGrenade && !grenadeDanger ||
-                brain.Action == PmcAction.EvadeHazard && !hazardDanger ||
-                health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
-                brain.Visible && passive || brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now) ||
-                brain.Action == PmcAction.HoldAngle && seenAge >= holdAngleSeconds;
-            best = choice; score = utility; reason = explanation;
+                           brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate ||
+                           brain.Action == PmcAction.Heal || brain.Action == PmcAction.ClashObjective ||
+                           brain.Action == PmcAction.FollowSquad;
+            emergency = grenadeDanger || hazardDanger || (brain.Action == PmcAction.EvadeGrenade && !grenadeDanger) ||
+                        (brain.Action == PmcAction.EvadeHazard && !hazardDanger) || health.CurrentAmmo == 0 ||
+                        brain.Suppression > .7f || now - brain.LastDamage < 1 || (brain.Visible && passive) ||
+                        (brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now)) ||
+                        (brain.Action == PmcAction.HoldAngle && seenAge >= holdAngleSeconds);
+            best = choice;
+            score = utility;
+            reason = explanation;
         }
 
-        private bool ShouldReload(DollSingerEnemyBrain brain, PredictedPlayerGhost health, Vector3 position, double now)
-        {
-            if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard ||
-                health.ControllerState.IsReloadingState) return false;
-            if (health.HaloEnergyInitialized) return health.HaloEnergy <= PmcShieldSupply.RechargeThreshold && SafeToTreat(brain, position, now);
+        private bool ShouldReload(
+            DollSingerEnemyBrain brain,
+            PredictedPlayerGhost health,
+            Vector3 position,
+            double now) {
+            if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade ||
+                brain.Action == PmcAction.EvadeHazard || health.ControllerState.IsReloadingState)
+                return false;
+            if (health.HaloEnergyInitialized)
+                return health.HaloEnergy <= PmcShieldSupply.RechargeThreshold && SafeToTreat(brain, position, now);
             if (health.CurrentAmmo <= 0) return true;
-            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
+            var weapon =
+                WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
             return weapon != null && health.CurrentAmmo < weapon.MagazineSize &&
-                health.CurrentAmmo <= Mathf.Max(1, Mathf.FloorToInt(weapon.MagazineSize * m_Tuning.TacticalReloadFraction)) &&
-                SafeToTreat(brain, position, now);
+                   health.CurrentAmmo <= Mathf.Max(1,
+                       Mathf.FloorToInt(weapon.MagazineSize * m_Tuning.TacticalReloadFraction)) &&
+                   SafeToTreat(brain, position, now);
         }
 
-        private static bool NeedsHealing(PredictedPlayerGhost health) => health.CurrentHealth > 0 &&
-            health.BodyHealthInitialized && health.TacticalPoisonSeconds <= 0 && SelectTreatment(health) != BodyPart.Auto &&
-            (RaidHealth.DangerFraction(health) < .8f ||
-            health.CurrentHealth < health.MaxHealth - 25 || health.LeftLegHealth <= 0 || health.RightLegHealth <= 0 ||
-            health.LeftArmHealth <= 0 || health.RightArmHealth <= 0);
+        private static bool NeedsHealing(PredictedPlayerGhost health) {
+            return health.CurrentHealth > 0 && health.BodyHealthInitialized && health.TacticalPoisonSeconds <= 0 &&
+                   SelectTreatment(health) != BodyPart.Auto && (RaidHealth.DangerFraction(health) < .8f ||
+                                                                health.CurrentHealth < health.MaxHealth - 25 ||
+                                                                health.LeftLegHealth <= 0 ||
+                                                                health.RightLegHealth <= 0 ||
+                                                                health.LeftArmHealth <= 0 ||
+                                                                health.RightArmHealth <= 0);
+        }
 
-        private static BodyPart SelectTreatment(PredictedPlayerGhost health)
-        {
-            if (RaidHealth.CanHeal(health, BodyPart.Head) && health.HeadHealth < RaidHealth.Maximum(health, BodyPart.Head) * .65f) return BodyPart.Head;
-            if (RaidHealth.CanHeal(health, BodyPart.Chest) && health.ChestHealth < RaidHealth.Maximum(health, BodyPart.Chest) * .65f) return BodyPart.Chest;
-            var selected = BodyPart.Auto;float fraction = float.MaxValue;
-            for (int i = 0; i < RaidHealth.PartCount; i++)
-            {
+        private static BodyPart SelectTreatment(PredictedPlayerGhost health) {
+            if (RaidHealth.CanHeal(health, BodyPart.Head) &&
+                health.HeadHealth < RaidHealth.Maximum(health, BodyPart.Head) * .65f)
+                return BodyPart.Head;
+            if (RaidHealth.CanHeal(health, BodyPart.Chest) &&
+                health.ChestHealth < RaidHealth.Maximum(health, BodyPart.Chest) * .65f)
+                return BodyPart.Chest;
+            var selected = BodyPart.Auto;
+            float fraction = float.MaxValue;
+            for (int i = 0; i < RaidHealth.PartCount; i++) {
                 var part = (BodyPart)i;
                 if (!RaidHealth.CanHeal(health, part)) continue;
                 float value = RaidHealth.Get(health, part) / RaidHealth.Maximum(health, part);
                 if (value >= fraction) continue;
-                fraction = value;selected = part;
+                fraction = value;
+                selected = part;
             }
             return selected;
         }
 
-        private static InventoryItem FindMedical(InventoryGraph inventory) => PmcMedicalInventory.FindAccessible(inventory);
+        private static InventoryItem FindMedical(InventoryGraph inventory) {
+            return PmcMedicalInventory.FindAccessible(inventory);
+        }
 
-        private bool SafeToTreat(DollSingerEnemyBrain brain, Vector3 position, double now)
-        {
-            if (brain.Visible || brain.Suppression >= .3f || now - brain.LastDamage < m_Tuning.HealSafetySeconds) return false;
+        private bool SafeToTreat(DollSingerEnemyBrain brain, Vector3 position, double now) {
+            if (brain.Visible || brain.Suppression >= .3f || now - brain.LastDamage < m_Tuning.HealSafetySeconds)
+                return false;
             if (brain.Target == Entity.Null || brain.Confidence <= .2f) return true;
             double observationAge = now - System.Math.Max(brain.LastSeenTime, brain.LastHeardTime);
-            if (observationAge < 2 || HorizontalDistance(position, brain.LastSeen) < 8 && observationAge < 6) return false;
+            if (observationAge < 2 || (HorizontalDistance(position, brain.LastSeen) < 8 && observationAge < 6))
+                return false;
             return observationAge > 6 || WorldBlocked(position + Vector3.up * 1.15f, brain.LastSeen + brain.AimOffset);
         }
 
-        private void AdvanceHealing(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
-        {
+        private void AdvanceHealing(
+            DollSingerEnemyBrain brain,
+            ref PredictedPlayerGhost health,
+            Vector3 position,
+            double now) {
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
-            bool eligible = brain.Action == PmcAction.Heal && (!brain.HazardDanger || brain.IsClashBot) && SafeToTreat(brain, position, now) &&
-                !(brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) &&
-                HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
-                (bleeding || burning || NeedsHealing(health));
+            bool eligible = brain.Action == PmcAction.Heal && (!brain.HazardDanger || brain.IsClashBot) &&
+                            SafeToTreat(brain, position, now) &&
+                            !(brain.IsClashBot
+                                ? health.ControllerState.IsReloadingState
+                                : RaidHealth.HandsBusy(health)) &&
+                            HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
+                            (bleeding || burning || NeedsHealing(health));
             double previous = brain.HealUntil;
-            if (PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now))
-            {
+            if (PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now)) {
                 if (previous <= 0 && brain.HealUntil > 0) RaidConsumableAcoustics.Mark(ref health);
                 return;
             }
-            if (brain.HealUntil <= 0)
-            {
+            if (brain.HealUntil <= 0) {
                 if (now < brain.NextHeal) return;
                 var medical = FindMedical(brain.Inventory);
-                if (medical == null) { brain.NextDecision = 0; return; }
+                if (medical == null) {
+                    brain.NextDecision = 0;
+                    return;
+                }
                 brain.HealStatus = false;
                 brain.HealItemId = medical.Id;
                 brain.HealInventoryVersion = brain.Inventory.Version;
-                brain.HealUntil = now + ConsumableCatalog.MedicalSeconds(medical.Code,m_Tuning.HealSeconds);
+                brain.HealUntil = now + ConsumableCatalog.MedicalSeconds(medical.Code, m_Tuning.HealSeconds);
                 brain.CommitUntil = brain.HealUntil;
                 RaidConsumableAcoustics.Mark(ref health);
                 return;
             }
-            if (brain.Inventory.Version != brain.HealInventoryVersion)
-            {
+            if (brain.Inventory.Version != brain.HealInventoryVersion) {
                 brain.HealUntil = 0;
                 brain.HealItemId = null;
                 brain.NextHeal = now + 1;
@@ -232,7 +288,7 @@ namespace Unity.MP_FPS
             if (now < brain.HealUntil) return;
             // The shared server transaction checks body health, accessibility and inventory
             // version. Nothing is consumed before the treatment timer finishes.
-            BodyPart treatment = SelectTreatment(health);
+            var treatment = SelectTreatment(health);
             RaidHealth.UseMedical(ref health, brain.Inventory, brain.HealItemId, brain.HealInventoryVersion, treatment);
             brain.LastHealth = health.CurrentHealth;
             brain.HealUntil = 0;

@@ -12,10 +12,8 @@ using UnityEngine.Serialization;
 using Unity.MP_FPS.DollSinger;
 using static FirstPersonController;
 
-namespace Unity.MP_FPS
-{
-    public partial class PlayerGhost : GhostMonoBehaviour, IUpdateClient, IUpdateServer
-    {
+namespace Unity.MP_FPS {
+    public partial class PlayerGhost : GhostMonoBehaviour, IUpdateClient, IUpdateServer {
         [field: SerializeField] public AssetReferenceGameObject ProjectilePrefabAR { get; private set; }
         [SerializeField] private Vector3 m_CameraRotation;
         [SerializeField] private GameObject m_OwnerVisuals;
@@ -24,27 +22,30 @@ namespace Unity.MP_FPS
         [field: SerializeField] public Transform CameraTarget { get; private set; }
         [field: SerializeField] public Transform ReticlePoint { get; private set; }
         [field: SerializeField] public Transform ShotOrigin { get; private set; }
-        [field: FormerlySerializedAs("<VisualShotOrigin>k__BackingField")] [field: SerializeField] 
+
+        [field: FormerlySerializedAs("<VisualShotOrigin>k__BackingField")]
+        [field: SerializeField]
         public Transform VisualShotOrigin1P { get; private set; }
+
         [field: SerializeField] public Transform VisualShotOrigin3P { get; private set; }
 
-        [Header("Manual Aiming Setup")]
-        [SerializeField] private Animator m_Animator3P;
+        [Header("Manual Aiming Setup")] [SerializeField]
+        private Animator m_Animator3P;
+
         private static readonly int AimPitchHash = Animator.StringToHash("AimPitch");
-        
         public int PlayerIndex { get; private set; }
         public int InputUserId { get; set; } = -1;
         public PlayerInput ServerMovementInput { get; set; }
         public ControllerConsts ControllerConsts { get; private set; }
 
         #region Cached Player Components
+
         private FirstPersonController m_Controller;
         public FirstPersonController Controller => m_Controller;
 
         #endregion
 
         [field: SerializeField] public GameObject MainCameraPrefab { get; private set; }
-
         private Camera m_PlayerCamera;
         private Animator _animatorCharacter;
         private Vector3 m_ReticleVector;
@@ -52,7 +53,6 @@ namespace Unity.MP_FPS
         private Transform m_HeadBone;
         private CapsuleCollider m_BodyHitbox, m_LeftArmHitbox, m_RightArmHitbox;
         private static RaycastHit[] s_ShotHits = new RaycastHit[64];
-
         private CinemachineTargetGroup m_TargetGroup;
         private CinemachinePositionComposer m_PositionComposer;
         private CinemachineCamera m_CinemachineCamera;
@@ -61,196 +61,185 @@ namespace Unity.MP_FPS
         // the one this ghost added. Both are needed to put the scene back the way it was when the
         // ghost is destroyed - see RestoreAudioListeners.
         private AudioListener m_AddedListener;
-        private readonly List<AudioListener> m_SuppressedListeners = new List<AudioListener>();
+        private readonly List<AudioListener> m_SuppressedListeners = new();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init()
-        {
-            s_NextPredictionId = 1;
-        }
-        
+        private static void Init() { s_NextPredictionId = 1; }
+
         private static uint s_NextPredictionId = 1;
-
-        public static uint GetNextPredictionID()
-        {
-            return s_NextPredictionId++;
-        }
-
-        public Camera GetPlayerCamera()
-        {
-            return m_PlayerCamera;
-        }
+        public static uint GetNextPredictionID() { return s_NextPredictionId++; }
+        public Camera GetPlayerCamera() { return m_PlayerCamera; }
 
         // 从角色身上的稳定锚点发出射线，再根据镜头提供的瞄准点检查开火方向。
-        public Ray GetShotRay(in PlayerInput input, float range, out Vector3 aimPoint)
-        {
-            var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) * Vector3.forward;
-            Vector3 origin = CameraTarget.position;
+        public Ray GetShotRay(in PlayerInput input, float range, out Vector3 aimPoint) {
+            var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) *
+                            Vector3.forward;
+            var origin = CameraTarget.position;
             aimPoint = origin + direction * range;
-            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
-            {
+            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger)) {
                 // A stable gameplay anchor also exists on a headless server, where the model is inactive.
                 origin = ShotOrigin.position + Vector3.up * Controller.StanceHeightOffset;
-                Vector3 leanOffset = dollSinger.GetGameplayLeanOffset(input.Lean,
+                var leanOffset = dollSinger.GetGameplayLeanOffset(input.Lean,
                     Quaternion.Euler(0f, input.LookYawPitchDegrees.x, 0f), input.ThirdPerson);
                 origin += DollSingerMovement.ConstrainLeanOffset(origin, leanOffset, transform,
                     LayerMask.GetMask("Ground", "Default"));
                 Vector3 requestedTarget = input.AimPoint;
-                Vector3 offset = requestedTarget - origin;
+                var offset = requestedTarget - origin;
                 // Allow camera/muzzle parallax, but reject overflowing or rearward target intent.
                 if (math.all(math.isfinite(input.AimPoint)) && math.lengthsq(input.AimPoint) > 0f &&
                     math.isfinite(offset.sqrMagnitude) && offset.sqrMagnitude > 0.0001f &&
-                    Vector3.Dot(offset.normalized, direction) >= 0.1f)
-                {
+                    Vector3.Dot(offset.normalized, direction) >= 0.1f) {
                     direction = offset.normalized;
                     aimPoint = origin + direction * Mathf.Min(offset.magnitude, range);
-                }
-                else
-                    aimPoint = origin + direction * range;
+                } else { aimPoint = origin + direction * range; }
             }
             return new Ray(origin, direction);
         }
 
         // 服务器即使把角色藏起来也要判定头部命中，所以用独立的碰撞体跟随角色姿势。
-        public void CreateHeadHitbox(int layer)
-        {
-            if(m_HeadHitbox!=null)return;
-            var animator=m_Animator3P!=null ? m_Animator3P : GetComponentInChildren<Animator>(true);
-            if(animator==null)return;
-            if(animator.avatar!=null && animator.avatar.isHuman)
-                m_HeadBone=animator.GetBoneTransform(HumanBodyBones.Head);
+        public void CreateHeadHitbox(int layer) {
+            if (m_HeadHitbox != null) return;
+            var animator = m_Animator3P != null ? m_Animator3P : GetComponentInChildren<Animator>(true);
+            if (animator == null) return;
+            if (animator.avatar != null && animator.avatar.isHuman)
+                m_HeadBone = animator.GetBoneTransform(HumanBodyBones.Head);
             else
-                foreach(var bone in animator.GetComponentsInChildren<Transform>(true))
-                    if(bone.name=="Head"){m_HeadBone=bone;break;}
-            if(m_HeadBone==null)return;
+                foreach (var bone in animator.GetComponentsInChildren<Transform>(true))
+                    if (bone.name == "Head") {
+                        m_HeadBone = bone;
+                        break;
+                    }
+            if (m_HeadBone == null) return;
             // Keep the hitbox outside the visual hierarchy: headless servers disable that model.
-            var head=new GameObject("Head hitbox");head.layer=layer;head.transform.SetParent(transform,false);
-            m_HeadHitbox=head.AddComponent<SphereCollider>();m_HeadHitbox.radius=.17f;
+            var head = new GameObject("Head hitbox");
+            head.layer = layer;
+            head.transform.SetParent(transform, false);
+            m_HeadHitbox = head.AddComponent<SphereCollider>();
+            m_HeadHitbox.radius = .17f;
             head.AddComponent<PlayerHitRegion>().Part = BodyPart.Head;
             // Proxy movement controllers are disabled. They still need a queryable body
             // so the camera chooses the character surface instead of distant ground.
-            var controller=GetComponent<UnityEngine.CharacterController>();
-            if(controller!=null)
-            {
-                var body=new GameObject("Body hitbox");body.layer=layer;body.transform.SetParent(transform,false);
-                var capsule=body.AddComponent<CapsuleCollider>();capsule.center=controller.center;
+            var controller = GetComponent<UnityEngine.CharacterController>();
+            if (controller != null) {
+                var body = new GameObject("Body hitbox");
+                body.layer = layer;
+                body.transform.SetParent(transform, false);
+                var capsule = body.AddComponent<CapsuleCollider>();
+                capsule.center = controller.center;
                 m_BodyHitbox = capsule;
-                capsule.height=controller.height;capsule.radius=controller.radius;capsule.direction=1;
-                CapsuleCollider Arm(string name, BodyPart part)
-                {
-                    var arm = new GameObject(name); arm.layer = layer; arm.transform.SetParent(transform, false);
+                capsule.height = controller.height;
+                capsule.radius = controller.radius;
+                capsule.direction = 1;
+
+                CapsuleCollider Arm(string name, BodyPart part) {
+                    var arm = new GameObject(name);
+                    arm.layer = layer;
+                    arm.transform.SetParent(transform, false);
                     arm.AddComponent<PlayerHitRegion>().Part = part;
                     return arm.AddComponent<CapsuleCollider>();
                 }
+
                 m_LeftArmHitbox = Arm("Left arm hitbox", BodyPart.LeftArm);
                 m_RightArmHitbox = Arm("Right arm hitbox", BodyPart.RightArm);
             }
             UpdateHeadHitbox();
         }
 
-        private void UpdateHeadHitbox()
-        {
-            if(m_HeadHitbox==null)return;
+        private void UpdateHeadHitbox() {
+            if (m_HeadHitbox == null) return;
             var capsule = Controller.CharacterController;
-            if (m_BodyHitbox != null) { m_BodyHitbox.center = capsule.center; m_BodyHitbox.height = capsule.height; m_BodyHitbox.radius = capsule.radius; }
+            if (m_BodyHitbox != null) {
+                m_BodyHitbox.center = capsule.center;
+                m_BodyHitbox.height = capsule.height;
+                m_BodyHitbox.radius = capsule.radius;
+            }
             if (Role == MultiplayerRole.Server)
                 m_HeadHitbox.transform.localPosition = capsule.center + Vector3.up * (capsule.height * .5f - .14f);
-            else if (m_HeadBone != null) m_HeadHitbox.transform.position=m_HeadBone.position+Vector3.up*.06f;
-            void PlaceArm(CapsuleCollider arm, float side)
-            {
+            else if (m_HeadBone != null) m_HeadHitbox.transform.position = m_HeadBone.position + Vector3.up * .06f;
+
+            void PlaceArm(CapsuleCollider arm, float side) {
                 if (arm == null) return;
-                arm.transform.localPosition = capsule.center + new Vector3(side * (capsule.radius + .06f), capsule.height * .08f, 0);
-                arm.height = capsule.height * .36f; arm.radius = .09f;
+                arm.transform.localPosition =
+                    capsule.center + new Vector3(side * (capsule.radius + .06f), capsule.height * .08f, 0);
+                arm.height = capsule.height * .36f;
+                arm.radius = .09f;
             }
-            PlaceArm(m_LeftArmHitbox, -1); PlaceArm(m_RightArmHitbox, 1);
+
+            PlaceArm(m_LeftArmHitbox, -1);
+            PlaceArm(m_RightArmHitbox, 1);
         }
 
-        public bool RaycastShot(Ray ray,float range,int mask,out RaycastHit nearest)
-        {
-            var physics=gameObject.scene.GetPhysicsScene();
+        public bool RaycastShot(Ray ray, float range, int mask, out RaycastHit nearest) {
+            var physics = gameObject.scene.GetPhysicsScene();
             int count;
-            while((count=physics.Raycast(ray.origin,ray.direction,s_ShotHits,range,mask,QueryTriggerInteraction.Ignore))==s_ShotHits.Length)
-            {
+            while ((count = physics.Raycast(ray.origin, ray.direction, s_ShotHits, range, mask,
+                       QueryTriggerInteraction.Ignore)) == s_ShotHits.Length) {
                 // Do not select an arbitrary target if an unusually dense scene fills the buffer.
-                if(s_ShotHits.Length>=4096){nearest=default;return false;}
-                System.Array.Resize(ref s_ShotHits,s_ShotHits.Length*2);
+                if (s_ShotHits.Length >= 4096) {
+                    nearest = default;
+                    return false;
+                }
+                System.Array.Resize(ref s_ShotHits, s_ShotHits.Length * 2);
             }
-            nearest=default;float distance=float.PositiveInfinity;bool found=false;
-            for(int i=0;i<count;i++)
-            {
-                var hit=s_ShotHits[i];
-                if(!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.distance>=distance)continue;
-                nearest=hit;distance=hit.distance;found=true;
+            nearest = default;
+            float distance = float.PositiveInfinity;
+            bool found = false;
+            for (int i = 0; i < count; i++) {
+                var hit = s_ShotHits[i];
+                if (!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.distance >= distance) continue;
+                nearest = hit;
+                distance = hit.distance;
+                found = true;
             }
             return found;
         }
 
-        public CinemachineCamera GetPlayerCinemachineCamera()
-        {
-            return m_CinemachineCamera;
-        }
+        public CinemachineCamera GetPlayerCinemachineCamera() { return m_CinemachineCamera; }
+        public CinemachinePositionComposer GetPositionComposer() { return m_PositionComposer; }
 
-        public CinemachinePositionComposer GetPositionComposer()
-        {
-            return m_PositionComposer;
-        }
-
-        public struct PlayerData : IComponentData
-        {
+        public struct PlayerData : IComponentData {
             [GhostField] public FixedString128Bytes Name;
             public Entity ViewEntity;
             public Entity ControlledEntity;
         }
 
-        public void Awake()
-        {
+        public void Awake() {
             GetRequiredComponent(out m_Controller);
             m_ReticleVector = ReticlePoint.localPosition;
         }
-        
-        private void LateUpdate()
-        {
+
+        private void LateUpdate() {
             // This logic is for visual clients only
             if ((Role != MultiplayerRole.ClientProxy && Role != MultiplayerRole.ClientOwned) || m_Animator3P == null)
-            {
                 return;
-            }
-
             var predictedPlayerGhost = ReadGhostComponentData<PredictedPlayerGhost>();
             var controllerState = predictedPlayerGhost.ControllerState;
-            
+
             // matches vertical angle value in ClientInputReaderSystem
             float normalizedPitch = controllerState.PitchDegrees / 85f;
-            
             m_Animator3P.SetFloat(AimPitchHash, normalizedPitch);
         }
 
-        public override void OnGhostLinked()
-        {
+        public override void OnGhostLinked() {
             // Host server and client replicas share a PhysX scene. Hitboxes on the
             // other timeline must never push this movement controller during prediction.
             Controller.CharacterController.excludeLayers |= Role == MultiplayerRole.Server
                 ? LayerMask.GetMask("ClientPlayer")
                 : LayerMask.GetMask("ServerPlayer");
-            CreateHeadHitbox(Role==MultiplayerRole.Server ? (int)LayerIndex.ServerPlayer : (int)LayerIndex.ClientPlayer);
-            bool isClientOwned = (Role == MultiplayerRole.ClientOwned);
+            CreateHeadHitbox(Role == MultiplayerRole.Server
+                ? (int)LayerIndex.ServerPlayer
+                : (int)LayerIndex.ClientPlayer);
+            bool isClientOwned = Role == MultiplayerRole.ClientOwned;
             m_OwnerVisuals.SetActive(isClientOwned);
             m_OtherPlayerVisuals.SetActive(!isClientOwned);
-
-            if (Role != MultiplayerRole.Server)
-            {
+            if (Role != MultiplayerRole.Server) {
                 _animatorCharacter = GetComponent<Animator>();
                 // Our own deployment gets the layered confirmation cue (success gong + the
                 // android acknowledging the order); other players arriving keep the spawn cue.
                 var spawnSfx = isClientOwned ? MoonkovAudio.Library?.DeployConfirm : m_SpawnSFX;
-                if (spawnSfx != null)
-                {
-                    GameManager.Instance.SoundSystem.CreateEmitter(spawnSfx, transform.position);
-                }
+                if (spawnSfx != null) GameManager.Instance.SoundSystem.CreateEmitter(spawnSfx, transform.position);
             }
-
-            if (isClientOwned)
-            {
+            if (isClientOwned) {
                 var predictedPlayer = ReadGhostComponentData<PredictedPlayerGhost>();
                 PlayerIndex = predictedPlayer.InputIndex;
                 // create camera
@@ -262,40 +251,28 @@ namespace Unity.MP_FPS
                 listening.SetParent(m_PlayerCamera ? m_PlayerCamera.transform : m_OwnerVisuals.transform, false);
                 m_AddedListener = listening.gameObject.AddComponent<AudioListener>();
                 m_SuppressedListeners.Clear();
-                foreach (var a in Resources.FindObjectsOfTypeAll<AudioListener>())
-                {
+                foreach (var a in Resources.FindObjectsOfTypeAll<AudioListener>()) {
                     if (a == null || a == m_AddedListener || !a.enabled) continue;
-                    if (!a.gameObject.scene.IsValid()) continue;   // skip prefab/asset contents
+                    if (!a.gameObject.scene.IsValid()) continue; // skip prefab/asset contents
                     m_SuppressedListeners.Add(a);
                     a.enabled = false;
                 }
-
                 GameManager.Instance.SoundSystem.SetListenerTransform(listening);
-            }
-            else if (Role == MultiplayerRole.ClientProxy)
-            {
+            } else if (Role == MultiplayerRole.ClientProxy) {
                 // no physics required
                 Controller.CharacterController.enabled = false;
             }
-
-            gameObject.layer = (Role == MultiplayerRole.Server)
+            gameObject.layer = Role == MultiplayerRole.Server
                 ? (int)LayerIndex.ServerPlayer
                 : (int)LayerIndex.ClientPlayer;
-
-            if (Role != MultiplayerRole.Server)
-                Moon.MoonSilverPrintSubject.Protect(gameObject);
-
+            if (Role != MultiplayerRole.Server) Moon.MoonSilverPrintSubject.Protect(gameObject);
             PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager);
             playerManager.Register(this);
         }
 
-        public override void OnGhostPreDestroy()
-        {
+        public override void OnGhostPreDestroy() {
             RestoreAudioListeners();
-            if (PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager))
-            {
-                playerManager.Unregister(this);
-            }
+            if (PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager)) playerManager.Unregister(this);
         }
 
         /// <summary>
@@ -305,56 +282,40 @@ namespace Unity.MP_FPS
         /// after extraction. The camera listener is also re-enabled explicitly, because Unity
         /// produces no sound at all when no enabled AudioListener exists.
         /// </summary>
-        private void RestoreAudioListeners()
-        {
+        private void RestoreAudioListeners() {
             if (m_AddedListener == null && m_SuppressedListeners.Count == 0) return;
-
             foreach (var listener in m_SuppressedListeners)
-            {
-                if (listener != null) listener.enabled = true;
-            }
+                if (listener != null)
+                    listener.enabled = true;
             m_SuppressedListeners.Clear();
-            if (m_AddedListener)
-            {
+            if (m_AddedListener) {
                 m_AddedListener.enabled = false;
                 Destroy(m_AddedListener.gameObject);
             }
             m_AddedListener = null;
-
             var camera = MainCameraSingleton.Instance;
             var fallback = camera != null ? camera.GetComponent<AudioListener>() : null;
-            if (fallback != null)
-            {
+            if (fallback != null) {
                 fallback.enabled = true;
                 if (GameManager.Instance != null)
-                {
                     GameManager.Instance.SoundSystem.SetListenerTransform(fallback.transform);
-                }
             }
         }
 
-        void AttachPlayerViewCamera()
-        {
-            var playerCamera = GameObject.FindAnyObjectByType<Camera>();
-            if (playerCamera != null)
-            {
+        private void AttachPlayerViewCamera() {
+            var playerCamera = FindAnyObjectByType<Camera>();
+            if (playerCamera != null) {
                 playerCamera.transform.parent = transform.Find("ViewPoint");
                 playerCamera.transform.localPosition = Vector3.zero;
                 playerCamera.transform.localRotation = Quaternion.identity;
             }
         }
 
-        private void CreateClientCamera()
-        {
+        private void CreateClientCamera() {
             //Disable current camera
             var existingCamera = FindAnyObjectByType<Camera>();
-            if (existingCamera != null)
-            {
-                existingCamera.enabled = false;
-            }
-
-            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
-            {
+            if (existingCamera != null) existingCamera.enabled = false;
+            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger)) {
                 m_PlayerCamera = dollSinger.ActivateOwnedView();
                 Utils.SetCursorVisible(false);
                 return;
@@ -364,35 +325,21 @@ namespace Unity.MP_FPS
             var mainCameraInstance = Instantiate(MainCameraPrefab, CameraTarget.transform);
             mainCameraInstance.transform.localPosition = Vector3.zero;
             mainCameraInstance.name = $"MainCamera_{PlayerIndex}";
-
             m_PlayerCamera = mainCameraInstance.GetComponent<Camera>();
-
             var audioListener = mainCameraInstance.GetComponent<AudioListener>();
-            if (audioListener != null)
-            {
-                GameManager.Instance.SoundSystem.SetListenerTransform(audioListener.transform);
-            }
-
+            if (audioListener != null) GameManager.Instance.SoundSystem.SetListenerTransform(audioListener.transform);
             Utils.SetCursorVisible(false);
         }
 
-        public void UpdateServer(float deltaTime)
-        {
-            UpdateHeadHitbox();
-        }
+        public void UpdateServer(float deltaTime) { UpdateHeadHitbox(); }
 
-        public void UpdateClient(float deltaTime)
-        {
+        public void UpdateClient(float deltaTime) {
             UpdateHeadHitbox();
             var predictedPlayerGhost = ReadGhostComponentData<PredictedPlayerGhost>();
             var controllerState = predictedPlayerGhost.ControllerState;
             if (Role == MultiplayerRole.ClientOwned)
-            {
                 CameraTarget.transform.rotation = Quaternion.Euler(controllerState.PitchDegrees,
-                    Camera.main.transform.rotation.eulerAngles.y,
-                    Camera.main.transform.rotation.eulerAngles.z);
-            }
-
+                    Camera.main.transform.rotation.eulerAngles.y, Camera.main.transform.rotation.eulerAngles.z);
             var rot = Quaternion.Euler(controllerState.PitchDegrees, 0.0f, 0.0f);
             ReticlePoint.localPosition = rot * m_ReticleVector;
 
@@ -401,24 +348,19 @@ namespace Unity.MP_FPS
             m_OtherPlayerVisuals.transform.localRotation = Quaternion.identity;
         }
 
-        public bool SetPlayerPositionFromRPC(float3 rpcPosition, float positionErrorSq)
-        {
+        public bool SetPlayerPositionFromRPC(float3 rpcPosition, float positionErrorSq) {
             var predictedPlayerGhost = ReadGhostComponentData<PredictedPlayerGhost>();
             var controllerState = predictedPlayerGhost.ControllerState;
-
             float positionError = math.distancesq(controllerState.CurrentPosition, rpcPosition);
 
             //allow the current player position to be altered by the client but only within a certain tolerance
             //(this is to avoid sliding during some position locked animations caused by the player predicting ahead of the server)
-            if (positionError <= (positionErrorSq))
-            {
+            if (positionError <= positionErrorSq) {
                 controllerState.CurrentPosition = rpcPosition;
                 predictedPlayerGhost.ControllerState = controllerState;
                 WriteGhostComponentData(predictedPlayerGhost);
-
                 return true;
             }
-
             return false;
         }
     }

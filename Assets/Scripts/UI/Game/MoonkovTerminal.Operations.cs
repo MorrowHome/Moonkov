@@ -3,18 +3,15 @@ using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-    public sealed partial class MoonkovTerminal
-    {
+namespace Unity.MP_FPS.Client {
+    public sealed partial class MoonkovTerminal {
         private int m_OperationStep;
-        private static readonly string[] OperationLayouts =
-        {
+
+        private static readonly string[] OperationLayouts = {
             "OperationOperator", "OperationLocation", "OperationBriefing", "OperationRecovery", "OperationReady"
         };
 
-        private void ShowOperationStep(int step)
-        {
+        private void ShowOperationStep(int step) {
             step = Mathf.Clamp(step, 0, OperationLayouts.Length - 1);
             if (m_OperationStep == step) return;
             m_OperationStep = step;
@@ -22,32 +19,29 @@ namespace Unity.MP_FPS.Client
             m_Content.Q<Button>(m_OperationStep == 4 ? "launch" : "operationContinue")?.Focus();
         }
 
-        private void Operation()
-        {
+        private void Operation() {
             TerminalLayout.Populate(m_Content, "Operation");
             TerminalLayout.Populate(m_Content.Q("operationMain"), OperationLayouts[m_OperationStep]);
-            if (m_OperationStep is 0 or 2)
-            {
+            if (m_OperationStep is 0 or 2) {
                 MoonkovLocalization.Set(m_Content.Q<Label>("operationLootKey"), "[{0}] COLLECT NEARBY SUPPLIES",
                     RaidKeyBindings.DisplayName(RaidKey.Interact));
                 MoonkovLocalization.Set(m_Content.Q<Label>("operationInventoryKey"), "[{0}] CHECK YOUR RAID PACK",
                     RaidKeyBindings.DisplayName(RaidKey.Inventory));
             }
-            for (int i = 0; i < OperationLayouts.Length; i++)
-            {
+            for (int i = 0; i < OperationLayouts.Length; i++) {
                 int step = i;
                 var button = m_Content.Q<Button>("operationStep" + i);
                 button.EnableInClassList("terminal-tab-selected", i == m_OperationStep);
                 button.clicked += () => ShowOperationStep(step);
             }
-            m_Content.Q<Button>("back").clicked += () =>
-            {
-                if (m_OperationStep == 0) Navigate(0);
-                else ShowOperationStep(m_OperationStep - 1);
+            m_Content.Q<Button>("back").clicked += () => {
+                if (m_OperationStep == 0)
+                    Navigate(0);
+                else
+                    ShowOperationStep(m_OperationStep - 1);
             };
             m_Content.Q<Button>("operationContinue").clicked += () => ShowOperationStep(m_OperationStep + 1);
-            switch (m_OperationStep)
-            {
+            switch (m_OperationStep) {
                 case 0:
                     m_Character = new MenuCharacterView(element: m_Content.Q<Image>("operatorPortrait"));
                     m_Character.SetEquipmentInventory(m_EquipmentInventory);
@@ -57,15 +51,16 @@ namespace Unity.MP_FPS.Client
                     PopulateOperationEquipment();
                     m_Content.Q<Button>("reviewEquipment").clicked += () => Navigate(1);
                     break;
-                case 2:
-                    BindOperationCargo();
-                    break;
+                case 2: BindOperationCargo(); break;
                 case 4:
                     m_Content.Q<Button>("readyEquipmentAction").clicked += ReviewDepartureEquipment;
                     PresentDepartureEquipment();
                     AddOperationCellArt("readyCellArt");
-                    MoonkovLocalization.Set(m_Content.Q<Label>("readyOperatorName"), GameSettings.CharacterName(GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex));
-                    MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS", PlayerProfileClient.CarryCells);
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyOperatorName"),
+                        GameSettings.CharacterName(GameSettings.Instance?.PlayerCharacter ??
+                                                   GameSettings.DollSingerCharacterIndex));
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS",
+                        PlayerProfileClient.CarryCells);
                     var launch = m_Content.Q<Button>("launch");
                     // 这个按钮只启动对应的准备路径。单人、好友房、线上小队的区别在 MainMenu.Account。
                     launch.clicked += m_Prepare;
@@ -75,87 +70,92 @@ namespace Unity.MP_FPS.Client
                     PresentCompanionPicker(m_Content);
                     companions.index = GameSettings.Instance.ExpeditionCompanionCount;
                     companions.SetEnabled(!m_Busy);
-                    companions.RegisterValueChangedCallback(_ => GameSettings.Instance.ExpeditionCompanionCount = companions.index);
+                    companions.RegisterValueChangedCallback(_ =>
+                        GameSettings.Instance.ExpeditionCompanionCount = companions.index);
                     string departure = DepartureAction(offline, lan);
                     MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), departure);
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionTitle"), departure);
-                    MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionNote"), offline
-                        ? "Deploy using your offline loadout. This is a real expedition: death or timeout loses unprotected equipment."
-                        : lan ? "Open your LAN room to choose a host or join a crew. Deployment starts from the room."
-                        : "进入小队，邀请好友或准备出发。装备在实际进入战局时出战。");
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionNote"),
+                        offline
+                            ?
+                            "Deploy using your offline loadout. This is a real expedition: death or timeout loses unprotected equipment."
+                            : lan
+                                ? "Open your LAN room to choose a host or join a crew. Deployment starts from the room."
+                                : "进入小队，邀请好友或准备出发。装备在实际进入战局时出战。");
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyDepartureNote"),
                         "Check your equipped weapon and carried supplies before leaving. Storage items stay here; carried loot is secured after extraction and saving.");
                     launch.SetEnabled(!m_Busy);
-                    if (m_Busy) MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), "LINK BUSY  /  STAND BY");
+                    if (m_Busy)
+                        MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"),
+                            "LINK BUSY  /  STAND BY");
                     break;
             }
         }
 
-        private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
-            offline ? "DEPLOY SOLO" : "进入小队";
+        private static string DepartureAction(bool offline, bool lan) {
+            return lan ? "OPEN LAN ROOM" : offline ? "DEPLOY SOLO" : "进入小队";
+        }
 
         // 只有单人标准远征且教学未占用流程时，准备页才提供可选人机队友。
-        internal static void PresentCompanionPicker(VisualElement root)
-        {
+        internal static void PresentCompanionPicker(VisualElement root) {
             var picker = root.Q<DropdownField>("readyCompanions");
             if (picker == null) return;
-            bool show = PlayerProfileClient.IsOffline && GameSettings.Instance.RequestedMode == RaidGameMode.Expedition &&
-                PlayerProfileClient.Tutorial?.Status != Campaign.TutorialStatus.Active;
+            bool show = PlayerProfileClient.IsOffline &&
+                        GameSettings.Instance.RequestedMode == RaidGameMode.Expedition &&
+                        PlayerProfileClient.Tutorial?.Status != Campaign.TutorialStatus.Active;
             picker.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
             root.Q("readyTerminalPhoto").style.display = show ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
-        private void PresentDepartureEquipment()
-        {
+        private void PresentDepartureEquipment() {
             var copy = m_Content.Q<Label>("readyEquipmentNote");
             var button = m_Content.Q<Button>("readyEquipmentAction");
             if (copy == null || button == null) return;
             var check = DepartureEquipmentCheck.Read(m_EquipmentInventory);
             MoonkovLocalization.Set(copy, check.Copy);
-            copy.EnableInClassList("op-warning", check.Issue == DepartureEquipmentIssue.Halo || check.Issue == DepartureEquipmentIssue.Medicine);
+            copy.EnableInClassList("op-warning",
+                check.Issue == DepartureEquipmentIssue.Halo || check.Issue == DepartureEquipmentIssue.Medicine);
             MoonkovLocalization.Set(button, check.Action);
             button.SetEnabled(!m_Busy && check.Issue != DepartureEquipmentIssue.Loading);
         }
 
         // 缺光环但能领应急装备时，打开已有商店流程。其他情况切到仓库让玩家检查和整理装备。
-        private void ReviewDepartureEquipment()
-        {
+        private void ReviewDepartureEquipment() {
             if (m_Busy || m_EquipmentInventory == null) return;
             // Reuse the shop's authoritative eligibility, order receipt and retry flow.
             if (DepartureEquipmentCheck.Read(m_EquipmentInventory).EmergencyAvailable)
                 OpenShop("LUNAR EMERGENCY SUPPLY", true);
-            else Navigate(1);
+            else
+                Navigate(1);
         }
 
-        private void BindOperationCharacters()
-        {
+        private void BindOperationCharacters() {
             var dollSinger = m_Content.Q<Button>("chooseDollSinger");
             var miku = m_Content.Q<Button>("chooseHatsuneMiku");
             var shian = m_Content.Q<Button>("chooseShian");
             dollSinger.clicked += () => ChooseOperationCharacter(GameSettings.DollSingerCharacterIndex);
             miku.clicked += () => ChooseOperationCharacter(GameSettings.HatsuneMikuCharacterIndex);
             shian.clicked += () => ChooseOperationCharacter(GameSettings.ShianCharacterIndex);
-            dollSinger.SetEnabled(!m_Busy); miku.SetEnabled(!m_Busy); shian.SetEnabled(!m_Busy);
+            dollSinger.SetEnabled(!m_Busy);
+            miku.SetEnabled(!m_Busy);
+            shian.SetEnabled(!m_Busy);
             PresentOperationCharacters();
         }
 
-        private void ChooseOperationCharacter(int characterIndex)
-        {
+        private void ChooseOperationCharacter(int characterIndex) {
             if (m_Busy || GameSettings.Instance == null) return;
             GameSettings.Instance.PlayerCharacter = characterIndex;
             PresentOperationCharacters();
         }
 
-        private void PresentOperationCharacters()
-        {
+        private void PresentOperationCharacters() {
             int selected = GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex;
             MoonkovLocalization.Set(m_Content.Q<Label>("operatorName"), GameSettings.CharacterName(selected));
             SetChoice("chooseDollSinger", GameSettings.DollSingerCharacterIndex);
             SetChoice("chooseHatsuneMiku", GameSettings.HatsuneMikuCharacterIndex);
             SetChoice("chooseShian", GameSettings.ShianCharacterIndex);
 
-            void SetChoice(string name, int characterIndex)
-            {
+            void SetChoice(string name, int characterIndex) {
                 var button = m_Content.Q<Button>(name);
                 bool active = selected == characterIndex;
                 button.EnableInClassList("terminal-tab-selected", active);
@@ -163,21 +163,18 @@ namespace Unity.MP_FPS.Client
             }
         }
 
-        private void PopulateOperationEquipment()
-        {
+        private void PopulateOperationEquipment() {
             var host = m_Content.Q("operationEquipment");
             var snapshot = PlayerProfileClient.Inventory;
             string[] slots = { "Helmet", "ChestRig", "Backpack", "Primary" };
             string[] labels = { "COLLAR", "CHEST BADGE", "BACKPACK", "PRIMARY" };
-            for (int i = 0; i < slots.Length; i++)
-            {
+            for (int i = 0; i < slots.Length; i++) {
                 var row = TerminalLayout.Clone("Components/OperationEquipmentRow", "equipmentRow");
                 host.Add(row);
                 var item = snapshot?.Equipped(slots[i]);
                 MoonkovLocalization.Set(row.Q<Label>("equipmentSlot"), labels[i]);
-                MoonkovLocalization.Set(row.Q<Label>("equipmentName"), item == null
-                    ? snapshot == null ? "—" : "EMPTY"
-                    : global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(item.Code).Name);
+                MoonkovLocalization.Set(row.Q<Label>("equipmentName"),
+                    item == null ? snapshot == null ? "—" : "EMPTY" : Inventory.InventoryCatalog.Get(item.Code).Name);
                 row.Q<Label>("equipmentState").text = item == null ? "—" : "✓";
                 if (item == null) continue;
                 var art = new StashItemArt(item.Code);
@@ -186,15 +183,13 @@ namespace Unity.MP_FPS.Client
             }
         }
 
-        private void AddOperationCellArt(string host)
-        {
+        private void AddOperationCellArt(string host) {
             var art = new StashItemArt(StashArtKind.Cell);
             art.style.flexGrow = 1;
             m_Content.Q(host).Add(art);
         }
 
-        private void BindOperationCargo()
-        {
+        private void BindOperationCargo() {
             AddOperationCellArt("carryCellArt");
             var carry = m_Content.Q<IntegerField>("operationCarryCells");
             var minus = m_Content.Q<Button>("carryMinus");
@@ -203,22 +198,23 @@ namespace Unity.MP_FPS.Client
             var gauge = m_Content.Q(className: "terminal-cargo-gauge-fill");
             carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
             carry.SetEnabled(!m_Busy);
-            void PresentCarry()
-            {
+
+            void PresentCarry() {
                 int selected = PlayerProfileClient.CarryCells;
                 MoonkovLocalization.Set(summary, "Carry {0}/{1} / Stash {2}", selected, RaidRules.BagCapacity, m_Cells);
                 gauge.style.width = Length.Percent(100f * selected / Mathf.Max(1, RaidRules.BagCapacity));
                 minus.SetEnabled(!m_Busy && selected > 0);
                 plus.SetEnabled(!m_Busy && selected < Mathf.Min(m_Cells, RaidRules.BagCapacity));
             }
+
             // Rendering never writes the profile. Only a deliberate control change uses
             // the existing profile adapter, which owns clamping and offline/online routing.
-            void Select(int value)
-            {
+            void Select(int value) {
                 PlayerProfileClient.SelectCarryCells(value);
                 carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
                 PresentCarry();
             }
+
             carry.RegisterValueChangedCallback(evt => Select(evt.newValue));
             minus.clicked += () => Select(PlayerProfileClient.CarryCells - 1);
             plus.clicked += () => Select(PlayerProfileClient.CarryCells + 1);

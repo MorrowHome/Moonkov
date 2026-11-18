@@ -7,8 +7,7 @@ using Newtonsoft.Json;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>
     /// The optional <c>moon-client.local.json</c> that ships next to the executable. It points a
     /// build at an account service and a game server without recompiling, so a player only has to
@@ -17,13 +16,11 @@ namespace Unity.MP_FPS
     /// This is the only reader of that file: AccountServiceSettings, ConnectionSettings and
     /// GameSettings all go through it, so they can never disagree about what the file said.
     /// </summary>
-    public static class ClientSettings
-    {
+    public static class ClientSettings {
         public const string FileName = "moon-client.local.json";
         public const string EditorFileName = "moon-client.editor.local.json";
 
-        sealed class Values
-        {
+        private sealed class Values {
             public string GameServerName;
             public string IceBindAddress;
             public string AccountServiceUrl;
@@ -31,50 +28,45 @@ namespace Unity.MP_FPS
             public bool? AllowLanHttp;
             public string ServerAddress;
             public int ServerPort;
+
             // -1 means "leave whatever the player chose alone".
             public int ConnectionMode = -1;
         }
 
-        static Values s_Values;
+        private static Values s_Values;
 
         // Not named Values: a member cannot share a name with the nested type above (CS0102).
-        static Values Configuration
-        {
-            get
-            {
+        private static Values Configuration {
+            get {
                 if (s_Values != null) return s_Values;
-                try
-                {
+                try {
                     // Windows: next to the executable. macOS: next to the .app, outside its bundle.
                     string directory = Path.GetDirectoryName(Application.dataPath);
-                    if (Application.platform == RuntimePlatform.OSXPlayer)
-                        directory = Path.GetDirectoryName(directory);
+                    if (Application.platform == RuntimePlatform.OSXPlayer) directory = Path.GetDirectoryName(directory);
                     string path = Path.Combine(directory, FileName);
                     s_Values = File.Exists(path)
                         ? JsonConvert.DeserializeObject<Values>(File.ReadAllText(path))
                         : new Values();
                     if (s_Values == null) s_Values = new Values();
                     if (string.IsNullOrWhiteSpace(s_Values.FriendSignalingUrl) &&
-                        Uri.TryCreate(s_Values.AccountServiceUrl, UriKind.Absolute, out var publicUrl) && publicUrl.Scheme == Uri.UriSchemeHttps)
+                        Uri.TryCreate(s_Values.AccountServiceUrl, UriKind.Absolute, out var publicUrl) &&
+                        publicUrl.Scheme == Uri.UriSchemeHttps)
                         s_Values.FriendSignalingUrl = new Uri(publicUrl, "/friend-signaling/v1/").AbsoluteUri;
-                }
-                catch (Exception exception)
-                {
+                } catch (Exception exception) {
                     Debug.LogWarning($"[Moonkov] ignoring {FileName}: {exception.Message}");
                     s_Values = new Values();
                 }
 #if UNITY_EDITOR
                 // Local development must not replace the settings shipped to players.
-                try
-                {
+                try {
                     string editorPath = Path.Combine(Path.GetDirectoryName(Application.dataPath), EditorFileName);
-                    if (File.Exists(editorPath))
-                    {
+                    if (File.Exists(editorPath)) {
                         var overrides = JsonConvert.DeserializeObject<Values>(File.ReadAllText(editorPath));
-                        if (overrides != null)
-                        {
-                            if (overrides.AccountServiceUrl != null) s_Values.AccountServiceUrl = overrides.AccountServiceUrl;
-                            if (overrides.FriendSignalingUrl != null) s_Values.FriendSignalingUrl = overrides.FriendSignalingUrl;
+                        if (overrides != null) {
+                            if (overrides.AccountServiceUrl != null)
+                                s_Values.AccountServiceUrl = overrides.AccountServiceUrl;
+                            if (overrides.FriendSignalingUrl != null)
+                                s_Values.FriendSignalingUrl = overrides.FriendSignalingUrl;
                             if (overrides.ServerAddress != null) s_Values.ServerAddress = overrides.ServerAddress;
                             if (overrides.GameServerName != null) s_Values.GameServerName = overrides.GameServerName;
                             if (overrides.ServerPort != 0) s_Values.ServerPort = overrides.ServerPort;
@@ -82,9 +74,7 @@ namespace Unity.MP_FPS
                             s_Values.AllowLanHttp = overrides.AllowLanHttp ?? s_Values.AllowLanHttp;
                         }
                     }
-                }
-                catch (Exception exception)
-                {
+                } catch (Exception exception) {
                     Debug.LogWarning($"[Moonkov] ignoring {EditorFileName}: {exception.Message}");
                 }
 #endif
@@ -94,11 +84,14 @@ namespace Unity.MP_FPS
 
         /// <summary>Editor play mode keeps statics alive between sessions, so re-read the file each run.</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() => s_Values = null;
+        private static void Reset() { s_Values = null; }
 
         public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
         public static string FriendSignalingUrl => Configuration.FriendSignalingUrl?.Trim();
-        public static string GameServerName => string.IsNullOrWhiteSpace(Configuration.GameServerName) ? null : Configuration.GameServerName.Trim();
+
+        public static string GameServerName =>
+            string.IsNullOrWhiteSpace(Configuration.GameServerName) ? null : Configuration.GameServerName.Trim();
+
         public static string IceBindAddress => Configuration.IceBindAddress?.Trim();
         public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;
 
@@ -117,20 +110,15 @@ namespace Unity.MP_FPS
         /// configured name is resolved here. An address literal comes back unchanged, which is the
         /// usual case and costs nothing.
         /// </summary>
-        public static async Task<string> ResolveAsync(string address)
-        {
-            if (string.IsNullOrWhiteSpace(address) || IPAddress.TryParse(address, out _))
-                return address;
-            try
-            {
+        public static async Task<string> ResolveAsync(string address) {
+            if (string.IsNullOrWhiteSpace(address) || IPAddress.TryParse(address, out _)) return address;
+            try {
                 var candidates = await Dns.GetHostAddressesAsync(address);
                 foreach (var candidate in candidates)
                     if (candidate.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         return candidate.ToString();
                 Debug.LogWarning($"[Moonkov] {address} has no IPv4 address.");
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 Debug.LogWarning($"[Moonkov] could not resolve {address}: {exception.Message}");
             }
             return address;
@@ -140,8 +128,9 @@ namespace Unity.MP_FPS
         /// A connect field may hold an address or a name. Names are resolved at connect time, so they
         /// have to pass validation here or the join button would stay disabled.
         /// </summary>
-        public static bool IsValidAddress(string address) =>
-            !string.IsNullOrWhiteSpace(address) &&
-            (NetworkEndpoint.TryParse(address, 0, out _) || Uri.CheckHostName(address) == UriHostNameType.Dns);
+        public static bool IsValidAddress(string address) {
+            return !string.IsNullOrWhiteSpace(address) && (NetworkEndpoint.TryParse(address, 0, out _) ||
+                                                           Uri.CheckHostName(address) == UriHostNameType.Dns);
+        }
     }
 }

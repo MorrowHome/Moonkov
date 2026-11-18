@@ -10,14 +10,18 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Unity.MP_FPS
-{
-    public enum ClashBotGoal { Target, GroundBounty, Rescue, Escort, Extract, Hold }
+namespace Unity.MP_FPS {
+    public enum ClashBotGoal {
+        Target,
+        GroundBounty,
+        Rescue,
+        Escort,
+        Extract,
+        Hold
+    }
 
-    public partial class DollSingerEnemySystem
-    {
-        private struct ClashAgent
-        {
+    public partial class DollSingerEnemySystem {
+        private struct ClashAgent {
             public Entity Entity;
             public DollSingerEnemyBrain Brain;
             public Vector3 Position;
@@ -28,14 +32,12 @@ namespace Unity.MP_FPS
         private ClashArenaDefinition m_ClashArena;
         private int m_ClashEpoch;
         private bool m_ClashNavChecked, m_ClashNavReady;
-        private readonly NavMeshPath m_ClashRoute = new NavMeshPath();
+        private readonly NavMeshPath m_ClashRoute = new();
         private readonly Vector3[] m_ClashRouteCorners = new Vector3[64];
-        private readonly List<ClashAgent> m_ClashAgents = new List<ClashAgent>(6);
+        private readonly List<ClashAgent> m_ClashAgents = new(6);
 
-        private void UpdateClashBots(MoonRaidMap map, ClashBotRegistry registry, double now)
-        {
-            if (!ReferenceEquals(m_Map, map) || !ReferenceEquals(m_ClashRegistry, registry))
-            {
+        private void UpdateClashBots(MoonRaidMap map, ClashBotRegistry registry, double now) {
+            if (!ReferenceEquals(m_Map, map) || !ReferenceEquals(m_ClashRegistry, registry)) {
                 DestroyEnemies(); // Excludes registered Clash actors: the server owns their lifetime.
                 ReleaseNavigation();
                 ResetPopulation();
@@ -46,49 +48,57 @@ namespace Unity.MP_FPS
                 m_ClashNavChecked = m_ClashNavReady = false;
                 m_ClashEpoch = 0;
             }
-            if (m_ClashEpoch != registry.Epoch)
-            {
+            if (m_ClashEpoch != registry.Epoch) {
                 m_ClashEpoch = registry.Epoch;
                 m_ClashAgents.Clear();
                 m_ClashSquads.Clear();
                 m_CoverReservations.Clear();
-                m_Tracks.Clear();m_Events.Clear();m_Targets.Clear();
+                m_Tracks.Clear();
+                m_Events.Clear();
+                m_Targets.Clear();
                 m_NextTargets = 0;
                 m_ClashNavChecked = m_ClashNavReady = false;
-                m_SpawnRandom = new Unity.Mathematics.Random(unchecked((uint)Math.Max(1, registry.Epoch * 977 + 17)));
+                m_SpawnRandom = new Mathematics.Random(unchecked((uint)Math.Max(1, registry.Epoch * 977 + 17)));
                 m_Characters.Reset();
             }
             if (m_ClashArena == null) m_ClashArena = BountyClashArenaSettings.Active?.Definition;
-            if (m_ClashArena == null)
-            { registry.SetNavigation(false, "等待速战场地加载…"); return; }
-            if (!NavigationReady(map, now))
-            { registry.SetNavigation(false, "正在生成 AI 导航…"); return; }
-            if (!m_ClashNavChecked)
-            {
+            if (m_ClashArena == null) {
+                registry.SetNavigation(false, "等待速战场地加载…");
+                return;
+            }
+            if (!NavigationReady(map, now)) {
+                registry.SetNavigation(false, "正在生成 AI 导航…");
+                return;
+            }
+            if (!m_ClashNavChecked) {
                 m_ClashNavChecked = true;
-                m_ClashNavReady = ValidateClashNavigation(out var failure);
-                registry.SetNavigation(m_ClashNavReady, m_ClashNavReady ? null : "AI 路线不可达，请重新进入地图。", failed: !m_ClashNavReady);
+                m_ClashNavReady = ValidateClashNavigation(out string failure);
+                registry.SetNavigation(m_ClashNavReady, m_ClashNavReady ? null : "AI 路线不可达，请重新进入地图。", !m_ClashNavReady);
                 if (!m_ClashNavReady) Debug.LogError("[Clash AI] Navigation rejected: " + failure);
             }
             if (!m_ClashNavReady) return;
             registry.SetNavigation(true);
             SpawnClashRequests(map, registry, now);
-            if (now >= m_NextTargets) { CollectTargets(now);m_NextTargets = now + .1; }
+            if (now >= m_NextTargets) {
+                CollectTargets(now);
+                m_NextTargets = now + .1;
+            }
             m_ClashAgents.Clear();
             foreach (var (tag, pose, entity) in SystemAPI.Query<RefRO<ClashBot>, RefRO<LocalTransform>>()
-                         .WithAll<DollSingerEnemy, Simulate>().WithEntityAccess())
-            {
-                if (tag.ValueRO.Epoch != registry.Epoch || !registry.TryGetView(tag.ValueRO.ParticipantId, out var view)) continue;
-                m_ClashAgents.Add(new ClashAgent { Entity = entity, Position = pose.ValueRO.Position,
-                    Brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity), View = view });
+                         .WithAll<DollSingerEnemy, Simulate>().WithEntityAccess()) {
+                if (tag.ValueRO.Epoch != registry.Epoch ||
+                    !registry.TryGetView(tag.ValueRO.ParticipantId, out var view))
+                    continue;
+                m_ClashAgents.Add(new ClashAgent {
+                    Entity = entity, Position = pose.ValueRO.Position,
+                    Brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity), View = view
+                });
             }
             ShareClashObservations(now);
-            foreach (var agent in m_ClashAgents)
-            {
+            foreach (var agent in m_ClashAgents) {
                 var input = EntityManager.GetComponentData<PlayerInputComponent>(agent.Entity);
                 if (agent.View.Epoch != registry.Epoch || agent.View.Phase != ClashPhase.Active ||
-                    agent.View.Life != ClashLife.Alive || !BountyClashRuntime.CanAct(EntityManager, agent.Entity))
-                {
+                    agent.View.Life != ClashLife.Alive || !BountyClashRuntime.CanAct(EntityManager, agent.Entity)) {
                     input.Input = default;
                     agent.Brain.Interacting = false;
                     agent.Brain.HealUntil = 0;
@@ -100,135 +110,142 @@ namespace Unity.MP_FPS
                 var ghost = link.LinkedInstance ? link.LinkedInstance.GetComponent<PlayerGhost>() : null;
                 if (!ghost || !ghost.ShotOrigin) continue;
                 var health = EntityManager.GetComponentData<PredictedPlayerGhost>(agent.Entity);
-                input.Input = Think(agent.Entity, agent.Brain, ghost, EntityManager.GetComponentData<LocalTransform>(agent.Entity),
-                    ref health, map, now, (float)SystemAPI.Time.DeltaTime);
+                input.Input = Think(agent.Entity, agent.Brain, ghost,
+                    EntityManager.GetComponentData<LocalTransform>(agent.Entity), ref health, map, now,
+                    (float)SystemAPI.Time.DeltaTime);
                 EntityManager.SetComponentData(agent.Entity, input);
                 EntityManager.SetComponentData(agent.Entity, health);
             }
         }
 
-        private void SpawnClashRequests(MoonRaidMap map, ClashBotRegistry registry, double now)
-        {
+        private void SpawnClashRequests(MoonRaidMap map, ClashBotRegistry registry, double now) {
             if (registry.PendingSpawns.Count == 0) return;
             var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
             if (WeaponManager.Instance?.WeaponRegistry == null) return;
-            foreach (var request in registry.PendingSpawns.ToArray())
-            {
+            foreach (var request in registry.PendingSpawns.ToArray()) {
                 if (request.Epoch != registry.Epoch || registry.IsRegistered(request.ParticipantId)) continue;
                 Vector3 point = request.Position;
-                if (!InsideClashArena(point) || !RaidSpawnSafety.TryGroundPosition(point, .35f, 1.8f, 45, out var ground, out _) ||
-                    Mathf.Abs(point.y - ground.y) > .6f)
-                {
+                if (!InsideClashArena(point) ||
+                    !RaidSpawnSafety.TryGroundPosition(point, .35f, 1.8f, 45, out var ground, out _) ||
+                    Mathf.Abs(point.y - ground.y) > .6f) {
                     m_ClashNavReady = false;
-                    registry.SetNavigation(false, "AI 出生点受阻，请重新进入地图。", failed: true);
-                    Debug.LogError("[Clash AI] Spawn clearance rejected for participant " + request.ParticipantId + " at " + point);
+                    registry.SetNavigation(false, "AI 出生点受阻，请重新进入地图。", true);
+                    Debug.LogError("[Clash AI] Spawn clearance rejected for participant " + request.ParticipantId +
+                                   " at " + point);
                     return;
                 }
                 if (!m_Characters.TryChoose(prefabs, ref m_SpawnRandom, out var prefab, out int characterIndex)) return;
                 var entity = SpawnActor(map, prefab, point, now, characterIndex, request);
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 var input = EntityManager.GetComponentData<DollSingerEnemy>(entity).InputEntity;
-                if (!registry.Register(request, entity, input, brain.Inventory))
-                {
+                if (!registry.Register(request, entity, input, brain.Inventory)) {
                     // The registry never took ownership of this rejected creation.
                     RetireEnemy(entity, brain);
-                    EntityManager.DestroyEntity(input);EntityManager.DestroyEntity(entity);
+                    EntityManager.DestroyEntity(input);
+                    EntityManager.DestroyEntity(entity);
                 }
             }
         }
 
-        private bool ValidateClashNavigation(out string failure)
-        {
+        private bool ValidateClashNavigation(out string failure) {
             failure = null;
-            Vector3 target = BountyClashArenaSettings.Position(m_ClashArena.Target);
-            if (!NavMesh.SamplePosition(target, out var objective, 2, m_Filter) || Mathf.Abs(objective.position.y - target.y) > 1.2f)
-            { failure = "objective_not_on_compound_navigation"; return false; }
-            for (int i = 0; i < m_ClashArena.Spawns.Length; i++)
-            {
-                Vector3 spawn = BountyClashArenaSettings.Position(m_ClashArena.Spawns[i]);
+            var target = BountyClashArenaSettings.Position(m_ClashArena.Target);
+            if (!NavMesh.SamplePosition(target, out var objective, 2, m_Filter) ||
+                Mathf.Abs(objective.position.y - target.y) > 1.2f) {
+                failure = "objective_not_on_compound_navigation";
+                return false;
+            }
+            for (int i = 0; i < m_ClashArena.Spawns.Length; i++) {
+                var spawn = BountyClashArenaSettings.Position(m_ClashArena.Spawns[i]);
                 if (!RaidSpawnSafety.TryGroundPosition(spawn, .35f, 1.8f, 45, out _, out _) ||
-                    !ValidatedClashRoute(spawn, objective.position))
-                { failure = "spawn_" + i + "_cannot_reach_objective_inside_arena"; return false; }
+                    !ValidatedClashRoute(spawn, objective.position)) {
+                    failure = "spawn_" + i + "_cannot_reach_objective_inside_arena";
+                    return false;
+                }
             }
             foreach (var exit in m_ClashArena.Exits)
-                if (ValidatedClashRoute(objective.position, BountyClashArenaSettings.Position(exit))) return true;
+                if (ValidatedClashRoute(objective.position, BountyClashArenaSettings.Position(exit)))
+                    return true;
             failure = "objective_cannot_reach_either_exit_inside_arena";
             return false;
         }
 
-        private bool ValidatedClashRoute(Vector3 start, Vector3 end)
-        {
+        private bool ValidatedClashRoute(Vector3 start, Vector3 end) {
             if (!NavMesh.SamplePosition(start, out var from, 2, m_Filter) ||
-                !NavMesh.SamplePosition(end, out var to, 2, m_Filter) ||
-                Mathf.Abs(from.position.y - start.y) > 1.2f || Mathf.Abs(to.position.y - end.y) > 1.2f ||
+                !NavMesh.SamplePosition(end, out var to, 2, m_Filter) || Mathf.Abs(from.position.y - start.y) > 1.2f ||
+                Mathf.Abs(to.position.y - end.y) > 1.2f ||
                 !NavMesh.CalculatePath(from.position, to.position, m_Filter, m_ClashRoute) ||
-                m_ClashRoute.status != NavMeshPathStatus.PathComplete) return false;
+                m_ClashRoute.status != NavMeshPathStatus.PathComplete)
+                return false;
             int count = m_ClashRoute.GetCornersNonAlloc(m_ClashRouteCorners);
             return count > 0 && count < m_ClashRouteCorners.Length && SafeClashRoute(m_ClashRouteCorners, count);
         }
 
-        private bool InsideClashArena(Vector3 point, float margin = .5f)
-        {
+        private bool InsideClashArena(Vector3 point, float margin = .5f) {
             if (m_ClashArena == null) return false;
             float radius = m_ClashArena.Radius - margin;
-            return ClashPoint.HorizontalSquared(new ClashPoint(point.x, point.y, point.z), m_ClashArena.Center) <= radius * (double)radius;
+            return ClashPoint.HorizontalSquared(new ClashPoint(point.x, point.y, point.z), m_ClashArena.Center) <=
+                   radius * (double)radius;
         }
 
-        private bool SafeClashRoute(Vector3[] corners, int count)
-        {
+        private bool SafeClashRoute(Vector3[] corners, int count) {
             // A convex circle also contains each segment between its inside corners.
             // If knocked outside, permit only a strictly inward first segment, never an excursion.
             double previous = double.MaxValue;
             bool entered = false;
-            for (int i = 0; i < count; i++)
-            {
-                double distance = ClashPoint.HorizontalSquared(new ClashPoint(corners[i].x, corners[i].y, corners[i].z), m_ClashArena.Center);
-                if (InsideClashArena(corners[i])) entered = true;
-                else if (entered || i > 0 && distance >= previous) return false;
+            for (int i = 0; i < count; i++) {
+                double distance = ClashPoint.HorizontalSquared(new ClashPoint(corners[i].x, corners[i].y, corners[i].z),
+                    m_ClashArena.Center);
+                if (InsideClashArena(corners[i]))
+                    entered = true;
+                else if (entered || (i > 0 && distance >= previous)) return false;
                 previous = distance;
             }
             return entered;
         }
 
-        private bool CanObserveOpponent(DollSingerEnemyBrain brain, Entity candidate)
-        {
+        private bool CanObserveOpponent(DollSingerEnemyBrain brain, Entity candidate) {
             if (!brain.IsClashBot)
-                return !ExpeditionSquadMember.BelongsTo(EntityManager, candidate, brain.ExpeditionSquadId, brain.LanCompanion);
+                return !ExpeditionSquadMember.BelongsTo(EntityManager, candidate, brain.ExpeditionSquadId,
+                    brain.LanCompanion);
             if (!EntityManager.Exists(candidate) || !EntityManager.HasComponent<ClashPlayer>(candidate) ||
-                !EntityManager.HasComponent<PredictedPlayerGhost>(candidate)) return false;
+                !EntityManager.HasComponent<PredictedPlayerGhost>(candidate))
+                return false;
             var identity = EntityManager.GetComponentData<ClashPlayer>(candidate);
             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(candidate);
             return identity.Epoch == brain.ClashEpoch && identity.TeamId != brain.ClashTeamId &&
-                identity.ParticipantId != brain.ClashParticipantId && health.ClashLife == ClashLife.Alive;
+                   identity.ParticipantId != brain.ClashParticipantId && health.ClashLife == ClashLife.Alive;
         }
 
-        private void ShareClashObservations(double now)
-        {
-            foreach (var receiver in m_ClashAgents)
-            {
+        private void ShareClashObservations(double now) {
+            foreach (var receiver in m_ClashAgents) {
                 if (receiver.View.Life != ClashLife.Alive || now - receiver.Brain.LastRadio < .5) continue;
                 receiver.Brain.LastRadio = now;
-                foreach (var sender in m_ClashAgents)
-                {
-                    if (sender.Entity == receiver.Entity || sender.View.Life != ClashLife.Alive || sender.View.TeamId != receiver.View.TeamId ||
-                        Vector3.Distance(sender.Position, receiver.Position) > 60) continue;
+                foreach (var sender in m_ClashAgents) {
+                    if (sender.Entity == receiver.Entity || sender.View.Life != ClashLife.Alive ||
+                        sender.View.TeamId != receiver.View.TeamId ||
+                        Vector3.Distance(sender.Position, receiver.Position) > 60)
+                        continue;
                     ShareSquadContacts(receiver.Brain, sender.Brain, now);
                 }
             }
         }
 
-        private void ShareSquadContacts(DollSingerEnemyBrain receiver, DollSingerEnemyBrain sender, double now)
-        {
-            foreach (var observation in sender.Contacts)
-            {
+        private void ShareSquadContacts(DollSingerEnemyBrain receiver, DollSingerEnemyBrain sender, double now) {
+            foreach (var observation in sender.Contacts) {
                 var source = observation.Value;
                 // A report is a clue. Only a new observation can refresh it or grant sight.
                 double observed = Math.Max(source.LastSeen, source.LastHeard);
                 if (now - observed > 1.5 || source.LastReported > observed ||
-                    !CanObserveOpponent(receiver, observation.Key)) continue;
-                if (!receiver.Contacts.TryGetValue(observation.Key, out var contact))
-                { contact = new PmcContact(); receiver.Contacts.Add(observation.Key, contact); }
-                if (contact.Visible || observed <= Math.Max(contact.LastReported, Math.Max(contact.LastSeen, contact.LastHeard))) continue;
+                    !CanObserveOpponent(receiver, observation.Key))
+                    continue;
+                if (!receiver.Contacts.TryGetValue(observation.Key, out var contact)) {
+                    contact = new PmcContact();
+                    receiver.Contacts.Add(observation.Key, contact);
+                }
+                if (contact.Visible ||
+                    observed <= Math.Max(contact.LastReported, Math.Max(contact.LastSeen, contact.LastHeard)))
+                    continue;
                 float angle = receiver.Random.NextFloat(0, Mathf.PI * 2);
                 contact.Position = source.Position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 2;
                 contact.Velocity = source.Velocity;
@@ -241,44 +258,43 @@ namespace Unity.MP_FPS
             }
         }
 
-        private bool HasClashCoveringAlly(DollSingerEnemyBrain brain, double now)
-        {
+        private bool HasClashCoveringAlly(DollSingerEnemyBrain brain, double now) {
             // Alternate roles in bounded windows; both actors must not leave cover together.
             int coveringSlot = ((int)(now / 6) + brain.ClashTeamId) % 2;
             if (brain.ClashSlot == coveringSlot || now < brain.NextFlank) return false;
             foreach (var ally in m_ClashAgents)
-            {
                 if (ally.Brain != brain && ally.View.TeamId == brain.ClashTeamId && ally.View.Life == ClashLife.Alive &&
-                    ally.Brain.ClashSlot == coveringSlot && IsCoveringAlly(ally.Entity, ally.Brain, brain, now)) return true;
-            }
+                    ally.Brain.ClashSlot == coveringSlot && IsCoveringAlly(ally.Entity, ally.Brain, brain, now))
+                    return true;
             return false;
         }
 
-        private bool IsCoveringAlly(Entity actor, DollSingerEnemyBrain ally, DollSingerEnemyBrain brain, double now)
-        {
-            if (!EntityManager.HasComponent<PredictedPlayerGhost>(actor) ||
-                !ally.Visible || ally.Target != brain.Target || now - ally.LastSeenTime > .3 ||
-                now - ally.LastDamage < 1 || ally.HealUntil > 0 || now - ally.VisibleSince < m_Tuning.ReactionSeconds)
+        private bool IsCoveringAlly(Entity actor, DollSingerEnemyBrain ally, DollSingerEnemyBrain brain, double now) {
+            if (!EntityManager.HasComponent<PredictedPlayerGhost>(actor) || !ally.Visible ||
+                ally.Target != brain.Target || now - ally.LastSeenTime > .3 || now - ally.LastDamage < 1 ||
+                ally.HealUntil > 0 || now - ally.VisibleSince < m_Tuning.ReactionSeconds)
                 return false;
             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
-            bool shootingPosture = ally.Action == PmcAction.Engage || ally.Action == PmcAction.Cover &&
-                ally.CoverPhase == PmcCoverPhase.Holding;
-            return shootingPosture && health.CurrentHealth > 0 && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
+            bool shootingPosture = ally.Action == PmcAction.Engage || (ally.Action == PmcAction.Cover &&
+                                                                       ally.CoverPhase == PmcCoverPhase.Holding);
+            return shootingPosture && health.CurrentHealth > 0 && health.CurrentAmmo > 0 &&
+                   !health.ControllerState.IsReloadingState;
         }
 
-        private bool ClashShotLaneClear(DollSingerEnemyBrain brain, Vector3 eye, Vector3 direction, float range)
-        {
+        private bool ClashShotLaneClear(DollSingerEnemyBrain brain, Vector3 eye, Vector3 direction, float range) {
             // Check the actual imperfect shot ray as well as the ideal target visibility ray.
-            int count = UnityEngine.Physics.SphereCastNonAlloc(eye, .09f, direction, m_Hits, range, s_SightMask, QueryTriggerInteraction.Ignore);
+            int count = UnityEngine.Physics.SphereCastNonAlloc(eye, .09f, direction, m_Hits, range, s_SightMask,
+                QueryTriggerInteraction.Ignore);
             if (count == m_Hits.Length) return false;
-            foreach (var ally in m_ClashAgents)
-            {
+            foreach (var ally in m_ClashAgents) {
                 if (ally.Brain == brain || ally.View.TeamId != brain.ClashTeamId ||
-                    !EntityManager.Exists(ally.Entity) || !EntityManager.HasComponent<GhostGameObjectLink>(ally.Entity)) continue;
+                    !EntityManager.Exists(ally.Entity) || !EntityManager.HasComponent<GhostGameObjectLink>(ally.Entity))
+                    continue;
                 var link = EntityManager.GetComponentObject<GhostGameObjectLink>(ally.Entity);
                 if (!link.LinkedInstance) continue;
                 for (int i = 0; i < count; i++)
-                    if (m_Hits[i].transform.IsChildOf(link.LinkedInstance.transform)) return false;
+                    if (m_Hits[i].transform.IsChildOf(link.LinkedInstance.transform))
+                        return false;
             }
             return true;
         }

@@ -9,80 +9,65 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Random = Unity.Mathematics.Random;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>
     /// This data structure wraps Unity.Mathematics.Random in a singleton,
     /// so that ECS can use it to generate random numbers
     /// </summary>
-    public struct FixedRandom : IComponentData
-    {
+    public struct FixedRandom : IComponentData {
         public Random Random;
     }
 
-    public static class Utils
-    {
-        public static void SetShadowModeInHierarchy(EntityManager entityManager, EntityCommandBuffer ecb,
-            Entity onEntity, ref BufferLookup<Child> childBufferFromEntity, ShadowCastingMode mode)
-        {
-            if (childBufferFromEntity.HasBuffer(onEntity))
-            {
-                DynamicBuffer<Child> childBuffer = childBufferFromEntity[onEntity];
-                for (var i = 0; i < childBuffer.Length; i++)
-                {
+    public static class Utils {
+        public static void SetShadowModeInHierarchy(
+            EntityManager entityManager,
+            EntityCommandBuffer ecb,
+            Entity onEntity,
+            ref BufferLookup<Child> childBufferFromEntity,
+            ShadowCastingMode mode) {
+            if (childBufferFromEntity.HasBuffer(onEntity)) {
+                var childBuffer = childBufferFromEntity[onEntity];
+                for (int i = 0; i < childBuffer.Length; i++)
                     SetShadowModeInHierarchy(entityManager, ecb, childBuffer[i].Value, ref childBufferFromEntity, mode);
-                }
             }
         }
 
-        public static void DisableRenderingInHierarchy(EntityCommandBuffer ecb, Entity onEntity,
-            ref BufferLookup<Child> childBufferFromEntity)
-        {
-            if (childBufferFromEntity.HasBuffer(onEntity))
-            {
-                DynamicBuffer<Child> childBuffer = childBufferFromEntity[onEntity];
-                for (var i = 0; i < childBuffer.Length; i++)
-                {
+        public static void DisableRenderingInHierarchy(
+            EntityCommandBuffer ecb,
+            Entity onEntity,
+            ref BufferLookup<Child> childBufferFromEntity) {
+            if (childBufferFromEntity.HasBuffer(onEntity)) {
+                var childBuffer = childBufferFromEntity[onEntity];
+                for (int i = 0; i < childBuffer.Length; i++)
                     DisableRenderingInHierarchy(ecb, childBuffer[i].Value, ref childBufferFromEntity);
-                }
             }
         }
 
-        public static void DisableRenderingInHierarchy2(EntityCommandBuffer ecb, Entity onEntity,
-            ref BufferLookup<Child> childBufferFromEntity)
-        {
+        public static void DisableRenderingInHierarchy2(
+            EntityCommandBuffer ecb,
+            Entity onEntity,
+            ref BufferLookup<Child> childBufferFromEntity) {
             ecb.AddComponent<Disabled>(onEntity);
-
-            if (childBufferFromEntity.HasBuffer(onEntity))
-            {
-                DynamicBuffer<Child> childBuffer = childBufferFromEntity[onEntity];
-                for (var i = 0; i < childBuffer.Length; i++)
-                {
+            if (childBufferFromEntity.HasBuffer(onEntity)) {
+                var childBuffer = childBufferFromEntity[onEntity];
+                for (int i = 0; i < childBuffer.Length; i++)
                     DisableRenderingInHierarchy(ecb, childBuffer[i].Value, ref childBufferFromEntity);
-                }
             }
         }
 
-        public static string GetLocalIPAddress()
-        {
+        public static string GetLocalIPAddress() {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
-            {
                 if (ip.AddressFamily == AddressFamily.InterNetwork && !ip.Equals(IPAddress.Loopback))
-                {
                     return ip.ToString();
-                }
-            }
-
             return IPAddress.Any.ToString();
         }
-        
-        public static float ComputeCharacterYAngleFromDirection(float3 forward)
-        {
+
+        public static float ComputeCharacterYAngleFromDirection(float3 forward) {
             float direction = math.dot(forward, math.right()) >= 0 ? 1 : -1;
             return math.degrees(math.acos(math.dot(forward, math.forward()))) * direction;
         }
-        
+
         public static void ComputeFinalRotationsFromRotationDelta(
             ref float viewPitchDegrees,
             ref float characterRotationYDegrees,
@@ -92,8 +77,7 @@ namespace Unity.MP_FPS
             float minPitchDegrees,
             float maxPitchDegrees,
             out quaternion characterRotation,
-            out quaternion viewLocalRotation)
-        {
+            out quaternion viewLocalRotation) {
             // Yaw
             characterRotationYDegrees += yawPitchDeltaDegrees.x;
             ComputeRotationFromYAngleAndUp(characterRotationYDegrees, characterTransformUp, out characterRotation);
@@ -101,33 +85,29 @@ namespace Unity.MP_FPS
             // Pitch
             viewPitchDegrees += yawPitchDeltaDegrees.y;
             viewPitchDegrees = math.clamp(viewPitchDegrees, minPitchDegrees, maxPitchDegrees);
-
             viewLocalRotation = CalculateLocalViewRotation(viewPitchDegrees, viewRollDegrees);
         }
 
         public static void ComputeRotationFromYAngleAndUp(
             float characterRotationYDegrees,
             float3 characterTransformUp,
-            out quaternion characterRotation)
-        {
+            out quaternion characterRotation) {
             characterRotation = math.mul(
-                MathUtilities.CreateRotationWithUpPriority(characterTransformUp, math.forward()), 
+                MathUtilities.CreateRotationWithUpPriority(characterTransformUp, math.forward()),
                 quaternion.Euler(0f, math.radians(characterRotationYDegrees), 0f));
         }
 
-        public static quaternion CalculateLocalViewRotation(float viewPitchDegrees, float viewRollDegrees)
-        {
+        public static quaternion CalculateLocalViewRotation(float viewPitchDegrees, float viewRollDegrees) {
             // Pitch
-            quaternion viewLocalRotation = quaternion.AxisAngle(-math.right(), math.radians(viewPitchDegrees));
+            var viewLocalRotation = quaternion.AxisAngle(-math.right(), math.radians(viewPitchDegrees));
 
             // Roll
-            viewLocalRotation = math.mul(viewLocalRotation, quaternion.AxisAngle(math.forward(), math.radians(viewRollDegrees)));
-
+            viewLocalRotation = math.mul(viewLocalRotation,
+                quaternion.AxisAngle(math.forward(), math.radians(viewRollDegrees)));
             return viewLocalRotation;
         }
 
-        public static void SetCursorVisible(bool isVisible)
-        {
+        public static void SetCursorVisible(bool isVisible) {
             var mode = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
             if (Cursor.lockState != mode) Cursor.lockState = mode;
             if (Cursor.visible != isVisible) Cursor.visible = isVisible;

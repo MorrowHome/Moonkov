@@ -6,10 +6,8 @@ using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class RaidHUD
-    {
+namespace Unity.MP_FPS {
+    public sealed partial class RaidHUD {
         private Label m_Telemetry;
         private World m_TelemetryWorld;
         private EntityQuery m_TelemetryConnection;
@@ -21,20 +19,19 @@ namespace Unity.MP_FPS
         private int m_TelemetryFrames;
         private const string TelemetryFormat = "{0} FPS  |  Ping {1}\nLoss {2}  |  Connection {3}";
 
-        private void InitializeTelemetry()
-        {
+        private void InitializeTelemetry() {
             m_Telemetry = m_Root.Q<Label>("raidTelemetry");
             m_Telemetry.text = "";
             m_TelemetryVisible = false;
-            m_TelemetrySeconds = 0; m_TelemetryFrames = 0;
+            m_TelemetrySeconds = 0;
+            m_TelemetryFrames = 0;
         }
 
-        private void UpdateTelemetry(bool visible)
-        {
+        private void UpdateTelemetry(bool visible) {
             m_Telemetry.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible)
-            {
-                m_TelemetrySeconds = 0; m_TelemetryFrames = 0;
+            if (!visible) {
+                m_TelemetrySeconds = 0;
+                m_TelemetryFrames = 0;
                 if (m_TelemetryVisible) DisposeTelemetry();
                 m_TelemetryVisible = false;
                 return;
@@ -45,17 +42,16 @@ namespace Unity.MP_FPS
             if (m_TelemetryVisible && m_TelemetrySeconds < .5f) return;
             m_TelemetryVisible = true;
             int fps = m_TelemetrySeconds > 0 ? Mathf.RoundToInt(m_TelemetryFrames / m_TelemetrySeconds) : 0;
-            m_TelemetrySeconds = 0; m_TelemetryFrames = 0;
-
-            if (m_TelemetryWorld != m_World)
-            {
+            m_TelemetrySeconds = 0;
+            m_TelemetryFrames = 0;
+            if (m_TelemetryWorld != m_World) {
                 DisposeTelemetry();
-                if (m_World != null && m_World.IsCreated)
-                {
+                if (m_World != null && m_World.IsCreated) {
                     m_TelemetryWorld = m_World;
                     m_TelemetryConnection = m_World.EntityManager.CreateEntityQuery(
                         ComponentType.ReadOnly<NetworkStreamConnection>());
-                    using var offline = m_World.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<OfflineRaidMode>());
+                    using var offline =
+                        m_World.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<OfflineRaidMode>());
                     using var lan = m_World.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<LanRaidMode>());
                     m_TelemetryOffline = !offline.IsEmptyIgnoreFilter;
                     m_TelemetryLan = !lan.IsEmptyIgnoreFilter;
@@ -72,33 +68,32 @@ namespace Unity.MP_FPS
             m_Telemetry.style.paddingTop = m_Telemetry.style.paddingBottom = 4 * scale;
         }
 
-        private void ReadTelemetryNetwork(out string ping, out string loss, out string method)
-        {
+        private void ReadTelemetryNetwork(out string ping, out string loss, out string method) {
             ping = loss = "Measuring";
             method = TelemetryConnectionMethod();
-            if (m_TelemetryOffline)
-            {
-                ping = "Local"; loss = "Not applicable";
+            if (m_TelemetryOffline) {
+                ping = "Local";
+                loss = "Not applicable";
                 return;
             }
             if (m_TelemetryWorld == null || !m_TelemetryWorld.IsCreated ||
-                !m_TelemetryConnection.TryGetSingletonEntity<NetworkStreamConnection>(out var entity))
-            {
-                ping = loss = "No connection"; method = "No connection";
+                !m_TelemetryConnection.TryGetSingletonEntity<NetworkStreamConnection>(out var entity)) {
+                ping = loss = "No connection";
+                method = "No connection";
                 ResetTelemetryPackets();
                 return;
             }
             var connection = m_TelemetryConnection.GetSingleton<NetworkStreamConnection>();
-            if (connection.CurrentState != ConnectionState.State.Connected)
-            {
-                ping = loss = connection.CurrentState == ConnectionState.State.Disconnected ? "No connection" : "Connecting...";
+            if (connection.CurrentState != ConnectionState.State.Connected) {
+                ping = loss = connection.CurrentState == ConnectionState.State.Disconnected
+                    ? "No connection"
+                    : "Connecting...";
                 if (connection.CurrentState == ConnectionState.State.Disconnected) method = "No connection";
                 ResetTelemetryPackets();
                 return;
             }
             // 重连会换连接实体。清掉上次的包计数和时间，再开始统计这条连接。
-            if (entity != m_TelemetryConnectionEntity)
-            {
+            if (entity != m_TelemetryConnectionEntity) {
                 ResetTelemetryPackets();
                 m_TelemetryConnectionEntity = entity;
             }
@@ -107,16 +102,14 @@ namespace Unity.MP_FPS
             var ack = em.GetComponentData<NetworkSnapshotAck>(entity);
             var packets = ack.SnapshotPacketLoss;
             double now = Time.realtimeSinceStartupAsDouble;
-            if (packets.NumPacketsReceived != m_TelemetryReceived)
-            {
+            if (packets.NumPacketsReceived != m_TelemetryReceived) {
                 m_TelemetryReceived = packets.NumPacketsReceived;
                 m_TelemetryLastPacket = packets.NumPacketsReceived > 0 ? now : double.NegativeInfinity;
             }
             if (packets.NumPacketsReceived == 0) return;
             // A connected transport can stop delivering snapshots before its timeout expires.
             // 连接可能还没超时，但已经收不到新快照。持续无数据就暂停展示旧延迟和丢包值。
-            if (now - m_TelemetryLastPacket > 2)
-            {
+            if (now - m_TelemetryLastPacket > 2) {
                 ping = loss = "Waiting for data";
                 return;
             }
@@ -127,12 +120,10 @@ namespace Unity.MP_FPS
         }
 
         // 显示实际连接使用的路径。例如何时直连看当前 IceSession，是否中转看已进入的线上实例。
-        private string TelemetryConnectionMethod()
-        {
+        private string TelemetryConnectionMethod() {
             if (m_TelemetryOffline) return "Single player";
             var game = GameManager.GameConnection;
-            if (m_TelemetryLan)
-            {
+            if (m_TelemetryLan) {
                 if (game?.PeerRoom == null) return "LAN";
                 return LanRoomClient.IsHost ? "Local" : "P2P direct";
             }
@@ -141,19 +132,18 @@ namespace Unity.MP_FPS
             if (game.SessionConnectionType == NetworkType.Relay) return "Relay";
             var lobby = OnlineLobbyClient.Snapshot;
             if (OnlineLobbyClient.InInstance && lobby?.InstanceId == OnlineLobbyClient.InstanceId &&
-                lobby.ConnectionPath == Online.OnlineNetworkProtocol.Vps) return "VPS relay";
+                lobby.ConnectionPath == Online.OnlineNetworkProtocol.Vps)
+                return "VPS relay";
             return "Direct";
         }
 
-        private void ResetTelemetryPackets()
-        {
+        private void ResetTelemetryPackets() {
             m_TelemetryConnectionEntity = Entity.Null;
             m_TelemetryReceived = 0;
             m_TelemetryLastPacket = double.NegativeInfinity;
         }
 
-        private void DisposeTelemetry()
-        {
+        private void DisposeTelemetry() {
             if (m_TelemetryWorld != null && m_TelemetryWorld.IsCreated) m_TelemetryConnection.Dispose();
             m_TelemetryWorld = null;
             m_TelemetryOffline = m_TelemetryLan = false;

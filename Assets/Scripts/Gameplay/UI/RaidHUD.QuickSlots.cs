@@ -5,15 +5,13 @@ using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Installed only on the owned network character; the gesture lab keeps its original keys.
-    public static class RaidQuickSlotInput
-    {
+    public static class RaidQuickSlotInput {
         private static DollSingerInput s_Input;
         private static DollSingerView s_View;
-        public static void Bind(DollSingerInput input, DollSingerView view = null)
-        {
+
+        public static void Bind(DollSingerInput input, DollSingerView view = null) {
             if (!input) return;
             if (s_Input && s_Input != input) Unbind(s_Input);
             if (s_Input != input || view) s_View = view;
@@ -26,41 +24,61 @@ namespace Unity.MP_FPS
             input.MeleeAttackInput = RaidHUD.RouteMeleeInput;
             input.GrenadeInput = RaidHUD.RouteGrenadeInput;
         }
-        public static void Unbind(DollSingerInput input)
-        {
+
+        public static void Unbind(DollSingerInput input) {
             if (!input) return;
             input.UseRaidKeyBindings = false;
-            input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null; input.MeleeAttackInput = null;
+            input.QuickSlotSelection = null;
+            input.QuickSlotPrimaryUse = null;
+            input.DarkSightMode = null;
+            input.MeleeAttackInput = null;
             input.QuickSlotScrollSelection = null;
             input.GrenadeInput = null;
-            if (s_Input == input) { s_Input = null; s_View = null; }
+            if (s_Input == input) {
+                s_Input = null;
+                s_View = null;
+            }
         }
-        private static int SelectScrolledWeapon(int direction) => s_View && s_View.IsFirstPerson ? RaidHUD.RouteQuickSlotScroll(direction) : 0;
-        internal static bool CloseAdjustmentMenu()
-        {
+
+        private static int SelectScrolledWeapon(int direction) {
+            return s_View && s_View.IsFirstPerson ? RaidHUD.RouteQuickSlotScroll(direction) : 0;
+        }
+
+        internal static bool CloseAdjustmentMenu() {
             if (!s_Input || !s_Input.LightAdjusting) return false;
             s_Input.CancelLightAdjustment();
             return true;
         }
-        internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
-        internal static bool ScrolledThisFrame => s_Input && s_Input.isActiveAndEnabled && s_Input.CanReadPlayerInput && s_Input.Scroll != 0;
+
+        internal static void ReleasePrimary() {
+            if (s_Input) s_Input.SuppressPrimaryUntilRelease();
+        }
+
+        internal static bool ScrolledThisFrame =>
+            s_Input && s_Input.isActiveAndEnabled && s_Input.CanReadPlayerInput && s_Input.Scroll != 0;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() { s_Input = null; s_View = null; }
+        private static void Reset() {
+            s_Input = null;
+            s_View = null;
+        }
     }
 
     // The controller shares one button across mission, world control and
     // tactical interactions. A single press must not start two hand actions.
-    public static class RaidInteractionInput
-    {
-        public static bool TacticalPressed(bool keyboard, bool gamepad, bool missionFocused, bool controlFocused, bool tacticalTarget)
-        {
+    public static class RaidInteractionInput {
+        public static bool TacticalPressed(
+            bool keyboard,
+            bool gamepad,
+            bool missionFocused,
+            bool controlFocused,
+            bool tacticalTarget) {
             if (missionFocused || controlFocused) return false;
-            return keyboard || gamepad && (tacticalTarget || !controlFocused);
+            return keyboard || (gamepad && (tacticalTarget || !controlFocused));
         }
     }
 
-    public sealed partial class RaidHUD
-    {
+    public sealed partial class RaidHUD {
         private QuickSlotBindings m_QuickBindings;
         private QuickSlotView m_QuickView;
         private Label m_SelfAidHint;
@@ -78,133 +96,186 @@ namespace Unity.MP_FPS
         private TacticalItemFeedback m_QuickOwnerFeedback;
         private InventoryError m_QuickOwnerError;
         private int m_QuickRaid;
-        private Unity.Entities.World m_QuickWorld;
+        private Entities.World m_QuickWorld;
         private string m_QuickProfileScope;
-        private static string QuickPreferenceScope
-        {
-            get
-            {
+
+        private static string QuickPreferenceScope {
+            get {
 #if UNITY_EDITOR
-                if (QuickSlotPreferenceStore.ValidationStore != null && !string.IsNullOrEmpty(QuickSlotPreferenceStore.ValidationScope))
+                if (QuickSlotPreferenceStore.ValidationStore != null &&
+                    !string.IsNullOrEmpty(QuickSlotPreferenceStore.ValidationScope))
                     return QuickSlotPreferenceStore.ValidationScope;
 #endif
                 return PlayerProfileClient.LocalPreferenceScope;
             }
         }
-        private TacticalItemOwnerRpc QuickOwner => TacticalItemsFeedback.LocalOwner.RaidId == m_Snapshot.RaidId ? TacticalItemsFeedback.LocalOwner : default;
+
+        private TacticalItemOwnerRpc QuickOwner =>
+            TacticalItemsFeedback.LocalOwner.RaidId == m_Snapshot.RaidId ? TacticalItemsFeedback.LocalOwner : default;
+
         private bool QuickTacticalActionPending => QuickOwner.Remaining > 0 || m_QuickTacticalRequest != 0;
-        private bool QuickTacticalCancelPending => m_QuickTacticalRequest != 0 && m_QuickRequestedAction == TacticalItemAction.Cancel;
-        private bool QuickManualBusy => GrenadeBusy || m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
+
+        private bool QuickTacticalCancelPending =>
+            m_QuickTacticalRequest != 0 && m_QuickRequestedAction == TacticalItemAction.Cancel;
+
+        private bool QuickManualBusy =>
+            GrenadeBusy || m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
+
         private bool QuickBusy => QuickManualBusy || MeleeBusy;
-        private RaidInventoryClientState QuickInventory => m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
-            ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()) : null;
-        private InventoryGraph QuickGraph => QuickInventory is { } inventory && inventory.RaidId == m_Snapshot.RaidId ? inventory.Graph : null;
-        private bool QuickAlive => GameSettings.Instance.GameState == GlobalGameState.InGame && m_Snapshot.RaidId > 0 && m_Snapshot.Phase == RaidPhase.Active && !m_ClashActionsBlocked &&
-            m_World != null && m_World.IsCreated && m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
+
+        private RaidInventoryClientState QuickInventory =>
+            m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
+                ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity())
+                : null;
+
+        private InventoryGraph QuickGraph =>
+            QuickInventory is { } inventory && inventory.RaidId == m_Snapshot.RaidId ? inventory.Graph : null;
+
+        private bool QuickAlive =>
+            GameSettings.Instance.GameState == GlobalGameState.InGame && m_Snapshot.RaidId > 0 &&
+            m_Snapshot.Phase == RaidPhase.Active && !m_ClashActionsBlocked && m_World != null && m_World.IsCreated &&
+            m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
             m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
-        public static bool QuickSlotToolSelected
-        {
-            get
-            {
-                if (s_Active == null || s_Active.m_QuickBindings == null || !s_Active.QuickAlive || PointerRequested || GameSettings.Instance.IsPauseMenuOpen) return false;
-                var graph = s_Active.QuickGraph; var item = s_Active.m_QuickBindings.SelectedItem(graph);
+
+        public static bool QuickSlotToolSelected {
+            get {
+                if (s_Active == null || s_Active.m_QuickBindings == null || !s_Active.QuickAlive || PointerRequested ||
+                    GameSettings.Instance.IsPauseMenuOpen)
+                    return false;
+                var graph = s_Active.QuickGraph;
+                var item = s_Active.m_QuickBindings.SelectedItem(graph);
                 return item != null && QuickSlotBindings.WeaponSlot(graph, item) == 0;
             }
         }
-        internal static bool UsesDarkSightViewKey() => s_Active != null && s_Active.m_ClashMode;
-        internal static int RouteQuickSlotSelection(int number) => s_Active != null ? s_Active.SelectQuickSlot(number) : 0;
-        internal static int RouteQuickSlotScroll(int direction) => s_Active != null ? s_Active.ScrollQuickWeapon(direction) : 0;
-        internal static bool RouteQuickSlotPrimary(bool pressed) => s_Active != null && s_Active.UseQuickSlot(pressed);
 
-        private void InitializeQuickSlots()
-        {
+        internal static bool UsesDarkSightViewKey() { return s_Active != null && s_Active.m_ClashMode; }
+
+        internal static int RouteQuickSlotSelection(int number) {
+            return s_Active != null ? s_Active.SelectQuickSlot(number) : 0;
+        }
+
+        internal static int RouteQuickSlotScroll(int direction) {
+            return s_Active != null ? s_Active.ScrollQuickWeapon(direction) : 0;
+        }
+
+        internal static bool RouteQuickSlotPrimary(bool pressed) {
+            return s_Active != null && s_Active.UseQuickSlot(pressed);
+        }
+
+        private void InitializeQuickSlots() {
             m_SelfAidHint = m_Root.Q<Label>("raidSelfAidHint");
-            m_SelfAidKey = null; m_SelfAidScale = -1;
+            m_SelfAidKey = null;
+            m_SelfAidScale = -1;
             m_QuickBindings = new QuickSlotBindings(new QuickSlotPreferenceStore());
-            m_QuickView = new QuickSlotView(m_Root, slot =>
-            {
+            m_QuickView = new QuickSlotView(m_Root, slot => {
                 if (!QuickCanBind) return;
-                m_QuickBindings.Clear(slot); QuickNotice(m_QuickBindings.Reason);
+                m_QuickBindings.Clear(slot);
+                QuickNotice(m_QuickBindings.Reason);
             }, slot => BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate));
             m_QuickView.SetInventoryHost(m_InventoryView.Element.Q("inventoryQuickbarDock"));
             m_InventoryView.QuickSlotDrop = DropOnQuickSlot;
-            m_InventoryView.QuickSlotDragPreview = (item, point) => m_QuickView?.PreviewDrop(item == null ? -1 : m_QuickView.Hit(point), QuickSlotBindings.CanBind(QuickGraph, item));
+            m_InventoryView.QuickSlotDragPreview = (item, point) =>
+                m_QuickView?.PreviewDrop(item == null ? -1 : m_QuickView.Hit(point),
+                    QuickSlotBindings.CanBind(QuickGraph, item));
             m_Root.RegisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);
         }
-        private static bool QuickTyping(VisualElement element) => QuickSlotBindings.Typing(element);
-        private bool QuickCanBind => QuickAlive && m_InventoryVisible && !m_HealthSelected &&
-            !GameSettings.Instance.IsPauseMenuOpen && !m_MissionDetailsVisible;
-        private void BindQuickKey(KeyDownEvent evt)
-        {
-            if (!QuickCanBind || QuickTyping(evt.target as VisualElement) || evt.ctrlKey || evt.altKey || evt.commandKey) return;
+
+        private static bool QuickTyping(VisualElement element) { return QuickSlotBindings.Typing(element); }
+
+        private bool QuickCanBind =>
+            QuickAlive && m_InventoryVisible && !m_HealthSelected && !GameSettings.Instance.IsPauseMenuOpen &&
+            !m_MissionDetailsVisible;
+
+        private void BindQuickKey(KeyDownEvent evt) {
+            if (!QuickCanBind || QuickTyping(evt.target as VisualElement) || evt.ctrlKey || evt.altKey ||
+                evt.commandKey)
+                return;
             int slot = (int)evt.keyCode - (int)KeyCode.Alpha1;
             if (slot < 0 || slot >= QuickSlotBindings.Count) return;
-            BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate); evt.StopImmediatePropagation();
+            BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate);
+            evt.StopImmediatePropagation();
         }
-        private void BindQuickSlot(int slot, InventoryItem item)
-        {
-            if (!QuickCanBind) { QuickNotice("当前无法设置快捷栏，请关闭其他菜单后重试。"); return; }
+
+        private void BindQuickSlot(int slot, InventoryItem item) {
+            if (!QuickCanBind) {
+                QuickNotice("当前无法设置快捷栏，请关闭其他菜单后重试。");
+                return;
+            }
             m_QuickBindings.UseProfile(QuickPreferenceScope);
             m_QuickBindings.Bind(slot, item, QuickGraph);
             QuickNotice(m_QuickBindings.Reason);
         }
+
         // 拖进快捷栏只尝试绑定。就算规则拒绝绑定，也到这里结束，免得松手又被当成普通移物。
-        private bool DropOnQuickSlot(InventoryItem item, Vector2 point)
-        {
+        private bool DropOnQuickSlot(InventoryItem item, Vector2 point) {
             int slot = m_QuickView.Hit(point);
             if (slot < 0) return false;
             BindQuickSlot(slot, item);
             return true; // A rejected hotbar drop must never become an inventory move.
         }
-        private void QuickNotice(string message) { m_QuickStatus = message; m_QuickStatusUntil = Time.unscaledTime + 3; }
-        private int ScrollQuickWeapon(int direction)
-        {
+
+        private void QuickNotice(string message) {
+            m_QuickStatus = message;
+            m_QuickStatusUntil = Time.unscaledTime + 3;
+        }
+
+        private int ScrollQuickWeapon(int direction) {
             if (m_QuickBindings == null || direction == 0 || !QuickAlive) return 0;
             var graph = QuickGraph;
             m_QuickBindings.UseProfile(QuickPreferenceScope);
             m_QuickBindings.InitializeWeapons(graph);
             m_QuickBindings.Validate(graph);
-            int slot = m_QuickBindings.NextWeaponSlot(graph, direction, m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().EquippedWeaponSlot);
+            int slot = m_QuickBindings.NextWeaponSlot(graph, direction,
+                m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().EquippedWeaponSlot);
             return slot < 0 ? 0 : SelectQuickSlot(slot + 1);
         }
+
         // 忙碌时先处理手雷收回或道具动作取消。手雷成功收回后，可以继续之前请求的切换。
-        private int SelectQuickSlot(int number)
-        {
+        private int SelectQuickSlot(int number) {
             if (m_QuickBindings == null) return 0;
             m_QuickBindings.UseProfile(QuickPreferenceScope);
             m_QuickBindings.Validate(QuickGraph);
-            if (number == 0 || !QuickAlive || DarkSightRequested || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
-                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return 0;
+            if (number == 0 || !QuickAlive || DarkSightRequested || PointerRequested ||
+                GameSettings.Instance.IsPauseMenuOpen ||
+                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement))
+                return 0;
             m_QuickView?.Reveal();
-            if (QuickManualBusy)
-            {
-                if (GrenadeBusy && !GrenadeHandling.Live((GrenadePhase)GrenadeState.GrenadePhase) && SendGrenade(GrenadeCommand.Stow)) m_GrenadeNextSlot = number;
-                if (QuickTacticalActionPending && !QuickTacticalCancelPending) SendQuickTactical(TacticalItemAction.Cancel);
+            if (QuickManualBusy) {
+                if (GrenadeBusy && !GrenadeHandling.Live((GrenadePhase)GrenadeState.GrenadePhase) &&
+                    SendGrenade(GrenadeCommand.Stow))
+                    m_GrenadeNextSlot = number;
+                if (QuickTacticalActionPending && !QuickTacticalCancelPending)
+                    SendQuickTactical(TacticalItemAction.Cancel);
                 return 0;
             }
             CancelMeleeForSelection();
             m_QuickBindings.InitializeWeapons(QuickGraph);
             var item = m_QuickBindings.Select(number - 1, QuickGraph);
-            if (m_QuickBindings.Fists(number - 1) && m_QuickBindings.Selected == number - 1)
-            {
+            if (m_QuickBindings.Fists(number - 1) && m_QuickBindings.Selected == number - 1) {
                 RaidQuickSlotInput.ReleasePrimary();
                 SendMelee(MeleeAction.Equip, equipmentSlot: MeleeInventory.EquipmentIndex);
                 return 0;
             }
-            if (item == null) { QuickNotice(m_QuickBindings.Reason); return 0; }
+            if (item == null) {
+                QuickNotice(m_QuickBindings.Reason);
+                return 0;
+            }
             RaidQuickSlotInput.ReleasePrimary();
             int slot = QuickSlotBindings.WeaponSlot(QuickGraph, item);
-            if (GrenadeHandling.Throwable(item.Code)) { EquipGrenade(item); return 0; }
-            if (slot == MeleeInventory.EquipmentIndex)
-            {
+            if (GrenadeHandling.Throwable(item.Code)) {
+                EquipGrenade(item);
+                return 0;
+            }
+            if (slot == MeleeInventory.EquipmentIndex) {
                 if (!SelectMelee(item)) QuickNotice("Melee weapon unavailable. Check equipment.");
                 return 0;
             }
             if (slot > 0) SendMelee(MeleeAction.Equip, item.Id, slot);
             return slot;
         }
-        private bool UseQuickSlot(bool pressed)
-        {
+
+        private bool UseQuickSlot(bool pressed) {
             if (m_QuickBindings == null) return false;
             var graph = QuickGraph;
             var item = m_QuickBindings.SelectedItem(graph);
@@ -213,40 +284,58 @@ namespace Unity.MP_FPS
             m_QuickWasTool = tool;
             if (releasedTool) RaidQuickSlotInput.ReleasePrimary();
             if (!tool) return releasedTool;
-            if (!pressed || !QuickAlive || DarkSightRequested || QuickBusy || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
-                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return true;
-            if (GrenadeHandling.Throwable(item.Code)) EquipGrenade(item);
-            else if (TacticalItemRules.Find(item.Code) != null) SendQuickTactical(TacticalItemAction.Use, item.Id);
-            else if (graph.MedicalAccessible(item)) UseMedical(item);
+            if (!pressed || !QuickAlive || DarkSightRequested || QuickBusy || PointerRequested ||
+                GameSettings.Instance.IsPauseMenuOpen ||
+                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement))
+                return true;
+            if (GrenadeHandling.Throwable(item.Code))
+                EquipGrenade(item);
+            else if (TacticalItemRules.Find(item.Code) != null)
+                SendQuickTactical(TacticalItemAction.Use, item.Id);
+            else if (graph.MedicalAccessible(item))
+                UseMedical(item);
             else if (graph.ConsumableAccessible(item)) UseConsumable(item);
             return true;
         }
-        private void SendQuickTactical(TacticalItemAction action, string itemId = null, uint target = 0)
-        {
-            var graph = QuickGraph; if (graph == null) return;
+
+        private void SendQuickTactical(TacticalItemAction action, string itemId = null, uint target = 0) {
+            var graph = QuickGraph;
+            if (graph == null) return;
             uint request = NextManualActionRequest();
             request = System.Math.Max(request, QuickOwner.RequestId + 1);
             m_InventoryRequestId = request;
-            if (!Send(new RaidTacticalItemActionRpc { RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version,
-                RequestId = request, ItemId = itemId ?? "", TargetId = target, Action = action }))
-            { QuickNotice("Not connected. Item remains in its container."); return; }
+            if (!Send(new RaidTacticalItemActionRpc {
+                    RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version,
+                    RequestId = request, ItemId = itemId ?? "", TargetId = target, Action = action
+                })) {
+                QuickNotice("Not connected. Item remains in its container.");
+                return;
+            }
             m_QuickRequestedAction = action;
-            m_QuickTacticalRequest = m_QuickTrackedTacticalRequest = request; m_QuickTacticalRequestedAt = Time.unscaledTime;
-            m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
-            QuickNotice(action == TacticalItemAction.Cancel ? "Cancellation requested." : "Use requested. Waiting for server.");
+            m_QuickTacticalRequest = m_QuickTrackedTacticalRequest = request;
+            m_QuickTacticalRequestedAt = Time.unscaledTime;
+            m_InventoryRequestedAt = Time.unscaledTime;
+            m_InventoryRequestPending = true;
+            QuickNotice(action == TacticalItemAction.Cancel
+                ? "Cancellation requested."
+                : "Use requested. Waiting for server.");
         }
-        private void PresentQuickSlots(bool active)
-        {
+
+        private void PresentQuickSlots(bool active) {
             if (m_QuickView == null) return;
             m_QuickActive = active && QuickAlive;
             string scope = QuickPreferenceScope;
-            if (m_QuickRaid != m_Snapshot.RaidId || m_QuickWorld != m_World || m_QuickProfileScope != scope)
-            {
-                m_QuickRaid = m_Snapshot.RaidId; m_QuickWorld = m_World; m_QuickProfileScope = scope;
+            if (m_QuickRaid != m_Snapshot.RaidId || m_QuickWorld != m_World || m_QuickProfileScope != scope) {
+                m_QuickRaid = m_Snapshot.RaidId;
+                m_QuickWorld = m_World;
+                m_QuickProfileScope = scope;
                 m_QuickTacticalRequest = m_QuickTrackedTacticalRequest = m_QuickOwnerRequest = 0;
-                m_QuickOwnerError = InventoryError.None; m_QuickInteractionHintUntil = 0;
-                m_QuickOwnerFeedback = TacticalItemFeedback.None; m_QuickStatusUntil = 0;
-                m_QuickBindings.Reset(); m_QuickWasTool = false;
+                m_QuickOwnerError = InventoryError.None;
+                m_QuickInteractionHintUntil = 0;
+                m_QuickOwnerFeedback = TacticalItemFeedback.None;
+                m_QuickStatusUntil = 0;
+                m_QuickBindings.Reset();
+                m_QuickWasTool = false;
                 m_QuickView.Hide();
                 RaidQuickSlotInput.ReleasePrimary();
             }
@@ -256,58 +345,95 @@ namespace Unity.MP_FPS
             if (!m_QuickActive) m_QuickBindings.Deselect();
             m_QuickBindings.Validate(graph);
             var owner = QuickOwner;
-            if (m_QuickTacticalRequest != 0 && owner.RequestId >= m_QuickTacticalRequest)
-            {
+            if (m_QuickTacticalRequest != 0 && owner.RequestId >= m_QuickTacticalRequest) {
                 m_QuickTacticalRequest = 0;
-                if (owner.Remaining <= 0 && m_InventoryRequestId == owner.RequestId && QuickInventory?.RequestId >= owner.RequestId)
+                if (owner.Remaining <= 0 && m_InventoryRequestId == owner.RequestId &&
+                    QuickInventory?.RequestId >= owner.RequestId)
                     m_InventoryRequestPending = false;
             }
             if (m_QuickTrackedTacticalRequest != 0 && owner.RequestId == m_QuickTrackedTacticalRequest &&
-                (owner.RequestId != m_QuickOwnerRequest || owner.Feedback != m_QuickOwnerFeedback || owner.Error != m_QuickOwnerError))
-            {
-                m_QuickOwnerRequest = owner.RequestId; m_QuickOwnerFeedback = owner.Feedback; m_QuickOwnerError = owner.Error;
-                if (owner.Feedback != TacticalItemFeedback.None)
-                {
-                    bool weaponBusy=owner.Error==InventoryError.Inaccessible && owner.Feedback==TacticalItemFeedback.Unavailable &&
-                        m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
-                    QuickNotice(owner.Error==InventoryError.Overweight ? "Overweight" : weaponBusy ? "INTERRUPTED / WEAPON CHANGED" : QuickFeedback(owner.Feedback));
+                (owner.RequestId != m_QuickOwnerRequest || owner.Feedback != m_QuickOwnerFeedback ||
+                 owner.Error != m_QuickOwnerError)) {
+                m_QuickOwnerRequest = owner.RequestId;
+                m_QuickOwnerFeedback = owner.Feedback;
+                m_QuickOwnerError = owner.Error;
+                if (owner.Feedback != TacticalItemFeedback.None) {
+                    bool weaponBusy = owner.Error == InventoryError.Inaccessible &&
+                                      owner.Feedback == TacticalItemFeedback.Unavailable &&
+                                      m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
+                                      RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
+                    QuickNotice(owner.Error == InventoryError.Overweight ? "Overweight" :
+                        weaponBusy ? "INTERRUPTED / WEAPON CHANGED" : QuickFeedback(owner.Feedback));
                 }
             }
-            if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
-            { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }
+            if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8) {
+                m_QuickTacticalRequest = 0;
+                MoonkovAudio.Error();
+                QuickNotice("Waiting for the server. Retry after the connection recovers.");
+            }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
             PresentSelfAidHint(owner, m_QuickActive && !menu && !DarkSightRequested && !QuickManualBusy);
             bool canReveal = m_QuickActive && !menu && !DarkSightRequested && Application.isFocused &&
-                UnityEngine.Cursor.lockState == CursorLockMode.Locked && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
-            if (!canReveal) m_QuickView.Hide();
+                             UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
+                             !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement);
+            if (!canReveal)
+                m_QuickView.Hide();
             else if (RaidQuickSlotInput.ScrolledThisFrame) m_QuickView.Reveal();
             bool cancelMenu = ChatInputBlocked || CinematicInputBlocked || MapInputBlocked || m_WasSettled ||
-                m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
-            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive || RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel) && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
+                              m_ClashLobbyPointer || GameSettings.Instance.IsPauseMenuOpen;
+            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (cancelMenu || !m_QuickActive ||
+                                                                              (RaidKeyBindings.Pressed(
+                                                                                   RaidKey.TiptoeOrCancel) &&
+                                                                               !QuickTyping(
+                                                                                   m_Root.panel?.focusController
+                                                                                           .focusedElement as
+                                                                                       VisualElement))))
                 SendQuickTactical(TacticalItemAction.Cancel);
             var selected = m_QuickBindings.SelectedItem(graph);
             TacticalItemsFeedback.SetSelectedItem(m_QuickActive ? selected?.Code : null);
-            TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested || QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement));
+            TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested ||
+                                                         QuickTyping(
+                                                             m_Root.panel?.focusController.focusedElement as
+                                                                 VisualElement));
             m_QuickView.Element.style.display = m_Snapshot.RaidId > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? MoonkovLocalization.Format($"DARK SIGHT / RELEASE {RaidKeyBindings.DisplayName(RaidKey.ViewOrDarkSight)} TO USE ITEMS") : QuickTacticalCancelPending ? null : owner.Remaining > 0 ?
-                null : QuickManualBusy ? null :
-                Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
+            string status = !m_QuickActive
+                ? "Item use unavailable while inactive or downed."
+                :
+                DarkSightRequested
+                    ?
+                    MoonkovLocalization.Format(
+                        $"DARK SIGHT / RELEASE {RaidKeyBindings.DisplayName(RaidKey.ViewOrDarkSight)} TO USE ITEMS")
+                    : QuickTacticalCancelPending
+                        ? null
+                        : owner.Remaining > 0
+                            ? null
+                            : QuickManualBusy
+                                ? null
+                                : Time.unscaledTime < m_QuickStatusUntil
+                                    ? m_QuickStatus
+                                    : Time.unscaledTime < m_QuickInteractionHintUntil
+                                        ? m_QuickInteractionHint
+                                        : null;
             string meleeStatus = MeleeCaption();
-            if (status == null && meleeStatus != null && m_QuickActive && !DarkSightRequested && !QuickManualBusy) status = meleeStatus;
+            if (status == null && meleeStatus != null && m_QuickActive && !DarkSightRequested && !QuickManualBusy)
+                status = meleeStatus;
             if (!m_InventoryVisible && GrenadeBusy) status = GrenadeCaption();
             if (status == null && !m_InventoryVisible) status = QuickSprintCaption(owner);
-            m_QuickView.Element.EnableInClassList("quick-slots-exhausted", m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
-            m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested, m_InventoryVisible, status);
+            m_QuickView.Element.EnableInClassList("quick-slots-exhausted",
+                m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
+            m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested,
+                m_InventoryVisible, status);
         }
-        private void PresentSelfAidHint(in TacticalItemOwnerRpc owner, bool visible)
-        {
+
+        private void PresentSelfAidHint(in TacticalItemOwnerRpc owner, bool visible) {
             if (m_SelfAidHint == null) return;
             visible &= owner.BleedSeconds > 0;
             m_SelfAidHint.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible) return;
-            string key = m_InteractionBindings == null ? RaidKeyBindings.DisplayName(RaidKey.Interact) : m_InteractionBindings.Label(m_InteractionBindings.Loot);
-            if (m_SelfAidKey != key)
-            {
+            string key = m_InteractionBindings == null
+                ? RaidKeyBindings.DisplayName(RaidKey.Interact)
+                : m_InteractionBindings.Label(m_InteractionBindings.Loot);
+            if (m_SelfAidKey != key) {
                 m_SelfAidKey = key;
                 MoonkovLocalization.Set(m_SelfAidHint, "Hold {0} to stop bleeding", key);
             }
@@ -315,30 +441,39 @@ namespace Unity.MP_FPS
             if (Mathf.Approximately(scale, m_SelfAidScale)) return;
             m_SelfAidScale = scale;
             m_SelfAidHint.style.fontSize = 14 * scale;
-            m_SelfAidHint.style.left = 16 * scale; m_SelfAidHint.style.top = 78 * scale;
+            m_SelfAidHint.style.left = 16 * scale;
+            m_SelfAidHint.style.top = 78 * scale;
             m_SelfAidHint.style.paddingLeft = m_SelfAidHint.style.paddingRight = 10 * scale;
             m_SelfAidHint.style.paddingTop = m_SelfAidHint.style.paddingBottom = 6 * scale;
         }
-        private static string QuickSprintCaption(in TacticalItemOwnerRpc owner)
-        {
-            string text = !owner.SprintTracked ? "" : owner.SprintExhausted
-                ? MoonkovLocalization.Format($"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / FATIGUED / REST TO RECOVER")
-                : MoonkovLocalization.Format($"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / 1–9 SELECT");
+
+        private static string QuickSprintCaption(in TacticalItemOwnerRpc owner) {
+            string text = !owner.SprintTracked
+                ? ""
+                :
+                owner.SprintExhausted
+                    ?
+                    MoonkovLocalization.Format(
+                        $"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / FATIGUED / REST TO RECOVER")
+                    : MoonkovLocalization.Format($"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / 1–9 SELECT");
             if (owner.StaminaSeconds > 0)
-                text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"STAMINA BOOST {owner.StaminaSeconds:0}s");
+                text += (text.Length > 0 ? " / " : "") +
+                        MoonkovLocalization.Format($"STAMINA BOOST {owner.StaminaSeconds:0}s");
             if (owner.AntidoteSeconds > 0)
-                text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"ANTIDOTE {owner.AntidoteSeconds:0}s");
+                text += (text.Length > 0 ? " / " : "") +
+                        MoonkovLocalization.Format($"ANTIDOTE {owner.AntidoteSeconds:0}s");
             if (owner.RegenerationSeconds > 0)
-                text += (text.Length > 0 ? " / " : "") + (owner.PoisonSeconds>0
+                text += (text.Length > 0 ? " / " : "") + (owner.PoisonSeconds > 0
                     ? MoonkovLocalization.Format($"REGEN PAUSED {owner.RegenerationSeconds:0}s")
                     : MoonkovLocalization.Format($"REGEN {owner.RegenerationSeconds:0}s"));
             return text.Length > 0 ? text : null;
         }
-        private bool TryQuickTacticalInteraction(bool active, bool missionFocused, bool controlFocused)
-        {
+
+        private bool TryQuickTacticalInteraction(bool active, bool missionFocused, bool controlFocused) {
             if (!active || !QuickAlive || QuickBusy || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked || !Application.isFocused ||
-                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return false;
+                QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement))
+                return false;
             if (!TryGetLocalPlayerEntity(out var entity)) return false;
             var em = m_World.EntityManager;
             if (!em.HasComponent<GhostGameObjectLink>(entity)) return false;
@@ -347,44 +482,56 @@ namespace Unity.MP_FPS
             // Same capsule eye and controller direction as the server. Orbit camera
             // offsets must not change reach, line of sight, or the usable floor.
             var controller = root.GetComponent<PlayerGhost>()?.Controller?.CharacterController;
-            Vector3 eye = root.transform.position + Vector3.up * Mathf.Max(.3f, (controller ? controller.height : 1.8f) - .2f);
+            var eye = root.transform.position +
+                      Vector3.up * Mathf.Max(.3f, (controller ? controller.height : 1.8f) - .2f);
             var health = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
-            Vector3 direction = Quaternion.Euler(health.ControllerState.PitchDegrees, health.ControllerState.YawDegrees, 0) * Vector3.forward;
-            bool found = TacticalItemsFeedback.TryFindInteraction(eye, direction,
-                out uint target, out TacticalItemAction action);
+            var direction =
+                Quaternion.Euler(health.ControllerState.PitchDegrees, health.ControllerState.YawDegrees, 0) *
+                Vector3.forward;
+            bool found = TacticalItemsFeedback.TryFindInteraction(eye, direction, out uint target, out var action);
             bool tacticalTarget = found;
-            if (!found && (QuickOwner.FireSeconds > 0 || QuickOwner.BleedSeconds > 0))
-            { found = true; action = TacticalItemAction.Extinguish; }
+            if (!found && (QuickOwner.FireSeconds > 0 || QuickOwner.BleedSeconds > 0)) {
+                found = true;
+                action = TacticalItemAction.Extinguish;
+            }
             if (!found) return false;
             m_QuickInteractionHint = m_InteractionBindings.Label(m_InteractionBindings.Loot) + "  " +
-                (action == TacticalItemAction.Resupply ? "补充弹药" : action == TacticalItemAction.Disarm ? "拆除陷阱" : "止血 / 灭火");
+                                     (action == TacticalItemAction.Resupply ? "补充弹药" :
+                                         action == TacticalItemAction.Disarm ? "拆除陷阱" : "止血 / 灭火");
             m_QuickInteractionHintUntil = Time.unscaledTime + .2f;
             bool pressed = !missionFocused && !controlFocused && m_InteractionBindings.Loot.WasPressedThisFrame();
             if (!pressed) return false;
-            SendQuickTactical(action, target: target); return true;
+            SendQuickTactical(action, target: target);
+            return true;
         }
-        private static string QuickFeedback(TacticalItemFeedback feedback) => feedback switch
-        {
-            TacticalItemFeedback.Started => "Item action started. Movement slowed; X cancels.",
-            TacticalItemFeedback.Completed => "Item action completed.",
-            TacticalItemFeedback.Cancelled => "Cancellation processed. Check inventory.",
-            TacticalItemFeedback.Interrupted => "Item action interrupted. Nothing consumed.",
-            TacticalItemFeedback.NeedGround => "Aim at clear ground within reach.",
-            TacticalItemFeedback.Limit => "Too many active objects. Remove a trap first.",
-            TacticalItemFeedback.NoRoom => "No room for supplies.",
-            TacticalItemFeedback.NoWound => "No wound needs treatment.",
-            TacticalItemFeedback.NoTarget => "No usable target within reach.",
-            TacticalItemFeedback.Stale => "Inventory changed. Try again.",
-            TacticalItemFeedback.Poisoned => "Poison exposure detected.",
-            _ => "Item action rejected. Check access and placement."
-        };
-        private void DisposeQuickSlots()
-        {
+
+        private static string QuickFeedback(TacticalItemFeedback feedback) {
+            return feedback switch {
+                TacticalItemFeedback.Started => "Item action started. Movement slowed; X cancels.",
+                TacticalItemFeedback.Completed => "Item action completed.",
+                TacticalItemFeedback.Cancelled => "Cancellation processed. Check inventory.",
+                TacticalItemFeedback.Interrupted => "Item action interrupted. Nothing consumed.",
+                TacticalItemFeedback.NeedGround => "Aim at clear ground within reach.",
+                TacticalItemFeedback.Limit => "Too many active objects. Remove a trap first.",
+                TacticalItemFeedback.NoRoom => "No room for supplies.",
+                TacticalItemFeedback.NoWound => "No wound needs treatment.",
+                TacticalItemFeedback.NoTarget => "No usable target within reach.",
+                TacticalItemFeedback.Stale => "Inventory changed. Try again.",
+                TacticalItemFeedback.Poisoned => "Poison exposure detected.",
+                _ => "Item action rejected. Check access and placement."
+            };
+        }
+
+        private void DisposeQuickSlots() {
             TacticalItemsFeedback.SetSelectedItem(null);
             TacticalItemsFeedback.SetPresentationBlocked(true);
             m_Root.UnregisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);
-            m_InventoryView.QuickSlotDrop = null; m_InventoryView.QuickSlotDragPreview = null;
-            m_QuickView?.Dispose(); m_QuickView = null; m_QuickBindings = null; m_QuickWasTool = false;
+            m_InventoryView.QuickSlotDrop = null;
+            m_InventoryView.QuickSlotDragPreview = null;
+            m_QuickView?.Dispose();
+            m_QuickView = null;
+            m_QuickBindings = null;
+            m_QuickWasTool = false;
             if (m_SelfAidHint != null) m_SelfAidHint.style.display = DisplayStyle.None;
             m_SelfAidHint = null;
         }

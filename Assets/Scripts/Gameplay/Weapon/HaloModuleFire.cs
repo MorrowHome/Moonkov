@@ -4,18 +4,16 @@ using Unity.MP_FPS.Inventory;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Prediction and server share timing, the one-shot input buffer and burst lifecycle.
-    public static class HaloModuleFire
-    {
+    public static class HaloModuleFire {
         public const float InputBufferSeconds = .12f;
 
-        public static bool HasPendingFire(in PredictedPlayerGhost state) =>
-            state.HaloPendingShot || state.BurstRemaining > 0 || state.FireBufferRemaining > 0;
+        public static bool HasPendingFire(in PredictedPlayerGhost state) {
+            return state.HaloPendingShot || state.BurstRemaining > 0 || state.FireBufferRemaining > 0;
+        }
 
-        public static void Reset(ref PredictedPlayerGhost state)
-        {
+        public static void Reset(ref PredictedPlayerGhost state) {
             state.BurstRemaining = 0;
             state.BurstSequence = 0;
             state.BurstTriggerHeld = false;
@@ -23,8 +21,7 @@ namespace Unity.MP_FPS
             state.HaloPendingShot = false;
         }
 
-        public static void AdvanceTimers(ref PredictedPlayerGhost state, float deltaTime)
-        {
+        public static void AdvanceTimers(ref PredictedPlayerGhost state, float deltaTime) {
             state.WeaponCooldown += deltaTime;
             state.WeaponEquipRemaining = Mathf.Max(0, state.WeaponEquipRemaining - deltaTime);
             state.FireBufferRemaining = Mathf.Max(0, state.FireBufferRemaining - deltaTime);
@@ -33,69 +30,85 @@ namespace Unity.MP_FPS
             state.PistolFireRecovery = Mathf.Max(0, state.PistolFireRecovery - deltaTime);
         }
 
-        private static bool IsPulse(in PredictedPlayerGhost state, WeaponData weapon) =>
-            (weapon != null && weapon.BurstCount > 1) || state.EquippedWeaponID == DollSingerWeapons.Halo &&
-            ((HaloModule)state.EquippedModules & HaloModule.PulseController) != 0;
+        private static bool IsPulse(in PredictedPlayerGhost state, WeaponData weapon) {
+            return (weapon != null && weapon.BurstCount > 1) || state.EquippedWeaponID == DollSingerWeapons.Halo &&
+                ((HaloModule)state.EquippedModules & HaloModule.PulseController) != 0;
+        }
 
-        private static float Interval(in PredictedPlayerGhost state, WeaponData weapon, bool betweenBursts) =>
-            Mathf.Max(.001f, weapon.BurstCount > 1 ? (betweenBursts ? weapon.BurstCooldown : weapon.BurstInterval) : betweenBursts ? Mathf.Max(.42f, weapon.CooldownInMs) : weapon.CooldownInMs) *
-            RaidHealth.HandlingMultiplier(state);
+        private static float Interval(in PredictedPlayerGhost state, WeaponData weapon, bool betweenBursts) {
+            return Mathf.Max(.001f,
+                       weapon.BurstCount > 1 ? (betweenBursts ? weapon.BurstCooldown : weapon.BurstInterval) :
+                       betweenBursts ? Mathf.Max(.42f, weapon.CooldownInMs) : weapon.CooldownInMs) *
+                   RaidHealth.HandlingMultiplier(state);
+        }
 
-        public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon)
-        {
+        public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon) {
             Reset(ref state);
             state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
-            state.ReloadQueued=false;
-            if (weapon == null) { state.WeaponEquipRemaining = 0; state.WeaponCooldown = 0; return; }
+            state.ReloadQueued = false;
+            if (weapon == null) {
+                state.WeaponEquipRemaining = 0;
+                state.WeaponCooldown = 0;
+                return;
+            }
             float recovery = state.EquippedWeaponSlot == 1 ? state.PrimaryFireRecovery :
                 state.EquippedWeaponSlot == 2 ? state.SecondaryFireRecovery : state.PistolFireRecovery;
             state.WeaponEquipRemaining = DollSingerWeapons.IsHalo(state.EquippedWeaponID)
-                ? Mathf.Max(0, weapon.EquipTime) * RaidHealth.HandlingMultiplier(state) : 0;
+                ? Mathf.Max(0, weapon.EquipTime) * RaidHealth.HandlingMultiplier(state)
+                : 0;
             state.WeaponCooldown = DollSingerWeapons.IsHalo(state.EquippedWeaponID)
-                ? Interval(state, weapon, IsPulse(state, weapon)) - recovery : 0;
+                ? Interval(state, weapon, IsPulse(state, weapon)) - recovery
+                : 0;
         }
 
         // R pressed during a draw waits for that draw, without spending a cell
         // early. A later weapon switch discards the old weapon's queued intent.
-        public static bool ReadyToReload(ref PredictedPlayerGhost state,bool requested,int magazineSize)
-        {
-            if(GrenadeHandling.Occupied(state) || state.CurrentHealth<=0 || state.ControllerState.IsReloadingState || magazineSize<=state.CurrentAmmo)
-            {state.ReloadQueued=false;return false;}
-            if(state.WeaponEquipRemaining>0)
-            {
-                if(requested)state.ReloadQueued=true;
+        public static bool ReadyToReload(ref PredictedPlayerGhost state, bool requested, int magazineSize) {
+            if (GrenadeHandling.Occupied(state) || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState ||
+                magazineSize <= state.CurrentAmmo) {
+                state.ReloadQueued = false;
                 return false;
             }
-            bool queued=state.ReloadQueued;state.ReloadQueued=false;
+            if (state.WeaponEquipRemaining > 0) {
+                if (requested) state.ReloadQueued = true;
+                return false;
+            }
+            bool queued = state.ReloadQueued;
+            state.ReloadQueued = false;
             return requested || queued;
         }
 
         // Aim controls the lens. Hip fire and ADS must both raise the halo and hands.
         // Store one click through that windup, separately from the short cooldown buffer.
-        public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, in PlayerInput input, bool switched, float deltaTime)
-        {
+        public static bool TryFire(
+            ref PredictedPlayerGhost state,
+            WeaponData weapon,
+            in PlayerInput input,
+            bool switched,
+            float deltaTime) {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool halo = DollSingerWeapons.IsHalo(state.EquippedWeaponID);
-            bool blocked = GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed || input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
-            if (blocked)
-            {
+            bool blocked = GrenadeHandling.Occupied(state) || input.HaloDefense || input.HaloTransfer ||
+                           state.HaloDefenseHeld || HaloTransferRules.Occupied(state) || input.FireSuppressed ||
+                           input.FreeLooking || switched || weapon == null || state.CurrentHealth <= 0;
+            if (blocked) {
                 Reset(ref state);
                 state.WeaponRaiseProgress = state.HipFireHoldRemaining = 0;
                 return false;
             }
             if (!halo) return TryFire(ref state, weapon, input.Shoot, input.Aim, switched);
-
             float step = Mathf.Max(0, deltaTime);
             bool wasReady = state.WeaponRaiseProgress >= 1f - .00001f;
             // Lowering can return before TryFire's trigger edge tracking runs.
             if (!input.Shoot) state.BurstTriggerHeld = false;
             // Aiming consumes the hip-fire hold. An aimed shot must not leave a
             // timed pose behind when RMB is released, even immediately after firing.
-            if (input.Aim) state.HipFireHoldRemaining = 0;
-            else if (input.FireHeld || input.Shoot || state.HipFireHoldRemaining > 0 && HasPendingFire(state))
+            if (input.Aim)
+                state.HipFireHoldRemaining = 0;
+            else if (input.FireHeld || input.Shoot || (state.HipFireHoldRemaining > 0 && HasPendingFire(state)))
                 state.HipFireHoldRemaining = DollSingerHaloAim.HipFireHoldSeconds;
-            else state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
-
+            else
+                state.HipFireHoldRemaining = Mathf.Max(0, state.HipFireHoldRemaining - step);
             // 抬手还没完成时，暂记一次点按。换弹仅在快结束时也允许缓存，防止玩家按早一点就完全丢键。
             bool reloadEnding = state.ControllerState.IsReloadingState && state.ReloadTimer <= InputBufferSeconds;
             if (!wasReady && input.Shoot && (!state.ControllerState.IsReloadingState || reloadEnding) &&
@@ -103,10 +116,10 @@ namespace Unity.MP_FPS
                 state.HaloPendingShot = true;
             bool raised = input.Aim || state.HipFireHoldRemaining > 0 || HasPendingFire(state);
             state.WeaponRaiseProgress = Mathf.MoveTowards(state.WeaponRaiseProgress, raised ? 1 : 0,
-                step / ((raised ? DollSingerHaloAim.RaiseSeconds : DollSingerHaloAim.LowerSeconds) * RaidHealth.HandlingMultiplier(state)));
+                step / ((raised ? DollSingerHaloAim.RaiseSeconds : DollSingerHaloAim.LowerSeconds) *
+                        RaidHealth.HandlingMultiplier(state)));
             if (state.ControllerState.IsReloadingState && !reloadEnding) state.HaloPendingShot = false;
             if (state.WeaponRaiseProgress < 1f - .00001f || state.WeaponEquipRemaining > 0) return false;
-
             bool trigger = input.Shoot || state.HaloPendingShot;
             state.HaloPendingShot = false;
             bool fired = TryFire(ref state, weapon, trigger, true, false);
@@ -115,34 +128,44 @@ namespace Unity.MP_FPS
             return fired;
         }
 
-        public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, bool trigger, bool aiming, bool switched)
-        {
+        public static bool TryFire(
+            ref PredictedPlayerGhost state,
+            WeaponData weapon,
+            bool trigger,
+            bool aiming,
+            bool switched) {
             HaloEnergyRules.RefreshAmmo(ref state, weapon);
             bool pulse = IsPulse(state, weapon);
             bool pressed = trigger && !state.BurstTriggerHeld;
             state.BurstTriggerHeld = trigger;
-            bool blocked = GrenadeHandling.Occupied(state) || weapon == null || switched || state.CurrentHealth <= 0 || state.HaloDefenseHeld || HaloTransferRules.Occupied(state) ||
-                (DollSingerWeapons.IsHalo(state.EquippedWeaponID) && !aiming);
-            if (blocked) { state.BurstRemaining = 0; state.FireBufferRemaining = 0; return false; }
+            bool blocked = GrenadeHandling.Occupied(state) || weapon == null || switched || state.CurrentHealth <= 0 ||
+                           state.HaloDefenseHeld || HaloTransferRules.Occupied(state) ||
+                           (DollSingerWeapons.IsHalo(state.EquippedWeaponID) && !aiming);
+            if (blocked) {
+                state.BurstRemaining = 0;
+                state.FireBufferRemaining = 0;
+                return false;
+            }
 
             // Semi-auto input is already a press event; pulse rifles receive a held trigger.
             // A single pending press expires quickly and follows the current aim when released.
             if (((!pulse && !weapon.Automatic && trigger) || (pulse && pressed)) &&
                 (!state.ControllerState.IsReloadingState || state.ReloadTimer <= InputBufferSeconds))
                 state.FireBufferRemaining = InputBufferSeconds;
-
-            if (state.ControllerState.IsReloadingState)
-            {
+            if (state.ControllerState.IsReloadingState) {
                 state.BurstRemaining = 0;
                 if (state.ReloadTimer > InputBufferSeconds) state.FireBufferRemaining = 0;
                 return false;
             }
-            if (state.CurrentAmmo <= 0) { state.BurstRemaining = 0; state.FireBufferRemaining = 0; return false; }
+            if (state.CurrentAmmo <= 0) {
+                state.BurstRemaining = 0;
+                state.FireBufferRemaining = 0;
+                return false;
+            }
             if (state.WeaponEquipRemaining > 0) return false;
             float interval = Interval(state, weapon, pulse && state.BurstRemaining == 0);
             if (state.WeaponCooldown + .00001f < interval) return false;
-            if (!pulse)
-            {
+            if (!pulse) {
                 state.BurstRemaining = 0;
                 state.BurstSequence = 0;
                 bool fire = weapon.Automatic ? trigger : state.FireBufferRemaining > 0;
@@ -150,8 +173,7 @@ namespace Unity.MP_FPS
                 return fire;
             }
             // 连发只在缓存了新按键时开始。后面的几发由这一组的剩余发数继续驱动。
-            if (state.BurstRemaining == 0)
-            {
+            if (state.BurstRemaining == 0) {
                 if (state.FireBufferRemaining <= 0) return false;
                 state.FireBufferRemaining = 0;
                 state.BurstRemaining = weapon.BurstCount > 1 ? weapon.BurstCount : 3;
@@ -163,18 +185,19 @@ namespace Unity.MP_FPS
 
         // Retain at most one simulation step of overshoot for continuous fire. Idle time,
         // a buffered semi-auto press, or a hitch never buys several accelerated shots.
-        public static void CommitShot(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime)
-        {
+        public static void CommitShot(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime) {
             bool pulse = IsPulse(state, weapon);
             float firedInterval = Interval(state, weapon, pulse && state.BurstSequence == 0);
             float remainder = state.WeaponCooldown - firedInterval;
             // 连续开火允许保留不到一拍的时间余量，以免模拟步长改变射速。长时间卡顿不会攒出多发。
-            bool preserveRemainder = (weapon.Automatic || pulse) && deltaTime <= firedInterval &&
-                remainder >= 0 && remainder <= deltaTime + .00001f;
+            bool preserveRemainder = (weapon.Automatic || pulse) && deltaTime <= firedInterval && remainder >= 0 &&
+                                     remainder <= deltaTime + .00001f;
             state.WeaponCooldown = preserveRemainder ? Mathf.Min(remainder, deltaTime) : 0;
             float recovery = Interval(state, weapon, pulse && state.BurstRemaining == 0) - state.WeaponCooldown;
-            if (state.EquippedWeaponSlot == 1) state.PrimaryFireRecovery = recovery;
-            else if (state.EquippedWeaponSlot == 2) state.SecondaryFireRecovery = recovery;
+            if (state.EquippedWeaponSlot == 1)
+                state.PrimaryFireRecovery = recovery;
+            else if (state.EquippedWeaponSlot == 2)
+                state.SecondaryFireRecovery = recovery;
             else if (state.EquippedWeaponSlot == 3) state.PistolFireRecovery = recovery;
         }
     }

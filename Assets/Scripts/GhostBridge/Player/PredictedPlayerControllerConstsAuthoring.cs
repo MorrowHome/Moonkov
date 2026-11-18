@@ -4,84 +4,102 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour
-{
+public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour {
     [field: Header("Player Movement Speeds")]
-    [field: SerializeField, Tooltip("Walk speed of the character in m/s")]
+    [field: SerializeField]
+    [field: Tooltip("Walk speed of the character in m/s")]
     public float WalkSpeed { get; private set; } = 2.35f;
 
-    [field: SerializeField, Tooltip("Sprint speed of the character in m/s")]
+    [field: SerializeField]
+    [field: Tooltip("Sprint speed of the character in m/s")]
     public float SprintSpeed { get; private set; } = 4.7f;
 
     [field: Header("Player Rotation Smoothing Times")]
-    [field: SerializeField, Tooltip("How fast the character turns to face movement direction while walking")]
+    [field: SerializeField]
+    [field: Tooltip("How fast the character turns to face movement direction while walking")]
     public float WalkRotationSmoothTime { get; private set; } = 0.2f;
 
     [field: SerializeField] public float WalkAnimationMotionScale { get; private set; } = 0.4f;
 
-    [field: SerializeField, Tooltip("How fast the character turns to face movement direction while sprinting")]
+    [field: SerializeField]
+    [field: Tooltip("How fast the character turns to face movement direction while sprinting")]
     public float SprintRotationSmoothTime { get; private set; } = 0f;
 
     [field: Header("Player Speed Change Rates")]
-    [field: SerializeField, Tooltip("Acceleration and deceleration while walking")]
+    [field: SerializeField]
+    [field: Tooltip("Acceleration and deceleration while walking")]
     public float WalkSpeedChangeRate { get; private set; } = 10.0f;
 
-    [field: SerializeField, Tooltip("Acceleration and deceleration while sprinting")]
+    [field: SerializeField]
+    [field: Tooltip("Acceleration and deceleration while sprinting")]
     public float SprintSpeedChangeRate { get; private set; } = 10f;
 
-    [field: SerializeField, Tooltip("Multiplier to player target speed during the landing animation timeout when sprinting")]
+    [field: SerializeField]
+    [field: Tooltip("Multiplier to player target speed during the landing animation timeout when sprinting")]
     public float SprintLandingSpeedMultiplier { get; private set; } = 0.6f;
 
     [field: SerializeField] public float SprintAnimationMotionScale { get; private set; } = 0.1f;
 
     [field: Space(10)]
     [field: Header("Player Jumping and Gravity")]
-    [field: SerializeField, Tooltip("The height the player can jump")]
+    [field: SerializeField]
+    [field: Tooltip("The height the player can jump")]
     public float JumpHeight { get; private set; } = 1.2f;
 
-    [field: SerializeField, Tooltip("Lunar surface acceleration in metres per second squared.")]
+    [field: SerializeField]
+    [field: Tooltip("Lunar surface acceleration in metres per second squared.")]
     public float Gravity { get; private set; } = -1.62f;
 
-    [field: SerializeField]
-    public float TerminalVelocity { get; private set; } = -53.0f;
+    [field: SerializeField] public float TerminalVelocity { get; private set; } = -53.0f;
 
-    [field: SerializeField, Tooltip("The fall speed applied to the player when in the standing state, to ensure player aligns with the ground on uneven terrain")]
+    [field: SerializeField]
+    [field:
+        Tooltip(
+            "The fall speed applied to the player when in the standing state, to ensure player aligns with the ground on uneven terrain")]
     public float StandingFallSpeed { get; private set; } = -1.25f;
 
     [field: Space(10)]
     [field: Header("Player State Timeouts")]
-    [field: SerializeField, Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
+    [field: SerializeField]
+    [field: Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
     public float JumpTimeout { get; private set; } = 0.50f;
 
-    [field: SerializeField, Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+    [field: SerializeField]
+    [field: Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout { get; private set; } = 0.15f;
 
-    [field: SerializeField, Tooltip("Buffer time to continue applying gravity while in standing state, ensures player fully settles on the ground")]
+    [field: SerializeField]
+    [field:
+        Tooltip(
+            "Buffer time to continue applying gravity while in standing state, ensures player fully settles on the ground")]
     public float LandingTimeout { get; private set; } = 0.15f;
 
-    [field: SerializeField, Tooltip("Length of land animation for applying the landing speed multiplier and blocking turns")]
+    [field: SerializeField]
+    [field: Tooltip("Length of land animation for applying the landing speed multiplier and blocking turns")]
     public float LandingAnimTimeout { get; private set; } = 0.4f;
 
-    [field: SerializeField, Tooltip("Time required to pass between movement state changes before batching is re-enabled")]
+    [field: SerializeField]
+    [field: Tooltip("Time required to pass between movement state changes before batching is re-enabled")]
     public float StateChangeSafetyTimeout { get; private set; } = 0.3f;
 
     [field: Space(10)]
     [field: Header("Player Grounded")]
-    [field: SerializeField, Tooltip("Additional offset for the grounded spherecast")]
+    [field: SerializeField]
+    [field: Tooltip("Additional offset for the grounded spherecast")]
     public float GroundedOffset { get; private set; } = -0.14f;
 
-    [field: SerializeField, Tooltip("What layers the character uses as ground")]
+    [field: SerializeField]
+    [field: Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers { get; private set; }
 
     /// <summary>Shared movement tuning for entity baking and offline gameplay previews.</summary>
-    public FirstPersonController.ControllerConsts BuildControllerConsts()
-    {
-        return new FirstPersonController.ControllerConsts
-        {
+    public FirstPersonController.ControllerConsts BuildControllerConsts() {
+        return new FirstPersonController.ControllerConsts {
             JumpHeight = JumpHeight,
             Gravity = Gravity,
             StandingFallSpeed = StandingFallSpeed,
-            JumpTimeout = math.max(JumpTimeout, math.EPSILON), //set a minimum delay to force the jump timeout to wait 1 frame
+            JumpTimeout =
+                math.max(JumpTimeout, math.EPSILON), //set a minimum delay to force the jump timeout to wait 1 frame
             FallTimeout = FallTimeout,
             LandingTimeout = LandingTimeout,
             LandingAnimTimeout = LandingAnimTimeout,
@@ -89,36 +107,28 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour
             GroundedOffset = GroundedOffset,
             GroundLayers = GroundLayers,
             TerminalVelocity = TerminalVelocity,
-
-            Walk = new FirstPersonController.ControllerConsts.StateConsts
-            {
+            Walk = new FirstPersonController.ControllerConsts.StateConsts {
                 Speed = WalkSpeed,
                 RotationSmoothTime = WalkRotationSmoothTime,
                 SpeedChangeRate = WalkSpeedChangeRate,
                 LandingSpeedMult = 1f,
-                AnimationMotionScale = WalkAnimationMotionScale,
+                AnimationMotionScale = WalkAnimationMotionScale
             },
-
-            Sprint = new FirstPersonController.ControllerConsts.StateConsts
-            {
+            Sprint = new FirstPersonController.ControllerConsts.StateConsts {
                 Speed = SprintSpeed,
                 RotationSmoothTime = SprintRotationSmoothTime,
                 SpeedChangeRate = SprintSpeedChangeRate,
                 LandingSpeedMult = SprintLandingSpeedMultiplier,
-                AnimationMotionScale = SprintAnimationMotionScale,
-            },
+                AnimationMotionScale = SprintAnimationMotionScale
+            }
         };
     }
-
 }
 
-public class PredictedPlayerControllerConstsBaker : Baker<PredictedPlayerControllerConstsAuthoring>
-{
-    public override void Bake(PredictedPlayerControllerConstsAuthoring authoring)
-    {
+public class PredictedPlayerControllerConstsBaker : Baker<PredictedPlayerControllerConstsAuthoring> {
+    public override void Bake(PredictedPlayerControllerConstsAuthoring authoring) {
         var entity = GetEntity(TransformUsageFlags.None);
-        AddComponent(entity, new PredictedPlayerControllerConsts
-        {
+        AddComponent(entity, new PredictedPlayerControllerConsts {
             ControllerConsts = authoring.BuildControllerConsts()
         });
     }

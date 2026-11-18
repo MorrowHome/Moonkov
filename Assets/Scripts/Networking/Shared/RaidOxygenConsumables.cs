@@ -1,19 +1,22 @@
 // 使用氧气罐时一起检查库存版本、物品是否拿得到以及装备能否补氧。先算好补氧结果，扣库存成功后才写入角色。
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>Atomic server-side inventory and suit refill transaction.</summary>
-    public static class RaidOxygenConsumables
-    {
+    public static class RaidOxygenConsumables {
         public const string CanisterCode = "oxygen_canister";
         public const float UseSeconds = 2;
 
-        public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition definition) =>
-            definition != null && float.IsFinite(definition.Oxygen) && definition.Oxygen > 0 && RaidOxygen.CanRefill(state);
+        public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition definition) {
+            return definition != null && float.IsFinite(definition.Oxygen) && definition.Oxygen > 0 &&
+                   RaidOxygen.CanRefill(state);
+        }
 
-        public static InventoryError Consume(ref PredictedPlayerGhost state, InventoryGraph graph, string id, int version)
-        {
+        public static InventoryError Consume(
+            ref PredictedPlayerGhost state,
+            InventoryGraph graph,
+            string id,
+            int version) {
             if (graph == null) return InventoryError.Invalid;
             if (version != graph.Version) return InventoryError.Stale;
             var item = graph.Find(id);

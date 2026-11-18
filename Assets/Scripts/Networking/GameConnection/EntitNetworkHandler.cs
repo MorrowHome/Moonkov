@@ -4,8 +4,7 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Services.Multiplayer;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>
     /// The NetworkHandler is setting up the correct driver constructors for the entity worlds
     /// and keep a copy of the NetworkEndpoints required to connect the clients and server.
@@ -17,19 +16,16 @@ namespace Unity.MP_FPS
     /// Using a TaskCompletionSource to access the connection endpoint ensure that the Session is setup properly before
     /// accessing any of these values.
     /// </remarks>
-    class EntityNetworkHandler : INetworkHandler
-    {
+    internal class EntityNetworkHandler : INetworkHandler {
         public Task<NetworkEndpoint> ConnectEndpoint => m_ConnectEndpoint.Task;
         public Task<NetworkEndpoint> ListenEndpoint => m_ListenEndpoint.Task;
         public Task<NetworkType> SessionConnectionType => m_SessionConnectionType.Task;
+        private readonly TaskCompletionSource<NetworkEndpoint> m_ConnectEndpoint = new();
+        private readonly TaskCompletionSource<NetworkEndpoint> m_ListenEndpoint = new();
+        private readonly TaskCompletionSource<NetworkType> m_SessionConnectionType = new();
+        private bool m_Stopped;
 
-        readonly TaskCompletionSource<NetworkEndpoint> m_ConnectEndpoint = new();
-        readonly TaskCompletionSource<NetworkEndpoint> m_ListenEndpoint = new();
-        readonly TaskCompletionSource<NetworkType> m_SessionConnectionType = new();
-        bool m_Stopped;
-
-        public Task StartAsync(NetworkConfiguration configuration)
-        {
+        public Task StartAsync(NetworkConfiguration configuration) {
             if (m_Stopped) throw new System.OperationCanceledException("Session initialization was cancelled.");
             NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(configuration);
             m_ConnectEndpoint.SetResult(GetConnectEndpoint(configuration));
@@ -38,41 +34,29 @@ namespace Unity.MP_FPS
             return Task.CompletedTask;
         }
 
-        static NetworkEndpoint GetConnectEndpoint(NetworkConfiguration configuration)
-        {
-            switch (configuration.Type, configuration.Role)
-            {
+        private static NetworkEndpoint GetConnectEndpoint(NetworkConfiguration configuration) {
+            switch (configuration.Type, configuration.Role) {
                 case (NetworkType.Direct, NetworkRole.Host):
                     return NetworkEndpoint.LoopbackIpv4.WithPort(configuration.DirectNetworkListenAddress.Port);
-                case (NetworkType.Direct, NetworkRole.Client):
-                    return configuration.DirectNetworkPublishAddress;
+                case (NetworkType.Direct, NetworkRole.Client): return configuration.DirectNetworkPublishAddress;
                 case (NetworkType.Relay, NetworkRole.Host):
                     return NetworkEndpoint.LoopbackIpv4.WithPort(configuration.RelayServerData.Endpoint.Port);
-                case (NetworkType.Relay, NetworkRole.Client):
-                    return configuration.RelayClientData.Endpoint;
-                default:
-                    return default;
+                case (NetworkType.Relay, NetworkRole.Client): return configuration.RelayClientData.Endpoint;
+                default: return default;
             }
         }
 
-        static NetworkEndpoint GetListenEndpoint(NetworkConfiguration configuration)
-        {
-            switch (configuration.Type)
-            {
-                case NetworkType.Direct:
-                    return configuration.DirectNetworkListenAddress;
-                case NetworkType.Relay:
-                    return NetworkEndpoint.AnyIpv4;
-                default:
-                    return default;
+        private static NetworkEndpoint GetListenEndpoint(NetworkConfiguration configuration) {
+            switch (configuration.Type) {
+                case NetworkType.Direct: return configuration.DirectNetworkListenAddress;
+                case NetworkType.Relay: return NetworkEndpoint.AnyIpv4;
+                default: return default;
             }
         }
 
-        public Task StopAsync()
-        {
+        public Task StopAsync() {
             m_Stopped = true;
             return Task.CompletedTask;
         }
     }
 }
-

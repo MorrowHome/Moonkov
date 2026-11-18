@@ -1,15 +1,21 @@
 // 这份资源像声音索引表。菜单、交互和角色表现通过字段拿到对应 SoundDef，资源替换或调参可以集中完成。
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     [CreateAssetMenu(menuName = "Moonkov/Audio Library")]
-    public sealed class MoonkovAudioLibrary : ScriptableObject
-    {
+    public sealed class MoonkovAudioLibrary : ScriptableObject {
         public SoundDef Click, Hover, Confirm, Error, Notification;
         public SoundDef AirlockButtonPress;
         public SoundDef InventoryOpen, InventoryClose, ContainerClose;
-        public SoundDef InventoryCloth, InventoryMetal, InventoryPlastic, InventoryFood, InventoryEquip, InventoryDrop, BatteryInsert;
+
+        public SoundDef InventoryCloth,
+            InventoryMetal,
+            InventoryPlastic,
+            InventoryFood,
+            InventoryEquip,
+            InventoryDrop,
+            BatteryInsert;
+
         public SoundDef WeaponDraw, WeaponDrawPistol, WeaponStow, WeaponAimIn, WeaponAimOut, MeleeDraw;
         public SoundDef GrenadeDraw, GrenadePin, GrenadeThrow, OxygenConnect, OxygenDisconnect, RoomSwitch;
         public SoundDef TerminalStart, TerminalComplete;
@@ -40,6 +46,7 @@ namespace Unity.MP_FPS
         public SoundDef OxygenSupply;
         public SoundDef ShipInterior;
         public SoundDef AccessCarrier, AccessTerminal, AccessCut, AccessReveal, AccessClose, AccessRoom, AccessGlitch;
+
         // Layered deployment confirmation (success gong + android voice).
         public SoundDef DeployConfirm;
     }

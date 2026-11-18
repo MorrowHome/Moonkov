@@ -11,18 +11,27 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.MP_FPS
-{
-    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition, Attached, Dominance }
+namespace Unity.MP_FPS {
+    public enum AlienAction : byte {
+        Roam,
+        Chase,
+        Search,
+        Windup,
+        Strike,
+        Recover,
+        Dead,
+        Ambush,
+        Reposition,
+        Attached,
+        Dominance
+    }
 
     /// <summary>Server-only intent, perception and damage; interpolated clients derive
     /// cosmetic rigs from snapshots. Target eligibility requires a real PlayerGhost:
     /// humans and PMC bots are eligible, other aliens never are.</summary>
     [DisallowMultipleComponent]
-    public sealed partial class ProceduralAlienEnemy : GhostMonoBehaviour, IUpdateServer, IUpdateClient
-    {
-        public struct State : IComponentData
-        {
+    public sealed partial class ProceduralAlienEnemy : GhostMonoBehaviour, IUpdateServer, IUpdateClient {
+        public struct State : IComponentData {
             [GhostField] public AlienAction Action;
             [GhostField(Quantization = 1000)] public float Scale;
             [GhostField(Quantization = 100)] public float Phase;
@@ -44,9 +53,15 @@ namespace Unity.MP_FPS
             [GhostField(Quantization = 1000)] public float3 ImpactNormal;
             [GhostField] public AlienImpactKind ImpactKind;
         }
+
         [SerializeField] private AlienCreatureProfile profile;
-        [SerializeField, Min(0), Tooltip("Full-rate visible client rig distance at 45-degree FOV. Distant visible rigs update at 30/15 Hz. Fully off-screen rigs beyond 8 metres use 5 Hz; zero disables the budget. Server simulation is unchanged.")]
+
+        [SerializeField]
+        [Min(0)]
+        [Tooltip(
+            "Full-rate visible client rig distance at 45-degree FOV. Distant visible rigs update at 30/15 Hz. Fully off-screen rigs beyond 8 metres use 5 Hz; zero disables the budget. Server simulation is unchanged.")]
         private float presentationDistance = 60;
+
         private AlienCreatureBody m_Body;
         private Entity m_Target;
         private Vector3 m_Spawn, m_LastSeen, m_RoamGoal;
@@ -57,19 +72,20 @@ namespace Unity.MP_FPS
         private bool m_Visible;
         private uint m_Attacks, m_Hits;
         private readonly RaycastHit[] m_HitsBuffer = new RaycastHit[32];
-        private readonly Dictionary<Entity, uint> m_ObservedShots = new Dictionary<Entity, uint>();
-        private struct FootstepTrack
-        {
+        private readonly Dictionary<Entity, uint> m_ObservedShots = new();
+
+        private struct FootstepTrack {
             public Vector3 Position;
             public float Distance, SampledAt;
             public uint LandTick, LootSequence, ConsumableSequence;
             public double NextCough;
         }
-        private readonly Dictionary<Entity, FootstepTrack> m_Footsteps = new Dictionary<Entity, FootstepTrack>();
-        private readonly List<Entity> m_ExpiredFootsteps = new List<Entity>();
+
+        private readonly Dictionary<Entity, FootstepTrack> m_Footsteps = new();
+        private readonly List<Entity> m_ExpiredFootsteps = new();
         private int m_FootstepWorldMask;
-        public override bool AllowAutoRegisterForUpdates() => Application.isPlaying && !m_ManualDemonstration;
-        private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new List<ProceduralAlienEnemy>();
+        public override bool AllowAutoRegisterForUpdates() { return Application.isPlaying && !m_ManualDemonstration; }
+        private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new();
         private float m_NextLod;
         private bool m_Liquid;
         private float m_PresentationElapsed, m_NextPresentation, m_LastPresentationInterval;
@@ -84,88 +100,99 @@ namespace Unity.MP_FPS
         public AlienAction Action => m_Action;
         public uint AttackCount => m_Attacks;
         public uint DamageCount => m_Hits;
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() { s_ClientAliens.Clear(); s_PresentationCamera = null; s_PresentationFrame = -1; }
 
-        public override void OnGhostLinked()
-        {
-            if (!profile) { Debug.LogError("Alien profile is missing.", this); return; }
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() {
+            s_ClientAliens.Clear();
+            s_PresentationCamera = null;
+            s_PresentationFrame = -1;
+        }
+
+        public override void OnGhostLinked() {
+            if (!profile) {
+                Debug.LogError("Alien profile is missing.", this);
+                return;
+            }
             m_FootstepWorldMask = LayerMask.GetMask("Default", "Ground");
-            m_MissionAlarmId = null; m_MissionAlarmUntil = 0;
-            m_ObservedShots.Clear(); m_Footsteps.Clear();
+            m_MissionAlarmId = null;
+            m_MissionAlarmUntil = 0;
+            m_ObservedShots.Clear();
+            m_Footsteps.Clear();
             var state = ReadGhostComponentData<State>();
-            m_Spawn = transform.position; m_RoamGoal = m_Spawn;
+            m_Spawn = transform.position;
+            m_RoamGoal = m_Spawn;
             m_AmbushEnabled = profile.IsCeilingSpider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
             m_Action = state.Action;
             m_LastHealth = profile.Health;
             float scale = state.Scale > 0 ? state.Scale : profile.Scale;
             m_Body = new AlienCreatureBody(transform, profile, scale, Role != MultiplayerRole.Server,
                 LayerMask.NameToLayer(Role == MultiplayerRole.Server ? "ServerPlayer" : "ClientPlayer"));
-            if (Role != MultiplayerRole.Server)
-            {
+            if (Role != MultiplayerRole.Server) {
                 s_ClientAliens.Add(this);
                 // Spread far-away rigs across frames instead of solving every
                 // creature on the same frame after a snapshot/spawn batch.
-                m_NextPresentation = Time.unscaledTime + (unchecked((uint)GhostGameObject.Owner) % 16) * .004f;
+                m_NextPresentation = Time.unscaledTime + unchecked((uint)GhostGameObject.Owner) % 16 * .004f;
             }
         }
+
         // An operating machine attracts nearby creatures without revealing the player.
-        public bool HearMissionAlarm(string operationId, Vector3 position)
-        {
+        public bool HearMissionAlarm(string operationId, Vector3 position) {
             if (Role != MultiplayerRole.Server || m_Body == null || !profile || m_AmbushEnabled ||
-                profile.Species == AlienSpecies.Roots && !profile.Boss || string.IsNullOrEmpty(operationId) ||
+                (profile.Species == AlienSpecies.Roots && !profile.Boss) || string.IsNullOrEmpty(operationId) ||
                 m_MissionAlarmId == operationId || m_Visible ||
-                m_Target != Entity.Null && m_Clock - m_LastSeenAt <= profile.MemorySeconds) return false;
+                (m_Target != Entity.Null && m_Clock - m_LastSeenAt <= profile.MemorySeconds))
+                return false;
             m_MissionAlarmId = operationId;
             m_MissionAlarmUntil = m_Clock + 30;
             m_Target = Entity.Null;
-            m_LastSeen = position; m_LastSeenAt = m_Clock; m_Visible = false;
+            m_LastSeen = position;
+            m_LastSeenAt = m_Clock;
+            m_Visible = false;
             return true;
         }
-        public static bool IsLivingHumanoid(EntityManager manager, Entity entity)
-        {
+
+        public static bool IsLivingHumanoid(EntityManager manager, Entity entity) {
             if (entity == Entity.Null || !manager.Exists(entity) || manager.HasComponent<State>(entity) ||
-                !manager.HasComponent<PredictedPlayerGhost>(entity) || !manager.HasComponent<GhostGameObjectLink>(entity) ||
-                manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth <= 0) return false;
+                !manager.HasComponent<PredictedPlayerGhost>(entity) ||
+                !manager.HasComponent<GhostGameObjectLink>(entity) ||
+                manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth <= 0)
+                return false;
             var link = manager.GetComponentObject<GhostGameObjectLink>(entity);
             return link.LinkedInstance && link.LinkedInstance.GetComponent<PlayerGhost>();
         }
 
-        public void UpdateServer(float deltaTime)
-        {
+        public void UpdateServer(float deltaTime) {
             // Destruction can retain a cleanup entity for one frame. The callback
             // registration is removed by GhostBridge cleanup; never read stripped data.
-            if (m_Body == null || !GhostGameObject.GhostEntityExists() || !GhostHasComponent<PredictedPlayerGhost>()) return;
-            float dt = Mathf.Clamp(deltaTime, 0, .06f); m_Clock += dt;
+            if (m_Body == null || !GhostGameObject.GhostEntityExists() || !GhostHasComponent<PredictedPlayerGhost>())
+                return;
+            float dt = Mathf.Clamp(deltaTime, 0, .06f);
+            m_Clock += dt;
             var manager = GhostGameObject.EntityManager;
             var health = ReadGhostComponentData<PredictedPlayerGhost>();
-            if (health.CurrentHealth <= 0)
-            {
-                if (m_Action != AlienAction.Dead)
-                {
+            if (health.CurrentHealth <= 0) {
+                if (m_Action != AlienAction.Dead) {
                     if (m_AttachedTarget != Entity.Null) ReleaseFace();
                     ChangeAction(AlienAction.Dead);
                     DropAlienLoot();
                 }
                 UpdateCombatPresentation(health.CurrentHealth);
-                m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false); WriteState();
-                if (m_Clock - m_ActionStarted > 2)
-                {
+                m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false);
+                WriteState();
+                if (m_Clock - m_ActionStarted > 2) {
                     LeaderboardManager.RetireRaidActor(GhostGameObject.Owner);
                     GhostGameObject.UpdateEntityCommandBuffer.DestroyEntity(GhostGameObject.LinkedEntity);
                 }
                 return;
             }
             float scale = Mathf.Clamp(profile.Scale, .1f, 4);
-            if (Mathf.Abs(scale - m_Body.Scale) > .0001f)
-            {
+            if (Mathf.Abs(scale - m_Body.Scale) > .0001f) {
                 var pose = m_Body.Motor.Current;
                 transform.position = pose.Position + pose.Up * SurfaceMotor.Height * (scale - m_Body.Scale);
                 m_Body.Dispose();
                 m_Body = new AlienCreatureBody(transform, profile, scale, false, LayerMask.NameToLayer("ServerPlayer"));
             }
-            if (m_AmbushEnabled)
-            {
+            if (m_AmbushEnabled) {
                 UpdateAmbush(dt, health.CurrentHealth);
                 WriteState();
                 return;
@@ -174,89 +201,117 @@ namespace Unity.MP_FPS
             WriteState();
         }
 
-        private void ChangeAction(AlienAction action)
-        {
+        private void ChangeAction(AlienAction action) {
             if (m_Action == action) return;
-            m_Action = action; m_ActionStarted = m_Clock;
+            m_Action = action;
+            m_ActionStarted = m_Clock;
         }
-        private Vector3 PatrolGoal()
-        {
-            if (m_Clock >= m_NextPatrol || Vector3.Distance(transform.position, m_RoamGoal) < .7f)
-            {
+
+        private Vector3 PatrolGoal() {
+            if (m_Clock >= m_NextPatrol || Vector3.Distance(transform.position, m_RoamGoal) < .7f) {
                 float angle = (GhostGameObject.Owner * 137.5f + m_Clock * 43) * Mathf.Deg2Rad;
                 m_RoamGoal = m_Spawn + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * profile.PatrolRadius;
                 m_NextPatrol = m_Clock + 4;
             }
             return m_RoamGoal;
         }
+
         // 感知同时看视线和声音。能看清时更新精确位置，听见脚步或枪声时使用可搜索的线索。
-        private void Sense()
-        {
+        private void Sense() {
             UnityEngine.Physics.SyncTransforms();
-            var manager = GhostGameObject.EntityManager; m_Visible = false;
-            using var query = manager.CreateEntityQuery(typeof(PredictedPlayerGhost), typeof(LocalTransform), typeof(GhostGameObjectLink));
+            var manager = GhostGameObject.EntityManager;
+            m_Visible = false;
+            using var query = manager.CreateEntityQuery(typeof(PredictedPlayerGhost), typeof(LocalTransform),
+                typeof(GhostGameObjectLink));
             using var entities = query.ToEntityArray(Allocator.Temp);
             using var smokeQuery = manager.CreateEntityQuery(typeof(TacticalServerWorld));
-            var smokeWorld = smokeQuery.IsEmptyIgnoreFilter ? null : manager.GetComponentObject<TacticalServerWorld>(smokeQuery.GetSingletonEntity());
-            float sightScale = HaloLightGlareRules.SightScale(ReadGhostComponentData<PredictedPlayerGhost>().HaloLightGlare);
+            var smokeWorld = smokeQuery.IsEmptyIgnoreFilter
+                ? null
+                : manager.GetComponentObject<TacticalServerWorld>(smokeQuery.GetSingletonEntity());
+            float sightScale =
+                HaloLightGlareRules.SightScale(ReadGhostComponentData<PredictedPlayerGhost>().HaloLightGlare);
             float best = float.MaxValue;
-            foreach (var entity in entities)
-            {
+            foreach (var entity in entities) {
                 if (!IsLivingHumanoid(manager, entity)) continue;
                 var root = manager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
-                Vector3 point = (Vector3)manager.GetComponentData<LocalTransform>(entity).Position + Vector3.up * 1.0f;
+                var point = (Vector3)manager.GetComponentData<LocalTransform>(entity).Position + Vector3.up * 1.0f;
                 float distance = Vector3.Distance(AimPoint, point);
                 var health = manager.GetComponentData<PredictedPlayerGhost>(entity);
                 uint shot = health.LastShotTick;
                 bool fired = m_ObservedShots.TryGetValue(entity, out uint previousShot) && previousShot != shot;
                 m_ObservedShots[entity] = shot;
-                bool stepped = Footstep(entity, point, health, out bool landed, out bool looting, out bool consuming, out bool cough);
+                bool stepped = Footstep(entity, point, health, out bool landed, out bool looting, out bool consuming,
+                    out bool cough);
                 bool visible = distance <= profile.SightRange * sightScale &&
-                    !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
+                               !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint,
+                                   point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point,
+                                   root.transform);
                 float movementHearing = profile.HearingRange * RaidFootsteps.AlienMovementRangeScale;
-                float stepRange = landed ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled) :
-                    RaidFootsteps.HearingRange(movementHearing, health.ControllerState.Stance,
+                float stepRange = landed
+                    ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled)
+                    : RaidFootsteps.HearingRange(movementHearing, health.ControllerState.Stance,
                         health.ControllerState.Sprinting, health.CarriedWeight, health.ClashEnabled);
-                if (looting || consuming || cough)
-                {
-                    float extra = Mathf.Max(Mathf.Max(looting ? RaidLootAcoustics.HearingRange : 0,
-                        consuming ? RaidConsumableAcoustics.HearingRange : 0), cough ? RaidCoughSound.Range : 0);
+                if (looting || consuming || cough) {
+                    float extra =
+                        Mathf.Max(
+                            Mathf.Max(looting ? RaidLootAcoustics.HearingRange : 0,
+                                consuming ? RaidConsumableAcoustics.HearingRange : 0),
+                            cough ? RaidCoughSound.Range : 0);
                     stepRange = Mathf.Max(stepped ? stepRange : 0, Mathf.Min(extra, profile.HearingRange));
                 }
                 bool blocked = false;
-                if (!visible && (fired && distance <= profile.HearingRange || (stepped || looting || consuming || cough) && distance <= stepRange))
-                    blocked = UnityEngine.Physics.Linecast(AimPoint, point, m_FootstepWorldMask, QueryTriggerInteraction.Ignore);
+                if (!visible && ((fired && distance <= profile.HearingRange) ||
+                                 ((stepped || looting || consuming || cough) && distance <= stepRange)))
+                    blocked = UnityEngine.Physics.Linecast(AimPoint, point, m_FootstepWorldMask,
+                        QueryTriggerInteraction.Ignore);
                 bool heardShot = !visible && fired && RaidFootsteps.Audible(distance, profile.HearingRange, blocked);
-                bool heardStep = !visible && !heardShot && (stepped || looting || consuming || cough) && RaidFootsteps.Audible(distance, stepRange, blocked);
+                bool heardStep = !visible && !heardShot && (stepped || looting || consuming || cough) &&
+                                 RaidFootsteps.Audible(distance, stepRange, blocked);
                 if (!visible && !heardShot && !heardStep) continue;
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);
                 if (score >= best) continue;
-                best = score; m_Target = entity;
+                best = score;
+                m_Target = entity;
                 m_MissionAlarmUntil = 0;
-                if (visible) m_LastSeen = point;
-                else
-                {
+                if (visible) { m_LastSeen = point; } else {
                     float soundRange = heardShot ? profile.HearingRange : stepRange;
-                    m_LastSeen = RaidAlienHearing.Estimate(point, distance, soundRange, blocked, GhostGameObject.Owner, entity.Index);
+                    m_LastSeen = RaidAlienHearing.Estimate(point, distance, soundRange, blocked, GhostGameObject.Owner,
+                        entity.Index);
                 }
-                m_LastSeenAt = m_Clock; m_Visible = visible;
+                m_LastSeenAt = m_Clock;
+                m_Visible = visible;
             }
             m_ExpiredFootsteps.Clear();
             foreach (var pair in m_Footsteps)
-                if (m_Clock - pair.Value.SampledAt > 3) m_ExpiredFootsteps.Add(pair.Key);
-            foreach (var expired in m_ExpiredFootsteps) { m_Footsteps.Remove(expired); m_ObservedShots.Remove(expired); }
+                if (m_Clock - pair.Value.SampledAt > 3)
+                    m_ExpiredFootsteps.Add(pair.Key);
+            foreach (var expired in m_ExpiredFootsteps) {
+                m_Footsteps.Remove(expired);
+                m_ObservedShots.Remove(expired);
+            }
             ObserveTargetMotion();
         }
-        private bool Footstep(Entity entity, Vector3 position, in PredictedPlayerGhost health, out bool landed, out bool looting,
-            out bool consuming, out bool cough)
-        {
-            landed = false; looting = false; consuming = false; cough = false;
-            if (!m_Footsteps.TryGetValue(entity, out var track))
-            {
-                track = new FootstepTrack { Position = position, SampledAt = m_Clock,
+
+        private bool Footstep(
+            Entity entity,
+            Vector3 position,
+            in PredictedPlayerGhost health,
+            out bool landed,
+            out bool looting,
+            out bool consuming,
+            out bool cough) {
+            landed = false;
+            looting = false;
+            consuming = false;
+            cough = false;
+            if (!m_Footsteps.TryGetValue(entity, out var track)) {
+                track = new FootstepTrack {
+                    Position = position, SampledAt = m_Clock,
                     LandTick = health.LastLandTick, LootSequence = health.LootSearchSequence,
-                    ConsumableSequence = health.ConsumableUseSequence };
-                cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds, health.ClashEnabled);
+                    ConsumableSequence = health.ConsumableUseSequence
+                };
+                cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds,
+                    health.ClashEnabled);
                 m_Footsteps[entity] = track;
                 return false;
             }
@@ -266,105 +321,130 @@ namespace Unity.MP_FPS
             track.LootSequence = health.LootSearchSequence;
             consuming = track.ConsumableSequence != health.ConsumableUseSequence;
             track.ConsumableSequence = health.ConsumableUseSequence;
-            cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds, health.ClashEnabled);
+            cough = RaidCoughSound.TryEmit(ref track.NextCough, m_Clock, health.TacticalCoughSeconds,
+                health.ClashEnabled);
             float elapsed = m_Clock - track.SampledAt;
-            Vector3 delta = position - track.Position; delta.y = 0;
+            var delta = position - track.Position;
+            delta.y = 0;
             float distance = delta.magnitude;
             // A teleport, stalled sample or airborne motion is not a footstep.
             if (landed || health.ControllerState.MovementType != FirstPersonController.MovementType.Standing ||
-                elapsed <= 0 || elapsed > 1 || distance > Mathf.Max(2, elapsed * 12)) track.Distance = 0;
-            else track.Distance += distance;
-            track.Position = position; track.SampledAt = m_Clock;
+                elapsed <= 0 || elapsed > 1 || distance > Mathf.Max(2, elapsed * 12))
+                track.Distance = 0;
+            else
+                track.Distance += distance;
+            track.Position = position;
+            track.SampledAt = m_Clock;
             bool stepped = landed || track.Distance >= RaidFootsteps.StepDistance;
             if (stepped) track.Distance %= RaidFootsteps.StepDistance;
             m_Footsteps[entity] = track;
             return stepped;
         }
-        private bool ClearSight(Vector3 from, Vector3 to, Transform target)
-        {
+
+        private bool ClearSight(Vector3 from, Vector3 to, Transform target) {
             var targetCollider = target.GetComponent<Collider>();
             if (targetCollider && (targetCollider.ClosestPoint(from) - from).sqrMagnitude < .000001f &&
-                !UnityEngine.Physics.Linecast(from, to, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) return true;
-            Vector3 delta = to - from;
+                !UnityEngine.Physics.Linecast(from, to, LayerMask.GetMask("Default", "Ground"),
+                    QueryTriggerInteraction.Ignore))
+                return true;
+            var delta = to - from;
             int count = UnityEngine.Physics.RaycastNonAlloc(from, delta.normalized, m_HitsBuffer, delta.magnitude + .1f,
                 LayerMask.GetMask("Default", "Ground", "ServerPlayer"), QueryTriggerInteraction.Ignore);
             if (count == m_HitsBuffer.Length) return false;
-            float nearest = float.MaxValue; Transform hit = null;
-            for (int i = 0; i < count; i++)
-            {
+            float nearest = float.MaxValue;
+            Transform hit = null;
+            for (int i = 0; i < count; i++) {
                 var entry = m_HitsBuffer[i];
                 if (entry.transform.IsChildOf(transform) || entry.distance >= nearest) continue;
-                nearest = entry.distance; hit = entry.transform;
+                nearest = entry.distance;
+                hit = entry.transform;
             }
             return hit && hit.IsChildOf(target);
         }
-        private void TryStrike()
-        {
+
+        private void TryStrike() {
             UnityEngine.Physics.SyncTransforms();
             var manager = GhostGameObject.EntityManager;
             if (!IsLivingHumanoid(manager, m_Target)) return;
             var root = manager.GetComponentObject<GhostGameObjectLink>(m_Target).LinkedInstance;
-            Vector3 point = ContactPoint(m_Target);
+            var point = ContactPoint(m_Target);
             if (Vector3.Distance(AimPoint, point) > profile.AttackReach * m_Body.Scale + .5f ||
-                !ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform)) return;
+                !ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform))
+                return;
             var health = manager.GetComponentData<PredictedPlayerGhost>(m_Target);
-            float damaged = RaidHealth.CombatDamage(manager, m_Target, ref health, BodyPart.Chest, profile.Damage, GhostGameObject.GetCurrentTick(), RaidDamageKind.Melee, point);
+            float damaged = RaidHealth.CombatDamage(manager, m_Target, ref health, BodyPart.Chest, profile.Damage,
+                GhostGameObject.GetCurrentTick(), RaidDamageKind.Melee, point);
             manager.SetComponentData(m_Target, health);
             if (damaged > 0) m_Hits++;
             if (health.CurrentHealth <= 0 && manager.HasComponent<GhostOwner>(m_Target))
-                LeaderboardManager.Instance?.AddKill(GhostGameObject.Owner, manager.GetComponentData<GhostOwner>(m_Target).NetworkId);
+                LeaderboardManager.Instance?.AddKill(GhostGameObject.Owner,
+                    manager.GetComponentData<GhostOwner>(m_Target).NetworkId);
         }
-        private Vector3 ContactPoint(Entity target)
-        {
+
+        private Vector3 ContactPoint(Entity target) {
             var manager = GhostGameObject.EntityManager;
             var root = manager.GetComponentObject<GhostGameObjectLink>(target).LinkedInstance;
             var player = root.GetComponent<PlayerGhost>();
-            return player && player.Controller && player.Controller.CharacterController ? player.Controller.CharacterController.ClosestPoint(AimPoint) :
-                (Vector3)manager.GetComponentData<LocalTransform>(target).Position + Vector3.up * .5f;
+            return player && player.Controller && player.Controller.CharacterController
+                ? player.Controller.CharacterController.ClosestPoint(AimPoint)
+                : (Vector3)manager.GetComponentData<LocalTransform>(target).Position + Vector3.up * .5f;
         }
-        private float ActionPulse() => m_Action == AlienAction.Windup ? Mathf.Clamp01((m_Clock - m_ActionStarted) / profile.Windup) :
-            m_Action == AlienAction.Strike ? 1 : m_Action == AlienAction.Recover ? Mathf.Clamp01(1 - (m_Clock - m_ActionStarted) / profile.Recovery) : 0;
+
+        private float ActionPulse() {
+            return m_Action == AlienAction.Windup ? Mathf.Clamp01((m_Clock - m_ActionStarted) / profile.Windup) :
+                m_Action == AlienAction.Strike ? 1 :
+                m_Action == AlienAction.Recover ? Mathf.Clamp01(1 - (m_Clock - m_ActionStarted) / profile.Recovery) : 0;
+        }
+
         // 把服务器已经确定的动作、攻击和身体状态写给客户端。客户端表现从这里拿数据。
-        private void WriteState()
-        {
-            WriteGhostComponentData(new State { Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
+        private void WriteState() {
+            WriteGhostComponentData(new State {
+                Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
                 ActionTime = m_Clock - m_ActionStarted, Velocity = m_Body.Motor.Velocity, AttackSequence = m_Attacks,
-                Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled, MucusInFlight = m_MucusInFlight && m_Action != AlienAction.Dead,
+                Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled,
+                MucusInFlight = m_MucusInFlight && m_Action != AlienAction.Dead,
                 MucusLowArc = m_MucusLowArc, ImpactSequence = m_ImpactSequence, ImpactPoint = m_ImpactPoint,
                 ImpactNormal = m_ImpactNormal, ImpactKind = m_ImpactKind,
                 AttackKind = m_Pattern.Kind, AttackPoint = m_CombatPoint, AttackOrigin = m_CombatOrigin,
-                AttackDirection = m_CombatDirection, BossPhase = m_BossPhase, AttachedTarget = m_AttachedTarget });
+                AttackDirection = m_CombatDirection, BossPhase = m_BossPhase, AttachedTarget = m_AttachedTarget
+            });
         }
 
-        public void UpdateClient(float deltaTime)
-        {
+        public void UpdateClient(float deltaTime) {
             if (m_Body == null || !GhostGameObject.GhostEntityExists() || !GhostHasComponent<State>()) return;
             var state = ReadGhostComponentData<State>();
             bool immediate = m_Action != state.Action;
-            if (Mathf.Abs(state.Scale - m_Body.Scale) > .002f && state.Scale > 0)
-            {
-                m_Body.Dispose(); m_Body = new AlienCreatureBody(transform, profile, state.Scale, true, LayerMask.NameToLayer("ClientPlayer"));
+            if (Mathf.Abs(state.Scale - m_Body.Scale) > .002f && state.Scale > 0) {
+                m_Body.Dispose();
+                m_Body = new AlienCreatureBody(transform, profile, state.Scale, true,
+                    LayerMask.NameToLayer("ClientPlayer"));
                 immediate = true;
             }
             m_Action = state.Action;
             m_AmbushEnabled = state.AmbushEnabled;
             ObserveSpeciesAttack(state);
-            if (state.Action == AlienAction.Attached && IsLivingHumanoid(GhostGameObject.EntityManager, state.AttachedTarget))
-            {
+            if (state.Action == AlienAction.Attached &&
+                IsLivingHumanoid(GhostGameObject.EntityManager, state.AttachedTarget)) {
                 var head = TargetHead(state.AttachedTarget);
                 transform.SetPositionAndRotation(head.position, head.rotation);
             }
-            float health = GhostHasComponent<PredictedPlayerGhost>() ? ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth : profile.Health;
+            float health = GhostHasComponent<PredictedPlayerGhost>()
+                ? ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth
+                : profile.Health;
             m_Body.ObserveAttackAudio(state, m_Pattern);
             m_Body.SetCombatPresentation(state.Action, state.ActionTime, state.AttackSequence, health,
                 m_AmbushEnabled ? profile.SpiderWindup : m_Pattern.Windup,
                 m_AmbushEnabled ? profile.SpiderRecovery : m_Pattern.Recovery,
                 m_AmbushEnabled ? profile.SpiderStrikeSeconds : m_Pattern.Active, m_Pattern.Kind);
-            if (Time.unscaledTime >= m_NextLod)
-            { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
+            if (Time.unscaledTime >= m_NextLod) {
+                m_Liquid = WantsLiquid();
+                m_NextLod = Time.unscaledTime + .35f;
+            }
             m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);
-            float interval = !Application.isPlaying || m_Liquid ? 0 : PresentationInterval(Camera.main, transform.position,
-                presentationDistance * Mathf.Max(1, m_Body.Scale));
+            float interval = !Application.isPlaying || m_Liquid
+                ? 0
+                : PresentationInterval(Camera.main, transform.position,
+                    presentationDistance * Mathf.Max(1, m_Body.Scale));
             // Turning back toward a distant rig must not wait for its old off-screen deadline.
             immediate |= interval < m_LastPresentationInterval;
             m_LastPresentationInterval = interval;
@@ -374,74 +454,93 @@ namespace Unity.MP_FPS
             m_PresentationElapsed = 0;
             float windup = m_AmbushEnabled ? profile.SpiderWindup : Mathf.Max(.01f, m_Pattern.Windup);
             float recovery = m_AmbushEnabled ? profile.SpiderRecovery : Mathf.Max(.01f, m_Pattern.Recovery);
-            float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / windup) :
-                state.Action == AlienAction.Strike || state.Action == AlienAction.Attached ? 1 :
-                state.Action == AlienAction.Dominance ? .65f * Mathf.Sin(Mathf.Clamp01(state.ActionTime / profile.BossDisplaySeconds) * Mathf.PI) :
-                state.Action == AlienAction.Recover ? Mathf.Clamp01(1 - state.ActionTime / recovery) : 0;
-            m_Body.Observe(new SurfaceMotor.Pose { Position = transform.position, Rotation = transform.rotation }, state.Velocity,
-                state.Detached, state.Phase, presentationDt, pulse, m_Liquid);
+            float pulse = state.Action == AlienAction.Windup
+                ? Mathf.Clamp01(state.ActionTime / windup)
+                :
+                state.Action == AlienAction.Strike || state.Action == AlienAction.Attached
+                    ? 1
+                    :
+                    state.Action == AlienAction.Dominance
+                        ?
+                        .65f * Mathf.Sin(Mathf.Clamp01(state.ActionTime / profile.BossDisplaySeconds) * Mathf.PI)
+                        : state.Action == AlienAction.Recover
+                            ? Mathf.Clamp01(1 - state.ActionTime / recovery)
+                            : 0;
+            m_Body.Observe(new SurfaceMotor.Pose { Position = transform.position, Rotation = transform.rotation },
+                state.Velocity, state.Detached, state.Phase, presentationDt, pulse, m_Liquid);
         }
 
         // 只有客户端肢体姿势更新按可见性和距离降频。服务器的碰撞、攻击和感知仍按原频率处理。
-        private static float PresentationInterval(Camera viewer, Vector3 position, float fullRateDistance)
-        {
+        private static float PresentationInterval(Camera viewer, Vector3 position, float fullRateDistance) {
             if (fullRateDistance <= 0 || !viewer || !viewer.isActiveAndEnabled || viewer.orthographic) return 0;
-            float zoom = Mathf.Max(1, Mathf.Tan(22.5f * Mathf.Deg2Rad) /
-                Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
+            float zoom = Mathf.Max(1,
+                Mathf.Tan(22.5f * Mathf.Deg2Rad) / Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
             float near = fullRateDistance * zoom;
             if (Moon.SourceWorldRuntimeQuality.Active)
                 near = Mathf.Min(near, Moon.SourceWorldRuntimeQuality.FullRateCreatureDistance * zoom);
             float squared = (position - viewer.transform.position).sqrMagnitude;
             if (squared <= Mathf.Min(near * near, 8f * 8f)) return 0;
             var matrix = viewer.projectionMatrix * viewer.worldToCameraMatrix;
-            if (s_PresentationCamera != viewer || s_PresentationFrame != Time.frameCount || s_PresentationMatrix != matrix)
-            {
+            if (s_PresentationCamera != viewer || s_PresentationFrame != Time.frameCount ||
+                s_PresentationMatrix != matrix) {
                 GeometryUtility.CalculateFrustumPlanes(matrix, s_PresentationFrustum);
-                s_PresentationCamera = viewer; s_PresentationFrame = Time.frameCount; s_PresentationMatrix = matrix;
+                s_PresentationCamera = viewer;
+                s_PresentationFrame = Time.frameCount;
+                s_PresentationMatrix = matrix;
             }
             // Generous bounds retain tall/long rigs at the image edge. This only budgets
             // client posing; sensing, server hitboxes, attack events and sound still update.
             float radius = Mathf.Max(8f, fullRateDistance * .25f);
             foreach (var plane in s_PresentationFrustum)
-                if (plane.GetDistanceToPoint(position) < -radius) return 1f / 5;
+                if (plane.GetDistanceToPoint(position) < -radius)
+                    return 1f / 5;
             if (squared <= near * near) return 0;
             return squared <= near * near * 4 ? 1f / 30 : 1f / 15;
         }
-        private bool WantsLiquid()
-        {
+
+        private bool WantsLiquid() {
             // The baked world's performance budget uses the existing solid rig.
             // Its hitboxes, attacks and animation remain the same without the
             // particle solver, density volume or high-detail filament mesh.
             if (Moon.SourceWorldRuntimeQuality.Active) return false;
-            if (!profile.Liquid || profile.MaximumLiquidEnemies <= 0 || !SystemInfo.supportsComputeShaders) return false;
+            if (!profile.Liquid || profile.MaximumLiquidEnemies <= 0 || !SystemInfo.supportsComputeShaders)
+                return false;
             var camera = Camera.main;
             if (!camera) return false;
             float distance = (camera.transform.position - transform.position).sqrMagnitude;
             if (distance > profile.LiquidDistance * profile.LiquidDistance) return false;
             int nearer = 0, selfIndex = s_ClientAliens.IndexOf(this);
-            for (int i = 0; i < s_ClientAliens.Count; i++)
-            {
+            for (int i = 0; i < s_ClientAliens.Count; i++) {
                 var other = s_ClientAliens[i];
                 if (!other || other == this || other.World != World || !other.profile.Liquid) continue;
                 float otherDistance = (camera.transform.position - other.transform.position).sqrMagnitude;
-                if (otherDistance < distance || Mathf.Approximately(otherDistance, distance) && i < selfIndex) nearer++;
+                if (otherDistance < distance || (Mathf.Approximately(otherDistance, distance) && i < selfIndex))
+                    nearer++;
             }
             return nearer < profile.MaximumLiquidEnemies;
         }
+
         public override void OnGhostPreDestroy() { Release(); }
         private void OnDestroy() { Release(); }
-        private void Release() { s_ClientAliens.Remove(this); m_AttackPresentation?.Dispose(); m_AttackPresentation = null; m_Body?.Dispose(); m_Body = null; }
+
+        private void Release() {
+            s_ClientAliens.Remove(this);
+            m_AttackPresentation?.Dispose();
+            m_AttackPresentation = null;
+            m_Body?.Dispose();
+            m_Body = null;
+        }
     }
 
-    public sealed class ProceduralAlienEnemyBaker : Baker<ProceduralAlienEnemy>
-    {
-        public override void Bake(ProceduralAlienEnemy authoring)
-        {
+    public sealed class ProceduralAlienEnemyBaker : Baker<ProceduralAlienEnemy> {
+        public override void Bake(ProceduralAlienEnemy authoring) {
             if (!authoring.Profile) return;
             DependsOn(authoring.Profile);
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new PredictedPlayerGhost { MaxHealth = authoring.Profile.Health, CurrentHealth = authoring.Profile.Health,
-                EquippedWeaponID = DollSingerWeapons.None });
+            AddComponent(entity, new PredictedPlayerGhost {
+                MaxHealth = authoring.Profile.Health, CurrentHealth = authoring.Profile.Health,
+                EquippedWeaponID = DollSingerWeapons.None
+            });
             // State itself is added by the existing GhostGameObjectBaker's nested-component
             // discovery. No PlayerInput or predicted movement components are added here.
         }

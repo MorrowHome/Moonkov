@@ -3,17 +3,14 @@ using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-    public sealed partial class ContainerInventoryView
-    {
+namespace Unity.MP_FPS.Client {
+    public sealed partial class ContainerInventoryView {
         private VisualElement m_ItemTooltip, m_TooltipTarget;
         private string m_TooltipItemId;
         private Vector2 m_TooltipPointer;
         private MoonkovItemInformation m_ItemInformation;
 
-        private void InitializeItemTooltip()
-        {
+        private void InitializeItemTooltip() {
             m_ItemTooltip = m_Root.Q("inventoryItemTooltip");
             m_ItemInformation = new MoonkovItemInformation(m_ItemTooltip);
             m_ItemTooltip.RegisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);
@@ -22,8 +19,7 @@ namespace Unity.MP_FPS.Client
             m_Root.RegisterCallback<DetachFromPanelEvent>(TooltipDetached);
         }
 
-        private void ShowItemTooltip(VisualElement target, InventoryItem item, Vector2 position)
-        {
+        private void ShowItemTooltip(VisualElement target, InventoryItem item, Vector2 position) {
             // 打开右键菜单时可能收到一次新的鼠标进入事件。这里依然挡住信息卡，避免它抢在菜单上面。
             if (m_Disposed || m_Drag != null || m_Windows.HasContext || item == null || target.panel == null) return;
             bool changed = m_TooltipTarget != target || m_TooltipItemId != item.Id;
@@ -34,12 +30,10 @@ namespace Unity.MP_FPS.Client
             PlaceItemTooltip();
         }
 
-        private void RefreshItemTooltip()
-        {
+        private void RefreshItemTooltip() {
             if (m_TooltipTarget == null) return;
             var item = m_Graph?.Find(m_TooltipItemId);
-            if (item == null || m_TooltipTarget.panel == null || m_Drag != null)
-            {
+            if (item == null || m_TooltipTarget.panel == null || m_Drag != null) {
                 HideItemTooltip();
                 return;
             }
@@ -49,8 +43,7 @@ namespace Unity.MP_FPS.Client
             m_ItemTooltip.BringToFront();
         }
 
-        private void PlaceItemTooltip()
-        {
+        private void PlaceItemTooltip() {
             if (m_TooltipTarget == null) return;
             const float margin = 8, offset = 18;
             var bounds = m_Root.contentRect;
@@ -62,24 +55,24 @@ namespace Unity.MP_FPS.Client
             float x = m_TooltipPointer.x + offset, y = m_TooltipPointer.y + offset;
             if (x + width > bounds.xMax - margin) x = m_TooltipPointer.x - width - offset;
             if (y + height > bounds.yMax - margin) y = m_TooltipPointer.y - height - offset;
-            m_ItemTooltip.style.left = Mathf.Clamp(x, bounds.xMin + margin, Mathf.Max(bounds.xMin + margin, bounds.xMax - width - margin));
-            m_ItemTooltip.style.top = Mathf.Clamp(y, bounds.yMin + margin, Mathf.Max(bounds.yMin + margin, bounds.yMax - height - margin));
+            m_ItemTooltip.style.left = Mathf.Clamp(x, bounds.xMin + margin,
+                Mathf.Max(bounds.xMin + margin, bounds.xMax - width - margin));
+            m_ItemTooltip.style.top = Mathf.Clamp(y, bounds.yMin + margin,
+                Mathf.Max(bounds.yMin + margin, bounds.yMax - height - margin));
         }
 
-        private void HideItemTooltip(VisualElement target = null)
-        {
+        private void HideItemTooltip(VisualElement target = null) {
             if (target != null && target != m_TooltipTarget) return;
             m_TooltipTarget = null;
             m_TooltipItemId = null;
             m_ItemTooltip.style.display = DisplayStyle.None;
         }
 
-        private void TooltipGeometryChanged(GeometryChangedEvent evt) => PlaceItemTooltip();
-        private void TooltipScrolled(WheelEvent evt) => HideItemTooltip();
-        private void TooltipDetached(DetachFromPanelEvent evt) => HideItemTooltip();
+        private void TooltipGeometryChanged(GeometryChangedEvent evt) { PlaceItemTooltip(); }
+        private void TooltipScrolled(WheelEvent evt) { HideItemTooltip(); }
+        private void TooltipDetached(DetachFromPanelEvent evt) { HideItemTooltip(); }
 
-        private void ReleaseItemTooltip()
-        {
+        private void ReleaseItemTooltip() {
             HideItemTooltip();
             m_ItemTooltip.UnregisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);
             m_Root.UnregisterCallback<GeometryChangedEvent>(TooltipGeometryChanged);

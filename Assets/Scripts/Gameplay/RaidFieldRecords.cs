@@ -5,39 +5,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Unity.MP_FPS.Client.ResearchQuestCopy;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Read-only copies of station logs. The quest evidence and loot inventories have their own authority.
-    internal sealed class RaidFieldRecords : IDisposable
-    {
+    internal sealed class RaidFieldRecords : IDisposable {
         internal const int MaxTablets = 6;
         private const float PreferredSpacing = 28f;
 
-        internal readonly struct Tablet
-        {
+        internal readonly struct Tablet {
             internal readonly Renderer Screen;
             internal readonly int Record;
-            internal Tablet(Renderer screen, int record) { Screen = screen; Record = record; }
+
+            internal Tablet(Renderer screen, int record) {
+                Screen = screen;
+                Record = record;
+            }
+
             internal string Title => s_Records[Record].Title;
             internal string Source => s_Records[Record].Source;
             internal string Body => s_Records[Record].Body;
         }
 
-        private readonly struct Entry
-        {
+        private readonly struct Entry {
             private readonly string m_TitleZh, m_TitleEn, m_SourceZh, m_SourceEn, m_BodyZh, m_BodyEn;
-            internal Entry(string titleZh, string titleEn, string sourceZh, string sourceEn, string bodyZh, string bodyEn)
-            {
-                m_TitleZh = titleZh; m_TitleEn = titleEn; m_SourceZh = sourceZh; m_SourceEn = sourceEn;
-                m_BodyZh = bodyZh; m_BodyEn = bodyEn;
+
+            internal Entry(
+                string titleZh,
+                string titleEn,
+                string sourceZh,
+                string sourceEn,
+                string bodyZh,
+                string bodyEn) {
+                m_TitleZh = titleZh;
+                m_TitleEn = titleEn;
+                m_SourceZh = sourceZh;
+                m_SourceEn = sourceEn;
+                m_BodyZh = bodyZh;
+                m_BodyEn = bodyEn;
             }
+
             internal string Title => Text(m_TitleZh, m_TitleEn);
             internal string Source => Text(m_SourceZh, m_SourceEn);
             internal string Body => Text(m_BodyZh, m_BodyEn);
         }
 
-        private static readonly Entry[] s_Records =
-        {
+        private static readonly Entry[] s_Records = {
             new("留给夜班", "For the night shift", "生活区交班条 / 事故前三天", "Crew handover / Three days before the incident",
                 "通风泵又响了一夜。我把两袋热饮留在值班桌下，蓝签那袋没加糖。今晚轮到观察室的人休息，除非项目部再把换班划掉。",
                 "The vent pump rattled all night again. I left two hot drink pouches under the duty desk. The blue one has no sugar. The observation crew is due a night off, unless Project crosses out the shift change again."),
@@ -71,17 +82,17 @@ namespace Unity.MP_FPS
         private int m_Round;
         internal IReadOnlyList<Tablet> Tablets => m_Tablets;
 
-        internal bool Present(MoonRaidMap map, ulong session, int round)
-        {
+        internal bool Present(MoonRaidMap map, ulong session, int round) {
             if (map == m_Map && session == m_Session && round == m_Round) return false;
             Dispose();
             if (!map || session == 0 || !map.LootVisual(0)) return true;
-            m_Map = map; m_Session = session; m_Round = round;
+            m_Map = map;
+            m_Session = session;
+            m_Round = round;
             var random = new System.Random(unchecked((int)(session ^ (session >> 32)) + round * 397));
             var sites = ChooseSites(map.LootPositions, random);
-            var records = ShuffledIndices(s_Records.Length, random);
-            for (int i = 0; i < sites.Count; i++)
-            {
+            int[] records = ShuffledIndices(s_Records.Length, random);
+            for (int i = 0; i < sites.Count; i++) {
                 var tray = map.LootVisual(sites[i]);
                 if (!tray) continue;
                 var model = PhysicalItemVisuals.Create(ResearchQuestRules.Tablet, map.transform);
@@ -89,17 +100,21 @@ namespace Unity.MP_FPS
                 m_Models.Add(model);
                 model.name = "Station field record " + (records[i] + 1).ToString("00");
                 var pose = model.transform;
-                pose.SetPositionAndRotation(tray.TransformPoint(new Vector3(.03f, RaidSupplyCacheVisuals.TopTrayHeight + .001f, 0)),
+                pose.SetPositionAndRotation(
+                    tray.TransformPoint(new Vector3(.03f, RaidSupplyCacheVisuals.TopTrayHeight + .001f, 0)),
                     tray.rotation * Quaternion.Euler(0, random.Next(-24, 25), 0) * pose.localRotation);
                 var screen = model.GetComponentInChildren<MeshRenderer>();
-                if (!screen) { model.SetActive(false); continue; }
+                if (!screen) {
+                    model.SetActive(false);
+                    continue;
+                }
                 var up = tray.up;
                 var bounds = screen.localBounds;
                 var mesh = screen.transform;
                 var half = bounds.extents;
                 float extent = Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.right * half.x))) +
-                    Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.up * half.y))) +
-                    Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.forward * half.z)));
+                               Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.up * half.y))) +
+                               Mathf.Abs(Vector3.Dot(up, mesh.TransformVector(Vector3.forward * half.z)));
                 float bottom = Vector3.Dot(up, mesh.TransformPoint(bounds.center) - pose.position) - extent;
                 pose.position -= up * bottom;
                 m_Tablets.Add(new Tablet(screen, records[i]));
@@ -107,53 +122,53 @@ namespace Unity.MP_FPS
             return true;
         }
 
-        internal static List<int> ChooseSites(Vector3[] positions, System.Random random)
-        {
+        internal static List<int> ChooseSites(Vector3[] positions, System.Random random) {
             int count = Mathf.Min(MaxTablets, positions.Length);
             var selected = new List<int>(count);
-            var shuffled = ShuffledIndices(positions.Length, random);
-            foreach (int index in shuffled)
-            {
+            int[] shuffled = ShuffledIndices(positions.Length, random);
+            foreach (int index in shuffled) {
                 bool spaced = true;
                 foreach (int previous in selected)
-                    if ((positions[previous] - positions[index]).sqrMagnitude < PreferredSpacing * PreferredSpacing)
-                    { spaced = false; break; }
+                    if ((positions[previous] - positions[index]).sqrMagnitude < PreferredSpacing * PreferredSpacing) {
+                        spaced = false;
+                        break;
+                    }
                 if (!spaced) continue;
                 selected.Add(index);
                 if (selected.Count == count) return selected;
             }
             // Compact layouts can still present records even when no two crates are 28 m apart.
-            foreach (int index in shuffled)
-            {
+            foreach (int index in shuffled) {
                 if (!selected.Contains(index)) selected.Add(index);
                 if (selected.Count == count) break;
             }
             return selected;
         }
 
-        private static int[] ShuffledIndices(int count, System.Random random)
-        {
-            var order = new int[count];
+        private static int[] ShuffledIndices(int count, System.Random random) {
+            int[] order = new int[count];
             for (int i = 0; i < count; i++) order[i] = i;
-            for (int i = count - 1; i > 0; i--)
-            {
+            for (int i = count - 1; i > 0; i--) {
                 int other = random.Next(i + 1);
                 (order[i], order[other]) = (order[other], order[i]);
             }
             return order;
         }
 
-        public void Dispose()
-        {
-            foreach (var model in m_Models)
-            {
+        public void Dispose() {
+            foreach (var model in m_Models) {
                 if (!model) continue;
                 model.SetActive(false);
-                if (Application.isPlaying) UnityEngine.Object.Destroy(model);
-                else UnityEngine.Object.DestroyImmediate(model);
+                if (Application.isPlaying)
+                    UnityEngine.Object.Destroy(model);
+                else
+                    UnityEngine.Object.DestroyImmediate(model);
             }
-            m_Models.Clear(); m_Tablets.Clear();
-            m_Map = null; m_Session = 0; m_Round = 0;
+            m_Models.Clear();
+            m_Tablets.Clear();
+            m_Map = null;
+            m_Session = 0;
+            m_Round = 0;
         }
     }
 }

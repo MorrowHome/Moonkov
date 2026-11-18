@@ -5,11 +5,11 @@ using UnityEngine.UIElements;
 using Unity.MP_FPS.Client;
 using static Unity.MP_FPS.Client.ResearchQuestCopy;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class RaidHUD
-    {
-        private static readonly ResearchDevice[] s_ResearchDevices = (ResearchDevice[])Enum.GetValues(typeof(ResearchDevice));
+namespace Unity.MP_FPS {
+    public sealed partial class RaidHUD {
+        private static readonly ResearchDevice[] s_ResearchDevices =
+            (ResearchDevice[])Enum.GetValues(typeof(ResearchDevice));
+
         private VisualElement m_ResearchList, m_ResearchPrompt;
         private Label m_ResearchPromptText;
         private readonly Label[] m_ResearchLines = new Label[ResearchQuestRules.Count];
@@ -17,15 +17,21 @@ namespace Unity.MP_FPS
         private readonly ResearchQuestRadio m_ResearchRadio = new();
         private readonly ResearchQuestFieldView m_ResearchField = new();
         private ResearchQuestSnapshotRpc m_ResearchSnapshot;
+
         [Flags]
-        private enum FieldCue { Echo = 1, Tablet = 2, Nadir = 4, Purge = 8 }
+        private enum FieldCue {
+            Echo = 1,
+            Tablet = 2,
+            Nadir = 4,
+            Purge = 8
+        }
+
         private int m_StoryRaid = -1;
         private FieldCue m_StoryPlayed;
         private float m_ResearchNextRefresh, m_ResearchNextHold;
         private bool m_ResearchInputPriority;
 
-        private void InitializeResearchQuests()
-        {
+        private void InitializeResearchQuests() {
             var style = Resources.Load<StyleSheet>("Moonkov/UI/ResearchQuests");
             if (style && !m_Root.styleSheets.Contains(style)) m_Root.styleSheets.Add(style);
             m_ResearchList = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -33,8 +39,7 @@ namespace Unity.MP_FPS
             m_ResearchList.AddToClassList("moonkov-style-font");
             m_ResearchList.style.display = DisplayStyle.None;
             m_Root.Q<ScrollView>("raidRightRail")?.Add(m_ResearchList);
-            for (int i = 0; i < m_ResearchLines.Length; i++)
-            {
+            for (int i = 0; i < m_ResearchLines.Length; i++) {
                 var label = new Label { pickingMode = PickingMode.Ignore };
                 label.AddToClassList("research-quest-raid-line");
                 m_ResearchLines[i] = label;
@@ -52,20 +57,21 @@ namespace Unity.MP_FPS
             m_ResearchHold = null;
         }
 
-        private bool ResearchInteractionAllowed(bool liveInteraction, bool clash) => liveInteraction && !clash &&
-            !RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>(), allowAnchoredHalo: true);
+        private bool ResearchInteractionAllowed(bool liveInteraction, bool clash) {
+            return liveInteraction && !clash &&
+                   !RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>(), true);
+        }
 
-        private bool UpdateResearchQuests(bool live, bool canInteract, Vector3 position)
-        {
+        private bool UpdateResearchQuests(bool live, bool canInteract, Vector3 position) {
             m_ResearchInputPriority = false;
             if (m_ResearchList == null) return false;
             int raid = m_Snapshot.RaidId;
             var entity = m_StateQuery.GetSingletonEntity();
             var manager = m_World.EntityManager;
             var quest = live && manager.HasComponent<ResearchQuestClientState>(entity)
-                ? manager.GetComponentData<ResearchQuestClientState>(entity).Snapshot : default;
-            if (quest.RaidId != raid || quest.Active == 0)
-            {
+                ? manager.GetComponentData<ResearchQuestClientState>(entity).Snapshot
+                : default;
+            if (quest.RaidId != raid || quest.Active == 0) {
                 m_ResearchSnapshot = default;
                 m_ResearchField.Clear();
                 m_ResearchList.style.display = DisplayStyle.None;
@@ -76,24 +82,22 @@ namespace Unity.MP_FPS
             }
             m_ResearchSnapshot = quest;
             m_ResearchField.Present(quest);
-            if (m_StoryRaid != raid)
-            {
+            if (m_StoryRaid != raid) {
                 m_StoryRaid = raid;
                 m_StoryPlayed = 0;
                 m_ResearchRadio.Stop();
             }
             string noticeCode = quest.Notice.IsEmpty ? null : quest.Notice.ToString();
             PlayFieldCue(FieldCue.Echo, noticeCode == "halo-echo", "story_field_echo");
-            PlayFieldCue(FieldCue.Tablet, ResearchQuestRules.Has(quest.Recovered, ResearchQuest.Tablet), "story_nadir_chamber");
+            PlayFieldCue(FieldCue.Tablet, ResearchQuestRules.Has(quest.Recovered, ResearchQuest.Tablet),
+                "story_nadir_chamber");
             PlayFieldCue(FieldCue.Nadir, quest.HeardNadir, "nadir");
             PlayFieldCue(FieldCue.Purge, quest.ControlOpened, "story_field_purge");
             m_ResearchRadio.Update();
             m_ResearchList.style.display = DisplayStyle.Flex;
-            if (Time.unscaledTime >= m_ResearchNextRefresh)
-            {
+            if (Time.unscaledTime >= m_ResearchNextRefresh) {
                 m_ResearchNextRefresh = Time.unscaledTime + .16f;
-                for (int i = 0; i < m_ResearchLines.Length; i++)
-                {
+                for (int i = 0; i < m_ResearchLines.Length; i++) {
                     var id = ResearchQuestRules.At(i);
                     var label = m_ResearchLines[i];
                     bool active = ResearchQuestRules.Has(quest.Active, id);
@@ -101,37 +105,35 @@ namespace Unity.MP_FPS
                     if (active) MoonkovLocalization.Set(label, For(id).Title + "   " + FieldProgress(id, quest));
                 }
             }
-
             bool held = canInteract && m_InteractionBindings.Operate.IsPressed();
             if (!held) ReleaseResearchHold();
             ResearchDevice? target = null;
             float best = m_WorldFocusScore;
             if (canInteract)
-                foreach (var id in s_ResearchDevices)
-                {
+                foreach (var id in s_ResearchDevices) {
                     if (!quest.Needs(id)) continue;
                     var anchor = ResearchQuestRuntime.Anchor(id);
                     if (anchor == null) continue;
-                    float score = RaidInteractionAim.Score(Camera.main, position, ResearchQuestRuntime.InteractionPoint(id, anchor), 3,
-                        m_ResearchField.Surface(id, anchor));
-                    if (score >= 0 && score >= best) { best = score; target = id; }
+                    float score = RaidInteractionAim.Score(Camera.main, position,
+                        ResearchQuestRuntime.InteractionPoint(id, anchor), 3, m_ResearchField.Surface(id, anchor));
+                    if (score >= 0 && score >= best) {
+                        best = score;
+                        target = id;
+                    }
                 }
-            if (!m_ResearchHold.HasValue && target.HasValue && held && m_InteractionBindings.Operate.WasPressedThisFrame())
-            {
+            if (!m_ResearchHold.HasValue && target.HasValue && held &&
+                m_InteractionBindings.Operate.WasPressedThisFrame()) {
                 m_ResearchHold = target;
                 m_ResearchNextHold = 0;
             }
-            if (m_ResearchHold.HasValue)
-            {
-                if (target != m_ResearchHold) ReleaseResearchHold();
-                else if (Time.unscaledTime >= m_ResearchNextHold)
-                {
+            if (m_ResearchHold.HasValue) {
+                if (target != m_ResearchHold) { ReleaseResearchHold(); } else if (Time.unscaledTime >=
+                 m_ResearchNextHold) {
                     Send(new ResearchQuestHoldRpc { RaidId = raid, Device = target.Value, Pressed = true });
                     m_ResearchNextHold = Time.unscaledTime + .1f;
                 }
             }
-            string notice = noticeCode switch
-            {
+            string notice = noticeCode switch {
                 "halo-echo" => Text("战斗光环检测到异常共振", "Abnormal Battle Halo resonance detected"),
                 "interrupted" => Text("操作中断", "Transfer interrupted"),
                 "space" => Text("背包空间不足", "Not enough inventory space"),
@@ -139,80 +141,105 @@ namespace Unity.MP_FPS
                 "lower-open" => Text("隔离解除。寻找记录和凭证", "Isolation released. Find the records and credentials."),
                 "credentials" => Text("记录已取得。寻找门禁凭证", "Records recovered. Find the access credentials."),
                 "nadir-records" => Text("凭证已取得。寻找奈迪尔的记录", "Credentials recovered. Find Nadir's records."),
-                "control-open" => Text("凭证已验证。回收档案并关闭实验", "Access granted. Recover the archive and disable the experiments."),
+                "control-open" => Text("凭证已验证。回收档案并关闭实验",
+                    "Access granted. Recover the archive and disable the experiments."),
                 "shutdown" => Text("档案已取得。关闭实验系统", "Archive secured. Disable the experiments."),
                 "archive" => Text("实验系统已关闭。回收原始档案", "Experiments disabled. Recover the original archive."),
                 "discharge" => Text("能量放电。可用光环护盾抵挡", "Energy discharge. Use your Halo shield."),
                 "sample" => Text("已封存生物样本", "Biological sample sealed"),
                 _ => null
             };
-            string prompt = target.HasValue ? m_InteractionBindings.Label(m_InteractionBindings.Operate) + "   " + DeviceAction(target.Value)
-                + (quest.CanOperate && quest.Target == target.Value ? $"   {quest.InteractionPercent}%" : "")
+            string prompt = target.HasValue
+                ? m_InteractionBindings.Label(m_InteractionBindings.Operate) + "   " + DeviceAction(target.Value) +
+                  (quest.CanOperate && quest.Target == target.Value ? $"   {quest.InteractionPercent}%" : "")
                 : notice;
             m_ResearchPrompt.style.display = canInteract && prompt != null ? DisplayStyle.Flex : DisplayStyle.None;
-            if (prompt != null && m_ResearchPromptText.text != prompt) MoonkovLocalization.Set(m_ResearchPromptText, prompt);
+            if (prompt != null && m_ResearchPromptText.text != prompt)
+                MoonkovLocalization.Set(m_ResearchPromptText, prompt);
             // 瞄到研究设备或正在按住时占用这次交互，避免一枚共享按键再触发搜刮。
             return m_ResearchInputPriority = target.HasValue || m_ResearchHold.HasValue;
         }
 
-        private void PlayFieldCue(FieldCue flag, bool triggered, string cue)
-        {
+        private void PlayFieldCue(FieldCue flag, bool triggered, string cue) {
             if (!triggered || (m_StoryPlayed & flag) != 0) return;
             m_StoryPlayed |= flag;
             m_ResearchRadio.EnqueueStory(cue, Chinese);
         }
 
-        private void ReleaseResearchHold()
-        {
+        private void ReleaseResearchHold() {
             if (!m_ResearchHold.HasValue) return;
-            Send(new ResearchQuestHoldRpc { RaidId = m_Snapshot.RaidId, Device = m_ResearchHold.Value, Pressed = false });
+            Send(new ResearchQuestHoldRpc
+                { RaidId = m_Snapshot.RaidId, Device = m_ResearchHold.Value, Pressed = false });
             m_ResearchHold = null;
         }
 
-        private static string DeviceAction(ResearchDevice device) => device switch
-        {
-            ResearchDevice.Tablet => Text("拿取研究员平板", "Take personnel tablet"),
-            ResearchDevice.Administrator => Text("读取管理员日志", "Copy administrator logs"),
-            ResearchDevice.Server => Text("拷贝研究数据库", "Copy research database"),
-            ResearchDevice.LowerSeal => Text("解除 L21 研究区封锁", "Release L21 isolation"),
-            ResearchDevice.NadirTerminal => Text("回收奈迪尔的记录", "Recover Nadir's records"),
-            ResearchDevice.CredentialsLocker => Text("拿取 LUCENT 门禁凭证", "Take LUCENT credentials"),
-            ResearchDevice.ControlAccess => Text("验证凭证并解锁控制室", "Authenticate at LUCENT control"),
-            ResearchDevice.OriginalArchive => Text("回收原始档案", "Secure the original archive"),
-            ResearchDevice.Shutdown => Text("关闭实验系统", "Disable experimental systems"),
-            _ => ""
-        };
+        private static string DeviceAction(ResearchDevice device) {
+            return device switch {
+                ResearchDevice.Tablet => Text("拿取研究员平板", "Take personnel tablet"),
+                ResearchDevice.Administrator => Text("读取管理员日志", "Copy administrator logs"),
+                ResearchDevice.Server => Text("拷贝研究数据库", "Copy research database"),
+                ResearchDevice.LowerSeal => Text("解除 L21 研究区封锁", "Release L21 isolation"),
+                ResearchDevice.NadirTerminal => Text("回收奈迪尔的记录", "Recover Nadir's records"),
+                ResearchDevice.CredentialsLocker => Text("拿取 LUCENT 门禁凭证", "Take LUCENT credentials"),
+                ResearchDevice.ControlAccess => Text("验证凭证并解锁控制室", "Authenticate at LUCENT control"),
+                ResearchDevice.OriginalArchive => Text("回收原始档案", "Secure the original archive"),
+                ResearchDevice.Shutdown => Text("关闭实验系统", "Disable experimental systems"),
+                _ => ""
+            };
+        }
 
-        private static string FieldProgress(ResearchQuest id, ResearchQuestSnapshotRpc view)
-        {
+        private static string FieldProgress(ResearchQuest id, ResearchQuestSnapshotRpc view) {
             if (ResearchQuestRules.Has(view.Recovered, id)) return Text("带回后交付", "Extract to turn in");
-            return id switch
-            {
-                ResearchQuest.Exposure when view.Seconds == ResearchQuestRules.ExposureSeconds => Text("测试完成，前往撤离", "Assessment complete. Extract."),
+            return id switch {
+                ResearchQuest.Exposure when view.Seconds == ResearchQuestRules.ExposureSeconds => Text("测试完成，前往撤离",
+                    "Assessment complete. Extract."),
                 ResearchQuest.Exposure => $"{view.Seconds / 60:00}:{view.Seconds % 60:00} / 05:00",
-                ResearchQuest.HaloTrial when view.HaloKills == ResearchQuestRules.HaloKillGoal => Text("击杀达标，前往撤离", "Kill quota met. Extract."),
+                ResearchQuest.HaloTrial when view.HaloKills == ResearchQuestRules.HaloKillGoal => Text("击杀达标，前往撤离",
+                    "Kill quota met. Extract."),
                 ResearchQuest.HaloTrial => $"{view.HaloKills} / {ResearchQuestRules.HaloKillGoal}",
-                ResearchQuest.Biology when !ResearchQuestRules.Has(view.Issued, id) && view.Samples < ResearchQuestRules.SampleGoal =>
-                    Text("取回配发的采样套件", "Recover the issued sampling kit"),
-                ResearchQuest.Biology => $"{Mathf.Min(view.Samples, ResearchQuestRules.SampleGoal)} / {ResearchQuestRules.SampleGoal}  " +
-                    (view.Samples >= ResearchQuestRules.SampleGoal ? Text("带回后交付", "Extract to turn in") : Text("封存样本", "samples")),
-                ResearchQuest.Tablet => view.TabletAvailable ? Text("MC00 L22 隔离柜", "MC00 L22 isolation cabinet") : Text("取回平板", "Recover the tablet"),
-                ResearchQuest.FlashDrive => ResearchQuestRules.Has(view.Issued, id) ? Text("MC00 L22 管理工作站", "MC00 L22 administrator workstation") :
-                    Text("取回配发的 U 盘", "Recover the issued flash drive"),
-                ResearchQuest.HardDrive => ResearchQuestRules.Has(view.Issued, id) ? Text("MC00 L22 研究服务器", "MC00 L22 research server") :
-                    Text("取回配发的硬盘", "Recover the issued hard drive"),
-                ResearchQuest.HaloStorage when view.PackageRemoved => Text("封存包已取出。下次出战重试", "Package removed. Retry on the next raid."),
-                ResearchQuest.HaloStorage => ResearchQuestRules.Has(view.Issued, id) ? Text("切换收纳形态并装入封存包", "Open Halo storage and load the package") :
-                    Text("取回封存包", "Recover the research package"),
-                ResearchQuest.NoWayBack => !view.LowerOpened ? Text("MC00 L21 研究区隔离开关", "MC00 L21 isolation control") :
-                    !view.RecordsHeld && !view.CredentialsHeld ? Text("回收奈迪尔的记录和门禁凭证", "Recover Nadir's records and the access credentials") :
-                    !view.RecordsHeld ? Text("带上奈迪尔的记录", "Carry Nadir's records") : Text("带上门禁凭证", "Carry the access credentials"),
+                ResearchQuest.Biology when !ResearchQuestRules.Has(view.Issued, id) &&
+                                           view.Samples < ResearchQuestRules.SampleGoal => Text("取回配发的采样套件",
+                    "Recover the issued sampling kit"),
+                ResearchQuest.Biology =>
+                    $"{Mathf.Min(view.Samples, ResearchQuestRules.SampleGoal)} / {ResearchQuestRules.SampleGoal}  " +
+                    (view.Samples >= ResearchQuestRules.SampleGoal
+                        ? Text("带回后交付", "Extract to turn in")
+                        : Text("封存样本", "samples")),
+                ResearchQuest.Tablet => view.TabletAvailable
+                    ? Text("MC00 L22 隔离柜", "MC00 L22 isolation cabinet")
+                    : Text("取回平板", "Recover the tablet"),
+                ResearchQuest.FlashDrive => ResearchQuestRules.Has(view.Issued, id)
+                    ? Text("MC00 L22 管理工作站", "MC00 L22 administrator workstation")
+                    : Text("取回配发的 U 盘", "Recover the issued flash drive"),
+                ResearchQuest.HardDrive => ResearchQuestRules.Has(view.Issued, id)
+                    ? Text("MC00 L22 研究服务器", "MC00 L22 research server")
+                    : Text("取回配发的硬盘", "Recover the issued hard drive"),
+                ResearchQuest.HaloStorage when view.PackageRemoved => Text("封存包已取出。下次出战重试",
+                    "Package removed. Retry on the next raid."),
+                ResearchQuest.HaloStorage => ResearchQuestRules.Has(view.Issued, id)
+                    ? Text("切换收纳形态并装入封存包", "Open Halo storage and load the package")
+                    : Text("取回封存包", "Recover the research package"),
+                ResearchQuest.NoWayBack => !view.LowerOpened
+                    ? Text("MC00 L21 研究区隔离开关", "MC00 L21 isolation control")
+                    :
+                    !view.RecordsHeld && !view.CredentialsHeld
+                        ?
+                        Text("回收奈迪尔的记录和门禁凭证", "Recover Nadir's records and the access credentials")
+                        : !view.RecordsHeld
+                            ? Text("带上奈迪尔的记录", "Carry Nadir's records")
+                            : Text("带上门禁凭证", "Carry the access credentials"),
                 ResearchQuest.EndOfTransmission => !view.ControlOpened
-                    ? ResearchQuestRules.Has(view.Issued, id) ? Text("MC00 L22 LUCENT 控制室", "MC00 L22 LUCENT control room") :
-                        Text("取回 LUCENT 门禁凭证", "Recover the LUCENT access credentials")
-                    : !view.ArchiveHeld && !view.SystemsDisabled ? Text("回收原始档案并关闭实验", "Secure the archive and disable the experiments") :
-                        !view.ArchiveHeld ? Text("带上 LUCENT 原始档案", "Carry the original LUCENT archive") : Text("关闭实验系统", "Disable experimental systems"),
-                ResearchQuest.Sentry when view.SentryKills == ResearchQuestRules.SentryKillGoal => Text("炮塔击杀达标，前往撤离", "Sentry quota met. Extract."),
+                    ?
+                    ResearchQuestRules.Has(view.Issued, id)
+                        ? Text("MC00 L22 LUCENT 控制室", "MC00 L22 LUCENT control room")
+                        : Text("取回 LUCENT 门禁凭证", "Recover the LUCENT access credentials")
+                    : !view.ArchiveHeld && !view.SystemsDisabled
+                        ? Text("回收原始档案并关闭实验", "Secure the archive and disable the experiments")
+                        : !view.ArchiveHeld
+                            ? Text("带上 LUCENT 原始档案", "Carry the original LUCENT archive")
+                            : Text("关闭实验系统", "Disable experimental systems"),
+                ResearchQuest.Sentry when view.SentryKills == ResearchQuestRules.SentryKillGoal => Text("炮塔击杀达标，前往撤离",
+                    "Sentry quota met. Extract."),
                 _ => $"{view.SentryKills} / {ResearchQuestRules.SentryKillGoal}"
             };
         }

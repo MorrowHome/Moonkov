@@ -1,30 +1,34 @@
 // 队友识别器的装备条件和目标关系。根据是否活着、所在队伍与同伴小组来决定能标谁，极速赏金里倒地队友仍可被识别。
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
-    public static class TeamOutlineRules
-    {
+namespace Unity.MP_FPS {
+    public static class TeamOutlineRules {
         public const string ItemCode = "team_tracker";
         public const int MaxTeammates = 3;
 
-        public static bool Equipped(InventoryGraph graph) => graph != null &&
-            (graph.Equipped("Special1")?.Code == ItemCode || graph.Equipped("Special2")?.Code == ItemCode ||
-             graph.Equipped("Special3")?.Code == ItemCode);
+        public static bool Equipped(InventoryGraph graph) {
+            return graph != null && (graph.Equipped("Special1")?.Code == ItemCode ||
+                                     graph.Equipped("Special2")?.Code == ItemCode ||
+                                     graph.Equipped("Special3")?.Code == ItemCode);
+        }
 
-        public static bool CanView(in PredictedPlayerGhost viewer) => EnergyShieldRules.Alive(viewer) &&
-            (!viewer.ClashEnabled || viewer.ClashCanAct);
+        public static bool CanView(in PredictedPlayerGhost viewer) {
+            return EnergyShieldRules.Alive(viewer) && (!viewer.ClashEnabled || viewer.ClashCanAct);
+        }
 
-        public static bool Companion(in PredictedPlayerGhost viewer, in PredictedPlayerGhost target, bool targetHuman) =>
-            !targetHuman && target.CurrentHealth > 0 && viewer.CompanionSquadId != 0 &&
-            viewer.CompanionSquadId == target.CompanionSquadId;
+        public static bool Companion(in PredictedPlayerGhost viewer, in PredictedPlayerGhost target, bool targetHuman) {
+            return !targetHuman && target.CurrentHealth > 0 && viewer.CompanionSquadId != 0 &&
+                   viewer.CompanionSquadId == target.CompanionSquadId;
+        }
 
-        public static bool Teammate(in PredictedPlayerGhost viewer, in PredictedPlayerGhost target,
-            bool viewerHuman, bool targetHuman)
-        {
+        public static bool Teammate(
+            in PredictedPlayerGhost viewer,
+            in PredictedPlayerGhost target,
+            bool viewerHuman,
+            bool targetHuman) {
             // Downed allies remain useful rescue targets. Finished participants and corpses do not.
             bool present = target.ClashEnabled
-                ? target.ClashLife == ClashLife.Downed || target.ClashLife == ClashLife.Alive && target.ClashCanAct
+                ? target.ClashLife == ClashLife.Downed || (target.ClashLife == ClashLife.Alive && target.ClashCanAct)
                 : target.CurrentHealth > 0;
             return present && HaloTransferRules.Teammates(viewer, target, viewerHuman, targetHuman);
         }

@@ -6,12 +6,10 @@ using Unity.Mathematics;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>Client presentation for the template's predicted player, with no independent movement simulation.</summary>
     [DefaultExecutionOrder(-50)]
-    public sealed class DollSingerNetworkPresentation : GhostMonoBehaviour
-    {
+    public sealed class DollSingerNetworkPresentation : GhostMonoBehaviour {
         [SerializeField] private DollSingerMovement m_Model;
         [SerializeField] private DollSingerInput m_Input;
         [SerializeField] private DollSingerView m_View;
@@ -40,7 +38,10 @@ namespace Unity.MP_FPS
         private Animator m_PresentationAnimator;
         private float m_AuthoredSpringDistance = float.NaN;
         private AnimatorCullingMode? m_AuthoredAnimationCulling;
-        private readonly System.Collections.Generic.Dictionary<SkinnedMeshRenderer, bool> m_AuthoredOffscreenSkinning = new();
+
+        private readonly System.Collections.Generic.Dictionary<SkinnedMeshRenderer, bool> m_AuthoredOffscreenSkinning =
+            new();
+
         public DollSingerMeleePresentation MeleePresentation => m_Melee;
         public Animator PresentationAnimator => m_PresentationAnimator;
         private uint m_LastShotEffectTick;
@@ -65,55 +66,64 @@ namespace Unity.MP_FPS
         private bool m_ClassicDeathStarted;
         public bool OwnedMuzzleObstructed { get; private set; }
         private const int CoverMask = (1 << (int)LayerIndex.Default) | (1 << (int)LayerIndex.Ground);
-
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
-        public Camera OwnedCamera => m_Linked && m_ViewActivated && Role == MultiplayerRole.ClientOwned ? m_View.camera : null;
+
+        public Camera OwnedCamera =>
+            m_Linked && m_ViewActivated && Role == MultiplayerRole.ClientOwned ? m_View.camera : null;
+
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
-        public bool WeaponHandsAvailable => m_Halo && !m_Halo.ExternalHandPoseActive && !RaidHUD.GrenadeInHands && !(m_Grenade && m_Grenade.OwnsHands);
-        public void PrepareDeploymentView(Camera transitionCamera)
-        {
+
+        public bool WeaponHandsAvailable =>
+            m_Halo && !m_Halo.ExternalHandPoseActive && !RaidHUD.GrenadeInHands && !(m_Grenade && m_Grenade.OwnsHands);
+
+        public void PrepareDeploymentView(Camera transitionCamera) {
             if (Role != MultiplayerRole.ClientOwned || !m_View) return;
             m_View.TransitionCamera = transitionCamera;
             m_View.SetFirstPerson(true);
         }
+
         public float OwnedLeanAmount => m_OwnedLean;
         public float OwnedReticleScreenRoll => m_View ? -m_View.SightLeanRoll : 0f;
 
-        public bool ReadOwnedLight(bool canRead)
-        {
-            if (canRead && m_Input.LightPressed)
-            {
+        public bool ReadOwnedLight(bool canRead) {
+            if (canRead && m_Input.LightPressed) {
                 m_OwnedLightEnabled = !m_OwnedLightEnabled;
                 MoonkovAudio.Play(MoonkovAudio.Library?.Light, transform.position);
             }
             return m_OwnedLightEnabled;
         }
 
-        public Vector3 GetGameplayLeanOffset(float lean, Quaternion bodyRotation, bool thirdPerson)
-        {
-            return thirdPerson || m_Model.Stance == DollSingerStance.Prone ? Vector3.zero : m_Model.GetLeanOffset(lean, bodyRotation);
+        public Vector3 GetGameplayLeanOffset(float lean, Quaternion bodyRotation, bool thirdPerson) {
+            return thirdPerson || m_Model.Stance == DollSingerStance.Prone
+                ? Vector3.zero
+                : m_Model.GetLeanOffset(lean, bodyRotation);
         }
 
-        public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
-        {
-            if (blocked || !m_OwnedAlive || !WeaponHandsAvailable || m_Input.LightAdjusting || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
-                (m_View.IsFirstPerson && m_Input.AltHeld)) m_Recoil.Reset();
-            else m_Recoil.Apply(ref look, new float2(m_Input.Look.x, -m_Input.Look.y) * m_View.AimLookSensitivity, Time.deltaTime);
-            if (m_Input.LightAdjusting)
-            {
-                m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.LightPreviewAiming;
+        public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked) {
+            if (blocked || !m_OwnedAlive || !WeaponHandsAvailable || m_Input.LightAdjusting ||
+                RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
+                (m_View.IsFirstPerson && m_Input.AltHeld))
+                m_Recoil.Reset();
+            else
+                m_Recoil.Apply(ref look, new float2(m_Input.Look.x, -m_Input.Look.y) * m_View.AimLookSensitivity,
+                    Time.deltaTime);
+            if (m_Input.LightAdjusting) {
+                m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) &&
+                                !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected &&
+                                m_Input.LightPreviewAiming;
                 freeLookOffset = m_FreeLookOffset;
                 return false;
             }
-            bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
-                ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
-            m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.AimHeld && !freeLooking;
+            bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset, ref m_OwnedLean,
+                out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
+            m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) &&
+                            !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.AimHeld &&
+                            !freeLooking;
             freeLookOffset = m_FreeLookOffset;
             return freeLooking;
         }
 
-        public Vector3 CaptureAimPoint(float2 look, float range)
-        {
+        public Vector3 CaptureAimPoint(float2 look, float range) {
             m_OwnedLook = look;
             var viewLook = look + m_FreeLookOffset;
             var ray = m_View.CaptureAimRay(Quaternion.Euler(viewLook.y, viewLook.x, 0f),
@@ -123,43 +133,35 @@ namespace Unity.MP_FPS
             // Host server colliders duplicate the client avatars; ignore that world here.
             int count;
             var physicsScene = gameObject.scene.GetPhysicsScene();
-            while ((count = physicsScene.Raycast(ray.origin, ray.direction, m_AimHits, range,
-                AimMask, QueryTriggerInteraction.Ignore)) == m_AimHits.Length)
-            {
+            while ((count = physicsScene.Raycast(ray.origin, ray.direction, m_AimHits, range, AimMask,
+                       QueryTriggerInteraction.Ignore)) == m_AimHits.Length) {
                 // Unordered saturated queries can omit the closest wall or target.
                 // Grow only on saturation and reuse the buffer for subsequent frames.
-                if (m_AimHits.Length >= 4096)
-                {
-                    return PresentOwnedAimPoint(ray.GetPoint(.05f));
-                }
+                if (m_AimHits.Length >= 4096) return PresentOwnedAimPoint(ray.GetPoint(.05f));
                 System.Array.Resize(ref m_AimHits, m_AimHits.Length * 2);
             }
             float nearest = range;
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 var hit = m_AimHits[i];
-                if (!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.distance >= nearest)
-                    continue;
+                if (!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.distance >= nearest) continue;
                 nearest = hit.distance;
                 target = hit.point;
             }
             return PresentOwnedAimPoint(target);
         }
 
-        private Vector3 PresentOwnedAimPoint(Vector3 target)
-        {
+        private Vector3 PresentOwnedAimPoint(Vector3 target) {
             m_HasOwnedAimPoint = true;
             m_OwnedAimPoint = target;
             // The ECS input pass follows MonoBehaviour.Update. Forward its freshly
             // sampled target before Halo.LateUpdate, without waiting another frame.
-            m_Halo.SetNetworkPresentation(!m_HaloOccupied && m_OwnedAiming,
-                m_OwnedViewRotation * Vector3.forward, target, m_OwnedLightEnabled, !m_HaloOccupied && ReadOwnedReadyIntent());
+            m_Halo.SetNetworkPresentation(!m_HaloOccupied && m_OwnedAiming, m_OwnedViewRotation * Vector3.forward,
+                target, m_OwnedLightEnabled, !m_HaloOccupied && ReadOwnedReadyIntent());
             PresentMuzzleObstruction(target);
             return target;
         }
 
-        public bool HasMuzzleObstruction(float2 look, Vector3 target, float lean, bool thirdPerson)
-        {
+        public bool HasMuzzleObstruction(float2 look, Vector3 target, float lean, bool thirdPerson) {
             if (!m_PlayerGhost) m_PlayerGhost = GetComponent<PlayerGhost>();
             if (!m_PlayerGhost) return false;
             var command = new PlayerInput { LookYawPitchDegrees = look, AimPoint = target, Lean = lean };
@@ -171,98 +173,105 @@ namespace Unity.MP_FPS
             return distance > .1f && m_PlayerGhost.RaycastShot(ray, distance - .08f, CoverMask, out _);
         }
 
-        private void PresentMuzzleObstruction(Vector3 target)
-        {
-            OwnedMuzzleObstructed = !m_Input.LightAdjusting &&
-                m_Halo.OwnsHandPose && m_Halo.AimBlend > .45f &&
-                HasMuzzleObstruction(m_OwnedLook, target, m_OwnedLean, IsThirdPerson);
-            if (OwnedMuzzleObstructed && m_ObstructionView == null)
-            {
+        private void PresentMuzzleObstruction(Vector3 target) {
+            OwnedMuzzleObstructed = !m_Input.LightAdjusting && m_Halo.OwnsHandPose && m_Halo.AimBlend > .45f &&
+                                    HasMuzzleObstruction(m_OwnedLook, target, m_OwnedLean, IsThirdPerson);
+            if (OwnedMuzzleObstructed && m_ObstructionView == null) {
                 var hud = FindAnyObjectByType<RaidHUD>();
-                if (hud) m_ObstructionView = new Client.HaloObstructionView(
-                    hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement);
+                if (hud)
+                    m_ObstructionView =
+                        new Client.HaloObstructionView(hud.GetComponent<UnityEngine.UIElements.UIDocument>()
+                            .rootVisualElement);
             }
             m_ObstructionView?.Present(OwnedMuzzleObstructed);
         }
 
-        public bool ReadOwnedAimIntent()
-        {
-            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected;
-            var returning = DollSingerLookController.ReturnFreeLook(m_FreeLookOffset, m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
+        public bool ReadOwnedAimIntent() {
+            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable ||
+                           (m_Melee && m_Melee.WantsPresentation) || GameSettings.Instance.IsPauseMenuOpen ||
+                           RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
+                           RaidHUD.QuickSlotToolSelected;
+            var returning =
+                DollSingerLookController.ReturnFreeLook(m_FreeLookOffset,
+                    m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
             bool freeLooking = m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(returning) > .01f);
-            return m_OwnedAiming = !blocked && (m_Input.LightAdjusting ? m_Input.LightPreviewAiming :
-                m_Input.CanReadPlayerInput && m_Input.AimHeld && !freeLooking);
+            return m_OwnedAiming = !blocked && (m_Input.LightAdjusting
+                ? m_Input.LightPreviewAiming
+                : m_Input.CanReadPlayerInput && m_Input.AimHeld && !freeLooking);
         }
 
-        public bool ReadOwnedReadyIntent()
-        {
-            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable || m_Melee && m_Melee.WantsPresentation ||
-                GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
-                RaidHUD.QuickSlotToolSelected || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput;
-            if (blocked || m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)) return false;
+        public bool ReadOwnedReadyIntent() {
+            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable ||
+                           (m_Melee && m_Melee.WantsPresentation) || GameSettings.Instance.IsPauseMenuOpen ||
+                           RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
+                           RaidHUD.QuickSlotToolSelected || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput;
+            if (blocked || (m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)))
+                return false;
             return ReadOwnedReadyState(m_Input.FireHeld || m_Input.FirePressed);
         }
 
-        private bool ReadOwnedReadyState(bool fire)
-        {
+        private bool ReadOwnedReadyState(bool fire) {
             // RMB owns the local release. Late snapshots may still contain the
             // previous hip-fire hold; only a new local hip-fire input rearms it.
-            if (m_OwnedAiming) m_OwnedHipHoldSuppressed = true;
+            if (m_OwnedAiming)
+                m_OwnedHipHoldSuppressed = true;
             else if (fire) m_OwnedHipHoldSuppressed = false;
-            return fire || m_OwnedPendingFire || m_OwnedRaised && !m_OwnedHipHoldSuppressed;
+            return fire || m_OwnedPendingFire || (m_OwnedRaised && !m_OwnedHipHoldSuppressed);
         }
 
         // 这里区分自己控制的角色和其他人的角色。只有自己这一个需要接本机镜头和操作反馈。
-        public override void OnGhostLinked()
-        {
+        public override void OnGhostLinked() {
             m_Linked = true;
             m_Motor = GetComponent<FirstPersonController>();
             m_OwnedAiming = m_OwnedRaised = m_HasOwnedAimPoint = false;
             m_OwnedPendingFire = m_OwnedHipHoldSuppressed = false;
-            m_Recoil.Reset(); m_RecoilWeapon = 0;
+            m_Recoil.Reset();
+            m_RecoilWeapon = 0;
             m_HitFlinch = default;
             m_LastShotEffectTick = 0;
-            m_LightPanel?.Dispose(); m_LightPanel = null;
+            m_LightPanel?.Dispose();
+            m_LightPanel = null;
             m_OwnedLightEnabled = true;
-            m_AudioAiming = false; m_DryFireAt = 0;
+            m_AudioAiming = false;
+            m_DryFireAt = 0;
             m_Audio?.Stop();
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             BindFootsteps();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
-            m_ObstructionView?.Dispose(); m_ObstructionView = null;
+            m_ObstructionView?.Dispose();
+            m_ObstructionView = null;
             OwnedMuzzleObstructed = false;
             m_Model.enabled = Role != MultiplayerRole.Server;
             m_Model.GetComponent<UnityEngine.CharacterController>().enabled = false;
             m_Model.gameObject.SetActive(Role != MultiplayerRole.Server);
-            if (Role == MultiplayerRole.ClientOwned)
-                ActivateOwnedView();
-            else
-            {
+            if (Role == MultiplayerRole.ClientOwned) { ActivateOwnedView(); } else {
                 m_Input.enabled = false;
                 m_View.gameObject.SetActive(false);
             }
-            if (Role != MultiplayerRole.Server)
-            {
+            if (Role != MultiplayerRole.Server) {
                 var springs = m_Model.GetComponent<SecondaryBoneSpring>();
-                if (springs)
-                {
+                if (springs) {
                     if (float.IsNaN(m_AuthoredSpringDistance)) m_AuthoredSpringDistance = springs.simulationDistance;
-                    springs.simulationDistance = Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active
-                        ? m_AuthoredSpringDistance > 0
-                            ? Mathf.Min(m_AuthoredSpringDistance, Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance)
-                            : Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance
-                        : m_AuthoredSpringDistance;
+                    springs.simulationDistance =
+                        Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active
+                            ? m_AuthoredSpringDistance > 0
+                                ? Mathf.Min(m_AuthoredSpringDistance,
+                                    Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance)
+                                : Moon.SourceWorldRuntimeQuality.SecondaryMotionDistance
+                            : m_AuthoredSpringDistance;
                 }
                 m_PresentationAnimator = m_Model.GetComponent<Animator>();
                 m_AuthoredRuntimeAnimatorController = m_PresentationAnimator.runtimeAnimatorController;
-                ConfigureClientAnimationBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
+                ConfigureClientAnimationBudget(Role != MultiplayerRole.ClientOwned &&
+                                               Moon.SourceWorldRuntimeQuality.Active);
                 m_Melee = m_Model.GetComponent<DollSingerMeleePresentation>();
                 if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();
                 m_Melee.Configure(m_PresentationAnimator, m_View, m_Halo);
                 m_Melee.ResetPresentation();
                 m_Action = m_Model.GetComponent<RaidActionPresentation>();
                 if (!m_Action) m_Action = m_Model.gameObject.AddComponent<RaidActionPresentation>();
-                string rig = name.Contains("HatsuneMiku") ? "HatsuneMiku" : name.Contains("Shian") ? "Shian" : "DollSinger";
+                string rig = name.Contains("HatsuneMiku") ? "HatsuneMiku" :
+                    name.Contains("Shian") ? "Shian" : "DollSinger";
                 m_Action.Configure(m_PresentationAnimator, m_View, m_Halo, rig);
                 m_Action.ResetPresentation();
                 m_Grenade = m_Model.GetComponent<GrenadePresentation>();
@@ -271,7 +280,8 @@ namespace Unity.MP_FPS
                 m_Grenade.ResetPresentation();
                 m_Protection = m_Model.GetComponent<EnergyShieldPresentation>();
                 if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
-                m_Protection.ConfigureHardwareBudget(Role != MultiplayerRole.ClientOwned && Moon.SourceWorldRuntimeQuality.Active);
+                m_Protection.ConfigureHardwareBudget(Role != MultiplayerRole.ClientOwned &&
+                                                     Moon.SourceWorldRuntimeQuality.Active);
                 m_Protection.ResetPresentation();
                 m_Transfer = m_Model.GetComponent<HaloTransferPresentation>();
                 if (!m_Transfer) m_Transfer = m_Model.gameObject.AddComponent<HaloTransferPresentation>();
@@ -281,33 +291,30 @@ namespace Unity.MP_FPS
         }
 
         // Also available to the owning prediction adapter; confirmation uses the same sequence and timeline.
-        public void PresentMelee(in MeleeViewState state)
-        {
+        public void PresentMelee(in MeleeViewState state) {
             if (m_Linked && Role != MultiplayerRole.Server && m_Melee) m_Melee.SetPresentation(state);
         }
 
-        private void ConfigureClientAnimationBudget(bool budget)
-        {
+        private void ConfigureClientAnimationBudget(bool budget) {
             // Keep animation state advancing, but do not skin invisible remote
             // avatars or write their cosmetic IK bones. Server simulation is separate.
-            if (m_PresentationAnimator)
-            {
+            if (m_PresentationAnimator) {
                 m_AuthoredAnimationCulling ??= m_PresentationAnimator.cullingMode;
-                m_PresentationAnimator.cullingMode = budget ? AnimatorCullingMode.CullUpdateTransforms : m_AuthoredAnimationCulling.Value;
+                m_PresentationAnimator.cullingMode =
+                    budget ? AnimatorCullingMode.CullUpdateTransforms : m_AuthoredAnimationCulling.Value;
             }
-            foreach (var renderer in m_Model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-            {
+            foreach (var renderer in m_Model.GetComponentsInChildren<SkinnedMeshRenderer>(true)) {
                 if (!m_AuthoredOffscreenSkinning.TryGetValue(renderer, out bool authored))
                     m_AuthoredOffscreenSkinning.Add(renderer, authored = renderer.updateWhenOffscreen);
                 renderer.updateWhenOffscreen = !budget && authored;
             }
         }
 
-        public Camera ActivateOwnedView()
-        {
+        public Camera ActivateOwnedView() {
             if (m_ViewActivated) return m_View.camera;
             m_ViewActivated = true;
-            m_Input.GameplayInputBlocked = () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
+            m_Input.GameplayInputBlocked =
+                () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
             RaidQuickSlotInput.Bind(m_Input, m_View);
             m_Input.TimedActionInputActive = () => RaidHUD.TimedActionInputActive;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -326,14 +333,11 @@ namespace Unity.MP_FPS
             return m_View.camera;
         }
 
-        private void Update()
-        {
-            if (!m_Linked || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy)
-                return;
-
+        private void Update() {
+            if (!m_Linked || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
-            if (!m_ClassicDeathStarted && Role != MultiplayerRole.Server && ghost.ClashEnabled && ghost.CurrentHealth <= 0 &&
-                GameSettings.Instance.RequestedMode == RaidGameMode.Classic)
+            if (!m_ClassicDeathStarted && Role != MultiplayerRole.Server && ghost.ClashEnabled &&
+                ghost.CurrentHealth <= 0 && GameSettings.Instance.RequestedMode == RaidGameMode.Classic)
                 BeginClassicDeath();
             var state = ghost.ControllerState;
             m_HaloOccupied = HaloTransferRules.Occupied(ghost);
@@ -345,36 +349,40 @@ namespace Unity.MP_FPS
             m_Halo.HandlingMultiplier = RaidHealth.HandlingMultiplier(ghost);
             if (!m_OwnedAlive || downed || m_RecoilWeapon != ghost.EquippedWeaponID) m_Recoil.Reset();
             m_RecoilWeapon = ghost.EquippedWeaponID;
-            if (Role == MultiplayerRole.ClientOwned)
-            {
+            if (Role == MultiplayerRole.ClientOwned) {
                 if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
-                if (m_Input.LightAdjusting && m_LightPanel == null)
-                {
+                if (m_Input.LightAdjusting && m_LightPanel == null) {
                     var hud = FindAnyObjectByType<RaidHUD>();
-                    if (hud) m_LightPanel = new Client.HaloLightPanel(hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement, m_Input, m_Halo);
+                    if (hud)
+                        m_LightPanel = new Client.HaloLightPanel(
+                            hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement, m_Input, m_Halo);
                 }
                 m_LightPanel?.Refresh(m_OwnedLightEnabled);
             }
-            m_Halo.LightingSettings = Role == MultiplayerRole.ClientOwned ? m_Input.LightingSettings : state.HaloLightingSettings;
+            m_Halo.LightingSettings = Role == MultiplayerRole.ClientOwned
+                ? m_Input.LightingSettings
+                : state.HaloLightingSettings;
             m_Motor.ApplyStanceCapsule(presentedStance);
             m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
             bool jumped = ghost.LastJumpTick != 0 &&
-                (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
+                          (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
             if (jumped) m_LastJumpTick = ghost.LastJumpTick;
             m_Model.ApplyNetworkPresentation(downed ? 0 : state.MovementSpeed, downed ? 0 : state.JumpFallSpeed,
-                downed || state.MovementType == FirstPersonController.MovementType.Standing,
-                !downed && state.Sprinting, !downed && jumped, Time.deltaTime, downed ? Vector3.zero : (Vector3)state.AnimatorMotion,
+                downed || state.MovementType == FirstPersonController.MovementType.Standing, !downed && state.Sprinting,
+                !downed && jumped, Time.deltaTime, downed ? Vector3.zero : (Vector3)state.AnimatorMotion,
                 ((Quaternion)state.CurrentRotation).eulerAngles.y, presentedStance);
             var viewRotation = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0f);
             var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
             var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
             bool owned = Role == MultiplayerRole.ClientOwned;
-            if (m_Action) m_Action.Present(ghost, owned, owned && m_View.IsFirstPerson,
-                downed || GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen));
+            if (m_Action)
+                m_Action.Present(ghost, owned, owned && m_View.IsFirstPerson,
+                    downed || GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight ||
+                    (owned && (RaidHUD.DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen)));
             if (m_Grenade) m_Grenade.Present(ghost, owned);
-            if (m_Protection) m_Protection.Present(ghost, owned, owned && m_View.IsFirstPerson, owned ? m_View.camera : null);
-            PresentMelee(new MeleeViewState
-            {
+            if (m_Protection)
+                m_Protection.Present(ghost, owned, owned && m_View.IsFirstPerson, owned ? m_View.camera : null);
+            PresentMelee(new MeleeViewState {
                 Weapon = (MeleeWeaponKind)ghost.MeleeWeapon, AttackWeapon = (MeleeWeaponKind)ghost.MeleeAttackWeapon,
                 Attack = (MeleeAttackKind)ghost.MeleeAttack, Phase = (MeleePhase)ghost.MeleePhase,
                 AttackSequence = ghost.MeleeAttackSequence, CancelSequence = ghost.MeleeCancelSequence,
@@ -382,47 +390,54 @@ namespace Unity.MP_FPS
                 Epoch = ghost.MeleeEpoch,
                 Alive = ghost.CurrentHealth > 0 && !downed, IsOwner = owned,
                 FirstPerson = owned && m_View.IsFirstPerson, AttackDirection = viewRotation * Vector3.forward,
-                Suppressed = GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
-                    GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked),
+                Suppressed = GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight ||
+                             (m_Action && m_Action.OwnsHands) || (owned && (RaidHUD.DarkSightRequested ||
+                                                                            RaidHUD.QuickSlotToolSelected ||
+                                                                            GameSettings.Instance.IsPauseMenuOpen ||
+                                                                            RaidHUD.GameplayActionsBlocked)),
                 HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
             });
-            bool hideWeapon = downed || m_Grenade && m_Grenade.OwnsHands || ghost.HaloDefenseHeld || ghost.ConsumingSupply || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || m_Action && m_Action.OwnsHands || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
+            bool hideWeapon = downed || (m_Grenade && m_Grenade.OwnsHands) || ghost.HaloDefenseHeld ||
+                              ghost.ConsumingSupply || ghost.ClashDarkSight || (m_Melee && m_Melee.OwnsHandPose) ||
+                              (m_Action && m_Action.OwnsHands) ||
+                              (owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected));
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             bool lightEnabled = ghost.CurrentHealth > 0 && (owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             m_Halo.SetNetworkPresentation(!hideWeapon && !m_HaloOccupied && (owned ? m_OwnedAiming : state.Aiming),
                 (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
-                owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
-                lightEnabled,
-                !hideWeapon && !m_HaloOccupied && (owned ? ReadOwnedReadyIntent() : m_OwnedRaised || m_OwnedPendingFire));
-            var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
+                owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint, lightEnabled,
+                !hideWeapon && !m_HaloOccupied &&
+                (owned ? ReadOwnedReadyIntent() : m_OwnedRaised || m_OwnedPendingFire));
+            var weapon =
+                WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
-                ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1) : DollSingerHaloAim.HaloWeapon.None;
+                ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1)
+                : DollSingerHaloAim.HaloWeapon.None;
             if (hideWeapon) haloWeapon = DollSingerHaloAim.HaloWeapon.None;
-            m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
-                state.IsReloadingState, HaloReload.Progress(ghost, weapon),
-                ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
-            if (m_Transfer)
-            {
+            m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo, state.IsReloadingState,
+                HaloReload.Progress(ghost, weapon), ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo,
+                ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
+            if (m_Transfer) {
                 DollSingerHaloAim recipient = null;
-                if (World.EntityManager.HasComponent<GhostGameObjectLink>(ghost.HaloTransferTarget))
-                {
+                if (World.EntityManager.HasComponent<GhostGameObjectLink>(ghost.HaloTransferTarget)) {
                     var link = World.EntityManager.GetComponentObject<GhostGameObjectLink>(ghost.HaloTransferTarget);
-                    if (link.LinkedInstance && link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var other))
+                    if (link.LinkedInstance &&
+                        link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var other))
                         recipient = other.m_Halo;
                 }
                 m_Transfer.Present(ghost, recipient);
             }
-            if (Role == MultiplayerRole.ClientOwned)
-            {
+            if (Role == MultiplayerRole.ClientOwned) {
                 bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
                 if (ghost.CurrentHealth > 0 && audibleAim != m_AudioAiming)
-                    MoonkovAudio.Play(audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut, transform.position);
+                    MoonkovAudio.Play(
+                        audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut,
+                        transform.position);
                 m_AudioAiming = audibleAim;
                 if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
                     !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&
-                    !hideWeapon && !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked)
-                {
+                    !hideWeapon && !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked) {
                     MoonkovAudio.Play(MoonkovAudio.Library?.DryFire, transform.position);
                     m_DryFireAt = Time.unscaledTime + .35f;
                 }
@@ -430,15 +445,19 @@ namespace Unity.MP_FPS
                 m_View.SetAimBlend(m_Halo.AdsBlend);
                 m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
                 bool showFlinch = m_ViewActivated && !GameSettings.Instance.IsPauseMenuOpen &&
-                    !RaidHUD.GameplayActionsBlocked && !Client.HalosTerminalBackdrop.PrefersReducedMotion;
-                m_View.SetHitFlinch(m_HitFlinch.Step(ghost, Time.deltaTime, m_View.CurrentAimMagnification, showFlinch));
+                                  !RaidHUD.GameplayActionsBlocked && !Client.HalosTerminalBackdrop.PrefersReducedMotion;
+                m_View.SetHitFlinch(m_HitFlinch.Step(ghost, Time.deltaTime, m_View.CurrentAimMagnification,
+                    showFlinch));
             }
         }
 
-        public void PlayShot(Vector3 aimPoint, uint weaponId, uint shotTick = 0, bool haloDeployed = false, Vector3 shotOrigin = default)
-        {
-            if (m_Linked && Role != MultiplayerRole.Server)
-            {
+        public void PlayShot(
+            Vector3 aimPoint,
+            uint weaponId,
+            uint shotTick = 0,
+            bool haloDeployed = false,
+            Vector3 shotOrigin = default) {
+            if (m_Linked && Role != MultiplayerRole.Server) {
                 // The shot RPC may precede the equipment snapshot on an observer.
                 var shotState = ReadGhostComponentData<PredictedPlayerGhost>();
                 bool equipped = shotState.EquippedWeaponID == weaponId;
@@ -447,51 +466,51 @@ namespace Unity.MP_FPS
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
                 if (equipped) m_Halo.GestureReleaseSeconds = profile?.GestureReleaseSeconds ?? 0;
-                if (equipped && Role == MultiplayerRole.ClientOwned && m_OwnedAlive && !m_HaloOccupied && !haloDeployed &&
-                    m_Input.CanReadPlayerInput && WeaponHandsAvailable && !m_Input.LightAdjusting)
-                {
-                    float interval = weapon == null ? .35f :
-                        (weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs) * RaidHealth.HandlingMultiplier(shotState);
+                if (equipped && Role == MultiplayerRole.ClientOwned && m_OwnedAlive && !m_HaloOccupied &&
+                    !haloDeployed && m_Input.CanReadPlayerInput && WeaponHandsAvailable && !m_Input.LightAdjusting) {
+                    float interval = weapon == null
+                        ? .35f
+                        : (weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs) *
+                          RaidHealth.HandlingMultiplier(shotState);
                     m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification, interval, m_OwnedAiming, profile);
                 }
-                if (weaponId == DollSingerWeapons.Halo || profile != null)
-                {
-                    bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime < Mathf.Max(.15f, (weapon?.CooldownInMs ?? .1f) * 1.5f);
+                if (weaponId == DollSingerWeapons.Halo || profile != null) {
+                    bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime <
+                        Mathf.Max(.15f, (weapon?.CooldownInMs ?? .1f) * 1.5f);
                     m_ShotSoundPressure = sustained ? Mathf.Min(1, m_ShotSoundPressure + .18f) : 0;
-                    m_LastSoundWeapon = weaponId; m_LastShotSoundTime = Time.unscaledTime;
+                    m_LastSoundWeapon = weaponId;
+                    m_LastShotSoundTime = Time.unscaledTime;
                     // The new attack remains crisp; only the preceding body and resonance crossfade.
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, profile?.BodyCrossfade ?? .045f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);
                     bool owned = Role == MultiplayerRole.ClientOwned && !m_HaloOccupied && !haloDeployed;
-                    Vector3 origin = haloDeployed ? shotOrigin : equipped && m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
+                    var origin = haloDeployed ? shotOrigin :
+                        equipped && m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
                     float bodyGain = Mathf.Lerp(1, profile?.SustainedBodyGain ?? .9f, m_ShotSoundPressure);
-                    m_RifleBodySound = MoonkovAudio.PlayWeaponReport(profile?.FireBody ?? weapon?.WeaponFireSfx,
-                        origin, owned, bodyGain);
-                    m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(profile != null ? profile.FireSnap : weapon?.WeaponFireLayerSfx,
-                        origin, .85f, owned ? 0f : 1f, m_ShotSoundPressure * (profile?.BurstPitchRise ?? 35f));
+                    m_RifleBodySound = MoonkovAudio.PlayWeaponReport(profile?.FireBody ?? weapon?.WeaponFireSfx, origin,
+                        owned, bodyGain);
+                    m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(
+                        profile != null ? profile.FireSnap : weapon?.WeaponFireLayerSfx, origin, .85f, owned ? 0f : 1f,
+                        m_ShotSoundPressure * (profile?.BurstPitchRise ?? 35f));
                     m_WeaponTailSound = MoonkovAudio.PlayWeaponLayer(profile?.FireTail, origin, .85f, owned ? .2f : 1f);
-                }
-                else
-                {
+                } else {
                     MoonkovAudio.Play(weapon?.WeaponFireSfx, haloDeployed ? shotOrigin : transform.position);
                     MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, haloDeployed ? shotOrigin : transform.position);
                 }
                 if (equipped)
-                    m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick, haloDeployed ? shotOrigin : (Vector3?)null);
+                    m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick,
+                        haloDeployed ? shotOrigin : (Vector3?)null);
             }
         }
 
-        private void BindFootsteps()
-        {
+        private void BindFootsteps() {
             if (!m_Model) return;
             m_Model.Footstep -= OnFootstep;
-            if (m_Linked && Role != MultiplayerRole.Server && isActiveAndEnabled)
-                m_Model.Footstep += OnFootstep;
+            if (m_Linked && Role != MultiplayerRole.Server && isActiveAndEnabled) m_Model.Footstep += OnFootstep;
         }
 
-        private void BeginClassicDeath()
-        {
+        private void BeginClassicDeath() {
             if (!m_PresentationAnimator || !m_PresentationAnimator.isHuman) return;
             var settings = Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
             if (!settings || !settings.Death) return;
@@ -511,8 +530,7 @@ namespace Unity.MP_FPS
             m_ClassicDeathGraph.Play();
         }
 
-        private void LateUpdate()
-        {
+        private void LateUpdate() {
             if (!m_ClassicDeathGraph.IsValid() || !m_PresentationAnimator) return;
             double age = Time.timeAsDouble - m_ClassicDeathStartedAt;
             m_ClassicDeathClip.SetTime(System.Math.Min(age, m_ClassicDeathClip.GetAnimationClip().length));
@@ -520,34 +538,33 @@ namespace Unity.MP_FPS
             if (age >= m_ClassicDeathClip.GetAnimationClip().length) m_PresentationAnimator.enabled = false;
         }
 
-        private void OnFootstep()
-        {
-            if (!m_Linked || !isActiveAndEnabled || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
+        private void OnFootstep() {
+            if (!m_Linked || !isActiveAndEnabled || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy)
+                return;
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             m_Audio?.OnFootstep(ghost, transform, Role == MultiplayerRole.ClientOwned);
         }
 
-        private void OnEnable() => BindFootsteps();
-        private void OnDisable()
-        {
+        private void OnEnable() { BindFootsteps(); }
+
+        private void OnDisable() {
             if (m_Model) m_Model.Footstep -= OnFootstep;
             m_Audio?.Stop();
             m_HitFlinch = default;
             if (m_View) m_View.SetHitFlinch(Vector3.zero);
         }
 
-        public override void OnGhostPreDestroy()
-        {
+        public override void OnGhostPreDestroy() {
             if (m_ClassicDeathGraph.IsValid()) m_ClassicDeathGraph.Destroy();
-            if (m_ClassicDeathStarted && m_PresentationAnimator)
-            {
+            if (m_ClassicDeathStarted && m_PresentationAnimator) {
                 m_PresentationAnimator.enabled = true;
                 m_PresentationAnimator.runtimeAnimatorController = m_AuthoredRuntimeAnimatorController;
                 m_PresentationAnimator.Rebind();
             }
             m_ClassicDeathStarted = false;
             if (m_Model) m_Model.Footstep -= OnFootstep;
-            m_LightPanel?.Dispose(); m_LightPanel = null;
+            m_LightPanel?.Dispose();
+            m_LightPanel = null;
             m_Audio?.Stop();
             GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);
             GameManager.Instance?.SoundSystem?.Stop(m_RifleSnapSound, .015f);
@@ -566,7 +583,8 @@ namespace Unity.MP_FPS
             m_Halo.OwnedAimIntent = null;
             m_Halo.OwnedReadyIntent = null;
             RaidQuickSlotInput.Unbind(m_Input);
-            m_ObstructionView?.Dispose(); m_ObstructionView = null;
+            m_ObstructionView?.Dispose();
+            m_ObstructionView = null;
             m_Input.enabled = false;
             m_Input.GameplayInputBlocked = null;
             m_Input.TimedActionInputActive = null;

@@ -3,16 +3,14 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>Client presentation for the authored raid route. Never drives enemy AI or spawning.</summary>
     [DisallowMultipleComponent]
-    public sealed class RaidThreatAtmosphere : MonoBehaviour
-    {
+    public sealed class RaidThreatAtmosphere : MonoBehaviour {
         [SerializeField] private SoundDef environmentBed;
         [SerializeField] private SoundDef structureCreak;
         [SerializeField] private SoundDef alienRustle;
-        [SerializeField, Min(5)] private float creatureSoundRange = 42;
+        [SerializeField] [Min(5)] private float creatureSoundRange = 42;
         private MoonRaidMap m_Map;
         private ISoundSystem m_System;
         private SoundSystem.SoundInfo m_Bed, m_Creak;
@@ -28,10 +26,12 @@ namespace Unity.MP_FPS
         private System.Random m_Random;
         private float m_NextSample, m_NextCreak, m_Pressure;
 
-        private void Start()
-        {
+        private void Start() {
             var game = GameManager.Instance;
-            if (!game || game.IsHeadless) { enabled = false; return; }
+            if (!game || game.IsHeadless) {
+                enabled = false;
+                return;
+            }
             m_Map = GetComponent<MoonRaidMap>();
             m_System = game.SoundSystem;
             m_Random = new System.Random(System.Guid.NewGuid().GetHashCode());
@@ -55,10 +55,8 @@ namespace Unity.MP_FPS
             m_Vignette.smoothness.Override(.45f);
         }
 
-        private void Update()
-        {
-            if (Valid(m_ContextBed))
-            {
+        private void Update() {
+            if (Valid(m_ContextBed)) {
                 m_ContextGain = Mathf.MoveTowards(m_ContextGain, 1, Time.unscaledDeltaTime * .7f);
                 m_ContextBed.Handle.Emitter.SetVolume(m_ContextGain);
             }
@@ -67,19 +65,20 @@ namespace Unity.MP_FPS
             if (!m_Map || m_System == null ||
                 !PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientOwned, out var manager) ||
                 !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players) || players.Count == 0 ||
-                !IsLiving(players[0]))
-            {
+                !IsLiving(players[0])) {
                 StopPresentation();
                 return;
             }
             var player = players[0];
             var state = player.GhostGameObject.ReadGhostComponentData<PredictedPlayerGhost>();
             BindCamera(player.GetPlayerCamera());
-            Vector3 listener = player.CameraTarget ? player.CameraTarget.position : player.transform.position;
-            var contextSound = state.BreathableAir ? MoonkovAudio.Library?.InteriorVent : MoonkovAudio.Library?.SuitVent;
-            if (contextSound != m_ContextSound || contextSound && !Valid(m_ContextBed))
-            {
-                Stop(ref m_ContextBed); m_ContextSound = contextSound; m_ContextGain = 0;
+            var listener = player.CameraTarget ? player.CameraTarget.position : player.transform.position;
+            var contextSound =
+                state.BreathableAir ? MoonkovAudio.Library?.InteriorVent : MoonkovAudio.Library?.SuitVent;
+            if (contextSound != m_ContextSound || (contextSound && !Valid(m_ContextBed))) {
+                Stop(ref m_ContextBed);
+                m_ContextSound = contextSound;
+                m_ContextGain = 0;
                 m_ContextBed = MoonkovAudio.PlayWeaponLayer(contextSound, listener, 0, 0);
             }
             bool nearby = ProceduralAlienEnemy.TryGetNearbySoundSource(player.World, listener,
@@ -88,9 +87,7 @@ namespace Unity.MP_FPS
             m_Pressure = Mathf.MoveTowards(m_Pressure, pressure, .15f);
             m_Volume.weight = Mathf.MoveTowards(m_Volume.weight, 1, .15f);
             m_Vignette.intensity.value = Mathf.Lerp(.18f, .28f, m_Pressure);
-
-            if (!Valid(m_Bed))
-            {
+            if (!Valid(m_Bed)) {
                 m_Bed = MoonkovAudio.Play(environmentBed, listener, .1f);
                 m_NextCreak = Time.time + Range(5, 9);
             }
@@ -101,9 +98,8 @@ namespace Unity.MP_FPS
             var anchors = m_Map.LootPositions;
             if (anchors.Length == 0) return;
             int first = m_Random.Next(anchors.Length);
-            for (int i = 0; i < anchors.Length; i++)
-            {
-                Vector3 point = anchors[(first + i) % anchors.Length] + Vector3.up * 2;
+            for (int i = 0; i < anchors.Length; i++) {
+                var point = anchors[(first + i) % anchors.Length] + Vector3.up * 2;
                 float distance = Vector3.Distance(listener, point);
                 if (distance < 5 || distance > 40) continue;
                 Stop(ref m_Creak);
@@ -112,26 +108,32 @@ namespace Unity.MP_FPS
             }
         }
 
-        private static bool IsLiving(PlayerGhost player) => player && player.GhostGameObject &&
-            player.GhostGameObject.GhostEntityExists() && player.GhostGameObject.GhostHasComponent<PredictedPlayerGhost>() &&
-            player.GhostGameObject.ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth > 0;
-        private static bool Valid(SoundSystem.SoundInfo info) => info?.Handle != null && info.Handle.IsValid();
-        private float Range(float min, float max) => min + (float)m_Random.NextDouble() * (max - min);
-        private void Stop(ref SoundSystem.SoundInfo info)
-        {
+        private static bool IsLiving(PlayerGhost player) {
+            return player && player.GhostGameObject && player.GhostGameObject.GhostEntityExists() &&
+                   player.GhostGameObject.GhostHasComponent<PredictedPlayerGhost>() && player.GhostGameObject
+                       .ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth > 0;
+        }
+
+        private static bool Valid(SoundSystem.SoundInfo info) { return info?.Handle != null && info.Handle.IsValid(); }
+        private float Range(float min, float max) { return min + (float)m_Random.NextDouble() * (max - min); }
+
+        private void Stop(ref SoundSystem.SoundInfo info) {
             if (Valid(info)) m_System?.Stop(info, .4f);
             info = null;
         }
-        private void StopPresentation()
-        {
-            Stop(ref m_Bed); Stop(ref m_Creak); Stop(ref m_ContextBed);
-            m_ContextSound = null; m_ContextGain = 0;
+
+        private void StopPresentation() {
+            Stop(ref m_Bed);
+            Stop(ref m_Creak);
+            Stop(ref m_ContextBed);
+            m_ContextSound = null;
+            m_ContextGain = 0;
             if (m_Volume) m_Volume.weight = 0;
             RestoreCamera();
             m_Pressure = 0;
         }
-        private void BindCamera(Camera camera)
-        {
+
+        private void BindCamera(Camera camera) {
             var data = camera ? camera.GetUniversalAdditionalCameraData() : null;
             if (data == m_CameraData) return;
             RestoreCamera();
@@ -142,18 +144,18 @@ namespace Unity.MP_FPS
             data.renderPostProcessing = true;
             data.volumeLayerMask |= 1; // The runtime atmosphere volume uses Default.
         }
-        private void RestoreCamera()
-        {
-            if (m_CameraData)
-            {
+
+        private void RestoreCamera() {
+            if (m_CameraData) {
                 m_CameraData.renderPostProcessing = m_PreviousPostProcessing;
                 m_CameraData.volumeLayerMask = m_PreviousVolumeMask;
             }
             m_CameraData = null;
         }
-        private void OnDisable() => StopPresentation();
-        private void OnDestroy()
-        {
+
+        private void OnDisable() { StopPresentation(); }
+
+        private void OnDestroy() {
             StopPresentation();
             if (m_Volume) Destroy(m_Volume.gameObject);
             if (!m_Profile) return;

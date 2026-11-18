@@ -8,15 +8,12 @@ using Random = UnityEngine.Random;
 /// Represents a single audio source GameObject with associated audio effects and spatial positioning.
 /// Handles detailed audio parameter management including filters, spatial audio, and distance-based effects.
 /// </summary>
-public class SoundGameObject
-{
-
+public class SoundGameObject {
     /// <summary>
     ///
     /// Defines how the SoundGameObject's position is determined and updated.
     /// </summary>
-    public enum PositionType
-    {
+    public enum PositionType {
         Position,
         ParentTransform
     }
@@ -24,22 +21,22 @@ public class SoundGameObject
     /// <summary>
     /// Contains references to all audio components attached to the GameObject.
     /// </summary>
-    public class AudioComponentData
-    {
+    public class AudioComponentData {
         public AudioSource ASource;
         public AudioLowPassFilter LowPassFilter;
         public AudioHighPassFilter HighPassFilter;
         public AudioDistortionFilter DistortionFilter;
     }
 
-    public SoundGameObject NextAvailable; // Linked list. Points to next available SoundGameObject (null = none available)
-    public AudioSource m_AudioSource;
+    public SoundGameObject
+        NextAvailable; // Linked list. Points to next available SoundGameObject (null = none available)
 
+    public AudioSource m_AudioSource;
     private const float SOUND_VOL_CUTOFF = -60.0f;
     private AudioLowPassFilter m_LowPassFilter;
     private AudioHighPassFilter m_HighPassFilter;
     private AudioDistortionFilter m_DistortionFilter;
-    private SoundEmitter m_Emitter;    // Emitter that is controlling this SoundObject
+    private SoundEmitter m_Emitter; // Emitter that is controlling this SoundObject
     private bool m_Active;
     private int m_CurrentLoopCount;
     private int m_LastTimeSamples;
@@ -47,7 +44,6 @@ public class SoundGameObject
     private GameObject m_SoundGameObjectPool;
     private GameObject m_Parent;
     private PositionType m_PositionType;
-
     private SoundDef m_SoundDef;
     private Transform m_ListenerTransform;
     private Interpolator m_Curve;
@@ -58,6 +54,7 @@ public class SoundGameObject
     private float m_LPFRandomValue;
     private float m_HPFRandomValue;
     private float m_SpatialBlendValue;
+
     // dsp time at which a PlayDelayed/PlayScheduled source will actually start.
     // 0 means "playback starts immediately or has already started".
     private double m_PendingStartDsp;
@@ -66,15 +63,11 @@ public class SoundGameObject
     private static readonly RaycastHit[] s_Obstacles = new RaycastHit[12];
     private static int s_OcclusionFrame, s_OcclusionBudget;
     private static readonly int s_OcclusionMask = LayerMask.GetMask("Default", "Ground");
-
 #if UNITY_EDITOR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void Init()
-    {
-        s_Counter = 0;
-    }
-    
-    static int s_Counter = 0;
+    private static void Init() { s_Counter = 0; }
+
+    private static int s_Counter = 0;
     private string m_DebugName;
 #endif
 
@@ -83,16 +76,14 @@ public class SoundGameObject
     /// </summary>
     /// <param name="parent">Parent GameObject that will contain this sound object</param>
     /// <param name="audioComponentData">Audio components to use for playback and effects</param>
-    public SoundGameObject(GameObject parent, AudioComponentData audioComponentData)
-    {
+    public SoundGameObject(GameObject parent, AudioComponentData audioComponentData) {
 #if UNITY_EDITOR
         m_DebugName = audioComponentData.ASource.gameObject.name;
 #endif
         InitAudioComponents(parent, audioComponentData);
     }
 
-    private void InitAudioComponents(GameObject parent, AudioComponentData audioComponentData)
-    {
+    private void InitAudioComponents(GameObject parent, AudioComponentData audioComponentData) {
         m_SoundGameObjectPool = parent;
         m_Parent = parent;
         m_AudioSource = audioComponentData.ASource;
@@ -109,39 +100,22 @@ public class SoundGameObject
     /// </summary>
     /// <param name="soundDef">Sound definition containing filter settings</param>
     /// <returns>True if distance calculations are needed for any enabled effects</returns>
-    public bool EnableAudioFilterComponents(SoundDef soundDef)
-    {
+    public bool EnableAudioFilterComponents(SoundDef soundDef) {
         bool calcDistance = false;
-
         if (m_LowPassFilter != null)
-        {
             if (m_LowPassFilter.enabled = soundDef.LowPassFilter.EnableComponent ? true : false)
-            {
                 calcDistance = true;
-            }
-        }
         if (m_HighPassFilter != null)
-        {
             if (m_HighPassFilter.enabled = soundDef.HighPassFilter.EnableComponent ? true : false)
-            {
                 calcDistance = true;
-            }
-        }
-        if (m_DistortionFilter)
-        {
-            m_DistortionFilter.enabled = soundDef.DistortionFilter.EnableComponent;
-        }
+        if (m_DistortionFilter) m_DistortionFilter.enabled = soundDef.DistortionFilter.EnableComponent;
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-        {
-            return calcDistance;    // No spatial blending when playing from the Unity editors inspector window
-        }
+            return calcDistance; // No spatial blending when playing from the Unity editors inspector window
 #endif
-        if (soundDef.DistanceInfo.SpatialBlendCurveType != Interpolator.CurveType.None && 
+        if (soundDef.DistanceInfo.SpatialBlendCurveType != Interpolator.CurveType.None &&
             soundDef.DistanceInfo.SpatialBlend_MaxDistance != 0)
-        {
             calcDistance = true;
-        }
         return calcDistance;
     }
 
@@ -149,8 +123,7 @@ public class SoundGameObject
     /// Enables the SoundGameObject and associates it with the specified emitter.
     /// </summary>
     /// <param name="soundEmitter">The emitter that will control this sound object</param>
-    public void Enable(SoundEmitter soundEmitter)
-    {
+    public void Enable(SoundEmitter soundEmitter) {
         m_Active = true;
         m_Emitter = soundEmitter;
         m_AudioSource.transform.position = Vector3.zero;
@@ -160,18 +133,14 @@ public class SoundGameObject
     /// Kills the SoundGameObject if it belongs to the specified emitter, stopping playback and cleanup.
     /// </summary>
     /// <param name="emitter">The emitter requesting the kill operation</param>
-    public void Kill(SoundEmitter emitter)
-    {
-        if (m_Emitter == emitter)
-        {
+    public void Kill(SoundEmitter emitter) {
+        if (m_Emitter == emitter) {
             StopAudioSource();
             // Scene/Play teardown can destroy the shared pool or the attached
             // source before its owner releases the emitter. Unity objects then
             // compare equal to null even though their managed wrappers remain.
             if (m_PositionType == PositionType.ParentTransform && m_AudioSource && m_SoundGameObjectPool)
-            {
                 m_AudioSource.transform.parent = m_SoundGameObjectPool.transform;
-            }
             m_Active = false;
             m_Emitter = null;
         }
@@ -180,24 +149,16 @@ public class SoundGameObject
     /// <summary>
     /// Stops the AudioSource component immediately.
     /// </summary>
-    public void StopAudioSource()
-    {
-        if (m_AudioSource != null)
-        {
-            m_AudioSource.Stop();
-        }
+    public void StopAudioSource() {
+        if (m_AudioSource != null) m_AudioSource.Stop();
     }
 
     /// <summary>
     /// Checks if the AudioSource is currently playing audio.
     /// </summary>
     /// <returns>True if playing, false otherwise</returns>
-    public bool IsPlaying()
-    {
-        if (m_AudioSource == null)
-        {
-            return false;
-        }
+    public bool IsPlaying() {
+        if (m_AudioSource == null) return false;
         return m_AudioSource.isPlaying;
     }
 
@@ -205,10 +166,7 @@ public class SoundGameObject
     /// Sets the active state of this SoundGameObject.
     /// </summary>
     /// <param name="activeFlag">True to activate, false to deactivate</param>
-    public void SetActive(bool activeFlag)
-    {
-        m_Active = activeFlag;
-    }
+    public void SetActive(bool activeFlag) { m_Active = activeFlag; }
 
     /// <summary>
     /// Updates the SoundGameObject, handling audio parameters, looping, and lifecycle management.
@@ -218,15 +176,10 @@ public class SoundGameObject
     /// <param name="count">Reference to active audio source counter</param>
     /// <param name="fatal">Reference to fatal error flag</param>
     /// <returns>True if still active and playing, false otherwise</returns>
-    public bool Update(SoundEmitter soundEmitter, int repeatCount, ref int count, ref bool fatal)
-    {
+    public bool Update(SoundEmitter soundEmitter, int repeatCount, ref int count, ref bool fatal) {
         fatal = false;
-        if (m_Active == false)
-        {
-            return false;
-        }
-
-        if (m_AudioSource == null)    // GameObject has been destroyed.
+        if (m_Active == false) return false;
+        if (m_AudioSource == null) // GameObject has been destroyed.
         {
             fatal = true;
             return false;
@@ -235,17 +188,14 @@ public class SoundGameObject
         // A delayed or scheduled source reports isPlaying == false until its start time.
         // Treating that as "finished" used to kill the emitter before it ever made a sound,
         // so any SoundDef using DelayMin/DelayMax or StopDelay was silently dropped.
-        if (m_PendingStartDsp > 0.0)
-        {
-            if (AudioSettings.dspTime < m_PendingStartDsp)
-            {
+        if (m_PendingStartDsp > 0.0) {
+            if (AudioSettings.dspTime < m_PendingStartDsp) {
                 count++;
                 return true;
             }
             m_PendingStartDsp = 0.0;
         }
-
-        if (m_AudioSource.isPlaying)  
+        if (m_AudioSource.isPlaying)
             // AudioSource is still playing? Handle fade out if stopping and update looping audio clip counter.
         {
             m_PendingStartDsp = 0.0;
@@ -258,31 +208,23 @@ public class SoundGameObject
         // Finished playing all AudioSources. We can free the SoundGameObject if it's not reserved and we've no more
         // SoundEmitter repeats to do
         if (soundEmitter.Reserved != SoundEmitter.ReservedInfo.ReservedEmitterAndAudioSources)
-        {
             if (repeatCount < 2)
-            {
                 Kill(soundEmitter); // Not reserved. Allow another emitter to use this SoundGameObject
-            }
-        }
-        return false;   // No longer playing
+        return false; // No longer playing
     }
 
     /// <summary>
     /// Checks if the audio has looped and updates loop counting accordingly.
     /// </summary>
     /// <returns>True if a loop was detected, false otherwise</returns>
-    public bool CheckForAudioSourceLoop()
-    {
+    public bool CheckForAudioSourceLoop() {
         bool looped = false;
-        if (m_CurrentLoopCount > 1 && m_AudioSource.timeSamples < m_LastTimeSamples)   
+        if (m_CurrentLoopCount > 1 && m_AudioSource.timeSamples < m_LastTimeSamples)
             // have we looped? If so, decrease loop counter
         {
             m_CurrentLoopCount--;
             looped = true;
-            if (m_CurrentLoopCount == 1)
-            {
-                m_AudioSource.loop = false;
-            }
+            if (m_CurrentLoopCount == 1) m_AudioSource.loop = false;
         }
         m_LastTimeSamples = m_AudioSource.timeSamples;
         return looped;
@@ -292,10 +234,9 @@ public class SoundGameObject
     /// Validates that the SoundGameObject's GameObject still exists and is accessible.
     /// </summary>
     /// <returns>True if valid, false if the GameObject has been destroyed</returns>
-    public bool IsValid()
-    {
-        return (m_AudioSource != null ? true : false); 
-            // SoundGameObject could have had its parent changed and its parent has since been destroyed.
+    public bool IsValid() {
+        return m_AudioSource != null ? true : false;
+        // SoundGameObject could have had its parent changed and its parent has since been destroyed.
     }
 
     /// <summary>
@@ -307,12 +248,14 @@ public class SoundGameObject
     /// <param name="soundEmitter">The controlling sound emitter</param>
     /// <param name="spatialBlend">Spatial blend value (0=2D, 1=3D)</param>
     /// <param name="mixerGroups">Array of audio mixer groups for routing</param>
-    public void TriggerAudioSource(Transform listenerTransform, 
-        SoundDef soundDef, SoundEmitter soundEmitter, float spatialBlend, AudioMixerGroup[] mixerGroups)
-    {
+    public void TriggerAudioSource(
+        Transform listenerTransform,
+        SoundDef soundDef,
+        SoundEmitter soundEmitter,
+        float spatialBlend,
+        AudioMixerGroup[] mixerGroups) {
         m_SoundDef = soundDef;
-        SoundEmitter.SoundDefOverrideData soundDefOverrideData = soundEmitter.SoundDefOverrideInfo;
-
+        var soundDefOverrideData = soundEmitter.SoundDefOverrideInfo;
         m_CalculateDistance = InitDistanceCurves(soundDef);
         m_ListenerTransform = listenerTransform;
         m_Occluded = false;
@@ -326,15 +269,14 @@ public class SoundGameObject
         m_AudioSource.clip = soundDef.Clips[(int)clipIndex];
 
         // Map from cent (100 = 1 semitone) space to linear playback multiplier
-        float cents = soundDefOverrideData.BasePitchInCents + 
-                      (Random.Range(soundDef.PitchAndVolumeInfo.PitchMin, soundDef.PitchAndVolumeInfo.PitchMax));
+        float cents = soundDefOverrideData.BasePitchInCents +
+                      Random.Range(soundDef.PitchAndVolumeInfo.PitchMin, soundDef.PitchAndVolumeInfo.PitchMax);
         m_AudioSource.pitch = Mathf.Pow(2.0f, cents / 1200.0f);
 
         // Set distance min / max attenuation
         m_AudioSource.minDistance = soundDef.DistanceInfo.VolumeDistMin;
         m_AudioSource.maxDistance = soundDef.DistanceInfo.VolumeDistMax;
         m_AudioSource.rolloffMode = soundDef.DistanceInfo.VolumeRolloffMode;
-
 #if UNITY_EDITOR
         m_AudioSource.gameObject.name = m_DebugName + " (" + soundDef.name + " " + s_Counter + ")";
         s_Counter++;
@@ -345,63 +287,51 @@ public class SoundGameObject
         float vMax = AmplitudeFromDecibel(soundDef.PitchAndVolumeInfo.VolumeMax);
         m_Volume = Random.Range(vMin, vMax);
 
-
         // Set loop on / off (Update code will count down the number of loops required and stop when necessary)
         m_AudioSource.loop = soundDef.RepeatInfo.LoopCount != 1; // True if loopcount!=1
-                                                                 // (0 = infinite. 1 = play once. 2 = play twice...)
+        // (0 = infinite. 1 = play once. 2 = play twice...)
         m_CurrentLoopCount = soundDef.RepeatInfo.LoopCount;
         m_LastTimeSamples = 0;
 
         // Set mixergroup output
-        if (mixerGroups != null)
-        {
-            m_AudioSource.outputAudioMixerGroup = mixerGroups[(int)soundDef.MixerGroup];
-        }
+        if (mixerGroups != null) m_AudioSource.outputAudioMixerGroup = mixerGroups[(int)soundDef.MixerGroup];
 
         // Set start sample offset position
-        float startPercentOffset = Random.Range(soundDef.StartStopInfo.StartOffsetPercentMin, soundDef.StartStopInfo.StartOffsetPercentMax) / 100.0f;
+        float startPercentOffset = Random.Range(soundDef.StartStopInfo.StartOffsetPercentMin,
+            soundDef.StartStopInfo.StartOffsetPercentMax) / 100.0f;
         startPercentOffset = Mathf.Clamp(soundDefOverrideData.StartOffsetFraction ?? startPercentOffset, 0, .999f);
         m_AudioSource.timeSamples = (int)((float)m_AudioSource.clip.samples * startPercentOffset);
         m_AudioSource.dopplerLevel = soundDef.DistanceInfo.DopplerScale;
-
-        m_LPFRandomValue = soundDefOverrideData.BaseLowPassCutoff + Random.Range(soundDef.LowPassFilter.CutoffMin, soundDef.LowPassFilter.CutoffMax);
+        m_LPFRandomValue = soundDefOverrideData.BaseLowPassCutoff +
+                           Random.Range(soundDef.LowPassFilter.CutoffMin, soundDef.LowPassFilter.CutoffMax);
         m_HPFRandomValue = Random.Range(soundDef.HighPassFilter.CutoffMin, soundDef.HighPassFilter.CutoffMax);
         m_SpatialBlendValue = spatialBlend;
-
         if (m_DistortionFilter != null && m_DistortionFilter.enabled)
-        {
-            m_DistortionFilter.distortionLevel = Random.Range(soundDef.DistortionFilter.DistortionMin, soundDef.DistortionFilter.DistortionMax);
-        }
+            m_DistortionFilter.distortionLevel = Random.Range(soundDef.DistortionFilter.DistortionMin,
+                soundDef.DistortionFilter.DistortionMax);
 
         // Set stereo pan.
         // This pan is applied before 3D panning calculations are considered.
         // In other words, stereo panning affects the left right balance of the sound before it is spatialised in 3D.
         m_AudioSource.panStereo = Random.Range(soundDef.DistanceInfo.PanMin, soundDef.DistanceInfo.PanMax);
-
         UpdateAudioParameters(soundEmitter);
 
         // Start sample with delay if required
         // If we also have a stopDelay time (stop the audioSource after n seconds), use PlayScheduled and SetScheduledEndTime
         float delay = Random.Range(soundDef.StartStopInfo.DelayMin, soundDef.StartStopInfo.DelayMax);
         float stopAfter = soundDefOverrideData.StopAfterSeconds ?? soundDef.StartStopInfo.StopDelay;
-        if (stopAfter > 0)
-        {
+        if (stopAfter > 0) {
             double startTime = AudioSettings.dspTime;
             startTime += delay;
             double endTime = startTime + stopAfter;
             m_PendingStartDsp = startTime;
             m_AudioSource.PlayScheduled(startTime);
             m_AudioSource.SetScheduledEndTime(endTime);
-        }
-        else
-        {
-            if (delay > 0.0f)
-            {
+        } else {
+            if (delay > 0.0f) {
                 m_PendingStartDsp = AudioSettings.dspTime + delay;
                 m_AudioSource.PlayDelayed(delay);
-            }
-            else
-            {
+            } else {
                 m_PendingStartDsp = 0.0;
                 m_AudioSource.Play();
             }
@@ -412,8 +342,7 @@ public class SoundGameObject
     /// Sets the world position of the SoundGameObject for spatial audio.
     /// </summary>
     /// <param name="position">World position coordinates</param>
-    public void SetPosition(Vector3 position)
-    {
+    public void SetPosition(Vector3 position) {
         m_AudioSource.transform.position = position;
         m_PositionType = PositionType.Position;
         m_Parent = m_SoundGameObjectPool;
@@ -424,185 +353,141 @@ public class SoundGameObject
     /// </summary>
     /// <param name="parent">Parent transform to attach to</param>
     /// <param name="localPosition">Local position offset from the parent</param>
-    public void SetParent(Transform parent, Vector3 localPosition)
-    {
+    public void SetParent(Transform parent, Vector3 localPosition) {
         m_AudioSource.transform.parent = parent;
         m_AudioSource.transform.localPosition = localPosition;
         m_Parent = parent.gameObject;
         m_PositionType = PositionType.ParentTransform;
     }
 
-    private float AmplitudeFromDecibel(float decibel)
-    {
-        if (decibel <= SOUND_VOL_CUTOFF)
-        {
-            return 0;
-        }
+    private float AmplitudeFromDecibel(float decibel) {
+        if (decibel <= SOUND_VOL_CUTOFF) return 0;
         return Mathf.Pow(2.0f, decibel / 6.0f);
     }
 
-    public void RefreshListener(Transform listener) => m_ListenerTransform = listener;
+    public void RefreshListener(Transform listener) { m_ListenerTransform = listener; }
+    private Vector3 GetPosition() { return m_AudioSource ? m_AudioSource.transform.position : Vector3.zero; }
 
-    private Vector3 GetPosition() => m_AudioSource ? m_AudioSource.transform.position : Vector3.zero;
-
-    private bool InitDistanceCurves(SoundDef soundDef)
-    {
+    private bool InitDistanceCurves(SoundDef soundDef) {
         bool calcDistance = false;
         m_LPFCurveNormalizedResult = 1;
         m_HPFCurveNormalizedResult = 1;
         m_SpatialCurveNormalizedResult = 1;
-
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-        {
-            return false;    // No listener distance calculation required when testing in inspector window
-        }
+            return false; // No listener distance calculation required when testing in inspector window
 #endif
         calcDistance = EnableAudioFilterComponents(soundDef);
         return calcDistance;
     }
 
-    private void UpdateDistanceCurves()
-    {
-        if (!m_CalculateDistance || m_ListenerTransform==null)
-        {
-            return;
-        }
-
-        Vector3 position = GetPosition();
-        Vector3 listenerPosition = m_ListenerTransform.position;
+    private void UpdateDistanceCurves() {
+        if (!m_CalculateDistance || m_ListenerTransform == null) return;
+        var position = GetPosition();
+        var listenerPosition = m_ListenerTransform.position;
         float dist = Vector3.Distance(position, listenerPosition);
-
-        SoundDef.Distance distanceInfo = m_SoundDef.DistanceInfo;
-
-        if (m_LowPassFilter != null && m_LowPassFilter.enabled)
-        {
+        var distanceInfo = m_SoundDef.DistanceInfo;
+        if (m_LowPassFilter != null && m_LowPassFilter.enabled) {
             float v = Mathf.Clamp(dist, 0, distanceInfo.LPF_MaxDistance);
-            m_LPFCurveNormalizedResult = 1.0f - m_Curve.GetNormalizedCurveValue(distanceInfo.LPFRollOffCurveType, 
-                                             v / distanceInfo.LPF_MaxDistance);
+            m_LPFCurveNormalizedResult = 1.0f - m_Curve.GetNormalizedCurveValue(distanceInfo.LPFRollOffCurveType,
+                v / distanceInfo.LPF_MaxDistance);
         }
-
-        if (m_HighPassFilter != null && m_HighPassFilter.enabled)
-        {
+        if (m_HighPassFilter != null && m_HighPassFilter.enabled) {
             float v = Mathf.Clamp(dist, 0, distanceInfo.HPF_MaxDistance);
-            m_HPFCurveNormalizedResult = 1.0f - m_Curve.GetNormalizedCurveValue(distanceInfo.HPFRollOffCurveType, 
+            m_HPFCurveNormalizedResult = 1.0f - m_Curve.GetNormalizedCurveValue(distanceInfo.HPFRollOffCurveType,
                 v / distanceInfo.HPF_MaxDistance);
         }
-
-        if (distanceInfo.SpatialBlend_MaxDistance > 0)
-        {
+        if (distanceInfo.SpatialBlend_MaxDistance > 0) {
             float v = Mathf.Clamp(dist, 0, distanceInfo.SpatialBlend_MaxDistance);
-            m_SpatialCurveNormalizedResult = m_Curve.GetNormalizedCurveValue(distanceInfo.SpatialBlendCurveType, 
+            m_SpatialCurveNormalizedResult = m_Curve.GetNormalizedCurveValue(distanceInfo.SpatialBlendCurveType,
                 v / distanceInfo.SpatialBlend_MaxDistance);
         }
     }
 
-    private void SetDistanceCurveAudio()
-    {
-        if (m_LowPassFilter != null && m_LowPassFilter.enabled)
-        {
+    private void SetDistanceCurveAudio() {
+        if (m_LowPassFilter != null && m_LowPassFilter.enabled) {
             float cutoff = m_LPFRandomValue * m_LPFCurveNormalizedResult;
-            if (m_SoundDef.DistanceInfo.LPFRollOffCurveType != Interpolator.CurveType.None && 
+            if (m_SoundDef.DistanceInfo.LPFRollOffCurveType != Interpolator.CurveType.None &&
                 m_SoundDef.DistanceInfo.LPF_MinCutoff > 0 && cutoff < m_SoundDef.DistanceInfo.LPF_MinCutoff)
-            {
                 cutoff = m_SoundDef.DistanceInfo.LPF_MinCutoff;
-            }
             m_LowPassFilter.cutoffFrequency = cutoff;
         }
-        if (m_HighPassFilter != null && m_HighPassFilter.enabled)
-        {
+        if (m_HighPassFilter != null && m_HighPassFilter.enabled) {
             float cutoff = m_HPFRandomValue * m_HPFCurveNormalizedResult;
-            if (m_SoundDef.DistanceInfo.HPFRollOffCurveType != Interpolator.CurveType.None && 
+            if (m_SoundDef.DistanceInfo.HPFRollOffCurveType != Interpolator.CurveType.None &&
                 m_SoundDef.DistanceInfo.HPF_MinCutoff > 0 && cutoff < m_SoundDef.DistanceInfo.HPF_MinCutoff)
-            {
                 cutoff = m_SoundDef.DistanceInfo.HPF_MinCutoff;
-            }
             m_HighPassFilter.cutoffFrequency = cutoff;
         }
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-        {
-            m_AudioSource.spatialBlend = 0;     
-            // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
-        }
+            m_AudioSource.spatialBlend = 0;
+        // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
         else
 #endif
-        {
             m_AudioSource.spatialBlend = m_SpatialBlendValue * m_SpatialCurveNormalizedResult;
-        }
     }
 
     // 把任务自己的音量和淡出、障碍物造成的衰减、短时混音压低合在一起。每个声源只需更新自己的最后一个音量值。
-    private void UpdateAudioParameters(SoundEmitter soundEmitter)
-    {
-        if (m_CalculateDistance)
-        {
-            UpdateDistanceCurves();
-        }
+    private void UpdateAudioParameters(SoundEmitter soundEmitter) {
+        if (m_CalculateDistance) UpdateDistanceCurves();
         SetDistanceCurveAudio();
         if (m_LowPassFilter && !m_SoundDef.LowPassFilter.EnableComponent) m_LowPassFilter.enabled = false;
         UpdateOcclusion();
-        if (m_LowPassFilter && m_SoundDef.Occlusion && m_SpatialBlendValue > .5f)
-        {
+        if (m_LowPassFilter && m_SoundDef.Occlusion && m_SpatialBlendValue > .5f) {
             float distanceCutoff = m_SoundDef.LowPassFilter.EnableComponent ? m_LowPassFilter.cutoffFrequency : 22000;
             m_LowPassFilter.enabled = true;
             m_LowPassFilter.cutoffFrequency = Mathf.Min(distanceCutoff, m_OcclusionCutoff);
         }
         m_AudioSource.volume = m_Volume * soundEmitter.Volume * soundEmitter.SoundDefOverrideInfo.VolumeScale *
-            m_OcclusionGain * soundEmitter.FadeOutTime.GetValue() * MoonkovSoundMix.Gain(m_SoundDef.Role);
+                               m_OcclusionGain * soundEmitter.FadeOutTime.GetValue() *
+                               MoonkovSoundMix.Gain(m_SoundDef.Role);
     }
 
-    private uint GetClipIndex(SoundDef soundDef, SoundEmitter soundEmitter)
-    {
+    private uint GetClipIndex(SoundDef soundDef, SoundEmitter soundEmitter) {
         uint clipIndex = 0;
-        if (soundDef.PlaybackType == SoundDef.PlaybackTypes.User)
-        {
+        if (soundDef.PlaybackType == SoundDef.PlaybackTypes.User) {
             clipIndex = soundEmitter.UserClipIndex;
             clipIndex %= (uint)soundDef.Clips.Count;
-        }
-        else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast)
-        {
+        } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast) {
             // Selected per SoundDef by SoundSystem, independent of emitter pool reuse.
             clipIndex = soundEmitter.UserClipIndex % (uint)soundDef.Clips.Count;
-        }
-        else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Random)
-        {
+        } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Random) {
             clipIndex = (uint)Random.Range(0, soundDef.Clips.Count);
-        }
-        else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Sequential)
-        {
+        } else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Sequential) {
             soundEmitter.SequentialClipIndex++;
-            soundEmitter.SequentialClipIndex %= (uint)soundDef.Clips.Count;    
-                // ensure it's in range (if swapping between user <> sequential)
+            soundEmitter.SequentialClipIndex %= (uint)soundDef.Clips.Count;
+            // ensure it's in range (if swapping between user <> sequential)
             clipIndex = soundEmitter.SequentialClipIndex;
         }
-
         return clipIndex;
     }
 
     // 有距离感的声音会抽样检查到听者之间是否被挡住。滤波和音量逐步靠近目标，避免跨过遮挡边缘时声音突然跳变。
-    private void UpdateOcclusion()
-    {
+    private void UpdateOcclusion() {
         if (!m_SoundDef.Occlusion || m_SpatialBlendValue <= .5f || !m_ListenerTransform) return;
-        if (s_OcclusionFrame != Time.frameCount) { s_OcclusionFrame = Time.frameCount; s_OcclusionBudget = 6; }
-        if (Time.unscaledTime >= m_NextOcclusion && s_OcclusionBudget > 0)
-        {
+        if (s_OcclusionFrame != Time.frameCount) {
+            s_OcclusionFrame = Time.frameCount;
+            s_OcclusionBudget = 6;
+        }
+        if (Time.unscaledTime >= m_NextOcclusion && s_OcclusionBudget > 0) {
             s_OcclusionBudget--;
             m_NextOcclusion = Time.unscaledTime + .16f;
             Vector3 start = m_ListenerTransform.position, delta = GetPosition() - start;
             float distance = delta.magnitude;
             m_Occluded = false;
-            if (distance > 1.2f)
-            {
+            if (distance > 1.2f) {
                 var scene = m_AudioSource.gameObject.scene.GetPhysicsScene();
-                int count = scene.Raycast(start, delta / distance, s_Obstacles, distance - .35f,
-                    s_OcclusionMask, QueryTriggerInteraction.Ignore);
-                for (int i = 0; i < count; i++)
-                {
+                int count = scene.Raycast(start, delta / distance, s_Obstacles, distance - .35f, s_OcclusionMask,
+                    QueryTriggerInteraction.Ignore);
+                for (int i = 0; i < count; i++) {
                     var hit = s_Obstacles[i];
                     if (hit.distance < .3f || hit.collider.transform.IsChildOf(m_ListenerTransform.root) ||
-                        m_PositionType == PositionType.ParentTransform && m_Parent && hit.collider.transform.IsChildOf(m_Parent.transform)) continue;
-                    m_Occluded = true; break;
+                        (m_PositionType == PositionType.ParentTransform && m_Parent &&
+                         hit.collider.transform.IsChildOf(m_Parent.transform)))
+                        continue;
+                    m_Occluded = true;
+                    break;
                 }
             }
         }

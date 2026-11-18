@@ -3,12 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Immutable source geometry shared by actors using the same skin. Bone matrices
     // and the final fit remain per actor, so animation and imported scale still apply.
-    internal sealed class EnergyShieldFittingData
-    {
+    internal sealed class EnergyShieldFittingData {
         private static readonly Dictionary<(Mesh, string), EnergyShieldFittingData> Cache = new();
         private readonly Dictionary<(int, int), int[]> neckSamples = new();
         public readonly Vector3[] Vertices;
@@ -17,19 +15,17 @@ namespace Unity.MP_FPS
         public readonly int[] Skin, Torso;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        public static void Clear() => Cache.Clear();
+        public static void Clear() { Cache.Clear(); }
 
-        public static EnergyShieldFittingData For(SkinnedMeshRenderer renderer)
-        {
+        public static EnergyShieldFittingData For(SkinnedMeshRenderer renderer) {
             var mesh = renderer.sharedMesh;
             var materials = renderer.sharedMaterials;
-            var flags = new char[Mathf.Min(mesh.subMeshCount, materials.Length)];
-            for (int i = 0; i < flags.Length; i++)
-            {
+            char[] flags = new char[Mathf.Min(mesh.subMeshCount, materials.Length)];
+            for (int i = 0; i < flags.Length; i++) {
                 string name = materials[i] ? materials[i].name : "";
                 bool body = name.Equals("Body", StringComparison.OrdinalIgnoreCase);
                 flags[i] = (char)((body || name.IndexOf("Skin", StringComparison.OrdinalIgnoreCase) >= 0 ? 1 : 0) |
-                    (body || name.IndexOf("Dress", StringComparison.OrdinalIgnoreCase) >= 0 ? 2 : 0));
+                                  (body || name.IndexOf("Dress", StringComparison.OrdinalIgnoreCase) >= 0 ? 2 : 0));
             }
             // 同一个网格可以配不同的材质。缓存还按材质被识别为皮肤或服装的结果区分，护具才能贴到应当参考的表面上。
             var key = (mesh, new string(flags));
@@ -41,21 +37,18 @@ namespace Unity.MP_FPS
             return data;
         }
 
-        private EnergyShieldFittingData(Mesh mesh, char[] flags)
-        {
+        private EnergyShieldFittingData(Mesh mesh, char[] flags) {
             Vertices = mesh.vertices;
             Weights = mesh.boneWeights;
             Bindposes = mesh.bindposes;
-            var skin = new bool[Vertices.Length];
-            var torso = new bool[Vertices.Length];
+            bool[] skin = new bool[Vertices.Length];
+            bool[] torso = new bool[Vertices.Length];
             bool hasSkin = false;
-            for (int sub = 0; sub < flags.Length; sub++)
-            {
+            for (int sub = 0; sub < flags.Length; sub++) {
                 int flag = flags[sub];
                 hasSkin |= (flag & 1) != 0;
                 if (flag == 0) continue;
-                foreach (int index in mesh.GetTriangles(sub))
-                {
+                foreach (int index in mesh.GetTriangles(sub)) {
                     skin[index] |= (flag & 1) != 0;
                     torso[index] |= (flag & 2) != 0;
                 }
@@ -64,23 +57,24 @@ namespace Unity.MP_FPS
             Torso = Indices(torso, false);
         }
 
-        private static int[] Indices(bool[] selected, bool all)
-        {
+        private static int[] Indices(bool[] selected, bool all) {
             var result = new List<int>();
-            for (int i = 0; i < selected.Length; i++) if (all || selected[i]) result.Add(i);
+            for (int i = 0; i < selected.Length; i++)
+                if (all || selected[i])
+                    result.Add(i);
             return result.ToArray();
         }
 
-        public int[] Neck(int neck, int head)
-        {
-            if (neckSamples.TryGetValue((neck, head), out var samples)) return samples;
+        public int[] Neck(int neck, int head) {
+            if (neckSamples.TryGetValue((neck, head), out int[] samples)) return samples;
             var selected = new List<int>();
             if (Weights.Length == Vertices.Length)
-                foreach (int i in Skin)
-                {
+                foreach (int i in Skin) {
                     var w = Weights[i];
-                    float influence = Weight(w.boneIndex0, w.weight0, neck, head) + Weight(w.boneIndex1, w.weight1, neck, head) +
-                        Weight(w.boneIndex2, w.weight2, neck, head) + Weight(w.boneIndex3, w.weight3, neck, head);
+                    float influence = Weight(w.boneIndex0, w.weight0, neck, head) +
+                                      Weight(w.boneIndex1, w.weight1, neck, head) +
+                                      Weight(w.boneIndex2, w.weight2, neck, head) +
+                                      Weight(w.boneIndex3, w.weight3, neck, head);
                     if (influence < .7f) continue;
                     selected.Add(i);
                 }
@@ -89,6 +83,8 @@ namespace Unity.MP_FPS
             return samples;
         }
 
-        private static float Weight(int index, float weight, int neck, int head) => index == neck || index == head ? weight : 0;
+        private static float Weight(int index, float weight, int neck, int head) {
+            return index == neck || index == head ? weight : 0;
+        }
     }
 }

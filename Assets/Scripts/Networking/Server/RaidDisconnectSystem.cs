@@ -2,22 +2,18 @@
 using Unity.Entities;
 using Unity.NetCode;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateInGroup(typeof(NetworkReceiveSystemGroup))]
     [UpdateAfter(typeof(NetworkStreamReceiveSystem))]
     [UpdateBefore(typeof(NetworkGroupCommandBufferSystem))]
-    public partial struct RaidDisconnectSystem : ISystem
-    {
-        public void OnCreate(ref SystemState state)
-        {
+    public partial struct RaidDisconnectSystem : ISystem {
+        public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<NetworkStreamDriver>();
             state.RequireForUpdate<RaidSession>();
         }
 
-        public void OnUpdate(ref SystemState state)
-        {
+        public void OnUpdate(ref SystemState state) {
             if (MoonRaidMap.Active == null || BountyClashRuntime.Enabled(state.EntityManager)) return;
             // The receive job updates CurrentState before its cleanup ECB destroys
             // the connection and player. Read their inventory and pose in this gap.

@@ -13,14 +13,12 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UIElements;
 using FontAsset = UnityEngine.TextCore.Text.FontAsset;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // UI Toolkit adapter for Unity Localization. Locale selection, persistence and
     // string/font loading belong to the package; bindings only own their UI lifetime.
-    public static class MoonkovLocalization
-    {
+    public static class MoonkovLocalization {
         public const string Strings = "MoonkovUI", Fonts = "MoonkovFonts";
-        private static readonly Dictionary<TextElement, Binding> s_Bindings = new Dictionary<TextElement, Binding>();
+        private static readonly Dictionary<TextElement, Binding> s_Bindings = new();
         private static LocalizedAsset<FontAsset> s_Font;
         private static LocalizedStringTable s_Strings;
         private static FontAsset s_CurrentFont;
@@ -29,20 +27,21 @@ namespace Unity.MP_FPS
         private static int s_LocaleRequest;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset()
-        {
+        private static void Reset() {
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Dispose();
             s_Bindings.Clear();
             if (s_Font != null) s_Font.AssetChanged -= FontChanged;
             if (s_Strings != null) s_Strings.TableChanged -= StringTableChanged;
             s_Strings = null;
             s_LocaleRequest++;
-            s_Font = null; s_CurrentFont = null; s_PreparedFont = null; s_Initialized = false;
+            s_Font = null;
+            s_CurrentFont = null;
+            s_PreparedFont = null;
+            s_Initialized = false;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Initialize()
-        {
+        private static void Initialize() {
             if (s_Initialized || Application.isBatchMode) return;
             s_Initialized = true;
             s_Font = new LocalizedAsset<FontAsset> { TableReference = Fonts, TableEntryReference = "UI" };
@@ -52,40 +51,35 @@ namespace Unity.MP_FPS
         }
 
         // 启动时译文资源可能还在加载。这里只取已经完成的结果，让首屏在表到达之前能显示原文。
-        private static StringTable ReadyTable
-        {
-            get
-            {
+        private static StringTable ReadyTable {
+            get {
                 var operation = s_Strings?.CurrentLoadingOperationHandle ?? default;
                 return operation.IsValid() && operation.IsDone && operation.Status == AsyncOperationStatus.Succeeded
-                    ? operation.Result : null;
+                    ? operation.Result
+                    : null;
             }
         }
 
-        private static void StringTableChanged(StringTable table)
-        {
+        private static void StringTableChanged(StringTable table) {
             // Initial UI renders source text; refresh it once the asynchronous table arrives.
             foreach (var binding in new List<Binding>(s_Bindings.Values)) binding.Refresh();
         }
 
-        public static string CurrentLocaleCode
-        {
-            get
-            {
+        public static string CurrentLocaleCode {
+            get {
                 var operation = LocalizationSettings.SelectedLocaleAsync;
                 return operation.IsDone && operation.Status == AsyncOperationStatus.Succeeded
-                    ? operation.Result?.Identifier.Code : PlayerPrefs.GetString("Moonkov.Locale", "zh-Hans");
+                    ? operation.Result?.Identifier.Code
+                    : PlayerPrefs.GetString("Moonkov.Locale", "zh-Hans");
             }
         }
 
-        private static void FontChanged(FontAsset font)
-        {
+        private static void FontChanged(FontAsset font) {
             s_CurrentFont = font;
             foreach (var binding in s_Bindings.Values) ApplyFont(binding.Element);
         }
 
-        public static async Task PrepareGameplayFontAsync(CancellationToken cancellationToken)
-        {
+        public static async Task PrepareGameplayFontAsync(CancellationToken cancellationToken) {
             Initialize();
             if (s_Font == null) return;
             await LocalizationSettings.InitializationOperation.Task;
@@ -106,36 +100,34 @@ namespace Unity.MP_FPS
             s_PreparedFont = font;
         }
 
-        private static void ApplyFont(TextElement element)
-        {
+        private static void ApplyFont(TextElement element) {
             // A surface can own its source-font rendering while keeping string bindings.
             // In particular, LAN uses the source font to avoid shared SDF atlas edge artifacts.
             for (VisualElement scope = element; scope != null; scope = scope.parent)
-                if (scope.ClassListContains("moonkov-style-font"))
-                {
+                if (scope.ClassListContains("moonkov-style-font")) {
                     element.style.unityFontDefinition = StyleKeyword.Null;
                     element.style.letterSpacing = StyleKeyword.Null;
                     return;
                 }
-            if (element.ClassListContains("terminal-home-title") || element.ClassListContains("stash-brand-title") || element.ClassListContains("archive-access-brand"))
-            {
+            if (element.ClassListContains("terminal-home-title") || element.ClassListContains("stash-brand-title") ||
+                element.ClassListContains("archive-access-brand")) {
                 element.style.unityFontDefinition = StyleKeyword.Null;
                 element.style.letterSpacing = StyleKeyword.Null;
                 return;
             }
             if (s_CurrentFont == null) return;
             element.style.unityFontDefinition = FontDefinition.FromSDFFont(s_CurrentFont);
-            if (CurrentLocaleCode == "zh-Hans") element.style.letterSpacing = 0;
-            else element.style.letterSpacing = StyleKeyword.Null;
+            if (CurrentLocaleCode == "zh-Hans")
+                element.style.letterSpacing = 0;
+            else
+                element.style.letterSpacing = StyleKeyword.Null;
         }
 
-        internal static async Task<bool> SelectAsync(string code)
-        {
+        internal static async Task<bool> SelectAsync(string code) {
             Initialize();
             // 连续选两次语言时，只有最后一次仍有效。等待初始化结束后用这个序号丢掉旧的选择。
             int request = ++s_LocaleRequest;
-            try
-            {
+            try {
                 var initialization = LocalizationSettings.InitializationOperation;
                 await initialization.Task;
                 if (request != s_LocaleRequest || initialization.Status != AsyncOperationStatus.Succeeded) return false;
@@ -145,55 +137,50 @@ namespace Unity.MP_FPS
                 PlayerPrefs.SetString("Moonkov.Locale", locale.Identifier.Code);
                 PlayerPrefs.Save();
                 return true;
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 Debug.LogException(exception);
                 return false;
             }
         }
 
-        public static string Text(string source)
-        {
+        public static string Text(string source) {
             if (string.IsNullOrEmpty(source)) return source;
             Initialize();
             var table = ReadyTable;
             return table?.GetEntry(source)?.LocalizedValue ?? source;
         }
 
-        public static string Format(FormattableString source)
-        {
-            var args = source.GetArguments();
-            for (int i = 0; i < args.Length; i++) if (args[i] is string text) args[i] = Text(text);
+        public static string Format(FormattableString source) {
+            object[] args = source.GetArguments();
+            for (int i = 0; i < args.Length; i++)
+                if (args[i] is string text)
+                    args[i] = Text(text);
             return string.Format(CultureInfo.CurrentCulture, Text(source.Format), args);
         }
 
-        public static void Set(TextElement element, string source, params object[] arguments)
-        {
+        public static void Set(TextElement element, string source, params object[] arguments) {
             if (element == null) return;
             Initialize();
-            if (!s_Bindings.TryGetValue(element, out var binding))
-            {
-                binding = new Binding(element); s_Bindings.Add(element, binding);
+            if (!s_Bindings.TryGetValue(element, out var binding)) {
+                binding = new Binding(element);
+                s_Bindings.Add(element, binding);
             }
             binding.Set(source ?? "", arguments);
             ApplyFont(element);
         }
 
-        public static void Bind(VisualElement root)
-        {
+        public static void Bind(VisualElement root) {
             Initialize();
-            root.Query<TextElement>().ForEach(element =>
-            {
+            root.Query<TextElement>().ForEach(element => {
                 ApplyFont(element);
                 // Input values are player content. Localize field labels and buttons,
                 // never usernames, passwords, chat or numeric editing buffers.
                 if (element.ClassListContains("unity-text-element--inner-input-field") ||
-                    element.ClassListContains("unity-text-element--inner-input-field-component")) return;
+                    element.ClassListContains("unity-text-element--inner-input-field-component"))
+                    return;
                 // The language dropdown supplies its own option names. Only apply locale fonts to its value.
                 if (element.ClassListContains(DropdownField.textUssClassName) &&
-                    element.GetFirstAncestorOfType<DropdownField>()?.ClassListContains("terminal-language") == true)
-                {
+                    element.GetFirstAncestorOfType<DropdownField>()?.ClassListContains("terminal-language") == true) {
                     if (!s_Bindings.ContainsKey(element)) s_Bindings.Add(element, new Binding(element));
                     return;
                 }
@@ -203,56 +190,69 @@ namespace Unity.MP_FPS
         }
 
         // 绑定保留原文和格式参数，切语言时能用原始数据重新翻译。元素离开面板就释放订阅。
-        private sealed class Binding : IDisposable
-        {
+        private sealed class Binding : IDisposable {
             public readonly TextElement Element;
             public string Rendered { get; private set; }
             private string m_Source;
             private object[] m_Arguments;
             private LocalizedString m_String;
             private bool m_Disposed;
-            public Binding(TextElement element)
-            {
+
+            public Binding(TextElement element) {
                 Element = element;
                 element.RegisterCallback<DetachFromPanelEvent>(Detached);
                 LocalizationSettings.SelectedLocaleChanged += LocaleChanged;
             }
-            public void Set(string source, object[] arguments)
-            {
+
+            public void Set(string source, object[] arguments) {
                 bool same = m_Source == source && m_Arguments != null && m_Arguments.Length == arguments.Length;
-                if (same) for (int i = 0; i < arguments.Length; i++) if (!Equals(arguments[i], m_Arguments[i])) { same = false; break; }
+                if (same)
+                    for (int i = 0; i < arguments.Length; i++)
+                        if (!Equals(arguments[i], m_Arguments[i])) {
+                            same = false;
+                            break;
+                        }
                 if (same) return;
-                m_Source = source; m_Arguments = arguments;
+                m_Source = source;
+                m_Arguments = arguments;
                 Refresh();
             }
-            public void Refresh()
-            {
+
+            public void Refresh() {
                 if (m_Disposed || m_Arguments == null) return;
                 if (m_String != null) m_String.StringChanged -= Updated;
                 m_String = null;
                 var table = ReadyTable;
-                if (table?.GetEntry(m_Source) != null)
-                {
+                if (table?.GetEntry(m_Source) != null) {
                     m_String = new LocalizedString(Strings, m_Source) { Arguments = TranslateArguments() };
                     m_String.StringChanged += Updated;
+                } else {
+                    Updated(m_Arguments.Length == 0
+                        ? m_Source
+                        : string.Format(CultureInfo.CurrentCulture, m_Source, TranslateArguments()));
                 }
-                else Updated(m_Arguments.Length == 0 ? m_Source : string.Format(CultureInfo.CurrentCulture, m_Source, TranslateArguments()));
             }
-            private object[] TranslateArguments()
-            {
-                var args = new object[m_Arguments.Length];
-                for (int i = 0; i < args.Length; i++) args[i] = m_Arguments[i] is string text ? Text(text) : m_Arguments[i];
+
+            private object[] TranslateArguments() {
+                object[] args = new object[m_Arguments.Length];
+                for (int i = 0; i < args.Length; i++)
+                    args[i] = m_Arguments[i] is string text ? Text(text) : m_Arguments[i];
                 return args;
             }
-            private void LocaleChanged(Locale locale)
-            {
+
+            private void LocaleChanged(Locale locale) {
                 Refresh();
                 ApplyFont(Element);
             }
-            private void Updated(string value) { Rendered = value; Element.text = value; }
-            private void Detached(DetachFromPanelEvent evt) => Dispose();
-            public void Dispose()
-            {
+
+            private void Updated(string value) {
+                Rendered = value;
+                Element.text = value;
+            }
+
+            private void Detached(DetachFromPanelEvent evt) { Dispose(); }
+
+            public void Dispose() {
                 if (m_Disposed) return;
                 m_Disposed = true;
                 if (m_String != null) m_String.StringChanged -= Updated;

@@ -13,20 +13,17 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.MP_FPS.Campaign;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Owned by the server World. Worker tasks contain data only; ECS access stays on the main thread.
-    public sealed partial class RaidPersistenceContext : IComponentData, IDisposable
-    {
-        [Serializable] private sealed class Config
-        {
+    public sealed partial class RaidPersistenceContext : IComponentData, IDisposable {
+        [Serializable]
+        private sealed class Config {
             public string BackendUrl;
             public string ServerKey;
             public string OutboxDirectory = "LocalData/raid-outbox";
         }
 
-        public sealed class Profile
-        {
+        public sealed class Profile {
             public string OnlineInstanceId;
             public int OnlineTeam;
             public string PlayerId;
@@ -39,26 +36,41 @@ namespace Unity.MP_FPS
             public int CampaignSchemaVersion;
             public string CampaignJson;
             public ResearchQuestProgress ResearchQuests;
-            public string Mode, MatchId; public int RulesVersion, TeamId;
+            public string Mode, MatchId;
+            public int RulesVersion, TeamId;
         }
 
-        public sealed class Settlement
-        {
+        public sealed class Settlement {
             public string PlayerId, SettlementId, Outcome, DeploymentId;
             public int Dust, Alloy, Cells;
             public string InventoryJson;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string Mode;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string MatchId;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string BountyEventId;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public BountyRedemption Redemption;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public CampaignProgress CampaignProgress;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public ResearchQuestResult ResearchQuests;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string Mode;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string MatchId;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string BountyEventId;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public int RulesVersion;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public int TeamId;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public BountyRedemption Redemption;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public CampaignProgress CampaignProgress;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public ResearchQuestResult ResearchQuests;
         }
 
-        public sealed class Join
-        {
+        public sealed class Join {
             public FixedString64Bytes Name;
             public int CharacterIndex;
             public Task<Profile> Task;
@@ -69,20 +81,30 @@ namespace Unity.MP_FPS
             public bool ResumeOnly;
         }
 
-        public sealed class Deployment
-        {
+        public sealed class Deployment {
             public string PlayerId, DeploymentId;
             public int Cells;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string Mode;
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string MatchId;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public bool Refund;
-            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int ResearchVersion;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string Mode;
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string MatchId;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public int RulesVersion;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public int TeamId;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public bool Refund;
+
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public int ResearchVersion;
         }
 
-        public sealed class Deploy
-        {
+        public sealed class Deploy {
             public Entity Connection;
             public Join Join;
             public Deployment Payload;
@@ -90,14 +112,15 @@ namespace Unity.MP_FPS
             public double RetryAt;
         }
 
-        public sealed class LoadoutRejectedException : Exception
-        {
+        public sealed class LoadoutRejectedException : Exception {
             public readonly RaidLoadoutError Error;
-            public LoadoutRejectedException(RaidLoadoutError error, string message = null) : base(message) { Error = error; }
+
+            public LoadoutRejectedException(RaidLoadoutError error, string message = null) : base(message) {
+                Error = error;
+            }
         }
 
-        public sealed class Save
-        {
+        public sealed class Save {
             public Entity Connection;
             public int RaidId;
             public Settlement Payload;
@@ -112,20 +135,25 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, Profile> Profiles = new Dictionary<Entity, Profile>();
         public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
-        public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
+
+        public readonly Dictionary<Entity, RaidInventoryState> Inventories =
+            new Dictionary<Entity, RaidInventoryState>();
+
         // Only the local authoritative server writes transient chapter facts.
         public readonly Dictionary<Entity, CampaignProgress> CampaignRuns = new Dictionary<Entity, CampaignProgress>();
         public bool Enabled => m_Http != null || m_Offline != null || m_Lan != null;
-        public bool MissionsSupported
-        {
-            get
-            {
+
+        public bool MissionsSupported {
+            get {
                 if (m_Offline != null || m_Lan != null || !Enabled) return true;
                 if (Profiles.Count == 0) return false;
-                foreach (var profile in Profiles.Values) if (profile.MissionSchemaVersion < 1) return false;
+                foreach (var profile in Profiles.Values)
+                    if (profile.MissionSchemaVersion < 1)
+                        return false;
                 return true;
             }
         }
+
         private readonly OfflineProfileStore m_Offline;
         private readonly LanPersistence m_Lan;
         private readonly HttpClient m_Http;
@@ -133,79 +161,78 @@ namespace Unity.MP_FPS
         private readonly string m_Outbox;
         private bool m_Disposed;
         public Task ShutdownTask { get; private set; } = Task.CompletedTask;
-
         public RaidPersistenceContext() : this((string)null) { }
-
-        internal static RaidPersistenceContext ForArena() => new RaidPersistenceContext(transient: true);
-
+        internal static RaidPersistenceContext ForArena() { return new RaidPersistenceContext(true); }
         private RaidPersistenceContext(bool transient) { }
 
-        public RaidPersistenceContext(OfflineProfileStore store)
-        {
+        public RaidPersistenceContext(OfflineProfileStore store) {
             m_Offline = store ?? throw new ArgumentNullException(nameof(store));
             m_Outbox = store.OutboxDirectory;
             Directory.CreateDirectory(m_Outbox);
             ReplayOutbox();
         }
 
-        public RaidPersistenceContext(LanPersistence lan)
-        {
+        public RaidPersistenceContext(LanPersistence lan) {
             m_Lan = lan ?? throw new ArgumentNullException(nameof(lan));
             m_Outbox = lan.OutboxDirectory;
             m_ClashCapability = Task.FromResult(true);
             ReplayOutbox();
         }
 
-        public RaidPersistenceContext(string configPath, HttpMessageHandler handler = null)
-        {
+        public RaidPersistenceContext(string configPath, HttpMessageHandler handler = null) {
             // Secrets are outside Assets and are never read by client Worlds.
             string root = Path.GetDirectoryName(Application.dataPath);
             if (string.IsNullOrEmpty(configPath)) configPath = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
             if (string.IsNullOrEmpty(configPath)) configPath = Path.Combine(root, "moon-server.local.json");
-            if (!File.Exists(configPath))
-            {
-                throw new InvalidOperationException("Online server requires moon-server.local.json (or MOON_SERVER_CONFIG). Use the explicit single-player or LAN room entry for local play.");
+            if (!File.Exists(configPath)) {
+                throw new InvalidOperationException(
+                    "Online server requires moon-server.local.json (or MOON_SERVER_CONFIG). Use the explicit single-player or LAN room entry for local play.");
             }
             var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
             if (config == null || string.IsNullOrEmpty(config.ServerKey) || config.ServerKey.Length < 32 ||
                 !Uri.TryCreate(config.BackendUrl, UriKind.Absolute, out var url) ||
                 (url.Scheme != "https" && !(url.Scheme == "http" && url.IsLoopback)))
-                throw new InvalidOperationException("Invalid moon server config: use a server key and HTTPS (HTTP is allowed on loopback only).");
-            m_Outbox = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(configPath)), config.OutboxDirectory));
+                throw new InvalidOperationException(
+                    "Invalid moon server config: use a server key and HTTPS (HTTP is allowed on loopback only).");
+            m_Outbox = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(configPath)),
+                config.OutboxDirectory));
             Directory.CreateDirectory(m_Outbox);
             m_Http = handler == null ? new HttpClient() : new HttpClient(handler);
-            m_Http.BaseAddress = url; m_Http.Timeout = TimeSpan.FromSeconds(10);
+            m_Http.BaseAddress = url;
+            m_Http.Timeout = TimeSpan.FromSeconds(10);
             m_Http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
-            m_ClashCapability=CheckClashCapabilityAsync();
+            m_ClashCapability = CheckClashCapabilityAsync();
             ReplayOutbox();
         }
 
         // 启动时从待发目录找上次未确认的写入。完整结算优先处理，只有找不到对应结算的出战记录才交给放弃或退款逻辑。
-        private void ReplayOutbox()
-        {
+        private void ReplayOutbox() {
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
             ReplayBountyFinalizations();
-            foreach (string file in Directory.GetFiles(m_Outbox, "*.json"))
-            {
-                if(Guid.TryParse(Path.GetFileNameWithoutExtension(file),out var receiptId) && Saves.ContainsKey(receiptId.ToString("D"))) continue;
+            foreach (string file in Directory.GetFiles(m_Outbox, "*.json")) {
+                if (Guid.TryParse(Path.GetFileNameWithoutExtension(file), out var receiptId) &&
+                    Saves.ContainsKey(receiptId.ToString("D")))
+                    continue;
                 var payload = JsonConvert.DeserializeObject<Settlement>(File.ReadAllText(file));
-                if (payload == null || !Guid.TryParse(payload.SettlementId, out _) || !Guid.TryParse(payload.PlayerId, out _))
+                if (payload == null || !Guid.TryParse(payload.SettlementId, out _) ||
+                    !Guid.TryParse(payload.PlayerId, out _))
                     throw new InvalidDataException("Invalid raid outbox file: " + Path.GetFileName(file));
                 if (Saves.ContainsKey(payload.SettlementId)) continue;
                 var save = new Save { Payload = payload };
                 save.Task = SaveAsync(payload);
                 Saves.Add(payload.SettlementId, save);
             }
-            foreach (string file in Directory.GetFiles(m_Outbox,"*.refund"))
-            {
-                var payload=JsonConvert.DeserializeObject<Deployment>(File.ReadAllText(file));
-                if(payload==null || payload.Mode!="BountyClash" || !Guid.TryParse(payload.DeploymentId,out _)) throw new InvalidDataException("Invalid deployment refund journal.");
-                payload.Refund=true;Abandon(payload);
-            }
-            foreach (string file in Directory.GetFiles(m_Outbox, "*.deploy"))
-            {
+            foreach (string file in Directory.GetFiles(m_Outbox, "*.refund")) {
                 var payload = JsonConvert.DeserializeObject<Deployment>(File.ReadAllText(file));
-                if (payload == null || !Guid.TryParse(payload.DeploymentId, out _) || !Guid.TryParse(payload.PlayerId, out _) || !RaidRules.ValidLoadout(payload.Cells))
+                if (payload == null || payload.Mode != "BountyClash" || !Guid.TryParse(payload.DeploymentId, out _))
+                    throw new InvalidDataException("Invalid deployment refund journal.");
+                payload.Refund = true;
+                Abandon(payload);
+            }
+            foreach (string file in Directory.GetFiles(m_Outbox, "*.deploy")) {
+                var payload = JsonConvert.DeserializeObject<Deployment>(File.ReadAllText(file));
+                if (payload == null || !Guid.TryParse(payload.DeploymentId, out _) ||
+                    !Guid.TryParse(payload.PlayerId, out _) || !RaidRules.ValidLoadout(payload.Cells))
                     throw new InvalidDataException("Invalid deployment journal: " + Path.GetFileName(file));
                 // A completed raid's exact settlement takes precedence over crash recovery.
                 if (!Saves.ContainsKey(payload.DeploymentId)) Abandon(payload);
@@ -214,79 +241,92 @@ namespace Unity.MP_FPS
         }
 
         // 把验证票和读取档案交给异步任务。ServerGameSystem.Persistence 每帧看任务有没有完成，验证结果出来后再处理角色和装备。
-        public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token, int carryCells = 0,
-            bool resumeOnly = false, byte expeditionCompanions = 0)
-        {
+        public void BeginJoin(
+            Entity connection,
+            FixedString64Bytes name,
+            int characterIndex,
+            string token,
+            int carryCells = 0,
+            bool resumeOnly = false,
+            byte expeditionCompanions = 0) {
             if (Joins.ContainsKey(connection) || Profiles.ContainsKey(connection)) return;
-            Joins.Add(connection, new Join
-            {
+            Joins.Add(connection, new Join {
                 Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells,
                 ResumeOnly = resumeOnly, ExpeditionCompanions = expeditionCompanions,
                 Task = ResolveJoinAsync(token)
             });
         }
 
-        public void RefreshJoin(Join join)
-        {
+        public void RefreshJoin(Join join) {
             join.NeedsRefresh = false;
             join.Task = m_Http == null ? ResolveJoinAsync(join.Token) : RefreshAuthenticatedJoinAsync(join.Task.Result);
         }
 
-        private async Task<Profile> RefreshAuthenticatedJoinAsync(Profile original)
-        {
-            using (var response = await m_Http.GetAsync("internal/accounts/" + Guid.Parse(original.PlayerId).ToString("D"), m_Stop.Token).ConfigureAwait(false))
-            {
+        private async Task<Profile> RefreshAuthenticatedJoinAsync(Profile original) {
+            using (var response = await m_Http
+                       .GetAsync("internal/accounts/" + Guid.Parse(original.PlayerId).ToString("D"), m_Stop.Token)
+                       .ConfigureAwait(false)) {
                 response.EnsureSuccessStatusCode();
-                var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                profile.OnlineInstanceId = original.OnlineInstanceId; profile.OnlineTeam = original.OnlineTeam;
+                var profile =
+                    JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync()
+                        .ConfigureAwait(false));
+                profile.OnlineInstanceId = original.OnlineInstanceId;
+                profile.OnlineTeam = original.OnlineTeam;
                 return profile;
             }
         }
 
-        public void BeginSave(Entity connection, RaidSession session, ResearchQuestResult researchQuests = null)
-        {
-            if (Saves.TryGetValue(session.SettlementId.ToString(),out var pending))
-            { pending.Connection=connection;pending.RaidId=session.RaidId;return; }
+        public void BeginSave(Entity connection, RaidSession session, ResearchQuestResult researchQuests = null) {
+            if (Saves.TryGetValue(session.SettlementId.ToString(), out var pending)) {
+                pending.Connection = connection;
+                pending.RaidId = session.RaidId;
+                return;
+            }
             var profile = Profiles[connection];
-            var payload = new Settlement
-            {
+            var payload = new Settlement {
                 PlayerId = profile.PlayerId, SettlementId = session.SettlementId.ToString(),
-                Mode=profile.Mode,MatchId=profile.MatchId,RulesVersion=profile.RulesVersion,TeamId=profile.TeamId,
+                Mode = profile.Mode, MatchId = profile.MatchId, RulesVersion = profile.RulesVersion,
+                TeamId = profile.TeamId,
                 Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells,
                 DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null,
-                InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null,
-                CampaignProgress = m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
-                    ? CampaignRules.Clone(campaign) : null,
+                InventoryJson = Inventories.TryGetValue(connection, out var inventory)
+                    ? JsonConvert.SerializeObject(inventory.Graph)
+                    : null,
+                CampaignProgress =
+                    m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
+                        ? CampaignRules.Clone(campaign)
+                        : null,
                 ResearchQuests = profile.ResearchQuests != null && profile.Mode == null ? researchQuests : null
             };
-            Saves.Add(payload.SettlementId, new Save
-            {
+            Saves.Add(payload.SettlementId, new Save {
                 Connection = connection, RaidId = session.RaidId, Payload = payload, Task = SaveAsync(payload)
             });
         }
 
-        public void BeginDeploy(Entity connection, int cells, Join join = null)
-        {
-            var payload = new Deployment { PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells,
-                ResearchVersion = m_Offline == null && m_Lan == null ? ResearchQuestRules.DeploymentVersion : 0 };
-            Deployments.Add(connection, new Deploy { Connection=connection, Join=join, Payload=payload, Task=DeployAsync(payload) });
+        public void BeginDeploy(Entity connection, int cells, Join join = null) {
+            var payload = new Deployment {
+                PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells,
+                ResearchVersion = m_Offline == null && m_Lan == null ? ResearchQuestRules.DeploymentVersion : 0
+            };
+            Deployments.Add(connection,
+                new Deploy { Connection = connection, Join = join, Payload = payload, Task = DeployAsync(payload) });
         }
 
-        private string DeploymentFile(Deployment payload) => Path.Combine(m_Outbox, Guid.Parse(payload.DeploymentId).ToString("N") + ".deploy");
+        private string DeploymentFile(Deployment payload) {
+            return Path.Combine(m_Outbox, Guid.Parse(payload.DeploymentId).ToString("N") + ".deploy");
+        }
 
         // 先把完整请求写到临时文件并刷盘，然后换成正式文件名。同一个编号重试只能使用同一份内容，避免拿旧编号提交不同结果。
-        private static void WriteJournal(string file, object payload)
-        {
-            if (File.Exists(file))
-            {
-                if(!Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken.Parse(File.ReadAllText(file)),Newtonsoft.Json.Linq.JToken.FromObject(payload)))
+        private static void WriteJournal(string file, object payload) {
+            if (File.Exists(file)) {
+                if (!Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken.Parse(File.ReadAllText(file)),
+                        Newtonsoft.Json.Linq.JToken.FromObject(payload)))
                     throw new InvalidDataException("Outbox receipt conflicts with its immutable payload.");
                 return;
             }
             string temporary = file + ".tmp";
             byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
-            using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
+            using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None)) {
                 stream.Write(bytes, 0, bytes.Length);
                 stream.Flush(true);
             }
@@ -294,51 +334,69 @@ namespace Unity.MP_FPS
         }
 
         // 本地先为这次出战留好恢复记录，再向档案请求划出装备。回包的玩家、出战编号和装备内容都要对得上，角色才允许带这套装备出生。
-        public Task<Profile> DeployAsync(Deployment payload) => Task.Run(async () =>
-        {
-            await AwaitBountyRegistrationAsync(payload).ConfigureAwait(false);
-            WriteJournal(DeploymentFile(payload), payload);
-            var profile = await PostAsync(ProfilePath("deployments",payload.Mode), payload).ConfigureAwait(false);
-            if (profile.Mode!=payload.Mode || profile.MatchId!=payload.MatchId || profile.RulesVersion!=payload.RulesVersion || profile.TeamId!=payload.TeamId ||
-                profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId || profile.CarriedCells != payload.Cells ||
-                (payload.Cells > 0 && !Guid.TryParse(profile.CellStackId, out _)))
-                throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment response mismatch.");
-            Inventory.InventoryGraph graph;
-            try { graph = string.IsNullOrEmpty(profile.RaidInventoryJson) ? null : RaidInventoryTransport.Decode(profile.RaidInventoryJson); }
-            catch (JsonException) { throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Malformed deployment inventory."); }
-            if (graph == null || graph.Find("stash") != null || graph.Find("loot")!=null || graph.Validate() != Inventory.InventoryError.None || graph.Count("cells",true) != payload.Cells)
-                throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment inventory missing or invalid; update the persistence service.");
-            return profile;
-        });
+        public Task<Profile> DeployAsync(Deployment payload) {
+            return Task.Run(async () => {
+                await AwaitBountyRegistrationAsync(payload).ConfigureAwait(false);
+                WriteJournal(DeploymentFile(payload), payload);
+                var profile = await PostAsync(ProfilePath("deployments", payload.Mode), payload).ConfigureAwait(false);
+                if (profile.Mode != payload.Mode || profile.MatchId != payload.MatchId ||
+                    profile.RulesVersion != payload.RulesVersion || profile.TeamId != payload.TeamId ||
+                    profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId ||
+                    profile.CarriedCells != payload.Cells ||
+                    (payload.Cells > 0 && !Guid.TryParse(profile.CellStackId, out _)))
+                    throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment response mismatch.");
+                Inventory.InventoryGraph graph;
+                try {
+                    graph = string.IsNullOrEmpty(profile.RaidInventoryJson)
+                        ? null
+                        : RaidInventoryTransport.Decode(profile.RaidInventoryJson);
+                } catch (JsonException) {
+                    throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Malformed deployment inventory.");
+                }
+                if (graph == null || graph.Find("stash") != null || graph.Find("loot") != null ||
+                    graph.Validate() != Inventory.InventoryError.None || graph.Count("cells", true) != payload.Cells)
+                    throw new LoadoutRejectedException(RaidLoadoutError.Rejected,
+                        "Deployment inventory missing or invalid; update the persistence service.");
+                return profile;
+            });
+        }
 
-        public void Abandon(Deployment payload, bool startImmediately = true)
-        {
+        public void Abandon(Deployment payload, bool startImmediately = true) {
             if (Saves.ContainsKey(payload.DeploymentId)) return;
-            var save = new Save { Payload = new Settlement { PlayerId=payload.PlayerId, SettlementId=payload.DeploymentId }, AbandonedDeployment=payload };
+            var save = new Save {
+                Payload = new Settlement { PlayerId = payload.PlayerId, SettlementId = payload.DeploymentId },
+                AbandonedDeployment = payload
+            };
             if (startImmediately) save.Task = RetrySave(save);
             Saves.Add(payload.DeploymentId, save);
         }
 
-        public Task<Profile> RetrySave(Save save) => save.AbandonedDeployment == null ? SaveAsync(save.Payload) : Task.Run(async () =>
-        {
-            var profile = await PostAsync(ProfilePath(save.AbandonedDeployment.Refund ? "deployments/refund" : "deployments/abandon",save.AbandonedDeployment.Mode), save.AbandonedDeployment).ConfigureAwait(false);
-            if (profile.PlayerId != save.Payload.PlayerId) throw new InvalidDataException("Recovery profile mismatch.");
-            File.Delete(DeploymentFile(save.AbandonedDeployment));
-            File.Delete(Path.ChangeExtension(DeploymentFile(save.AbandonedDeployment),".refund"));
-            return profile;
-        });
+        public Task<Profile> RetrySave(Save save) {
+            return save.AbandonedDeployment == null
+                ? SaveAsync(save.Payload)
+                : Task.Run(async () => {
+                    var profile =
+                        await PostAsync(
+                            ProfilePath(save.AbandonedDeployment.Refund ? "deployments/refund" : "deployments/abandon",
+                                save.AbandonedDeployment.Mode), save.AbandonedDeployment).ConfigureAwait(false);
+                    if (profile.PlayerId != save.Payload.PlayerId)
+                        throw new InvalidDataException("Recovery profile mismatch.");
+                    File.Delete(DeploymentFile(save.AbandonedDeployment));
+                    File.Delete(Path.ChangeExtension(DeploymentFile(save.AbandonedDeployment), ".refund"));
+                    return profile;
+                });
+        }
 
         // 先存能重发的结算记录，再发给档案。确认成功后先删出战记录，最后删结算记录，这样中间崩溃时还可以恢复最终结果。
-        public Task<Profile> SaveAsync(Settlement payload)
-        {
+        public Task<Profile> SaveAsync(Settlement payload) {
             // One tiny local receipt per completed raid; the frame never waits for disk or HTTP.
-            return Task.Run(async () =>
-            {
+            return Task.Run(async () => {
                 string file = Path.Combine(m_Outbox, Guid.Parse(payload.SettlementId).ToString("N") + ".json");
                 WriteJournal(file, payload);
                 await RedeemBeforeSaveAsync(payload).ConfigureAwait(false);
-                var profile = await PostAsync(ProfilePath("settlements",payload.Mode), payload).ConfigureAwait(false);
-                if (profile.PlayerId != payload.PlayerId) throw new InvalidDataException("Settlement profile mismatch.");
+                var profile = await PostAsync(ProfilePath("settlements", payload.Mode), payload).ConfigureAwait(false);
+                if (profile.PlayerId != payload.PlayerId)
+                    throw new InvalidDataException("Settlement profile mismatch.");
                 // Delete the open-raid journal first. A crash between deletes then replays the exact receipt.
                 File.Delete(Path.ChangeExtension(file, ".deploy"));
                 File.Delete(file);
@@ -346,73 +404,86 @@ namespace Unity.MP_FPS
             });
         }
 
-        private async Task<Profile> PostAsync(string path, object payload)
-        {
+        private async Task<Profile> PostAsync(string path, object payload) {
             if (m_Offline != null) return m_Offline.Request(path, payload);
             if (m_Lan != null) return m_Lan.Request(path, payload);
-            using (var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
-            using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false))
-            {
+            using (var content =
+                   new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
+            using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false)) {
                 // Do not log request bodies: guest tokens and server keys are credentials.
-                if (path.EndsWith("/deployments",StringComparison.Ordinal) && (response.StatusCode == HttpStatusCode.Conflict || response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound))
-                {
+                if (path.EndsWith("/deployments", StringComparison.Ordinal) &&
+                    (response.StatusCode == HttpStatusCode.Conflict ||
+                     response.StatusCode == HttpStatusCode.BadRequest ||
+                     response.StatusCode == HttpStatusCode.NotFound)) {
                     var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var error = body.Contains("research_supplies_no_space") ? RaidLoadoutError.ResearchSuppliesNoSpace :
-                        body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells : RaidLoadoutError.Rejected;
+                        body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells :
+                        RaidLoadoutError.Rejected;
                     throw new LoadoutRejectedException(error);
                 }
                 response.EnsureSuccessStatusCode();
-                var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                if (profile == null || !Guid.TryParse(profile.PlayerId, out _) || profile.Dust < 0 || profile.Alloy < 0 || profile.Cells < 0)
+                var profile =
+                    JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync()
+                        .ConfigureAwait(false));
+                if (profile == null || !Guid.TryParse(profile.PlayerId, out _) || profile.Dust < 0 ||
+                    profile.Alloy < 0 || profile.Cells < 0)
                     throw new InvalidDataException("Invalid persistence response.");
                 return profile;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             if (m_Disposed) return;
             m_Disposed = true;
-            if (!Enabled) { m_Stop.Dispose(); return; }
+            if (!Enabled) {
+                m_Stop.Dispose();
+                return;
+            }
             // The World disappears before disconnect processing necessarily gets another tick.
             // Capture data now; cleanup must not query ECS or await HTTP on the main thread.
             foreach (var profile in Profiles.Values)
                 if (!string.IsNullOrEmpty(profile.DeploymentId))
-                    Abandon(DeploymentOf(profile), startImmediately:false);
+                    Abandon(DeploymentOf(profile), false);
             var deploying = new List<Task<Profile>>();
-            foreach (var deploy in Deployments.Values)
-            {
+            foreach (var deploy in Deployments.Values) {
                 if (deploy.Task != null) deploying.Add(deploy.Task);
-                if(deploy.Payload.Mode=="BountyClash") RefundBountyDeployment(deploy.Payload,deploy.Task);
-                else Abandon(deploy.Payload, startImmediately:false);
+                if (deploy.Payload.Mode == "BountyClash")
+                    RefundBountyDeployment(deploy.Payload, deploy.Task);
+                else
+                    Abandon(deploy.Payload, false);
             }
             var saves = new List<Save>(Saves.Values);
             m_Stop.CancelAfter(TimeSpan.FromSeconds(20));
             ShutdownTask = FlushShutdownAsync(deploying, saves);
         }
 
-        private async Task FlushShutdownAsync(List<Task<Profile>> deploying, List<Save> saves)
-        {
-            try
-            {
+        private async Task FlushShutdownAsync(List<Task<Profile>> deploying, List<Save> saves) {
+            try {
                 // A pending debit must resolve before its cancellation is acknowledged locally.
-                foreach (var task in deploying) { try { await task.ConfigureAwait(false); } catch (Exception) { /* journal retained */ } }
-                foreach (var save in saves)
-                {
-                    try
-                    {
-                        if (save.Task != null) { try { await save.Task.ConfigureAwait(false); } catch (Exception) { /* retry exact payload */ } }
+                foreach (var task in deploying) {
+                    try { await task.ConfigureAwait(false); } catch (Exception) {
+                        /* journal retained */
+                    }
+                }
+                foreach (var save in saves) {
+                    try {
+                        if (save.Task != null) {
+                            try { await save.Task.ConfigureAwait(false); } catch (Exception) {
+                                /* retry exact payload */
+                            }
+                        }
                         if (save.Task == null || !save.Task.IsCompletedSuccessfully)
                             await RetrySave(save).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning("[Raid] Shutdown receipt remains in outbox for recovery: " + ex.GetType().Name);
+                    } catch (Exception ex) {
+                        Debug.LogWarning("[Raid] Shutdown receipt remains in outbox for recovery: " +
+                                         ex.GetType().Name);
                     }
                 }
                 CleanBountyJournals();
+            } finally {
+                m_Http?.Dispose();
+                m_Stop.Dispose();
             }
-            finally { m_Http?.Dispose(); m_Stop.Dispose(); }
         }
     }
 }

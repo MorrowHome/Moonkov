@@ -3,20 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Presentation facade over the template's pooled SoundSystem; never creates audio sources.
-    public static class MoonkovAudio
-    {
+    public static class MoonkovAudio {
         private static MoonkovAudioLibrary s_Library;
         private static bool s_Loaded;
         private static float s_LastHover;
-        public static MoonkovAudioLibrary Library
-        {
-            get
-            {
-                if (!s_Loaded)
-                {
+
+        public static MoonkovAudioLibrary Library {
+            get {
+                if (!s_Loaded) {
                     s_Loaded = true;
                     s_Library = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary");
                 }
@@ -25,73 +21,80 @@ namespace Unity.MP_FPS
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset()
-        {
+        private static void Reset() {
             s_Library = null;
             s_Loaded = false;
             s_LastHover = -1f;
             s_BoundRoots.Clear();
         }
 
-        public static SoundSystem.SoundInfo Play(SoundDef sound, Vector3 position, float volume = 1f)
-        {
+        public static SoundSystem.SoundInfo Play(SoundDef sound, Vector3 position, float volume = 1f) {
             var game = GameManager.Instance;
-            if (!Application.isPlaying || game == null || game.IsHeadless || sound == null ||
-                sound.Clips == null || sound.Clips.Count == 0) return null;
+            if (!Application.isPlaying || game == null || game.IsHeadless || sound == null || sound.Clips == null ||
+                sound.Clips.Count == 0)
+                return null;
             return game.SoundSystem?.CreateEmitter(sound, position, volume);
         }
 
         // Uses the same emitter/source pool and mixer, with per-playback ownership and pitch.
-        public static SoundSystem.SoundInfo PlayWeaponLayer(SoundDef sound, Vector3 position,
-            float volume, float spatialBlend, float pitchCents = 0,
-            float? startOffsetFraction = null, float? stopAfterSeconds = null, Transform follow = null)
-        {
+        public static SoundSystem.SoundInfo PlayWeaponLayer(
+            SoundDef sound,
+            Vector3 position,
+            float volume,
+            float spatialBlend,
+            float pitchCents = 0,
+            float? startOffsetFraction = null,
+            float? stopAfterSeconds = null,
+            Transform follow = null) {
             var game = GameManager.Instance;
-            if (!Application.isPlaying || game == null || game.IsHeadless || sound == null ||
-                sound.Clips == null || sound.Clips.Count == 0) return null;
-            var info = new SoundSystem.SoundInfo
-            {
+            if (!Application.isPlaying || game == null || game.IsHeadless || sound == null || sound.Clips == null ||
+                sound.Clips.Count == 0)
+                return null;
+            var info = new SoundSystem.SoundInfo {
                 SoundDefinition = sound, SoundTransform = follow,
                 Position = follow ? follow.InverseTransformPoint(position) : position,
-                SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(sound)
-                { SpatialBlend = Mathf.Clamp01(spatialBlend), BasePitchInCents = sound.BasePitchInCents + pitchCents,
-                    StartOffsetFraction = startOffsetFraction, StopAfterSeconds = stopAfterSeconds }
+                SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(sound) {
+                    SpatialBlend = Mathf.Clamp01(spatialBlend), BasePitchInCents = sound.BasePitchInCents + pitchCents,
+                    StartOffsetFraction = startOffsetFraction, StopAfterSeconds = stopAfterSeconds
+                }
             };
             return game.SoundSystem != null && game.SoundSystem.PlayEmitter(info, volume) ? info : null;
         }
 
         public const float WorldWeaponGain = .57f;
 
-        public static SoundSystem.SoundInfo PlayWeaponReport(SoundDef sound, Vector3 position, bool owned, float gain = 1f) =>
-            PlayWeaponLayer(sound, position, gain * (owned ? 1f : WorldWeaponGain), owned ? 0f : 1f);
-
-        public static bool CanHearDetail(Vector3 position, float range)
-        {
-            var game = GameManager.Instance;
-            return Application.isPlaying && game && !game.IsHeadless && game.SoundSystem is SoundSystem system &&
-                system.IsWithinHearing(position, range);
+        public static SoundSystem.SoundInfo PlayWeaponReport(
+            SoundDef sound,
+            Vector3 position,
+            bool owned,
+            float gain = 1f) {
+            return PlayWeaponLayer(sound, position, gain * (owned ? 1f : WorldWeaponGain), owned ? 0f : 1f);
         }
 
-        public static void Click() => Play(Library?.Click, Vector3.zero);
-        public static void Confirm() => Play(Library?.Confirm, Vector3.zero);
-        public static void AirlockButtonPress() => Play(Library?.AirlockButtonPress, Vector3.zero);
-        public static void Error() => Play(Library?.Error, Vector3.zero);
+        public static bool CanHearDetail(Vector3 position, float range) {
+            var game = GameManager.Instance;
+            return Application.isPlaying && game && !game.IsHeadless && game.SoundSystem is SoundSystem system &&
+                   system.IsWithinHearing(position, range);
+        }
+
+        public static void Click() { Play(Library?.Click, Vector3.zero); }
+        public static void Confirm() { Play(Library?.Confirm, Vector3.zero); }
+        public static void AirlockButtonPress() { Play(Library?.AirlockButtonPress, Vector3.zero); }
+        public static void Error() { Play(Library?.Error, Vector3.zero); }
 
         // Bind before activation, including buttons created dynamically between document scans.
         // Clickable captures pointer-up, and navigation can detach the button before ClickEvent
         // reaches an ancestor. The sound therefore belongs to Button.clicked, not a root event.
-        private static readonly HashSet<VisualElement> s_BoundRoots = new HashSet<VisualElement>();
+        private static readonly HashSet<VisualElement> s_BoundRoots = new();
 
-        public static void BindUI(VisualElement root)
-        {
+        public static void BindUI(VisualElement root) {
             if (root == null || !s_BoundRoots.Add(root)) return;
             root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             root.RegisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
         }
 
-        public static void UnbindUI(VisualElement root)
-        {
+        public static void UnbindUI(VisualElement root) {
             if (root == null || !s_BoundRoots.Remove(root)) return;
             root.UnregisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             root.UnregisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
@@ -99,59 +102,68 @@ namespace Unity.MP_FPS
         }
 
         /// <summary>Forget roots whose panel is gone so the bound set does not grow forever.</summary>
-        public static void PruneBoundRoots()
-        {
+        public static void PruneBoundRoots() {
             foreach (var root in new List<VisualElement>(s_BoundRoots))
-                if (root.panel == null) UnbindUI(root);
+                if (root.panel == null)
+                    UnbindUI(root);
         }
 
-        private static Button ButtonFor(EventBase evt)
-        {
+        private static Button ButtonFor(EventBase evt) {
             var target = evt.target as VisualElement;
             return target as Button ?? target?.GetFirstAncestorOfType<Button>();
         }
+
         // 先在按下或键盘确认时给按钮挂上声音，再等按钮实际激活。即使点击后页面马上被拆掉，这个按钮自己的回调也能响。
-        private static void BindButton(Button button)
-        {
+        private static void BindButton(Button button) {
             if (button == null || !button.enabledInHierarchy) return;
             // A subtree and its UIDocument may both observe the press. Rebinding the same
             // delegate is idempotent, without retaining buttons after their page is discarded.
             button.clicked -= Click;
             button.clicked += Click;
         }
-        private static void OnPointerDown(PointerDownEvent evt)
-        {
+
+        private static void OnPointerDown(PointerDownEvent evt) {
             if (evt.button == 0) BindButton(ButtonFor(evt));
         }
-        private static void OnSubmit(NavigationSubmitEvent evt)
-        {
-            BindButton(ButtonFor(evt));
-        }
-        private static void OnHover(PointerOverEvent evt)
-        {
+
+        private static void OnSubmit(NavigationSubmitEvent evt) { BindButton(ButtonFor(evt)); }
+
+        private static void OnHover(PointerOverEvent evt) {
             var button = ButtonFor(evt);
-            if (button == null || !button.enabledInHierarchy ||
-                Time.unscaledTime - s_LastHover < .1f) return;
+            if (button == null || !button.enabledInHierarchy || Time.unscaledTime - s_LastHover < .1f) return;
             s_LastHover = Time.unscaledTime;
             Play(Library?.Hover, Vector3.zero);
         }
 
         public static float MasterVolume => Mathf.Clamp01(PlayerPrefs.GetFloat("Moonkov.Audio.Master", .8f));
-        public static float EffectsVolume => Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Effects", .85f), 0f, SoundMixer.MaximumCategoryVolume);
-        public static float MusicVolume => Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Music", SoundMixer.soundMusicVol?.FloatValue ?? 1f), 0f, SoundMixer.MaximumCategoryVolume);
-        public static float InterfaceVolume => Mathf.Clamp01(PlayerPrefs.GetFloat("Moonkov.Audio.Interface", .65f));
-        public static float MaximumVolume(string channel) =>
-            channel == "Effects" || channel == "Music" ? SoundMixer.MaximumCategoryVolume : 1f;
 
-        public static void ApplyVolumes()
-        {
-            AudioListener.volume = MasterVolume;
-            if (SoundMixer.soundSFXVol != null) SoundMixer.soundSFXVol.Value = EffectsVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            if (SoundMixer.soundMusicVol != null) SoundMixer.soundMusicVol.Value = MusicVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            if (SoundMixer.soundMenuVol != null) SoundMixer.soundMenuVol.Value = InterfaceVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        public static float EffectsVolume =>
+            Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Effects", .85f), 0f, SoundMixer.MaximumCategoryVolume);
+
+        public static float MusicVolume =>
+            Mathf.Clamp(PlayerPrefs.GetFloat("Moonkov.Audio.Music", SoundMixer.soundMusicVol?.FloatValue ?? 1f), 0f,
+                SoundMixer.MaximumCategoryVolume);
+
+        public static float InterfaceVolume => Mathf.Clamp01(PlayerPrefs.GetFloat("Moonkov.Audio.Interface", .65f));
+
+        public static float MaximumVolume(string channel) {
+            return channel == "Effects" || channel == "Music" ? SoundMixer.MaximumCategoryVolume : 1f;
         }
-        public static void SetVolume(string channel, float value)
-        {
+
+        public static void ApplyVolumes() {
+            AudioListener.volume = MasterVolume;
+            if (SoundMixer.soundSFXVol != null)
+                SoundMixer.soundSFXVol.Value =
+                    EffectsVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (SoundMixer.soundMusicVol != null)
+                SoundMixer.soundMusicVol.Value =
+                    MusicVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (SoundMixer.soundMenuVol != null)
+                SoundMixer.soundMenuVol.Value =
+                    InterfaceVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public static void SetVolume(string channel, float value) {
             PlayerPrefs.SetFloat("Moonkov.Audio." + channel, Mathf.Clamp(value, 0f, MaximumVolume(channel)));
             ApplyVolumes();
         }

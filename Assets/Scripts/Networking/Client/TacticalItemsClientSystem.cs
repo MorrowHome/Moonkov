@@ -3,48 +3,57 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-    public partial class TacticalItemsClientSystem : SystemBase
-    {
+    public partial class TacticalItemsClientSystem : SystemBase {
         private TacticalItemsFeedback m_Feedback;
         private bool m_OwnsPresentation;
-        protected override void OnCreate()
-        {
+
+        protected override void OnCreate() {
             // Managed components need an instance: the generic default singleton stores null.
             var owner = EntityManager.CreateEntity();
             EntityManager.AddComponentObject(owner, new TacticalItemClientState());
         }
-        private bool OwnsPresentation()
-        {
+
+        private bool OwnsPresentation() {
             // Match RaidHUD's first full client World. Additional in-process transport
             // peers retain their own owner component and cannot overwrite the viewed HUD.
-            foreach(var world in Unity.Entities.World.All)
-                if(world.IsCreated && world.IsClient() && !world.IsThinClient())return world==World;
+            foreach (var world in World.All)
+                if (world.IsCreated && world.IsClient() && !world.IsThinClient())
+                    return world == World;
             return true;
         }
-        protected override void OnUpdate()
-        {
-            m_OwnsPresentation=OwnsPresentation();
-            if(m_OwnsPresentation && !m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();
-            using var ecb=new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            foreach(var (rpc,received,entity) in SystemAPI.Query<RefRO<TacticalItemOwnerRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
-            {
-                var owner=rpc.ValueRO;
-                var current=SystemAPI.ManagedAPI.GetSingleton<TacticalItemClientState>();
-                if(current.Apply(owner) && m_OwnsPresentation)TacticalItemsFeedback.SetOwner(owner);
+
+        protected override void OnUpdate() {
+            m_OwnsPresentation = OwnsPresentation();
+            if (m_OwnsPresentation && !m_Feedback) m_Feedback = TacticalItemsFeedback.GetOrCreate();
+            using var ecb = new EntityCommandBuffer(Collections.Allocator.Temp);
+            foreach (var (rpc, received, entity) in SystemAPI
+                         .Query<RefRO<TacticalItemOwnerRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
+                var owner = rpc.ValueRO;
+                var current = SystemAPI.ManagedAPI.GetSingleton<TacticalItemClientState>();
+                if (current.Apply(owner) && m_OwnsPresentation) TacticalItemsFeedback.SetOwner(owner);
                 ecb.DestroyEntity(entity);
             }
-            foreach(var (rpc,received,entity) in SystemAPI.Query<RefRO<TacticalWorldStateRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
-            {
-                if(m_OwnsPresentation)
-                {if(!m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();m_Feedback.Present(rpc.ValueRO);}
+            foreach (var (rpc, received, entity) in SystemAPI
+                         .Query<RefRO<TacticalWorldStateRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
+                if (m_OwnsPresentation) {
+                    if (!m_Feedback) m_Feedback = TacticalItemsFeedback.GetOrCreate();
+                    m_Feedback.Present(rpc.ValueRO);
+                }
                 ecb.DestroyEntity(entity);
             }
             ecb.Playback(EntityManager);
         }
-        protected override void OnDestroy()
-        {if(m_Feedback){if(Application.isPlaying)Object.Destroy(m_Feedback.gameObject);else Object.DestroyImmediate(m_Feedback.gameObject);}if(m_OwnsPresentation)TacticalItemsFeedback.SetOwner(default);}
+
+        protected override void OnDestroy() {
+            if (m_Feedback) {
+                if (Application.isPlaying)
+                    Object.Destroy(m_Feedback.gameObject);
+                else
+                    Object.DestroyImmediate(m_Feedback.gameObject);
+            }
+            if (m_OwnsPresentation) TacticalItemsFeedback.SetOwner(default);
+        }
     }
 }

@@ -9,74 +9,105 @@ using Newtonsoft.Json;
 using Unity.MP_FPS.Online;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
-    public static partial class AccountClient
-    {
-        internal static async Task<LobbySnapshot> LobbyAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false)
-        {
+namespace Unity.MP_FPS {
+    public static partial class AccountClient {
+        internal static async Task<LobbySnapshot> LobbyAsync(
+            LobbyAction action,
+            CancellationToken ct,
+            bool browseRooms = false) {
             string token = Token;
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl)) throw new InvalidOperationException("请先登录在线账号。");
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(s_BaseUrl))
+                throw new InvalidOperationException("请先登录在线账号。");
             using var request = new HttpRequestMessage(action == null ? HttpMethod.Get : HttpMethod.Post,
-                Address(s_BaseUrl, (action == null ? "auth/lobby" : "auth/lobby/action") +
-                    "?character=" + GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose +
+                Address(s_BaseUrl,
+                    (action == null ? "auth/lobby" : "auth/lobby/action") + "?character=" +
+                    GameSettings.Instance.PlayerCharacter + "&pose=" + OnlineLobbyClient.SelectedPose +
                     "&networkProtocol=" + OnlineNetworkProtocol.Version + (browseRooms ? "&browseRooms=true" : "")));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            if (action != null) request.Content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
+            if (action != null)
+                request.Content =
+                    new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
-            string body = await response.Content.ReadAsStringAsync(); ct.ThrowIfCancellationRequested();
+            string body = await response.Content.ReadAsStringAsync();
+            ct.ThrowIfCancellationRequested();
             if (!response.IsSuccessStatusCode)
-                throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ?? "大厅服务暂不可用，请重试。");
+                throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ??
+                                                    "大厅服务暂不可用，请重试。");
             if (token != Token) throw new OperationCanceledException("登录账号已变更。");
             return JsonConvert.DeserializeObject<LobbySnapshot>(body) ?? throw new InvalidOperationException("大厅响应无效。");
         }
     }
-    public static class OnlineLobbyClient
-    {
+
+    public static class OnlineLobbyClient {
         private static LobbySnapshot s_Snapshot;
-        public static LobbySnapshot Snapshot => s_Account == PlayerProfileClient.LocalPreferenceScope ? s_Snapshot : null;
+
+        public static LobbySnapshot Snapshot =>
+            s_Account == PlayerProfileClient.LocalPreferenceScope ? s_Snapshot : null;
+
         public static string InstanceId { get; private set; }
         public static string ServerName { get; private set; }
-        public static bool InInstance => !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan &&
-            !string.IsNullOrEmpty(InstanceId) && s_Account == PlayerProfileClient.LocalPreferenceScope;
+
+        public static bool InInstance =>
+            !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && !string.IsNullOrEmpty(InstanceId) &&
+            s_Account == PlayerProfileClient.LocalPreferenceScope;
+
         public static string LastAttempt { get; private set; }
         private static string s_Account;
         private static bool s_PreserveFailedJoin;
         public static string Error { get; private set; }
         public static int SelectedPose { get; set; } = -1;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { s_Snapshot = null; InstanceId = ServerName = LastAttempt = s_Account = Error = null; SelectedPose = -1; s_PreserveFailedJoin = false; }
-        private static void SelectAccount()
-        {
-            string scope = PlayerProfileClient.LocalPreferenceScope;
-            if (s_Account != scope) { Reset(); SessionReconnect.Dismiss(); s_Account = scope; }
+        private static void Reset() {
+            s_Snapshot = null;
+            InstanceId = ServerName = LastAttempt = s_Account = Error = null;
+            SelectedPose = -1;
+            s_PreserveFailedJoin = false;
         }
-        public static async Task RefreshAsync(CancellationToken ct, bool browseRooms = false)
-        {
+
+        private static void SelectAccount() {
+            string scope = PlayerProfileClient.LocalPreferenceScope;
+            if (s_Account != scope) {
+                Reset();
+                SessionReconnect.Dismiss();
+                s_Account = scope;
+            }
+        }
+
+        public static async Task RefreshAsync(CancellationToken ct, bool browseRooms = false) {
             SelectAccount();
             s_Snapshot = await AccountClient.LobbyAsync(null, ct, browseRooms);
         }
-        public static async Task ActAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false)
-        {
+
+        public static async Task ActAsync(LobbyAction action, CancellationToken ct, bool browseRooms = false) {
             SelectAccount();
-            if (action.Action == "start" || action.Action == "ready" && action.Ready)
+            if (action.Action == "start" || (action.Action == "ready" && action.Ready))
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
-            s_Snapshot = await AccountClient.LobbyAsync(action, ct, browseRooms); Error = null;
-            if (action.Action == "leave")
-            {
-                InstanceId = ServerName = LastAttempt = null; s_PreserveFailedJoin = false;
+            s_Snapshot = await AccountClient.LobbyAsync(action, ct, browseRooms);
+            Error = null;
+            if (action.Action == "leave") {
+                InstanceId = ServerName = LastAttempt = null;
+                s_PreserveFailedJoin = false;
                 SessionReconnect.Dismiss();
             }
         }
+
         // 大厅处于就绪时才取分配好的服务器地址。校验协议和本人席位后设置加载参数，这一步还没在战局中生成玩家。
-        public static void Join(bool retry = false)
-        {
+        public static void Join(bool retry = false) {
             var s = Snapshot;
-            if (s?.Phase != "Ready" || string.IsNullOrEmpty(s.Address) || s.InstanceId == LastAttempt && !retry) return;
-            if (s.NetworkProtocol != OnlineNetworkProtocol.Version || !OnlineNetworkProtocol.ValidPath(s.ConnectionPath))
-            { Error = "大厅连接协议不匹配，请更新账号后端与独立服务器。"; return; }
-            foreach (var member in s.Members) if (member.PlayerId == s.SelfId && member.Returned) return;
-            InstanceId = s.InstanceId; ServerName = s.ServerName; LastAttempt = s.InstanceId;
+            if (s?.Phase != "Ready" || string.IsNullOrEmpty(s.Address) || (s.InstanceId == LastAttempt && !retry))
+                return;
+            if (s.NetworkProtocol != OnlineNetworkProtocol.Version ||
+                !OnlineNetworkProtocol.ValidPath(s.ConnectionPath)) {
+                Error = "大厅连接协议不匹配，请更新账号后端与独立服务器。";
+                return;
+            }
+            foreach (var member in s.Members)
+                if (member.PlayerId == s.SelfId && member.Returned)
+                    return;
+            InstanceId = s.InstanceId;
+            ServerName = s.ServerName;
+            LastAttempt = s.InstanceId;
             s_PreserveFailedJoin = false;
             Error = null;
             // Always retain the public game entrance. P2P uses separate ICE endpoints.
@@ -88,25 +119,27 @@ namespace Unity.MP_FPS
             ConnectionSettings.Instance.ResumeOnly = false;
             GameManager.Instance.StartGameAsync(CreationType.ConnectAndJoin);
         }
-        public static void PreserveFailedJoin()
-        { if (InInstance) s_PreserveFailedJoin = true; }
+
+        public static void PreserveFailedJoin() {
+            if (InInstance) s_PreserveFailedJoin = true;
+        }
+
         // 加载失败时可以保留后端席位。真正返回大厅才上报 return，免得加载进不去却被记成已经打完回来了。
-        public static async Task ReturnedAsync()
-        {
-            bool preserve = s_PreserveFailedJoin; s_PreserveFailedJoin = false;
+        public static async Task ReturnedAsync() {
+            bool preserve = s_PreserveFailedJoin;
+            s_PreserveFailedJoin = false;
             if (!InInstance || SessionReconnect.Available || preserve) return;
-            try
-            {
+            try {
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(12));
                 await ActAsync(new LobbyAction { Action = "return" }, timeout.Token);
                 InstanceId = ServerName = null;
-            }
-            catch (Exception ex) { Error = "等待服务器结算后返回队伍：" + ex.Message; }
+            } catch (Exception ex) { Error = "等待服务器结算后返回队伍：" + ex.Message; }
         }
-        public static async Task RetryReturnAsync(CancellationToken ct)
-        {
+
+        public static async Task RetryReturnAsync(CancellationToken ct) {
             await ActAsync(new LobbyAction { Action = "return" }, ct);
-            SessionReconnect.Dismiss(); Error = null;
+            SessionReconnect.Dismiss();
+            Error = null;
             InstanceId = ServerName = null;
         }
     }

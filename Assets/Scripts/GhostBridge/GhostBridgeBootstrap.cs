@@ -7,20 +7,17 @@ using Unity.NetCode;
 using UnityEngine;
 using Hash128 = Unity.Entities.Hash128;
 
-[ResetOnPlayMode(resetMethod: "ResetStaticState")]
+[ResetOnPlayMode("ResetStaticState")]
 [UnityEngine.Scripting.Preserve]
-public class GhostBridgeBootstrap : ClientServerBootstrap
-{
+public class GhostBridgeBootstrap : ClientServerBootstrap {
 #pragma warning disable UDR0001
     public static GhostBridgeBootstrap Instance; // This is reset from ResetOnPlayMode attribute
 #pragma warning restore UDR0001
     public new World ServerWorld { get; private set; }
     public new World ClientWorld { get; private set; }
 
-    public static bool IsServerOnly
-    {
-        get
-        {
+    public static bool IsServerOnly {
+        get {
 #if UNITY_EDITOR
             return RequestedPlayType == PlayType.Server;
 #elif UNITY_SERVER
@@ -32,33 +29,27 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
     }
 
     private GameObject m_ClientGameObjectHierarchy;
-    public GameObject ClientGameObjectHierarchy
-    {
-        get
-        {
-            if (m_ClientGameObjectHierarchy == null)
-            {
-                // create top level gameobject
-                m_ClientGameObjectHierarchy = new GameObject();
-                m_ClientGameObjectHierarchy.name = "Client";
-            }
 
+    public GameObject ClientGameObjectHierarchy {
+        get {
+            if (m_ClientGameObjectHierarchy != null) return m_ClientGameObjectHierarchy;
+            // create top level gameobject
+            m_ClientGameObjectHierarchy = new GameObject {
+                name = "Client"
+            };
             return m_ClientGameObjectHierarchy;
         }
     }
 
     private GameObject m_ServerGameObjectHierarchy;
-    public GameObject ServerGameObjectHierarchy
-    {
-        get
-        {
-            if (m_ServerGameObjectHierarchy == null)
-            {
-                // create top level gameobject
-                m_ServerGameObjectHierarchy = new GameObject();
-                m_ServerGameObjectHierarchy.name = "Server";
-            }
 
+    public GameObject ServerGameObjectHierarchy {
+        get {
+            if (m_ServerGameObjectHierarchy != null) return m_ServerGameObjectHierarchy;
+            // create top level gameobject
+            m_ServerGameObjectHierarchy = new GameObject {
+                name = "Server"
+            };
             return m_ServerGameObjectHierarchy;
         }
     }
@@ -66,158 +57,110 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
     private Hash128 m_ClientGuid;
     public Hash128 ClientGuid => m_ClientGuid;
 
-    public static bool TryGetInstance(out GhostBridgeBootstrap instance)
-    {
+    public static bool TryGetInstance(out GhostBridgeBootstrap instance) {
         instance = Instance;
         return instance != null;
     }
 
-    protected static void ResetStaticState()
-    {
+    protected static void ResetStaticState() {
         // we need to ensure the static driver constructor override
         // is cleared, otherwise we might end up with a relay network driver
         // when in Ip mode
         NetworkStreamReceiveSystem.DriverConstructor = null;
-
-        if (Instance != null)
-        {
-            Instance.DestroyMultiplayerWorlds();
-            Instance = null;
-        }
+        if (Instance == null) return;
+        Instance.DestroyMultiplayerWorlds();
+        Instance = null;
         // GhostGameObject.UpdateEntityCommandBuffer = default;
     }
 
-    public override bool Initialize(string defaultWorldName)
-    {
+    public override bool Initialize(string defaultWorldName) {
         Instance = this;
-
 #if UNITY_SERVER
         // turn off stack trace for logs (it clutters the console window)
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
 #endif
-
 #if UNITY_EDITOR
         LiveConversionEditorSettings.LiveConversionEnabled = false;
 #endif
-
         var world = new World(defaultWorldName, WorldFlags.Game);
         World.DefaultGameObjectInjectionWorld = world;
-
-        if (IsServerOnly)
-        {
-            NetworkStreamReceiveSystem.DriverConstructor = new Unity.MP_FPS.EntityDriverConstructor(Unity.Services.Multiplayer.NetworkRole.Server);
-            CreateServerWorld();
-        }
-
+        if (!IsServerOnly) return true;
+        NetworkStreamReceiveSystem.DriverConstructor =
+            new Unity.MP_FPS.EntityDriverConstructor(Unity.Services.Multiplayer.NetworkRole.Server);
+        CreateServerWorld();
         return true;
     }
 
     // 进入战局后实体要归入真正的客户端或服务端 World。先释放启动时的普通 World，再给新 World 登记 Ghost 的更新系统。
-    public void StartMultiplayerWorlds(bool asHost)
-    {
+    public void StartMultiplayerWorlds(bool asHost) {
         Debug.Log($"StartMultiplayerWorlds asHost {asHost}");
-
         GhostGameObjectUpdateSystem.Reset();
 
         // we no longer need the default world
         // so we can dispose it now. This unclutters the editor world selection UI
         // but also ensures we aren't loading our entities into the default world
         // which occasionally triggers the sporadic-and-unrecoverable "Loading Entity Scene failed" error
-        if (World.DefaultGameObjectInjectionWorld != null)
-        {
+        if (World.DefaultGameObjectInjectionWorld != null) {
             World.DefaultGameObjectInjectionWorld.Dispose();
             World.DefaultGameObjectInjectionWorld = null;
         }
-
-        if (asHost)
-        {
+        if (asHost) {
             var serverWorld = CreateServerWorld();
             GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
         }
-
         var clientWorld = CreateClientWorld();
         GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
     }
 
-    private void SafelyQuitWorld(World world)
-    {
-        if (world != null)
-        {
+    private void SafelyQuitWorld(World world) {
+        if (world != null) {
             world.QuitUpdate = true;
             world.EntityManager.CompleteAllTrackedJobs();
             ScriptBehaviourUpdateOrder.RemoveWorldFromCurrentPlayerLoop(world);
         }
     }
 
-    public void DestroyMultiplayerWorlds()
-    {
-        if (ClientWorld != null)
-        {
-            DestroyWorld(ClientWorld);
-        }
-
-        if (ServerWorld != null)
-        {
-            DestroyWorld(ServerWorld);
-        }
-        
-        if (m_ClientGameObjectHierarchy != null)
-        {
+    public void DestroyMultiplayerWorlds() {
+        if (ClientWorld != null) DestroyWorld(ClientWorld);
+        if (ServerWorld != null) DestroyWorld(ServerWorld);
+        if (m_ClientGameObjectHierarchy != null) {
             Object.Destroy(m_ClientGameObjectHierarchy);
             m_ClientGameObjectHierarchy = null;
         }
-
-        if (m_ServerGameObjectHierarchy != null)
-        {
+        if (m_ServerGameObjectHierarchy != null) {
             Object.Destroy(m_ServerGameObjectHierarchy);
             m_ServerGameObjectHierarchy = null;
         }
-
         GhostSingleton.InvokeAndClearStaticCallbacks();
     }
 
-    public void QuitMultiplayerWorlds()
-    {
-        if (ClientWorld != null)
-        {
-            SafelyQuitWorld(ClientWorld);
-        }
-
-        if (ServerWorld != null)
-        {
-            SafelyQuitWorld(ServerWorld);
-        }
+    public void QuitMultiplayerWorlds() {
+        if (ClientWorld != null) SafelyQuitWorld(ClientWorld);
+        if (ServerWorld != null) SafelyQuitWorld(ServerWorld);
     }
 
-    private void DestroyWorld(World world)
-    {
-        if (world != null)
-        {
+    private void DestroyWorld(World world) {
+        if (world != null) {
             world.QuitUpdate = true;
             world.EntityManager.CompleteAllTrackedJobs();
             if (ScriptBehaviourUpdateOrder.IsWorldInCurrentPlayerLoop(world))
-            {
                 ScriptBehaviourUpdateOrder.RemoveWorldFromCurrentPlayerLoop(world);
-            }
             world.Dispose();
         }
     }
 
-    private World CreateClientWorld()
-    {
+    private World CreateClientWorld() {
         ClientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
 
         // create unique client guid
         var hash128 = new UnityEngine.Hash128();
         hash128.Append(System.Guid.NewGuid().ToString());
         m_ClientGuid = hash128;
-
         return ClientWorld;
     }
 
-    private World CreateServerWorld()
-    {
+    private World CreateServerWorld() {
         ServerWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
         return ServerWorld;
     }

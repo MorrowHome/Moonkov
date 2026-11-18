@@ -9,12 +9,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     [RequireComponent(typeof(UIDocument))]
     [DefaultExecutionOrder(150)]
-    public sealed partial class RaidHUD : MonoBehaviour
-    {
+    public sealed partial class RaidHUD : MonoBehaviour {
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
         private VisualElement m_Root, m_Result, m_Status, m_Inventory;
@@ -29,18 +27,21 @@ namespace Unity.MP_FPS
         private VisualElement m_OxygenPanel, m_OxygenFill;
         private bool m_HealthSelected;
         private float m_NextOxygenAlert;
-        private readonly MoonkovOxygenFeedback m_OxygenFeedback = new MoonkovOxygenFeedback();
+        private readonly MoonkovOxygenFeedback m_OxygenFeedback = new();
         private EntityQuery m_InventoryQuery;
         private uint m_InventorySequence, m_InventoryRequestId;
-        private readonly MoonkovActionAudio m_InventoryAudio = new MoonkovActionAudio();
-        private readonly MoonkovLootRevealAudio m_LootRevealAudio = new MoonkovLootRevealAudio();
-        private void TrackInventoryAudio(SoundDef success, SoundDef start = null)
-            => m_InventoryAudio.Track(m_Snapshot.RaidId, m_InventoryRequestId, success, start);
+        private readonly MoonkovActionAudio m_InventoryAudio = new();
+        private readonly MoonkovLootRevealAudio m_LootRevealAudio = new();
+
+        private void TrackInventoryAudio(SoundDef success, SoundDef start = null) {
+            m_InventoryAudio.Track(m_Snapshot.RaidId, m_InventoryRequestId, success, start);
+        }
+
         private float m_InventoryRequestedAt;
         private bool m_InventoryRequestPending;
         private bool m_LootOpenPending;
         private bool m_CloseLootWhenIdle;
-        private int m_DissectingLootId=-1;
+        private int m_DissectingLootId = -1;
         private float m_DissectionEndsAt;
         private bool m_DissectionInterrupted;
         private bool m_MedicalActive, m_ConsumableActive, m_ConsumableFood, m_ConsumableOxygen;
@@ -51,10 +52,17 @@ namespace Unity.MP_FPS
         private bool m_ActionAccepted, m_ActionCancelPending, m_ActionFailed;
         private uint m_ActionRequestId;
         private int m_ActionRaidId;
-        private int m_OpenedLootId=-1;
+        private int m_OpenedLootId = -1;
         private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
-        private VisualElement m_Interaction, m_InteractionDetails, m_ExtractionPanel, m_ExtractionTrack, m_ExtractionFill, m_Receipt;
+
+        private VisualElement m_Interaction,
+            m_InteractionDetails,
+            m_ExtractionPanel,
+            m_ExtractionTrack,
+            m_ExtractionFill,
+            m_Receipt;
+
         private AirlockInteractionPrompt m_AirlockPrompt;
         private RaidMinimapView m_Minimap;
         private Label m_InteractionKey, m_InteractionState, m_InteractionRange, m_ReceiptText;
@@ -81,18 +89,32 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         private int m_MenuEscapeFrame = -1;
-        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible || s_Active.m_FieldRecordOpen || s_Active.m_ClassicBuyOpen);
-        public static bool InventoryDefenseAllowed => s_Active != null && s_Active.m_InventoryVisible && s_Active.QuickAlive &&
+
+        public static bool InventoryOpen =>
+            s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible ||
+                                 s_Active.m_CampaignJournalVisible || s_Active.m_FieldRecordOpen ||
+                                 s_Active.m_ClassicBuyOpen);
+
+        public static bool InventoryDefenseAllowed =>
+            s_Active != null && s_Active.m_InventoryVisible && s_Active.QuickAlive &&
             !s_Active.m_MissionDetailsVisible && !s_Active.m_CampaignJournalVisible && !s_Active.m_ClashLobbyPointer &&
             !ChatInputBlocked && !s_Active.CinematicInputBlocked && !MapInputBlocked &&
             !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
             !QuickTyping(s_Active.m_Root.panel?.focusController.focusedElement as VisualElement);
-        public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ArenaFinished || s_Active.m_ClashLobbyPointer));
-        public static bool TimedActionInputActive => s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
+
+        public static bool PointerRequested =>
+            ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen ||
+            MapInputBlocked || (s_Active != null &&
+                                (s_Active.m_WasSettled || s_Active.m_ArenaFinished || s_Active.m_ClashLobbyPointer));
+
+        public static bool TimedActionInputActive =>
+            s_Active != null && (s_Active.GrenadeBusy || s_Active.TimedActionActive ||
+                                 s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetPresentation() => s_Active = null;
-        public static bool CloseInventory()
-        {
+        private static void ResetPresentation() { s_Active = null; }
+
+        public static bool CloseInventory() {
             if (s_Active == null) return false;
             if (s_Active.m_MenuEscapeFrame == Time.frameCount) return true;
             if (!CloseActiveMenu()) return false;
@@ -100,35 +122,49 @@ namespace Unity.MP_FPS
             RaidQuickSlotInput.ReleasePrimary();
             return true;
         }
-        private static bool CloseActiveMenu()
-        {
+
+        private static bool CloseActiveMenu() {
             if (s_Active != null && s_Active.CloseChatForEscape()) return true;
-            if (s_Active != null && s_Active.m_FieldRecordOpen) { s_Active.SetFieldRecordOpen(false); return true; }
-            if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
-            { s_Active.CloseRaidMapFromUI(); return true; }
-            if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
-            if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
+            if (s_Active != null && s_Active.m_FieldRecordOpen) {
+                s_Active.SetFieldRecordOpen(false);
+                return true;
+            }
+            if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount)) {
+                s_Active.CloseRaidMapFromUI();
+                return true;
+            }
+            if (s_Active != null && s_Active.m_CampaignJournalVisible) {
+                s_Active.SetCampaignJournal(false);
+                return true;
+            }
+            if (s_Active != null && s_Active.m_MissionDetailsVisible) {
+                s_Active.SetMissionDetails(false);
+                return true;
+            }
             if (!InventoryOpen) return RaidQuickSlotInput.CloseAdjustmentMenu();
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
-            s_Active.SetInventory(false); return true;
+            s_Active.SetInventory(false);
+            return true;
         }
 
-        private void OnMenuKeyDown(KeyDownEvent evt)
-        {
+        private void OnMenuKeyDown(KeyDownEvent evt) {
             if (evt.keyCode != KeyCode.Escape || GameSettings.Instance.GameState != GlobalGameState.InGame ||
-                m_ChatView?.Composing == true) return;
+                m_ChatView?.Composing == true)
+                return;
             if (CloseInventory()) evt.StopImmediatePropagation();
         }
 
-        private void OnEnable()
-        {
+        private void OnEnable() {
             m_MenuEscapeFrame = -1;
             m_ReturnGuidance.Reset();
             m_DeployRequestedRaid = 0;
             m_DeployRequestedSequence = 0;
             m_DeployRequestId = 0;
             m_WasSettled = false;
-            s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
+            s_Active = this;
+            m_ResultStep = 0;
+            m_InventoryVisible = false;
+            m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
             MoonkovAudio.BindUI(m_Root);
             m_Root.RegisterCallback<KeyDownEvent>(OnMenuKeyDown, TrickleDown.TrickleDown);
@@ -152,51 +188,84 @@ namespace Unity.MP_FPS
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
             m_AirlockPrompt.Initialize(GetComponent<UIDocument>());
-            m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
+            m_Status = m_Root.Q("raidStatus");
+            m_Timer = m_Root.Q<Label>("raidTimer");
+            m_Bag = m_Root.Q<Label>("raidBag");
             m_Clock = m_Root.Q<Label>("raidClock");
-            m_Exit = m_Root.Q<Label>("raidExtraction"); m_Prompt = m_Root.Q<Label>("raidPrompt");
-            m_Interaction = m_Root.Q("raidInteraction"); m_InteractionDetails = m_Root.Q("raidInteractionDetails");
+            m_Exit = m_Root.Q<Label>("raidExtraction");
+            m_Prompt = m_Root.Q<Label>("raidPrompt");
+            m_Interaction = m_Root.Q("raidInteraction");
+            m_InteractionDetails = m_Root.Q("raidInteractionDetails");
             m_InteractionKey = m_Root.Q<Label>("raidInteractionKey");
-            m_InteractionState = m_Root.Q<Label>("raidInteractionState"); m_InteractionRange = m_Root.Q<Label>("raidInteractionRange");
-            m_ExtractionPanel = m_Root.Q("raidExtractionPanel"); m_ExtractionTrack = m_Root.Q("raidExtractionTrack");
+            m_InteractionState = m_Root.Q<Label>("raidInteractionState");
+            m_InteractionRange = m_Root.Q<Label>("raidInteractionRange");
+            m_ExtractionPanel = m_Root.Q("raidExtractionPanel");
+            m_ExtractionTrack = m_Root.Q("raidExtractionTrack");
             m_ExtractionFill = m_Root.Q("raidExtractionFill");
-            m_Receipt = m_Root.Q("raidReceipt"); m_ReceiptText = m_Root.Q<Label>("raidReceiptText");
-            m_FeedbackRaid = 0; m_ReceiptUntil = 0; m_ReceiptQueued = false; m_ReceiptSupplies = default;
-            m_Result = m_Root.Q("raidResult"); m_ResultText = m_Root.Q<Label>("raidResultText"); m_SaveStatus = m_Root.Q<Label>("raidSaveStatus");
-            m_Deploy = m_Root.Q<Button>("raidDeploy"); m_Deploy.clicked += Deploy;
+            m_Receipt = m_Root.Q("raidReceipt");
+            m_ReceiptText = m_Root.Q<Label>("raidReceiptText");
+            m_FeedbackRaid = 0;
+            m_ReceiptUntil = 0;
+            m_ReceiptQueued = false;
+            m_ReceiptSupplies = default;
+            m_Result = m_Root.Q("raidResult");
+            m_ResultText = m_Root.Q<Label>("raidResultText");
+            m_SaveStatus = m_Root.Q<Label>("raidSaveStatus");
+            m_Deploy = m_Root.Q<Button>("raidDeploy");
+            m_Deploy.clicked += Deploy;
             m_LoadoutPanel = m_Root.Q("raidLoadout");
             m_CarryCells = m_Root.Q<IntegerField>("raidCarryCells");
             m_CarryCells.RegisterValueChangedCallback(CarryCellsChanged);
             m_LoadoutNote = m_Root.Q<Label>("raidLoadoutNote");
-            m_ResultBack = m_Root.Q<Button>("raidResultBack"); m_ResultBack.clicked += ResultBack;
-            m_ResultNext = m_Root.Q<Button>("raidResultNext"); m_ResultNext.clicked += ResultNext;
-            m_Return = m_Root.Q<Button>("raidReturn"); m_Return.clicked += ReturnToShip;
+            m_ResultBack = m_Root.Q<Button>("raidResultBack");
+            m_ResultBack.clicked += ResultBack;
+            m_ResultNext = m_Root.Q<Button>("raidResultNext");
+            m_ResultNext.clicked += ResultNext;
+            m_Return = m_Root.Q<Button>("raidReturn");
+            m_Return.clicked += ReturnToShip;
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
             m_ResultCargo = new Client.RaidResultCargoView(m_Root.Q<ScrollView>("raidCargoManifest"));
             m_Inventory = m_Root.Q("raidInventory");
-            m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
-            m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
-            m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical, UseConsumable, DropItem);
+            m_InventoryTitle = m_Root.Q<Label>(className: "raid-inventory-title");
+            m_EquipmentHost = m_Root.Q("raidInventoryHost");
+            m_HealthHost = m_Root.Q("raidHealthHost");
+            m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical,
+                UseConsumable, DropItem);
             m_InventoryView.OperationAudioEnabled = false;
             m_InventoryView.ShieldRechargeAvailable = CanRechargeShieldCell;
             m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart, ConsumeSupply);
-            m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
-            m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
-            m_HealthSelected = false; m_NextOxygenAlert = 0; m_OxygenFeedback.Reset();
+            m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab");
+            m_EquipmentTab.clicked += EquipmentTab;
+            m_HealthTab = m_Root.Q<Button>("raidHealthTab");
+            m_HealthTab.clicked += HealthTab;
+            m_HealthSelected = false;
+            m_NextOxygenAlert = 0;
+            m_OxygenFeedback.Reset();
             m_OxygenWarning = m_Root.Q<Label>("raidOxygenWarning");
-            m_OxygenPanel = m_Root.Q("raidOxygenPanel"); m_OxygenFill = m_Root.Q("raidOxygenFill");
-            m_OxygenReserve = m_Root.Q<Label>("raidOxygenReserve"); m_OxygenTime = m_Root.Q<Label>("raidOxygenTime");
+            m_OxygenPanel = m_Root.Q("raidOxygenPanel");
+            m_OxygenFill = m_Root.Q("raidOxygenFill");
+            m_OxygenReserve = m_Root.Q<Label>("raidOxygenReserve");
+            m_OxygenTime = m_Root.Q<Label>("raidOxygenTime");
             m_OxygenAir = m_Root.Q<Label>("raidOxygenAir");
-            m_ActionView = new Client.RaidTimedActionView(CancelProgressAction); m_Root.Add(m_ActionView);
+            m_ActionView = new Client.RaidTimedActionView(CancelProgressAction);
+            m_Root.Add(m_ActionView);
             ResetTimedAction();
-            m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset(); m_LootRevealAudio.Reset();
-            m_ClassicPurchaseSequence = 0; m_ClassicPurchaseMessage = null; m_ClassicPurchaseMessageUntil = 0;
-            m_InventoryRequestPending=false;
-            m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
-            var closePack=m_Root.Q<Button>("raidPackClose");closePack.clicked += ClosePack;
-            m_SwitchDrop=new Button(SwitchNearbyDrop) {name="raidSwitchDrop",text="SWITCH NEARBY BAG"};
-            m_SwitchDrop.style.display=DisplayStyle.None;
-            closePack.parent.Insert(closePack.parent.IndexOf(closePack),m_SwitchDrop);
+            m_InventorySequence = 0;
+            m_InventoryRequestId = 0;
+            m_InventoryAudio.Reset();
+            m_LootRevealAudio.Reset();
+            m_ClassicPurchaseSequence = 0;
+            m_ClassicPurchaseMessage = null;
+            m_ClassicPurchaseMessageUntil = 0;
+            m_InventoryRequestPending = false;
+            m_LootOpenPending = false;
+            m_OpenedLootId = -1;
+            m_DissectingLootId = -1;
+            var closePack = m_Root.Q<Button>("raidPackClose");
+            closePack.clicked += ClosePack;
+            m_SwitchDrop = new Button(SwitchNearbyDrop) { name = "raidSwitchDrop", text = "SWITCH NEARBY BAG" };
+            m_SwitchDrop.style.display = DisplayStyle.None;
+            closePack.parent.Insert(closePack.parent.IndexOf(closePack), m_SwitchDrop);
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
             InitializeCampaignHUD();
@@ -214,31 +283,35 @@ namespace Unity.MP_FPS
             InitializeChat();
         }
 
-        private void ToggleTasks() => SetTasksCollapsed(!m_TasksCollapsed);
+        private void ToggleTasks() { SetTasksCollapsed(!m_TasksCollapsed); }
 
-        private void SetTasksCollapsed(bool collapsed)
-        {
+        private void SetTasksCollapsed(bool collapsed) {
             m_TasksCollapsed = collapsed;
             m_TaskPanel.EnableInClassList("is-collapsed", collapsed);
             MoonkovLocalization.Set(m_TaskToggle.Q<Label>("raidTaskChevron"), collapsed ? "+" : "−");
-            if (m_ClashTaskToggle != null)
-            {
+            if (m_ClashTaskToggle != null) {
                 m_ClashView.Tasks.EnableInClassList("is-collapsed", collapsed);
                 MoonkovLocalization.Set(m_ClashTaskToggle.Q<Label>("raidTaskChevron"), collapsed ? "+" : "−");
             }
         }
 
-        private void UpdateTaskPanel(bool live)
-        {
+        private void UpdateTaskPanel(bool live) {
             bool visible = live && !m_InventoryVisible && !m_MapOpen && !m_MissionDetailsVisible &&
-                !m_CampaignJournalVisible && !ChatInputBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
-                (m_ClashMode || m_MissionHud.style.display == DisplayStyle.Flex ||
-                 m_CampaignHud != null && !m_CampaignHud.ClassListContains("campaign-hidden") ||
-                 m_ResearchList != null && m_ResearchList.style.display == DisplayStyle.Flex ||
-                 m_ExtractionPanel.ClassListContains("is-visible"));
+                           !m_CampaignJournalVisible && !ChatInputBlocked && !CinematicInputBlocked &&
+                           !GameSettings.Instance.IsPauseMenuOpen && (m_ClashMode ||
+                                                                      m_MissionHud.style.display == DisplayStyle.Flex ||
+                                                                      (m_CampaignHud != null &&
+                                                                       !m_CampaignHud.ClassListContains(
+                                                                           "campaign-hidden")) ||
+                                                                      (m_ResearchList != null &&
+                                                                       m_ResearchList.style.display ==
+                                                                       DisplayStyle.Flex) ||
+                                                                      m_ExtractionPanel
+                                                                          .ClassListContains("is-visible"));
             bool showMinimap = m_Minimap.Visible;
             m_TaskPanel.EnableInClassList("has-minimap", showMinimap);
-            m_TaskPanel.style.display = !m_ClashMode && (visible || showMinimap) ? DisplayStyle.Flex : DisplayStyle.None;
+            m_TaskPanel.style.display =
+                !m_ClashMode && (visible || showMinimap) ? DisplayStyle.Flex : DisplayStyle.None;
             m_TaskToggle.style.display = visible && !m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             m_ClashView.Tasks.style.display = visible && m_ClashMode ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible && Application.isFocused && RaidKeyBindings.Pressed(RaidKey.Status) &&
@@ -246,67 +319,71 @@ namespace Unity.MP_FPS
                 ToggleTasks();
         }
 
-        private void EquipmentTab() => SelectHealth(false);
-        private void HealthTab() => SelectHealth(true);
-        private void SelectHealth(bool health)
-        {
-            if (m_InventoryRequestPending && !TimedActionActive || m_HealthSelected == health) return;
+        private void EquipmentTab() { SelectHealth(false); }
+        private void HealthTab() { SelectHealth(true); }
+
+        private void SelectHealth(bool health) {
+            if ((m_InventoryRequestPending && !TimedActionActive) || m_HealthSelected == health) return;
             m_HealthSelected = health;
             m_EquipmentHost.style.display = health ? DisplayStyle.None : DisplayStyle.Flex;
             m_HealthHost.style.display = health ? DisplayStyle.Flex : DisplayStyle.None;
             m_EquipmentTab.EnableInClassList("raid-tab-active", !health);
             m_HealthTab.EnableInClassList("raid-tab-active", health);
-            MoonkovLocalization.Set(m_InventoryTitle, health ? "HEALTH / SUIT STATUS" :
+            MoonkovLocalization.Set(m_InventoryTitle,
+                health ? "HEALTH / SUIT STATUS" :
                 RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ? "抽屉搜刮 / 随身装备" :
                 m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备" :
-                IsDroppedLoot(m_OpenedLootId) ? "地面丢弃物 / 随身装备" : m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
+                IsDroppedLoot(m_OpenedLootId) ? "地面丢弃物 / 随身装备" :
+                m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
                 m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
-            if (health) m_InventoryView.Suspend();
+            if (health)
+                m_InventoryView.Suspend();
             else if (m_InventoryVisible) m_InventoryView.Show();
             RefreshHealth();
         }
-        private void RefreshHealth()
-        {
+
+        private void RefreshHealth() {
             if (m_World == null || !m_World.IsCreated) return;
-            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
+            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>()
+                ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>()
+                : default;
             int medicines = 0, food = 0, water = 0, oxygenCanisters = 0;
             string foodCode = null, waterCode = null, oxygenCode = null;
             float medicalRestore = 0;
-            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
-            {
-                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
+                var inventory =
+                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
+                        .GetSingletonEntity());
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Graph != null)
-                    foreach (var item in inventory.Graph.Items)
-                    {
-                        if (inventory.Graph.MedicalAccessible(item))
-                        {
+                    foreach (var item in inventory.Graph.Items) {
+                        if (inventory.Graph.MedicalAccessible(item)) {
                             medicines += item.Quantity;
-                            if (medicalRestore == 0) medicalRestore = Inventory.ConsumableCatalog.MedicalRestore(item.Code);
+                            if (medicalRestore == 0)
+                                medicalRestore = Inventory.ConsumableCatalog.MedicalRestore(item.Code);
                         }
-                        if (inventory.Graph.ConsumableAccessible(item))
-                        {
+                        if (inventory.Graph.ConsumableAccessible(item)) {
                             var supply = Inventory.ConsumableCatalog.Get(item.Code);
-                            if (supply.Oxygen > 0) { oxygenCanisters += item.Quantity; if (oxygenCode == null) oxygenCode = item.Code; }
-                            else if (supply.Food)
-                            {
+                            if (supply.Oxygen > 0) {
+                                oxygenCanisters += item.Quantity;
+                                if (oxygenCode == null) oxygenCode = item.Code;
+                            } else if (supply.Food) {
                                 food += item.Quantity;
                                 if (foodCode == null && RaidNutrition.CanConsume(player, supply)) foodCode = item.Code;
-                            }
-                            else
-                            {
+                            } else {
                                 water += item.Quantity;
-                                if (waterCode == null && RaidNutrition.CanConsume(player, supply)) waterCode = item.Code;
+                                if (waterCode == null && RaidNutrition.CanConsume(player, supply))
+                                    waterCode = item.Code;
                             }
                         }
                     }
             }
-            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending,
-                food, water, oxygenCanisters, foodCode, waterCode, oxygenCode, medicalRestore, TimedActionBusyText());
+            if (m_InventoryVisible && m_HealthSelected)
+                m_HealthView.Present(player, medicines, m_InventoryRequestPending, food, water, oxygenCanisters,
+                    foodCode, waterCode, oxygenCode, medicalRestore, TimedActionBusyText());
             bool oxygenReady = player.BodyHealthInitialized && player.CurrentHealth > 0 && !m_WasSettled;
             bool needsSuitAir = RaidOxygen.NeedsSuitAir(player);
             m_OxygenPanel.style.display = DisplayStyle.None; // Unified combat monitor owns the visual readout.
-            if (oxygenReady)
-            {
+            if (oxygenReady) {
                 MoonkovLocalization.Set(m_OxygenReserve, "O₂ / {0:0}%", player.Oxygen);
                 MoonkovLocalization.Set(m_OxygenTime, "EST. {0}", Client.RaidHealthView.OxygenTimeText(player));
                 MoonkovLocalization.Set(m_OxygenAir, Client.RaidHealthView.OxygenAirText(player));
@@ -318,133 +395,202 @@ namespace Unity.MP_FPS
             bool oxygenWarning = oxygenReady && needsSuitAir && player.Oxygen <= 25;
             var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
             bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
-            m_OxygenWarning.style.display = DisplayStyle.None; // Keep the existing alert cadence below, without a second overlay.
+            m_OxygenWarning.style.display =
+                DisplayStyle.None; // Keep the existing alert cadence below, without a second overlay.
             if (!oxygenReady) m_OxygenFeedback.Reset();
             bool suitAlert = oxygenReady && m_OxygenFeedback.Observe(player, Time.unscaledTime);
             if (suitAlert) MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.SuitWarning, Vector3.zero, 1, 0);
-            if (!warning) { m_NextOxygenAlert = 0; return; }
-            bool critical = (oxygenWarning && player.Oxygen <= 10) || (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
+            if (!warning) {
+                m_NextOxygenAlert = 0;
+                return;
+            }
+            bool critical = (oxygenWarning && player.Oxygen <= 10) ||
+                            (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
             m_OxygenWarning.EnableInClassList("oxygen-critical", critical);
-            string text = oxygenWarning ? string.Format(System.Globalization.CultureInfo.CurrentCulture,
-                MoonkovLocalization.Text(player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%"), player.Oxygen) : "";
+            string text = oxygenWarning
+                ? string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                    MoonkovLocalization.Text(player.Oxygen <= 0
+                        ? "HYPOXIA / SEEK PRESSURIZED AIR"
+                        : "LOW OXYGEN / {0:0}%"), player.Oxygen)
+                : "";
             string nutritionText = Client.RaidHealthView.EffectText(otherEffects);
             if (!string.IsNullOrEmpty(nutritionText)) text += (text.Length > 0 ? "\n" : "") + nutritionText;
             MoonkovLocalization.Set(m_OxygenWarning, text);
-            bool alert = !oxygenWarning &&
-                (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving | SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
-            if (alert && Time.unscaledTime >= m_NextOxygenAlert)
-            {
-                MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
+            bool alert = !oxygenWarning && (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving |
+                                                       SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
+            if (alert && Time.unscaledTime >= m_NextOxygenAlert) {
+                MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
+                m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
             }
         }
 
         private bool m_AudioExtracting;
         private float m_ExtractionSoundAt;
         private int m_ExtractionSoundRaid;
-        private readonly RaidReturnGuidance m_ReturnGuidance = new RaidReturnGuidance();
+        private readonly RaidReturnGuidance m_ReturnGuidance = new();
 
-        private bool IsDroppedLoot(int id)
-        {
-            if(id<RaidLootContainers.FirstDeathBagId || m_World==null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter)return false;
-            var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
-            return bags.Bags.TryGetValue(id,out var bag) && bag.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex;
+        private bool IsDroppedLoot(int id) {
+            if (id < RaidLootContainers.FirstDeathBagId || m_World == null || !m_World.IsCreated ||
+                m_StateQuery.IsEmptyIgnoreFilter)
+                return false;
+            var bags =
+                m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            return bags.Bags.TryGetValue(id, out var bag) &&
+                   bag.CharacterIndex == RaidLootContainers.DroppedItemCharacterIndex;
         }
-        private uint NextManualActionRequest()
-        {
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=System.Math.Max(System.Math.Max(m_InventoryRequestId,m_MissionRequest),inventory.RequestId)+1;
+
+        private uint NextManualActionRequest() {
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId =
+                System.Math.Max(System.Math.Max(m_InventoryRequestId, m_MissionRequest), inventory.RequestId) + 1;
             return m_InventoryRequestId;
         }
-        private bool TimedActionActive => m_MedicalActive || m_DissectingLootId>=0;
-        private void CancelTimedAction()
-        {
-            if(!TimedActionActive || m_ActionCancelPending || m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return;
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=NextManualActionRequest();
-            if(Send(new RaidActionCancelRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId}))
-            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_LootRevealAudio.Cancel();m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_ActionCancelPending=true;}
+
+        private bool TimedActionActive => m_MedicalActive || m_DissectingLootId >= 0;
+
+        private void CancelTimedAction() {
+            if (!TimedActionActive || m_ActionCancelPending || m_World == null || !m_World.IsCreated ||
+                m_InventoryQuery.IsEmptyIgnoreFilter)
+                return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = NextManualActionRequest();
+            if (Send(new RaidActionCancelRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId })) {
+                TrackInventoryAudio(MoonkovAudio.Library?.Equipment);
+                m_LootRevealAudio.Cancel();
+                m_InventoryRequestedAt = Time.unscaledTime;
+                m_InventoryRequestPending = true;
+                m_ActionCancelPending = true;
+            }
         }
-        private void ResetTimedAction()
-        {
-            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false; m_DissectingLootId=-1; m_ActionFeedbackUntil=0; m_ActionFeedback=null;
-            m_ActionAccepted=m_ActionCancelPending=m_ActionFailed=false; m_ActionRequestId=0;
-            m_ProgressTacticalRequest=0;m_ProgressTacticalDuration=0;
-            m_CloseLootWhenIdle=false;
+
+        private void ResetTimedAction() {
+            m_MedicalActive = m_ConsumableActive = m_ConsumableFood = m_ConsumableOxygen = false;
+            m_DissectingLootId = -1;
+            m_ActionFeedbackUntil = 0;
+            m_ActionFeedback = null;
+            m_ActionAccepted = m_ActionCancelPending = m_ActionFailed = false;
+            m_ActionRequestId = 0;
+            m_ProgressTacticalRequest = 0;
+            m_ProgressTacticalDuration = 0;
+            m_CloseLootWhenIdle = false;
         }
-        private void BeginTimedAction()
-        {
-            m_ActionRequestId=m_InventoryRequestId; m_ActionAccepted=m_ActionCancelPending=false;
-            m_ActionFeedback=null; m_ActionFeedbackUntil=0; m_ActionFailed=false;
+
+        private void BeginTimedAction() {
+            m_ActionRequestId = m_InventoryRequestId;
+            m_ActionAccepted = m_ActionCancelPending = false;
+            m_ActionFeedback = null;
+            m_ActionFeedbackUntil = 0;
+            m_ActionFailed = false;
         }
-        private string TimedActionBusyText()
-            => TimedActionActive ? m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") : m_MedicalActive ? "TREATING" : "SEARCHING" : "USING ITEM";
-        private void PresentTimedAction()
-        {
-            if(m_ActionView==null)return;
-            bool active=TimedActionActive && m_Snapshot.Phase==RaidPhase.Active;
-            bool visible=m_Snapshot.Phase==RaidPhase.Active && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked && !m_MapOpen &&
-                !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_ClashActionsBlocked && !DarkSightRequested;
-            if(!active && PresentOtherProgress(visible))return;
-            float remaining=(m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt)-Time.unscaledTime;
-            m_ActionView.Present(active,m_ActionAccepted,m_ActionCancelPending,m_MedicalActive,remaining,m_ActionDuration,
-                Time.unscaledTime<m_ActionFeedbackUntil ? m_ActionFeedback : null,m_ActionFailed,visible,m_InventoryVisible,
-                m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") : null);
-            if(active && visible && !ChatInputBlocked && RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel))CancelTimedAction();
+
+        private string TimedActionBusyText() {
+            return TimedActionActive
+                ? m_ConsumableActive ? (m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK") :
+                m_MedicalActive ? "TREATING" : "SEARCHING"
+                : "USING ITEM";
         }
-        private void SetInventory(bool visible)
-        {
+
+        private void PresentTimedAction() {
+            if (m_ActionView == null) return;
+            bool active = TimedActionActive && m_Snapshot.Phase == RaidPhase.Active;
+            bool visible = m_Snapshot.Phase == RaidPhase.Active && !GameSettings.Instance.IsPauseMenuOpen &&
+                           !CinematicInputBlocked && !m_MapOpen && !m_MissionDetailsVisible &&
+                           !m_CampaignJournalVisible && !m_ClashActionsBlocked && !DarkSightRequested;
+            if (!active && PresentOtherProgress(visible)) return;
+            float remaining = (m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt) - Time.unscaledTime;
+            m_ActionView.Present(active, m_ActionAccepted, m_ActionCancelPending, m_MedicalActive, remaining,
+                m_ActionDuration, Time.unscaledTime < m_ActionFeedbackUntil ? m_ActionFeedback : null, m_ActionFailed,
+                visible, m_InventoryVisible,
+                m_ConsumableActive ? m_ConsumableOxygen ? "REFILL O₂" : m_ConsumableFood ? "EAT" : "DRINK" : null);
+            if (active && visible && !ChatInputBlocked && RaidKeyBindings.Pressed(RaidKey.TiptoeOrCancel))
+                CancelTimedAction();
+        }
+
+        private void SetInventory(bool visible) {
             if (visible && m_FieldRecordOpen) return;
             if (visible) SetRaidMapOpen(false);
             if (visible && m_CampaignJournalVisible) SetCampaignJournal(false);
             if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
-            if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
-            {
-                if(!TimedActionActive && !QuickTacticalActionPending)return;
-            }
-            if(!visible && m_DissectingLootId>=0)CancelTimedAction();
+            if (m_InventoryRequestPending && m_Snapshot.Phase == RaidPhase.Active && !visible)
+                if (!TimedActionActive && !QuickTacticalActionPending)
+                    return;
+            if (!visible && m_DissectingLootId >= 0) CancelTimedAction();
             if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending))
-                MoonkovAudio.Play(visible ? MoonkovAudio.Library?.InventoryOpen :
-                    m_OpenedLootId >= 0 ? MoonkovAudio.Library?.ContainerClose : MoonkovAudio.Library?.InventoryClose, Vector3.zero);
-            if(visible)m_CloseLootWhenIdle=false;
-            else if(m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)
-            {
-                if(m_MedicalActive || QuickTacticalActionPending)m_CloseLootWhenIdle=true;
-                else RequestLoot(-1);
+                MoonkovAudio.Play(
+                    visible ? MoonkovAudio.Library?.InventoryOpen :
+                    m_OpenedLootId >= 0 ? MoonkovAudio.Library?.ContainerClose : MoonkovAudio.Library?.InventoryClose,
+                    Vector3.zero);
+            if (visible) { m_CloseLootWhenIdle = false; } else if (m_OpenedLootId >= 0 &&
+                                                                   m_Snapshot.Phase == RaidPhase.Active) {
+                if (m_MedicalActive || QuickTacticalActionPending)
+                    m_CloseLootWhenIdle = true;
+                else
+                    RequestLoot(-1);
             }
-            m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible) { ClearInventoryBackdrop(); m_LootRevealAudio.Cancel(); }
-            if (visible) { UpdateInventoryView(); if(!m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
-            else m_InventoryView.Suspend();
-            Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
+            m_InventoryVisible = visible;
+            m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible) {
+                ClearInventoryBackdrop();
+                m_LootRevealAudio.Cancel();
+            }
+            if (visible) {
+                UpdateInventoryView();
+                if (!m_HealthSelected) m_InventoryView.Show();
+                RefreshHealth();
+            } else { m_InventoryView.Suspend(); }
+            Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible ||
+                                   GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
-        private void ClosePack() => SetInventory(false);
-        private void CloseLootWhenIdle()
-        {
-            if(!m_CloseLootWhenIdle)return;
-            if(m_InventoryVisible || m_OpenedLootId<0 || m_Snapshot.Phase!=RaidPhase.Active)
-            {m_CloseLootWhenIdle=false;return;}
-            if(!TimedActionActive && !QuickTacticalActionPending && !m_InventoryRequestPending && RequestLoot(-1))
-                m_CloseLootWhenIdle=false;
+
+        private void ClosePack() { SetInventory(false); }
+
+        private void CloseLootWhenIdle() {
+            if (!m_CloseLootWhenIdle) return;
+            if (m_InventoryVisible || m_OpenedLootId < 0 || m_Snapshot.Phase != RaidPhase.Active) {
+                m_CloseLootWhenIdle = false;
+                return;
+            }
+            if (!TimedActionActive && !QuickTacticalActionPending && !m_InventoryRequestPending && RequestLoot(-1))
+                m_CloseLootWhenIdle = false;
         }
-        private void ResultBack() { m_ResultStep = Mathf.Max(0, m_ResultStep - 1); RenderResult(); }
-        private void ResultNext() { m_ResultStep = Mathf.Min(2, m_ResultStep + 1); RenderResult(); }
-        private void ReturnToShip() { if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync(); }
+
+        private void ResultBack() {
+            m_ResultStep = Mathf.Max(0, m_ResultStep - 1);
+            RenderResult();
+        }
+
+        private void ResultNext() {
+            m_ResultStep = Mathf.Min(2, m_ResultStep + 1);
+            RenderResult();
+        }
+
+        private void ReturnToShip() {
+            if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync();
+        }
+
         // 界面只显示本局且结果状态一致的物资清单。结算页依次展示战局结果、带回或丢失的物品和仓库余额。
-        private void RenderResult()
-        {
+        private void RenderResult() {
             RaidResultManifest manifest = null;
-            if (m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter)
-            {
-                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            if (m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter) {
+                var inventory =
+                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
+                        .GetSingletonEntity());
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Result?.Outcome == m_Snapshot.Phase)
                     manifest = inventory.Result;
             }
-            string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
-            MoonkovLocalization.Set(m_Root.Q<Label>("raidResultHeading"), m_ResultStep == 0 ? title : m_ResultStep == 1 ?
-                "CARGO MANIFEST" : "RESOURCE BALANCES");
+            string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" :
+                m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidResultHeading"),
+                m_ResultStep == 0 ? title : m_ResultStep == 1 ? "CARGO MANIFEST" : "RESOURCE BALANCES");
             if (manifest != null && m_ResultStep != 2)
-                MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}\nReturned {1:N0} / Lost {2:N0}", m_Snapshot.RaidId, manifest.ReturnedCount, manifest.LostCount);
-            else MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}", m_Snapshot.RaidId);
+                MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}\nReturned {1:N0} / Lost {2:N0}",
+                    m_Snapshot.RaidId, manifest.ReturnedCount, manifest.LostCount);
+            else
+                MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}", m_Snapshot.RaidId);
             m_Result.EnableInClassList("raid-result-failed", m_Snapshot.Phase != RaidPhase.Extracted);
             m_Result.EnableInClassList("raid-result-cargo", m_ResultStep == 1);
             m_Result.EnableInClassList("raid-result-storage", m_ResultStep == 2);
@@ -452,11 +598,16 @@ namespace Unity.MP_FPS
             m_Root.Q("raidStorageManifest").style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Root.Q("raidCargoManifest").style.display = m_ResultStep == 1 ? DisplayStyle.Flex : DisplayStyle.None;
             if (m_ResultStep == 1) m_ResultCargo.Present(manifest);
-            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestDust"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashDust : m_Snapshot.Dust);
-            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestAlloy"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashAlloy : m_Snapshot.Alloy);
-            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
-            for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
-            m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestDust"), "{0:N0}",
+                m_ResultStep == 2 ? m_Snapshot.StashDust : m_Snapshot.Dust);
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestAlloy"), "{0:N0}",
+                m_ResultStep == 2 ? m_Snapshot.StashAlloy : m_Snapshot.Alloy);
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}",
+                m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
+            for (int i = 0; i < 3; i++)
+                m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
+            m_ResultBack.SetEnabled(m_ResultStep > 0);
+            m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
             // Keep one owner for result actions; tutorial raids must return through the ship.
             m_Deploy.style.display = m_ResultStep == 2 && !m_TutorialConfigured ? DisplayStyle.Flex : DisplayStyle.None;
             m_Return.style.display = DisplayStyle.Flex;
@@ -464,73 +615,122 @@ namespace Unity.MP_FPS
         }
 
         // 客户端 World 放着服务器同步回来的数据。这个界面只连实际玩家的客户端，找到拥有的角色、已入场的连接和库存读数。
-        private void InitializeWorld()
-        {
+        private void InitializeWorld() {
             m_ReturnGuidance.Reset();
-            m_InventoryAudio.Reset(); m_LootRevealAudio.Reset(); m_InventorySequence = 0;
-            ResetTimedAction(); m_ActionRaidId=0;
+            m_InventoryAudio.Reset();
+            m_LootRevealAudio.Reset();
+            m_InventorySequence = 0;
+            ResetTimedAction();
+            m_ActionRaidId = 0;
             ResetBountyConnection();
-            foreach (var world in World.All)
-            {
+            foreach (var world in World.All) {
                 if (!world.IsCreated || !world.IsClient() || world.IsThinClient()) continue;
                 m_World = world;
                 m_StateQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<RaidClientState>());
-                m_FieldRecordClock = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ExpeditionClockState>());
+                m_FieldRecordClock =
+                    world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ExpeditionClockState>());
                 m_PlayerQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PredictedPlayerGhost>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>(), ComponentType.ReadOnly<LocalTransform>());
-                m_ConnectionQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>(), ComponentType.ReadOnly<NetworkStreamInGame>());
-                m_InventoryQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<RaidInventoryClientState>());
+                m_ConnectionQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>(),
+                    ComponentType.ReadOnly<NetworkStreamInGame>());
+                m_InventoryQuery =
+                    world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<RaidInventoryClientState>());
                 break;
             }
         }
 
-        private void LateUpdate()
-        {
+        private void LateUpdate() {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) {
+                ClearFieldRecords();
+                m_InteractionOutline.Hide();
+                UpdateTelemetry(false);
+                ClearInventoryBackdrop();
+                ResetChat();
+                ResetRaidCinematics();
+                m_Minimap.Hide();
+                ResetRaidMap();
+                PresentMelee(false);
+                PresentQuickSlots(false);
+                HideBountyClash();
+                return;
+            }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ClearFieldRecords(); m_InteractionOutline.Hide(); UpdateTelemetry(false); ClearInventoryBackdrop(); m_TaskPanel.style.display = DisplayStyle.None; UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) {
+                ClearFieldRecords();
+                m_InteractionOutline.Hide();
+                UpdateTelemetry(false);
+                ClearInventoryBackdrop();
+                m_TaskPanel.style.display = DisplayStyle.None;
+                UpdateChat();
+                ResetRaidCinematics();
+                m_Minimap.Hide();
+                ResetRaidMap();
+                PresentMelee(false);
+                PresentQuickSlots(false);
+                HideBountyClash();
+                return;
+            }
             // 先更新不同玩法都用到的库存和会话信息。竞技场或经典爆破接管后直接走自己的 HUD，后面是远征和赏金冲突的流程。
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateTelemetry(m_Snapshot.RaidId > 0);
-            if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
+            if (m_ActionRaidId != m_Snapshot.RaidId) {
+                ResetTimedAction();
+                m_ActionRaidId = m_Snapshot.RaidId;
+            }
             UpdateInventoryView();
-            if (m_ArenaHud != null) { PresentArenaHud(); return; }
+            if (m_ArenaHud != null) {
+                PresentArenaHud();
+                return;
+            }
             bool clash = PresentBountyClash();
             UpdateRaidCinematics(clash);
             UpdateChat();
-            if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
+            if (CinematicInputBlocked)
+                ResetRaidMap();
+            else
+                UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if ((RaidKeyBindings.Pressed(RaidKey.Inventory) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
-                {if(!m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending)SetInventory(!m_InventoryVisible);}
+            if ((RaidKeyBindings.Pressed(RaidKey.Inventory) ||
+                 (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked &&
+                ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked &&
+                !GameSettings.Instance.IsPauseMenuOpen)
+                if (!m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending)
+                    SetInventory(!m_InventoryVisible);
             if (settled && m_InventoryVisible) SetInventory(false);
             UpdateInventoryBackdrop();
-            if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
-            if (settled && !m_WasSettled)
-            {
+            if (!settled && m_WasSettled) {
                 m_ResultStep = 0;
-                if (m_Snapshot.Phase == RaidPhase.Extracted) MoonkovAudio.Confirm();
-                else MoonkovAudio.Error();
+                Utils.SetCursorVisible(false);
+            }
+            if (settled && !m_WasSettled) {
+                m_ResultStep = 0;
+                if (m_Snapshot.Phase == RaidPhase.Extracted)
+                    MoonkovAudio.Confirm();
+                else
+                    MoonkovAudio.Error();
             }
             if (m_InventoryVisible) Utils.SetCursorVisible(true);
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
-            var deathBags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            var deathBags =
+                m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
             MoonRaidMap.Active.ShowDeathBags(deathBags);
-            int viewing=m_DissectingLootId>=0 ? m_DissectingLootId : m_OpenedLootId;
-            bool switchable=m_InventoryVisible && IsDroppedLoot(viewing) && m_PlayerQuery.HasSingleton<LocalTransform>() &&
-                SelectNearbyDrop(deathBags,m_PlayerQuery.GetSingleton<LocalTransform>().Position,viewing)>=0;
-            m_SwitchDrop.style.display=switchable ? DisplayStyle.Flex : DisplayStyle.None;
+            int viewing = m_DissectingLootId >= 0 ? m_DissectingLootId : m_OpenedLootId;
+            bool switchable = m_InventoryVisible && IsDroppedLoot(viewing) &&
+                              m_PlayerQuery.HasSingleton<LocalTransform>() && SelectNearbyDrop(deathBags,
+                                  m_PlayerQuery.GetSingleton<LocalTransform>().Position, viewing) >= 0;
+            m_SwitchDrop.style.display = switchable ? DisplayStyle.Flex : DisplayStyle.None;
             m_SwitchDrop.SetEnabled(!m_InventoryRequestPending || TimedActionActive);
-            if (settled)
-            {
+            if (settled) {
                 // LateUpdate runs after character teardown, which can restore the previous cursor state.
                 Utils.SetCursorVisible(true);
-                bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
+                bool saving = m_Snapshot.SaveState == RaidSaveState.Saving ||
+                              m_Snapshot.SaveState == RaidSaveState.Retrying;
                 if (m_DeployRequestedRaid == m_Snapshot.RaidId && m_Snapshot.Sequence > m_DeployRequestedSequence &&
-                    m_Snapshot.LoadoutRequestId == m_DeployRequestId &&
-                    !m_Snapshot.DeployPending && m_Snapshot.LoadoutError != RaidLoadoutError.None)
+                    m_Snapshot.LoadoutRequestId == m_DeployRequestId && !m_Snapshot.DeployPending &&
+                    m_Snapshot.LoadoutError != RaidLoadoutError.None)
                     m_DeployRequestedRaid = 0;
                 bool deploying = m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId;
                 m_Deploy.SetEnabled(!saving && !deploying);
@@ -538,41 +738,59 @@ namespace Unity.MP_FPS
                 m_Return.SetEnabled(!saving && !deploying && GameManager.CanUseMainMenu);
                 m_CarryCells.SetEnabled(!saving && !deploying);
                 // Do not replace text while the player is editing it.
-                if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused || !m_CarryCells.Contains(focused))
+                if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused ||
+                    !m_CarryCells.Contains(focused))
                     m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
-                MoonkovLocalization.Set(m_LoadoutNote, deploying ? "Preparing loadout. Waiting for server confirmation..."
-                    : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
-                    : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
-                    : m_Snapshot.LoadoutError == RaidLoadoutError.ResearchSuppliesNoSpace ? Client.ResearchQuestCopy.Text("任务配发物品放不下。请回仓库腾出空间。", "Make room in your loadout for mission equipment.")
-                    : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
-                    : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. Reloading spends energy per round. Unspent energy returns on extraction."));
+                MoonkovLocalization.Set(m_LoadoutNote,
+                    deploying
+                        ? "Preparing loadout. Waiting for server confirmation..."
+                        :
+                        m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells
+                            ?
+                            "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
+                            : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount
+                                ? "Choose 0-12 energy cells."
+                                : m_Snapshot.LoadoutError == RaidLoadoutError.ResearchSuppliesNoSpace
+                                    ? Client.ResearchQuestCopy.Text("任务配发物品放不下。请回仓库腾出空间。",
+                                        "Make room in your loadout for mission equipment.")
+                                    : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected
+                                        ? "Loadout rejected. You can retry or return to the ship."
+                                        : MoonkovLocalization.Format(
+                                            $"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. Reloading spends energy per round. Unspent energy returns on extraction."));
                 if (!m_WasSettled && !saving) m_Return.Focus();
             }
             m_WasSettled = settled;
-            m_Result.style.display = settled && !clash && !(m_Cinematic?.HidesHUD ?? false) ? DisplayStyle.Flex : DisplayStyle.None;
-
+            m_Result.style.display = settled && !clash && !(m_Cinematic?.HidesHUD ?? false)
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             int nearest = -1;
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
-            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked && !CinematicInputBlocked;
+            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
+                         m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 &&
+                         !m_ClashActionsBlocked && !CinematicInputBlocked;
             PresentFieldRecords(ready && !settled && !clash && !m_TutorialConfigured);
             if (!alive) SetFieldRecordOpen(false);
             bool haloBusy = alive && HaloTransferRules.Occupied(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
-            bool haloBlocksLoot = haloBusy && !HaloSupportRules.Anchored(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
+            bool haloBlocksLoot =
+                haloBusy && !HaloSupportRules.Anchored(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
             CloseLootWhenIdle();
             UpdateMinimap(alive && ready && !settled && !clash);
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked && !haloBusy);
             // 只有角色还能行动、没有菜单接管、库存没有在等请求时，才允许按键操作世界里的目标。
-            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested && !m_ClashInteractionFocused &&
-                !ChatInputBlocked && !m_InventoryVisible && !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&
-                !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen && Application.isFocused &&
-                UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            bool liveInteraction = alive && ready && !settled && !MapInputBlocked && !DarkSightRequested &&
+                                   !m_ClashInteractionFocused && !ChatInputBlocked && !m_InventoryVisible &&
+                                   !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_FieldRecordOpen &&
+                                   !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
+                                   Application.isFocused && UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (alive) position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
-            SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest, out distance, !haloBusy);
+            SelectWorldInteraction(liveInteraction && !haloBlocksLoot, !clash, position, deathBags, out nearest,
+                out distance, !haloBusy);
             bool researchInteraction = ResearchInteractionAllowed(liveInteraction, clash);
-            bool researchControl = UpdateResearchQuests(alive && ready && !settled && !clash, researchInteraction, position);
+            bool researchControl =
+                UpdateResearchQuests(alive && ready && !settled && !clash, researchInteraction, position);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash && !haloBusy);
             missionControl |= researchControl;
             m_AirlockPrompt.BindingLabel = m_InteractionBindings.Label(m_InteractionBindings.Operate);
@@ -582,20 +800,22 @@ namespace Unity.MP_FPS
             UpdateTaskPanel(alive && ready && !settled);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
             bool readingTarget = ReadFieldRecord(liveInteraction && !missionControl);
-            bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy, missionControl || readingTarget, m_WorldControlFocused);
-            if (liveInteraction && !missionControl && !readingTarget && !haloBlocksLoot)
-            {
+            bool tacticalInteraction = TryQuickTacticalInteraction(liveInteraction && !haloBusy,
+                missionControl || readingTarget, m_WorldControlFocused);
+            if (liveInteraction && !missionControl && !readingTarget && !haloBlocksLoot) {
                 bool controlPressed = !haloBusy && !tacticalInteraction && !clash && m_WorldControlFocused &&
-                    m_InteractionBindings.Operate.WasPressedThisFrame() && m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
-                if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame() && !tacticalInteraction && !controlPressed && !m_WorldControlFocused)
+                                      m_InteractionBindings.Operate.WasPressedThisFrame() &&
+                                      m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
+                if (nearest >= 0 && m_InteractionBindings.Loot.WasPressedThisFrame() && !tacticalInteraction &&
+                    !controlPressed && !m_WorldControlFocused)
                     OpenLootContainer(nearest);
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
             // 按键和瞄准可以逐帧响应，较重的界面文字按间隔更新。这里先处理选择与操作，再到后面刷文字。
             bool interactionVisible = liveInteraction && !m_FieldRecordOpen;
-            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, researchInteraction, position, deathBags);
-            if (!interactionVisible)
-            {
+            UpdateInteractionOutlines(interactionVisible, !clash, !haloBlocksLoot, !haloBusy, researchInteraction,
+                position, deathBags);
+            if (!interactionVisible) {
                 m_Interaction.EnableInClassList("is-visible", false);
                 m_AirlockPrompt.RefreshSelection(Camera.main, position, false);
             }
@@ -603,89 +823,129 @@ namespace Unity.MP_FPS
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
             RefreshHealth();
-            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId && nearest<RaidLootContainers.FirstMissionCacheId;
-            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
-            bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
-            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !missionControl && !m_WorldControlFocused,alien,IsDroppedLoot(nearest));
-            RefreshHaloTransferInteraction(interactionVisible && !missionControl && !readingTarget && !m_WorldControlFocused && nearest < 0 && Time.unscaledTime >= m_LootErrorUntil);
+            bool deathBag = nearest >= RaidLootContainers.FirstDeathBagId &&
+                            nearest < RaidLootContainers.FirstMissionCacheId;
+            bool empty = deathBag
+                ? deathBags.Bags[nearest].Empty
+                : nearest >= 0 && nearest < RaidLootContainers.FirstDeathBagId &&
+                  (m_Snapshot.TakenMask & (1UL << nearest)) != 0;
+            bool alien = deathBag && deathBags.Bags[nearest].CharacterIndex == -1;
+            RefreshInteraction(nearest, distance, deathBag, empty,
+                interactionVisible && !missionControl && !m_WorldControlFocused, alien, IsDroppedLoot(nearest));
+            RefreshHaloTransferInteraction(interactionVisible && !missionControl && !readingTarget &&
+                                           !m_WorldControlFocused && nearest < 0 &&
+                                           Time.unscaledTime >= m_LootErrorUntil);
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             bool showReturn = !m_InventoryVisible && !MapInputBlocked && !m_MissionDetailsVisible &&
-                !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;
+                              !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen &&
+                              !CinematicInputBlocked;
             if (m_ReturnGuidance.Update(m_Snapshot.RaidId, m_Snapshot.TimeLeft, ready && alive && !settled && !clash,
-                extracting, showReturn, Time.unscaledTime))
-            {
+                    extracting, showReturn, Time.unscaledTime)) {
                 m_RevealUntil = Time.unscaledTime + 8;
                 MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
             }
-            if (clash)
-            {
+            if (clash) {
                 m_Status.style.display = DisplayStyle.None;
                 m_ExtractionPanel.RemoveFromClassList("is-visible");
-                m_OxygenPanel.style.display = DisplayStyle.None; m_OxygenWarning.style.display = DisplayStyle.None;
-                m_Clock.text = ""; m_Exit.text = "";
+                m_OxygenPanel.style.display = DisplayStyle.None;
+                m_OxygenWarning.style.display = DisplayStyle.None;
+                m_Clock.text = "";
+                m_Exit.text = "";
                 return;
             }
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
-            MoonkovLocalization.Set(m_Timer, ready ? MoonkovLocalization.Format($"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining") : "Connecting...");
+            MoonkovLocalization.Set(m_Timer,
+                ready
+                    ? MoonkovLocalization.Format(
+                        $"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining")
+                    : "Connecting...");
             var clock = ExpeditionClockPresentation.Active;
-            MoonkovLocalization.Set(m_Clock, clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "");
+            MoonkovLocalization.Set(m_Clock,
+                clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "");
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
-            if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
+            if (count != m_PreviousCount) {
+                m_PreviousCount = count;
+                m_RevealUntil = Time.unscaledTime + 4;
+            }
             RefreshSupplyReceipt(ready && !settled);
-            MoonkovLocalization.Set(m_Bag, "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}" , count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
-            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
-            {
-                var batteryGraph = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
-                if (batteryGraph != null) MoonkovLocalization.Set(m_Bag,
-                    "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\nMEDICAL / {6}",
-                    count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells,
-                    batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true),
-                    batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) + batteryGraph.Count("trauma_kit", true));
+            MoonkovLocalization.Set(m_Bag, "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}", count,
+                m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
+                var batteryGraph = m_World.EntityManager
+                    .GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
+                if (batteryGraph != null)
+                    MoonkovLocalization.Set(m_Bag,
+                        "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\nMEDICAL / {6}",
+                        count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells, batteryGraph.CellEnergy(true),
+                        batteryGraph.CellEnergy(accessibleOnly: true),
+                        batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) +
+                        batteryGraph.Count("trauma_kit", true));
             }
-            if (m_ExtractionSoundRaid != m_Snapshot.RaidId)
-            { m_ExtractionSoundRaid = m_Snapshot.RaidId; m_AudioExtracting = false; m_ExtractionSoundAt = 0; }
-            if (extracting != m_AudioExtracting)
-            {
-                if (extracting || alive && !settled)
-                    MoonkovAudio.Play(extracting ? MoonkovAudio.Library?.ExtractStart : MoonkovAudio.Library?.ExtractCancel, Vector3.zero);
-                m_AudioExtracting = extracting; m_ExtractionSoundAt = Time.unscaledTime + 1;
+            if (m_ExtractionSoundRaid != m_Snapshot.RaidId) {
+                m_ExtractionSoundRaid = m_Snapshot.RaidId;
+                m_AudioExtracting = false;
+                m_ExtractionSoundAt = 0;
             }
-            if (extracting && m_Snapshot.ExtractionRemaining <= 3 && Time.unscaledTime >= m_ExtractionSoundAt)
-            {
+            if (extracting != m_AudioExtracting) {
+                if (extracting || (alive && !settled))
+                    MoonkovAudio.Play(
+                        extracting ? MoonkovAudio.Library?.ExtractStart : MoonkovAudio.Library?.ExtractCancel,
+                        Vector3.zero);
+                m_AudioExtracting = extracting;
+                m_ExtractionSoundAt = Time.unscaledTime + 1;
+            }
+            if (extracting && m_Snapshot.ExtractionRemaining <= 3 && Time.unscaledTime >= m_ExtractionSoundAt) {
                 MoonkovAudio.Play(MoonkovAudio.Library?.ExtractTick, Vector3.zero, .65f);
                 m_ExtractionSoundAt = Time.unscaledTime + 1;
             }
             bool returnBeacon = showReturn && m_ReturnGuidance.ShowBeacon;
-            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && showReturn && (extracting || returnBeacon));
+            m_ExtractionPanel.EnableInClassList("is-visible",
+                alive && !settled && showReturn && (extracting || returnBeacon));
             m_ExtractionTrack.style.display = DisplayStyle.None;
             if (extracting)
-                m_ExtractionFill.style.width = Length.Percent(100 * Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining / MoonRaidMap.Active.ExtractionSeconds));
-            else m_ExtractionFill.style.width = Length.Percent(0);
-            if (alive && !settled)
-            {
-                Vector3 delta = MoonRaidMap.Active.NearestExtraction(position) - position;
-                string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
+                m_ExtractionFill.style.width = Length.Percent(100 *
+                                                              Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining /
+                                                                  MoonRaidMap.Active.ExtractionSeconds));
+            else
+                m_ExtractionFill.style.width = Length.Percent(0);
+            if (alive && !settled) {
+                var delta = MoonRaidMap.Active.NearestExtraction(position) - position;
+                string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" :
+                    delta.z > 0 ? "N" : "S";
                 if (extracting)
-                    MoonkovLocalization.Set(m_Exit, MoonRaidMap.Active.ExtractionCount > 1 ? "EXTRACTION BEACON" : "SHUTTLE BEACON");
+                    MoonkovLocalization.Set(m_Exit,
+                        MoonRaidMap.Active.ExtractionCount > 1 ? "EXTRACTION BEACON" : "SHUTTLE BEACON");
                 else if (returnBeacon)
-                    MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude, MoonkovLocalization.Text(heading));
+                    MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude,
+                        MoonkovLocalization.Text(heading));
                 else
                     MoonkovLocalization.Set(m_Exit, "");
-            }
-            else MoonkovLocalization.Set(m_Exit, "");
-            if (settled)
-            {
-                MoonkovLocalization.Set(m_SaveStatus, m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
-                    : m_Snapshot.SaveState == RaidSaveState.Saved ? m_Snapshot.Phase == RaidPhase.Extracted
-                        ? "Extracted items are saved. If recovery items are pending, make room and claim them before deploying again."
-                        : "Stash saved. You can reconnect later."
-                    : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...");
+            } else { MoonkovLocalization.Set(m_Exit, ""); }
+            if (settled) {
+                MoonkovLocalization.Set(m_SaveStatus,
+                    m_Snapshot.SaveState == RaidSaveState.SessionOnly
+                        ? "Stash lasts for this connection only."
+                        :
+                        m_Snapshot.SaveState == RaidSaveState.Saved
+                            ?
+                            m_Snapshot.Phase == RaidPhase.Extracted
+                                ? "Extracted items are saved. If recovery items are pending, make room and claim them before deploying again."
+                                : "Stash saved. You can reconnect later."
+                            : m_Snapshot.SaveState == RaidSaveState.Retrying
+                                ? "Waiting to save. Retrying..."
+                                : "Saving raid results...");
                 RenderResult();
             }
         }
 
-        private void RefreshInteraction(int nearest, float distance, bool deathBag, bool empty, bool allowed,bool alien=false,bool dropped=false)
-        {
+        private void RefreshInteraction(
+            int nearest,
+            float distance,
+            bool deathBag,
+            bool empty,
+            bool allowed,
+            bool alien = false,
+            bool dropped = false) {
             m_Interaction.EnableInClassList("is-halo-transfer", false);
             bool record = m_FieldRecordFocus.HasValue;
             bool error = !record && Time.unscaledTime < m_LootErrorUntil;
@@ -694,46 +954,48 @@ namespace Unity.MP_FPS
             if (!visible) return;
             m_Interaction.EnableInClassList("is-error", error);
             m_Interaction.EnableInClassList("is-empty", !error && empty);
-            MoonkovLocalization.Set(m_InteractionKey, error ? "!" : m_InteractionBindings.Label(m_InteractionBindings.Loot));
+            MoonkovLocalization.Set(m_InteractionKey,
+                error ? "!" : m_InteractionBindings.Label(m_InteractionBindings.Loot));
             m_InteractionDetails.style.display = error ? DisplayStyle.None : DisplayStyle.Flex;
-            if (record)
-            {
+            if (record) {
                 MoonkovLocalization.Set(m_Prompt, Client.ResearchQuestCopy.Text("读取日志", "Read field log"));
                 MoonkovLocalization.Set(m_InteractionState, m_FieldRecordFocus.Value.Title);
                 MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
                 return;
             }
-            if (error)
-            {
-                MoonkovLocalization.Set(m_Prompt, m_DissectionInterrupted ? "搜索中断。请留在容器旁，保持静止并避免受伤。" :
-                    "Cannot reach this container. Move closer with a clear line of sight.");
+            if (error) {
+                MoonkovLocalization.Set(m_Prompt,
+                    m_DissectionInterrupted
+                        ? "搜索中断。请留在容器旁，保持静止并避免受伤。"
+                        : "Cannot reach this container. Move closer with a clear line of sight.");
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text(m_ClassicHud ? "SEARCH" : "[F]  SEARCH FALLEN EXPEDITION")
-                : MoonkovLocalization.Format($"[F]  OPEN SUPPLY CACHE / {nearest + 1:00}");
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 " + RaidFurnitureLoot.NameFor(nearest) :
+                dropped ? "搜索地面丢弃物" :
+                alien ? MoonkovLocalization.Text("[F]  DISSECT / SEARCH ALIEN REMAINS") :
+                deathBag ? MoonkovLocalization.Text(m_ClassicHud ? "SEARCH" : "[F]  SEARCH FALLEN EXPEDITION") :
+                MoonkovLocalization.Format($"[F]  OPEN SUPPLY CACHE / {nearest + 1:00}");
             if (prompt.StartsWith("[F]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
-            MoonkovLocalization.Set(m_InteractionState, RaidFurnitureLoot.IsFurniture(nearest) ? "小型容器" : empty ? "EMPTY" : "CONTENTS");
+            MoonkovLocalization.Set(m_InteractionState,
+                RaidFurnitureLoot.IsFurniture(nearest) ? "小型容器" : empty ? "EMPTY" : "CONTENTS");
             MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
         }
 
-        private void RefreshSupplyReceipt(bool active)
-        {
-            int3 supplies = new int3(m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
-            if (m_FeedbackRaid != m_Snapshot.RaidId || !active)
-            {
+        private void RefreshSupplyReceipt(bool active) {
+            var supplies = new int3(m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
+            if (m_FeedbackRaid != m_Snapshot.RaidId || !active) {
                 m_FeedbackRaid = m_Snapshot.RaidId;
                 m_PreviousSupplies = supplies;
-                m_ReceiptSupplies = default; m_ReceiptQueued = false; m_ReceiptUntil = 0;
-            }
-            else
-            {
+                m_ReceiptSupplies = default;
+                m_ReceiptQueued = false;
+                m_ReceiptUntil = 0;
+            } else {
                 // Only server snapshot increases earn a receipt. Opening or clicking a cache is not a pickup.
-                int3 gained = math.max(supplies - m_PreviousSupplies, 0);
+                var gained = math.max(supplies - m_PreviousSupplies, 0);
                 m_PreviousSupplies = supplies;
-                if (math.any(gained > 0))
-                {
+                if (math.any(gained > 0)) {
                     // Pickup sound is emitted by the acknowledged transfer, for every item type.
                     if (Time.unscaledTime >= m_ReceiptUntil && !m_ReceiptQueued) m_ReceiptSupplies = default;
                     m_ReceiptSupplies += gained;
@@ -746,304 +1008,438 @@ namespace Unity.MP_FPS
                     MoonkovLocalization.Set(m_ReceiptText, text);
                 }
             }
-            if (m_ReceiptQueued && !m_InventoryVisible)
-            {
+            if (m_ReceiptQueued && !m_InventoryVisible) {
                 m_ReceiptQueued = false;
                 m_ReceiptUntil = Time.unscaledTime + 3.2f;
             }
-            m_Receipt.EnableInClassList("is-visible", active && !m_InventoryVisible &&
-                !GameSettings.Instance.IsPauseMenuOpen && Time.unscaledTime < m_ReceiptUntil);
+            m_Receipt.EnableInClassList("is-visible",
+                active && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen &&
+                Time.unscaledTime < m_ReceiptUntil);
         }
 
-        private static void AppendReceipt(ref string text, int amount, string item)
-        {
+        private static void AppendReceipt(ref string text, int amount, string item) {
             if (amount <= 0) return;
             if (text.Length > 0) text += "\n";
             text += $"+{amount}  {MoonkovLocalization.Text(item)}";
         }
 
-        public static int SelectNearbyDrop(RaidDeathBagClientState bags,Vector3 position,int current)
-        {
-            int next=int.MaxValue,first=int.MaxValue;
-            foreach(var bag in bags.Bags.Values)
-            {
-                if(bag.LootId==current || bag.CharacterIndex!=RaidLootContainers.DroppedItemCharacterIndex || bag.Empty ||
-                    Vector3.Distance(position,(Vector3)bag.Position)>RaidRules.PickupRange ||
-                    UnityEngine.Physics.Linecast(position+Vector3.up*1.4f,(Vector3)bag.Position+Vector3.up*.25f,
-                        LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))continue;
-                first=System.Math.Min(first,bag.LootId);
-                if(bag.LootId>current)next=System.Math.Min(next,bag.LootId);
+        public static int SelectNearbyDrop(RaidDeathBagClientState bags, Vector3 position, int current) {
+            int next = int.MaxValue, first = int.MaxValue;
+            foreach (var bag in bags.Bags.Values) {
+                if (bag.LootId == current || bag.CharacterIndex != RaidLootContainers.DroppedItemCharacterIndex ||
+                    bag.Empty || Vector3.Distance(position, (Vector3)bag.Position) > RaidRules.PickupRange ||
+                    UnityEngine.Physics.Linecast(position + Vector3.up * 1.4f,
+                        (Vector3)bag.Position + Vector3.up * .25f, LayerMask.GetMask("Default", "Ground"),
+                        QueryTriggerInteraction.Ignore))
+                    continue;
+                first = System.Math.Min(first, bag.LootId);
+                if (bag.LootId > current) next = System.Math.Min(next, bag.LootId);
             }
-            return next!=int.MaxValue ? next : first!=int.MaxValue ? first : -1;
+            return next != int.MaxValue ? next : first != int.MaxValue ? first : -1;
         }
-        private void SwitchNearbyDrop()
-        {
-            if(!m_InventoryVisible || m_InventoryRequestPending && !TimedActionActive || !m_PlayerQuery.HasSingleton<LocalTransform>())return;
-            var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
-            int current=m_DissectingLootId>=0 ? m_DissectingLootId : m_OpenedLootId;
-            int next=SelectNearbyDrop(bags,m_PlayerQuery.GetSingleton<LocalTransform>().Position,current);
-            if(next>=0)OpenLootContainer(next);
+
+        private void SwitchNearbyDrop() {
+            if (!m_InventoryVisible || (m_InventoryRequestPending && !TimedActionActive) ||
+                !m_PlayerQuery.HasSingleton<LocalTransform>())
+                return;
+            var bags =
+                m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            int current = m_DissectingLootId >= 0 ? m_DissectingLootId : m_OpenedLootId;
+            int next = SelectNearbyDrop(bags, m_PlayerQuery.GetSingleton<LocalTransform>().Position, current);
+            if (next >= 0) OpenLootContainer(next);
         }
+
         // 先向服务端发打开请求。客户端可以立即显示自己的背包和等待进度，搜刮目标里实际能拿的物品由后续快照带来。
-        private void OpenLootContainer(int id)
-        {
-            if(!RequestLoot(id))return;
+        private void OpenLootContainer(int id) {
+            if (!RequestLoot(id)) return;
             BeginTimedAction();
-            var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
-            m_HealthSelected=false;m_EquipmentHost.style.display=DisplayStyle.Flex;m_HealthHost.style.display=DisplayStyle.None;
-            m_EquipmentTab.EnableInClassList("raid-tab-active",true);m_HealthTab.EnableInClassList("raid-tab-active",false);
-            bool dissect=bags.Bags.TryGetValue(id,out var remains) && remains.RequiresDissection;
-            m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_DissectingLootId=id;
-            m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
-            m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
-            string opening=dissect || m_ClassicHud ? "SEARCHING" :
-                RaidFurnitureLoot.IsSupplyCache(id) ? "正在搜索补给箱…" : RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            var carried=inventory.Graph?.Clone();
-            carried?.Items.RemoveAll(item=>item.Id==Inventory.LootInventoryExchange.Root || inventory.Graph.RootOf(item.Id)==Inventory.LootInventoryExchange.Root);
-            m_LootOpenPending=true;m_InventoryView.Present(carried,opening,operationCompleted:false);
-            m_InventoryView.SetReadOnly(opening);SetInventory(true);
+            var bags =
+                m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            m_HealthSelected = false;
+            m_EquipmentHost.style.display = DisplayStyle.Flex;
+            m_HealthHost.style.display = DisplayStyle.None;
+            m_EquipmentTab.EnableInClassList("raid-tab-active", true);
+            m_HealthTab.EnableInClassList("raid-tab-active", false);
+            bool dissect = bags.Bags.TryGetValue(id, out var remains) && remains.RequiresDissection;
+            m_MedicalActive = m_ConsumableActive = m_ConsumableFood = m_ConsumableOxygen = false;
+            m_DissectingLootId = id;
+            m_ActionDuration = dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
+            m_DissectionEndsAt = Time.unscaledTime + m_ActionDuration;
+            string opening = dissect || m_ClassicHud ? "SEARCHING" :
+                RaidFurnitureLoot.IsSupplyCache(id) ? "正在搜索补给箱…" :
+                RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" :
+                IsDroppedLoot(id) ? "搜索地面丢弃物…" :
+                id >= RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            var carried = inventory.Graph?.Clone();
+            carried?.Items.RemoveAll(item =>
+                item.Id == Inventory.LootInventoryExchange.Root ||
+                inventory.Graph.RootOf(item.Id) == Inventory.LootInventoryExchange.Root);
+            m_LootOpenPending = true;
+            m_InventoryView.Present(carried, opening, false);
+            m_InventoryView.SetReadOnly(opening);
+            SetInventory(true);
         }
-        private bool RequestLoot(int lootId)
-        {
-            if(m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return false;
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=NextManualActionRequest();
-            if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))
-            { MoonkovAudio.Error(); return false; }
+
+        private bool RequestLoot(int lootId) {
+            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return false;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = NextManualActionRequest();
+            if (!Send(new RaidLootOpenRpc
+                    { RaidId = m_Snapshot.RaidId, LootId = lootId, RequestId = m_InventoryRequestId })) {
+                MoonkovAudio.Error();
+                return false;
+            }
             TrackInventoryAudio(null);
             m_LootRevealAudio.Begin(m_Snapshot.RaidId, m_InventoryRequestId, lootId, inventory.Graph);
-            m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
+            m_InventoryRequestedAt = Time.unscaledTime;
+            m_InventoryRequestPending = true;
+            return true;
         }
+
         // Sequence 变化表示收到了新库存消息，RequestId 用来匹配正在等的请求。收到重复的内容时也能用这两个值判断该更新什么。
-        private void UpdateInventoryView()
-        {
-            if (m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>(TimedActionActive ? m_ActionDuration+5 : 5))
-            {
-                bool timedOut=TimedActionActive;
-                m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_ActionCancelPending=false;
-                if(timedOut) {m_ActionFeedback="ACTION INTERRUPTED";m_ActionFailed=true;m_ActionFeedbackUntil=Time.unscaledTime+3;}
-                m_InventoryAudio.Reset(); m_LootRevealAudio.Cancel(); MoonkovAudio.Error();
-                m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
-                m_InventoryView.Present(inventory.Graph,"ACTION INTERRUPTED",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
+        private void UpdateInventoryView() {
+            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            if (m_InventoryRequestPending && Time.unscaledTime - m_InventoryRequestedAt >
+                (TimedActionActive ? m_ActionDuration + 5 : 5)) {
+                bool timedOut = TimedActionActive;
+                m_DissectingLootId = -1;
+                m_MedicalActive = m_ConsumableActive = m_ConsumableFood = m_ConsumableOxygen = false;
+                m_ActionCancelPending = false;
+                if (timedOut) {
+                    m_ActionFeedback = "ACTION INTERRUPTED";
+                    m_ActionFailed = true;
+                    m_ActionFeedbackUntil = Time.unscaledTime + 3;
+                }
+                m_InventoryAudio.Reset();
+                m_LootRevealAudio.Cancel();
+                MoonkovAudio.Error();
+                m_InventoryRequestPending = false;
+                m_LootOpenPending = false;
+                m_InventoryView.SetReadOnly(null);
+                m_InventoryView.Present(inventory.Graph, "ACTION INTERRUPTED", lootId: inventory.LootId,
+                    droppedItem: IsDroppedLoot(inventory.LootId), corpseCharacterIndex: inventory.CorpseCharacterIndex,
+                    corpseEquipmentSlots: inventory.CorpseEquipmentSlots);
                 m_HealthView.Message("ACTION INTERRUPTED");
             }
-            if (!m_InventoryVisible || inventory.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase != RaidPhase.Active)
+            if (!m_InventoryVisible || inventory.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase != RaidPhase.Active) {
                 m_LootRevealAudio.Cancel();
-            else
-            {
+            } else {
                 // Process closure/cancellation before draining queued item sounds.
                 if (inventory.Sequence != m_InventorySequence) m_LootRevealAudio.Observe(inventory);
                 if (m_LootRevealAudio.TryPlay(Time.unscaledTime))
                     MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             }
-            if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
-            if(m_DissectingLootId>=0)
-                MoonkovLocalization.Set(m_InventoryTitle,"SEARCHING");
-            if (inventory.Sequence!=m_InventorySequence)
-            {
-                m_InventorySequence=inventory.Sequence;
+            if (inventory.Graph == null || inventory.RaidId != m_Snapshot.RaidId) return;
+            if (m_DissectingLootId >= 0) MoonkovLocalization.Set(m_InventoryTitle, "SEARCHING");
+            if (inventory.Sequence != m_InventorySequence) {
+                m_InventorySequence = inventory.Sequence;
                 var cue = m_InventoryAudio.Observe(inventory.RaidId, inventory.RequestId,
-                    inventory.MedicalItemId != null || inventory.DissectingLootId >= 0 && m_LootOpenPending,
+                    inventory.MedicalItemId != null || (inventory.DissectingLootId >= 0 && m_LootOpenPending),
                     inventory.Error != Inventory.InventoryError.None, MoonkovAudio.Library?.Error);
                 MoonkovAudio.PlayWeaponLayer(cue, Vector3.zero, 1, 0);
-                if((inventory.MedicalItemId!=null || inventory.DissectingLootId>=0) && inventory.RequestId<m_ActionRequestId)return;
-                if(inventory.MedicalItemId!=null)
-                {
-                    m_ActionAccepted=true;
-                    m_MedicalActive=true;m_MedicalEndsAt=Time.unscaledTime+inventory.MedicalRemaining;
-                    m_ConsumableActive=inventory.MedicalIsConsumable;
-                    m_ConsumableOxygen=m_ConsumableActive && Inventory.ConsumableCatalog.Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Oxygen>0;
-                    m_ConsumableFood=m_ConsumableActive && Inventory.ConsumableCatalog.Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Food==true;
-                    m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.MedicalRemaining);
-                    string action=TimedActionBusyText();
-                    m_InventoryView.Present(inventory.Graph,action,operationCompleted:false,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
+                if ((inventory.MedicalItemId != null || inventory.DissectingLootId >= 0) &&
+                    inventory.RequestId < m_ActionRequestId)
+                    return;
+                if (inventory.MedicalItemId != null) {
+                    m_ActionAccepted = true;
+                    m_MedicalActive = true;
+                    m_MedicalEndsAt = Time.unscaledTime + inventory.MedicalRemaining;
+                    m_ConsumableActive = inventory.MedicalIsConsumable;
+                    m_ConsumableOxygen = m_ConsumableActive && Inventory.ConsumableCatalog
+                        .Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Oxygen > 0;
+                    m_ConsumableFood = m_ConsumableActive && Inventory.ConsumableCatalog
+                        .Get(inventory.Graph.Find(inventory.MedicalItemId)?.Code)?.Food == true;
+                    m_ActionDuration = Mathf.Max(m_ActionDuration, inventory.MedicalRemaining);
+                    string action = TimedActionBusyText();
+                    m_InventoryView.Present(inventory.Graph, action, false, inventory.LootId,
+                        IsDroppedLoot(inventory.LootId), inventory.CorpseCharacterIndex,
+                        inventory.CorpseEquipmentSlots);
                     m_InventoryView.SetReadOnly(action);
                     return;
                 }
-                if(inventory.DissectingLootId>=0)
-                {
-                    m_ActionAccepted=true;
-                    m_DissectingLootId=inventory.DissectingLootId;
-                    m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
-                    m_ActionDuration=inventory.SearchItemSeconds>0 ? inventory.SearchItemSeconds : Mathf.Max(m_ActionDuration,inventory.DissectionRemaining);
+                if (inventory.DissectingLootId >= 0) {
+                    m_ActionAccepted = true;
+                    m_DissectingLootId = inventory.DissectingLootId;
+                    m_DissectionEndsAt = Time.unscaledTime + inventory.DissectionRemaining;
+                    m_ActionDuration = inventory.SearchItemSeconds > 0
+                        ? inventory.SearchItemSeconds
+                        : Mathf.Max(m_ActionDuration, inventory.DissectionRemaining);
                     // 搜索揭示进度和搬运物品是两件并行的事。进度快照照常刷新右栏，确认了这次搬运才解除等待。
-                    bool moveAcknowledged=!m_InventoryRequestPending || inventory.RequestId>=m_InventoryRequestId;
-                    bool requestFinished=m_InventoryRequestPending && moveAcknowledged;
-                    if(moveAcknowledged && !m_ActionCancelPending){m_InventoryRequestPending=false;m_InventoryRequestedAt=Time.unscaledTime;}
-                    m_LootOpenPending=false;
+                    bool moveAcknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId;
+                    bool requestFinished = m_InventoryRequestPending && moveAcknowledged;
+                    if (moveAcknowledged && !m_ActionCancelPending) {
+                        m_InventoryRequestPending = false;
+                        m_InventoryRequestedAt = Time.unscaledTime;
+                    }
+                    m_LootOpenPending = false;
                     m_InventoryView.SetReadOnly(m_ActionCancelPending ? "SEARCHING" : null);
-                    string moveError=requestFinished && inventory.Error!=Inventory.InventoryError.None ?
-                        MoonkovLocalization.Format($"Inventory: {inventory.Error}") : null;
-                    m_InventoryView.Present(inventory.Graph,moveError,operationCompleted:moveAcknowledged && !m_ActionCancelPending,lootId:inventory.LootId,
-                        droppedItem:IsDroppedLoot(inventory.LootId),searchTotal:inventory.SearchTotal,searchFootprints:inventory.SearchFootprints);
+                    string moveError = requestFinished && inventory.Error != Inventory.InventoryError.None
+                        ? MoonkovLocalization.Format($"Inventory: {inventory.Error}")
+                        : null;
+                    m_InventoryView.Present(inventory.Graph, moveError, moveAcknowledged && !m_ActionCancelPending,
+                        inventory.LootId, IsDroppedLoot(inventory.LootId), searchTotal: inventory.SearchTotal,
+                        searchFootprints: inventory.SearchFootprints);
                     return;
                 }
-                bool wasTimed=TimedActionActive;
-                bool wasMedical=m_MedicalActive;
-                bool wasConsumable=m_ConsumableActive;
-                bool wasOpen=m_OpenedLootId>=0;
-                bool missionCache = m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId && !RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ||
-                    inventory.LootId >= RaidLootContainers.FirstMissionCacheId && !RaidFurnitureLoot.IsFurniture(inventory.LootId);
-                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId || wasOpen && inventory.LootId<0;
+                bool wasTimed = TimedActionActive;
+                bool wasMedical = m_MedicalActive;
+                bool wasConsumable = m_ConsumableActive;
+                bool wasOpen = m_OpenedLootId >= 0;
+                bool missionCache =
+                    (m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId &&
+                     !RaidFurnitureLoot.IsFurniture(m_OpenedLootId)) ||
+                    (inventory.LootId >= RaidLootContainers.FirstMissionCacheId &&
+                     !RaidFurnitureLoot.IsFurniture(inventory.LootId));
+                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId ||
+                                    (wasOpen && inventory.LootId < 0);
                 if (acknowledged) m_InventoryRequestPending = false;
-                m_OpenedLootId=inventory.LootId;
-                if(acknowledged)
-                {
-                    m_DissectionInterrupted=m_DissectingLootId>=0 && inventory.Error==Inventory.InventoryError.Inaccessible;
-                    m_ActionCancelPending=false;
-                    m_DissectingLootId=-1;m_MedicalActive=m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
+                m_OpenedLootId = inventory.LootId;
+                if (acknowledged) {
+                    m_DissectionInterrupted = m_DissectingLootId >= 0 &&
+                                              inventory.Error == Inventory.InventoryError.Inaccessible;
+                    m_ActionCancelPending = false;
+                    m_DissectingLootId = -1;
+                    m_MedicalActive = m_ConsumableActive = m_ConsumableFood = m_ConsumableOxygen = false;
+                    m_LootOpenPending = false;
+                    m_InventoryView.SetReadOnly(null);
                 }
-                MoonkovLocalization.Set(m_InventoryTitle, RaidFurnitureLoot.IsFurniture(inventory.LootId) ? "抽屉搜刮 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
-                    : IsDroppedLoot(inventory.LootId) ? "地面丢弃物 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
-                    : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
-                string inventoryMessage = acknowledged && inventory.Error != Inventory.InventoryError.None ?
-                    missionCache ? MissionInventoryFailure(inventory.Error) : m_DissectionInterrupted || wasMedical ? "操作已中断：移动、受伤、开火、切换或库存变化；未消耗物品。" : MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null;
-                m_InventoryView.Present(inventory.Graph,inventoryMessage,
-                    operationCompleted: acknowledged,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
-                if(acknowledged && !string.IsNullOrEmpty(inventory.ActionFeedback))
-                {
-                    inventoryMessage=wasConsumable && inventory.Error==Inventory.InventoryError.None && inventory.ActionFeedback=="补给使用完成。" ? null :
-                        wasTimed ? Client.RaidActionReadout.Receipt(inventory.ActionFeedback,inventory.Error!=Inventory.InventoryError.None) : inventory.ActionFeedback;
-                    m_InventoryView.Present(inventory.Graph,inventoryMessage,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
+                MoonkovLocalization.Set(m_InventoryTitle,
+                    RaidFurnitureLoot.IsFurniture(inventory.LootId) ? "抽屉搜刮 / 随身装备" :
+                    inventory.LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备" :
+                    IsDroppedLoot(inventory.LootId) ? "地面丢弃物 / 随身装备" :
+                    inventory.LootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
+                    inventory.LootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
+                string inventoryMessage = acknowledged && inventory.Error != Inventory.InventoryError.None
+                    ? missionCache ? MissionInventoryFailure(inventory.Error) :
+                    m_DissectionInterrupted || wasMedical ? "操作已中断：移动、受伤、开火、切换或库存变化；未消耗物品。" :
+                    MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}")
+                    : null;
+                m_InventoryView.Present(inventory.Graph, inventoryMessage, acknowledged, inventory.LootId,
+                    IsDroppedLoot(inventory.LootId), inventory.CorpseCharacterIndex, inventory.CorpseEquipmentSlots);
+                if (acknowledged && !string.IsNullOrEmpty(inventory.ActionFeedback)) {
+                    inventoryMessage =
+                        wasConsumable && inventory.Error == Inventory.InventoryError.None &&
+                        inventory.ActionFeedback == "补给使用完成。" ? null :
+                        wasTimed ? Client.RaidActionReadout.Receipt(inventory.ActionFeedback,
+                            inventory.Error != Inventory.InventoryError.None) : inventory.ActionFeedback;
+                    m_InventoryView.Present(inventory.Graph, inventoryMessage, lootId: inventory.LootId,
+                        droppedItem: IsDroppedLoot(inventory.LootId),
+                        corpseCharacterIndex: inventory.CorpseCharacterIndex,
+                        corpseEquipmentSlots: inventory.CorpseEquipmentSlots);
                 }
-                if(acknowledged && wasTimed)
-                {
-                    bool consumed=wasConsumable && inventory.Error==Inventory.InventoryError.None && inventory.ActionFeedback=="补给使用完成。";
-                    m_ActionFeedback=consumed ? null : !wasMedical && string.IsNullOrEmpty(inventory.ActionFeedback) && inventory.Error==Inventory.InventoryError.None && inventory.LootId>=0 ?
-                        "CONTAINER OPENED" : Client.RaidActionReadout.Receipt(inventory.ActionFeedback,inventory.Error!=Inventory.InventoryError.None);
-                    m_ActionFailed=!consumed && m_ActionFeedback!="TREATMENT COMPLETE" && m_ActionFeedback!="SEARCH COMPLETE" && m_ActionFeedback!="CONTAINER OPENED" && m_ActionFeedback!="ACTION CANCELLED";
-                    m_ActionFeedbackUntil=Time.unscaledTime+3;
+                if (acknowledged && wasTimed) {
+                    bool consumed = wasConsumable && inventory.Error == Inventory.InventoryError.None &&
+                                    inventory.ActionFeedback == "补给使用完成。";
+                    m_ActionFeedback = consumed ? null :
+                        !wasMedical && string.IsNullOrEmpty(inventory.ActionFeedback) &&
+                        inventory.Error == Inventory.InventoryError.None && inventory.LootId >= 0 ? "CONTAINER OPENED" :
+                        Client.RaidActionReadout.Receipt(inventory.ActionFeedback,
+                            inventory.Error != Inventory.InventoryError.None);
+                    m_ActionFailed = !consumed && m_ActionFeedback != "TREATMENT COMPLETE" &&
+                                     m_ActionFeedback != "SEARCH COMPLETE" && m_ActionFeedback != "CONTAINER OPENED" &&
+                                     m_ActionFeedback != "ACTION CANCELLED";
+                    m_ActionFeedbackUntil = Time.unscaledTime + 3;
                 }
                 if (acknowledged) m_HealthView.Message(inventoryMessage ?? "");
                 if (missionCache && acknowledged && inventory.Error == Inventory.InventoryError.Inaccessible)
-                    MissionNotice(m_MissionSnapshot.Phase == Missions.MissionPhase.Expired ? "回收窗口已关闭 · 本批未撤出的产物失效，普通搜刮与撤离仍可继续。" : inventoryMessage);
+                    MissionNotice(m_MissionSnapshot.Phase == Missions.MissionPhase.Expired
+                        ? "回收窗口已关闭 · 本批未撤出的产物失效，普通搜刮与撤离仍可继续。"
+                        : inventoryMessage);
                 if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
                 // A self-use failure can be repeated by protection snapshots. It is not a close command.
-                if(inventory.LootId<0 && wasOpen)
-                {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}
-                else if(m_InventoryVisible && !m_HealthSelected && inventory.LootId<0 && !m_LootOpenPending)m_InventoryView.Show();
+                if (inventory.LootId < 0 && wasOpen) {
+                    if (inventory.Error == Inventory.InventoryError.Inaccessible)
+                        m_LootErrorUntil = Time.unscaledTime + 3;
+                    SetInventory(false);
+                } else if (m_InventoryVisible && !m_HealthSelected && inventory.LootId < 0 && !m_LootOpenPending) {
+                    m_InventoryView.Show();
+                }
             }
-        }
-        private void DropItem(Inventory.InventoryItem item)
-        {
-            if(m_InventoryRequestPending || m_Snapshot.Phase!=RaidPhase.Active)return;
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=NextManualActionRequest();
-            if(Send(new RaidInventoryDropRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId,
-                ExpectedVersion=inventory.Graph.Version,ItemId=item.Id}))
-            {TrackInventoryAudio(MoonkovAudio.Library?.InventoryDrop);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
-            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots); }
-        }
-        // 单纯整理随身物品带一份库存版本。有打开的搜刮容器时，额外带容器编号和它的版本，由房主校验两边的库存。
-        private void SendInventoryMove(Inventory.InventoryCommand command)
-        {
-            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=NextManualActionRequest();
-            bool sent=inventory.LootId>=0
-                ? Send(new RaidLootMoveRpc {RaidId=m_Snapshot.RaidId,LootId=inventory.LootId,ExpectedLootVersion=inventory.LootVersion,
-                    RequestId=m_InventoryRequestId,ExpectedVersion=command.ExpectedVersion,Operation=command.Operation,
-                    ItemId=command.ItemId??"",Parent=command.Parent??"",Region=command.Region??"",TargetId=command.TargetId??"",
-                    X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated})
-                : Send(new RaidInventoryMoveRpc { RaidId=m_Snapshot.RaidId, RequestId=m_InventoryRequestId, ExpectedVersion=command.ExpectedVersion,
-                Operation=command.Operation, ItemId=command.ItemId??"", Parent=command.Parent??"", Region=command.Region??"", TargetId=command.TargetId??"",
-                X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated });
-            if(sent)
-            {
-                TrackInventoryAudio(MoonkovInventoryAudio.ForMove(inventory.Graph, command, MoonkovAudio.Library));
-                m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true;
-            }
-            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container."); }
         }
 
-        private void UseMedical(Inventory.InventoryItem item)
-            => UseMedical(item, BodyPart.Auto);
-        private void ConsumeSupply(string code)
-        {
+        private void DropItem(Inventory.InventoryItem item) {
+            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = NextManualActionRequest();
+            if (Send(new RaidInventoryDropRpc {
+                    RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                    ExpectedVersion = inventory.Graph.Version, ItemId = item.Id
+                })) {
+                TrackInventoryAudio(MoonkovAudio.Library?.InventoryDrop);
+                m_InventoryRequestedAt = Time.unscaledTime;
+                m_InventoryRequestPending = true;
+            } else {
+                MoonkovAudio.Error();
+                m_InventoryView.Present(inventory.Graph, "未连接；物品仍在原容器内。", lootId: inventory.LootId,
+                    droppedItem: IsDroppedLoot(inventory.LootId), corpseCharacterIndex: inventory.CorpseCharacterIndex,
+                    corpseEquipmentSlots: inventory.CorpseEquipmentSlots);
+            }
+        }
+
+        // 单纯整理随身物品带一份库存版本。有打开的搜刮容器时，额外带容器编号和它的版本，由房主校验两边的库存。
+        private void SendInventoryMove(Inventory.InventoryCommand command) {
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = NextManualActionRequest();
+            bool sent = inventory.LootId >= 0
+                ? Send(new RaidLootMoveRpc {
+                    RaidId = m_Snapshot.RaidId, LootId = inventory.LootId, ExpectedLootVersion = inventory.LootVersion,
+                    RequestId = m_InventoryRequestId, ExpectedVersion = command.ExpectedVersion,
+                    Operation = command.Operation,
+                    ItemId = command.ItemId ?? "", Parent = command.Parent ?? "", Region = command.Region ?? "",
+                    TargetId = command.TargetId ?? "",
+                    X = command.X, Y = command.Y, Quantity = command.Quantity, Rotated = command.Rotated
+                })
+                : Send(new RaidInventoryMoveRpc {
+                    RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                    ExpectedVersion = command.ExpectedVersion,
+                    Operation = command.Operation, ItemId = command.ItemId ?? "", Parent = command.Parent ?? "",
+                    Region = command.Region ?? "", TargetId = command.TargetId ?? "",
+                    X = command.X, Y = command.Y, Quantity = command.Quantity, Rotated = command.Rotated
+                });
+            if (sent) {
+                TrackInventoryAudio(MoonkovInventoryAudio.ForMove(inventory.Graph, command, MoonkovAudio.Library));
+                m_InventoryRequestedAt = Time.unscaledTime;
+                m_InventoryRequestPending = true;
+            } else {
+                MoonkovAudio.Error();
+                m_InventoryView.Present(inventory.Graph, "Not connected. Item remains in its container.");
+            }
+        }
+
+        private void UseMedical(Inventory.InventoryItem item) { UseMedical(item, BodyPart.Auto); }
+
+        private void ConsumeSupply(string code) {
             if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
             var item = inventory.Graph?.Items.Find(i => i.Code == code && inventory.Graph.ConsumableAccessible(i));
             if (item != null) UseConsumable(item);
         }
-        private void UseConsumable(Inventory.InventoryItem item)
-        {
-            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active || m_InventoryQuery.IsEmptyIgnoreFilter) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
+
+        private void UseConsumable(Inventory.InventoryItem item) {
+            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active ||
+                m_InventoryQuery.IsEmptyIgnoreFilter)
+                return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>()
+                ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>()
+                : default;
             var definition = Inventory.ConsumableCatalog.Get(item.Code);
             bool shieldSupply = Inventory.BatteryEnergy.IsCell(item);
             bool oxygenSupply = definition != null && definition.Oxygen > 0;
-            if (!(shieldSupply ? CanRechargeShieldCell(item) : oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
-            {
-                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped badge." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
-                    "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
-                MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
+            if (!(shieldSupply ? CanRechargeShieldCell(item) :
+                    oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition))) {
+                string message = shieldSupply
+                    ?
+                    "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped badge."
+                    : oxygenSupply
+                        ? "Cannot refill oxygen: reserve is full or the player is inactive."
+                        : "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
+                MoonkovAudio.Error();
+                m_InventoryView.Present(inventory.Graph, message);
+                m_HealthView.Message(message);
+                return;
             }
             m_InventoryRequestId = NextManualActionRequest();
-            if (Send(new RaidConsumableUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
-                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
-            {
+            if (Send(new RaidConsumableUseRpc {
+                    RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                    ExpectedVersion = inventory.Graph.Version, ItemId = item.Id
+                })) {
                 TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.BatteryInsert :
                     oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : null);
-                m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
-                if(!shieldSupply)
-                {
-                    BeginTimedAction();m_MedicalActive=m_ConsumableActive=true;m_ConsumableFood=definition.Food;m_ConsumableOxygen=oxygenSupply;
-                    m_ActionDuration=Inventory.ConsumableCatalog.UseSeconds(item.Code);
-                    m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
+                m_InventoryRequestedAt = Time.unscaledTime;
+                m_InventoryRequestPending = true;
+                if (!shieldSupply) {
+                    BeginTimedAction();
+                    m_MedicalActive = m_ConsumableActive = true;
+                    m_ConsumableFood = definition.Food;
+                    m_ConsumableOxygen = oxygenSupply;
+                    m_ActionDuration = Inventory.ConsumableCatalog.UseSeconds(item.Code);
+                    m_MedicalEndsAt = Time.unscaledTime + m_ActionDuration;
                 }
-            }
-            else
-            {
+            } else {
                 const string message = "Not connected. Consumable remains in its container.";
-                MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message);
+                MoonkovAudio.Error();
+                m_InventoryView.Present(inventory.Graph, message);
+                m_HealthView.Message(message);
             }
-            RefreshHealth();
-        }
-        private void TreatPart(BodyPart part)
-        {
-            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            var item = inventory.Graph?.Items.Find(inventory.Graph.MedicalAccessible);
-            if (item != null) UseMedical(item, part);
-        }
-        private void UseMedical(Inventory.InventoryItem item, BodyPart part)
-        {
-            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId = NextManualActionRequest();
-            if (Send(new RaidMedicalUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
-                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
-            {
-                BeginTimedAction();
-                TrackInventoryAudio(item.Code == "medkit" || item.Code == "med_gel" ? null : MoonkovAudio.Library?.Medical);
-                m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;m_ConsumableActive=m_ConsumableFood=m_ConsumableOxygen=false;
-                m_ActionDuration=Inventory.ConsumableCatalog.MedicalSeconds(item.Code,MoonRaidMap.Active.MedicalSeconds);m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
-            }
-            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container."); }
             RefreshHealth();
         }
 
-        private void CarryCellsChanged(ChangeEvent<int> evt)
-        {
+        private void TreatPart(BodyPart part) {
+            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            var item = inventory.Graph?.Items.Find(inventory.Graph.MedicalAccessible);
+            if (item != null) UseMedical(item, part);
+        }
+
+        private void UseMedical(Inventory.InventoryItem item, BodyPart part) {
+            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = NextManualActionRequest();
+            if (Send(new RaidMedicalUseRpc {
+                    RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                    ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part
+                })) {
+                BeginTimedAction();
+                TrackInventoryAudio(item.Code == "medkit" || item.Code == "med_gel"
+                    ? null
+                    : MoonkovAudio.Library?.Medical);
+                m_InventoryRequestedAt = Time.unscaledTime;
+                m_InventoryRequestPending = true;
+                m_MedicalActive = true;
+                m_ConsumableActive = m_ConsumableFood = m_ConsumableOxygen = false;
+                m_ActionDuration =
+                    Inventory.ConsumableCatalog.MedicalSeconds(item.Code, MoonRaidMap.Active.MedicalSeconds);
+                m_MedicalEndsAt = Time.unscaledTime + m_ActionDuration;
+            } else {
+                MoonkovAudio.Error();
+                m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container.");
+            }
+            RefreshHealth();
+        }
+
+        private void CarryCellsChanged(ChangeEvent<int> evt) {
             PlayerProfileClient.SelectCarryCells(evt.newValue);
             m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
         }
 
         // 结算保存结束后才可以再次出发。受大厅管理的对局要退回小队，下一局由大厅另起一张地图。
-        private void Deploy()
-        {
+        private void Deploy() {
             // A managed raid always returns to its party; another deploy must get a fresh map.
-            if (OnlineLobbyClient.InInstance) { ReturnToShip(); return; }
+            if (OnlineLobbyClient.InInstance) {
+                ReturnToShip();
+                return;
+            }
             if (m_ClashMode) return;
-            if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
-                m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||
-                m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
+            if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active || m_Snapshot.DeployPending ||
+                m_DeployRequestedRaid == m_Snapshot.RaidId || m_Snapshot.SaveState == RaidSaveState.Saving ||
+                m_Snapshot.SaveState == RaidSaveState.Retrying)
+                return;
             uint requestId = m_Snapshot.LoadoutRequestId + 1;
-            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = PlayerProfileClient.CarryCells, RequestId = requestId }))
-            {
+            if (Send(new RaidDeployRpc {
+                    SettledRaidId = m_Snapshot.RaidId, CarryCells = PlayerProfileClient.CarryCells,
+                    RequestId = requestId
+                })) {
                 GameSettings.Instance.IsPauseMenuOpen = false;
                 m_DeployRequestedRaid = m_Snapshot.RaidId;
                 m_DeployRequestedSequence = m_Snapshot.Sequence;
@@ -1053,18 +1449,17 @@ namespace Unity.MP_FPS
         }
 
         // Netcode 通过一只临时 ECS 实体发 RPC。这里放进消息组件和目标连接，实际发送由网络系统完成。
-        private bool Send<T>(T rpc) where T : unmanaged, IRpcCommand
-        {
+        private bool Send<T>(T rpc) where T : unmanaged, IRpcCommand {
             if (m_World == null || !m_World.IsCreated || !m_ConnectionQuery.HasSingleton<NetworkId>()) return false;
             var em = m_World.EntityManager;
             var entity = em.CreateEntity();
             em.AddComponentData(entity, rpc);
-            em.AddComponentData(entity, new SendRpcCommandRequest { TargetConnection = m_ConnectionQuery.GetSingletonEntity() });
+            em.AddComponentData(entity,
+                new SendRpcCommandRequest { TargetConnection = m_ConnectionQuery.GetSingletonEntity() });
             return true;
         }
 
-        private void OnDisable()
-        {
+        private void OnDisable() {
             ReleaseResearchHold();
             m_ResearchField.Clear();
             m_ResearchRadio.Dispose();
@@ -1075,7 +1470,8 @@ namespace Unity.MP_FPS
             if (m_TaskToggle != null) m_TaskToggle.clicked -= ToggleTasks;
             if (m_ClashTaskToggle != null) m_ClashTaskToggle.clicked -= ToggleTasks;
             m_ClashTaskToggle = null;
-            m_InteractionBindings?.Dispose(); m_InteractionBindings = null;
+            m_InteractionBindings?.Dispose();
+            m_InteractionBindings = null;
             DisposeTelemetry();
             DisposeChat();
             DisposeCampaignHUD();
@@ -1091,23 +1487,32 @@ namespace Unity.MP_FPS
             DisposeQuickSlots();
             CancelMissionHold();
             RaidMissionSite.Active?.StopPresentation();
-            m_Minimap?.Dispose(); m_Minimap = null;
-            m_ClassicMinimap?.Dispose(); m_ClassicMinimap = null;
+            m_Minimap?.Dispose();
+            m_Minimap = null;
+            m_ClassicMinimap?.Dispose();
+            m_ClassicMinimap = null;
             m_AirlockPrompt?.RefreshSelection(null, default, false);
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
-            m_InventoryView?.Dispose(); m_InventoryView=null;
-            m_ClassicShop?.Dispose(); m_ClassicShop = null;
-            m_HealthView?.Dispose(); m_HealthView = null;
+            m_InventoryView?.Dispose();
+            m_InventoryView = null;
+            m_ClassicShop?.Dispose();
+            m_ClassicShop = null;
+            m_HealthView?.Dispose();
+            m_HealthView = null;
             if (m_EquipmentTab != null) m_EquipmentTab.clicked -= EquipmentTab;
             if (m_HealthTab != null) m_HealthTab.clicked -= HealthTab;
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
-            if (m_World != null && m_World.IsCreated)
-            {
-                m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose(); m_InventoryQuery.Dispose(); m_FieldRecordClock.Dispose();
+            if (m_World != null && m_World.IsCreated) {
+                m_StateQuery.Dispose();
+                m_PlayerQuery.Dispose();
+                m_ConnectionQuery.Dispose();
+                m_InventoryQuery.Dispose();
+                m_FieldRecordClock.Dispose();
             }
             m_World = null;
             if (s_Active == this) s_Active = null;
-            if (m_InventoryVisible || m_MissionDetailsVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
+            if (m_InventoryVisible || m_MissionDetailsVisible)
+                Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
             m_MissionDetailsVisible = false;
             m_InventoryVisible = false;
             m_Root?.Clear();

@@ -14,11 +14,9 @@ using Unity.MP_FPS.Inventory;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace Unity.MP_FPS.Client
-{
+namespace Unity.MP_FPS.Client {
     // A private rendering stage: no player input, networking, or gameplay controller.
-    public sealed partial class MenuCharacterView : IDisposable
-    {
+    public sealed partial class MenuCharacterView : IDisposable {
         // The project's PC renderer only draws layers 0–7. UI is within that mask.
         private const int ViewLayer = 5;
         private const float PortraitFieldOfView = 27;
@@ -31,8 +29,10 @@ namespace Unity.MP_FPS.Client
         public bool HaloVisible => m_Halo != null && m_Halo.gameObject.activeInHierarchy;
         public Scene DisplayScene => m_Scene;
         public int CurrentMotionIndex => m_Motion;
-        public string CurrentMotion => m_Settings == null ? string.Empty :
-            m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
+
+        public string CurrentMotion =>
+            m_Settings == null ? string.Empty : m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
+
         public int CharacterIndex { get; private set; } = -1;
         private MenuCharacterSettings m_Settings;
         private readonly GameSettings m_GameSettings;
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS.Client
         private readonly Transform m_SharedStage;
         private Animator m_Animator;
         public event Action FrameRendered;
-        private readonly System.Random m_Random = new System.Random();
+        private readonly System.Random m_Random = new();
         private static int s_StageSequence;
         private readonly AnimationClipPlayable[] m_Clips = new AnimationClipPlayable[2];
         private readonly int[] m_Indices = new int[2];
@@ -79,13 +79,18 @@ namespace Unity.MP_FPS.Client
         public float InspectionYaw => m_InspectionYaw;
         public float Zoom { get; private set; } = 1;
 
-        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null, Transform sharedStage = null, bool homePose = false)
-        {
+        public MenuCharacterView(
+            bool idleOnly = false,
+            Image element = null,
+            int? characterIndex = null,
+            Transform sharedStage = null,
+            bool homePose = false) {
             m_IdleOnly = idleOnly || homePose;
             m_HomePose = homePose;
             m_SharedStage = sharedStage;
             Element = element ?? new Image();
-            Element.pickingMode = homePose ? PickingMode.Ignore : PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
+            Element.pickingMode = homePose ? PickingMode.Ignore : PickingMode.Position;
+            Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
             Element.tooltip = homePose ? string.Empty : MoonkovLocalization.Text("拖动旋转 / 滚轮缩放");
             Element.RegisterCallback<PointerDownEvent>(BeginInspect);
@@ -98,106 +103,142 @@ namespace Unity.MP_FPS.Client
             m_GameSettings = characterIndex.HasValue ? null : GameSettings.Instance;
             SelectCharacter(characterIndex ?? m_GameSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex);
             if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged += SelectCharacter;
-            try
-            {
+            try {
                 m_LastTime = Time.realtimeSinceStartupAsDouble;
                 if (m_SharedStage == null) m_Timer = Element.schedule.Execute(Tick).Every(33);
+            } catch {
+                Dispose();
+                throw;
             }
-            catch { Dispose(); throw; }
         }
 
-        private void SelectCharacter(int characterIndex)
-        {
+        private void SelectCharacter(int characterIndex) {
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (m_Disposed || CharacterIndex == characterIndex) return;
             ReleaseStage();
             CharacterIndex = characterIndex;
             m_Motion = m_LastAction = m_BagRemaining = 0;
             m_ActionBag = null;
-            MotionChanges = 0; HaloAimWeight = 0;
+            MotionChanges = 0;
+            HaloAimWeight = 0;
             string path = GameSettings.MenuCharacterSettingsPath(CharacterIndex);
             m_Settings = Resources.Load<MenuCharacterSettings>(path);
-            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
-            {
+            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null ||
+                m_Settings.Motions.Length == 0) {
                 m_Settings = null;
                 Debug.LogWarning("Moonkov menu character settings are missing: " + path);
             }
         }
 
-        private void BeginInspect(PointerDownEvent evt)
-        {
+        private void BeginInspect(PointerDownEvent evt) {
             // Only a press on the portrait starts inspection. Buttons/items layered
             // above it retain their own event target and pointer capture.
             if (m_Disposed || m_HomePose || m_DragPointer >= 0 || evt.target != Element ||
-                evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0) return;
+                evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0)
+                return;
             m_DragPointer = evt.pointerId;
             m_DragPosition = Element.WorldToLocal(evt.position);
-            if (!m_Inspected) { m_InspectionYaw = m_PoseTurn; m_Inspected = true; }
+            if (!m_Inspected) {
+                m_InspectionYaw = m_PoseTurn;
+                m_Inspected = true;
+            }
             Element.CapturePointer(evt.pointerId);
             m_Timer?.Every(16);
             evt.StopPropagation();
         }
-        private void Inspect(PointerMoveEvent evt)
-        {
+
+        private void Inspect(PointerMoveEvent evt) {
             if (evt.pointerId != m_DragPointer || !Element.HasPointerCapture(evt.pointerId)) return;
-            if ((evt.pressedButtons & 1) == 0) { StopInspect(); return; }
-            Vector2 position = Element.WorldToLocal(evt.position);
-            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw -
-                (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
+            if ((evt.pressedButtons & 1) == 0) {
+                StopInspect();
+                return;
+            }
+            var position = Element.WorldToLocal(evt.position);
+            m_InspectionYaw =
+                Mathf.Repeat(
+                    m_InspectionYaw -
+                    (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) -
+                180f;
             m_DragPosition = position;
             m_ViewDirty = true;
             evt.StopPropagation();
         }
-        private void ZoomInspect(WheelEvent evt)
-        {
-            if (m_Disposed || m_HomePose || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0) return;
+
+        private void ZoomInspect(WheelEvent evt) {
+            if (m_Disposed || m_HomePose || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0)
+                return;
             Zoom = Mathf.Clamp(Zoom * Mathf.Exp(-Mathf.Clamp(evt.delta.y, -40, 40) * .08f), .65f, 3f);
             m_ViewDirty = true;
             evt.StopPropagation();
             (evt.target as VisualElement)?.focusController?.IgnoreEvent(evt);
         }
-        private void EndInspect(PointerUpEvent evt)
-        {
+
+        private void EndInspect(PointerUpEvent evt) {
             if (evt.pointerId != m_DragPointer || evt.button != 0) return;
-            StopInspect(); evt.StopPropagation();
+            StopInspect();
+            evt.StopPropagation();
         }
-        private void CancelInspect(PointerCancelEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
-        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
-        private void Detached(DetachFromPanelEvent evt) => ReleaseStage();
-        private void StopInspect()
-        {
-            int pointer = m_DragPointer; m_DragPointer = -1;
+
+        private void CancelInspect(PointerCancelEvent evt) {
+            if (evt.pointerId == m_DragPointer) StopInspect();
+        }
+
+        private void CaptureLost(PointerCaptureOutEvent evt) {
+            if (evt.pointerId == m_DragPointer) StopInspect();
+        }
+
+        private void Detached(DetachFromPanelEvent evt) { ReleaseStage(); }
+
+        private void StopInspect() {
+            int pointer = m_DragPointer;
+            m_DragPointer = -1;
             if (pointer >= 0 && Element.HasPointerCapture(pointer)) Element.ReleasePointer(pointer);
             if (pointer >= 0) m_Timer?.Every(33);
         }
-        private void ApplyOrientation()
-        {
+
+        private void ApplyOrientation() {
             if (m_Model != null)
-                m_Model.transform.localRotation = Quaternion.Euler(0, m_HomePose ? HomeYaw : m_Settings.Yaw +
-                    (m_Inspected ? m_InspectionYaw : m_PoseTurn), 0);
+                m_Model.transform.localRotation = Quaternion.Euler(0,
+                    m_HomePose ? HomeYaw : m_Settings.Yaw + (m_Inspected ? m_InspectionYaw : m_PoseTurn), 0);
         }
 
-        public void ResetInspection()
-        {
-            StopInspect(); m_InspectionYaw = 0; m_Inspected = false; Zoom = 1; m_ViewDirty = true;
+        public void ResetInspection() {
+            StopInspect();
+            m_InspectionYaw = 0;
+            m_Inspected = false;
+            Zoom = 1;
+            m_ViewDirty = true;
         }
 
         // 预览可以独占一套舞台，也能挂到小队共用舞台。这里准备模型和动画，独立展示时还会配置自己的相机和灯。
-        private void CreateStage()
-        {
-            m_Slot = 0; m_Motion = 0; m_Blend = 0; m_BaseTime = 0; m_Transition = false;
+        private void CreateStage() {
+            m_Slot = 0;
+            m_Motion = 0;
+            m_Blend = 0;
+            m_BaseTime = 0;
+            m_Transition = false;
             m_Times[0] = m_Times[1] = 0;
             m_GestureActive = false;
 #if UNITY_EDITOR
-            if (m_SharedStage == null && !Application.isPlaying) { m_Scene = EditorSceneManager.NewPreviewScene(); m_EditorScene = true; }
-            else
+            if (m_SharedStage == null && !Application.isPlaying) {
+                m_Scene = EditorSceneManager.NewPreviewScene();
+                m_EditorScene = true;
+            } else
 #endif
-                m_Scene = m_SharedStage != null ? m_SharedStage.gameObject.scene : SceneManager.CreateScene("Moonkov menu character " + Guid.NewGuid().ToString("N"));
+            {
+                m_Scene = m_SharedStage != null
+                    ? m_SharedStage.gameObject.scene
+                    : SceneManager.CreateScene("Moonkov menu character " + Guid.NewGuid().ToString("N"));
+            }
             m_Stage = new GameObject("Menu character render stage");
             SceneManager.MoveGameObjectToScene(m_Stage, m_Scene);
             // Far from gameplay geometry and lights in a player build.
-            if (m_SharedStage != null) m_Stage.transform.SetParent(m_SharedStage, false);
-            else m_Stage.transform.position = m_EditorScene ? Vector3.zero : new Vector3(1000 + 64 * (s_StageSequence++ % 100), 1000, 1000);
+            if (m_SharedStage != null)
+                m_Stage.transform.SetParent(m_SharedStage, false);
+            else
+                m_Stage.transform.position = m_EditorScene
+                    ? Vector3.zero
+                    : new Vector3(1000 + 64 * (s_StageSequence++ % 100), 1000, 1000);
             m_Stage.SetActive(false);
             m_Model = UnityEngine.Object.Instantiate(m_Settings.VisualPrefab, m_Stage.transform, false);
             m_Model.transform.localPosition = Vector3.zero;
@@ -218,7 +259,8 @@ namespace Unity.MP_FPS.Client
             m_HandAvoidance?.PreparePresentation(0, 0);
             m_Spring?.InitializePresentation();
             m_Chest = animator.GetBoneTransform(HumanBodyBones.Chest);
-            if (m_Settings.GestureBake != null) m_Gestures = new DollSingerBakedGestures(animator, m_Settings.GestureBake);
+            if (m_Settings.GestureBake != null)
+                m_Gestures = new DollSingerBakedGestures(animator, m_Settings.GestureBake);
             m_FullBodyMask = new AvatarMask { name = "Menu full body", hideFlags = HideFlags.HideAndDontSave };
             for (int part = 0; part < (int)AvatarMaskBodyPart.LastBodyPart; part++)
                 m_FullBodyMask.SetHumanoidBodyPartActive((AvatarMaskBodyPart)part, true);
@@ -226,40 +268,47 @@ namespace Unity.MP_FPS.Client
             m_Graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
             m_Mixer = AnimationMixerPlayable.Create(m_Graph, 2);
             m_BaseIdle = AnimationClipPlayable.Create(m_Graph, m_Settings.Motions[0]);
-            m_BaseIdle.SetSpeed(0); m_BaseIdle.SetApplyFootIK(false); m_BaseIdle.SetApplyPlayableIK(true);
+            m_BaseIdle.SetSpeed(0);
+            m_BaseIdle.SetApplyFootIK(false);
+            m_BaseIdle.SetApplyPlayableIK(true);
             m_Layers = AnimationLayerMixerPlayable.Create(m_Graph, 2);
             m_Graph.Connect(m_BaseIdle, 0, m_Layers, 0);
             m_Graph.Connect(m_Mixer, 0, m_Layers, 1);
-            m_Layers.SetInputWeight(0, 1); m_Layers.SetInputWeight(1, 1);
+            m_Layers.SetInputWeight(0, 1);
+            m_Layers.SetInputWeight(1, 1);
             m_Layers.SetLayerMaskFromAvatarMask(1, m_FullBodyMask);
             AnimationPlayableOutput.Create(m_Graph, "Character", animator).SetSourcePlayable(m_Layers);
             SetClip(0, 0);
             m_Mixer.SetInputWeight(0, 1f);
-            m_Graph.Play(); m_Graph.Evaluate(0);
+            m_Graph.Play();
+            m_Graph.Evaluate(0);
             m_TwistFollowers?.ApplyPresentation();
             m_Remaining = IdleDuration();
             m_Head = animator.GetBoneTransform(HumanBodyBones.Head);
             var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
-            m_FaceHeightOffset = m_Head != null && neck != null ? Vector3.Distance(m_Head.position, neck.position) * 1.25f : 0;
+            m_FaceHeightOffset = m_Head != null && neck != null
+                ? Vector3.Distance(m_Head.position, neck.position) * 1.25f
+                : 0;
             m_Finger = animator.GetBoneTransform(HumanBodyBones.RightIndexDistal);
-            if (m_Finger != null) while (m_Finger.childCount > 0) m_Finger = m_Finger.GetChild(0);
+            if (m_Finger != null)
+                while (m_Finger.childCount > 0)
+                    m_Finger = m_Finger.GetChild(0);
             InitializeEquipmentVisuals();
             PresentMeleeEquipment();
             UpdateHalo();
             SampleEquipmentVisuals(0);
             ApplyProtectionInventory(m_ProtectionInventory);
             ApplyEquipmentProtectionSnapshot();
-
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
-            foreach (var renderer in m_Renderers)
-            {
+            foreach (var renderer in m_Renderers) {
                 renderer.updateWhenOffscreen = true;
                 // Squad renders are requested manually, sometimes more than once
                 // per Editor update. Skin the final authored pose for each render.
                 if (m_SharedStage != null) renderer.forceMatrixRecalculationPerRender = true;
                 renderer.forceRenderingOff = false;
             }
-            if (m_Renderers.Length == 0) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
+            if (m_Renderers.Length == 0)
+                throw new InvalidOperationException("The menu visual prefab has no character renderer.");
             m_Bounds = new Bounds(m_Stage.transform.position, Vector3.zero);
             ExpandFramingBounds();
             if (m_SharedStage != null) return;
@@ -270,8 +319,10 @@ namespace Unity.MP_FPS.Client
             m_Camera.backgroundColor = Color.clear;
             m_Camera.orthographic = false;
             m_Camera.fieldOfView = PortraitFieldOfView;
-            m_Camera.nearClipPlane = .05f; m_Camera.farClipPlane = 30;
-            m_Camera.allowHDR = true; m_Camera.allowMSAA = true;
+            m_Camera.nearClipPlane = .05f;
+            m_Camera.farClipPlane = 30;
+            m_Camera.allowHDR = true;
+            m_Camera.allowMSAA = true;
             var data = m_Camera.GetUniversalAdditionalCameraData();
             data.renderPostProcessing = false;
             data.volumeLayerMask = 0;
@@ -284,42 +335,52 @@ namespace Unity.MP_FPS.Client
             m_ViewDirty = true;
         }
 
-        private GameObject Child(string name)
-        {
+        private GameObject Child(string name) {
             var child = new GameObject(name) { layer = ViewLayer };
-            child.transform.SetParent(m_Stage.transform, false); return child;
+            child.transform.SetParent(m_Stage.transform, false);
+            return child;
         }
-        private void Light(string name, Vector3 rotation, Color color, float intensity, bool shadows)
-        {
+
+        private void Light(string name, Vector3 rotation, Color color, float intensity, bool shadows) {
             var light = Child(name).AddComponent<Light>();
-            light.type = LightType.Directional; light.color = color; light.intensity = intensity;
+            light.type = LightType.Directional;
+            light.color = color;
+            light.intensity = intensity;
             light.cullingMask = 1 << ViewLayer;
             light.shadows = shadows ? LightShadows.Soft : LightShadows.None;
             light.transform.rotation = Quaternion.Euler(rotation);
         }
-        private float IdleDuration() => Mathf.Lerp(m_Settings.IdleInterval.x, m_Settings.IdleInterval.y, (float)m_Random.NextDouble());
-        private void SetClip(int slot, int index)
-        {
-            if (m_Clips[slot].IsValid()) { m_Graph.Disconnect(m_Mixer, slot); m_Graph.DestroyPlayable(m_Clips[slot]); }
+
+        private float IdleDuration() {
+            return Mathf.Lerp(m_Settings.IdleInterval.x, m_Settings.IdleInterval.y, (float)m_Random.NextDouble());
+        }
+
+        private void SetClip(int slot, int index) {
+            if (m_Clips[slot].IsValid()) {
+                m_Graph.Disconnect(m_Mixer, slot);
+                m_Graph.DestroyPlayable(m_Clips[slot]);
+            }
             m_Clips[slot] = AnimationClipPlayable.Create(m_Graph, m_Settings.Motions[index]);
             m_Clips[slot].SetApplyFootIK(false);
             m_Clips[slot].SetApplyPlayableIK(true);
             m_Clips[slot].SetSpeed(0);
             m_Graph.Connect(m_Clips[slot], 0, m_Mixer, slot);
-            m_Indices[slot] = index; m_Times[slot] = 0;
+            m_Indices[slot] = index;
+            m_Times[slot] = 0;
         }
-        private void BeginNextMotion()
-        {
+
+        private void BeginNextMotion() {
             // Shuffle without replacement: every configured action gets a turn before any repeat.
             int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? TakeAction() : 0;
             BeginMotion(next);
         }
-        private void BeginMotion(int next)
-        {
-            if (next != 0)
-            {
+
+        private void BeginMotion(int next) {
+            if (next != 0) {
                 m_LastAction = next;
-                var mask = m_Settings.MotionMasks != null && next < m_Settings.MotionMasks.Length ? m_Settings.MotionMasks[next] : m_Settings.HaloAimMask;
+                var mask = m_Settings.MotionMasks != null && next < m_Settings.MotionMasks.Length
+                    ? m_Settings.MotionMasks[next]
+                    : m_Settings.HaloAimMask;
                 m_Layers.SetLayerMaskFromAvatarMask(1, mask != null ? mask : m_FullBodyMask);
             }
             var options = m_Settings.Motion(next);
@@ -328,28 +389,30 @@ namespace Unity.MP_FPS.Client
             if (next != 0 && !options.Loop && options.Weapon == 0)
                 m_FadeSeconds = Mathf.Min(m_FadeSeconds, Mathf.Max(.05f, clip.length * .25f));
             SetClip(1 - m_Slot, next);
-            m_Motion = next; m_Transition = true; m_Blend = 0;
-            float hold = options.HoldSeconds > 0 ? options.HoldSeconds : options.Loop
-                ? Mathf.Max(clip.length, Mathf.Lerp(m_Settings.LoopInterval.x, m_Settings.LoopInterval.y, (float)m_Random.NextDouble())) : clip.length;
+            m_Motion = next;
+            m_Transition = true;
+            m_Blend = 0;
+            float hold = options.HoldSeconds > 0 ? options.HoldSeconds :
+                options.Loop ? Mathf.Max(clip.length,
+                    Mathf.Lerp(m_Settings.LoopInterval.x, m_Settings.LoopInterval.y, (float)m_Random.NextDouble())) :
+                clip.length;
             m_Remaining = next == 0 ? IdleDuration() : hold + m_FadeSeconds;
             MotionChanges++;
         }
 
-        private int TakeAction()
-        {
-            if (m_ActionBag == null)
-            {
+        private int TakeAction() {
+            if (m_ActionBag == null) {
                 var actions = new List<int>();
                 for (int i = 1; i < m_Settings.Motions.Length; i++)
-                    if (EquipmentMotionAllowed(i)) actions.Add(i);
-                m_ActionBag = actions.ToArray(); m_BagRemaining = 0;
+                    if (EquipmentMotionAllowed(i))
+                        actions.Add(i);
+                m_ActionBag = actions.ToArray();
+                m_BagRemaining = 0;
             }
             int count = m_ActionBag.Length;
             if (count == 0) return 0;
-            if (m_BagRemaining == 0)
-            {
-                for (int i = count - 1; i > 0; i--)
-                {
+            if (m_BagRemaining == 0) {
+                for (int i = count - 1; i > 0; i--) {
                     int other = m_Random.Next(i + 1);
                     (m_ActionBag[i], m_ActionBag[other]) = (m_ActionBag[other], m_ActionBag[i]);
                 }
@@ -360,37 +423,42 @@ namespace Unity.MP_FPS.Client
             return m_ActionBag[--m_BagRemaining];
         }
 
-        private void Tick()
-        {
+        private void Tick() {
             double now = Time.realtimeSinceStartupAsDouble;
-            float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f); m_LastTime = now;
+            float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f);
+            m_LastTime = now;
             if (m_Disposed || m_Settings == null) return;
             bool visible = Element.panel != null;
             for (VisualElement parent = Element; parent != null; parent = parent.parent)
-                if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
-            if (!visible) { ReleaseStage(); return; }
+                if (parent.resolvedStyle.display == DisplayStyle.None) {
+                    visible = false;
+                    break;
+                }
+            if (!visible) {
+                ReleaseStage();
+                return;
+            }
             if (m_Camera == null) CreateStage();
-            if ((!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion) && !HomeReactionActive)
-            {
-                var size=Element.contentRect.size;
-                if(m_Target==null || size!=m_EditorViewport || m_ViewDirty)
-                {
+            if ((!TerminalMotion.Animate(Element) || HalosTerminalBackdrop.PrefersReducedMotion) &&
+                !HomeReactionActive) {
+                var size = Element.contentRect.size;
+                if (m_Target == null || size != m_EditorViewport || m_ViewDirty) {
                     if (m_ViewDirty) Advance(0);
-                    Render(); m_EditorViewport=size;
+                    Render();
+                    m_EditorViewport = size;
                 }
                 return;
             }
             Advance(dt);
             Render();
         }
+
         // Also used by the editor's single targeted lifecycle/animation check.
-        public void Advance(float dt)
-        {
+        public void Advance(float dt) {
             if (m_Disposed || m_Settings == null) return;
             if (m_Model == null) CreateStage();
             float reactionDt = dt;
-            if (HomeReactionActive)
-            {
+            if (HomeReactionActive) {
                 AdvanceHomeReaction(dt);
                 if (m_HomeReducedMotion) dt = 0;
             }
@@ -398,26 +466,30 @@ namespace Unity.MP_FPS.Client
             m_BaseTime += dt;
             var idle = m_Settings.Motions[0];
             m_BaseIdle.SetTime(m_BaseTime % idle.length);
-            if (m_SharedStage != null) AdvanceSquadPose(dt);
+            if (m_SharedStage != null)
+                AdvanceSquadPose(dt);
             else if (!m_IdleOnly && m_Remaining <= 0 && !m_Transition) BeginNextMotion();
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 if (!m_Clips[i].IsValid()) continue;
                 var clip = m_Settings.Motions[m_Indices[i]];
                 m_Times[i] += dt;
-                m_Clips[i].SetTime(m_Settings.Motion(m_Indices[i]).Loop ? m_Times[i] % clip.length : Math.Min(m_Times[i], clip.length));
+                m_Clips[i].SetTime(m_Settings.Motion(m_Indices[i]).Loop
+                    ? m_Times[i] % clip.length
+                    : Math.Min(m_Times[i], clip.length));
             }
-            if (m_Transition)
-            {
+            if (m_Transition) {
                 m_Blend = Mathf.Min(1f, m_Blend + dt / m_FadeSeconds);
                 float weight = Mathf.SmoothStep(0, 1, m_Blend);
-                m_Mixer.SetInputWeight(m_Slot, 1f - weight); m_Mixer.SetInputWeight(1 - m_Slot, weight);
-                if (m_Blend >= 1) { m_Slot = 1 - m_Slot; m_Transition = false; }
+                m_Mixer.SetInputWeight(m_Slot, 1f - weight);
+                m_Mixer.SetInputWeight(1 - m_Slot, weight);
+                if (m_Blend >= 1) {
+                    m_Slot = 1 - m_Slot;
+                    m_Transition = false;
+                }
             }
             float preserveHands = 0, turn = 0, tiptoe = 0;
             bool gestureActive = false;
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 if (!m_Clips[i].IsValid()) continue;
                 var options = m_Settings.Motion(m_Indices[i]);
                 float weight = m_Mixer.GetInputWeight(i);
@@ -443,11 +515,10 @@ namespace Unity.MP_FPS.Client
             ApplyWeaponGesture(dt);
             m_EquipmentMelee?.SamplePreviewIdle();
             ApplySquadPose(dt);
-            if (m_HomePose && m_Head != null)
-            {
+            if (m_HomePose && m_Head != null) {
                 float lookOutside = 1 - m_HomeFacing;
                 m_Head.rotation = Quaternion.AngleAxis(-20 * lookOutside, Vector3.up) *
-                    Quaternion.AngleAxis(-10 * lookOutside, m_Model.transform.right) * m_Head.rotation;
+                                  Quaternion.AngleAxis(-10 * lookOutside, m_Model.transform.right) * m_Head.rotation;
             }
             UpdateHalo();
             ApplyHomeReactionPose(reactionDt);
@@ -455,42 +526,40 @@ namespace Unity.MP_FPS.Client
             SampleEquipmentVisuals(dt);
             PlayHomeShot();
             if (m_Protection) m_Protection.SetPreviewHaloColor(PreviewHaloColor);
-            if(m_Protection)m_Protection.SimulatePresentation();
+            if (m_Protection) m_Protection.SimulatePresentation();
         }
 
-        private void ExpandFramingBounds()
-        {
+        private void ExpandFramingBounds() {
             var root = m_Model.transform;
             var toModel = root.worldToLocalMatrix;
             var scale = root.lossyScale;
-            foreach (var renderer in m_Renderers)
-            {
+            foreach (var renderer in m_Renderers) {
                 var bounds = renderer.localBounds;
                 var boundsRoot = renderer.rootBone != null ? renderer.rootBone : renderer.transform;
                 var toRoot = toModel * boundsRoot.localToWorldMatrix;
-                for (int i = 0; i < 8; i++)
-                {
+                for (int i = 0; i < 8; i++) {
                     var corner = bounds.center + Vector3.Scale(bounds.extents,
                         new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
                     ExpandFramingPoint(Vector3.Scale(toRoot.MultiplyPoint3x4(corner), scale));
                 }
             }
-            if (m_Head != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Head.position), scale) + Vector3.up * .4f);
-            if (m_Halo != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Halo.position), scale) + Vector3.up * .2f);
+            if (m_Head != null)
+                ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Head.position), scale) +
+                                   Vector3.up * .4f);
+            if (m_Halo != null)
+                ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Halo.position), scale) +
+                                   Vector3.up * .2f);
         }
 
-        private void ExpandFramingPoint(Vector3 point)
-        {
+        private void ExpandFramingPoint(Vector3 point) {
             float radius = new Vector2(point.x, point.z).magnitude;
             var center = m_Model.transform.position + Vector3.up * point.y;
             m_Bounds.Encapsulate(new Bounds(center, new Vector3(radius * 2, 0, radius * 2)));
         }
 
-        private void ApplyWeaponGesture(float dt)
-        {
+        private void ApplyWeaponGesture(float dt) {
             if (m_Gestures == null || m_Chest == null) return;
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 if (!m_Clips[i].IsValid()) continue;
                 var options = m_Settings.Motion(m_Indices[i]);
                 int gestureWeapon = EquipmentGestureWeapon(m_Indices[i]);
@@ -503,32 +572,37 @@ namespace Unity.MP_FPS.Client
                 return;
             }
         }
-        public void SetProtectionInventory(InventoryGraph inventory) => SetEquipmentInventory(inventory);
 
-        private void ApplyProtectionInventory(InventoryGraph inventory)
-        {
-            m_ProtectionInventory=inventory;
-            if(m_Model==null)return;
-            bool equipped=EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code)||inventory?.Equipped("Shield")!=null||EnergyShieldEquipment.BackpackStyle(inventory?.Equipped("Backpack")?.Code)!=0||EnergyShieldEquipment.BadgeStyle(inventory?.Equipped("ChestRig")?.Code)!=0;
-            if(!m_Protection&&!equipped)return;
-            if(!m_Protection)m_Protection=m_Model.GetComponent<EnergyShieldPresentation>()??m_Model.AddComponent<EnergyShieldPresentation>();
+        public void SetProtectionInventory(InventoryGraph inventory) { SetEquipmentInventory(inventory); }
+
+        private void ApplyProtectionInventory(InventoryGraph inventory) {
+            m_ProtectionInventory = inventory;
+            if (m_Model == null) return;
+            bool equipped = EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code) ||
+                            inventory?.Equipped("Shield") != null ||
+                            EnergyShieldEquipment.BackpackStyle(inventory?.Equipped("Backpack")?.Code) != 0 ||
+                            EnergyShieldEquipment.BadgeStyle(inventory?.Equipped("ChestRig")?.Code) != 0;
+            if (!m_Protection && !equipped) return;
+            if (!m_Protection)
+                m_Protection = m_Model.GetComponent<EnergyShieldPresentation>() ??
+                               m_Model.AddComponent<EnergyShieldPresentation>();
             m_Protection.PresentationAudioEnabled = false;
             m_Protection.PresentInventory(inventory);
             m_Protection.SetPreviewHaloColor(PreviewHaloColor);
             m_Protection.SimulatePresentation();
         }
-        private void UpdateHalo()
-        {
+
+        private void UpdateHalo() {
             HaloAimWeight = 0;
             for (int i = 0; i < 2; i++)
                 if (m_Clips[i].IsValid() && (m_Settings.Motion(m_Indices[i]).Weapon > 0 || m_Indices[i] == 1))
                     HaloAimWeight += m_Mixer.GetInputWeight(i);
         }
-        public void Render() => Render(Element.contentRect.size);
+
+        public void Render() { Render(Element.contentRect.size); }
 
         // 按 UI 上的实际尺寸分配渲染纹理，大小合适时继续复用。用放大的渲染尺寸提高预览清晰度，同时受配置上限约束。
-        public void Render(Vector2 viewport)
-        {
+        public void Render(Vector2 viewport) {
             if (m_Disposed || m_Camera == null) return;
             float width = viewport.x, height = viewport.y;
             if (!float.IsFinite(width) || !float.IsFinite(height) || width < 2 || height < 2) return;
@@ -536,13 +610,17 @@ namespace Unity.MP_FPS.Client
             float scale = Mathf.Min(m_Settings.ResolutionScale, maximum / Mathf.Max(width, height));
             int w = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16));
             int h = Mathf.Min(maximum, Mathf.Max(16, Mathf.CeilToInt(height * scale / 16f) * 16));
-            if (m_Target == null || m_Target.width != w || m_Target.height != h)
-            {
+            if (m_Target == null || m_Target.width != w || m_Target.height != h) {
                 ReleaseTarget();
-                var descriptor = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 24) { msaaSamples = 4, useMipMap = false };
+                var descriptor = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 24)
+                    { msaaSamples = 4, useMipMap = false };
                 descriptor.msaaSamples = SystemInfo.GetRenderTextureSupportedMSAASampleCount(descriptor);
-                m_Target = new RenderTexture(descriptor) { name = "Moonkov live character", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Bilinear };
-                m_Target.Create(); Element.image = m_Target;
+                m_Target = new RenderTexture(descriptor) {
+                    name = "Moonkov live character", hideFlags = HideFlags.HideAndDontSave,
+                    filterMode = FilterMode.Bilinear
+                };
+                m_Target.Create();
+                Element.image = m_Target;
             }
             m_Camera.aspect = (float)w / h;
             float verticalTangent = Mathf.Tan(PortraitFieldOfView * .5f * Mathf.Deg2Rad);
@@ -550,8 +628,7 @@ namespace Unity.MP_FPS.Client
                 m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
             m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
             var focus = m_Bounds.center;
-            if (m_HomePose && m_Head != null)
-            {
+            if (m_HomePose && m_Head != null) {
                 // Keep the foreground framing through the skirt and upper legs during the turn.
                 var hips = m_Animator.GetBoneTransform(HumanBodyBones.Hips);
                 float torso = m_Head.position.y - hips.position.y;
@@ -559,44 +636,50 @@ namespace Unity.MP_FPS.Client
                 float bottom = hips.position.y - torso * .91f;
                 focus.y = (top + bottom) * .5f;
                 distance = (top - bottom) * .5f / verticalTangent + torso * .25f;
-            }
-            else if (m_Head != null && Zoom > 1)
-            {
+            } else if (m_Head != null && Zoom > 1) {
                 var face = m_Head.position + Vector3.up * m_FaceHeightOffset;
                 face.z = focus.z;
                 focus = Vector3.Lerp(focus, face, Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1, 2, Zoom)));
             }
             m_Camera.transform.position = focus + new Vector3(0, .035f, distance);
             m_Camera.transform.LookAt(focus);
-            RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
+            RenderPipeline.SubmitRenderRequest(m_Camera,
+                new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
             Element.MarkDirtyRepaint();
             FrameRendered?.Invoke();
         }
-        public bool TryGetBodyAnchor(HumanBodyBones bone, out Vector2 world)
-        {
+
+        public bool TryGetBodyAnchor(HumanBodyBones bone, out Vector2 world) {
             world = default;
             if (m_Camera == null || m_Animator == null || Element.panel == null) return false;
-            var transform = m_Animator.GetBoneTransform(bone); if (transform == null) return false;
+            var transform = m_Animator.GetBoneTransform(bone);
+            if (transform == null) return false;
             var point = m_Camera.WorldToViewportPoint(transform.position);
             if (point.z <= 0) return false;
-            world = Element.LocalToWorld(new Vector2(point.x * Element.contentRect.width, (1 - point.y) * Element.contentRect.height));
+            world = Element.LocalToWorld(new Vector2(point.x * Element.contentRect.width,
+                (1 - point.y) * Element.contentRect.height));
             return true;
         }
-        private void ReleaseTarget()
-        {
+
+        private void ReleaseTarget() {
             Element.image = null;
             if (m_Target == null) return;
-            m_Target.Release(); Destroy(m_Target); m_Target = null;
+            m_Target.Release();
+            Destroy(m_Target);
+            m_Target = null;
         }
-        private static void Destroy(UnityEngine.Object value)
-        {
-            if (Application.isPlaying) UnityEngine.Object.Destroy(value);
-            else UnityEngine.Object.DestroyImmediate(value);
+
+        private static void Destroy(UnityEngine.Object value) {
+            if (Application.isPlaying)
+                UnityEngine.Object.Destroy(value);
+            else
+                UnityEngine.Object.DestroyImmediate(value);
         }
-        public void Dispose()
-        {
+
+        public void Dispose() {
             if (m_Disposed) return;
-            m_Disposed = true; m_Timer?.Pause();
+            m_Disposed = true;
+            m_Timer?.Pause();
             if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged -= SelectCharacter;
             Element.UnregisterCallback<PointerDownEvent>(BeginInspect);
             Element.UnregisterCallback<PointerMoveEvent>(Inspect);
@@ -606,29 +689,56 @@ namespace Unity.MP_FPS.Client
             Element.UnregisterCallback<WheelEvent>(ZoomInspect);
             Element.UnregisterCallback<DetachFromPanelEvent>(Detached);
             ReleaseStage();
-            m_ProtectionInventory=null;
+            m_ProtectionInventory = null;
         }
-        private void ReleaseStage()
-        {
+
+        private void ReleaseStage() {
             ReleaseHomeReaction();
             ReleaseEquipmentVisuals();
-            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_ViewDirty = false; Zoom = 1;
+            StopInspect();
+            m_InspectionYaw = m_PoseTurn = 0;
+            m_Inspected = m_ViewDirty = false;
+            Zoom = 1;
             if (m_Graph.IsValid()) m_Graph.Destroy();
-            if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
+            if (m_FullBodyMask != null) {
+                Destroy(m_FullBodyMask);
+                m_FullBodyMask = null;
+            }
             ReleaseTarget();
-            if (m_Stage != null) { m_Stage.SetActive(false); Destroy(m_Stage); }
-            m_Stage = null; m_Camera = null; m_Model = null; m_Animator = null;
-            m_Protection=null;
-            m_EquipmentMelee=null;
-            m_Halo = null; m_Head = null; m_Finger = null;
-            m_Spring = null; m_HandAvoidance = null;
+            if (m_Stage != null) {
+                m_Stage.SetActive(false);
+                Destroy(m_Stage);
+            }
+            m_Stage = null;
+            m_Camera = null;
+            m_Model = null;
+            m_Animator = null;
+            m_Protection = null;
+            m_EquipmentMelee = null;
+            m_Halo = null;
+            m_Head = null;
+            m_Finger = null;
+            m_Spring = null;
+            m_HandAvoidance = null;
             m_TwistFollowers = null;
-            m_Gestures = null; m_Chest = null; m_Renderers = null;
-            m_SquadMotions = null; m_SquadPose = -1; m_SquadReady = m_SquadSettled = false; m_SquadReadyPulse = 0;
-            if (m_SharedStage != null) { m_Scene = default; return; }
+            m_Gestures = null;
+            m_Chest = null;
+            m_Renderers = null;
+            m_SquadMotions = null;
+            m_SquadPose = -1;
+            m_SquadReady = m_SquadSettled = false;
+            m_SquadReadyPulse = 0;
+            if (m_SharedStage != null) {
+                m_Scene = default;
+                return;
+            }
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR
-            if (m_EditorScene) { EditorSceneManager.ClosePreviewScene(m_Scene); m_Scene = default; return; }
+            if (m_EditorScene) {
+                EditorSceneManager.ClosePreviewScene(m_Scene);
+                m_Scene = default;
+                return;
+            }
 #endif
             SceneManager.UnloadSceneAsync(m_Scene);
             m_Scene = default;

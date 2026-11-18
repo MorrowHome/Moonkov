@@ -7,10 +7,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class RaidHUD
-    {
+namespace Unity.MP_FPS {
+    public sealed partial class RaidHUD {
         private VisualElement m_ArenaHud, m_ArenaArmory, m_ArenaResult;
         private VisualElement m_ClassicCenter;
         private VisualElement m_ClassicScoreboard;
@@ -28,8 +26,7 @@ namespace Unity.MP_FPS
         private ItemDefinition[] m_ArenaDefinitions;
         private bool m_ArenaFinished, m_ArenaResultSoundPlayed;
 
-        private void InitializeArenaHud()
-        {
+        private void InitializeArenaHud() {
             m_ArenaHud = new VisualElement { pickingMode = PickingMode.Ignore };
             m_ArenaHud.AddToClassList("arena-hud");
             m_ArenaScore = new Label { pickingMode = PickingMode.Ignore };
@@ -38,8 +35,7 @@ namespace Unity.MP_FPS
             m_ArenaHud.Add(m_ArenaScore);
             m_ArenaHud.Add(m_ArenaStatus);
             m_ClassicHud = GameSettings.Instance.RequestedMode == RaidGameMode.Classic;
-            if (m_ClassicHud)
-            {
+            if (m_ClassicHud) {
                 m_ArenaHud.AddToClassList("is-classic");
                 m_ArenaHud.AddToClassList("moonkov-style-font");
                 m_ClassicStatusA = CreateClassicTeamStatus("T");
@@ -55,14 +51,12 @@ namespace Unity.MP_FPS
                 m_ArenaHud.Add(m_ClassicStatusB);
             }
             m_Root.Add(m_ArenaHud);
-            if (m_ClassicHud)
-            {
+            if (m_ClassicHud) {
                 m_ClassicMinimap = new ClassicMinimapView(m_Root);
                 m_ClassicScoreboard = CreateClassicScoreboard();
                 m_ClassicScoreboard.style.display = DisplayStyle.None;
                 m_Root.Add(m_ClassicScoreboard);
             }
-
             m_ArenaResult = new VisualElement();
             m_ArenaResult.AddToClassList("arena-result");
             m_ArenaResultText = new Label();
@@ -73,48 +67,47 @@ namespace Unity.MP_FPS
             m_ArenaResult.Add(exit);
             m_ArenaResult.style.display = DisplayStyle.None;
             m_Root.Add(m_ArenaResult);
-
-            m_ArenaDefinitions = InventoryCatalog.Definitions.Values.Where(item => m_ClassicHud ? ClassicMatch.Price(item) > 0 : ArenaArmory.Available(item))
+            m_ArenaDefinitions = InventoryCatalog.Definitions.Values
+                .Where(item => m_ClassicHud ? ClassicMatch.Price(item) > 0 : ArenaArmory.Available(item))
                 .OrderBy(item => item.Kind).ThenBy(item => item.Name).ToArray();
-            if (!m_ClassicHud)
-            {
-                m_ArenaItems = new DropdownField(m_ArenaDefinitions.Select(item => MoonkovLocalization.Text(item.Name)).ToList(), 0);
+            if (!m_ClassicHud) {
+                m_ArenaItems =
+                    new DropdownField(m_ArenaDefinitions.Select(item => MoonkovLocalization.Text(item.Name)).ToList(),
+                        0);
                 m_ArenaTake = new Button(TakeArenaSupply);
                 MoonkovLocalization.Set(m_ArenaTake, "免费领取");
             }
             m_ArenaArmory = new VisualElement();
             m_ArenaArmory.AddToClassList("arena-armory");
-            if (m_ClassicHud)
-            {
+            if (m_ClassicHud) {
                 m_ArenaArmory.AddToClassList("is-classic");
-                m_ClassicOffers = m_ArenaDefinitions.Select(item => new ShopOffer
-                {
+                m_ClassicOffers = m_ArenaDefinitions.Select(item => new ShopOffer {
                     Code = item.Code, Name = item.Name, BuyDust = ClassicMatch.Price(item), SellDust = 0
                 }).ToArray();
-                m_ClassicShop = new MoonkovShopPurchaseView(TakeClassicSupply, quantityLimit: ClassicMatch.PurchaseLimit);
+                m_ClassicShop =
+                    new MoonkovShopPurchaseView(TakeClassicSupply, quantityLimit: ClassicMatch.PurchaseLimit);
                 m_ArenaArmory.Add(m_ClassicShop.Element);
-            }
-            else
-            {
+            } else {
                 m_ArenaArmory.Add(m_ArenaItems);
                 m_ArenaArmory.Add(m_ArenaTake);
             }
             m_ArenaArmory.style.display = DisplayStyle.None;
             m_ArenaInventoryWindow = m_Inventory.Q(className: "raid-inventory-window");
-            if (m_ClassicHud) m_Root.Add(m_ArenaArmory);
-            else m_ArenaInventoryWindow.Insert(1, m_ArenaArmory);
+            if (m_ClassicHud)
+                m_Root.Add(m_ArenaArmory);
+            else
+                m_ArenaInventoryWindow.Insert(1, m_ArenaArmory);
         }
 
-        private static VisualElement CreateClassicTeamStatus(string team)
-        {
-            var row = new VisualElement { name = "classic-status-" + team.ToLowerInvariant(), pickingMode = PickingMode.Ignore };
+        private static VisualElement CreateClassicTeamStatus(string team) {
+            var row = new VisualElement
+                { name = "classic-status-" + team.ToLowerInvariant(), pickingMode = PickingMode.Ignore };
             row.AddToClassList("classic-status-row");
             row.AddToClassList(team == "T" ? "classic-status-attackers" : "classic-status-defenders");
             var label = new Label(team) { pickingMode = PickingMode.Ignore };
             label.AddToClassList("classic-status-team");
             row.Add(label);
-            for (int i = 0; i < ClassicMatch.TeamSize; i++)
-            {
+            for (int i = 0; i < ClassicMatch.TeamSize; i++) {
                 var player = new Label("●") { name = "player-" + i, pickingMode = PickingMode.Ignore };
                 player.AddToClassList("classic-status-player");
                 row.Add(player);
@@ -122,8 +115,7 @@ namespace Unity.MP_FPS
             return row;
         }
 
-        private VisualElement CreateClassicScoreboard()
-        {
+        private VisualElement CreateClassicScoreboard() {
             m_ClassicBoardSequence = 0;
             m_ClassicBoardVisible = false;
             var board = new VisualElement { name = "classic-scoreboard", pickingMode = PickingMode.Ignore };
@@ -141,8 +133,7 @@ namespace Unity.MP_FPS
             return board;
         }
 
-        private static Label AddClassicBoardLabel(VisualElement parent, string className, string text = null)
-        {
+        private static Label AddClassicBoardLabel(VisualElement parent, string className, string text = null) {
             var label = new Label { pickingMode = PickingMode.Ignore, enableRichText = false };
             label.AddToClassList(className);
             parent.Add(label);
@@ -150,14 +141,12 @@ namespace Unity.MP_FPS
             return label;
         }
 
-        private sealed class ClassicBoardTeam
-        {
+        private sealed class ClassicBoardTeam {
             private readonly VisualElement m_Column;
             private readonly Label m_Role, m_Score;
             private readonly ClassicBoardRow[] m_Rows = new ClassicBoardRow[ClassicMatch.TeamSize];
 
-            public ClassicBoardTeam(VisualElement parent)
-            {
+            public ClassicBoardTeam(VisualElement parent) {
                 m_Column = new VisualElement { pickingMode = PickingMode.Ignore };
                 m_Column.AddToClassList("classic-scoreboard-team");
                 var heading = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -179,8 +168,7 @@ namespace Unity.MP_FPS
                 parent.Add(m_Column);
             }
 
-            public void Present(in ClassicSnapshotV4Rpc match, int team)
-            {
+            public void Present(in ClassicSnapshotV4Rpc match, int team) {
                 bool attacking = match.AttackTeam == team;
                 m_Column.EnableInClassList("classic-scoreboard-attackers", attacking);
                 m_Column.EnableInClassList("classic-scoreboard-defenders", !attacking);
@@ -193,13 +181,11 @@ namespace Unity.MP_FPS
             }
         }
 
-        private readonly struct ClassicBoardRow
-        {
+        private readonly struct ClassicBoardRow {
             private readonly VisualElement m_Row;
             private readonly Label m_Name, m_Kills, m_Deaths, m_Ratio, m_Damage, m_Status;
 
-            public ClassicBoardRow(VisualElement parent)
-            {
+            public ClassicBoardRow(VisualElement parent) {
                 m_Row = new VisualElement { pickingMode = PickingMode.Ignore };
                 m_Row.AddToClassList("classic-scoreboard-player");
                 m_Name = AddClassicBoardLabel(m_Row, "classic-scoreboard-player-name");
@@ -211,8 +197,7 @@ namespace Unity.MP_FPS
                 parent.Add(m_Row);
             }
 
-            public void Present(in ClassicScoreboardEntry entry, bool alive, bool local)
-            {
+            public void Present(in ClassicScoreboardEntry entry, bool alive, bool local) {
                 bool occupied = entry.Name.Length > 0;
                 m_Row.EnableInClassList("is-local", occupied && local);
                 m_Name.text = occupied ? entry.Name.ToString() : "—";
@@ -225,54 +210,62 @@ namespace Unity.MP_FPS
             }
         }
 
-        private void TakeArenaSupply()
-        {
-            if (m_InventoryRequestPending || m_InventoryQuery.IsEmptyIgnoreFilter ||
-                m_ArenaItems.index < 0 || m_ArenaItems.index >= m_ArenaDefinitions.Length) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+        private void TakeArenaSupply() {
+            if (m_InventoryRequestPending || m_InventoryQuery.IsEmptyIgnoreFilter || m_ArenaItems.index < 0 ||
+                m_ArenaItems.index >= m_ArenaDefinitions.Length)
+                return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
             if (inventory.Graph == null) return;
             uint requestId = NextManualActionRequest();
-            var code = new Unity.Collections.FixedString64Bytes(m_ArenaDefinitions[m_ArenaItems.index].Code);
-            if (Send(new ArenaSupplyRpc { Code = code, RequestId = requestId, Quantity = 1, ExpectedVersion = inventory.Graph.Version }))
-            {
+            var code = new Collections.FixedString64Bytes(m_ArenaDefinitions[m_ArenaItems.index].Code);
+            if (Send(new ArenaSupplyRpc
+                    { Code = code, RequestId = requestId, Quantity = 1, ExpectedVersion = inventory.Graph.Version })) {
                 TrackInventoryAudio(MoonkovAudio.Library?.Equipment);
                 m_InventoryRequestedAt = Time.unscaledTime;
                 m_InventoryRequestPending = true;
             }
         }
 
-        private void TakeClassicSupply(ShopOffer offer, int quantity)
-        {
-            if (m_InventoryRequestPending || offer == null || quantity < 1 || m_InventoryQuery.IsEmptyIgnoreFilter) return;
-            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+        private void TakeClassicSupply(ShopOffer offer, int quantity) {
+            if (m_InventoryRequestPending || offer == null || quantity < 1 || m_InventoryQuery.IsEmptyIgnoreFilter)
+                return;
+            var inventory =
+                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
+                    m_InventoryQuery.GetSingletonEntity());
             if (inventory.Graph == null) return;
             uint requestId = NextManualActionRequest();
-            if (Send(new ArenaSupplyRpc
-            {
-                Code = new Unity.Collections.FixedString64Bytes(offer.Code), Quantity = quantity,
-                RequestId = requestId, ExpectedVersion = inventory.Graph.Version
-            }))
-            {
+            if (Send(new ArenaSupplyRpc {
+                    Code = new Collections.FixedString64Bytes(offer.Code), Quantity = quantity,
+                    RequestId = requestId, ExpectedVersion = inventory.Graph.Version
+                })) {
                 TrackInventoryAudio(MoonkovAudio.Library?.Confirm);
                 m_InventoryRequestedAt = Time.unscaledTime;
                 m_InventoryRequestPending = true;
             }
         }
 
-        private void PresentArenaHud()
-        {
-            if (m_ClassicHud) { PresentClassicHud(); return; }
+        private void PresentArenaHud() {
+            if (m_ClassicHud) {
+                PresentClassicHud();
+                return;
+            }
             var state = m_World.EntityManager.GetComponentData<ArenaClientState>(m_StateQuery.GetSingletonEntity());
             var match = state.Snapshot;
-            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
+            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() &&
+                         m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
             bool fighting = alive && match.Phase == ArenaPhase.Fighting;
             m_ArenaFinished = state.Received && match.Phase == ArenaPhase.Finished;
             PresentArenaResultSound(m_ArenaFinished, match.Won, match.Draw);
             if ((m_ArenaFinished || !alive) && m_InventoryVisible) SetInventory(false);
-            if (!m_ArenaFinished && alive && m_Snapshot.RaidId > 0 && !ChatInputBlocked && !GameSettings.Instance.IsPauseMenuOpen &&
-                (RaidKeyBindings.Pressed(RaidKey.Inventory) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)))
+            if (!m_ArenaFinished && alive && m_Snapshot.RaidId > 0 && !ChatInputBlocked &&
+                !GameSettings.Instance.IsPauseMenuOpen &&
+                (RaidKeyBindings.Pressed(RaidKey.Inventory) ||
+                 (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)))
                 SetInventory(!m_InventoryVisible);
-            m_ArenaArmory.style.display = m_InventoryVisible && !m_HealthSelected ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ArenaArmory.style.display =
+                m_InventoryVisible && !m_HealthSelected ? DisplayStyle.Flex : DisplayStyle.None;
             m_ArenaTake.SetEnabled(!m_InventoryRequestPending && !TimedActionActive);
             UpdateInventoryBackdrop();
             UpdateChat();
@@ -280,40 +273,49 @@ namespace Unity.MP_FPS
             PresentMelee(fighting);
             UpdateGrenades(fighting && !GameSettings.Instance.IsPauseMenuOpen);
             PresentTimedAction();
-            m_ArenaResult.style.display = m_ArenaFinished && !GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ArenaResult.style.display = m_ArenaFinished && !GameSettings.Instance.IsPauseMenuOpen
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             if (m_ArenaFinished) Utils.SetCursorVisible(true);
             m_RefreshTimer -= Time.deltaTime;
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = .1f;
             RefreshHealth();
-
             int seconds = Mathf.CeilToInt(match.Remaining);
             m_ArenaScore.text = match.Phase == ArenaPhase.Waiting
-                ? MoonkovLocalization.Text("竞技场") : $"{seconds / 60:00}:{seconds % 60:00}   {match.Kills} / {ArenaMatch.TargetScore}";
-            MoonkovLocalization.Set(m_ArenaStatus, match.Phase == ArenaPhase.Waiting ? "等待玩家进入" :
-                !alive && match.Respawn > 0 ? MoonkovLocalization.Format($"复活 {Mathf.CeilToInt(match.Respawn)} 秒") : "");
+                ? MoonkovLocalization.Text("竞技场")
+                : $"{seconds / 60:00}:{seconds % 60:00}   {match.Kills} / {ArenaMatch.TargetScore}";
+            MoonkovLocalization.Set(m_ArenaStatus,
+                match.Phase == ArenaPhase.Waiting ? "等待玩家进入" :
+                !alive && match.Respawn > 0 ? MoonkovLocalization.Format($"复活 {Mathf.CeilToInt(match.Respawn)} 秒") :
+                "");
             if (m_ArenaFinished)
-                MoonkovLocalization.Set(m_ArenaResultText, match.Players < 2 && match.BestScore == 0 && match.Draw
-                    ? "对局人数不足" : match.Draw ? "平局" : match.Won ? "获胜" : "对局结束");
+                MoonkovLocalization.Set(m_ArenaResultText,
+                    match.Players < 2 && match.BestScore == 0 && match.Draw ? "对局人数不足" :
+                    match.Draw ? "平局" :
+                    match.Won ? "获胜" : "对局结束");
         }
 
         // 同一份结束快照会显示多次。记录已经播过的结果音，只在本场首次结束时播放。
-        private void PresentArenaResultSound(bool finished, bool won, bool draw)
-        {
-            if (!finished) { m_ArenaResultSoundPlayed = false; return; }
+        private void PresentArenaResultSound(bool finished, bool won, bool draw) {
+            if (!finished) {
+                m_ArenaResultSoundPlayed = false;
+                return;
+            }
             if (m_ArenaResultSoundPlayed) return;
             m_ArenaResultSoundPlayed = true;
-            if (draw) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
-            else if (won) MoonkovAudio.Confirm();
-            else MoonkovAudio.Error();
+            if (draw)
+                MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
+            else if (won)
+                MoonkovAudio.Confirm();
+            else
+                MoonkovAudio.Error();
         }
 
         // 记分板打开且快照序号更新时才刷新成员数据。各席位的角色和统计来自房主发布的信息。
-        private void PresentClassicScoreboard(in ClassicClientState data, bool visible)
-        {
+        private void PresentClassicScoreboard(in ClassicClientState data, bool visible) {
             visible &= data.Received;
-            if (visible != m_ClassicBoardVisible)
-            {
+            if (visible != m_ClassicBoardVisible) {
                 m_ClassicBoardVisible = visible;
                 m_ClassicScoreboard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (visible) m_ClassicScoreboard.BringToFront();
@@ -322,8 +324,10 @@ namespace Unity.MP_FPS
             m_ClassicBoardSequence = data.Sequence;
             ref readonly var match = ref data.Snapshot;
             int seconds = Mathf.CeilToInt(match.Remaining);
-            if (match.Round == 0) MoonkovLocalization.Set(m_ClassicBoardRound, "WAITING FOR PLAYERS");
-            else MoonkovLocalization.Set(m_ClassicBoardRound, "ROUND {0}", match.Round);
+            if (match.Round == 0)
+                MoonkovLocalization.Set(m_ClassicBoardRound, "WAITING FOR PLAYERS");
+            else
+                MoonkovLocalization.Set(m_ClassicBoardRound, "ROUND {0}", match.Round);
             m_ClassicBoardClock.text = $"{seconds / 60:00}:{seconds % 60:00}";
             m_ClassicBoardTeams[0].Present(match, 0);
             m_ClassicBoardTeams[1].Present(match, 1);

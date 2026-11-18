@@ -8,73 +8,75 @@ using Unity.Transforms;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
-    public partial struct ServerGameSystem
-    {
-        private void HandleClassic(ref SystemState state, EntityCommandBuffer ecb, ArenaMatch match, double now, int expected)
-        {
+namespace Unity.MP_FPS {
+    public partial struct ServerGameSystem {
+        private void HandleClassic(
+            ref SystemState state,
+            EntityCommandBuffer ecb,
+            ArenaMatch match,
+            double now,
+            int expected) {
             var manager = state.EntityManager;
             var rules = match.Classic;
             var map = ClassicDust2Map.Active;
             if (!map || match.Players.Count == 0) return;
             if (rules.NeedsRound(now) && match.FirstRoundReady(now, expected) &&
                 match.Players.Keys.All(connection => manager.HasComponent<RaidSession>(connection)) &&
-                state.World.GetExistingSystemManaged<DollSingerEnemySystem>() is { } ai && WeaponManager.Instance?.WeaponRegistry != null)
+                state.World.GetExistingSystemManaged<DollSingerEnemySystem>() is { } ai &&
+                WeaponManager.Instance?.WeaponRegistry != null)
                 StartClassicRound(ref state, ecb, match, map, ai, now);
-
-            foreach (var (intent, received, entity) in SystemAPI.Query<RefRO<ClassicUseRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
-            {
+            foreach (var (intent, received, entity) in SystemAPI
+                         .Query<RefRO<ClassicUseRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
                 received.ValueRW.Consume();
                 ecb.DestroyEntity(entity);
-                if (intent.ValueRO.Round != rules.Round || !match.Players.TryGetValue(received.ValueRO.SourceConnection, out var player)) continue;
+                if (intent.ValueRO.Round != rules.Round ||
+                    !match.Players.TryGetValue(received.ValueRO.SourceConnection, out var player))
+                    continue;
                 player.UseUntil = intent.ValueRO.Held ? now + .65 : 0;
                 if (!intent.ValueRO.Held) rules.CancelHold(player.Id);
             }
-
             int aliveA = 0, aliveB = 0;
             bool startingCombat = rules.Phase == ClassicPhase.Buy && now >= rules.Deadline;
             bool live = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
             var tactics = match.ClassicTactics;
             if (live) tactics.BeginTick();
-            foreach (var (connection, seat) in match.Players)
-            {
+            foreach (var (connection, seat) in match.Players) {
                 var actor = MatchActor(manager, connection);
-                if (!TryGetLivingPosition(ref state, actor, out var position))
-                {
-                    if (live)
-                    {
+                if (!TryGetLivingPosition(ref state, actor, out var position)) {
+                    if (live) {
                         rules.DropBomb(seat.Id, seat.LastPosition);
-                        if (MarkClassicDeath(manager, match, actor))
-                            DropDeathInventory(ref state, connection, initialize: false);
-                        SetClassicActorActive(manager, actor, active: false);
+                        if (MarkClassicDeath(manager, match, actor)) DropDeathInventory(ref state, connection, false);
+                        SetClassicActorActive(manager, actor, false);
                     }
                     rules.CancelHold(seat.Id);
                     continue;
                 }
                 if (startingCombat) rules.EnterCombat(seat.Id);
                 seat.LastPosition = position;
-                if (seat.Team == 0) aliveA++; else aliveB++;
+                if (seat.Team == 0)
+                    aliveA++;
+                else
+                    aliveB++;
                 var use = ClassicOpportunity(map, rules, seat.Id, seat.Team, position);
                 if (!live) continue;
                 var health = manager.GetComponentData<PredictedPlayerGhost>(actor);
                 tactics.Observe(actor, seat.Id, seat.Team, seat.Slot, false, position, health.LastShotTick, now);
-                if (now >= seat.UseUntil) { rules.CancelHold(seat.Id); continue; }
+                if (now >= seat.UseUntil) {
+                    rules.CancelHold(seat.Id);
+                    continue;
+                }
                 rules.Use(seat.Id, seat.Team, use, position, health.LastHitTick, now);
             }
-            foreach (var bot in match.Bots.Values)
-            {
-                if (!TryGetLivingPosition(ref state, bot.Actor, out var position))
-                {
-                    if (live)
-                    {
+            foreach (var bot in match.Bots.Values) {
+                if (!TryGetLivingPosition(ref state, bot.Actor, out var position)) {
+                    if (live) {
                         rules.DropBomb(bot.Id, bot.LastPosition);
-                        if (MarkClassicDeath(manager, match, bot.Actor))
-                        {
+                        if (MarkClassicDeath(manager, match, bot.Actor)) {
                             var brain = manager.GetComponentObject<DollSingerEnemyBrain>(bot.Actor);
                             var health = manager.GetComponentData<PredictedPlayerGhost>(bot.Actor);
                             EnergyShieldEquipment.Flush(ref health, brain.Inventory);
-                            StoreDeathLoot(LootContainers(ref state), brain.Inventory, manager.GetComponentData<LocalTransform>(bot.Actor),
+                            StoreDeathLoot(LootContainers(ref state), brain.Inventory,
+                                manager.GetComponentData<LocalTransform>(bot.Actor),
                                 manager.GetComponentData<DollSingerEnemy>(bot.Actor).CharacterIndex, now);
                         }
                     }
@@ -83,24 +85,26 @@ namespace Unity.MP_FPS
                 }
                 if (startingCombat) rules.EnterCombat(bot.Id);
                 bot.LastPosition = position;
-                if (bot.Team == 0) aliveA++; else aliveB++;
-                if (live) tactics.Observe(bot.Actor, bot.Id, bot.Team, bot.Slot, true, position,
-                    manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastShotTick, now);
+                if (bot.Team == 0)
+                    aliveA++;
+                else
+                    aliveB++;
+                if (live)
+                    tactics.Observe(bot.Actor, bot.Id, bot.Team, bot.Slot, true, position,
+                        manager.GetComponentData<PredictedPlayerGhost>(bot.Actor).LastShotTick, now);
             }
             if (live) UpdateClassicBots(ref state, match, map, now);
-
             rules.Advance(now, rules.AttackTeam == 0 ? aliveA : aliveB, rules.AttackTeam == 0 ? aliveB : aliveA);
-            if ((rules.Phase is ClassicPhase.RoundOver or ClassicPhase.Finished) && match.CreditedRound != rules.Round)
-            {
+            if (rules.Phase is ClassicPhase.RoundOver or ClassicPhase.Finished && match.CreditedRound != rules.Round) {
                 match.CreditedRound = rules.Round;
                 foreach (var seat in match.Players.Values)
-                    seat.Credits = System.Math.Min(16000, seat.Credits + (seat.Team == rules.RoundWinner ? 3250 : 1400));
+                    seat.Credits = Math.Min(16000, seat.Credits + (seat.Team == rules.RoundWinner ? 3250 : 1400));
             }
             bool active = rules.Phase is ClassicPhase.Live or ClassicPhase.Planted;
-            foreach (var connection in match.Players.Keys) SetClassicActorActive(manager, MatchActor(manager, connection), active);
+            foreach (var connection in match.Players.Keys)
+                SetClassicActorActive(manager, MatchActor(manager, connection), active);
             foreach (var bot in match.Bots.Values) SetClassicActorActive(manager, bot.Actor, active);
-
-            float remaining = (float)System.Math.Max(0, rules.Deadline - now);
+            float remaining = (float)Math.Max(0, rules.Deadline - now);
             if (!UpdateMatchInventory(ref state, ecb, match, now, remaining)) return;
             var loot = LootContainers(ref state);
             byte cacheMask = 0;
@@ -111,48 +115,46 @@ namespace Unity.MP_FPS
             roster.Clear();
             Span<byte> aliveMasks = stackalloc byte[2];
             aliveMasks.Clear();
-            foreach (var (connection, player) in match.Players)
-            {
-                roster[player.Team * ClassicMatch.TeamSize + player.Slot] = rules.ScoreboardEntry(player.Id, player.Name);
+            foreach (var (connection, player) in match.Players) {
+                roster[player.Team * ClassicMatch.TeamSize + player.Slot] =
+                    rules.ScoreboardEntry(player.Id, player.Name);
                 if (TryGetLivingPosition(ref state, MatchActor(manager, connection), out _))
                     aliveMasks[player.Team] |= (byte)(1 << player.Slot);
             }
-            foreach (var bot in match.Bots.Values)
-            {
+            foreach (var bot in match.Bots.Values) {
                 roster[bot.Team * ClassicMatch.TeamSize + bot.Slot] =
                     rules.ScoreboardEntry(bot.Id, new FixedString64Bytes($"BOT {bot.Slot + 1:00}"));
                 if (TryGetLivingPosition(ref state, bot.Actor, out _)) aliveMasks[bot.Team] |= (byte)(1 << bot.Slot);
             }
-
-            foreach (var (connection, seat) in match.Players)
-            {
+            foreach (var (connection, seat) in match.Players) {
                 if (!manager.HasComponent<RaidSession>(connection)) continue;
                 var actor = MatchActor(manager, connection);
                 bool alive = TryGetLivingPosition(ref state, actor, out var position);
                 var rpc = ecb.CreateEntity();
-                ecb.AddComponent(rpc, new ClassicSnapshotV4Rpc
-                {
-                    Phase = rules.Phase, Round = rules.Round, Team = seat.Team, Slot = seat.Slot, AttackTeam = rules.AttackTeam,
+                ecb.AddComponent(rpc, new ClassicSnapshotV4Rpc {
+                    Phase = rules.Phase, Round = rules.Round, Team = seat.Team, Slot = seat.Slot,
+                    AttackTeam = rules.AttackTeam,
                     ScoreA = rules.Score[0], ScoreB = rules.Score[1],
-                    AliveA = Unity.Mathematics.math.countbits((uint)aliveMasks[0]),
-                    AliveB = Unity.Mathematics.math.countbits((uint)aliveMasks[1]),
+                    AliveA = Mathematics.math.countbits((uint)aliveMasks[0]),
+                    AliveB = Mathematics.math.countbits((uint)aliveMasks[1]),
                     AliveMaskA = aliveMasks[0], AliveMaskB = aliveMasks[1],
                     SeatA0 = roster[0], SeatA1 = roster[1], SeatA2 = roster[2], SeatA3 = roster[3], SeatA4 = roster[4],
                     SeatB0 = roster[5], SeatB1 = roster[6], SeatB2 = roster[7], SeatB3 = roster[8], SeatB4 = roster[9],
                     CacheMask = cacheMask,
-                    Remaining = remaining, Credits = seat.Credits, Winner = rules.Phase == ClassicPhase.Finished ? rules.Winner : rules.RoundWinner,
+                    Remaining = remaining, Credits = seat.Credits,
+                    Winner = rules.Phase == ClassicPhase.Finished ? rules.Winner : rules.RoundWinner,
                     HasBomb = rules.Carrier == seat.Id, Alive = alive,
                     Use = alive ? ClassicOpportunity(map, rules, seat.Id, seat.Team, position) : ClassicUse.None,
                     UseProgress = rules.HoldProgress(seat.Id, now),
-                    BombVisible = rules.Phase == ClassicPhase.Planted || rules.Phase == ClassicPhase.Live && rules.BombOnGround,
+                    BombVisible = rules.Phase == ClassicPhase.Planted ||
+                                  (rules.Phase == ClassicPhase.Live && rules.BombOnGround),
                     BombPosition = rules.BombPosition
                 });
                 ecb.AddComponent(rpc, new SendRpcCommandRequest { TargetConnection = connection });
             }
         }
 
-        private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now)
-        {
+        private void UpdateClassicBots(ref SystemState state, ArenaMatch match, ClassicDust2Map map, double now) {
             using var profile = s_ClassicBotProfile.Auto();
             var manager = state.EntityManager;
             var rules = match.Classic;
@@ -160,34 +162,39 @@ namespace Unity.MP_FPS
             var tacticalWorld = TacticalWorld(ref state);
             float dt = SystemAPI.Time.DeltaTime;
             tactics.UpdateOrders(rules, map, now);
-            foreach (var bot in match.Bots.Values)
-            {
+            foreach (var bot in match.Bots.Values) {
                 if (!tactics.Alive(bot)) continue;
                 var health = manager.GetComponentData<PredictedPlayerGhost>(bot.Actor);
                 var status = TacticalStatus(tacticalWorld, bot.Actor);
                 PmcSprintRules.Tick(ref status.Sprint, ref status.SprintPosition, ref status.SprintPositionKnown,
-                    bot.LastPosition, dt, true, health.ControllerState.Sprinting, health.ControllerState.MovementSpeed, 0, status.Stamina > now);
+                    bot.LastPosition, dt, true, health.ControllerState.Sprinting, health.ControllerState.MovementSpeed,
+                    0, status.Stamina > now);
                 health.TacticalSprintStamina = status.Sprint.Value;
                 health.TacticalSprintExhausted = status.Sprint.Exhausted;
                 manager.SetComponentData(bot.Actor, health);
                 var use = ClassicOpportunity(map, rules, bot.Id, bot.Team, bot.LastPosition);
                 if (bot.Tick(manager, tactics, map, rules, health, tacticalWorld, use, now, dt))
                     rules.Use(bot.Id, bot.Team, use, bot.LastPosition, health.LastHitTick, now);
-                else rules.CancelHold(bot.Id);
+                else
+                    rules.CancelHold(bot.Id);
             }
         }
 
-        private static readonly Unity.Profiling.ProfilerMarker s_ClassicBotProfile = new("Moonkov.ClassicBots");
+        private static readonly Profiling.ProfilerMarker s_ClassicBotProfile = new("Moonkov.ClassicBots");
 
-        private static Entity MatchActor(EntityManager manager, Entity connection) =>
-            manager.HasComponent<JoinedClient>(connection) ? manager.GetComponentData<JoinedClient>(connection).PlayerEntity : Entity.Null;
+        private static Entity MatchActor(EntityManager manager, Entity connection) {
+            return manager.HasComponent<JoinedClient>(connection)
+                ? manager.GetComponentData<JoinedClient>(connection).PlayerEntity
+                : Entity.Null;
+        }
 
-        private static bool MarkClassicDeath(EntityManager manager, ArenaMatch match, Entity actor) =>
-            manager.HasComponent<PredictedPlayerGhost>(actor) && manager.GetComponentData<PredictedPlayerGhost>(actor).CurrentHealth <= 0 &&
-            match.ClassicDeaths.Add(actor);
+        private static bool MarkClassicDeath(EntityManager manager, ArenaMatch match, Entity actor) {
+            return manager.HasComponent<PredictedPlayerGhost>(actor) &&
+                   manager.GetComponentData<PredictedPlayerGhost>(actor).CurrentHealth <= 0 &&
+                   match.ClassicDeaths.Add(actor);
+        }
 
-        private static void SetClassicActorActive(EntityManager manager, Entity actor, bool active)
-        {
+        private static void SetClassicActorActive(EntityManager manager, Entity actor, bool active) {
             if (!manager.HasComponent<ClashPlayer>(actor) || !manager.HasComponent<PredictedPlayerGhost>(actor)) return;
             var id = manager.GetComponentData<ClashPlayer>(actor);
             var health = manager.GetComponentData<PredictedPlayerGhost>(actor);
@@ -202,33 +209,40 @@ namespace Unity.MP_FPS
         }
 
         // 新回合开始先重置搜刮对象，选择携带炸弹的席位，再重新放置玩家和机器人。累计战绩留在比赛状态中。
-        private void StartClassicRound(ref SystemState state, EntityCommandBuffer ecb, ArenaMatch match, ClassicDust2Map map,
-            DollSingerEnemySystem ai, double now)
-        {
+        private void StartClassicRound(
+            ref SystemState state,
+            EntityCommandBuffer ecb,
+            ArenaMatch match,
+            ClassicDust2Map map,
+            DollSingerEnemySystem ai,
+            double now) {
             var manager = state.EntityManager;
             var rules = match.Classic;
             bool halftime = rules.Round == ClassicMatch.Half;
             int attackTeam = rules.Round < ClassicMatch.Half ? 0 : 1;
             int carrierSlot = (rules.Round + 1) % ClassicMatch.TeamSize;
-            var assigned = match.Players.Values.FirstOrDefault(player => player.Team == attackTeam && player.Slot == carrierSlot);
+            var assigned =
+                match.Players.Values.FirstOrDefault(player => player.Team == attackTeam && player.Slot == carrierSlot);
             int carrier = assigned?.Id ?? BotId(attackTeam, carrierSlot);
             rules.BeginRound(now, carrier);
             ResetClassicLoot(ref state, match);
             var prefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
             int attackCharacter = prefabs.HatsuneMikuEntityPrefab != Entity.Null
-                ? GameSettings.HatsuneMikuCharacterIndex : GameSettings.DollSingerCharacterIndex;
-            int CharacterForTeam(int team) => team == attackTeam ? attackCharacter : GameSettings.DollSingerCharacterIndex;
+                ? GameSettings.HatsuneMikuCharacterIndex
+                : GameSettings.DollSingerCharacterIndex;
+
+            int CharacterForTeam(int team) {
+                return team == attackTeam ? attackCharacter : GameSettings.DollSingerCharacterIndex;
+            }
+
             match.ClassicTactics.BeginRound(rules.Round, carrierSlot);
-            foreach (var bot in match.Bots.Values)
-            {
+            foreach (var bot in match.Bots.Values) {
                 if (manager.Exists(bot.Input)) ecb.DestroyEntity(bot.Input);
                 if (manager.Exists(bot.Actor)) ecb.DestroyEntity(bot.Actor);
             }
             match.Bots.Clear();
-            var occupied = new bool[ClassicMatch.Capacity];
-
-            foreach (var (connection, seat) in match.Players)
-            {
+            bool[] occupied = new bool[ClassicMatch.Capacity];
+            foreach (var (connection, seat) in match.Players) {
                 seat.UseUntil = 0;
                 if (halftime) seat.Credits = 800;
                 occupied[seat.Team * ClassicMatch.TeamSize + seat.Slot] = true;
@@ -237,69 +251,72 @@ namespace Unity.MP_FPS
                 var oldActor = MatchActor(manager, connection);
                 bool retain = !halftime && TryGetLivingPosition(ref state, oldActor, out _);
                 int previousVersion = seat.Spawned ? GetRaidInventory(ref state, connection).Graph.Version : 0;
-                if (retain)
-                {
+                if (retain) {
                     var inventory = GetRaidInventory(ref state, connection);
                     inventory.CloseLoot();
                     inventory.ClearSearchRecords();
                 }
                 if (manager.Exists(oldActor)) RemoveArenaActor(ref state, ecb, connection, oldActor);
-                if (!retain)
-                {
+                if (!retain) {
                     var kit = ClassicMatch.StartingKit();
-                    kit.Version = System.Math.Max(kit.Version, previousVersion + 1);
+                    kit.Version = Math.Max(kit.Version, previousVersion + 1);
                     SetRaidInventory(ref state, connection, kit, 1);
                 }
-                if (!seat.Spawned) AddPlayerToLeaderboard(manager.GetComponentData<NetworkId>(connection).Value, seat.Name);
+                if (!seat.Spawned)
+                    AddPlayerToLeaderboard(manager.GetComponentData<NetworkId>(connection).Value, seat.Name);
                 SpawnPlayerCharacter(ref state, ecb, connection, seat.Name, CharacterForTeam(seat.Team), seat, spawn);
                 seat.Spawned = true;
             }
             for (int team = 0; team < 2; team++)
-                for (int slot = 0; slot < ClassicMatch.TeamSize; slot++)
-                {
-                    if (occupied[team * ClassicMatch.TeamSize + slot]) continue;
-                    int id = BotId(team, slot);
-                    var bot = ai.SpawnClassicBot(map.Spawn(team == attackTeam, slot), team, slot, id, rules.Round, now,
-                        CharacterForTeam(team));
-                    if (bot != null) match.Bots.Add(id, bot);
-                }
+            for (int slot = 0; slot < ClassicMatch.TeamSize; slot++) {
+                if (occupied[team * ClassicMatch.TeamSize + slot]) continue;
+                int id = BotId(team, slot);
+                var bot = ai.SpawnClassicBot(map.Spawn(team == attackTeam, slot), team, slot, id, rules.Round, now,
+                    CharacterForTeam(team));
+                if (bot != null) match.Bots.Add(id, bot);
+            }
         }
 
-        private void ResetClassicLoot(ref SystemState state, ArenaMatch match)
-        {
+        private void ResetClassicLoot(ref SystemState state, ArenaMatch match) {
             var loot = LootContainers(ref state);
             foreach (int id in loot.DeathBags.Keys) loot.Containers.Remove(id);
             loot.DeathBags.Clear();
             match.ClassicDeaths.Clear();
-            for (int id = 0; id < ClassicDust2Map.SupplyCacheCount; id++)
-            {
-                var cache = InventoryGraph.Create(stash: false, starter: false);
-                cache.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+            for (int id = 0; id < ClassicDust2Map.SupplyCacheCount; id++) {
+                var cache = InventoryGraph.Create(false, false);
+                cache.Items.Add(
+                    new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
                 match.Classic.RestockCache(id, cache);
                 if (loot.Containers.TryGetValue(id, out var previous)) cache.Version = previous.Version + 1;
                 loot.Containers[id] = cache;
             }
         }
 
-        private static int BotId(int team, int slot) => -(1 + team * ClassicMatch.TeamSize + slot);
+        private static int BotId(int team, int slot) { return -(1 + team * ClassicMatch.TeamSize + slot); }
 
-        private static ClassicUse ClassicOpportunity(ClassicDust2Map map, ClassicMatch rules, int actor, int team, Vector3 position)
-        {
-            if (rules.Phase == ClassicPhase.Live && team == rules.AttackTeam)
-            {
-                if (rules.Carrier == actor)
-                {
+        private static ClassicUse ClassicOpportunity(
+            ClassicDust2Map map,
+            ClassicMatch rules,
+            int actor,
+            int team,
+            Vector3 position) {
+            if (rules.Phase == ClassicPhase.Live && team == rules.AttackTeam) {
+                if (rules.Carrier == actor) {
                     if (map.InSite(0, position)) return ClassicUse.PlantA;
                     if (map.InSite(1, position)) return ClassicUse.PlantB;
                 }
                 if (rules.BombOnGround && CanReachBomb(position, rules.BombPosition)) return ClassicUse.PickUp;
             }
-            if (rules.Phase == ClassicPhase.Planted && team != rules.AttackTeam && CanReachBomb(position, rules.BombPosition))
+            if (rules.Phase == ClassicPhase.Planted && team != rules.AttackTeam &&
+                CanReachBomb(position, rules.BombPosition))
                 return ClassicUse.Defuse;
             return ClassicUse.None;
         }
 
-        private static bool CanReachBomb(Vector3 position, Vector3 bomb) => (position - bomb).sqrMagnitude <= 2.2f * 2.2f &&
-            !UnityEngine.Physics.Linecast(position + Vector3.up * 1.2f, bomb + Vector3.up * .24f, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore);
+        private static bool CanReachBomb(Vector3 position, Vector3 bomb) {
+            return (position - bomb).sqrMagnitude <= 2.2f * 2.2f && !UnityEngine.Physics.Linecast(
+                position + Vector3.up * 1.2f, bomb + Vector3.up * .24f, LayerMask.GetMask("Default", "Ground"),
+                QueryTriggerInteraction.Ignore);
+        }
     }
 }

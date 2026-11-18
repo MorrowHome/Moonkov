@@ -15,11 +15,11 @@ using Newtonsoft.Json.Linq;
 using Unity.Entities;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
-    public struct LanRaidMode : IComponentData { }
-    public static class LanRoomClient
-    {
+namespace Unity.MP_FPS {
+    public struct LanRaidMode : IComponentData {
+    }
+
+    public static class LanRoomClient {
         public static LanRoomServer Server { get; private set; }
         public static LanRoomSnapshot Room { get; private set; }
         public static LanProfileSnapshot Profile { get; private set; }
@@ -37,287 +37,375 @@ namespace Unity.MP_FPS
         private static LanPeerRoom s_PeerRoom;
         private static int s_Generation, s_LaunchedRound, s_Failures;
         private static bool s_Polling, s_Closing;
-        private static CancellationTokenSource s_Stop = new CancellationTokenSource();
-        private static readonly SemaphoreSlim s_Requests = new SemaphoreSlim(1, 1);
+        private static CancellationTokenSource s_Stop = new();
+        private static readonly SemaphoreSlim s_Requests = new(1, 1);
         public static event Action Changed;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset()
-        {
-            s_Stop.Cancel(); s_PeerRoom?.Dispose(); s_PeerRoom = null;
-            Server?.Dispose(); Server?.Persistence.Dispose(); Server = null;
-            Room = null; Profile = null; MemberId = Ticket = Error = s_Credential = null;
-            s_Stop = new CancellationTokenSource(); s_Generation++; s_LaunchedRound = s_Failures = 0;
-            s_Polling = s_Closing = false; Changed = null;
+        private static void Reset() {
+            s_Stop.Cancel();
+            s_PeerRoom?.Dispose();
+            s_PeerRoom = null;
+            Server?.Dispose();
+            Server?.Persistence.Dispose();
+            Server = null;
+            Room = null;
+            Profile = null;
+            MemberId = Ticket = Error = s_Credential = null;
+            s_Stop = new CancellationTokenSource();
+            s_Generation++;
+            s_LaunchedRound = s_Failures = 0;
+            s_Polling = s_Closing = false;
+            Changed = null;
         }
-        private static void EnsurePump()
-        {
+
+        private static void EnsurePump() {
             if (UnityEngine.Object.FindAnyObjectByType<LanRoomPump>() != null) return;
-            var go = new GameObject("LAN room connection"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<LanRoomPump>();
+            var go = new GameObject("LAN room connection");
+            UnityEngine.Object.DontDestroyOnLoad(go);
+            go.AddComponent<LanRoomPump>();
         }
-        public static async Task CreateAsync(string name, string playerName, RaidGameMode mode, int capacity, int port, int gamePort, CancellationToken ct,
-            bool crossNetwork = false)
-        {
+
+        public static async Task CreateAsync(
+            string name,
+            string playerName,
+            RaidGameMode mode,
+            int capacity,
+            int port,
+            int gamePort,
+            CancellationToken ct,
+            bool crossNetwork = false) {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             RequireRoomAvailable();
-            if (!PlayerProfileClient.SupportsSinglePlayer) throw new InvalidOperationException("开房需要 Client+Server 游戏版本。");
+            if (!PlayerProfileClient.SupportsSinglePlayer)
+                throw new InvalidOperationException("开房需要 Client+Server 游戏版本。");
             string root = Path.Combine(Application.persistentDataPath, "LAN", "host-v1");
 #if UNITY_EDITOR
             // Keep Editor project copies from leasing the same host save.
-            using (var hash = SHA256.Create())
-                root = Path.Combine(root, BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath))).Replace("-", ""));
+            using (var hash = SHA256.Create()) {
+                root = Path.Combine(root,
+                    BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath)))
+                        .Replace("-", ""));
+            }
 #endif
             var persistence = await Task.Run(() => new LanPersistence(root), ct);
             LanRoomServer server = null;
             LanPeerRoom peerRoom = null;
-            try
-            {
-                await persistence.RecoverAsync(); ct.ThrowIfCancellationRequested();
+            try {
+                await persistence.RecoverAsync();
+                ct.ThrowIfCancellationRequested();
                 server = new LanRoomServer(persistence, name, mode, capacity, port, gamePort, peerRoom: crossNetwork);
-                if (crossNetwork)
-                {
+                if (crossNetwork) {
                     var identity = await Task.Run(LanPeerIdentity.Create, ct);
                     ct.ThrowIfCancellationRequested();
                     peerRoom = new LanPeerRoom(server, identity);
                 }
                 s_Credential = GetCredential();
-                var reply = server.AddHost(s_Credential, playerName, Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex);
+                var reply = server.AddHost(s_Credential, playerName,
+                    Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex);
                 s_PeerRoom = peerRoom;
-                Server = server; Address = "127.0.0.1"; Port = server.Port;
-                Enter(reply); EnsurePump();
+                Server = server;
+                Address = "127.0.0.1";
+                Port = server.Port;
+                Enter(reply);
+                EnsurePump();
+            } catch {
+                peerRoom?.Dispose();
+                server?.Dispose();
+                persistence.Dispose();
+                throw;
             }
-            catch { peerRoom?.Dispose(); server?.Dispose(); persistence.Dispose(); throw; }
         }
-        public static async Task JoinAsync(string address, int port, string playerName, CancellationToken ct)
-        {
+
+        public static async Task JoinAsync(string address, int port, string playerName, CancellationToken ct) {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             RequireRoomAvailable();
             string credential = GetCredential();
-            var reply = await LanProtocol.SendAsync(address, port, new LanRequest { Action = "join", Credential = credential, Name = playerName,
-                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex }, ct);
+            var reply = await LanProtocol.SendAsync(address, port, new LanRequest {
+                Action = "join", Credential = credential, Name = playerName,
+                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex
+            }, ct);
             ct.ThrowIfCancellationRequested();
-            if (reply.Room == null || reply.Room.Protocol != LanProtocol.Version || reply.Profile?.Profile == null) throw new InvalidDataException("房间响应无效。");
-            s_Credential = credential; Address = address; Port = port; Enter(reply); EnsurePump();
+            if (reply.Room == null || reply.Room.Protocol != LanProtocol.Version || reply.Profile?.Profile == null)
+                throw new InvalidDataException("房间响应无效。");
+            s_Credential = credential;
+            Address = address;
+            Port = port;
+            Enter(reply);
+            EnsurePump();
         }
-        private static void RequireRoomAvailable()
-        {
+
+        private static void RequireRoomAvailable() {
             if (Active || s_Closing || s_PeerRoom != null) throw new InvalidOperationException("请先离开当前房间。");
         }
-        internal static async Task JoinPeerAsync(string text, string playerName, Func<string, CancellationToken, Task> replyReady, CancellationToken ct)
-        {
+
+        internal static async Task JoinPeerAsync(
+            string text,
+            string playerName,
+            Func<string, CancellationToken, Task> replyReady,
+            CancellationToken ct) {
             await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             ct.ThrowIfCancellationRequested();
             RequireRoomAvailable();
-            var invite = LanPeerInvitation.Decode(text, reply: false);
-            using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(GetCredential(peer: true)));
-            string credential = BitConverter.ToString(hmac.ComputeHash(Encoding.ASCII.GetBytes("Moonkov.FriendRoom.v1/" + invite.HostId)))
+            var invite = LanPeerInvitation.Decode(text, false);
+            using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(GetCredential(true)));
+            string credential = BitConverter
+                .ToString(hmac.ComputeHash(Encoding.ASCII.GetBytes("Moonkov.FriendRoom.v1/" + invite.HostId)))
                 .Replace("-", "").ToLowerInvariant();
-            var request = new LanRequest { Action = "join", RoomId = invite.RoomId, Credential = credential, Name = playerName,
-                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex };
+            var request = new LanRequest {
+                Action = "join", RoomId = invite.RoomId, Credential = credential, Name = playerName,
+                CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex
+            };
             using var stop = CancellationTokenSource.CreateLinkedTokenSource(ct, s_Stop.Token);
             var room = new LanPeerRoom(null, new LanPeerIdentity(invite.Certificate));
             s_PeerRoom = room;
-            try
-            {
+            try {
                 EnsurePump();
                 var reply = await room.JoinAsync(invite, request, replyReady, stop.Token);
                 stop.Token.ThrowIfCancellationRequested();
                 if (reply.Room?.Protocol != LanProtocol.Version || reply.Room.Id != invite.RoomId ||
                     reply.Room.HostId != invite.HostId || reply.Profile?.Profile == null)
                     throw new InvalidDataException("跨网房间响应无效。");
-                s_Credential = credential; Address = null; Port = 0;
+                s_Credential = credential;
+                Address = null;
+                Port = 0;
                 Enter(reply);
-            }
-            catch
-            {
+            } catch {
                 if (s_PeerRoom == room) s_PeerRoom = null;
                 room.Dispose();
                 throw;
             }
         }
-        internal static void PumpPeerRoom() => s_PeerRoom?.Pump();
-        private static void Enter(LanReply reply)
-        {
+
+        internal static void PumpPeerRoom() { s_PeerRoom?.Pump(); }
+
+        private static void Enter(LanReply reply) {
             PlayerProfileClient.LeaveOffline();
-            s_Generation++; s_LaunchedRound = 0; s_Failures = 0; Error = null;
+            s_Generation++;
+            s_LaunchedRound = 0;
+            s_Failures = 0;
+            Error = null;
             Apply(reply);
         }
-        private static string GetCredential(bool peer = false)
-        {
+
+        private static string GetCredential(bool peer = false) {
             string key = peer ? "Moonkov.Friends.Credential.v1" : "Moonkov.LAN.Credential.v1";
             string value = PlayerPrefs.GetString(key, "");
             if (value.Length == 64 && value.All(Uri.IsHexDigit)) return value;
-            var bytes = new byte[32];
-            using (var random = RandomNumberGenerator.Create()) random.GetBytes(bytes);
+            byte[] bytes = new byte[32];
+            using (var random = RandomNumberGenerator.Create()) { random.GetBytes(bytes); }
             value = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
-            PlayerPrefs.SetString(key, value); PlayerPrefs.Save(); return value;
+            PlayerPrefs.SetString(key, value);
+            PlayerPrefs.Save();
+            return value;
         }
-        private static void Apply(LanReply reply)
-        {
-            Room = reply.Room ?? Room; MemberId = reply.MemberId ?? MemberId; Ticket = reply.Ticket;
-            if (reply.Profile != null) { Profile = reply.Profile; PlayerProfileClient.ApplyLanProfile(); }
-            if (Room != null)
-            {
+
+        private static void Apply(LanReply reply) {
+            Room = reply.Room ?? Room;
+            MemberId = reply.MemberId ?? MemberId;
+            Ticket = reply.Ticket;
+            if (reply.Profile != null) {
+                Profile = reply.Profile;
+                PlayerProfileClient.ApplyLanProfile();
+            }
+            if (Room != null) {
                 GameSettings.Instance.RequestedMode = Room.Mode;
                 if (IsHost) s_PeerRoom?.UpdateRoomCode(Room);
             }
             Changed?.Invoke();
         }
-        public static async Task<LanReply> RequestAsync(string action, object payload = null, bool ready = false, CancellationToken ct = default)
-        {
-            if (!ArenaMatch.UsesTemporaryKit(Room?.Mode ?? RaidGameMode.Expedition) && (action == "start" || action == "ready" && ready))
+
+        public static async Task<LanReply> RequestAsync(
+            string action,
+            object payload = null,
+            bool ready = false,
+            CancellationToken ct = default) {
+            if (!ArenaMatch.UsesTemporaryKit(Room?.Mode ?? RaidGameMode.Expedition) &&
+                (action == "start" || (action == "ready" && ready)))
                 await PlayerProfileClient.FlushMenuInventoryAsync(ct);
             if (!Active || s_Closing) throw new InvalidOperationException("尚未加入房间。");
             int generation = s_Generation;
-            var request = new LanRequest { Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,
+            var request = new LanRequest {
+                Action = action, Credential = s_Credential, RoomId = Room.Id, Ready = ready,
                 CharacterIndex = Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 2, 4), PoseIndex = PoseIndex,
-                Payload = payload == null ? null : JObject.FromObject(payload) };
+                Payload = payload == null ? null : JObject.FromObject(payload)
+            };
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, s_Stop.Token);
             // 将轮询、拖格和准备等请求排队处理。回包之后再看房间代数，已经切到新房间就丢掉旧房间的结果。
             await s_Requests.WaitAsync(linked.Token);
-            try
-            {
+            try {
                 if (generation != s_Generation) throw new OperationCanceledException();
                 var server = Server;
                 LanReply reply;
-                if (server != null)
-                {
+                if (server != null) {
                     if (action == "start" && s_PeerRoom?.HasManualOffer == true)
                         throw new InvalidOperationException("请先完成或取消当前邀请。");
                     reply = await Task.Run(() => server.Handle(request), linked.Token);
+                } else if (s_PeerRoom != null) { reply = await s_PeerRoom.SendAsync(request, linked.Token); } else {
+                    reply = await LanProtocol.SendAsync(Address, Port, request, linked.Token);
                 }
-                else if (s_PeerRoom != null) reply = await s_PeerRoom.SendAsync(request, linked.Token);
-                else reply = await LanProtocol.SendAsync(Address, Port, request, linked.Token);
                 linked.Token.ThrowIfCancellationRequested();
                 if (generation != s_Generation) throw new OperationCanceledException();
-                Apply(reply); return reply;
-            }
-            finally { s_Requests.Release(); }
+                Apply(reply);
+                return reply;
+            } finally { s_Requests.Release(); }
         }
-        internal static async void Poll()
-        {
+
+        internal static async void Poll() {
             if (!Active || s_Polling || s_Closing) return;
             s_Polling = true;
-            try
-            {
-                await RequestAsync("poll"); s_Failures = 0; Error = null;
+            try {
+                await RequestAsync("poll");
+                s_Failures = 0;
+                Error = null;
                 var state = GameSettings.Instance.GameState;
                 // 房主在准备阶段先把服务器启动起来。来宾看到房主已监听才启动客户端，每个房间轮次只触发一次加载。
-                if ((Room.Phase == LanRoomPhase.Playing || IsHost && Room.Phase == LanRoomPhase.Preparing) && Room.Round != s_LaunchedRound && !string.IsNullOrEmpty(Ticket) && state == GlobalGameState.MainMenu)
-                {
+                if ((Room.Phase == LanRoomPhase.Playing || (IsHost && Room.Phase == LanRoomPhase.Preparing)) &&
+                    Room.Round != s_LaunchedRound && !string.IsNullOrEmpty(Ticket) &&
+                    state == GlobalGameState.MainMenu) {
                     s_LaunchedRound = Room.Round;
-                    if (s_PeerRoom == null)
-                    {
+                    if (s_PeerRoom == null) {
                         ConnectionSettings.Instance.IPAddress = Address;
                         ConnectionSettings.Instance.Port = Room.GamePort.ToString();
                     }
                     GameManager.Instance.StartGameAsync(IsHost ? CreationType.LanHost : CreationType.LanJoin);
+                } else if (Room.Phase == LanRoomPhase.Returning) {
+                    if (state != GlobalGameState.MainMenu)
+                        GameManager.Instance.ReturnToMainMenuAsync();
+                    else if (Room.Members.Any(m => m.Id == MemberId && m.InGame)) await ReturnedToMenuAsync();
                 }
-                else if (Room.Phase == LanRoomPhase.Returning)
-                {
-                    if (state != GlobalGameState.MainMenu) GameManager.Instance.ReturnToMainMenuAsync();
-                    else if (Room.Members.Any(m=>m.Id==MemberId && m.InGame)) await ReturnedToMenuAsync();
+            } catch (OperationCanceledException) { } catch (Exception ex) {
+                if (++s_Failures >= 3) {
+                    Error = "与房主的连接已中断。" + ex.Message;
+                    Changed?.Invoke();
+                    if (GameSettings.Instance.GameState != GlobalGameState.MainMenu)
+                        GameManager.Instance.ReturnToMainMenuAsync();
+                    else
+                        await LeaveAsync(true);
                 }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                if (++s_Failures >= 3)
-                {
-                    Error = "与房主的连接已中断。" + ex.Message; Changed?.Invoke();
-                    if (GameSettings.Instance.GameState != GlobalGameState.MainMenu) GameManager.Instance.ReturnToMainMenuAsync();
-                    else await LeaveAsync(afterWorldShutdown: true);
-                }
-            }
-            finally { s_Polling = false; }
+            } finally { s_Polling = false; }
         }
-        public static async Task ReturnedToMenuAsync()
-        {
+
+        public static async Task ReturnedToMenuAsync() {
             if (!Active) return;
-            try { await RequestAsync("returned"); await RequestAsync("profile"); }
-            catch (Exception) { await LeaveAsync(afterWorldShutdown:true); }
+            try {
+                await RequestAsync("returned");
+                await RequestAsync("profile");
+            } catch (Exception) { await LeaveAsync(true); }
         }
-        public static async Task LeaveAsync(bool afterWorldShutdown = false)
-        {
+
+        public static async Task LeaveAsync(bool afterWorldShutdown = false) {
             if (s_Closing) return;
             if (!afterWorldShutdown) await PlayerProfileClient.FlushMenuInventoryAsync(CancellationToken.None);
             // Worlds must have released their deployment receipts before the host store closes.
             if (!afterWorldShutdown && Active && GameSettings.Instance.GameState != GlobalGameState.MainMenu)
                 throw new InvalidOperationException("请先返回主菜单，再关闭或离开房间。");
-            if (Active && !IsHost) { try { await RequestAsync("leave"); } catch (Exception) { /* best effort; lease expires */ } }
+            if (Active && !IsHost)
+                try { await RequestAsync("leave"); } catch (Exception) {
+                    /* best effort; lease expires */
+                }
             s_Closing = true;
-            try
-            {
-                s_Generation++; var server = Server; Server = null; Room = null; Profile = null; Ticket = MemberId = null;
-                s_PeerRoom?.Dispose(); s_PeerRoom = null;
-                server?.Dispose(); server?.Persistence.Dispose(); PlayerProfileClient.ClearLanProfile();
-                if (ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode)) GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
+            try {
+                s_Generation++;
+                var server = Server;
+                Server = null;
+                Room = null;
+                Profile = null;
+                Ticket = MemberId = null;
+                s_PeerRoom?.Dispose();
+                s_PeerRoom = null;
+                server?.Dispose();
+                server?.Persistence.Dispose();
+                PlayerProfileClient.ClearLanProfile();
+                if (ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode))
+                    GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
                 Changed?.Invoke();
-            }
-            finally { s_Closing = false; }
+            } finally { s_Closing = false; }
         }
-        internal static void StopAfterPumpDestroyed()
-        {
+
+        internal static void StopAfterPumpDestroyed() {
             if (!Active && s_PeerRoom == null) return;
             // Editor Stop/native quit can bypass the menu's orderly shutdown.
             // Capture ECS ownership on this thread, then finish data-only writes before closing leases.
-            var server = Server; server?.Dispose(); s_Stop.Cancel(); s_Generation++;
-            s_PeerRoom?.Dispose(); s_PeerRoom = null;
-            Server = null; Room = null; Profile = null; Ticket = MemberId = null;
+            var server = Server;
+            server?.Dispose();
+            s_Stop.Cancel();
+            s_Generation++;
+            s_PeerRoom?.Dispose();
+            s_PeerRoom = null;
+            Server = null;
+            Room = null;
+            Profile = null;
+            Ticket = MemberId = null;
             if (server == null) return;
             var shutdowns = new List<Task>();
-            foreach (var world in World.All)
-            {
+            foreach (var world in World.All) {
                 if (!world.IsCreated) continue;
                 using var query = world.EntityManager.CreateEntityQuery(typeof(RaidPersistenceContext));
                 if (query.IsEmptyIgnoreFilter) continue;
-                var context = world.EntityManager.GetComponentObject<RaidPersistenceContext>(query.GetSingletonEntity());
-                context.Dispose(); shutdowns.Add(context.ShutdownTask);
+                var context =
+                    world.EntityManager.GetComponentObject<RaidPersistenceContext>(query.GetSingletonEntity());
+                context.Dispose();
+                shutdowns.Add(context.ShutdownTask);
             }
             _ = DisposeStoreAsync(server.Persistence, shutdowns);
         }
-        private static async Task DisposeStoreAsync(LanPersistence persistence, List<Task> shutdowns)
-        { try { await Task.WhenAll(shutdowns).ConfigureAwait(false); } finally { persistence.Dispose(); } }
-        public static string[] LocalAddresses()
-        {
-            try { return NetworkInterface.GetAllNetworkInterfaces().Where(n => n.OperationalStatus == OperationalStatus.Up)
-                .OrderByDescending(n => n.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork && !g.Address.Equals(IPAddress.Any)))
-                .SelectMany(n => n.GetIPProperties().UnicastAddresses).Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a.Address) && !a.Address.ToString().StartsWith("169.254.", StringComparison.Ordinal))
-                .Select(a => a.Address.ToString()).Distinct().ToArray(); }
-            catch { return Array.Empty<string>(); }
+
+        private static async Task DisposeStoreAsync(LanPersistence persistence, List<Task> shutdowns) {
+            try { await Task.WhenAll(shutdowns).ConfigureAwait(false); } finally { persistence.Dispose(); }
         }
-        public static async Task<LanRoomSnapshot[]> DiscoverAsync(CancellationToken ct)
-        {
+
+        public static string[] LocalAddresses() {
+            try {
+                return NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                    .OrderByDescending(n => n.GetIPProperties().GatewayAddresses.Any(g =>
+                        g.Address.AddressFamily == AddressFamily.InterNetwork && !g.Address.Equals(IPAddress.Any)))
+                    .SelectMany(n => n.GetIPProperties().UnicastAddresses).Where(a =>
+                        a.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a.Address) &&
+                        !a.Address.ToString().StartsWith("169.254.", StringComparison.Ordinal))
+                    .Select(a => a.Address.ToString()).Distinct().ToArray();
+            } catch { return Array.Empty<string>(); }
+        }
+
+        public static async Task<LanRoomSnapshot[]> DiscoverAsync(CancellationToken ct) {
             var rooms = new Dictionary<string, LanRoomSnapshot>();
-            using var socket = new UdpClient(new IPEndPoint(IPAddress.Any, 0)); socket.EnableBroadcast = true;
-            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct); timeout.CancelAfter(1800);
+            using var socket = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
+            socket.EnableBroadcast = true;
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeout.CancelAfter(1800);
             using var cancel = timeout.Token.Register(socket.Close);
-            var query = Encoding.UTF8.GetBytes(LanProtocol.DiscoveryQuery);
-            try
-            {
+            byte[] query = Encoding.UTF8.GetBytes(LanProtocol.DiscoveryQuery);
+            try {
                 var destinations = new HashSet<IPAddress> { IPAddress.Broadcast, IPAddress.Loopback };
-                foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces().Where(n => n.OperationalStatus == OperationalStatus.Up))
-                    foreach (var ip in adapter.GetIPProperties().UnicastAddresses.Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork && a.IPv4Mask != null))
-                    { byte[] address = ip.Address.GetAddressBytes(), mask = ip.IPv4Mask.GetAddressBytes(); destinations.Add(new IPAddress(address.Select((b, i) => (byte)(b | ~mask[i])).ToArray())); }
+                foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces()
+                             .Where(n => n.OperationalStatus == OperationalStatus.Up))
+                foreach (var ip in adapter.GetIPProperties().UnicastAddresses.Where(a =>
+                             a.Address.AddressFamily == AddressFamily.InterNetwork && a.IPv4Mask != null)) {
+                    byte[] address = ip.Address.GetAddressBytes(), mask = ip.IPv4Mask.GetAddressBytes();
+                    destinations.Add(new IPAddress(address.Select((b, i) => (byte)(b | ~mask[i])).ToArray()));
+                }
                 foreach (var ip in destinations)
-                    try { await socket.SendAsync(query, query.Length, new IPEndPoint(ip, LanProtocol.DiscoveryPort)); } catch (SocketException) { }
-                while (!timeout.IsCancellationRequested)
-                {
+                    try {
+                        await socket.SendAsync(query, query.Length, new IPEndPoint(ip, LanProtocol.DiscoveryPort));
+                    } catch (SocketException) { }
+                while (!timeout.IsCancellationRequested) {
                     var packet = await socket.ReceiveAsync();
                     if (packet.Buffer.Length > 12000) continue;
-                    try
-                    {
-                        var room = JsonConvert.DeserializeObject<LanRoomSnapshot>(Encoding.UTF8.GetString(packet.Buffer), LanProtocol.Json);
-                        if (room == null || room.Protocol != LanProtocol.Version || room.Members == null || room.Members.Length > 32 ||
-                            !int.TryParse(room.Address, out var port) || port < 1 || port > 65535 || string.IsNullOrEmpty(room.Id)) continue;
+                    try {
+                        var room = JsonConvert.DeserializeObject<LanRoomSnapshot>(
+                            Encoding.UTF8.GetString(packet.Buffer), LanProtocol.Json);
+                        if (room == null || room.Protocol != LanProtocol.Version || room.Members == null ||
+                            room.Members.Length > 32 || !int.TryParse(room.Address, out int port) || port < 1 ||
+                            port > 65535 || string.IsNullOrEmpty(room.Id))
+                            continue;
                         room.Address = packet.RemoteEndPoint.Address + ":" + port;
                         rooms[room.Id] = room;
-                    }
-                    catch (JsonException) { }
+                    } catch (JsonException) { }
                 }
-            }
-            catch (Exception) when (timeout.IsCancellationRequested) { }
-            ct.ThrowIfCancellationRequested(); return rooms.Values.ToArray();
+            } catch (Exception) when (timeout.IsCancellationRequested) { }
+            ct.ThrowIfCancellationRequested();
+            return rooms.Values.ToArray();
         }
     }
 }

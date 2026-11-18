@@ -7,19 +7,16 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>
     /// This extension methods help with some specificities of the <see cref="ISession"/> interface.
     /// </summary>
-    public static class SessionExtension
-    {
+    public static class SessionExtension {
         /// <summary>
         /// This method is used to know if the current <see cref="ISession"/> is a pure server and not a client.
         /// </summary>
         /// <returns>True if the session is only a server and does not have a client, false otherwise.</returns>
-        public static bool IsServer(this ISession session)
-        {
+        public static bool IsServer(this ISession session) {
             return session.IsHost && session.CurrentPlayer?.Id == null;
         }
     }
@@ -32,52 +29,56 @@ namespace Unity.MP_FPS
     /// to retrieve the Listen and Connect <see cref="NetworkEndpoint"/> while connecting through the <see cref="ISession"/> API.
     /// This is done in order to control the Worlds creation and Connection in <see cref="GameManager.StartGameAsync"/>.
     /// </remarks>
-    public class GameConnection
-    {
+    public class GameConnection {
         public ISession Session { get; private set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
         public EmbeddedIceClientSession IceSession { get; private set; }
         internal LanPeerRoom PeerRoom { get; private set; }
-        public void ReleaseIce() { IceSession?.Dispose(); IceSession = null; }
 
-        public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(false, ct);
-        public static Task<GameConnection> JoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(true, ct);
+        public void ReleaseIce() {
+            IceSession?.Dispose();
+            IceSession = null;
+        }
+
+        public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) {
+            return OpenRelayAsync(false, ct);
+        }
+
+        public static Task<GameConnection> JoinGameAsync(CancellationToken ct = default) {
+            return OpenRelayAsync(true, ct);
+        }
 
         // Relay 会话建立和底层网络回调是两件事。先等会话，再等回调提供两个端点。超时后如果 SDK 又迟到建好了房间，会补做清理。
-        static async Task<GameConnection> OpenRelayAsync(bool joinByCode, CancellationToken ct)
-        {
+        private static async Task<GameConnection> OpenRelayAsync(bool joinByCode, CancellationToken ct) {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(SessionConnectionPolicy.TimeoutSeconds));
             var handler = new EntityNetworkHandler();
             Task<ISession> pending = null;
-            try
-            {
+            try {
                 await BoundedAsync(StartServicesAsync(), timeout.Token);
-                if (joinByCode)
-                    pending = MultiplayerService.Instance.JoinSessionByCodeAsync(ConnectionSettings.Instance.SessionCode,
-                        new JoinSessionOptions().WithNetworkHandler(handler));
-                else
-                {
+                if (joinByCode) {
+                    pending = MultiplayerService.Instance.JoinSessionByCodeAsync(
+                        ConnectionSettings.Instance.SessionCode, new JoinSessionOptions().WithNetworkHandler(handler));
+                } else {
                     string name = GameSettings.Instance.SessionName?.Trim();
-                    if (string.IsNullOrEmpty(name) || name.Length > 64) throw new InvalidOperationException("房间名称须为 1–64 个字符。 ");
-                    pending = AsSessionAsync(MultiplayerService.Instance.CreateSessionAsync(new SessionOptions
-                    {
-                        Name = name, MaxPlayers = GameManager.RequestedMaxPlayers
-                    }.WithRelayNetwork().WithNetworkOptions(new NetworkOptions { RelayProtocol = RelayProtocol.DTLS }).WithNetworkHandler(handler)));
+                    if (string.IsNullOrEmpty(name) || name.Length > 64)
+                        throw new InvalidOperationException("房间名称须为 1–64 个字符。 ");
+                    pending = AsSessionAsync(MultiplayerService.Instance.CreateSessionAsync(new SessionOptions {
+                            Name = name, MaxPlayers = GameManager.RequestedMaxPlayers
+                        }.WithRelayNetwork()
+                        .WithNetworkOptions(new NetworkOptions { RelayProtocol = RelayProtocol.DTLS })
+                        .WithNetworkHandler(handler)));
                 }
                 var session = await BoundedAsync(pending, timeout.Token);
-                return new GameConnection
-                {
+                return new GameConnection {
                     Session = session,
                     ConnectEndpoint = await BoundedAsync(handler.ConnectEndpoint, timeout.Token),
                     ListenEndpoint = await BoundedAsync(handler.ListenEndpoint, timeout.Token),
                     SessionConnectionType = await BoundedAsync(handler.SessionConnectionType, timeout.Token)
                 };
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 await handler.StopAsync();
                 if (pending != null) _ = CleanupLateSessionAsync(pending);
                 if (ex is OperationCanceledException && !ct.IsCancellationRequested)
@@ -88,12 +89,10 @@ namespace Unity.MP_FPS
 
         // The SDK does not expose cancellation for every operation. Bound our wait,
         // observe late failures, and remove late-created sessions rather than leaking rooms.
-        static async Task BoundedAsync(Task operation, CancellationToken ct)
-        {
+        private static async Task BoundedAsync(Task operation, CancellationToken ct) {
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            Task delay = Task.Delay(Timeout.Infinite, deadline.Token);
-            if (await Task.WhenAny(operation, delay) != operation)
-            {
+            var delay = Task.Delay(Timeout.Infinite, deadline.Token);
+            if (await Task.WhenAny(operation, delay) != operation) {
                 _ = ObserveAsync(operation);
                 ct.ThrowIfCancellationRequested();
             }
@@ -101,22 +100,31 @@ namespace Unity.MP_FPS
             await operation;
             ct.ThrowIfCancellationRequested();
         }
-        static async Task<T> BoundedAsync<T>(Task<T> operation, CancellationToken ct)
-        { await BoundedAsync((Task)operation, ct); return await operation; }
-        static async Task<ISession> AsSessionAsync(Task<IHostSession> task) => await task;
-        static async Task ObserveAsync(Task task) { try { await task; } catch (Exception) { } }
-        static async Task CleanupLateSessionAsync(Task<ISession> pending)
-        {
-            try
-            {
-                var session = await pending;
-                if (session.IsHost) await session.AsHost().DeleteAsync(); else await session.LeaveAsync();
-            }
-            catch (Exception ex) { UnityEngine.Debug.LogWarning("[Session] Late session cleanup: " + ex.GetType().Name); }
+
+        private static async Task<T> BoundedAsync<T>(Task<T> operation, CancellationToken ct) {
+            await BoundedAsync((Task)operation, ct);
+            return await operation;
         }
-        
-        public static GameConnection GetServerConnectionSettings(ushort port)
-        {
+
+        private static async Task<ISession> AsSessionAsync(Task<IHostSession> task) { return await task; }
+
+        private static async Task ObserveAsync(Task task) {
+            try { await task; } catch (Exception) { }
+        }
+
+        private static async Task CleanupLateSessionAsync(Task<ISession> pending) {
+            try {
+                var session = await pending;
+                if (session.IsHost)
+                    await session.AsHost().DeleteAsync();
+                else
+                    await session.LeaveAsync();
+            } catch (Exception ex) {
+                UnityEngine.Debug.LogWarning("[Session] Late session cleanup: " + ex.GetType().Name);
+            }
+        }
+
+        public static GameConnection GetServerConnectionSettings(ushort port) {
             ConnectionSettings.Instance.Port = port.ToString();
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = NetworkEndpoint.AnyIpv4.WithPort(port);
@@ -125,8 +133,7 @@ namespace Unity.MP_FPS
             return gameConnection;
         }
 
-        public static GameConnection GetServerConnectionSettings(NetworkEndpoint listenEndpoint)
-        {
+        public static GameConnection GetServerConnectionSettings(NetworkEndpoint listenEndpoint) {
             ConnectionSettings.Instance.Port = listenEndpoint.Port.ToString();
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = listenEndpoint;
@@ -134,12 +141,13 @@ namespace Unity.MP_FPS
             gameConnection.SessionConnectionType = NetworkType.Direct;
             return gameConnection;
         }
-        
-        public static Task<GameConnection> HostGameAsync()
-        {
+
+        public static Task<GameConnection> HostGameAsync() {
             if (LanRoomClient.PeerRoom is { } room)
-                return Task.FromResult(new GameConnection { PeerRoom = room, ListenEndpoint = NetworkEndpoint.AnyIpv4,
-                    ConnectEndpoint = NetworkEndpoint.LoopbackIpv4, SessionConnectionType = NetworkType.Direct });
+                return Task.FromResult(new GameConnection {
+                    PeerRoom = room, ListenEndpoint = NetworkEndpoint.AnyIpv4,
+                    ConnectEndpoint = NetworkEndpoint.LoopbackIpv4, SessionConnectionType = NetworkType.Direct
+                });
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = NetworkEndpoint.AnyIpv4.WithPort(port);
@@ -148,34 +156,34 @@ namespace Unity.MP_FPS
             return Task.FromResult(gameConnection);
         }
 
-        public static Task<GameConnection> OfflineGameAsync()
-        {
-            return Task.FromResult(new GameConnection
-            {
+        public static Task<GameConnection> OfflineGameAsync() {
+            return Task.FromResult(new GameConnection {
                 ListenEndpoint = NetworkEndpoint.LoopbackIpv4,
                 ConnectEndpoint = NetworkEndpoint.LoopbackIpv4,
                 SessionConnectionType = NetworkType.Direct
             });
         }
 
-        public void UseLocalServerEndpoint(NetworkEndpoint endpoint) => ConnectEndpoint = endpoint;
+        public void UseLocalServerEndpoint(NetworkEndpoint endpoint) { ConnectEndpoint = endpoint; }
 
         // 优先用已有好友房的战局路线，官方大厅分配到 P2P 时再新建 ICE 会话。普通直连走域名解析和公网端口。
-        public static async Task<GameConnection> ConnectGameAsync(CancellationToken ct = default)
-        {
+        public static async Task<GameConnection> ConnectGameAsync(CancellationToken ct = default) {
             if (LanRoomClient.PeerRoom is { } room)
-                return new GameConnection { PeerRoom = room, ListenEndpoint = room.RaidTransport.LocalEndpoint,
-                    ConnectEndpoint = room.GuestRaidEndpoint, SessionConnectionType = NetworkType.Direct };
-            if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && OnlineLobbyClient.InInstance)
-            {
+                return new GameConnection {
+                    PeerRoom = room, ListenEndpoint = room.RaidTransport.LocalEndpoint,
+                    ConnectEndpoint = room.GuestRaidEndpoint, SessionConnectionType = NetworkType.Direct
+                };
+            if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && OnlineLobbyClient.InInstance) {
                 var snapshot = OnlineLobbyClient.Snapshot;
-                if (snapshot?.InstanceId != OnlineLobbyClient.InstanceId || !Online.OnlineNetworkProtocol.ValidPath(snapshot.ConnectionPath))
+                if (snapshot?.InstanceId != OnlineLobbyClient.InstanceId ||
+                    !Online.OnlineNetworkProtocol.ValidPath(snapshot.ConnectionPath))
                     throw new InvalidOperationException("战局连接方式无效，请返回小队刷新。");
-                if (snapshot.ConnectionPath == Online.OnlineNetworkProtocol.P2P)
-                {
+                if (snapshot.ConnectionPath == Online.OnlineNetworkProtocol.P2P) {
                     var ice = await EmbeddedIceClientSession.ConnectAsync(snapshot, ct);
-                    return new GameConnection { IceSession = ice, ListenEndpoint = ice.Transport.LocalEndpoint,
-                        ConnectEndpoint = ice.Endpoint, SessionConnectionType = NetworkType.Direct };
+                    return new GameConnection {
+                        IceSession = ice, ListenEndpoint = ice.Transport.LocalEndpoint,
+                        ConnectEndpoint = ice.Endpoint, SessionConnectionType = NetworkType.Direct
+                    };
                 }
             }
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
@@ -190,30 +198,17 @@ namespace Unity.MP_FPS
             return gameConnection;
         }
 
-        static async Task StartServicesAsync()
-        {
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-            {
-                await UnityServices.InitializeAsync();
-            }
-
+        private static async Task StartServicesAsync() {
+            if (UnityServices.State != ServicesInitializationState.Initialized) await UnityServices.InitializeAsync();
             if (!AuthenticationService.Instance.IsAuthorized)
-            {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            }
         }
 
-        static SessionOptions CreateSessionOptions(ConnectionType connectionType, string address, string port)
-        {
-            SessionOptions options = new SessionOptions { MaxPlayers = GameManager.MaxPlayer };
-            switch (connectionType)
-            {
-                case ConnectionType.Relay:
-                    options.WithRelayNetwork();
-                    break;
-                case ConnectionType.Direct:
-                    options.WithDirectNetwork("0.0.0.0", address, ushort.Parse(port));
-                    break;
+        private static SessionOptions CreateSessionOptions(ConnectionType connectionType, string address, string port) {
+            var options = new SessionOptions { MaxPlayers = GameManager.MaxPlayer };
+            switch (connectionType) {
+                case ConnectionType.Relay: options.WithRelayNetwork(); break;
+                case ConnectionType.Direct: options.WithDirectNetwork("0.0.0.0", address, ushort.Parse(port)); break;
             }
             return options;
         }

@@ -10,12 +10,18 @@ using UnityEngine.UIElements;
 using Unity.MP_FPS.Campaign;
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class RaidHUD
-    {
+namespace Unity.MP_FPS {
+    public sealed partial class RaidHUD {
         private VisualElement m_CampaignOverlay, m_CampaignHud, m_CampaignJournalModal;
-        private Label m_CampaignChapter, m_CampaignTitle, m_CampaignAction, m_CampaignLocation, m_CampaignHint, m_CampaignMarker, m_CampaignResult;
+
+        private Label m_CampaignChapter,
+            m_CampaignTitle,
+            m_CampaignAction,
+            m_CampaignLocation,
+            m_CampaignHint,
+            m_CampaignMarker,
+            m_CampaignResult;
+
         private Client.CampaignChapterView m_CampaignJournal;
         private bool m_CampaignJournalVisible, m_CampaignHasDestination;
         private float m_CampaignNextPresentation, m_CampaignNextRead;
@@ -23,30 +29,35 @@ namespace Unity.MP_FPS
         private int m_CampaignRadioRaid;
         private Vector3 m_CampaignDestination;
         private string m_CampaignDestinationName;
-        private readonly HashSet<string> m_CampaignCommunicationsShown = new HashSet<string>(StringComparer.Ordinal);
-        private readonly HashSet<string> m_CampaignDiscoveredAnchors = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_CampaignCommunicationsShown = new(StringComparer.Ordinal);
+        private readonly HashSet<string> m_CampaignDiscoveredAnchors = new(StringComparer.Ordinal);
 
-        private bool CampaignJournalAvailable
-        {
-            get
-            {
-                if (!PlayerProfileClient.IsOffline || m_ClashMode || m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) return false;
+        private bool CampaignJournalAvailable {
+            get {
+                if (!PlayerProfileClient.IsOffline || m_ClashMode || m_World == null || !m_World.IsCreated ||
+                    m_StateQuery.IsEmptyIgnoreFilter)
+                    return false;
                 var entity = m_StateQuery.GetSingletonEntity();
-                return m_World.EntityManager.HasComponent<RaidMissionClientState>(entity) &&
-                    m_World.EntityManager.GetComponentData<RaidMissionClientState>(entity).Snapshot.CampaignEnabled;
+                return m_World.EntityManager.HasComponent<RaidMissionClientState>(entity) && m_World.EntityManager
+                    .GetComponentData<RaidMissionClientState>(entity).Snapshot.CampaignEnabled;
             }
         }
 
-        private void InitializeCampaignHUD()
-        {
+        private void InitializeCampaignHUD() {
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/CampaignChapterHUD");
             if (!tree) return;
             tree.CloneTree(m_Root);
-            m_CampaignOverlay = m_Root.Q("campaignOverlay"); m_CampaignHud = m_Root.Q("campaignHud");
-            m_CampaignChapter = m_Root.Q<Label>("campaignHudChapter"); m_CampaignTitle = m_Root.Q<Label>("campaignHudTitle"); m_CampaignAction = m_Root.Q<Label>("campaignHudAction");
-            m_CampaignLocation = m_Root.Q<Label>("campaignHudLocation"); m_CampaignHint = m_Root.Q<Label>("campaignHudHint");
-            m_CampaignMarker = m_Root.Q<Label>("campaignMarker"); m_CampaignJournalModal = m_Root.Q("campaignJournalModal");
-            var rail = m_Root.Q<ScrollView>("raidRightRail"); if (rail != null) rail.Add(m_CampaignHud);
+            m_CampaignOverlay = m_Root.Q("campaignOverlay");
+            m_CampaignHud = m_Root.Q("campaignHud");
+            m_CampaignChapter = m_Root.Q<Label>("campaignHudChapter");
+            m_CampaignTitle = m_Root.Q<Label>("campaignHudTitle");
+            m_CampaignAction = m_Root.Q<Label>("campaignHudAction");
+            m_CampaignLocation = m_Root.Q<Label>("campaignHudLocation");
+            m_CampaignHint = m_Root.Q<Label>("campaignHudHint");
+            m_CampaignMarker = m_Root.Q<Label>("campaignMarker");
+            m_CampaignJournalModal = m_Root.Q("campaignJournalModal");
+            var rail = m_Root.Q<ScrollView>("raidRightRail");
+            if (rail != null) rail.Add(m_CampaignHud);
             m_CampaignHud.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
             var style = Resources.Load<StyleSheet>("Moonkov/UI/CampaignChapterOne");
             if (style != null && !m_Root.styleSheets.Contains(style)) m_Root.styleSheets.Add(style);
@@ -54,197 +65,234 @@ namespace Unity.MP_FPS
                 () => m_World != null && m_World.IsCreated ? CampaignScene.ReadProgress(m_World) : null,
                 () => SetCampaignJournal(false), "返回战局");
             m_CampaignJournal.SetVisible(false);
-            m_CampaignResult = new Label(); m_CampaignResult.AddToClassList("campaign-copy"); m_CampaignResult.AddToClassList("campaign-hidden");
+            m_CampaignResult = new Label();
+            m_CampaignResult.AddToClassList("campaign-copy");
+            m_CampaignResult.AddToClassList("campaign-hidden");
             m_ResultText.parent.Insert(m_ResultText.parent.IndexOf(m_ResultText) + 1, m_CampaignResult);
-            m_CampaignJournalVisible = m_CampaignHasDestination = false; m_CampaignNextPresentation = m_CampaignNextRead = 0; m_CampaignProgress = null;
+            m_CampaignJournalVisible = m_CampaignHasDestination = false;
+            m_CampaignNextPresentation = m_CampaignNextRead = 0;
+            m_CampaignProgress = null;
             InitializeTutorialHUD();
-            MoonkovLocalization.Bind(m_CampaignOverlay); MoonkovLocalization.Bind(m_CampaignResult);
+            MoonkovLocalization.Bind(m_CampaignOverlay);
+            MoonkovLocalization.Bind(m_CampaignResult);
         }
 
-        private void SetCampaignJournal(bool open)
-        {
+        private void SetCampaignJournal(bool open) {
             if (m_CampaignJournalModal == null || open == m_CampaignJournalVisible) return;
-            if (open)
-            {
-                if (!CampaignJournalAvailable || m_InventoryVisible || m_FieldRecordOpen || GameSettings.Instance.IsPauseMenuOpen) return;
-                SetRaidMapOpen(false); SetMissionDetails(false); CancelMissionHold();
+            if (open) {
+                if (!CampaignJournalAvailable || m_InventoryVisible || m_FieldRecordOpen ||
+                    GameSettings.Instance.IsPauseMenuOpen)
+                    return;
+                SetRaidMapOpen(false);
+                SetMissionDetails(false);
+                CancelMissionHold();
                 m_CampaignJournal.Refresh();
             }
             m_CampaignJournalVisible = open;
             m_CampaignJournalModal.EnableInClassList("campaign-hidden", !open);
             m_CampaignJournal.SetVisible(open);
-            Utils.SetCursorVisible(open || m_InventoryVisible || m_MissionDetailsVisible || m_MapOpen || m_WasSettled || GameSettings.Instance.IsPauseMenuOpen);
+            Utils.SetCursorVisible(open || m_InventoryVisible || m_MissionDetailsVisible || m_MapOpen || m_WasSettled ||
+                                   GameSettings.Instance.IsPauseMenuOpen);
             if (open) m_CampaignJournal.Element.Q<Button>("campaignContinue")?.Focus();
         }
 
-        private void UpdateCampaignHUD(bool live)
-        {
+        private void UpdateCampaignHUD(bool live) {
             if (m_CampaignHud == null) return;
             bool available = CampaignJournalAvailable;
-            if (!available) m_CampaignProgress = null;
-            else if (m_CampaignProgress == null || Time.unscaledTime >= m_CampaignNextRead)
-            { m_CampaignProgress = CampaignScene.ReadProgress(m_World); m_CampaignNextRead = Time.unscaledTime + .25f; }
+            if (!available) { m_CampaignProgress = null; } else if (m_CampaignProgress == null ||
+                                                                    Time.unscaledTime >= m_CampaignNextRead) {
+                m_CampaignProgress = CampaignScene.ReadProgress(m_World);
+                m_CampaignNextRead = Time.unscaledTime + .25f;
+            }
             var progress = m_CampaignProgress;
             m_CampaignOverlay.EnableInClassList("campaign-compact", m_Root.resolvedStyle.width < 1400);
-            if (!live || progress == null)
-            {
-                m_CampaignHud.AddToClassList("campaign-hidden"); m_CampaignMarker.AddToClassList("campaign-hidden");
+            if (!live || progress == null) {
+                m_CampaignHud.AddToClassList("campaign-hidden");
+                m_CampaignMarker.AddToClassList("campaign-hidden");
                 SetCampaignJournal(false);
                 PresentCampaignResult(progress);
                 return;
             }
             m_CampaignResult.AddToClassList("campaign-hidden");
-            if (m_CampaignRadioRaid != m_Snapshot.RaidId)
-            {
-                m_CampaignRadioRaid = m_Snapshot.RaidId; m_CampaignCommunicationsShown.Clear();
+            if (m_CampaignRadioRaid != m_Snapshot.RaidId) {
+                m_CampaignRadioRaid = m_Snapshot.RaidId;
+                m_CampaignCommunicationsShown.Clear();
                 m_CampaignDiscoveredAnchors.Clear();
-                m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
+                m_ChapterRadioQueue.Clear();
+                m_ChapterRadioCurrent = null;
             }
             PresentCampaignCommunication(progress);
             if ((RaidKeyBindings.Pressed(RaidKey.Journal) ||
-                (Gamepad.current != null && Gamepad.current.dpad.up.wasPressedThisFrame)) && !m_InventoryVisible &&
+                 (Gamepad.current != null && Gamepad.current.dpad.up.wasPressedThisFrame)) && !m_InventoryVisible &&
                 !ChatInputBlocked && !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 SetCampaignJournal(!m_CampaignJournalVisible);
             bool tracked = !progress.TrackingSuppressed && progress.PrimaryTracked != null;
             string id = tracked ? EffectiveCampaignTask(progress) : null;
             bool show = id != null && !m_InventoryVisible && !m_CampaignJournalVisible && !m_MissionDetailsVisible &&
-                !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen;
+                        !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen;
             m_CampaignHud.EnableInClassList("campaign-hidden", !show);
             // The old event remains interactive; only its duplicate tracking card is replaced.
-            m_MissionHud.style.display = DisplayStyle.None; m_MissionMarker.style.display = DisplayStyle.None;
-            if (!show) { m_CampaignMarker.AddToClassList("campaign-hidden"); return; }
-            if (Time.unscaledTime >= m_CampaignNextPresentation)
-            {
+            m_MissionHud.style.display = DisplayStyle.None;
+            m_MissionMarker.style.display = DisplayStyle.None;
+            if (!show) {
+                m_CampaignMarker.AddToClassList("campaign-hidden");
+                return;
+            }
+            if (Time.unscaledTime >= m_CampaignNextPresentation) {
                 m_CampaignNextPresentation = Time.unscaledTime + .25f;
-                var task = CampaignCatalog.Find(id); var node = CampaignRules.CurrentNode(progress, id);
+                var task = CampaignCatalog.Find(id);
+                var node = CampaignRules.CurrentNode(progress, id);
                 m_CampaignChapter.text = "第" + (task.Chapter == 1 ? "一" : "二") + "章 " + task.ChapterTitle;
                 m_CampaignTitle.text = task.Title;
                 m_CampaignAction.text = CampaignActionText(node);
-                m_CampaignHint.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : CampaignTeachingHint(node);
-                Vector3? origin = m_PlayerQuery.HasSingleton<LocalTransform>() ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : null;
-                m_CampaignHasDestination = CampaignScene.TryDestination(m_World, progress, id, origin, out m_CampaignDestination, out m_CampaignDestinationName);
+                m_CampaignHint.text = Time.unscaledTime < m_MissionNoticeUntil
+                    ? m_MissionNotice
+                    : CampaignTeachingHint(node);
+                Vector3? origin = m_PlayerQuery.HasSingleton<LocalTransform>()
+                    ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position
+                    : null;
+                m_CampaignHasDestination = CampaignScene.TryDestination(m_World, progress, id, origin,
+                    out m_CampaignDestination, out m_CampaignDestinationName);
                 var anchor = RaidMissionSite.Active ? RaidMissionSite.Active.Anchor(node?.AnchorId) : null;
-                bool undiscovered = anchor != null && anchor.Id != "entry" && !m_CampaignDiscoveredAnchors.Contains(anchor.Id);
-                if (undiscovered && origin.HasValue && Camera.main && Vector3.Distance(origin.Value, anchor.Position) <= 12 &&
-                    Vector3.Angle(Camera.main.transform.forward, anchor.Position - Camera.main.transform.position) <= 60 &&
-                    RaidInteractionAim.Visible(Camera.main.transform.position, anchor.Position, RaidInteractionAim.MissionSurface(anchor.Id)))
-                { m_CampaignDiscoveredAnchors.Add(anchor.Id); undiscovered = false; }
+                bool undiscovered = anchor != null && anchor.Id != "entry" &&
+                                    !m_CampaignDiscoveredAnchors.Contains(anchor.Id);
+                if (undiscovered && origin.HasValue && Camera.main &&
+                    Vector3.Distance(origin.Value, anchor.Position) <= 12 &&
+                    Vector3.Angle(Camera.main.transform.forward, anchor.Position - Camera.main.transform.position) <=
+                    60 && RaidInteractionAim.Visible(Camera.main.transform.position, anchor.Position,
+                        RaidInteractionAim.MissionSurface(anchor.Id))) {
+                    m_CampaignDiscoveredAnchors.Add(anchor.Id);
+                    undiscovered = false;
+                }
                 if (undiscovered) m_CampaignHasDestination = false;
-                if (m_CampaignHasDestination && origin.HasValue)
-                {
-                    Vector3 from = origin.Value;
+                if (m_CampaignHasDestination && origin.HasValue) {
+                    var from = origin.Value;
                     float height = m_CampaignDestination.y - from.y;
                     string floor = height > 3 ? "楼上" : height < -3 ? "楼下" : "当前层附近";
-                    m_CampaignLocation.text = m_CampaignDestinationName + "\n" + floor + "  直线 " + Vector3.Distance(from, m_CampaignDestination).ToString("0") + " 米";
+                    m_CampaignLocation.text = m_CampaignDestinationName + "\n" + floor + "  直线 " +
+                                              Vector3.Distance(from, m_CampaignDestination).ToString("0") + " 米";
+                } else {
+                    m_CampaignLocation.text =
+                        undiscovered ? anchor.Region + "  沿入口楼梯前往设备区" : node?.Location ?? "返回作业船查看记录";
                 }
-                else m_CampaignLocation.text = undiscovered ? anchor.Region + "  沿入口楼梯前往设备区" : node?.Location ?? "返回作业船查看记录";
             }
             UpdateCampaignMarker(false);
         }
 
-        private static string EffectiveCampaignTask(CampaignProgress progress)
-        {
+        private static string EffectiveCampaignTask(CampaignProgress progress) {
             string current = CampaignRules.CurrentMain(progress);
             string tracked = progress.PrimaryTracked;
-            if (!CampaignRules.Available(progress, tracked) || CampaignRules.Status(progress, tracked) == CampaignTaskStatus.AwaitingExtraction && current != null)
+            if (!CampaignRules.Available(progress, tracked) ||
+                (CampaignRules.Status(progress, tracked) == CampaignTaskStatus.AwaitingExtraction && current != null))
                 return current;
             return CampaignRules.Status(progress, tracked) == CampaignTaskStatus.Completed ? current : tracked;
         }
 
         // 通信字幕跟当前真实主线节点走。翻动日志选中行不会换章节，每个节点的字幕在一局内只入队一次。
-        private void PresentCampaignCommunication(CampaignProgress progress)
-        {
+        private void PresentCampaignCommunication(CampaignProgress progress) {
             // Field confirmation is distinct from extraction/save. Read actual server facts once per raid.
             ConfirmCampaignFieldStage(progress, "CM01");
             ConfirmCampaignFieldStage(progress, "CM02");
             // Follow actual chapter progress, not the currently selected journal row.
             string current = CampaignRules.CurrentMain(progress);
             var node = current == null ? null : CampaignRules.CurrentNode(progress, current);
-            if (node == null || string.IsNullOrEmpty(node.Briefing) || !m_CampaignCommunicationsShown.Add(current + "/" + node.Id)) return;
+            if (node == null || string.IsNullOrEmpty(node.Briefing) ||
+                !m_CampaignCommunicationsShown.Add(current + "/" + node.Id))
+                return;
             m_ChapterRadioQueue.Enqueue(node.Briefing);
             m_CampaignNextPresentation = 0;
         }
 
-        private void ConfirmCampaignFieldStage(CampaignProgress progress, string id)
-        {
+        private void ConfirmCampaignFieldStage(CampaignProgress progress, string id) {
             if ((CampaignRules.Mask(progress, id) & 3) == 3 && !progress.CompletedTasks.Contains(id) &&
                 m_CampaignCommunicationsShown.Add(id + "/field-confirmed"))
                 m_ChapterRadioQueue.Enqueue(CampaignCatalog.Find(id).CompletionText);
         }
 
-        private string CampaignActionText(NodeDefinition node)
-        {
+        private string CampaignActionText(NodeDefinition node) {
             if (node == null) return "调查记录已保存";
-            if (node.Kind == CampaignObjectiveKind.Configure && !m_MissionInspected.Contains(node.AnchorId)) return "查看配电 A 故障铭牌";
-            if (node.Kind != CampaignObjectiveKind.Process || node.Seconds <= 0 || string.IsNullOrEmpty(node.ExistingObjectiveId)) return node.Action;
+            if (node.Kind == CampaignObjectiveKind.Configure && !m_MissionInspected.Contains(node.AnchorId))
+                return "查看配电 A 故障铭牌";
+            if (node.Kind != CampaignObjectiveKind.Process || node.Seconds <= 0 ||
+                string.IsNullOrEmpty(node.ExistingObjectiveId))
+                return node.Action;
             var site = RaidMissionSite.Active;
             int index = m_MissionSnapshot.DefinitionIndex;
-            if (site && index >= 0 && index < site.Definitions.Length)
-            {
+            if (site && index >= 0 && index < site.Definitions.Length) {
                 var objectives = site.Definitions[index].Objectives;
                 for (int i = 0; i < objectives.Length; i++)
-                    if (objectives[i].Id == node.ExistingObjectiveId)
-                    {
+                    if (objectives[i].Id == node.ExistingObjectiveId) {
                         float fraction = i < 4 ? m_MissionSnapshot.ProgressA[i] : m_MissionSnapshot.ProgressB[i - 4];
                         return (node.ExistingObjectiveId == "download" ? "下载进行中 " : "切割进行中 ") +
-                            (Mathf.Clamp01(fraction) * node.Seconds).ToString("0") + "/" + node.Seconds.ToString("0") + " 秒";
+                               (Mathf.Clamp01(fraction) * node.Seconds).ToString("0") + "/" +
+                               node.Seconds.ToString("0") + " 秒";
                     }
             }
             return node.Action;
         }
 
-        private string CampaignTeachingHint(NodeDefinition node)
-        {
+        private string CampaignTeachingHint(NodeDefinition node) {
             if (node == null) return "调查记录已保存。";
             if (node.Kind == CampaignObjectiveKind.Extract) return "携带物尚未入库，成功撤离后保存调查记录。";
             if (node.Kind == CampaignObjectiveKind.RecoverItem) return "打开输出槽取走物品，预留至少 1×1 空位。";
             if (node.Kind == CampaignObjectiveKind.ReachArea) return "移动并观察 MC00 入口，留意来时路线。";
-            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
-            {
-                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-                if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId && inventory.Graph.CellEnergy(accessibleOnly: true) == 0)
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
+                var inventory =
+                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
+                        .GetSingletonEntity());
+                if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId &&
+                    inventory.Graph.CellEnergy(accessibleOnly: true) == 0)
                     return "没有可用电池，留意已充能弹量与回程余量。";
             }
             if (node.Kind == CampaignObjectiveKind.Process) return "设备自动运行，可以移动观察，也可以提前撤离。";
-            if (node.Kind == CampaignObjectiveKind.Configure) return m_MissionInspected.Contains(node.AnchorId) ?
-                "隔离烧损支路，保留备用母线。" : "靠近设备查看铭牌，再选择线路。";
+            if (node.Kind == CampaignObjectiveKind.Configure)
+                return m_MissionInspected.Contains(node.AnchorId) ? "隔离烧损支路，保留备用母线。" : "靠近设备查看铭牌，再选择线路。";
             string key = m_InteractionBindings.Label(m_InteractionBindings.Operate);
             return node.Seconds > 0 ? $"按住 {key} {node.Seconds:0.#} 秒，松开取消。" : key + "  操作设备";
         }
 
-        private void PresentCampaignResult(CampaignProgress progress)
-        {
-            bool archive = m_MissionSnapshot.CampaignChapter == 2 && progress != null && progress.CompletedTasks.Contains("CM04");
-            bool first = m_MissionSnapshot.CampaignChapter == 1 && progress != null && progress.CompletedTasks.Contains("CM03");
+        private void PresentCampaignResult(CampaignProgress progress) {
+            bool archive = m_MissionSnapshot.CampaignChapter == 2 && progress != null &&
+                           progress.CompletedTasks.Contains("CM04");
+            bool first = m_MissionSnapshot.CampaignChapter == 1 && progress != null &&
+                         progress.CompletedTasks.Contains("CM03");
             bool complete = m_ResultStep == 0 && (first || archive) && m_MissionSnapshot.RaidId == m_Snapshot.RaidId &&
-                m_Snapshot.Phase == RaidPhase.Extracted && m_Snapshot.SaveState == RaidSaveState.Saved;
+                            m_Snapshot.Phase == RaidPhase.Extracted && m_Snapshot.SaveState == RaidSaveState.Saved;
             m_CampaignResult.EnableInClassList("campaign-hidden", !complete);
-            if (complete) m_CampaignResult.text = archive ? "事故档案已带回\n沈禾：两台设备的时间不同，还需要门禁和求救记录。" :
-                "第一章 静默着陆 已完成\n沈禾：样本接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？";
+            if (complete)
+                m_CampaignResult.text = archive
+                    ? "事故档案已带回\n沈禾：两台设备的时间不同，还需要门禁和求救记录。"
+                    : "第一章 静默着陆 已完成\n沈禾：样本接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？";
         }
 
-        private void UpdateCampaignMarker(bool visible)
-        {
+        private void UpdateCampaignMarker(bool visible) {
             var camera = Camera.main;
             if (!visible || !camera || Vector3.Distance(camera.transform.position, m_CampaignDestination) < 5 ||
-                UnityEngine.Physics.Linecast(camera.transform.position, m_CampaignDestination, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore))
-            { m_CampaignMarker.AddToClassList("campaign-hidden"); return; }
+                UnityEngine.Physics.Linecast(camera.transform.position, m_CampaignDestination,
+                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) {
+                m_CampaignMarker.AddToClassList("campaign-hidden");
+                return;
+            }
             var point = camera.WorldToViewportPoint(m_CampaignDestination);
             bool behind = point.z <= 0;
-            if (behind) { point.x = camera.transform.InverseTransformPoint(m_CampaignDestination).x >= 0 ? .9f : .1f; point.y = .35f; }
+            if (behind) {
+                point.x = camera.transform.InverseTransformPoint(m_CampaignDestination).x >= 0 ? .9f : .1f;
+                point.y = .35f;
+            }
             m_CampaignMarker.text = (behind ? "身后  " : "") + m_CampaignDestinationName;
             m_CampaignMarker.style.left = Mathf.Clamp(point.x, .09f, .91f) * m_Root.resolvedStyle.width - 90;
             m_CampaignMarker.style.top = (1 - Mathf.Clamp(point.y, .15f, .82f)) * m_Root.resolvedStyle.height;
             m_CampaignMarker.RemoveFromClassList("campaign-hidden");
         }
 
-        private void DisposeCampaignHUD()
-        {
-            m_CampaignJournal?.Dispose(); m_CampaignJournal = null;
+        private void DisposeCampaignHUD() {
+            m_CampaignJournal?.Dispose();
+            m_CampaignJournal = null;
             if (m_CampaignJournalVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
             m_CampaignJournalVisible = m_CampaignHasDestination = false;
             m_CampaignProgress = null;
-            m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
+            m_ChapterRadioQueue.Clear();
+            m_ChapterRadioCurrent = null;
         }
     }
 }

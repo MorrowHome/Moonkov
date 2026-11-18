@@ -9,12 +9,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class RaidHUD
-    {
+namespace Unity.MP_FPS {
+    public sealed partial class RaidHUD {
         private EntityQuery m_ClashQuery;
-        private bool m_ClashQueryCreated, m_ClashLobbyPointer, m_ClashActionsBlocked, m_ClashMode, m_ClashInteractionFocused;
+
+        private bool m_ClashQueryCreated,
+            m_ClashLobbyPointer,
+            m_ClashActionsBlocked,
+            m_ClashMode,
+            m_ClashInteractionFocused;
+
         private BountyClashView m_ClashView;
         private BountyClashClientState m_Clash;
         private float m_NextSenseLease, m_NextReviveLease;
@@ -23,219 +27,299 @@ namespace Unity.MP_FPS
         private uint m_ClashAudioRequest;
         private bool m_ClashAudioPickup;
         private bool m_ClashAudioReviving;
-        private void PresentClashAudio(ClashSnapshotRpc snapshot)
-        {
+
+        private void PresentClashAudio(ClashSnapshotRpc snapshot) {
             if (!m_Clash.HasSnapshot) return;
             bool same = m_ClashAudioInitialized && snapshot.Epoch == m_ClashAudioSnapshot.Epoch &&
-                snapshot.MatchId.Equals(m_ClashAudioSnapshot.MatchId);
-            if (same)
-            {
+                        snapshot.MatchId.Equals(m_ClashAudioSnapshot.MatchId);
+            if (same) {
                 if (snapshot.IsCarrier && !m_ClashAudioSnapshot.IsCarrier)
                     MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Pickup, Vector3.zero, 1, 0);
                 if (snapshot.Life == ClashLife.Alive && m_ClashAudioSnapshot.Life == ClashLife.Downed)
                     MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Medical, Vector3.zero, 1, 0);
                 if (snapshot.Bounty != m_ClashAudioSnapshot.Bounty && !snapshot.IsCarrier)
                     MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
-                if (m_ClashAudioRequest != 0 && snapshot.AcknowledgedRequest >= m_ClashAudioRequest)
-                {
+                if (m_ClashAudioRequest != 0 && snapshot.AcknowledgedRequest >= m_ClashAudioRequest) {
                     // A later lease acknowledgment cannot describe an earlier action's outcome.
-                    if (snapshot.AcknowledgedRequest == m_ClashAudioRequest)
-                    {
-                        if (snapshot.Result != ClashResult.Ok) MoonkovAudio.Error();
+                    if (snapshot.AcknowledgedRequest == m_ClashAudioRequest) {
+                        if (snapshot.Result != ClashResult.Ok)
+                            MoonkovAudio.Error();
                         else if (!m_ClashAudioPickup) MoonkovAudio.Confirm();
                     }
                     m_ClashAudioRequest = 0;
                 }
-                if (m_ReviveTarget >= 0 && m_Clash.Participants.TryGetValue(m_ReviveTarget, out var member))
-                {
+                if (m_ReviveTarget >= 0 && m_Clash.Participants.TryGetValue(m_ReviveTarget, out var member)) {
                     bool reviving = member.ReviveProgress > 0 && member.Life == ClashLife.Downed;
                     if (reviving && !m_ClashAudioReviving)
                         MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Consume, Vector3.zero, .7f, 0);
                     if (m_ClashAudioReviving && member.Life == ClashLife.Alive)
                         MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Medical, Vector3.zero, 1, 0);
                     m_ClashAudioReviving = reviving;
-                }
-                else m_ClashAudioReviving = false;
+                } else { m_ClashAudioReviving = false; }
+            } else {
+                m_ClashAudioRequest = 0;
+                m_ClashAudioReviving = false;
             }
-            else { m_ClashAudioRequest = 0; m_ClashAudioReviving = false; }
-            m_ClashAudioSnapshot = snapshot; m_ClashAudioInitialized = true;
+            m_ClashAudioSnapshot = snapshot;
+            m_ClashAudioInitialized = true;
         }
+
         private int m_SenseFlags;
         private int m_ReviveTarget = -1;
         private Entity m_ClashCameraOwner;
         private Camera m_ClashCamera;
         private VisualElement m_ClashCargoParent;
-        public static bool GameplayActionsBlocked => PointerRequested || s_Active != null &&
-            (s_Active.m_ClashActionsBlocked || Time.frameCount <= s_Active.m_MenuEscapeFrame);
-        public static bool DarkSightRequested => s_Active != null && s_Active.CanReadClashInput && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
-        private bool CanReadClashInput => m_ClashMode && m_Clash is { Approved: true, HasSnapshot: true } &&
-            m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive && m_Clash.Snapshot.Connected &&
-            !PointerRequested && !QuickBusy &&
-            Application.isFocused && !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
+
+        public static bool GameplayActionsBlocked =>
+            PointerRequested || (s_Active != null &&
+                                 (s_Active.m_ClashActionsBlocked || Time.frameCount <= s_Active.m_MenuEscapeFrame));
+
+        public static bool DarkSightRequested =>
+            s_Active != null && s_Active.CanReadClashInput && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
+
+        private bool CanReadClashInput =>
+            m_ClashMode && m_Clash is { Approved: true, HasSnapshot: true } &&
+            m_Clash.Snapshot.Phase == ClashPhase.Active && m_Clash.Snapshot.Life == ClashLife.Alive &&
+            m_Clash.Snapshot.Connected && !PointerRequested && !QuickBusy && Application.isFocused &&
+            !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
             !Client.QuickSlotBindings.Typing(m_Root.panel?.focusController.focusedElement as VisualElement);
 
-        private void InitializeBountyClash()
-        {
-            m_ClashView = new BountyClashView(m_Root, (intent, value, invite) => SendClash(intent, value, invite), ReturnToShip);
-            m_ClashLobbyPointer = false; m_ClashActionsBlocked = false; m_ClashMode = false; m_Clash = null; m_SenseFlags = 0; m_ReviveTarget = -1;
+        private void InitializeBountyClash() {
+            m_ClashView = new BountyClashView(m_Root, (intent, value, invite) => SendClash(intent, value, invite),
+                ReturnToShip);
+            m_ClashLobbyPointer = false;
+            m_ClashActionsBlocked = false;
+            m_ClashMode = false;
+            m_Clash = null;
+            m_SenseFlags = 0;
+            m_ReviveTarget = -1;
         }
-        private bool PresentBountyClash()
-        {
+
+        private bool PresentBountyClash() {
             m_ClashInteractionFocused = false;
             m_ClashMode = BountyClashRuntime.Enabled(m_World.EntityManager);
             var cargo = m_Bag.parent;
-            if (m_ClashMode && m_ClashCargoParent == null)
-            {
-                m_ClashCargoParent = cargo.parent; m_QuickView.Element.parent.Add(cargo);
+            if (m_ClashMode && m_ClashCargoParent == null) {
+                m_ClashCargoParent = cargo.parent;
+                m_QuickView.Element.parent.Add(cargo);
                 cargo.AddToClassList("clash-cargo");
             }
-            if (!m_ClashMode && m_ClashCargoParent != null)
-            { m_ClashCargoParent.Add(cargo); cargo.RemoveFromClassList("clash-cargo"); cargo.style.display = StyleKeyword.Null; m_ClashCargoParent = null; }
-            if (!m_ClashMode) { BountyClashDarkSightRenderer.ClearImmediate(); m_Clash?.StopView(); m_ClashView.Show(false); m_ClashLobbyPointer = m_ClashActionsBlocked = false; return false; }
-            if (!m_ClashQueryCreated)
-            { m_ClashQuery = m_World.EntityManager.CreateEntityQuery(typeof(BountyClashClientState)); m_ClashQueryCreated = true; }
-            if (m_ClashQuery.IsEmptyIgnoreFilter) { BountyClashDarkSightRenderer.ClearImmediate(); m_ClashActionsBlocked = m_ClashLobbyPointer = true; return true; }
-            m_Clash = m_World.EntityManager.GetComponentObject<BountyClashClientState>(m_ClashQuery.GetSingletonEntity());
+            if (!m_ClashMode && m_ClashCargoParent != null) {
+                m_ClashCargoParent.Add(cargo);
+                cargo.RemoveFromClassList("clash-cargo");
+                cargo.style.display = StyleKeyword.Null;
+                m_ClashCargoParent = null;
+            }
+            if (!m_ClashMode) {
+                BountyClashDarkSightRenderer.ClearImmediate();
+                m_Clash?.StopView();
+                m_ClashView.Show(false);
+                m_ClashLobbyPointer = m_ClashActionsBlocked = false;
+                return false;
+            }
+            if (!m_ClashQueryCreated) {
+                m_ClashQuery = m_World.EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
+                m_ClashQueryCreated = true;
+            }
+            if (m_ClashQuery.IsEmptyIgnoreFilter) {
+                BountyClashDarkSightRenderer.ClearImmediate();
+                m_ClashActionsBlocked = m_ClashLobbyPointer = true;
+                return true;
+            }
+            m_Clash = m_World.EntityManager.GetComponentObject<BountyClashClientState>(
+                m_ClashQuery.GetSingletonEntity());
             var snapshot = m_Clash.Snapshot;
             PresentClashAudio(snapshot);
             bool previouslyPointer = m_ClashLobbyPointer;
-            m_ClashLobbyPointer = !m_Clash.Approved || !m_Clash.HasSnapshot || BountyClashRules.Ended(snapshot.Life) || snapshot.Phase == ClashPhase.Finished || snapshot.Phase == ClashPhase.Lobby ||
-                snapshot.Phase == ClashPhase.Preparing || snapshot.Phase == ClashPhase.Deploying;
+            m_ClashLobbyPointer = !m_Clash.Approved || !m_Clash.HasSnapshot || BountyClashRules.Ended(snapshot.Life) ||
+                                  snapshot.Phase == ClashPhase.Finished || snapshot.Phase == ClashPhase.Lobby ||
+                                  snapshot.Phase == ClashPhase.Preparing || snapshot.Phase == ClashPhase.Deploying;
             m_ClashActionsBlocked = m_ClashLobbyPointer || snapshot.Life != ClashLife.Alive;
             if (m_ClashActionsBlocked && m_InventoryVisible) SetInventory(false);
             cargo.style.display = DisplayStyle.None;
-            if (m_ClashLobbyPointer) Utils.SetCursorVisible(true);
-            else if (previouslyPointer && !GameSettings.Instance.IsPauseMenuOpen && !m_InventoryVisible) Utils.SetCursorVisible(false);
+            if (m_ClashLobbyPointer)
+                Utils.SetCursorVisible(true);
+            else if (previouslyPointer && !GameSettings.Instance.IsPauseMenuOpen && !m_InventoryVisible)
+                Utils.SetCursorVisible(false);
             bool hasLocal = TryGetLocalPlayerEntity(out var owner);
-            if (hasLocal)
-            {
-                if (owner != m_ClashCameraOwner || !m_ClashCamera)
-                {
-                    m_ClashCameraOwner = owner; m_ClashCamera = null;
-                    if (m_World.EntityManager.HasComponent<GhostGameObjectLink>(owner))
-                    {
+            if (hasLocal) {
+                if (owner != m_ClashCameraOwner || !m_ClashCamera) {
+                    m_ClashCameraOwner = owner;
+                    m_ClashCamera = null;
+                    if (m_World.EntityManager.HasComponent<GhostGameObjectLink>(owner)) {
                         var link = m_World.EntityManager.GetComponentObject<GhostGameObjectLink>(owner);
-                        if (link.LinkedInstance && link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
+                        if (link.LinkedInstance &&
+                            link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
                             m_ClashCamera = presentation.OwnedCamera;
                     }
                 }
+            } else {
+                m_ClashCameraOwner = Entity.Null;
+                m_ClashCamera = null;
             }
-            else { m_ClashCameraOwner = Entity.Null; m_ClashCamera = null; }
-            Vector3 position = hasLocal ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : default;
-            bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
+            var position = hasLocal ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : default;
+            bool saving = m_Snapshot.SaveState == RaidSaveState.Saving ||
+                          m_Snapshot.SaveState == RaidSaveState.Retrying;
             ReadClashInput(position, hasLocal);
-            bool worldView = hasLocal && m_ClashCamera && CanReadClashInput && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
-            bool worldBoost = worldView && snapshot.IsCarrier && snapshot.SenseRemaining > 0 && Mouse.current != null && Mouse.current.rightButton.isPressed;
-            if (!hasLocal || !m_ClashCamera) BountyClashDarkSightRenderer.ClearImmediate();
-            else BountyClashDarkSightRenderer.Publish(m_ClashCamera, worldView, worldBoost,
-                worldView && m_Clash.Sense.Presence, m_Clash, Time.realtimeSinceStartupAsDouble);
-            m_ClashView.Present(m_Clash, position, hasLocal, m_ClashCamera, saving, GameManager.CanUseMainMenu, DarkSightRequested,
-                DarkSightRequested && Mouse.current != null && Mouse.current.rightButton.isPressed,
-                hasLocal ? (Vector3)math.mul(m_PlayerQuery.GetSingleton<LocalTransform>().Rotation, math.forward()) : Vector3.forward);
-            m_ClashView.SetMenuOpen(m_InventoryVisible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen);
-            BountyClashArenaSettings.Active?.PresentObjective(snapshot.Bounty == ClashBountyState.Carried || snapshot.Bounty == ClashBountyState.Extracted ? 1 : snapshot.BanishProgress,
-                snapshot.Bounty == ClashBountyState.Ground, snapshot.BountyPosition);
+            bool worldView = hasLocal && m_ClashCamera && CanReadClashInput &&
+                             RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
+            bool worldBoost = worldView && snapshot.IsCarrier && snapshot.SenseRemaining > 0 && Mouse.current != null &&
+                              Mouse.current.rightButton.isPressed;
+            if (!hasLocal || !m_ClashCamera)
+                BountyClashDarkSightRenderer.ClearImmediate();
+            else
+                BountyClashDarkSightRenderer.Publish(m_ClashCamera, worldView, worldBoost,
+                    worldView && m_Clash.Sense.Presence, m_Clash, Time.realtimeSinceStartupAsDouble);
+            m_ClashView.Present(m_Clash, position, hasLocal, m_ClashCamera, saving, GameManager.CanUseMainMenu,
+                DarkSightRequested, DarkSightRequested && Mouse.current != null && Mouse.current.rightButton.isPressed,
+                hasLocal
+                    ? (Vector3)math.mul(m_PlayerQuery.GetSingleton<LocalTransform>().Rotation, math.forward())
+                    : Vector3.forward);
+            m_ClashView.SetMenuOpen(m_InventoryVisible || m_MapOpen || m_MissionDetailsVisible ||
+                                    GameSettings.Instance.IsPauseMenuOpen);
+            BountyClashArenaSettings.Active?.PresentObjective(
+                snapshot.Bounty == ClashBountyState.Carried || snapshot.Bounty == ClashBountyState.Extracted
+                    ? 1
+                    : snapshot.BanishProgress, snapshot.Bounty == ClashBountyState.Ground, snapshot.BountyPosition);
             return true;
         }
+
         // GhostOwnerIsLocal is enableable: GetSingletonEntity rejects this query.
         // Materialize its filtered entities so disabled ownership never keeps a camera/action target.
-        private bool TryGetLocalPlayerEntity(out Entity entity)
-        {
+        private bool TryGetLocalPlayerEntity(out Entity entity) {
             using var players = m_PlayerQuery.ToEntityArray(Allocator.Temp);
             entity = players.Length == 1 ? players[0] : Entity.Null;
             return entity != Entity.Null;
         }
+
         // 请求带着当前对局的 MatchId 和 Epoch 来辨认属于哪一场。需要回执的动作还要等上一次结束，避免按钮连续提交。
-        private bool SendClash(ClashIntent intent, int value = 0, string invite = null, int target = -1, bool track = true)
-        {
-            if (m_Clash == null || !m_Clash.Approved || !m_Clash.HasSnapshot || !m_Clash.Snapshot.Connected) return false;
+        private bool SendClash(
+            ClashIntent intent,
+            int value = 0,
+            string invite = null,
+            int target = -1,
+            bool track = true) {
+            if (m_Clash == null || !m_Clash.Approved || !m_Clash.HasSnapshot || !m_Clash.Snapshot.Connected)
+                return false;
             if (track && m_Clash.ActionPending(Time.realtimeSinceStartupAsDouble)) return false;
-            var rpc = new ClashActionRpc
-            {
+            var rpc = new ClashActionRpc {
                 MatchId = m_Clash.Snapshot.MatchId, Epoch = m_Clash.Snapshot.Epoch,
                 Intent = intent, Value = value, TargetParticipantId = target,
-                RequestId = m_Clash.NextRequest = System.Math.Max(m_Clash.NextRequest, m_Clash.Snapshot.AcknowledgedRequest) + 1
+                RequestId = m_Clash.NextRequest =
+                    System.Math.Max(m_Clash.NextRequest, m_Clash.Snapshot.AcknowledgedRequest) + 1
             };
             if (!string.IsNullOrEmpty(invite)) rpc.InviteCode.CopyFromTruncated(invite);
             if (!Send(rpc)) return false;
-            if (track) { m_ClashAudioRequest = rpc.RequestId; m_ClashAudioPickup = intent == ClashIntent.Pickup; m_Clash.PendingRequest = rpc.RequestId; m_Clash.RequestedAt = Time.realtimeSinceStartupAsDouble; }
+            if (track) {
+                m_ClashAudioRequest = rpc.RequestId;
+                m_ClashAudioPickup = intent == ClashIntent.Pickup;
+                m_Clash.PendingRequest = rpc.RequestId;
+                m_Clash.RequestedAt = Time.realtimeSinceStartupAsDouble;
+            }
             return true;
         }
-        private void ReadClashInput(Vector3 position, bool hasLocal)
-        {
+
+        private void ReadClashInput(Vector3 position, bool hasLocal) {
             var s = m_Clash.Snapshot;
             bool allowed = hasLocal && CanReadClashInput;
             bool view = allowed && RaidKeyBindings.Held(RaidKey.ViewOrDarkSight);
-            bool boost = view && s.IsCarrier && s.SenseRemaining > 0 && Mouse.current != null && Mouse.current.rightButton.isPressed;
+            bool boost = view && s.IsCarrier && s.SenseRemaining > 0 && Mouse.current != null &&
+                         Mouse.current.rightButton.isPressed;
             int flags = view ? boost ? 3 : 1 : 0;
             m_Clash.SetSenseInput(view, boost);
-            if (flags != m_SenseFlags || flags != 0 && Time.unscaledTime >= m_NextSenseLease)
-            {
+            if (flags != m_SenseFlags || (flags != 0 && Time.unscaledTime >= m_NextSenseLease)) {
                 if (flags != m_SenseFlags && (flags == 0 || m_SenseFlags == 0))
-                    MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Aim, Vector3.zero, .65f, 0, flags == 0 ? -180 : 0);
+                    MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Aim, Vector3.zero, .65f, 0,
+                        flags == 0 ? -180 : 0);
                 SendClash(ClashIntent.SenseHeld, flags, track: false);
-                m_SenseFlags = flags; m_NextSenseLease = Time.unscaledTime + .25f;
+                m_SenseFlags = flags;
+                m_NextSenseLease = Time.unscaledTime + .25f;
             }
-            if (!allowed || view)
-            {
-                CancelClashRevive(); m_ClashView.SetAction(null); return;
+            if (!allowed || view) {
+                CancelClashRevive();
+                m_ClashView.SetAction(null);
+                return;
             }
-            int candidate = -1; float nearest = 3f, reviveProgress = 0;
-            foreach (var member in m_Clash.Participants.Values)
-            {
-                if (!member.OwnTeam || member.TeamId != s.LocalTeamId || member.IsLocal || member.Life != ClashLife.Downed) continue;
+            int candidate = -1;
+            float nearest = 3f, reviveProgress = 0;
+            foreach (var member in m_Clash.Participants.Values) {
+                if (!member.OwnTeam || member.TeamId != s.LocalTeamId || member.IsLocal ||
+                    member.Life != ClashLife.Downed)
+                    continue;
                 float distance = Vector3.Distance(position, member.Position);
-                if (distance < nearest) { nearest = distance; candidate = member.ParticipantId; reviveProgress = member.ReviveProgress; }
+                if (distance < nearest) {
+                    nearest = distance;
+                    candidate = member.ParticipantId;
+                    reviveProgress = member.ReviveProgress;
+                }
             }
             m_ClashInteractionFocused = candidate >= 0;
             bool held = RaidKeyBindings.Held(RaidKey.Interact);
-            if (candidate >= 0 && held)
-            {
-                if (m_ReviveTarget != candidate)
-                { CancelClashRevive(); if (SendClash(ClashIntent.ReviveBegin, target: candidate, track: false)) m_ReviveTarget = candidate; m_NextReviveLease = Time.unscaledTime + .25f; }
-                else if (Time.unscaledTime >= m_NextReviveLease)
-                { SendClash(ClashIntent.ReviveRenew, target: candidate, track: false); m_NextReviveLease = Time.unscaledTime + .25f; }
-                m_ClashView.SetAction("[{0}] HOLD TO REVIVE / {1:0}%", RaidKeyBindings.DisplayName(RaidKey.Interact), reviveProgress * 100); return;
+            if (candidate >= 0 && held) {
+                if (m_ReviveTarget != candidate) {
+                    CancelClashRevive();
+                    if (SendClash(ClashIntent.ReviveBegin, target: candidate, track: false)) m_ReviveTarget = candidate;
+                    m_NextReviveLease = Time.unscaledTime + .25f;
+                } else if (Time.unscaledTime >= m_NextReviveLease) {
+                    SendClash(ClashIntent.ReviveRenew, target: candidate, track: false);
+                    m_NextReviveLease = Time.unscaledTime + .25f;
+                }
+                m_ClashView.SetAction("[{0}] HOLD TO REVIVE / {1:0}%", RaidKeyBindings.DisplayName(RaidKey.Interact),
+                    reviveProgress * 100);
+                return;
             }
             CancelClashRevive();
-            if (candidate >= 0) { m_ClashView.SetAction("[{0}] HOLD TO REVIVE TEAMMATE", RaidKeyBindings.DisplayName(RaidKey.Interact)); return; }
-            Vector3 objective = s.Bounty == ClashBountyState.Ground ? (Vector3)s.BountyPosition : (Vector3)s.TargetPosition;
+            if (candidate >= 0) {
+                m_ClashView.SetAction("[{0}] HOLD TO REVIVE TEAMMATE", RaidKeyBindings.DisplayName(RaidKey.Interact));
+                return;
+            }
+            var objective = s.Bounty == ClashBountyState.Ground ? (Vector3)s.BountyPosition : (Vector3)s.TargetPosition;
             bool near = Vector3.Distance(position, objective) <= 3;
             string hint = near && s.Bounty == ClashBountyState.Unbanished ? "[{0}] BANISH DEAD TARGET" :
                 near && s.Bounty == ClashBountyState.Ground ? "[{0}] PICK UP THE UNIQUE BOUNTY" : null;
             m_ClashInteractionFocused = hint != null;
-            if (hint == null) m_ClashView.SetAction(null);
-            else
-            {
+            if (hint == null) { m_ClashView.SetAction(null); } else {
                 m_ClashView.SetAction(hint, RaidKeyBindings.DisplayName(RaidKey.Interact));
                 if (RaidKeyBindings.Pressed(RaidKey.Interact))
                     SendClash(s.Bounty == ClashBountyState.Unbanished ? ClashIntent.Banish : ClashIntent.Pickup);
             }
         }
-        private void CancelClashRevive()
-        { if (m_ReviveTarget >= 0) SendClash(ClashIntent.ReviveCancel, target: m_ReviveTarget, track: false); m_ReviveTarget = -1; }
-        private void DisposeBountyClash()
-        {
+
+        private void CancelClashRevive() {
+            if (m_ReviveTarget >= 0) SendClash(ClashIntent.ReviveCancel, target: m_ReviveTarget, track: false);
+            m_ReviveTarget = -1;
+        }
+
+        private void DisposeBountyClash() {
             BountyClashDarkSightRenderer.ClearImmediate();
-            m_ClashView?.Dispose(); m_ClashView = null;
+            m_ClashView?.Dispose();
+            m_ClashView = null;
             ResetBountyConnection();
         }
-        private void HideBountyClash()
-        {
+
+        private void HideBountyClash() {
             BountyClashDarkSightRenderer.ClearImmediate();
-            m_ClashView?.Show(false); m_Clash?.StopView();
-            m_ClashLobbyPointer = m_ClashActionsBlocked = false; m_SenseFlags = 0; m_ReviveTarget = -1;
+            m_ClashView?.Show(false);
+            m_Clash?.StopView();
+            m_ClashLobbyPointer = m_ClashActionsBlocked = false;
+            m_SenseFlags = 0;
+            m_ReviveTarget = -1;
         }
-        private void ResetBountyConnection()
-        {
-            m_ClashAudioInitialized = false; m_ClashAudioRequest = 0; m_ClashAudioReviving = false;
+
+        private void ResetBountyConnection() {
+            m_ClashAudioInitialized = false;
+            m_ClashAudioRequest = 0;
+            m_ClashAudioReviving = false;
             ResetRaidMap();
             BountyClashDarkSightRenderer.ClearImmediate();
             m_Clash?.StopView();
             if (m_ClashQueryCreated && m_World != null && m_World.IsCreated) m_ClashQuery.Dispose();
-            m_ClashQueryCreated = m_ClashLobbyPointer = m_ClashActionsBlocked = m_ClashMode = false; m_Clash = null;
-            m_SenseFlags = 0; m_ReviveTarget = -1;
-            m_ClashCameraOwner = Entity.Null; m_ClashCamera = null;
+            m_ClashQueryCreated = m_ClashLobbyPointer = m_ClashActionsBlocked = m_ClashMode = false;
+            m_Clash = null;
+            m_SenseFlags = 0;
+            m_ReviveTarget = -1;
+            m_ClashCameraOwner = Entity.Null;
+            m_ClashCamera = null;
         }
     }
 }

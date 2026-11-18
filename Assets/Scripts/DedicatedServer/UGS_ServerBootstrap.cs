@@ -120,7 +120,8 @@ namespace Unity.MP_FPS
             GameManager.ConfigureRaidMode(serverWorld);
             GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
 
-            using var drvQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            using var drvQuery =
+ serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             drvQuery.CompleteDependency();
             var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
             serverDriver.ValueRW.Listen(listenEndpoint);

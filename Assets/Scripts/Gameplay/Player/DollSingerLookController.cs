@@ -4,47 +4,55 @@ using Unity.Mathematics;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Owned input response. The resulting look angle is sent through the existing
     // command path, so the camera and the following shot share the same direction.
-    public struct HaloRecoilResponse
-    {
+    public struct HaloRecoilResponse {
         private float pending, recoverable, age, recoveryDelay, recoveryRate;
         private float returnFraction, pendingYaw, recoverableYaw;
         private uint sequence;
         public float Remaining => pending + recoverable;
-        public static float KickDegrees(uint weapon) => weapon switch
-        {
-            DollSingerWeapons.Cicada => .18f,
-            DollSingerWeapons.Trine or DollSingerWeapons.Rondo => .28f,
-            DollSingerWeapons.Aegis => .42f,
-            DollSingerWeapons.Revolver => .9f,
-            DollSingerWeapons.Shotgun or DollSingerWeapons.Sundown => 1.25f,
-            DollSingerWeapons.Tempest => .48f,
-            DollSingerWeapons.Thorn or DollSingerWeapons.Vesper => .8f,
-            DollSingerWeapons.Sniper or DollSingerWeapons.Nocturne => 1.2f,
-            DollSingerWeapons.Halo => .44f,
-            _ => 0f
-        };
-        public void Kick(uint weapon, float magnification, float shotInterval = .35f, bool aiming = true)
-        {
+
+        public static float KickDegrees(uint weapon) {
+            return weapon switch {
+                DollSingerWeapons.Cicada => .18f,
+                DollSingerWeapons.Trine or DollSingerWeapons.Rondo => .28f,
+                DollSingerWeapons.Aegis => .42f,
+                DollSingerWeapons.Revolver => .9f,
+                DollSingerWeapons.Shotgun or DollSingerWeapons.Sundown => 1.25f,
+                DollSingerWeapons.Tempest => .48f,
+                DollSingerWeapons.Thorn or DollSingerWeapons.Vesper => .8f,
+                DollSingerWeapons.Sniper or DollSingerWeapons.Nocturne => 1.2f,
+                DollSingerWeapons.Halo => .44f,
+                _ => 0f
+            };
+        }
+
+        public void Kick(uint weapon, float magnification, float shotInterval = .35f, bool aiming = true) {
             returnFraction = 1;
             float scale = aiming ? 1f / Mathf.Clamp(magnification, 1f, 12f) : 1f;
             float strength = aiming ? 1f : 2.8f;
-            pending += Mathf.Min(KickDegrees(weapon) * scale * strength, Mathf.Max(0, (aiming ? 3f : 9f) * scale - Remaining));
+            pending += Mathf.Min(KickDegrees(weapon) * scale * strength,
+                Mathf.Max(0, (aiming ? 3f : 9f) * scale - Remaining));
             // Begin settling between automatic/burst shots. A fixed long hold lets
             // fast weapons reach the travel limit and then lose every later kick.
-            recoveryDelay = aiming ? Mathf.Min(.12f, Mathf.Max(0, shotInterval) * .35f) :
-                Mathf.Min(.22f, Mathf.Max(0, shotInterval) * .65f);
+            recoveryDelay = aiming
+                ? Mathf.Min(.12f, Mathf.Max(0, shotInterval) * .35f)
+                : Mathf.Min(.22f, Mathf.Max(0, shotInterval) * .65f);
             recoveryRate = aiming ? 13f : 4f;
             age = 0;
         }
 
-        public void Kick(uint weapon, float magnification, float shotInterval, bool aiming, HaloWeaponFeedbackProfile profile)
-        {
-            if (profile == null || profile.RecoilPitch <= 0)
-            { Kick(weapon, magnification, shotInterval, aiming); return; }
+        public void Kick(
+            uint weapon,
+            float magnification,
+            float shotInterval,
+            bool aiming,
+            HaloWeaponFeedbackProfile profile) {
+            if (profile == null || profile.RecoilPitch <= 0) {
+                Kick(weapon, magnification, shotInterval, aiming);
+                return;
+            }
             float scale = aiming ? 1f / Mathf.Clamp(magnification, 1f, 12f) : 1f;
             float strength = aiming ? 1f : 2.8f;
             float limit = (aiming ? Mathf.Max(3, profile.RecoilPitch * 2) : 12) * scale;
@@ -56,54 +64,70 @@ namespace Unity.MP_FPS
             recoveryRate = Mathf.Max(.1f, profile.RecoilSettleSpeed);
             age = 0;
         }
-        public void Apply(ref float pitch, float downwardInput, float deltaTime)
-        {
+
+        public void Apply(ref float pitch, float downwardInput, float deltaTime) {
             if (deltaTime <= 0) return;
             // Only retain recovery for movement that actually passed the pitch limit.
             float kick = Mathf.Min(pending, Mathf.Max(0, pitch + 80f));
-            pending = 0; pitch -= kick; recoverable += kick * returnFraction;
+            pending = 0;
+            pitch -= kick;
+            recoverable += kick * returnFraction;
             recoverable = Mathf.Max(0, recoverable - Mathf.Max(0, downwardInput));
-            float previous = age; age += deltaTime;
+            float previous = age;
+            age += deltaTime;
             float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previous - recoveryDelay);
             float recovery = recoverable * (1f - Mathf.Exp(-recoveryRate * recoveryTime));
-            recoverable -= recovery; pitch = Mathf.Min(80f, pitch + recovery);
+            recoverable -= recovery;
+            pitch = Mathf.Min(80f, pitch + recovery);
         }
-        public void Apply(ref float2 look, float2 playerDelta, float deltaTime)
-        {
+
+        public void Apply(ref float2 look, float2 playerDelta, float deltaTime) {
             if (deltaTime <= 0) return;
             float previousAge = age;
             Apply(ref look.y, playerDelta.y, deltaTime);
-            look.x += pendingYaw; recoverableYaw += pendingYaw * returnFraction; pendingYaw = 0;
+            look.x += pendingYaw;
+            recoverableYaw += pendingYaw * returnFraction;
+            pendingYaw = 0;
             if (playerDelta.x * recoverableYaw < 0)
                 recoverableYaw = Mathf.MoveTowards(recoverableYaw, 0, Mathf.Abs(playerDelta.x));
             float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previousAge - recoveryDelay);
             float recovery = recoverableYaw * (1 - Mathf.Exp(-recoveryRate * recoveryTime));
-            recoverableYaw -= recovery; look.x -= recovery;
+            recoverableYaw -= recovery;
+            look.x -= recovery;
         }
-        public void Reset()
-        { pending = recoverable = age = recoveryDelay = pendingYaw = recoverableYaw = 0; recoveryRate = 13; returnFraction = 1; sequence = 0; }
+
+        public void Reset() {
+            pending = recoverable = age = recoveryDelay = pendingYaw = recoverableYaw = 0;
+            recoveryRate = 13;
+            returnFraction = 1;
+            sequence = 0;
+        }
     }
 
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>
-    public static class DollSingerLookController
-    {
-        public static float2 ReturnFreeLook(float2 offset, float step) => new float2(
-            Mathf.MoveTowards(offset.x, 0f, step), Mathf.MoveTowards(offset.y, 0f, step));
-        public static bool Update(ref float2 look, ref float2 freeLookOffset, ref float lean,
-            out Quaternion viewRotation, DollSingerInput input, DollSingerMovement model,
-            DollSingerView view, bool blocked, float deltaTime)
-        {
+    public static class DollSingerLookController {
+        public static float2 ReturnFreeLook(float2 offset, float step) {
+            return new float2(Mathf.MoveTowards(offset.x, 0f, step), Mathf.MoveTowards(offset.y, 0f, step));
+        }
+
+        public static bool Update(
+            ref float2 look,
+            ref float2 freeLookOffset,
+            ref float lean,
+            out Quaternion viewRotation,
+            DollSingerInput input,
+            DollSingerMovement model,
+            DollSingerView view,
+            bool blocked,
+            float deltaTime) {
             bool thirdPerson = !view.IsFirstPerson;
             bool freeLooking = !blocked && !thirdPerson && input.AltHeld;
-            if (freeLooking)
-            {
+            if (freeLooking) {
                 freeLookOffset += new float2(input.Look.x, -input.Look.y);
                 freeLookOffset = math.clamp(freeLookOffset,
                     new float2(-model.m_FreeLookYawLimit, -model.m_FreeLookPitchLimit),
                     new float2(model.m_FreeLookYawLimit, model.m_FreeLookPitchLimit));
-            }
-            else
-            {
+            } else {
                 if (!blocked) look += new float2(input.Look.x, -input.Look.y) * view.AimLookSensitivity;
                 float step = model.m_FreeLookReturnSpeed * deltaTime;
                 freeLookOffset = ReturnFreeLook(freeLookOffset, step);
@@ -111,9 +135,11 @@ namespace Unity.MP_FPS
             if (thirdPerson) freeLookOffset = float2.zero;
             look.y = math.clamp(look.y, -80f, 80f);
             freeLookOffset.y = math.clamp(look.y + freeLookOffset.y, -80f, 80f) - look.y;
-            lean = blocked || thirdPerson || model.Stance == DollSingerStance.Prone || input.Stance == DollSingerStance.Prone ? 0f :
-                Mathf.MoveTowards(lean, input.LeanTarget, deltaTime * model.m_LeanSpeed);
-            Quaternion bodyRotation = freeLooking ? model.transform.rotation : Quaternion.Euler(0f, look.x, 0f);
+            lean = blocked || thirdPerson || model.Stance == DollSingerStance.Prone ||
+                   input.Stance == DollSingerStance.Prone
+                ? 0f
+                : Mathf.MoveTowards(lean, input.LeanTarget, deltaTime * model.m_LeanSpeed);
+            var bodyRotation = freeLooking ? model.transform.rotation : Quaternion.Euler(0f, look.x, 0f);
             if (!blocked && !thirdPerson) lean = view.LimitLeanAmount(lean, bodyRotation);
             model.SetNetworkLeanAmount(lean);
             var viewLook = look + freeLookOffset;

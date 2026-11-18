@@ -10,79 +10,54 @@ using UnityEngine.Jobs;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateAfter(typeof(GhostGameObjectPhysicsUpdateServerSystem))]
-public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<ServerGhostTransformRetrieveSystem>
-{
+public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<ServerGhostTransformRetrieveSystem> {
     private const int k_BatchTransformSize = 200;
-
     private NativeArray<LocalTransform> m_GhostGameObjectTransforms;
-    public NativeArray<LocalTransform> GhostTransformsArray
-    {
-        get
-        {
+
+    public NativeArray<LocalTransform> GhostTransformsArray {
+        get {
             m_GhostTransformWriteHandle.Complete();
             return m_GhostGameObjectTransforms;
         }
     }
 
     private JobHandle m_GhostTransformWriteHandle;
+    public void CompleteTransformRead() { m_GhostTransformWriteHandle.Complete(); }
 
-    public void CompleteTransformRead() => m_GhostTransformWriteHandle.Complete();
-
-    protected override void OnDestroy()
-    {
+    protected override void OnDestroy() {
         CompleteTransformRead();
-        if (m_GhostGameObjectTransforms.IsCreated)
-        {
-            m_GhostGameObjectTransforms.Dispose();
-        }
-
+        if (m_GhostGameObjectTransforms.IsCreated) m_GhostGameObjectTransforms.Dispose();
         base.OnDestroy();
     }
 
-    protected override void OnUpdate()
-    {
+    protected override void OnUpdate() {
         m_GhostTransformWriteHandle.Complete();
-
         var lifeTimeSystem = GhostGameObjectLifetimeSystem.ServerInstance;
         lifeTimeSystem.EnsureTransformAccessArrayUpToDate();
-
-        if (!m_GhostGameObjectTransforms.IsCreated || m_GhostGameObjectTransforms.Length != lifeTimeSystem.GhostGameObjectList.Count)
-        {
-            if (m_GhostGameObjectTransforms.IsCreated)
-            {
-                m_GhostGameObjectTransforms.Dispose();
-            }
-            m_GhostGameObjectTransforms = new NativeArray<LocalTransform>(lifeTimeSystem.GhostGameObjectList.Count, Allocator.Persistent);
+        if (!m_GhostGameObjectTransforms.IsCreated ||
+            m_GhostGameObjectTransforms.Length != lifeTimeSystem.GhostGameObjectList.Count) {
+            if (m_GhostGameObjectTransforms.IsCreated) m_GhostGameObjectTransforms.Dispose();
+            m_GhostGameObjectTransforms =
+                new NativeArray<LocalTransform>(lifeTimeSystem.GhostGameObjectList.Count, Allocator.Persistent);
         }
-
-        if (lifeTimeSystem.GhostGameObjectTransformAccessArray.isCreated)
-        {
-            m_GhostTransformWriteHandle = new ServerRetrieveTransformsJob
-            {
-                GhostTransformsArray = m_GhostGameObjectTransforms,
-            }
-            .ScheduleReadOnly(lifeTimeSystem.GhostGameObjectTransformAccessArray, k_BatchTransformSize);
-
+        if (lifeTimeSystem.GhostGameObjectTransformAccessArray.isCreated) {
+            m_GhostTransformWriteHandle = new ServerRetrieveTransformsJob {
+                GhostTransformsArray = m_GhostGameObjectTransforms
+            }.ScheduleReadOnly(lifeTimeSystem.GhostGameObjectTransformAccessArray, k_BatchTransformSize);
             Dependency = m_GhostTransformWriteHandle;
         }
     }
 
     [BurstCompile]
-    struct ServerRetrieveTransformsJob : IJobParallelForTransform
-    {
-        [NativeDisableParallelForRestriction]
-        public NativeArray<LocalTransform> GhostTransformsArray;
+    private struct ServerRetrieveTransformsJob : IJobParallelForTransform {
+        [NativeDisableParallelForRestriction] public NativeArray<LocalTransform> GhostTransformsArray;
 
-        public void Execute(int index, TransformAccess transform)
-        {
+        public void Execute(int index, TransformAccess transform) {
             if (transform.isValid)
-            {
-                GhostTransformsArray[index] = new LocalTransform
-                {
+                GhostTransformsArray[index] = new LocalTransform {
                     Position = transform.position,
-                    Rotation = transform.rotation,
+                    Rotation = transform.rotation
                 };
-            }
         }
     }
 }
@@ -91,21 +66,13 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(TransformSystemGroup))]
 [UpdateAfter(typeof(ServerGhostTransformRetrieveSystem))]
-public partial class ServerGhostTransformWriteSystem : SystemBase
-{
-    protected override void OnUpdate()
-    {
+public partial class ServerGhostTransformWriteSystem : SystemBase {
+    protected override void OnUpdate() {
         // update server ghosts with gameobject positions
         var transforms = ServerGhostTransformRetrieveSystem.Instance.GhostTransformsArray;
-        if (transforms.Length == 0)
-        {
-            return;
-        }
-
-        foreach(var (localTransform, ghostGuid) 
-                in SystemAPI.Query<RefRW<LocalTransform>, RefRO<GhostGameObjectGuid>>() 
-                    .WithAll<GhostGameObjectTransformSync, GhostInstance>())
-        {
+        if (transforms.Length == 0) return;
+        foreach (var (localTransform, ghostGuid) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<GhostGameObjectGuid>>()
+                     .WithAll<GhostGameObjectTransformSync, GhostInstance>()) {
             var transform = transforms[ghostGuid.ValueRO.LocalGhostIndex];
             localTransform.ValueRW.Position = transform.Position;
             localTransform.ValueRW.Rotation = transform.Rotation;

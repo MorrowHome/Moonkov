@@ -1,21 +1,23 @@
 // 按武器选择枪响音层、命中声和镜头后坐等表现参数。角色网络表现和 RifleImpactFeedback 从同一资源拿这些配置。
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Presentation only: weapon damage, spread and projectile authority remain in WeaponData.
     [System.Serializable]
-    public sealed class HaloWeaponFeedbackProfile
-    {
+    public sealed class HaloWeaponFeedbackProfile {
         public SoundDef FireBody, FireSnap, FireTail;
         public SoundDef RockImpact, MetalImpact, BodyImpact, HitConfirm, KillConfirm;
-        [Header("Per-weapon shot response (zero keeps the existing response)")]
-        [Min(0f)] public float RecoilPitch, RecoilYaw, GestureReleaseSeconds;
+
+        [Header("Per-weapon shot response (zero keeps the existing response)")] [Min(0f)]
+        public float RecoilPitch, RecoilYaw, GestureReleaseSeconds;
+
         [Range(0f, 1f)] public float RecoilReturnFraction = 1f;
         [Min(0f)] public float RecoilHoldSeconds;
         [Min(.1f)] public float RecoilSettleSpeed = 13f;
-        [Header("Shot mix")]
-        [Range(.01f, .20f)] public float BodyCrossfade = .045f;
+
+        [Header("Shot mix")] [Range(.01f, .20f)]
+        public float BodyCrossfade = .045f;
+
         [Range(.01f, .2f)] public float TailCrossfade = .09f;
         [Range(.6f, 1f)] public float SustainedBodyGain = .9f;
         [Range(0f, 100f)] public float BurstPitchRise = 35f;
@@ -29,47 +31,45 @@ namespace Unity.MP_FPS
     }
 
     [System.Serializable]
-    public sealed class WeaponFeedbackEntry
-    {
+    public sealed class WeaponFeedbackEntry {
         public uint WeaponId;
         public HaloWeaponFeedbackProfile Profile;
     }
 
     [CreateAssetMenu(menuName = "Moonkov/Rifle Feedback")]
-    public sealed class RifleFeedbackLibrary : ScriptableObject
-    {
+    public sealed class RifleFeedbackLibrary : ScriptableObject {
         public Material ImpactMaterial;
         public SoundDef RockImpact, MetalImpact, BodyImpact;
         public SoundDef HitConfirm, KillConfirm;
         public HaloWeaponFeedbackProfile Rifle, Revolver, Shotgun, Sniper;
-
         public WeaponFeedbackEntry[] WeaponProfiles;
 
-        public HaloWeaponFeedbackProfile ForWeapon(uint weaponId)
-        {
+        public HaloWeaponFeedbackProfile ForWeapon(uint weaponId) {
             if (WeaponProfiles != null)
                 foreach (var entry in WeaponProfiles)
-                    if (entry != null && entry.WeaponId == weaponId && entry.Profile != null) return entry.Profile;
+                    if (entry != null && entry.WeaponId == weaponId && entry.Profile != null)
+                        return entry.Profile;
             return BaseForWeapon(weaponId);
         }
 
         // Kept for older assets and for rebuilding visual/impact defaults in the installer.
-        public HaloWeaponFeedbackProfile BaseForWeapon(uint weaponId) => weaponId switch
-        {
-            DollSingerWeapons.Halo => Rifle,
-            DollSingerWeapons.Revolver => Revolver,
-            DollSingerWeapons.Shotgun => Shotgun,
-            DollSingerWeapons.Sniper => Sniper,
-            DollSingerWeapons.Cicada => Rifle,
-            DollSingerWeapons.Trine => Rifle,
-            DollSingerWeapons.Aegis => Rifle,
-            DollSingerWeapons.Vesper => Sniper,
-            DollSingerWeapons.Thorn => Shotgun,
-            DollSingerWeapons.Sundown => Shotgun,
-            DollSingerWeapons.Rondo => Rifle,
-            DollSingerWeapons.Tempest => Shotgun,
-            DollSingerWeapons.Nocturne => Sniper,
-            _ => null
-        };
+        public HaloWeaponFeedbackProfile BaseForWeapon(uint weaponId) {
+            return weaponId switch {
+                DollSingerWeapons.Halo => Rifle,
+                DollSingerWeapons.Revolver => Revolver,
+                DollSingerWeapons.Shotgun => Shotgun,
+                DollSingerWeapons.Sniper => Sniper,
+                DollSingerWeapons.Cicada => Rifle,
+                DollSingerWeapons.Trine => Rifle,
+                DollSingerWeapons.Aegis => Rifle,
+                DollSingerWeapons.Vesper => Sniper,
+                DollSingerWeapons.Thorn => Shotgun,
+                DollSingerWeapons.Sundown => Shotgun,
+                DollSingerWeapons.Rondo => Rifle,
+                DollSingerWeapons.Tempest => Shotgun,
+                DollSingerWeapons.Nocturne => Sniper,
+                _ => null
+            };
+        }
     }
 }

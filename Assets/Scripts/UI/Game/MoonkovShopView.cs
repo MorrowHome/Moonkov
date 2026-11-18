@@ -5,10 +5,8 @@ using System.Threading;
 using Unity.MP_FPS.Inventory;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-    public sealed class MoonkovShopView : IDisposable
-    {
+namespace Unity.MP_FPS.Client {
+    public sealed class MoonkovShopView : IDisposable {
         private readonly VisualElement m_Window;
         private readonly ScrollView m_List;
         private readonly Label m_Balance, m_Status;
@@ -21,203 +19,339 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_InspectTitle, m_InspectDetail;
         private VisualElement m_SelectedRow;
         private string m_SelectedCode;
-        private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
+        private readonly CancellationTokenSource m_Stop = new();
         private ShopOffer[] m_Offers;
         private bool m_Busy, m_Disposed;
         private int m_Tab;
         private string m_StatusSource;
 
-        public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false, Action openWorkshop = null, bool research = false, string initialProduct = null)
-        {
-            m_Window = window; m_Tab = research ? 3 : recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
+        public MoonkovShopView(
+            VisualElement window,
+            Action openStorage,
+            bool recovery = false,
+            Action openWorkshop = null,
+            bool research = false,
+            string initialProduct = null) {
+            m_Window = window;
+            m_Tab = research ? 3 : recovery ? 2 : 0;
+            window.AddToClassList("terminal-shop-window");
             window.EnableInClassList("research-dedicated", research);
-            if (research)
-            {
-                window.style.left = Length.Percent(3); window.style.top = Length.Percent(3);
+            if (research) {
+                window.style.left = Length.Percent(3);
+                window.style.top = Length.Percent(3);
                 MoonkovLocalization.Set(window.Q<Label>("windowTitle"), "RESEARCH & FABRICATION");
             }
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/Research"));
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/ShopPurchase"));
-            var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
-            m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop, openStorage);
-            if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.MenuInventory);
+            var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog");
+            window.Add(catalog);
+            m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop,
+                openStorage);
+            if (initialProduct == "halo_mooncore_recycler")
+                m_Research.SelectMooncore(PlayerProfileClient.MenuInventory);
             catalog.Insert(3, m_Research.Root);
-            if (!research)
-            {
-                m_Purchases = new MoonkovShopPurchaseView((offer, quantity) => Order(ShopOperation.Buy, offer.Code, null, quantity), initialProduct);
+            if (!research) {
+                m_Purchases = new MoonkovShopPurchaseView(
+                    (offer, quantity) => Order(ShopOperation.Buy, offer.Code, null, quantity), initialProduct);
                 catalog.Insert(2, m_Purchases.Element);
             }
-            m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
+            m_InspectArt = catalog.Q("inspectArt");
+            m_InspectTitle = catalog.Q<Label>("inspectTitle");
+            m_InspectDetail = catalog.Q<Label>("inspectDetail");
             var head = catalog.Q("shopHead");
             m_Balance = MoonkovTerminal.Text(head, "MOON DUST / —", "terminal-heading");
             MoonkovTerminal.ActionButton(head, "OPEN STORAGE", openStorage);
-            if (initialProduct != null && openWorkshop != null) MoonkovTerminal.ActionButton(head, "GO TO HALO MODIFICATION", openWorkshop);
+            if (initialProduct != null && openWorkshop != null)
+                MoonkovTerminal.ActionButton(head, "GO TO HALO MODIFICATION", openWorkshop);
             var tabs = catalog.Q("shopTabs");
-            string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
-            for (int i = 0; i < names.Length; i++)
-            { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; if ((tab == 0 || tab == 3) && !PlayerProfileClient.MenuInventoryNeedsRetry) Status(""); Render(); }); }
+            string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" };
+            m_Tabs = new Button[4];
+            for (int i = 0; i < names.Length; i++) {
+                int tab = i;
+                m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => {
+                    m_Tab = tab;
+                    if ((tab == 0 || tab == 3) && !PlayerProfileClient.MenuInventoryNeedsRetry) Status("");
+                    Render();
+                });
+            }
             m_List = catalog.Q<ScrollView>("shopList");
             var statusHost = catalog.Q("shopStatusHost");
-            m_StatusHost = statusHost; statusHost.AddToClassList("research-transaction-status");
-            m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
+            m_StatusHost = statusHost;
+            statusHost.AddToClassList("research-transaction-status");
+            m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy");
+            m_Status.AddToClassList("terminal-shop-status");
             Status(research || m_Tab == 0 ? "" : "Contacting lunar supply…");
-            m_Retry = MoonkovTerminal.ActionButton(statusHost, "RETRY SYNC", Retry); m_Retry.style.display = DisplayStyle.None;
-            window.RegisterCallback<DetachFromPanelEvent>(Detached); PlayerProfileClient.InventoryChanged += Changed;
+            m_Retry = MoonkovTerminal.ActionButton(statusHost, "RETRY SYNC", Retry);
+            m_Retry.style.display = DisplayStyle.None;
+            window.RegisterCallback<DetachFromPanelEvent>(Detached);
+            PlayerProfileClient.InventoryChanged += Changed;
             Load();
         }
-        private async void Load()
-        {
-            m_Busy = true; Render();
-            try
-            {
+
+        private async void Load() {
+            m_Busy = true;
+            Render();
+            try {
                 m_Offers = await PlayerProfileClient.GetShopOffersAsync(m_Stop.Token);
                 if (!m_Disposed) Status(m_Tab == 0 || m_Tab == 3 ? "" : "Purchases arrive in personal storage.");
+            } catch (OperationCanceledException) {
+                if (!m_Disposed) Status("Supply contact timed out. Close and reopen the supplier to reconnect.");
+            } catch (Exception ex) {
+                if (!m_Disposed) Status(ex.Message);
+            } finally {
+                m_Busy = false;
+                if (!m_Disposed) Render();
             }
-            catch (OperationCanceledException) { if (!m_Disposed) Status("Supply contact timed out. Close and reopen the supplier to reconnect."); }
-            catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
-            finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
-        private void Changed() { if (!m_Busy && !m_Disposed) Render(); }
+
+        private void Changed() {
+            if (!m_Busy && !m_Disposed) Render();
+        }
+
         private bool Ready => !m_Busy && m_Offers != null && PlayerProfileClient.CanQueueMenuInventory;
-        private void Render()
-        {
-            if (PlayerProfileClient.MenuInventoryNeedsRetry) Status("Inventory confirmation is interrupted. Retry synchronization first.");
-            else if (PlayerProfileClient.MenuInventoryPending > 0) Status("Syncing inventory…");
-            else if (PlayerProfileClient.MenuInventoryError != null) Status(PlayerProfileClient.MenuInventoryError.Message);
+
+        private void Render() {
+            if (PlayerProfileClient.MenuInventoryNeedsRetry)
+                Status("Inventory confirmation is interrupted. Retry synchronization first.");
+            else if (PlayerProfileClient.MenuInventoryPending > 0)
+                Status("Syncing inventory…");
+            else if (PlayerProfileClient.MenuInventoryError != null)
+                Status(PlayerProfileClient.MenuInventoryError.Message);
             m_Window.EnableInClassList("is-busy", m_Busy);
             m_Window.EnableInClassList("research-window", m_Tab == 3);
             m_Window.EnableInClassList("shop-buy-window", m_Tab == 0);
-            m_StatusHost.EnableInClassList("research-hidden", m_Tab == 3 && (string.IsNullOrEmpty(m_StatusSource) || m_Busy) || m_Tab == 0 && string.IsNullOrEmpty(m_StatusSource));
+            m_StatusHost.EnableInClassList("research-hidden",
+                (m_Tab == 3 && (string.IsNullOrEmpty(m_StatusSource) || m_Busy)) ||
+                (m_Tab == 0 && string.IsNullOrEmpty(m_StatusSource)));
             m_Window.Q(className: "archive-shop-body").EnableInClassList("research-hidden", m_Tab == 0 || m_Tab == 3);
-            if (m_Purchases != null)
-            {
+            if (m_Purchases != null) {
                 m_Purchases.Element.style.display = m_Tab == 0 ? DisplayStyle.Flex : DisplayStyle.None;
                 if (m_Tab != 0) m_Purchases.Suspend();
             }
             m_Research.Root.EnableInClassList("research-hidden", m_Tab != 3);
             m_List.Clear();
-            m_SelectedRow = null; m_InspectArt.Clear(); MoonkovLocalization.Set(m_InspectTitle, ""); MoonkovLocalization.Set(m_InspectDetail, "");
-            MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.MenuInventory?.Count("dust") ?? 0);
+            m_SelectedRow = null;
+            m_InspectArt.Clear();
+            MoonkovLocalization.Set(m_InspectTitle, "");
+            MoonkovLocalization.Set(m_InspectDetail, "");
+            MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}",
+                PlayerProfileClient.MenuInventory?.Count("dust") ?? 0);
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
-            m_Retry.style.display = PlayerProfileClient.MenuInventoryNeedsRetry && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
-            if (m_Tab == 3) { Research(); return; }
-            if (m_Tab == 0 && m_Purchases != null)
-            {
+            m_Retry.style.display = PlayerProfileClient.MenuInventoryNeedsRetry && !m_Busy
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
+            if (m_Tab == 3) {
+                Research();
+                return;
+            }
+            if (m_Tab == 0 && m_Purchases != null) {
                 m_Purchases.Present(m_Offers, PlayerProfileClient.MenuInventory, Ready, m_Busy,
-                    PlayerProfileClient.RaidActive ? "Finish or leave your active raid before trading or requesting emergency supplies." : null);
+                    PlayerProfileClient.RaidActive
+                        ? "Finish or leave your active raid before trading or requesting emergency supplies."
+                        : null);
                 return;
             }
             if (PlayerProfileClient.RaidActive)
-                MoonkovTerminal.Text(m_List, "Finish or leave your active raid before trading or requesting emergency supplies.", "terminal-copy");
-            if (m_Offers == null)
-            { MoonkovTerminal.Text(m_List, m_Busy ? "Connecting to supplier…" : "Sign in and reopen this supplier to load current stock.", "terminal-copy"); return; }
-            if (m_Tab == 1) SellRows();
-            else if(m_Tab==2) Recovery();
+                MoonkovTerminal.Text(m_List,
+                    "Finish or leave your active raid before trading or requesting emergency supplies.",
+                    "terminal-copy");
+            if (m_Offers == null) {
+                MoonkovTerminal.Text(m_List,
+                    m_Busy ? "Connecting to supplier…" : "Sign in and reopen this supplier to load current stock.",
+                    "terminal-copy");
+                return;
+            }
+            if (m_Tab == 1)
+                SellRows();
+            else if (m_Tab == 2) Recovery();
         }
-        private void Research()
-        {
-            m_Research.Present(PlayerProfileClient.MenuInventory, Ready, m_Busy, PlayerProfileClient.MenuInventoryNeedsRetry, m_Offers == null && m_Busy);
+
+        private void Research() {
+            m_Research.Present(PlayerProfileClient.MenuInventory, Ready, m_Busy,
+                PlayerProfileClient.MenuInventoryNeedsRetry, m_Offers == null && m_Busy);
         }
-        private void Status(string source)
-        { m_StatusSource = source; MoonkovLocalization.Set(m_Status, source); }
-        private VisualElement Product(string code, string name, string detail)
-        {
-            var row = TerminalLayout.Clone("Components/ShopProduct", "shopProduct"); m_List.Add(row);
-            var art = new StashItemArt(code); art.style.flexGrow = 1;
+
+        private void Status(string source) {
+            m_StatusSource = source;
+            MoonkovLocalization.Set(m_Status, source);
+        }
+
+        private VisualElement Product(string code, string name, string detail) {
+            var row = TerminalLayout.Clone("Components/ShopProduct", "shopProduct");
+            m_List.Add(row);
+            var art = new StashItemArt(code);
+            art.style.flexGrow = 1;
             row.Q("productArt").Add(art);
             MoonkovLocalization.Set(row.Q<Label>("productTitle"), name);
             MoonkovLocalization.Set(row.Q<Label>("productDetail"), detail);
-            void Select()
-            {
-                m_SelectedRow?.RemoveFromClassList("archive-product-selected"); m_SelectedRow = row; m_SelectedCode = code;
+
+            void Select() {
+                m_SelectedRow?.RemoveFromClassList("archive-product-selected");
+                m_SelectedRow = row;
+                m_SelectedCode = code;
                 row.AddToClassList("archive-product-selected");
-                MoonkovLocalization.Set(m_InspectTitle, name); MoonkovLocalization.Set(m_InspectDetail, detail);
-                m_InspectArt.Clear(); var preview = new StashItemArt(code); preview.style.flexGrow = 1; m_InspectArt.Add(preview);
+                MoonkovLocalization.Set(m_InspectTitle, name);
+                MoonkovLocalization.Set(m_InspectDetail, detail);
+                m_InspectArt.Clear();
+                var preview = new StashItemArt(code);
+                preview.style.flexGrow = 1;
+                m_InspectArt.Add(preview);
             }
+
             row.focusable = true;
-            row.RegisterCallback<PointerDownEvent>(evt => { if (evt.button == 0) Select(); });
+            row.RegisterCallback<PointerDownEvent>(evt => {
+                if (evt.button == 0) Select();
+            });
             row.RegisterCallback<FocusInEvent>(_ => Select());
             if (m_SelectedRow == null || m_SelectedCode == code) Select();
             return row;
         }
-        private void Quantity(VisualElement parent, int maximum, int initial, Action<int> changed)
-        {
+
+        private void Quantity(VisualElement parent, int maximum, int initial, Action<int> changed) {
             int quantity = initial;
-            var picker = MoonkovTerminal.Row(parent); picker.AddToClassList("terminal-shop-quantity");
+            var picker = MoonkovTerminal.Row(parent);
+            picker.AddToClassList("terminal-shop-quantity");
             Label value = null;
-            var minus = MoonkovTerminal.ActionButton(picker, "−", () => { quantity = Math.Max(1, quantity - 1); MoonkovLocalization.Set(value, "× " + quantity); changed(quantity); });
+            var minus = MoonkovTerminal.ActionButton(picker, "−", () => {
+                quantity = Math.Max(1, quantity - 1);
+                MoonkovLocalization.Set(value, "× " + quantity);
+                changed(quantity);
+            });
             value = MoonkovTerminal.Text(picker, "× " + quantity, "terminal-copy");
-            var plus = MoonkovTerminal.ActionButton(picker, "+", () => { quantity = Math.Min(maximum, quantity + 1); MoonkovLocalization.Set(value, "× " + quantity); changed(quantity); });
-            minus.SetEnabled(maximum > 1 && Ready); plus.SetEnabled(maximum > 1 && Ready);
+            var plus = MoonkovTerminal.ActionButton(picker, "+", () => {
+                quantity = Math.Min(maximum, quantity + 1);
+                MoonkovLocalization.Set(value, "× " + quantity);
+                changed(quantity);
+            });
+            minus.SetEnabled(maximum > 1 && Ready);
+            plus.SetEnabled(maximum > 1 && Ready);
         }
-        private void SellRows()
-        {
-            var graph = PlayerProfileClient.MenuInventory; int rows = 0;
-            if (graph != null) foreach (var item in graph.Items.Where(i => m_Offers.Any(o => o.Code == i.Code)).ToArray())
-            {
-                var offer = m_Offers.First(o => o.Code == item.Code); rows++;
-                string detail = graph.Children(item.Id).Any() ? (InventoryCatalog.Get(item.Code).Container ? "EMPTY CONTAINER BEFORE SELLING" : "REMOVE MODULES BEFORE SELLING") : item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
-                    MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + StockDetail(item);
-                var row = Product(item.Code, offer.Name, detail);
-                var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
-                int quantity = 1; Button sell = null;
-                Quantity(order, item.Quantity, quantity, value => { quantity = value; if (sell != null) MoonkovLocalization.Set(sell, "SELL / {0} DUST" , ShopCatalog.SaleDust(item, quantity, offer.SellDust)); });
-                sell = MoonkovTerminal.ActionButton(order, MoonkovLocalization.Format($"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"), () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
-                sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash" && !graph.Children(item.Id).Any());
-            }
-            if (rows == 0) MoonkovTerminal.Text(m_List, "No tradeable items to sell. Recover supplies and valuables in a raid.", "terminal-copy");
+
+        private void SellRows() {
+            var graph = PlayerProfileClient.MenuInventory;
+            int rows = 0;
+            if (graph != null)
+                foreach (var item in graph.Items.Where(i => m_Offers.Any(o => o.Code == i.Code)).ToArray()) {
+                    var offer = m_Offers.First(o => o.Code == item.Code);
+                    rows++;
+                    string detail = graph.Children(item.Id).Any()
+                        ?
+                        InventoryCatalog.Get(item.Code).Container
+                            ? "EMPTY CONTAINER BEFORE SELLING"
+                            : "REMOVE MODULES BEFORE SELLING"
+                        : item.EmergencySupply
+                            ? "EMERGENCY SUPPLY / CANNOT BE SOLD"
+                            : graph.RootOf(item.Id) != "stash"
+                                ? "RETURN TO STORAGE TO SELL"
+                                : MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + StockDetail(item);
+                    var row = Product(item.Code, offer.Name, detail);
+                    var order = new VisualElement();
+                    order.AddToClassList("terminal-shop-order");
+                    row.Add(order);
+                    int quantity = 1;
+                    Button sell = null;
+                    Quantity(order, item.Quantity, quantity, value => {
+                        quantity = value;
+                        if (sell != null)
+                            MoonkovLocalization.Set(sell, "SELL / {0} DUST",
+                                ShopCatalog.SaleDust(item, quantity, offer.SellDust));
+                    });
+                    sell = MoonkovTerminal.ActionButton(order,
+                        MoonkovLocalization.Format(
+                            $"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"),
+                        () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
+                    sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash" &&
+                                    !graph.Children(item.Id).Any());
+                }
+            if (rows == 0)
+                MoonkovTerminal.Text(m_List, "No tradeable items to sell. Recover supplies and valuables in a raid.",
+                    "terminal-copy");
         }
-        private static string StockDetail(InventoryItem item)
-        {
-            if (HaloModules.FromCode(item.Code) != HaloModule.None) return MoonkovLocalization.Text(HaloModules.Description(item.Code));
-            if (item.Code == "cells") return MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
-            if (ShopCatalog.IsWeapon(item.Code)) return item.LoadedAmmo < 0 ? MoonkovLocalization.Text("FULL MAGAZINE") : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS");
+
+        private static string StockDetail(InventoryItem item) {
+            if (HaloModules.FromCode(item.Code) != HaloModule.None)
+                return MoonkovLocalization.Text(HaloModules.Description(item.Code));
+            if (item.Code == "cells")
+                return MoonkovLocalization.Format(
+                    $"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
+            if (ShopCatalog.IsWeapon(item.Code))
+                return item.LoadedAmmo < 0
+                    ? MoonkovLocalization.Text("FULL MAGAZINE")
+                    : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS");
             return MoonkovItemPresentation.Details(item.Code);
         }
-        private void Recovery()
-        {
+
+        private void Recovery() {
             var row = Product("pistol", "EMERGENCY FIELD KIT", "FREE / SIX-ROUND REVOLVER + 3 ENERGY CELLS");
-            var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
+            var order = new VisualElement();
+            order.AddToClassList("terminal-shop-order");
+            row.Add(order);
             bool eligible = ShopCatalog.CanClaim(PlayerProfileClient.MenuInventory);
-            var claim = MoonkovTerminal.ActionButton(order, eligible ? "CLAIM FREE KIT" : "WEAPON ALREADY OWNED", () => Order(ShopOperation.Emergency, null, null, 0), "terminal-primary");
+            var claim = MoonkovTerminal.ActionButton(order, eligible ? "CLAIM FREE KIT" : "WEAPON ALREADY OWNED",
+                () => Order(ShopOperation.Emergency, null, null, 0), "terminal-primary");
             claim.SetEnabled(Ready && eligible);
-            MoonkovTerminal.Text(m_List, "Available when no halo weapon remains, including weapons stored inside containers. The revolver equips into the pistol slot; cells go into carried storage when space allows. Emergency supplies cannot be sold.", "terminal-copy");
+            MoonkovTerminal.Text(m_List,
+                "Available when no halo weapon remains, including weapons stored inside containers. The revolver equips into the pistol slot; cells go into carried storage when space allows. Emergency supplies cannot be sold.",
+                "terminal-copy");
         }
+
         // 每份订单带有独立请求编号和预期库存版本。收到回执前先显示同步状态，后续由 PlayerProfileClient 校正菜单库存。
-        private void Order(ShopOperation operation, string code, string itemId, int quantity)
-        {
+        private void Order(ShopOperation operation, string code, string itemId, int quantity) {
             if (!Ready) return;
-            Execute(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = PlayerProfileClient.MenuInventory.Version,
-                Operation = operation, Code = code, ItemId = itemId, Quantity = quantity });
+            Execute(new ShopCommand {
+                RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = PlayerProfileClient.MenuInventory.Version,
+                Operation = operation, Code = code, ItemId = itemId, Quantity = quantity
+            });
         }
-        private async void Execute(ShopCommand command)
-        {
+
+        private async void Execute(ShopCommand command) {
             if (command == null || !Ready || m_Disposed) return;
-            try
-            {
+            try {
                 var confirmation = PlayerProfileClient.QueueMenuTradeAsync(command, m_Offers);
-                Status("Syncing inventory…"); Render();
+                Status("Syncing inventory…");
+                Render();
                 await confirmation;
-                if (!m_Disposed) { Status(""); Render(); }
+                if (!m_Disposed) {
+                    Status("");
+                    Render();
+                }
+            } catch (OperationCanceledException) {
+                if (!m_Disposed) {
+                    Status("");
+                    Render();
+                }
+            } catch (Exception ex) {
+                if (!m_Disposed) {
+                    Status(ex.Message);
+                    Render();
+                }
             }
-            catch (OperationCanceledException) { if (!m_Disposed) { Status(""); Render(); } }
-            catch (Exception ex) { if (!m_Disposed) { Status(ex.Message); Render(); } }
         }
-        private async void Retry()
-        {
+
+        private async void Retry() {
             if (m_Disposed || m_Busy) return;
-            try { await PlayerProfileClient.FlushMenuInventoryAsync(m_Stop.Token); if (!m_Disposed) Status(""); }
-            catch (OperationCanceledException) { }
-            catch (Exception ex) { if (!m_Disposed) Status(ex.Message); }
-            finally { if (!m_Disposed) Render(); }
+            try {
+                await PlayerProfileClient.FlushMenuInventoryAsync(m_Stop.Token);
+                if (!m_Disposed) Status("");
+            } catch (OperationCanceledException) { } catch (Exception ex) {
+                if (!m_Disposed) Status(ex.Message);
+            } finally {
+                if (!m_Disposed) Render();
+            }
         }
-        private void Detached(DetachFromPanelEvent evt) { if (evt.target == m_Window) Dispose(); }
-        public void Dispose()
-        {
-            if (m_Disposed) return; m_Disposed = true;
-            PlayerProfileClient.InventoryChanged -= Changed; m_Window.UnregisterCallback<DetachFromPanelEvent>(Detached);
+
+        private void Detached(DetachFromPanelEvent evt) {
+            if (evt.target == m_Window) Dispose();
+        }
+
+        public void Dispose() {
+            if (m_Disposed) return;
+            m_Disposed = true;
+            PlayerProfileClient.InventoryChanged -= Changed;
+            m_Window.UnregisterCallback<DetachFromPanelEvent>(Detached);
             m_Purchases?.Dispose();
-            m_Stop.Cancel(); m_Stop.Dispose();
+            m_Stop.Cancel();
+            m_Stop.Dispose();
         }
     }
 }

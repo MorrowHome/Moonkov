@@ -5,72 +5,78 @@ using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS
-{
-    public enum GlobalGameState
-    {
+namespace Unity.MP_FPS {
+    public enum GlobalGameState {
         MainMenu,
         InGame,
-        Loading,
+        Loading
     }
 
-    public enum MainMenuState
-    {
+    public enum MainMenuState {
         MainMenuScreen,
         StartHostPopup,
         DirectConnectPopUp,
-        JoinCodePopUp,
+        JoinCodePopUp
     }
 
-    public enum PlayerState
-    {
+    public enum PlayerState {
         IsPlaying,
-        IsDead,
+        IsDead
     }
-   
-    public class GameSettings : INotifyBindablePropertyChanged
-    {
+
+    public class GameSettings : INotifyBindablePropertyChanged {
         // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
         public const int DollSingerCharacterIndex = 2;
         public const int HatsuneMikuCharacterIndex = 3;
         public const int ShianCharacterIndex = 4;
-        public static bool IsPlayableCharacter(int characterIndex) =>
-            characterIndex == DollSingerCharacterIndex || characterIndex == HatsuneMikuCharacterIndex || characterIndex == ShianCharacterIndex;
-        public static int NormalizeCharacterIndex(int characterIndex) =>
-            IsPlayableCharacter(characterIndex) ? characterIndex : DollSingerCharacterIndex;
-        public static string CharacterName(int characterIndex) =>
-            characterIndex == ShianCharacterIndex ? "SHIAN" : characterIndex == HatsuneMikuCharacterIndex ? "HATSUNE MIKU" : "DOLLSINGER";
-        public static string MenuCharacterSettingsPath(int characterIndex) => characterIndex switch
-        {
-            HatsuneMikuCharacterIndex => "Moonkov/HatsuneMikuMenuCharacterSettings",
-            ShianCharacterIndex => "Moonkov/ShianMenuCharacterSettings",
-            _ => "Moonkov/MenuCharacterSettings"
-        };
+
+        public static bool IsPlayableCharacter(int characterIndex) {
+            return characterIndex == DollSingerCharacterIndex || characterIndex == HatsuneMikuCharacterIndex ||
+                   characterIndex == ShianCharacterIndex;
+        }
+
+        public static int NormalizeCharacterIndex(int characterIndex) {
+            return IsPlayableCharacter(characterIndex) ? characterIndex : DollSingerCharacterIndex;
+        }
+
+        public static string CharacterName(int characterIndex) {
+            return characterIndex == ShianCharacterIndex ? "SHIAN" :
+                characterIndex == HatsuneMikuCharacterIndex ? "HATSUNE MIKU" : "DOLLSINGER";
+        }
+
+        public static string MenuCharacterSettingsPath(int characterIndex) {
+            return characterIndex switch {
+                HatsuneMikuCharacterIndex => "Moonkov/HatsuneMikuMenuCharacterSettings",
+                ShianCharacterIndex => "Moonkov/ShianMenuCharacterSettings",
+                _ => "Moonkov/MenuCharacterSettings"
+            };
+        }
+
         public static GameSettings Instance { get; private set; } = null!;
 
         /// <summary>
         /// This INitialOnloadMethod instantiate the singletone instance 
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void RuntimeInitializeOnLoad() => Instance = new GameSettings();
+        private static void RuntimeInitializeOnLoad() { Instance = new GameSettings(); }
 
-        const string k_PlayerNameKey = "PlayerName";
-        const string k_ConnectionModeKey = "ConnectionMode";
-        const string k_SessionNameKey = "SessionName";
-        const string k_RaidModeKey = "Moonkov.RaidMode";
-        const string k_PlayerCharacterKey = "Moonkov.PlayerCharacter";
-        const string k_ExpeditionCompanionKey = "Moonkov.ExpeditionCompanions";
-        public int ExpeditionCompanionCount
-        {
+        private const string k_PlayerNameKey = "PlayerName";
+        private const string k_ConnectionModeKey = "ConnectionMode";
+        private const string k_SessionNameKey = "SessionName";
+        private const string k_RaidModeKey = "Moonkov.RaidMode";
+        private const string k_PlayerCharacterKey = "Moonkov.PlayerCharacter";
+        private const string k_ExpeditionCompanionKey = "Moonkov.ExpeditionCompanions";
+
+        public int ExpeditionCompanionCount {
             get => Mathf.Clamp(PlayerPrefs.GetInt(k_ExpeditionCompanionKey, 0), 0, RaidRules.MaxCompanions);
             set => PlayerPrefs.SetInt(k_ExpeditionCompanionKey, Mathf.Clamp(value, 0, RaidRules.MaxCompanions));
         }
+
         private RaidGameMode m_RequestedMode;
-        public RaidGameMode RequestedMode
-        {
+
+        public RaidGameMode RequestedMode {
             get => m_RequestedMode;
-            set
-            {
+            set {
                 if (!Enum.IsDefined(typeof(RaidGameMode), value)) return;
                 if (m_RequestedMode == value) return;
                 m_RequestedMode = value;
@@ -78,18 +84,19 @@ namespace Unity.MP_FPS
                 Notify();
             }
         }
-        public int RequestedRulesVersion => RequestedMode switch
-        {
-            RaidGameMode.BountyClash => BountyClashRules.Version,
-            RaidGameMode.Arena => ArenaMatch.Version,
-            RaidGameMode.Classic => ClassicMatch.Version,
-            _ => 0
-        };
 
-        GameSettings()
-        {
+        public int RequestedRulesVersion =>
+            RequestedMode switch {
+                RaidGameMode.BountyClash => BountyClashRules.Version,
+                RaidGameMode.Arena => ArenaMatch.Version,
+                RaidGameMode.Classic => ClassicMatch.Version,
+                _ => 0
+            };
+
+        private GameSettings() {
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
-            m_PlayerCharacter = NormalizeCharacterIndex(PlayerPrefs.GetInt(k_PlayerCharacterKey, DollSingerCharacterIndex));
+            m_PlayerCharacter =
+                NormalizeCharacterIndex(PlayerPrefs.GetInt(k_PlayerCharacterKey, DollSingerCharacterIndex));
             // The shipped settings file decides which connection mode a fresh install opens in, so
             // players pointed at a dedicated server land straight on the host/join buttons.
             m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey,
@@ -97,48 +104,40 @@ namespace Unity.MP_FPS
             m_SessionName = PlayerPrefs.GetString(k_SessionNameKey, "default-session");
             m_RequestedMode = GhostBridgeBootstrap.IsServerOnly ? RaidGameMode.Expedition :
                 PlayerPrefs.GetInt(k_RaidModeKey, 0) == 1 ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
-            var args = Environment.GetCommandLineArgs();
+            string[] args = Environment.GetCommandLineArgs();
             for (int i = 0; i + 1 < args.Length; i++)
-                if (args[i] == "-raid-mode") m_RequestedMode = args[i + 1].Equals("bounty-clash", StringComparison.OrdinalIgnoreCase)
-                    ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
+                if (args[i] == "-raid-mode")
+                    m_RequestedMode = args[i + 1].Equals("bounty-clash", StringComparison.OrdinalIgnoreCase)
+                        ? RaidGameMode.BountyClash
+                        : RaidGameMode.Expedition;
         }
 
         public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;
-        void Notify([CallerMemberName] string property = "") =>
+
+        private void Notify([CallerMemberName] string property = "") {
             propertyChanged?.Invoke(this, new BindablePropertyChangedEventArgs(property));
+        }
 
         public AwaitableCompletionSource CancellableUserInputPopUp;
-        
-        GlobalGameState m_GameState;
-        public GlobalGameState GameState
-        {
+        private GlobalGameState m_GameState;
+
+        public GlobalGameState GameState {
             get => m_GameState;
-            set
-            {
-                if (m_GameState == value)
-                {
-                    return;
-                }
-
+            set {
+                if (m_GameState == value) return;
                 m_GameState = value;
-
                 Notify(MainMenuStylePropertyName);
                 Notify(LoadingScreenStylePropertyName);
                 Notify(InGameUIPropertyName);
             }
         }
-        
-        MainMenuState m_MainMenuState;
-        public MainMenuState MainMenuState
-        {
-            get => m_MainMenuState;
-            set
-            {
-                if (m_MainMenuState == value)
-                {
-                    return;
-                }
 
+        private MainMenuState m_MainMenuState;
+
+        public MainMenuState MainMenuState {
+            get => m_MainMenuState;
+            set {
+                if (m_MainMenuState == value) return;
                 m_MainMenuState = value;
                 Notify(MainMenuStylePropertyName);
                 Notify(JoinSessionStylePropertyName);
@@ -146,102 +145,90 @@ namespace Unity.MP_FPS
                 Notify(DirectConnectStylePropertyName);
             }
         }
-        
-        PlayerState m_PlayerState;
-        public PlayerState PlayerState
-        {
-            get => m_PlayerState;
-            set
-            {
-                if (m_PlayerState == value)
-                    return;
 
+        private PlayerState m_PlayerState;
+
+        public PlayerState PlayerState {
+            get => m_PlayerState;
+            set {
+                if (m_PlayerState == value) return;
                 m_PlayerState = value;
                 //Notify(RespawnScreenStylePropertyName); //TODO: Define the respawn screen style
             }
         }
 
         public static readonly string MainMenuStylePropertyName = nameof(MainMenuStyle);
+
         [CreateProperty]
-        DisplayStyle MainMenuStyle => m_GameState == GlobalGameState.MainMenu && 
-                                      MainMenuState == MainMenuState.MainMenuScreen ? 
-                                      DisplayStyle.Flex : DisplayStyle.None;
+        private DisplayStyle MainMenuStyle =>
+            m_GameState == GlobalGameState.MainMenu && MainMenuState == MainMenuState.MainMenuScreen
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
 
         public static readonly string JoinSessionStylePropertyName = nameof(JoinSessionStyle);
+
         [CreateProperty]
-        DisplayStyle JoinSessionStyle => m_GameState == GlobalGameState.MainMenu && 
-                                         MainMenuState == MainMenuState.JoinCodePopUp ? 
-                                         DisplayStyle.Flex : DisplayStyle.None;
+        private DisplayStyle JoinSessionStyle =>
+            m_GameState == GlobalGameState.MainMenu && MainMenuState == MainMenuState.JoinCodePopUp
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
 
         public static readonly string StartHostStylePropertyName = nameof(StartHostStyle);
+
         [CreateProperty]
-        DisplayStyle StartHostStyle => m_GameState == GlobalGameState.MainMenu && 
-                                       MainMenuState == MainMenuState.StartHostPopup ? 
-                                       DisplayStyle.Flex : DisplayStyle.None;
+        private DisplayStyle StartHostStyle =>
+            m_GameState == GlobalGameState.MainMenu && MainMenuState == MainMenuState.StartHostPopup
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
 
         public static readonly string DirectConnectStylePropertyName = nameof(DirectConnectStyle);
+
         [CreateProperty]
-        DisplayStyle DirectConnectStyle => m_GameState == GlobalGameState.MainMenu && 
-                                           MainMenuState == MainMenuState.DirectConnectPopUp ? 
-                                           DisplayStyle.Flex : DisplayStyle.None;
+        private DisplayStyle DirectConnectStyle =>
+            m_GameState == GlobalGameState.MainMenu && MainMenuState == MainMenuState.DirectConnectPopUp
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
 
         public static readonly string LoadingScreenStylePropertyName = nameof(LoadingScreenStyle);
-        [CreateProperty]
-        DisplayStyle LoadingScreenStyle
-        {
-            get
-            {
-                if (m_GameState == GlobalGameState.Loading)
-                {
-                    return DisplayStyle.Flex;
-                }
 
-                LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.NotLoading,  0.0f);
+        [CreateProperty]
+        private DisplayStyle LoadingScreenStyle {
+            get {
+                if (m_GameState == GlobalGameState.Loading) return DisplayStyle.Flex;
+                LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.NotLoading, 0.0f);
                 return DisplayStyle.None;
             }
         }
 
         public static readonly string InGameUIPropertyName = nameof(InGameUI);
+
         [CreateProperty]
-        DisplayStyle InGameUI => m_GameState == GlobalGameState.InGame ? DisplayStyle.Flex : DisplayStyle.None;
+        private DisplayStyle InGameUI => m_GameState == GlobalGameState.InGame ? DisplayStyle.Flex : DisplayStyle.None;
 
-        bool m_IsPauseMenuOpen = false;
-        public bool IsPauseMenuOpen
-        {
+        private bool m_IsPauseMenuOpen = false;
+
+        public bool IsPauseMenuOpen {
             get => m_IsPauseMenuOpen;
-            set
-            {
-                if (m_IsPauseMenuOpen == value)
-                {
-                    return;
-                }
-
+            set {
+                if (m_IsPauseMenuOpen == value) return;
                 m_IsPauseMenuOpen = value;
                 Utils.SetCursorVisible(value || RaidHUD.PointerRequested);
                 Notify(PauseMenuStylePropertyName);
                 Notify(MobileControlsOpacityPropertyName);
             }
         }
+
         public static readonly string PauseMenuStylePropertyName = nameof(PauseMenuStyle);
-        [CreateProperty]
-        public DisplayStyle PauseMenuStyle => IsPauseMenuOpen ? DisplayStyle.Flex : DisplayStyle.None;
-
+        [CreateProperty] public DisplayStyle PauseMenuStyle => IsPauseMenuOpen ? DisplayStyle.Flex : DisplayStyle.None;
         public static readonly string MobileControlsOpacityPropertyName = nameof(MobileControlsPauseMenuOpacity);
-        [CreateProperty]
-        public StyleFloat MobileControlsPauseMenuOpacity => IsPauseMenuOpen ? 0.5f : 1f;
+        [CreateProperty] public StyleFloat MobileControlsPauseMenuOpacity => IsPauseMenuOpen ? 0.5f : 1f;
+        private string m_PlayerName;
 
-        string m_PlayerName;
         [CreateProperty]
-        public string PlayerName
-        {
+        public string PlayerName {
             get => m_PlayerName;
-            set
-            {
-                if (m_PlayerName == value)
-                {
-                    return;
-                }
-
+            set {
+                if (m_PlayerName == value) return;
                 m_PlayerName = value;
                 PlayerPrefs.SetString(k_PlayerNameKey, value);
             }
@@ -249,12 +236,11 @@ namespace Unity.MP_FPS
 
         private int m_PlayerCharacter;
         public event Action<int> PlayerCharacterChanged;
+
         [CreateProperty]
-        public int PlayerCharacter
-        {
+        public int PlayerCharacter {
             get => m_PlayerCharacter;
-            set
-            {
+            set {
                 int characterIndex = NormalizeCharacterIndex(value);
                 if (m_PlayerCharacter == characterIndex) return;
                 m_PlayerCharacter = characterIndex;
@@ -264,50 +250,42 @@ namespace Unity.MP_FPS
                 PlayerCharacterChanged?.Invoke(characterIndex);
             }
         }
-        
-        int m_ConnectionMode = 0;
-        [CreateProperty]
-        public int ConnectionMode
-        {
-            get => m_ConnectionMode;
-            set
-            {
-                if (m_ConnectionMode == value)
-                    return;
 
+        private int m_ConnectionMode = 0;
+
+        [CreateProperty]
+        public int ConnectionMode {
+            get => m_ConnectionMode;
+            set {
+                if (m_ConnectionMode == value) return;
                 m_ConnectionMode = value;
                 PlayerPrefs.SetInt(k_ConnectionModeKey, value);
             }
         }
 
-        string m_SessionName = "default-session";
-        [CreateProperty]
-        public string SessionName
-        {
-            get => m_SessionName;
-            set
-            {
-                if (m_SessionName == value)
-                    return;
+        private string m_SessionName = "default-session";
 
+        [CreateProperty]
+        public string SessionName {
+            get => m_SessionName;
+            set {
+                if (m_SessionName == value) return;
                 m_SessionName = value;
                 PlayerPrefs.SetString(k_SessionNameKey, value);
             }
         }
 
         public static readonly string MainMenuSceneLoadedPropertyName = nameof(MainMenuSceneLoadedStyle);
+
         [CreateProperty]
-        DisplayStyle MainMenuSceneLoadedStyle => m_MainMenuSceneLoaded ? DisplayStyle.None : DisplayStyle.Flex;
+        private DisplayStyle MainMenuSceneLoadedStyle => m_MainMenuSceneLoaded ? DisplayStyle.None : DisplayStyle.Flex;
 
-        bool m_MainMenuSceneLoaded;
-        public bool MainMenuSceneLoaded
-        {
+        private bool m_MainMenuSceneLoaded;
+
+        public bool MainMenuSceneLoaded {
             get => m_MainMenuSceneLoaded;
-            set
-            {
-                if (m_MainMenuSceneLoaded == value)
-                    return;
-
+            set {
+                if (m_MainMenuSceneLoaded == value) return;
                 m_MainMenuSceneLoaded = value;
                 Notify(MainMenuSceneLoadedPropertyName);
             }

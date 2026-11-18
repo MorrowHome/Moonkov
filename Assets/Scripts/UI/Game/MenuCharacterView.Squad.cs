@@ -3,10 +3,8 @@ using Unity.MP_FPS.Online;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Unity.MP_FPS.Client
-{
-    public sealed partial class MenuCharacterView
-    {
+namespace Unity.MP_FPS.Client {
+    public sealed partial class MenuCharacterView {
         private int m_SquadPose = -1;
         private bool m_SquadReady;
         private float m_SquadReadyPulse;
@@ -16,21 +14,19 @@ namespace Unity.MP_FPS.Client
         internal float SquadInspectionYaw { get; set; }
         internal Transform SquadRoot => m_Stage != null ? m_Stage.transform : null;
 
-        internal bool HitSquadModel(Ray ray)
-        {
+        internal bool HitSquadModel(Ray ray) {
             if (m_Renderers == null) return false;
             foreach (var renderer in m_Renderers)
-                if (renderer && renderer.enabled && renderer.gameObject.activeInHierarchy && renderer.bounds.IntersectRay(ray))
+                if (renderer && renderer.enabled && renderer.gameObject.activeInHierarchy &&
+                    renderer.bounds.IntersectRay(ray))
                     return true;
             return false;
         }
 
-        internal void PresentSquad(LobbyAppearance appearance, int slot, bool ready)
-        {
+        internal void PresentSquad(LobbyAppearance appearance, int slot, bool ready) {
             if (m_SharedStage == null) return;
             if (m_Model == null) CreateStage();
-            if (m_SquadMotions == null)
-            {
+            if (m_SquadMotions == null) {
                 m_SquadMotions = new SquadBakedMotions(m_Animator, CharacterIndex);
                 m_BaseTime = slot * .73f;
             }
@@ -45,16 +41,13 @@ namespace Unity.MP_FPS.Client
             if (m_EquipmentFaceBack) m_EquipmentFaceBack.enabled = false;
         }
 
-        private void AdvanceSquadPose(float dt)
-        {
+        private void AdvanceSquadPose(float dt) {
             m_SquadReadyPulse = Mathf.Max(0, m_SquadReadyPulse - dt);
-            if (m_Motion != 0 && !m_Transition)
-            {
+            if (m_Motion != 0 && !m_Transition) {
                 BeginMotion(0);
                 m_Layers.SetLayerMaskFromAvatarMask(1, m_FullBodyMask);
             }
-            if (m_Stage != null)
-            {
+            if (m_Stage != null) {
                 int pose = m_SquadReadyPulse > 0 ? 1 : m_SquadPose;
                 float facing = pose == 0 ? 12 : pose == 1 ? 8 : pose == 2 ? 6 : -4;
                 m_SquadPoseYaw = dt > 0 ? Mathf.LerpAngle(m_SquadPoseYaw, facing, 1 - Mathf.Exp(-dt * 10)) : facing;
@@ -62,22 +55,22 @@ namespace Unity.MP_FPS.Client
             }
         }
 
-        private void ApplySquadPose(float dt)
-        {
+        private void ApplySquadPose(float dt) {
             if (m_SharedStage == null || m_SquadMotions == null) return;
             m_SquadMotions.Apply(m_SquadReadyPulse > 0 ? 1 : m_SquadPose, m_BaseTime, dt, m_SquadSettled);
         }
 
-        internal void SettleSquadPose()
-        {
+        internal void SettleSquadPose() {
             if (m_Model == null) return;
             m_SquadReadyPulse = 0;
             m_SquadSettled = true;
             AdvanceSquadPose(0);
-            if (m_Transition)
-            {
-                m_Mixer.SetInputWeight(m_Slot, 0); m_Mixer.SetInputWeight(1 - m_Slot, 1);
-                m_Slot = 1 - m_Slot; m_Transition = false; m_Blend = 1;
+            if (m_Transition) {
+                m_Mixer.SetInputWeight(m_Slot, 0);
+                m_Mixer.SetInputWeight(1 - m_Slot, 1);
+                m_Slot = 1 - m_Slot;
+                m_Transition = false;
+                m_Blend = 1;
             }
             m_Times[m_Slot] = m_Settings.Motions[m_Motion].length * .9;
             Advance(0);

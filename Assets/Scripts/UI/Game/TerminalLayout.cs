@@ -4,57 +4,85 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
+namespace Unity.MP_FPS.Client {
     // Layout assets own hierarchy and presentation; presenters only bind state and actions.
-    internal static class TerminalLayout
-    {
-        internal static VisualElement Clone(string assetName, string elementName)
-        {
+    internal static class TerminalLayout {
+        internal static VisualElement Clone(string assetName, string elementName) {
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/" + assetName);
             if (tree == null) throw new InvalidOperationException("Missing Moonkov UI layout: " + assetName);
             return Clone(tree, elementName);
         }
 
-        internal static VisualElement Clone(VisualTreeAsset tree, string elementName)
-        {
+        internal static VisualElement Clone(VisualTreeAsset tree, string elementName) {
             if (tree == null) throw new InvalidOperationException("Missing Moonkov UI component: " + elementName);
             var element = tree.CloneTree().Q<VisualElement>(elementName);
-            if (element == null) throw new InvalidOperationException(tree.name + " is missing UI binding: " + elementName);
+            if (element == null)
+                throw new InvalidOperationException(tree.name + " is missing UI binding: " + elementName);
             element.RemoveFromHierarchy();
             MoonkovLocalization.Bind(element);
             return element;
         }
 
-        internal static void Populate(VisualElement parent, string assetName)
-        {
+        internal static void Populate(VisualElement parent, string assetName) {
             var page = Clone(assetName, "terminalPage");
             foreach (var child in page.Children().ToArray()) parent.Add(child);
         }
     }
 
-    public sealed partial class TechFrame
-    {
+    public sealed partial class TechFrame {
         public TechFrame() : this(0) { }
+
         [UxmlAttribute]
-        public float Delay { get => m_Delay; set { m_Delay = value; MarkDirtyRepaint(); } }
+        public float Delay {
+            get => m_Delay;
+            set {
+                m_Delay = value;
+                MarkDirtyRepaint();
+            }
+        }
     }
 
-    public sealed partial class HazardStripes
-    {
+    public sealed partial class HazardStripes {
         public HazardStripes() : this(TerminalPalette.Yellow) { }
+
         [UxmlAttribute]
-        public Color StripeColor { get => m_Color; set { m_Color = value; MarkDirtyRepaint(); } }
+        public Color StripeColor {
+            get => m_Color;
+            set {
+                m_Color = value;
+                MarkDirtyRepaint();
+            }
+        }
+
         [UxmlAttribute]
-        public bool Moving { get => m_Moving; set { m_Moving = value; MarkDirtyRepaint(); } }
+        public bool Moving {
+            get => m_Moving;
+            set {
+                m_Moving = value;
+                MarkDirtyRepaint();
+            }
+        }
     }
 
-    public sealed partial class ArcMeter
-    {
+    public sealed partial class ArcMeter {
         public ArcMeter() : this(0, TerminalPalette.Yellow) { }
+
         [UxmlAttribute]
-        public float Value { get => m_Value; set { m_Value = Mathf.Clamp01(value); MarkDirtyRepaint(); } }
+        public float Value {
+            get => m_Value;
+            set {
+                m_Value = Mathf.Clamp01(value);
+                MarkDirtyRepaint();
+            }
+        }
+
         [UxmlAttribute]
-        public Color MeterColor { get => m_Color; set { m_Color = value; MarkDirtyRepaint(); } }
+        public Color MeterColor {
+            get => m_Color;
+            set {
+                m_Color = value;
+                MarkDirtyRepaint();
+            }
+        }
     }
 }

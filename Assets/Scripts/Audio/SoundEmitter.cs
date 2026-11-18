@@ -7,10 +7,8 @@ using UnityEngine.Audio;
 using Random = UnityEngine.Random;
 
 [Serializable]
-public class SoundEmitter
-{
-    public enum ReservedInfo
-    {
+public class SoundEmitter {
+    public enum ReservedInfo {
         FreeAfterPlaybackCompletes,
         ReservedEmitter,
         ReservedEmitterAndAudioSources
@@ -20,59 +18,67 @@ public class SoundEmitter
     /// Contains override data that can modify SoundDef parameters at runtime.
     /// Allows per-instance customization of pitch, volume, and filter settings.
     /// </summary>
-    public class SoundDefOverrideData
-    {
+    public class SoundDefOverrideData {
         // Null uses the asset's spatialization; weapon ownership may override one playback.
         public float? SpatialBlend;
+
         // Optional clip window for timed weapon mechanisms. Null keeps the bank defaults.
         public float? StartOffsetFraction;
         public float? StopAfterSeconds;
-        public float BasePitchInCents;  // Copied from SoundDef to allow user to override if required
-        public float VolumeScale;       // Copied from SoundDef
+        public float BasePitchInCents; // Copied from SoundDef to allow user to override if required
+        public float VolumeScale; // Copied from SoundDef
         public float BaseLowPassCutoff; // Copied from SoundDef
 
-        public SoundDefOverrideData()
-        {
+        public SoundDefOverrideData() {
             BaseLowPassCutoff = 0;
             BasePitchInCents = 0;
             VolumeScale = 1;
         }
 
-        public SoundDefOverrideData(SoundDef soundDef)
-        {
+        public SoundDefOverrideData(SoundDef soundDef) {
             BasePitchInCents = soundDef.BasePitchInCents;
             VolumeScale = soundDef.VolumeScale;
             BaseLowPassCutoff = soundDef.BaseLowPassCutoff;
         }
     }
 
-    public bool Allocated;          // True = Emitter has been allocated
-    public ReservedInfo Reserved;   // Reserved type for this emitter. Reserve if you want to use RandomNotLast or Sequential clip selection.
-    [System.NonSerialized]
-    public List<SoundGameObject> ActiveSoundGameObjects;  // List of SoundGameObjects that are active for this SoundDef (using the SoundDef.PlayCount)
-    public uint RandomClipIndex;    // Last Random clip index. Required to allow for "Play random, but don't play last"..
-    public uint UserClipIndex;      // if SoundDef clip index = User, the user can set this value to use as the clip index
-    public uint SequentialClipIndex; // This index is used if the SoundDef clip index = Sequential.
-    public float Volume;            // Base emitter volume (final volume = Volume * SoundDefOverrideInfo.VolumeScale * RandomVol(min/max) * KeyOffFadeOutVol)
-    [System.NonSerialized]
-    public SoundDefOverrideData SoundDefOverrideInfo;
-    [System.NonSerialized]
-    public Interpolator FadeOutTime;  // Time (in seconds) to fade out the SoundGameObject when it is requested to stop
-    public int SeqId;               // ID of this SoundEmitter. Used to validate user calls to play/stop etc.
-    public bool Active;            // True = Active SoundGameObjects or SoundEmitter is reserved
+    public bool Allocated; // True = Emitter has been allocated
 
-    private SoundGameObjectPool m_SoundGameObjectPool;  // Pool of SoundGameObjects that can be allocated for this emitter
+    public ReservedInfo
+        Reserved; // Reserved type for this emitter. Reserve if you want to use RandomNotLast or Sequential clip selection.
+
+    [NonSerialized]
+    public List<SoundGameObject>
+        ActiveSoundGameObjects; // List of SoundGameObjects that are active for this SoundDef (using the SoundDef.PlayCount)
+
+    public uint RandomClipIndex; // Last Random clip index. Required to allow for "Play random, but don't play last"..
+    public uint UserClipIndex; // if SoundDef clip index = User, the user can set this value to use as the clip index
+    public uint SequentialClipIndex; // This index is used if the SoundDef clip index = Sequential.
+
+    public float
+        Volume; // Base emitter volume (final volume = Volume * SoundDefOverrideInfo.VolumeScale * RandomVol(min/max) * KeyOffFadeOutVol)
+
+    [NonSerialized] public SoundDefOverrideData SoundDefOverrideInfo;
+
+    [NonSerialized]
+    public Interpolator FadeOutTime; // Time (in seconds) to fade out the SoundGameObject when it is requested to stop
+
+    public int SeqId; // ID of this SoundEmitter. Used to validate user calls to play/stop etc.
+    public bool Active; // True = Active SoundGameObjects or SoundEmitter is reserved
+
+    private SoundGameObjectPool
+        m_SoundGameObjectPool; // Pool of SoundGameObjects that can be allocated for this emitter
+
     public SoundDef Definition => m_SoundDef;
-    private SoundDef m_SoundDef;    // SoundDef that is being processed for this Emitter
-    private int m_RepeatCount;      // Current repeat count (1 > SoundDef RandomRepeat(min/max)) 0 will play once (as will 1)
+    private SoundDef m_SoundDef; // SoundDef that is being processed for this Emitter
+    private int m_RepeatCount; // Current repeat count (1 > SoundDef RandomRepeat(min/max)) 0 will play once (as will 1)
     private Transform m_ListenerTransform;
 
     /// <summary>
     /// Copies override data from a SoundDef to allow runtime modifications.
     /// </summary>
     /// <param name="soundDef">The SoundDef to copy settings from</param>
-    public void CopyOverrideDataFromSoundDef(SoundDef soundDef)
-    {
+    public void CopyOverrideDataFromSoundDef(SoundDef soundDef) {
         SoundDefOverrideInfo.SpatialBlend = null;
         SoundDefOverrideInfo.StartOffsetFraction = null;
         SoundDefOverrideInfo.StopAfterSeconds = null;
@@ -85,24 +91,19 @@ public class SoundEmitter
     /// Initializes a new SoundEmitter with the specified sound game object pool.
     /// </summary>
     /// <param name="soundGameObjectPool">Pool of sound game objects to use for audio playback</param>
-    public SoundEmitter(SoundGameObjectPool soundGameObjectPool)
-    {
-        Init(soundGameObjectPool);
-    }
+    public SoundEmitter(SoundGameObjectPool soundGameObjectPool) { Init(soundGameObjectPool); }
 
     /// <summary>
     /// Initializes the sound emitter with default values and the specified pool.
     /// </summary>
     /// <param name="soundGameObjectPool">Pool of sound game objects to use</param>
-    public void Init(SoundGameObjectPool soundGameObjectPool)
-    {
+    public void Init(SoundGameObjectPool soundGameObjectPool) {
         Allocated = false;
         Active = false;
-
         ActiveSoundGameObjects = new List<SoundGameObject>();
         Volume = 1.0f;
         SequentialClipIndex = 0;
-        RandomClipIndex = 0;      // fresh allocation: nothing has been played yet
+        RandomClipIndex = 0; // fresh allocation: nothing has been played yet
         UserClipIndex = 0;
         m_RepeatCount = 0;
         Reserved = ReservedInfo.FreeAfterPlaybackCompletes;
@@ -115,20 +116,15 @@ public class SoundEmitter
         // when a match starts) stays poisoned forever and silently swallows the first
         // Update() of whatever sound is given to it next.
         if (FadeOutTime == null)
-        {
             FadeOutTime = new Interpolator(1.0f, Interpolator.CurveType.Linear);
-        }
         else
-        {
             FadeOutTime.SetValue(1.0f);
-        }
     }
 
     /// <summary>
     /// Unreserves the emitter and kills it, making it available for reallocation.
     /// </summary>
-    public void UnreserveAndKill()
-    {
+    public void UnreserveAndKill() {
         Reserved = ReservedInfo.FreeAfterPlaybackCompletes;
         Kill(); // Stop all SoundGameObjects and kills emitter
     }
@@ -136,31 +132,22 @@ public class SoundEmitter
     /// <summary>
     /// Kills the sound emitter, stopping playback and potentially freeing it for reuse.
     /// </summary>
-    public void Kill()
-    {
+    public void Kill() {
         Stop(); // Stop emitter and potentially stop SoundGameObjects if not reserved
-        if (Reserved == ReservedInfo.FreeAfterPlaybackCompletes)   // Free emitter unless reserved
-        {
+        if (Reserved == ReservedInfo.FreeAfterPlaybackCompletes) // Free emitter unless reserved
             Allocated = false;
-        }
     }
 
     /// <summary>
     /// Stops the sound emitter, handling SoundGameObjects based on reservation status.
     /// </summary>
-    public void Stop()
-    {
+    public void Stop() {
         if (Reserved != ReservedInfo.ReservedEmitterAndAudioSources)
-        {
             KillSoundGameObjects(); // Kill SoundGameObjects, allowing other emitters to use them
-        }
         else
-        {
-            foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)   // SoundGameObjects are reserved for this Emitter, so just stop the AudioSource but keep
-            {
+            foreach (var soundGameObject in
+                     ActiveSoundGameObjects) // SoundGameObjects are reserved for this Emitter, so just stop the AudioSource but keep
                 soundGameObject.StopAudioSource();
-            }
-        }
         Active = false;
     }
 
@@ -168,42 +155,26 @@ public class SoundEmitter
     /// Sets the volume level for this emitter.
     /// </summary>
     /// <param name="volume">Volume multiplier (typically 0-1)</param>
-    public void SetVolume(float volume)
-    {
-        Volume = volume;
-    }
+    public void SetVolume(float volume) { Volume = volume; }
 
     /// <summary>
     /// Plays the sound emitter using the current SoundDef and active SoundGameObjects.
     /// </summary>
     /// <param name="listenerTransform">Transform of the audio listener for spatial calculations</param>
     /// <param name="mixerGroups">Array of audio mixer groups for output routing</param>
-    public void Play(Transform listenerTransform, AudioMixerGroup[] mixerGroups)
-    {
-        if (m_SoundDef == null || m_SoundDef.Clips == null || m_SoundDef.Clips.Count == 0)
-        {
-            return;
-        }
-
+    public void Play(Transform listenerTransform, AudioMixerGroup[] mixerGroups) {
+        if (m_SoundDef == null || m_SoundDef.Clips == null || m_SoundDef.Clips.Count == 0) return;
         m_ListenerTransform = listenerTransform;
-
-
         float spatialBlend;
 #if UNITY_EDITOR
         if (!EditorApplication.isPlaying)
-        {
-            spatialBlend = 0;    // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
-        }
+            spatialBlend =
+                0; // Disable SpatialBlend if playing in the inspector window to ensure audio is playing from all speakers
         else
 #endif
-        {
             spatialBlend = Mathf.Clamp01(SoundDefOverrideInfo.SpatialBlend ?? m_SoundDef.DistanceInfo.SpatialBlend);
-        }
-
-        foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)
-        {
+        foreach (var soundGameObject in ActiveSoundGameObjects)
             soundGameObject.TriggerAudioSource(m_ListenerTransform, m_SoundDef, this, spatialBlend, mixerGroups);
-        }
     }
 
     /// <summary>
@@ -211,50 +182,36 @@ public class SoundEmitter
     /// </summary>
     /// <param name="mixerGroups">Array of audio mixer groups</param>
     /// <returns>True if the emitter is still active, false if it should be removed</returns>
-    public bool Update(AudioMixerGroup[] mixerGroups, Transform listener = null)
-    {
-        if (!Active)
-        {
+    public bool Update(AudioMixerGroup[] mixerGroups, Transform listener = null) {
+        if (!Active) return false;
+        if (FadeOutTime.GetValue() == 0.0f) {
+            Kill(); // Emitter fadeout is complete. So stop and optionally kill the emitter (unless reserved) and optionally stop all audio sources
             return false;
         }
-
-        if (FadeOutTime.GetValue() == 0.0f)
-        {
-            Kill();                // Emitter fadeout is complete. So stop and optionally kill the emitter (unless reserved) and optionally stop all audio sources
-            return false;
-        }
-
-        if (listener && listener != m_ListenerTransform)
-        {
+        if (listener && listener != m_ListenerTransform) {
             m_ListenerTransform = listener;
             foreach (var source in ActiveSoundGameObjects) source.RefreshListener(listener);
         }
         int activeAudioSourceCounter = 0;
-        foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)
-        {
+        foreach (var soundGameObject in ActiveSoundGameObjects) {
             bool fatal = false;
             soundGameObject.Update(this, m_RepeatCount, ref activeAudioSourceCounter, ref fatal);
-            if (fatal == true)    // AudioSource's GameObject has been destroyed (likely attached to a parent GameObject that has been destroyed). Stop all sounds and recover
+            if (fatal == true) // AudioSource's GameObject has been destroyed (likely attached to a parent GameObject that has been destroyed). Stop all sounds and recover
             {
                 ValidateSoundGameObjects();
                 UnreserveAndKill(); // Unreserve and kill this SoundEmitter
                 return false;
             }
         }
-
-        if (activeAudioSourceCounter > 0)   // An AudioSource is still playing?
-        {
+        if (activeAudioSourceCounter > 0) // An AudioSource is still playing?
             return true;
-        }
-
-        if (m_RepeatCount > 1)      // All audio sources have finished playing for this emitter. Handle Repeat
+        if (m_RepeatCount > 1) // All audio sources have finished playing for this emitter. Handle Repeat
         {
             m_RepeatCount--;
             Play(m_ListenerTransform, mixerGroups); // Play the emitter again
             return true;
         }
-
-        Kill();  // SoundEmitter has finished. Kill SoundEmitter for reuse if not reserved.
+        Kill(); // SoundEmitter has finished. Kill SoundEmitter for reuse if not reserved.
         return false;
     }
 
@@ -262,14 +219,8 @@ public class SoundEmitter
     /// Initiates a fade-out effect over the specified duration.
     /// </summary>
     /// <param name="fadeOutTime">Time in seconds to fade out (0 for immediate)</param>
-    public void FadeOut(float fadeOutTime)
-    {
-        if (fadeOutTime == 0.0f)
-        {
-            FadeOutTime.SetValue(0.0f);
-        }
-        else
-        {
+    public void FadeOut(float fadeOutTime) {
+        if (fadeOutTime == 0.0f) { FadeOutTime.SetValue(0.0f); } else {
             FadeOutTime.SetValue(1.0f);
             FadeOutTime.MoveTo(0.0f, fadeOutTime);
         }
@@ -280,12 +231,8 @@ public class SoundEmitter
     /// </summary>
     /// <param name="soundDef">The SoundDef containing audio clips and settings</param>
     /// <returns>True if the SoundDef was set successfully, false if null</returns>
-    public bool SetSoundDef(SoundDef soundDef)
-    {
-        if (soundDef == null)
-        {
-            return false;
-        }
+    public bool SetSoundDef(SoundDef soundDef) {
+        if (soundDef == null) return false;
         m_SoundDef = soundDef;
         return true;
     }
@@ -293,8 +240,7 @@ public class SoundEmitter
     /// <summary>
     /// Activates the emitter and sets up repeat count based on the SoundDef settings.
     /// </summary>
-    public void Activate()
-    {
+    public void Activate() {
         m_RepeatCount = Random.Range(m_SoundDef.RepeatInfo.RepeatMin, m_SoundDef.RepeatInfo.RepeatMax);
         Active = true;
     }
@@ -303,10 +249,7 @@ public class SoundEmitter
     /// Gets the current repeat count for this emitter.
     /// </summary>
     /// <returns>Number of repeats remaining</returns>
-    public int GetRepeatCount()
-    {
-        return m_RepeatCount;
-    }
+    public int GetRepeatCount() { return m_RepeatCount; }
 
     /// <summary>
     /// Prepares and allocates SoundGameObjects for playback at the specified position.
@@ -316,18 +259,17 @@ public class SoundEmitter
     /// <param name="position">Position or local offset depending on parent</param>
     /// <returns>True if SoundGameObjects were prepared successfully, false otherwise</returns>
     // 开播前先取得足够的声源，再设定跟随物体或固定位置。准备失败时，SoundSystem 会负责收回这次借出的任务。
-    public bool PrepareSoundGameObjects(Transform parent, Vector3 position)
-    {
-        if (ActiveSoundGameObjects.Count == 0 || Reserved != ReservedInfo.ReservedEmitterAndAudioSources)   // No SoundGameObjects yet allocated.
+    public bool PrepareSoundGameObjects(Transform parent, Vector3 position) {
+        if (ActiveSoundGameObjects.Count == 0 ||
+            Reserved != ReservedInfo.ReservedEmitterAndAudioSources) // No SoundGameObjects yet allocated.
         {
             KillSoundGameObjects();
-            if (AllocateSoundGameObjects(m_SoundGameObjectPool, m_SoundDef.PlayCount) == false)    // create n SoundGameObjects (AudioSources)
-            {
-                return false;   // Failed to create n SoundGameObjects
-            }
+            if (AllocateSoundGameObjects(m_SoundGameObjectPool, m_SoundDef.PlayCount) ==
+                false) // create n SoundGameObjects (AudioSources)
+                return false; // Failed to create n SoundGameObjects
         }
-
-        if (ValidateSoundGameObjects() == false)    // Fatal. SoundGameObject has been destroyed by a parent. Clean up and unreserve Emitter
+        if (ValidateSoundGameObjects() ==
+            false) // Fatal. SoundGameObject has been destroyed by a parent. Clean up and unreserve Emitter
         {
             KillSoundGameObjects();
             UnreserveAndKill();
@@ -335,17 +277,13 @@ public class SoundEmitter
         }
 
         // ActiveSoundGameObjects may still have reserved SoundGameObjects, if Reserved = ReservedInfo.ReserveEmitterAndAudioSources            
-        foreach (var soundGameObject in ActiveSoundGameObjects)
-        {
+        foreach (var soundGameObject in ActiveSoundGameObjects) {
             soundGameObject.Enable(this);
             if (parent != null)
-            {
-                soundGameObject.SetParent(parent, position); // Position is used as Transform.LocalPosition. So, an offset from the parent.
-            }
+                soundGameObject.SetParent(parent,
+                    position); // Position is used as Transform.LocalPosition. So, an offset from the parent.
             else
-            {
                 soundGameObject.SetPosition(position);
-            }
         }
         return true;
     }
@@ -354,16 +292,16 @@ public class SoundEmitter
     /// Check if the SoundGameObjects still exist
     /// If they have been attached to another GameObject, and their Parent GameObject has been destroyed, we need to create another SoundGameObject
     ///</summary>
-    private bool ValidateSoundGameObjects()
-    {
+    private bool ValidateSoundGameObjects() {
         bool isValid = true;
-        for (int i = 0; i < ActiveSoundGameObjects.Count; i++)
-        {
-            SoundGameObject soundGameObject = ActiveSoundGameObjects[i];
-            if (!soundGameObject.IsValid())
-            {
-                SoundGameObject newSoundGameObject = m_SoundGameObjectPool.Create();  // Create another SoundGameObject so that there's the same number in the pool
-                m_SoundGameObjectPool.Replace(soundGameObject, newSoundGameObject);     // Replace the old with the new in the pool
+        for (int i = 0; i < ActiveSoundGameObjects.Count; i++) {
+            var soundGameObject = ActiveSoundGameObjects[i];
+            if (!soundGameObject.IsValid()) {
+                var newSoundGameObject =
+                    m_SoundGameObjectPool
+                        .Create(); // Create another SoundGameObject so that there's the same number in the pool
+                m_SoundGameObjectPool.Replace(soundGameObject,
+                    newSoundGameObject); // Replace the old with the new in the pool
                 ActiveSoundGameObjects[i] = newSoundGameObject;
                 isValid = false;
             }
@@ -371,39 +309,34 @@ public class SoundEmitter
         return isValid;
     }
 
-    private void KillSoundGameObjects()
-    {
-        if (Reserved != ReservedInfo.ReservedEmitterAndAudioSources)
-        {
-            foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)
-            {
-                soundGameObject.Kill(this); // Killing a SoundGameObject moves it back under the SoundGameObjectPool parent GameObject
-                UpdateSoundObjectPoolLinkedList(soundGameObject);   // Link soundGameObject back into the SoundObjectPool linked list (it becomes the next to be selected)
+    private void KillSoundGameObjects() {
+        if (Reserved != ReservedInfo.ReservedEmitterAndAudioSources) {
+            foreach (var soundGameObject in ActiveSoundGameObjects) {
+                soundGameObject
+                    .Kill(this); // Killing a SoundGameObject moves it back under the SoundGameObjectPool parent GameObject
+                UpdateSoundObjectPoolLinkedList(
+                    soundGameObject); // Link soundGameObject back into the SoundObjectPool linked list (it becomes the next to be selected)
             }
             ActiveSoundGameObjects.Clear();
         }
     }
 
-    private void UpdateSoundObjectPoolLinkedList(SoundGameObject newSoundGameObject)
-    {
-        SoundGameObject nextSoundGameObject = m_SoundGameObjectPool.NextSoundGameObject;
-        m_SoundGameObjectPool.NextSoundGameObject = newSoundGameObject;     // Make this the next available SoundGameObject in the pool
-        newSoundGameObject.NextAvailable = nextSoundGameObject;             // Link the previously next SoundGameObject to follow be selected after newSoundGameObject 
+    private void UpdateSoundObjectPoolLinkedList(SoundGameObject newSoundGameObject) {
+        var nextSoundGameObject = m_SoundGameObjectPool.NextSoundGameObject;
+        m_SoundGameObjectPool.NextSoundGameObject =
+            newSoundGameObject; // Make this the next available SoundGameObject in the pool
+        newSoundGameObject.NextAvailable =
+            nextSoundGameObject; // Link the previously next SoundGameObject to follow be selected after newSoundGameObject
         m_SoundGameObjectPool.AvailableSoundObjectCount++;
     }
 
-    private bool AllocateSoundGameObjects(SoundGameObjectPool soundGameObjectPool, int count)
-    {
-        if (soundGameObjectPool.AvailableSoundObjectCount < count)    // Are there enough free SoundGameObjects available to use for this emitter?
-        {
+    private bool AllocateSoundGameObjects(SoundGameObjectPool soundGameObjectPool, int count) {
+        if (soundGameObjectPool.AvailableSoundObjectCount <
+            count) // Are there enough free SoundGameObjects available to use for this emitter?
             return false;
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            SoundGameObject soundGameObject = soundGameObjectPool.NextSoundGameObject;
+        for (int i = 0; i < count; i++) {
+            var soundGameObject = soundGameObjectPool.NextSoundGameObject;
             soundGameObjectPool.NextSoundGameObject = soundGameObject.NextAvailable;
-
             soundGameObject.SetActive(true);
             soundGameObjectPool.AvailableSoundObjectCount--;
             ActiveSoundGameObjects.Add(soundGameObject);
@@ -411,5 +344,3 @@ public class SoundEmitter
         return true;
     }
 }
-
-

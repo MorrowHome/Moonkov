@@ -2,23 +2,21 @@
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     // Weight is server-derived from the actual carried inventory. The same value
     // is replicated for owner prediction; storage and open loot are excluded.
-    public static class RaidEncumbrance
-    {
+    public static class RaidEncumbrance {
         public const float ComfortableWeight = 18;
 
-        public static float Burden(float weight)
-        {
+        public static float Burden(float weight) {
             if (!float.IsFinite(weight)) return 0;
-            return Mathf.Clamp01((weight - ComfortableWeight) / (InventoryCatalog.CarryWeightLimit - ComfortableWeight));
+            return Mathf.Clamp01((weight - ComfortableWeight) /
+                                 (InventoryCatalog.CarryWeightLimit - ComfortableWeight));
         }
 
-        public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
-            FirstPersonController.ControllerConsts constants)
-        {
+        public static FirstPersonController.ControllerConsts Movement(
+            in PredictedPlayerGhost state,
+            FirstPersonController.ControllerConsts constants) {
             if (state.ClashEnabled) return constants;
             float burden = Burden(state.CarriedWeight);
             constants.Walk.Speed *= 1 - .12f * burden;
@@ -27,7 +25,7 @@ namespace Unity.MP_FPS
             return constants;
         }
 
-        public static float SprintDrain(float weight) => 1 + .75f * Burden(weight);
-        public static float SprintRecovery(float weight) => 1 - .35f * Burden(weight);
+        public static float SprintDrain(float weight) { return 1 + .75f * Burden(weight); }
+        public static float SprintRecovery(float weight) { return 1 - .35f * Burden(weight); }
     }
 }

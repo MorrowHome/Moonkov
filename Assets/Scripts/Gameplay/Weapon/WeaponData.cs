@@ -1,16 +1,13 @@
 // 单把武器的配置资产。开火逻辑从这里读取射速、容量和能耗，弹道系统读取伤害、速度、重力和散布，表现层读取镜头等参数。
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
-    public enum WeaponType
-    {
+namespace Unity.MP_FPS {
+    public enum WeaponType {
         Hitscan,
         Projectile
     }
 
-    public enum ReticleType
-    {
+    public enum ReticleType {
         Cross,
         TCross,
         OpenCircular,
@@ -18,8 +15,7 @@ namespace Unity.MP_FPS
     }
 
     [CreateAssetMenu(fileName = "NewWeaponData", menuName = "FPS Sample/Weapon Data")]
-    public class WeaponData : ScriptableObject
-    {
+    public class WeaponData : ScriptableObject {
         [Header("General")] public string WeaponName = "Assault Rifle";
         public WeaponType Type = WeaponType.Hitscan;
         public ReticleType ReticleType = ReticleType.TCross;
@@ -27,16 +23,18 @@ namespace Unity.MP_FPS
         [Header("Firing Mechanics")] [Tooltip("Seconds between shots (legacy field name).")]
         public float CooldownInMs = 10f;
 
-        [Min(0f), Tooltip("Seconds to ready a halo after equipping, independent of its firing interval.")]
+        [Min(0f)] [Tooltip("Seconds to ready a halo after equipping, independent of its firing interval.")]
         public float EquipTime = 0.22f;
 
         public float Damage = 15f;
-        [Header("Damage over distance")]
-        [Min(0f)] public float DamageFalloffStart;
-        [Min(0f), Tooltip("Zero preserves full damage at every distance. Does not affect explosions.")]
-        public float DamageFalloffEnd;
-        [Range(0f, 1f)] public float MinimumDamageFraction = 1f;
 
+        [Header("Damage over distance")] [Min(0f)]
+        public float DamageFalloffStart;
+
+        [Min(0f)] [Tooltip("Zero preserves full damage at every distance. Does not affect explosions.")]
+        public float DamageFalloffEnd;
+
+        [Range(0f, 1f)] public float MinimumDamageFraction = 1f;
         public bool Automatic = true;
         [Range(1, 8)] public int BurstCount = 1;
         [Min(.01f)] public float BurstInterval = .085f;
@@ -48,7 +46,8 @@ namespace Unity.MP_FPS
 
         [Header("Ammo & Reloading")] public int MagazineSize = 30;
         public float ReloadTime = 2.0f; // Time in seconds
-        [Min(1), Tooltip("Battery energy spent per round added to this halo's magazine.")]
+
+        [Min(1)] [Tooltip("Battery energy spent per round added to this halo's magazine.")]
         public int EnergyPerRound = 1;
 
         [Header("Projectile Properties")] [Tooltip("The ghost prefab for the projectile to be spawned.")]
@@ -60,21 +59,21 @@ namespace Unity.MP_FPS
         public SoundDef WeaponReloadSfx;
         public SoundDef WeaponFireLayerSfx;
         public SoundDef WeaponImpactSfx;
-
         public ProjectileBehavior Behavior = ProjectileBehavior.DirectDamage;
         public float AoeRadius = 5f;
         public float ProjectileSpeed = 30f;
         [Range(1, 32)] public int PelletCount = 1;
         [Range(0f, 30f)] public float SpreadDegrees;
+
         [Tooltip("Downward acceleration in m/s²; lunar gravity is 1.62. Zero keeps legacy rockets straight.")]
         public float ProjectileGravity;
+
         [Min(0.001f)] public float ProjectileRadius = 0.01f;
         [Min(0.1f)] public float ProjectileLifetime = 5f;
         public bool ShowProjectileBody;
     }
 
-    public enum ProjectileBehavior
-    {
+    public enum ProjectileBehavior {
         DirectDamage,
         AreaOfEffect
     }

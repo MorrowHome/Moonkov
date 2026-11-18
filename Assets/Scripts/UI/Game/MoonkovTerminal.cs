@@ -5,17 +5,27 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
+namespace Unity.MP_FPS.Client {
     // Navigation and presentation; shop transactions go through the account inventory service.
-    public sealed partial class MoonkovTerminal : IDisposable
-    {
-        private readonly VisualElement m_Root, m_Gear, m_Content, m_Nav, m_NavTabs, m_Indicator, m_Chrome, m_FooterTicker;
+    public sealed partial class MoonkovTerminal : IDisposable {
+        private readonly VisualElement m_Root,
+            m_Gear,
+            m_Content,
+            m_Nav,
+            m_NavTabs,
+            m_Indicator,
+            m_Chrome,
+            m_FooterTicker;
+
         private readonly LunarBackdrop m_Shade;
         private readonly Action m_Prepare;
         private TutorialMenuView m_Tutorial;
-        private readonly List<Button> m_Tabs = new List<Button>();
-        private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
+        private readonly List<Button> m_Tabs = new();
+
+        private readonly string[] m_Pages = {
+            "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS"
+        };
+
         private readonly TerminalWindows m_Windows;
         private readonly HalosMainRoom m_Home;
         private MenuCharacterView m_Character;
@@ -26,27 +36,32 @@ namespace Unity.MP_FPS.Client
         private int m_Dust, m_Alloy, m_Cells;
         private readonly Label m_Title, m_Subtitle, m_Clock;
         private static float s_FrameDelay;
-        private readonly List<Action> m_NavActions = new List<Action>();
+        private readonly List<Action> m_NavActions = new();
         private readonly IVisualElementScheduledItem m_ClockTimer;
         private IVisualElementScheduledItem m_IndicatorTimer;
-        private const string k_Ticker = "MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173 C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH  //  RECOVER. SURVIVE. EXTRACT.  //  ";
+
+        private const string k_Ticker =
+            "MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173 C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH  //  RECOVER. SURVIVE. EXTRACT.  //  ";
+
         public TerminalWindows Windows => m_Windows;
         public MenuCharacterView Character => m_Character;
-        public void PresentEquipment(Inventory.InventoryGraph inventory)
-        {
+
+        public void PresentEquipment(Inventory.InventoryGraph inventory) {
             m_EquipmentInventory = inventory;
             m_Home.PresentEquipment(inventory);
             m_Character?.SetEquipmentInventory(inventory);
             if (m_Page == 4 && m_OperationStep == 4) PresentDepartureEquipment();
         }
+
         public event Action Navigating;
         public event Action LoadoutShowing;
         public event Action HaloModificationRequested;
         public event Action<VisualElement> HaloWorkshopShowing;
 
-        public MoonkovTerminal(VisualElement root, Action prepare, Action<string> revealStorageItem = null)
-        {
-            m_Root = root; m_Prepare = prepare; root.AddToClassList("moonkov-terminal");
+        public MoonkovTerminal(VisualElement root, Action prepare, Action<string> revealStorageItem = null) {
+            m_Root = root;
+            m_Prepare = prepare;
+            root.AddToClassList("moonkov-terminal");
             root.AddToClassList("archive-ui");
             var pageStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedPages");
             if (pageStyle != null && !root.styleSheets.Contains(pageStyle)) root.styleSheets.Add(pageStyle);
@@ -65,19 +80,19 @@ namespace Unity.MP_FPS.Client
             m_Gear = root.Q<VisualElement>(className: "stash-body");
             m_Nav = root.Q<VisualElement>("terminalNav");
             m_NavTabs = root.Q<VisualElement>("terminalNavTabs");
-            for (int i = 0; i < m_Pages.Length; i++)
-            {
+            for (int i = 0; i < m_Pages.Length; i++) {
                 int page = i;
                 var tab = root.Q<Button>("terminalTab" + i);
                 Action action = () => Navigate(page);
-                tab.clicked += action; m_NavActions.Add(action); m_Tabs.Add(tab);
+                tab.clicked += action;
+                m_NavActions.Add(action);
+                m_Tabs.Add(tab);
             }
             m_Indicator = root.Q<VisualElement>(className: "terminal-nav-indicator");
             m_NavTabs.RegisterCallback<GeometryChangedEvent>(NavGeometryChanged);
             var dot = root.Q<VisualElement>(className: "terminal-nav-dot");
             m_Clock = root.Q<Label>(className: "terminal-nav-clock");
-            m_ClockTimer = m_Nav.schedule.Execute(() =>
-            {
+            m_ClockTimer = m_Nav.schedule.Execute(() => {
                 MoonkovLocalization.Set(m_Clock, DateTime.UtcNow.ToString("HH:mm:ss") + " UTC");
                 dot.EnableInClassList("terminal-nav-dot-dim", DateTime.UtcNow.Second % 2 == 0);
             }).Every(500);
@@ -86,38 +101,53 @@ namespace Unity.MP_FPS.Client
             m_Root.RegisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
             var spacer = root.Q<VisualElement>(className: "stash-footer-spacer");
             if (spacer != null) m_FooterTicker = Ticker(spacer, k_Ticker);
-            m_Chrome = new TerminalChrome(); root.Add(m_Chrome);
-            m_Shade = new LunarBackdrop(BackdropMode.Ship, root); m_Shade.AddToClassList("terminal-scene-shade"); root.Insert(0, m_Shade);
+            m_Chrome = new TerminalChrome();
+            root.Add(m_Chrome);
+            m_Shade = new LunarBackdrop(BackdropMode.Ship, root);
+            m_Shade.AddToClassList("terminal-scene-shade");
+            root.Insert(0, m_Shade);
             m_Windows = new TerminalWindows(root, () => Navigate(0));
             m_Home = new HalosMainRoom(root, Navigate);
-            Navigate(0); m_Ready = true;
+            Navigate(0);
+            m_Ready = true;
             m_Tutorial = new TutorialMenuView(root, () => Navigate(1), () => Navigate(4, 4), revealStorageItem);
         }
-        public void Present(string player, int dust, int alloy, int cells, bool busy)
-        {
-            bool changed = player != m_Player || dust != m_Dust || alloy != m_Alloy || cells != m_Cells || busy != m_Busy;
-            m_Player = player; m_Dust = dust; m_Alloy = alloy; m_Cells = cells; m_Busy = busy;
+
+        public void Present(string player, int dust, int alloy, int cells, bool busy) {
+            bool changed = player != m_Player || dust != m_Dust || alloy != m_Alloy || cells != m_Cells ||
+                           busy != m_Busy;
+            m_Player = player;
+            m_Dust = dust;
+            m_Alloy = alloy;
+            m_Cells = cells;
+            m_Busy = busy;
             if (changed && m_Page != 1) Render();
         }
-        public void Navigate(int page) => Navigate(page, null);
+
+        public void Navigate(int page) { Navigate(page, null); }
 
         // 切页时关掉上一页的浮窗，通知背包清掉当前交互，再把背景和内容切到目标页面。
-        private void Navigate(int page, int? operationStep)
-        {
-            Navigating?.Invoke(); DisposeCharacter();
+        private void Navigate(int page, int? operationStep) {
+            Navigating?.Invoke();
+            DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
             bool roomTransition = page == 0 || m_Page == 0;
-            if (page == 0) m_Home.Show(m_Page != 0);
-            else m_Home.Hide();
+            if (page == 0)
+                m_Home.Show(m_Page != 0);
+            else
+                m_Home.Hide();
             if (page == 4 && (m_Page != 4 || operationStep.HasValue)) m_OperationStep = operationStep ?? 0;
-            if (page != 5) { CloseResearchTasks(); m_FacilityRecords = false; }
-            m_Page = page; m_Windows?.CloseAll();
+            if (page != 5) {
+                CloseResearchTasks();
+                m_FacilityRecords = false;
+            }
+            m_Page = page;
+            m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
             m_Tutorial?.Refresh();
             ApplyPageTheme();
-            for (int i = 0; i < m_Tabs.Count; i++)
-            {
+            for (int i = 0; i < m_Tabs.Count; i++) {
                 m_Tabs[i].EnableInClassList("terminal-tab-selected", i == page);
                 m_Tabs[i].Q<ArchiveCardFrame>()?.MarkDirtyRepaint();
             }
@@ -125,57 +155,67 @@ namespace Unity.MP_FPS.Client
             m_Content.style.display = page == 0 || page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Shade.Mode = page == 0 ? BackdropMode.Ship : BackdropMode.Page;
             MoonkovLocalization.Set(m_Title, m_Pages[page]);
-            if (page == 1) MoonkovLocalization.Set(m_Subtitle, "EQUIPMENT / PERSONAL STORAGE");
-            else MoonkovLocalization.Set(m_Subtitle, "ORBITAL SHIP / {0}", m_Pages[page]);
-            if (moved)
-            {
-                TerminalMotion.Scramble(m_Title, .12f, .5f); TerminalMotion.Reveal(m_Subtitle, .18f, 24, 0, .5f);
-                if (m_Ready && !roomTransition) TerminalMotion.Wipe(m_Root, (page + 1).ToString("00") + "  //  " + m_Pages[page]);
+            if (page == 1)
+                MoonkovLocalization.Set(m_Subtitle, "EQUIPMENT / PERSONAL STORAGE");
+            else
+                MoonkovLocalization.Set(m_Subtitle, "ORBITAL SHIP / {0}", m_Pages[page]);
+            if (moved) {
+                TerminalMotion.Scramble(m_Title, .12f, .5f);
+                TerminalMotion.Reveal(m_Subtitle, .18f, 24, 0, .5f);
+                if (m_Ready && !roomTransition)
+                    TerminalMotion.Wipe(m_Root, (page + 1).ToString("00") + "  //  " + m_Pages[page]);
             }
             m_IndicatorTimer?.Pause();
             m_IndicatorTimer = m_Nav.schedule.Execute(() => MoveIndicator(true));
-            if (page != 1) Render();
-            else
-            {
+            if (page != 1) { Render(); } else {
                 TerminalMotion.Fade(m_Gear, .1f, .45f);
-                if (LoadoutShowing != null) { LoadoutShowing(); return; }
+                if (LoadoutShowing != null) {
+                    LoadoutShowing();
+                    return;
+                }
                 m_Character = new MenuCharacterView();
                 m_Character.SetEquipmentInventory(m_EquipmentInventory);
                 m_Character.Element.RemoveFromClassList("terminal-character-art");
                 m_Character.Element.AddToClassList("stash-character-render");
-                var stage = m_Root.Q<VisualElement>("stashCharacterStage"); stage.Insert(0, m_Character.Element);
+                var stage = m_Root.Q<VisualElement>("stashCharacterStage");
+                stage.Insert(0, m_Character.Element);
                 var guides = stage.Q<StashEquipmentGuides>();
                 if (guides != null) m_Character.FrameRendered += guides.MarkDirtyRepaint;
             }
         }
-        public void Prepare() => Navigate(4);
-        private void MoveIndicator(bool animate)
-        {
+
+        public void Prepare() { Navigate(4); }
+
+        private void MoveIndicator(bool animate) {
             if (m_Page >= m_Tabs.Count) return;
-            var target = m_Tabs[m_Page].layout; if (float.IsNaN(target.width) || target.width < 1) return;
+            var target = m_Tabs[m_Page].layout;
+            if (float.IsNaN(target.width) || target.width < 1) return;
             float x0 = m_Indicator.resolvedStyle.left, w0 = m_Indicator.resolvedStyle.width;
-            if (!animate || float.IsNaN(x0) || float.IsNaN(w0) || w0 < 1)
-            {
-                m_Indicator.style.left = target.x; m_Indicator.style.width = target.width; return;
+            if (!animate || float.IsNaN(x0) || float.IsNaN(w0) || w0 < 1) {
+                m_Indicator.style.left = target.x;
+                m_Indicator.style.width = target.width;
+                return;
             }
-            TerminalMotion.Tween(m_Indicator, .5f, t =>
-            {
+            TerminalMotion.Tween(m_Indicator, .5f, t => {
                 float k = TerminalMotion.OutExpo(t), stretch = Mathf.Sin(t * Mathf.PI) * 40;
-                m_Indicator.style.left = Mathf.Lerp(x0, target.x, k) - stretch * .5f; m_Indicator.style.width = Mathf.Lerp(w0, target.width, k) + stretch;
+                m_Indicator.style.left = Mathf.Lerp(x0, target.x, k) - stretch * .5f;
+                m_Indicator.style.width = Mathf.Lerp(w0, target.width, k) + stretch;
             }, 0, null, "indicator");
         }
+
         // 按当前页装配内容。任务页已打开且只需要更新研究状态时，可以刷新现有视图，保留用户正在看的任务。
-        private void Render()
-        {
-            if (m_Page == 5 && m_ResearchTasks != null && PlayerProfileClient.ResearchQuests != null)
-            { m_ResearchTasks.Refresh(); return; }
+        private void Render() {
+            if (m_Page == 5 && m_ResearchTasks != null && PlayerProfileClient.ResearchQuests != null) {
+                m_ResearchTasks.Refresh();
+                return;
+            }
             CloseResearchTasks();
             ApplyPageTheme();
             DisposeCharacter();
-            m_Content.Clear(); s_FrameDelay = .08f;
+            m_Content.Clear();
+            s_FrameDelay = .08f;
             m_Content.EnableInClassList("terminal-content-page", m_Page != 0);
-            switch (m_Page)
-            {
+            switch (m_Page) {
                 case 0: Ship(); break;
                 case 2: Halo(); break;
                 case 3: Suppliers(); break;
@@ -188,107 +228,112 @@ namespace Unity.MP_FPS.Client
             if (m_Page == 0) return;
             float delay = .1f;
             foreach (var child in m_Content.Children())
-            {
-                if (child.ClassListContains("terminal-row")) delay = TerminalMotion.Cascade(child, delay, .08f, 0, 26);
-                else { TerminalMotion.Reveal(child, delay, 0, 18); delay += .05f; }
-            }
+                if (child.ClassListContains("terminal-row")) {
+                    delay = TerminalMotion.Cascade(child, delay, .08f, 0, 26);
+                } else {
+                    TerminalMotion.Reveal(child, delay, 0, 18);
+                    delay += .05f;
+                }
         }
 
-        private void Ship()
-        {
-            m_Home.Present(m_Busy);
-        }
+        private void Ship() { m_Home.Present(m_Busy); }
 
-        private void UpdateHomeMenuSize()
-        {
+        private void UpdateHomeMenuSize() {
             var menu = m_Content.Q<VisualElement>(className: "terminal-home-menu");
-            menu?.EnableInClassList("terminal-home-menu-compact", m_Content.contentRect.height < 500 || m_Content.contentRect.width < 1120);
+            menu?.EnableInClassList("terminal-home-menu-compact",
+                m_Content.contentRect.height < 500 || m_Content.contentRect.width < 1120);
         }
 
-        private void ApplyHomeTheme()
-        {
+        private void ApplyHomeTheme() {
             m_Root.AddToClassList("moon-approved-home");
             m_Root.AddToClassList("moon-proposal-plates");
             m_Root.RemoveFromClassList("moon-home-light");
             m_Root.AddToClassList("moon-home-dark");
         }
 
-        private void ApplyPageTheme()
-        {
+        private void ApplyPageTheme() {
             m_Root.EnableInClassList("archive-pages", m_Page != 0);
             // All runtime terminal pages now share dark surface roles.
             for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
             m_Root.RemoveFromClassList("archive-light");
-            for (int i = 0; i < 5; i++) m_Root.EnableInClassList("operation-step-" + i, m_Page == 4 && m_OperationStep == i);
+            for (int i = 0; i < 5; i++)
+                m_Root.EnableInClassList("operation-step-" + i, m_Page == 4 && m_OperationStep == i);
             m_Root.EnableInClassList("archive-halo-page", m_Page == 2);
-            m_Root.EnableInClassList("archive-compact", m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
+            m_Root.EnableInClassList("archive-compact",
+                m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
         }
 
-
-        private void Halo()
-        {
+        private void Halo() {
             TerminalLayout.Populate(m_Content, "Halo");
             var host = m_Content.Q("haloWorkshopHost");
             host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HaloWorkshop"));
-            if (HaloWorkshopShowing != null) HaloWorkshopShowing(host);
-            else m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
+            if (HaloWorkshopShowing != null)
+                HaloWorkshopShowing(host);
+            else
+                m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
         }
 
-        public void OpenWorkshopSupply(bool research, string moduleCode = null)
-        {
+        public void OpenWorkshopSupply(bool research, string moduleCode = null) {
             Navigate(3);
-            OpenShop(research ? "HALO RESEARCH" : "THE SALVAGE ENGINEER", research: research, initialProduct: moduleCode);
+            OpenShop(research ? "HALO RESEARCH" : "THE SALVAGE ENGINEER", research: research,
+                initialProduct: moduleCode);
         }
 
-        private void Suppliers()
-        {
+        private void Suppliers() {
             TerminalLayout.Populate(m_Content, "Suppliers");
             string[] names = { "UNITED EARTH LOGISTICS", "LUNAR MEDICAL BUREAU", "THE SALVAGE ENGINEER" };
-            for (int i = 0; i < names.Length; i++)
-            {
-                string supplier = names[i]; m_Content.Q<Button>("supplier" + i).clicked += () => SupplierDetail(supplier);
+            for (int i = 0; i < names.Length; i++) {
+                string supplier = names[i];
+                m_Content.Q<Button>("supplier" + i).clicked += () => SupplierDetail(supplier);
             }
             m_Content.Q<Button>("emergencySupply").clicked += () => OpenShop("LUNAR EMERGENCY SUPPLY", true);
             m_Content.Q<Button>("mooncoreResearch").clicked += () => OpenShop("HALO RESEARCH", research: true);
         }
-        private void SupplierDetail(string name)
-        {
-            OpenShop(name);
-        }
-        private void OpenShop(string name, bool recovery = false, bool research = false, string initialProduct = null)
-        {
+
+        private void SupplierDetail(string name) { OpenShop(name); }
+
+        private void OpenShop(string name, bool recovery = false, bool research = false, string initialProduct = null) {
             var window = m_Windows.Open(name);
-            new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery,
-                () => { m_Windows.Close(window); HaloModificationRequested?.Invoke(); }, research, initialProduct);
+            new MoonkovShopView(window, () => {
+                m_Windows.Close(window);
+                Navigate(1);
+            }, recovery, () => {
+                m_Windows.Close(window);
+                HaloModificationRequested?.Invoke();
+            }, research, initialProduct);
         }
 
-        private void Tasks()
-        {
+        private void Tasks() {
             if (TryPresentResearchTasks()) return;
             if (TryPresentCampaignTasks()) return;
             TerminalLayout.Populate(m_Content, "Tasks");
             if (m_FacilityRecords && PlayerProfileClient.ResearchQuests != null)
                 ActionButton(m_Content.Q<VisualElement>(className: "terminal-side"),
-                    ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => { m_FacilityRecords = false; Render(); });
+                    ResearchQuestCopy.Text("返回任务管理", "Back to quests"), () => {
+                        m_FacilityRecords = false;
+                        Render();
+                    });
             var graph = PlayerProfileClient.Inventory;
             int facts = graph?.MissionFirsts ?? 0, count = 0;
-            for (int i = 0; i < 3; i++)
-            {
-                bool complete = (facts & (1 << i)) != 0; if (complete) count++;
+            for (int i = 0; i < 3; i++) {
+                bool complete = (facts & (1 << i)) != 0;
+                if (complete) count++;
                 m_Content.Q<Label>("statValue" + i).text = graph == null ? "待载入档案" : complete ? "已保存" : "尚未带回";
             }
             m_Content.Q<ArcMeter>().Value = count / 3f;
             m_Content.Q<Label>("missionCareerCount").text = graph == null ? "—/3" : count + "/3";
-            m_Content.Q<Label>("mooncoreKnowledge").text = (facts & Inventory.MissionInventory.FirstMooncore) != 0 ?
-                "月核：夹具出现重复批次编号，说明异常结晶曾被重新封存。样本来源仍待进一步调查。" : "月核：留意 MC00 的封存异常。完成线路隔离和取样，将真实碎片带回。";
-            m_Content.Q<Label>("archiveKnowledge").text = (facts & Inventory.MissionInventory.FirstArchive) != 0 ?
-                "档案：18:42 故障隔离，18:47 设备仍在上传。最后一次操作身份尚未确认。" : "档案：留意失联设备恢复信号，校验两处时间标签，再取出事故记录。";
+            m_Content.Q<Label>("mooncoreKnowledge").text = (facts & Inventory.MissionInventory.FirstMooncore) != 0
+                ? "月核：夹具出现重复批次编号，说明异常结晶曾被重新封存。样本来源仍待进一步调查。"
+                : "月核：留意 MC00 的封存异常。完成线路隔离和取样，将真实碎片带回。";
+            m_Content.Q<Label>("archiveKnowledge").text = (facts & Inventory.MissionInventory.FirstArchive) != 0
+                ? "档案：18:42 故障隔离，18:47 设备仍在上传。最后一次操作身份尚未确认。"
+                : "档案：留意失联设备恢复信号，校验两处时间标签，再取出事故记录。";
             TerminalMotion.Cascade(m_Content.Q<VisualElement>(className: "terminal-objectives"), .5f, .12f, 30, 0);
             m_Content.Q<Button>("planOperation").clicked += Prepare;
             m_Content.Q<Button>("mooncoreResearch").clicked += () => OpenShop("HALO RESEARCH", research: true);
         }
-        private void Base()
-        {
+
+        private void Base() {
             TerminalLayout.Populate(m_Content, "Base");
             var stores = m_Content.Q<VisualElement>(className: "terminal-resources");
             int[] values = { m_Dust, m_Alloy, m_Cells };
@@ -297,84 +342,124 @@ namespace Unity.MP_FPS.Client
             m_Content.Q<Button>("openStorage").clicked += () => Navigate(1);
         }
 
-        private void Comms() => TerminalLayout.Populate(m_Content, "Comms");
-        private void Settings()
-        {
+        private void Comms() { TerminalLayout.Populate(m_Content, "Comms"); }
+
+        private void Settings() {
             TerminalLayout.Populate(m_Content, "Settings");
             BindSettings(m_Content, () => Navigate(8));
         }
-        private void NavGeometryChanged(GeometryChangedEvent evt) => MoveIndicator(false);
-        private void ContentGeometryChanged(GeometryChangedEvent evt) { UpdateHomeMenuSize(); ApplyPageTheme(); }
+
+        private void NavGeometryChanged(GeometryChangedEvent evt) { MoveIndicator(false); }
+
+        private void ContentGeometryChanged(GeometryChangedEvent evt) {
+            UpdateHomeMenuSize();
+            ApplyPageTheme();
+        }
 
         // Endless marquee; the copy is doubled so the loop has no seam.
-        internal static VisualElement Ticker(VisualElement parent, string text)
-        {
-            var ticker = new VisualElement { pickingMode = PickingMode.Ignore }; ticker.AddToClassList("terminal-ticker"); parent.Add(ticker);
-            var track = new VisualElement { pickingMode = PickingMode.Ignore }; track.AddToClassList("terminal-ticker-track"); ticker.Add(track);
-            Text(track, text, "terminal-ticker-text"); Text(track, text, "terminal-ticker-text");
-            AnimateTicker(ticker); return ticker;
+        internal static VisualElement Ticker(VisualElement parent, string text) {
+            var ticker = new VisualElement { pickingMode = PickingMode.Ignore };
+            ticker.AddToClassList("terminal-ticker");
+            parent.Add(ticker);
+            var track = new VisualElement { pickingMode = PickingMode.Ignore };
+            track.AddToClassList("terminal-ticker-track");
+            ticker.Add(track);
+            Text(track, text, "terminal-ticker-text");
+            Text(track, text, "terminal-ticker-text");
+            AnimateTicker(ticker);
+            return ticker;
         }
-        private static void AnimateTicker(VisualElement ticker)
-        {
+
+        private static void AnimateTicker(VisualElement ticker) {
             var track = ticker.Q<VisualElement>(className: "terminal-ticker-track");
             var first = track.Q<Label>(className: "terminal-ticker-text");
             double start = TerminalMotion.Now;
-            ticker.schedule.Execute(() =>
-            {
+            ticker.schedule.Execute(() => {
                 if (!TerminalMotion.Animate(ticker)) return;
-                float w = first.layout.width; if (float.IsNaN(w) || w < 1) return;
+                float w = first.layout.width;
+                if (float.IsNaN(w) || w < 1) return;
                 track.style.translate = new Translate(-Mathf.Repeat((float)(TerminalMotion.Now - start) * 42, w), 0);
             }).Every(16);
         }
-        internal static VisualElement Row(VisualElement parent)
-        {
-            var row = new VisualElement(); row.AddToClassList("terminal-row"); parent.Add(row); return row;
-        }
-        internal static VisualElement Panel(VisualElement parent, string title, string css)
-        {
-            var panel = new VisualElement(); panel.AddToClassList("terminal-panel"); panel.AddToClassList(css);
-            Text(panel, title, "terminal-eyebrow"); TechFrame.Attach(panel, Mathf.Min(s_FrameDelay, .6f)); s_FrameDelay += .08f;
-            parent.Add(panel); return panel;
-        }
-        internal static Label Text(VisualElement parent, string text, string css)
-        {
-            var label = new Label(); label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label;
+
+        internal static VisualElement Row(VisualElement parent) {
+            var row = new VisualElement();
+            row.AddToClassList("terminal-row");
+            parent.Add(row);
+            return row;
         }
 
+        internal static VisualElement Panel(VisualElement parent, string title, string css) {
+            var panel = new VisualElement();
+            panel.AddToClassList("terminal-panel");
+            panel.AddToClassList(css);
+            Text(panel, title, "terminal-eyebrow");
+            TechFrame.Attach(panel, Mathf.Min(s_FrameDelay, .6f));
+            s_FrameDelay += .08f;
+            parent.Add(panel);
+            return panel;
+        }
 
-        internal static Button ActionButton(VisualElement parent, string text, Action action, string css = "terminal-button")
-        {
-            var button = new Button(action); button.AddToClassList(css); parent.Add(button); MoonkovLocalization.Set(button, text); return button;
+        internal static Label Text(VisualElement parent, string text, string css) {
+            var label = new Label();
+            label.AddToClassList(css);
+            parent.Add(label);
+            MoonkovLocalization.Set(label, text);
+            return label;
         }
-        internal static void Disabled(VisualElement parent, string text, string reason)
-        {
-            var button = ActionButton(parent, text, null); button.tooltip = reason; button.SetEnabled(false);
+
+        internal static Button ActionButton(
+            VisualElement parent,
+            string text,
+            Action action,
+            string css = "terminal-button") {
+            var button = new Button(action);
+            button.AddToClassList(css);
+            parent.Add(button);
+            MoonkovLocalization.Set(button, text);
+            return button;
         }
-        internal static void Stat(VisualElement parent, string name, string value)
-        {
-            var row = Row(parent); row.AddToClassList("terminal-stat"); Text(row, name, "terminal-stat-name"); Text(row, value, "terminal-stat-value");
+
+        internal static void Disabled(VisualElement parent, string text, string reason) {
+            var button = ActionButton(parent, text, null);
+            button.tooltip = reason;
+            button.SetEnabled(false);
         }
-        public void Dispose()
-        {
+
+        internal static void Stat(VisualElement parent, string name, string value) {
+            var row = Row(parent);
+            row.AddToClassList("terminal-stat");
+            Text(row, name, "terminal-stat-name");
+            Text(row, value, "terminal-stat-value");
+        }
+
+        public void Dispose() {
             m_Home.Dispose();
             m_Tutorial?.Dispose();
             m_CampaignTasks?.Dispose();
             CloseResearchTasks();
             DisposeCharacter();
-            m_Windows.Dispose(); m_Content.Clear(); m_ClockTimer.Pause();
+            m_Windows.Dispose();
+            m_Content.Clear();
+            m_ClockTimer.Pause();
             m_IndicatorTimer?.Pause();
             m_NavTabs.UnregisterCallback<GeometryChangedEvent>(NavGeometryChanged);
             m_Content.UnregisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
             m_Root.UnregisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
             for (int i = 0; i < m_Tabs.Count; i++) m_Tabs[i].clicked -= m_NavActions[i];
-            m_Shade.Dispose(); m_Shade.RemoveFromHierarchy(); m_Chrome.RemoveFromHierarchy(); m_FooterTicker?.RemoveFromHierarchy();
+            m_Shade.Dispose();
+            m_Shade.RemoveFromHierarchy();
+            m_Chrome.RemoveFromHierarchy();
+            m_FooterTicker?.RemoveFromHierarchy();
             m_Root.Query(className: "terminal-wipe").ForEach(e => e.RemoveFromHierarchy());
             m_Gear.style.display = DisplayStyle.Flex;
         }
-        private void DisposeCharacter()
-        {
+
+        private void DisposeCharacter() {
             if (m_Character == null) return;
-            m_Character.Element.RemoveFromHierarchy(); m_Character.Dispose(); m_Character = null;
+            m_Character.Element.RemoveFromHierarchy();
+            m_Character.Dispose();
+            m_Character = null;
         }
     }
 }

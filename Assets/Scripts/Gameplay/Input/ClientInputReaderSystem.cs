@@ -8,37 +8,29 @@ using UnityEngine;
 using Unity.MP_FPS.DollSinger;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
-public partial class ClientInputReaderSystem : SystemBase
-{
+public partial class ClientInputReaderSystem : SystemBase {
     private float2 _accumulatedLook;
-
     private Entity _lastKnownPlayerEntity = Entity.Null;
     private DollSingerInput _dollSingerInput;
     private DollSingerNetworkPresentation _dollSingerPresentation;
 
-    protected override void OnUpdate()
-    {
-        Entity currentLocalPlayer = Entity.Null;
-        float3 playerForward = new float3(0, 0, 1);
+    protected override void OnUpdate() {
+        var currentLocalPlayer = Entity.Null;
+        var playerForward = new float3(0, 0, 1);
 
         // 1. Find the local player entity and its server-authored spawn facing.
-        foreach (var (transform, ghost, owner, entity) in SystemAPI.Query<
-                         RefRO<LocalTransform>,
-                         RefRO<PredictedPlayerGhost>,
-                         RefRO<GhostOwnerIsLocal>>()
-                     .WithEntityAccess())
-        {
+        foreach (var (transform, ghost, owner, entity) in SystemAPI
+                     .Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>, RefRO<GhostOwnerIsLocal>>()
+                     .WithEntityAccess()) {
             currentLocalPlayer = entity;
             playerForward = math.mul(transform.ValueRO.Rotation, new float3(0, 0, 1));
             break; // Found local player, stop searching
         }
 
         // 2. Check for Respawn (Entity ID changed)
-        if (currentLocalPlayer != Entity.Null)
-        {
+        if (currentLocalPlayer != Entity.Null) {
             // 重生换了角色实体，就从服务器给的新出生朝向开始积累视角。顺便清掉上个角色的输入与光环转移引用。
-            if (currentLocalPlayer != _lastKnownPlayerEntity)
-            {
+            if (currentLocalPlayer != _lastKnownPlayerEntity) {
                 // Each map owns spawn facing; the old arena's centre is not a universal look target.
                 float yawRadians = math.atan2(playerForward.x, playerForward.z);
                 _accumulatedLook = new float2(math.degrees(yawRadians), 0f);
@@ -50,9 +42,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 _transferGestureHeld = false;
                 _transferTarget = HaloTransferCandidate = Entity.Null;
             }
-        }
-        else
-        {
+        } else {
             // Player is dead or not yet spawned.
             // Reset the tracker so the *next* spawn triggers the logic.
             _lastKnownPlayerEntity = Entity.Null;
@@ -61,69 +51,74 @@ public partial class ClientInputReaderSystem : SystemBase
             _transferGestureHeld = false;
             _transferTarget = HaloTransferCandidate = Entity.Null;
         }
-
         if (_dollSingerInput == null && currentLocalPlayer != Entity.Null &&
-            EntityManager.HasComponent<GhostGameObjectLink>(currentLocalPlayer))
-        {
+            EntityManager.HasComponent<GhostGameObjectLink>(currentLocalPlayer)) {
             var link = EntityManager.GetComponentObject<GhostGameObjectLink>(currentLocalPlayer);
             if (link.LinkedInstance != null &&
-                link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
-            {
+                link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation)) {
                 _dollSingerInput = presentation.OwnedInput;
                 _dollSingerPresentation = presentation;
             }
         }
-
-        foreach (var (input, movementInput) in SystemAPI.Query<RefRW<ClientInput>, RefRW<ClientMovementInput>>())
-        {
+        foreach (var (input, movementInput) in SystemAPI.Query<RefRW<ClientInput>, RefRW<ClientMovementInput>>()) {
             input.ValueRW = new ClientInput();
             movementInput.ValueRW = new ClientMovementInput();
-
             // 打开背包或暂停时得让服务器知道这一帧的开火被屏蔽。可在界面内保留哪些能力由 HUD 和角色表现一起决定。
             bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
-            if (blocked && _dollSingerInput == null)
-            {
+            if (blocked && _dollSingerInput == null) {
                 var suppressed = new PlayerInput();
                 suppressed.SetFlag(PlayerInput.InputFlag.FireSuppressed, true);
                 input.ValueRW.SetInput(0, suppressed);
                 movementInput.ValueRW.SetInput(0, suppressed);
                 continue;
             }
-
-            if (_dollSingerInput != null)
-            {
+            if (_dollSingerInput != null) {
                 var playerInput = new PlayerInput { HaloLightingSettings = _dollSingerInput.LightingSettings };
                 bool canRead = !blocked && _dollSingerInput.CanReadPlayerInput;
                 playerInput.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,
                     !_dollSingerPresentation.ReadOwnedLight(canRead));
-                playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(
-                    ref _accumulatedLook, out playerInput.FreeLookOffset, !canRead);
-                playerInput.Lean = (canRead || _dollSingerInput.LightAdjusting) && !_dollSingerPresentation.IsThirdPerson
-                    ? _dollSingerPresentation.OwnedLeanAmount : 0f;
+                playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(ref _accumulatedLook,
+                    out playerInput.FreeLookOffset, !canRead);
+                playerInput.Lean =
+                    (canRead || _dollSingerInput.LightAdjusting) && !_dollSingerPresentation.IsThirdPerson
+                        ? _dollSingerPresentation.OwnedLeanAmount
+                        : 0f;
                 playerInput.MoveInput = canRead ? _dollSingerInput.Move : Vector2.zero;
                 playerInput.SetStance(_dollSingerInput.Stance);
                 playerInput.SetFlag(PlayerInput.InputFlag.Jump, canRead && _dollSingerInput.JumpPressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
-                playerInput.SetFlag(PlayerInput.InputFlag.Aim, !blocked && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && (_dollSingerInput.LightAdjusting ? _dollSingerInput.LightPreviewAiming : canRead && _dollSingerInput.AimHeld) && !playerInput.FreeLooking);
+                playerInput.SetFlag(PlayerInput.InputFlag.Aim,
+                    !blocked && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected &&
+                    (_dollSingerInput.LightAdjusting
+                        ? _dollSingerInput.LightPreviewAiming
+                        : canRead && _dollSingerInput.AimHeld) && !playerInput.FreeLooking);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
-                bool canFire = canRead && _dollSingerPresentation.WeaponHandsAvailable &&
-                    !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && !playerInput.FreeLooking;
+                bool canFire = canRead && _dollSingerPresentation.WeaponHandsAvailable && !RaidHUD.DarkSightRequested &&
+                               !RaidHUD.QuickSlotToolSelected && !playerInput.FreeLooking;
                 playerInput.SetFlag(PlayerInput.InputFlag.FireSuppressed, !canFire);
                 playerInput.SetFlag(PlayerInput.InputFlag.FireHeld, canFire && _dollSingerInput.FireHeld);
                 // 单发看这一帧是否按下，连发和点射看是否按住。最后由武器规则按冷却、弹量和其他动作状态判断能否开火。
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canFire &&
-                    (weapon != null && !weapon.Automatic && weapon.BurstCount <= 1 ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
-                playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
-                playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
-                playerInput.SetFlag(PlayerInput.InputFlag.EquipPistol, canRead && _dollSingerInput.WeaponSlotPressed == 3);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot,
+                    canFire && (weapon != null && !weapon.Automatic && weapon.BurstCount <= 1
+                        ? _dollSingerInput.FirePressed
+                        : _dollSingerInput.FireHeld));
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo,
+                    canRead && _dollSingerInput.WeaponSlotPressed == 1);
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver,
+                    canRead && _dollSingerInput.WeaponSlotPressed == 2);
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipPistol,
+                    canRead && _dollSingerInput.WeaponSlotPressed == 3);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
-                playerInput.SetFlag(PlayerInput.InputFlag.HaloDefense, !RaidHUD.DarkSightRequested &&
-                    (canRead && _dollSingerInput.DefenseHeld && !RaidHUD.QuickSlotToolSelected ||
-                     RaidHUD.InventoryDefenseAllowed && DollSingerInput.DefenseButtonHeld));
+                playerInput.SetFlag(PlayerInput.InputFlag.HaloDefense,
+                    !RaidHUD.DarkSightRequested &&
+                    ((canRead && _dollSingerInput.DefenseHeld && !RaidHUD.QuickSlotToolSelected) ||
+                     (RaidHUD.InventoryDefenseAllowed && DollSingerInput.DefenseButtonHeld)));
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
-                playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
+                playerInput.AimPoint =
+                    _dollSingerPresentation.CaptureAimPoint(_accumulatedLook,
+                        weapon != null ? weapon.HitscanRange : 100f);
                 ReadHaloTransfer(currentLocalPlayer, equipped, canFire, ref playerInput);
                 TutorialRuntime.Observe(playerInput);
                 InGameHUD.ObserveHaloChargeInput(playerInput, equipped);
@@ -131,23 +126,16 @@ public partial class ClientInputReaderSystem : SystemBase
                 movementInput.ValueRW.SetInput(0, playerInput);
                 continue;
             }
-
             var user = InputSystemManager.GetFirstInputUser();
-
-            if (user.valid)
-            {
+            if (user.valid) {
                 var controls = (InputSystem_Actions)user.actions;
-
                 var playerInput = new PlayerInput();
-
                 ProcessGameplayInput(controls, ref playerInput);
 
                 // movement
                 float2 moveVector = controls.Player.Move.ReadValue<Vector2>();
                 playerInput.MoveInput = moveVector;
-
                 var addedDelta = (float2)controls.Player.LookDelta.ReadValue<Vector2>();
-
                 const float sensitivity = 3.7f;
                 var lookDelta = addedDelta * sensitivity;
 
@@ -160,20 +148,14 @@ public partial class ClientInputReaderSystem : SystemBase
 
                 // Assign the full, accumulated angle to the input struct
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
-
                 TutorialRuntime.Observe(playerInput);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
-            }
-            else
-            {
-                Debug.LogWarning($"[ClientInputReaderSystem] Input user is invalid");
-            }
+            } else { Debug.LogWarning($"[ClientInputReaderSystem] Input user is invalid"); }
         }
     }
 
-    private void ProcessGameplayInput(in InputSystem_Actions controls, ref PlayerInput playerInput)
-    {
+    private void ProcessGameplayInput(in InputSystem_Actions controls, ref PlayerInput playerInput) {
         playerInput.SetFlag(PlayerInput.InputFlag.Jump, controls.Player.Jump.triggered);
         playerInput.SetFlag(PlayerInput.InputFlag.Shoot, controls.FPS.ShootSingle.IsPressed());
         playerInput.SetFlag(PlayerInput.InputFlag.FireHeld, controls.FPS.ShootSingle.IsPressed());

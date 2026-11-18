@@ -4,72 +4,59 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
+namespace Unity.MP_FPS.Client {
     [RequireComponent(typeof(UIDocument))]
-    public class StartHostPopUp : MonoBehaviour
-    {
-        static class UIElementNames
-        {
+    public class StartHostPopUp : MonoBehaviour {
+        private static class UIElementNames {
             public const string PortInputField = "PortField";
             public const string StartButton = "StartButton";
             public const string CancelButton = "CancelButton";
         }
 
-        VisualElement m_StartHostPopUp;
-        Button m_StartButton;
-        Button m_CancelButton;
+        private VisualElement m_StartHostPopUp;
+        private Button m_StartButton;
+        private Button m_CancelButton;
 
-        void OnEnable()
-        {
+        private void OnEnable() {
             m_StartHostPopUp = GetComponent<UIDocument>().rootVisualElement;
-
-            m_StartHostPopUp.SetBinding("style.display", new DataBinding
-            {
+            m_StartHostPopUp.SetBinding("style.display", new DataBinding {
                 dataSource = GameSettings.Instance,
                 dataSourcePath = new PropertyPath(GameSettings.StartHostStylePropertyName),
-                bindingMode = BindingMode.ToTarget,
+                bindingMode = BindingMode.ToTarget
             });
-
             var portInputField = m_StartHostPopUp.Q<TextField>(UIElementNames.PortInputField);
-            portInputField.SetBinding("value", new DataBinding
-            {
+            portInputField.SetBinding("value", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
                 dataSourcePath = new PropertyPath(nameof(ConnectionSettings.Port)),
-                bindingMode = BindingMode.TwoWay,
+                bindingMode = BindingMode.TwoWay
             });
-
             m_StartButton = m_StartHostPopUp.Q<Button>(UIElementNames.StartButton);
             m_StartButton.clicked += OnStartPressed;
-            m_StartButton.SetBinding("enabledSelf", new DataBinding
-            {
+            m_StartButton.SetBinding("enabledSelf", new DataBinding {
                 dataSource = ConnectionSettings.Instance,
                 dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsNetworkEndpointValid)),
-                bindingMode = BindingMode.ToTarget,
+                bindingMode = BindingMode.ToTarget
             });
-
             m_CancelButton = m_StartHostPopUp.Q<Button>(UIElementNames.CancelButton);
             m_CancelButton.clicked += OnCancelPressed;
             GameInput.Actions.UI.TogglePauseMenu.performed += CancelFromKeyboard;
         }
 
-        void OnDisable()
-        {
+        private void OnDisable() {
             m_StartButton.clicked -= OnStartPressed;
             m_CancelButton.clicked -= OnCancelPressed;
             GameInput.Actions.UI.TogglePauseMenu.performed -= CancelFromKeyboard;
         }
 
-        static void OnStartPressed() => GameSettings.Instance.CancellableUserInputPopUp.SetResult();
+        private static void OnStartPressed() { GameSettings.Instance.CancellableUserInputPopUp.SetResult(); }
 
-        static void CancelFromKeyboard(InputAction.CallbackContext context)
-        {
+        private static void CancelFromKeyboard(InputAction.CallbackContext context) {
             if (Application.isFocused && GameSettings.Instance.GameState == GlobalGameState.MainMenu &&
-                GameSettings.Instance.MainMenuState == MainMenuState.StartHostPopup) OnCancelPressed();
+                GameSettings.Instance.MainMenuState == MainMenuState.StartHostPopup)
+                OnCancelPressed();
         }
 
-        static void OnCancelPressed()
-        {
+        private static void OnCancelPressed() {
             GameSettings.Instance.CancellableUserInputPopUp.SetCanceled();
             ConnectionSettings.Instance.IPAddress = ConnectionSettings.ConfiguredAddress;
             ConnectionSettings.Instance.Port = ConnectionSettings.ConfiguredPort;

@@ -3,13 +3,11 @@ using Unity.Entities;
 using Unity.MP_FPS.Inventory;
 using UnityEngine;
 
-namespace Unity.MP_FPS
-{
-    public sealed partial class ProceduralAlienEnemy
-    {
+namespace Unity.MP_FPS {
+    public sealed partial class ProceduralAlienEnemy {
         private bool m_LootDropped;
-        private void DropAlienLoot()
-        {
+
+        private void DropAlienLoot() {
             if (m_LootDropped) return;
             m_LootDropped = true;
             var manager = GhostGameObject.EntityManager;
@@ -17,11 +15,13 @@ namespace Unity.MP_FPS
             if (query.IsEmptyIgnoreFilter) return;
             var loot = manager.GetComponentObject<RaidLootContainers>(query.GetSingletonEntity());
             if (!loot.Initialized) return;
-            var inventory = AlienHarvest.Create(profile.Boss, loot.LootRandom,profile.Species.ToString());
-            Vector3 point = transform.position;
+            var inventory = AlienHarvest.Create(profile.Boss, loot.LootRandom, profile.Species.ToString());
+            var point = transform.position;
             if (!UnityEngine.Physics.Raycast(point + Vector3.up * .1f, Vector3.down, out var floor, 100,
-                LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) return;
-            loot.DropHarvest(inventory, floor.point, Quaternion.FromToRotation(Vector3.up, floor.normal), World.Time.ElapsedTime);
+                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore))
+                return;
+            loot.DropHarvest(inventory, floor.point, Quaternion.FromToRotation(Vector3.up, floor.normal),
+                World.Time.ElapsedTime);
         }
     }
 }

@@ -4,45 +4,53 @@ using Unity.Jobs;
 using Unity.Networking.Transport;
 using Unity.Networking.Transport.TLS;
 
-namespace Unity.MP_FPS.EmbeddedNetworking
-{
+namespace Unity.MP_FPS.EmbeddedNetworking {
     /// <summary>Managed struct required by UTP's Windows unmanaged wrapper.</summary>
-    public struct EmbeddedIceNetworkInterface : INetworkInterface
-    {
-        readonly EmbeddedIceTransport m_Transport;
-        readonly bool m_OwnsTransport;
-        internal EmbeddedIceNetworkInterface(EmbeddedIceTransport transport, bool ownsTransport)
-        { m_Transport = transport; m_OwnsTransport = ownsTransport; }
+    public struct EmbeddedIceNetworkInterface : INetworkInterface {
+        private readonly EmbeddedIceTransport m_Transport;
+        private readonly bool m_OwnsTransport;
+
+        internal EmbeddedIceNetworkInterface(EmbeddedIceTransport transport, bool ownsTransport) {
+            m_Transport = transport;
+            m_OwnsTransport = ownsTransport;
+        }
+
         public NetworkEndpoint LocalEndpoint => m_Transport.LocalEndpoint;
-        public int Initialize(ref NetworkSettings settings, ref int packetPadding)
-        {
+
+        public int Initialize(ref NetworkSettings settings, ref int packetPadding) {
             // Refuse accidental plaintext use outside the explicit native datagram check.
             settings.GetSecureParameters();
             if (settings.GetNetworkConfigParameters().maxMessageSize > EmbeddedIceTransport.MaxDatagram)
                 throw new ArgumentException("UTP datagram exceeds the ICE bridge capacity.");
             return 0;
         }
+
         // NetCode Listen binds AnyIpv4. UTP Connect auto-binds a Custom endpoint
         // using the remote peer address, not LocalEndpoint. Both are logical binds:
         // ICE sockets are already bound to the selected physical address.
-        public int Bind(NetworkEndpoint endpoint) => endpoint == LocalEndpoint ||
-            m_Transport.HasPeerEndpoint(endpoint) ||
-            endpoint.Family == NetworkFamily.Ipv4 && endpoint.WithPort(0) == NetworkEndpoint.AnyIpv4 ? 0 : -1;
-        public int Listen() => 0;
-        public JobHandle ScheduleReceive(ref ReceiveJobArguments arguments, JobHandle dependency)
-        {
+        public int Bind(NetworkEndpoint endpoint) {
+            return endpoint == LocalEndpoint || m_Transport.HasPeerEndpoint(endpoint) ||
+                   (endpoint.Family == NetworkFamily.Ipv4 && endpoint.WithPort(0) == NetworkEndpoint.AnyIpv4)
+                ? 0
+                : -1;
+        }
+
+        public int Listen() { return 0; }
+
+        public JobHandle ScheduleReceive(ref ReceiveJobArguments arguments, JobHandle dependency) {
             // Synchronize once per batch, never on native callbacks.
             // A jobified bridge requires profiling and a separate ownership design.
             dependency.Complete();
             m_Transport.Receive(ref arguments);
             return default;
         }
-        public JobHandle ScheduleSend(ref SendJobArguments arguments, JobHandle dependency)
-        {
+
+        public JobHandle ScheduleSend(ref SendJobArguments arguments, JobHandle dependency) {
             dependency.Complete();
             m_Transport.Send(ref arguments);
             return default;
         }
-        public void Dispose() => m_Transport.ReleaseDriver(m_OwnsTransport);
+
+        public void Dispose() { m_Transport.ReleaseDriver(m_OwnsTransport); }
     }
 }

@@ -12,134 +12,190 @@ using Newtonsoft.Json;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
-namespace Unity.MP_FPS
-{
-    public static partial class AccountClient
-    {
-        private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
-        private sealed class Profile
-        {
+namespace Unity.MP_FPS {
+    public static partial class AccountClient {
+        private sealed class LoginResult {
+            public string Token, DisplayName;
+            public DateTime ExpiresAt;
+        }
+
+        private sealed class Profile {
             public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson;
             public int Dust, Alloy, Cells;
             public ResearchQuestProgress ResearchQuests;
         }
-        private sealed class Failure { public string Error; }
-        private sealed class ShopSnapshot { public ShopOffer[] Offers; public Profile Profile; }
-        public sealed class InventoryRequestException : InvalidOperationException
-        {
+
+        private sealed class Failure {
+            public string Error;
+        }
+
+        private sealed class ShopSnapshot {
+            public ShopOffer[] Offers;
+            public Profile Profile;
+        }
+
+        public sealed class InventoryRequestException : InvalidOperationException {
             public string ErrorCode { get; }
             public InventoryRequestException(string code) : base(InventoryFailureMessage(code)) { ErrorCode = code; }
         }
+
         private static HttpClient s_Http;
         private static string s_Token, s_Name, s_PreferenceKey;
         private static DateTime s_Expires;
         private static string s_BaseUrl;
         internal static bool AllowLanHttp { get; set; }
-        public static RecoveryInbox Recovery {get;private set;} = new RecoveryInbox();
+        public static RecoveryInbox Recovery { get; private set; } = new();
         public static InventoryGraph Inventory { get; private set; }
         public static ResearchQuestProgress ResearchQuests { get; private set; }
         public static bool RaidActive { get; private set; }
         private static string s_VerifiedPlayerId, s_VerifiedServiceUrl;
-        public static string LocalPreferenceScope
-        {
-            get
-            {
-                if(!IsLoggedIn || !Uri.TryCreate(s_BaseUrl,UriKind.Absolute,out var service) || !Guid.TryParse(s_VerifiedPlayerId,out var id) ||
-                    service.AbsoluteUri.TrimEnd('/')!=s_VerifiedServiceUrl)return "";
-                using(var hash=SHA256.Create())return "online/"+BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(s_VerifiedServiceUrl+"/"+id.ToString("D")))).Replace("-","");
+
+        public static string LocalPreferenceScope {
+            get {
+                if (!IsLoggedIn || !Uri.TryCreate(s_BaseUrl, UriKind.Absolute, out var service) ||
+                    !Guid.TryParse(s_VerifiedPlayerId, out var id) ||
+                    service.AbsoluteUri.TrimEnd('/') != s_VerifiedServiceUrl)
+                    return "";
+                using (var hash = SHA256.Create()) {
+                    return "online/" + BitConverter
+                        .ToString(hash.ComputeHash(
+                            Encoding.UTF8.GetBytes(s_VerifiedServiceUrl + "/" + id.ToString("D")))).Replace("-", "");
+                }
             }
         }
+
         private static long s_ProfileRequest, s_AppliedProfileRequest;
         public static event Action InventoryChanged;
         public static int StashDust { get; private set; }
         public static int StashAlloy { get; private set; }
         public static int StashCells { get; private set; }
         public static int CarryCells { get; private set; }
-        public static void SelectCarryCells(int cells) => CarryCells = Mathf.Clamp(cells, 0, Mathf.Min(StashCells, RaidRules.BagCapacity));
-        public static void UpdateStash(int dust, int alloy, int cells)
-        {
-            StashDust = dust; StashAlloy = alloy; StashCells = cells;
+
+        public static void SelectCarryCells(int cells) {
+            CarryCells = Mathf.Clamp(cells, 0, Mathf.Min(StashCells, RaidRules.BagCapacity));
+        }
+
+        public static void UpdateStash(int dust, int alloy, int cells) {
+            StashDust = dust;
+            StashAlloy = alloy;
+            StashCells = cells;
             SelectCarryCells(CarryCells);
         }
-        public static string Token { get { Load(); return IsLoggedIn ? s_Token : ""; } }
-        public static string DisplayName { get { Load(); return s_Name; } }
-        public static bool IsLoggedIn { get { Load(); return !string.IsNullOrEmpty(s_Token) && s_Expires > DateTime.UtcNow; } }
+
+        public static string Token {
+            get {
+                Load();
+                return IsLoggedIn ? s_Token : "";
+            }
+        }
+
+        public static string DisplayName {
+            get {
+                Load();
+                return s_Name;
+            }
+        }
+
+        public static bool IsLoggedIn {
+            get {
+                Load();
+                return !string.IsNullOrEmpty(s_Token) && s_Expires > DateTime.UtcNow;
+            }
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset()
-        {
-            s_Http?.Dispose(); s_Http = null;
-            s_Token = s_Name = s_PreferenceKey = null; s_Expires = default;
+        private static void Reset() {
+            s_Http?.Dispose();
+            s_Http = null;
+            s_Token = s_Name = s_PreferenceKey = null;
+            s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
-            s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
+            s_VerifiedPlayerId = s_VerifiedServiceUrl = null;
+            Inventory = null;
+            Recovery = new RecoveryInbox();
+            RaidActive = false;
+            InventoryChanged = null;
+            s_BaseUrl = null;
             s_ProfileRequest = s_AppliedProfileRequest = 0;
             ResearchQuests = null;
             AllowLanHttp = false;
         }
 
-        private static void Load()
-        {
+        private static void Load() {
             if (s_PreferenceKey != null) return;
             s_PreferenceKey = "MoonRaid.Account.v1";
 #if UNITY_EDITOR
             // Virtual editor clones keep independent logins even if their PlayerPrefs registry is shared.
-            using (var hash = SHA256.Create())
-                s_PreferenceKey += BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath))).Replace("-", "");
+            using (var hash = SHA256.Create()) {
+                s_PreferenceKey += BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Application.dataPath)))
+                    .Replace("-", "");
+            }
 #endif
-            var saved = PlayerPrefs.GetString(s_PreferenceKey, "");
-            try
-            {
+            string saved = PlayerPrefs.GetString(s_PreferenceKey, "");
+            try {
                 var result = JsonConvert.DeserializeObject<LoginResult>(saved);
                 if (result == null) return;
-                s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
-            }
-            catch (JsonException) { PlayerPrefs.DeleteKey(s_PreferenceKey); }
+                s_Token = result.Token;
+                s_Name = result.DisplayName;
+                s_Expires = result.ExpiresAt.ToUniversalTime();
+            } catch (JsonException) { PlayerPrefs.DeleteKey(s_PreferenceKey); }
         }
 
-        public static async Task AuthenticateAsync(string baseUrl, string username, string password, bool register, CancellationToken ct)
-        {
+        public static async Task AuthenticateAsync(
+            string baseUrl,
+            string username,
+            string password,
+            bool register,
+            CancellationToken ct) {
             Load();
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) throw new InvalidOperationException("Enter username and password.");
-            using (var request = new HttpRequestMessage(HttpMethod.Post, Address(baseUrl, register ? "auth/register" : "auth/login")))
-            {
-                request.Content = new StringContent(JsonConvert.SerializeObject(new
-                {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                throw new InvalidOperationException("Enter username and password.");
+            using (var request = new HttpRequestMessage(HttpMethod.Post,
+                       Address(baseUrl, register ? "auth/register" : "auth/login"))) {
+                request.Content = new StringContent(JsonConvert.SerializeObject(new {
                     Username = username.Trim(), Password = password,
                     GuestToken = register ? RaidGuestIdentity.GetToken(false) : null
                 }), Encoding.UTF8, "application/json");
-                using (var response = await SendAccountRequestAsync(request, ct))
-                {
+                using (var response = await SendAccountRequestAsync(request, ct)) {
                     ThrowIfFailed(response.StatusCode);
                     var result = JsonConvert.DeserializeObject<LoginResult>(await response.Content.ReadAsStringAsync());
-                    if (result == null || result.Token == null || result.Token.Length != 64 || result.ExpiresAt <= DateTime.UtcNow)
+                    if (result == null || result.Token == null || result.Token.Length != 64 ||
+                        result.ExpiresAt <= DateTime.UtcNow)
                         throw new InvalidOperationException("Invalid login response.");
                     ct.ThrowIfCancellationRequested();
                     CarryCells = 0;
-                    s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false;
+                    s_VerifiedPlayerId = s_VerifiedServiceUrl = null;
+                    Inventory = null;
+                    Recovery = new RecoveryInbox();
+                    RaidActive = false;
                     ResearchQuests = null;
-                    s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
-                    PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result)); PlayerPrefs.Save();
+                    s_Token = result.Token;
+                    s_Name = result.DisplayName;
+                    s_Expires = result.ExpiresAt.ToUniversalTime();
+                    PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result));
+                    PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
                     await ValidateAsync(baseUrl, ct);
                 }
             }
         }
 
-        public static Task RefreshInventoryAsync(CancellationToken ct) => ValidateAsync(s_BaseUrl, ct);
-        public static async Task ValidateAsync(string baseUrl, CancellationToken ct)
-        {
+        public static Task RefreshInventoryAsync(CancellationToken ct) { return ValidateAsync(s_BaseUrl, ct); }
+
+        public static async Task ValidateAsync(string baseUrl, CancellationToken ct) {
             s_BaseUrl = baseUrl;
             if (!IsLoggedIn) return;
             string token = Token;
             long requestId = ++s_ProfileRequest;
-            using (var request = new HttpRequestMessage(HttpMethod.Get, Address(baseUrl, "auth/me")))
-            {
+            using (var request = new HttpRequestMessage(HttpMethod.Get, Address(baseUrl, "auth/me"))) {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                using (var response = await SendAccountRequestAsync(request, ct, loadingStash: true))
-                {
+                using (var response = await SendAccountRequestAsync(request, ct, true)) {
                     if (token != Token) return;
-                    if (response.StatusCode == HttpStatusCode.Unauthorized) { Clear(); return; }
+                    if (response.StatusCode == HttpStatusCode.Unauthorized) {
+                        Clear();
+                        return;
+                    }
                     ThrowIfFailed(response.StatusCode);
                     var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync());
                     if (profile == null) throw new InvalidOperationException("Invalid account response.");
@@ -150,49 +206,67 @@ namespace Unity.MP_FPS
             }
         }
 
-        public static async Task LogoutAsync(string baseUrl, CancellationToken ct)
-        {
+        public static async Task LogoutAsync(string baseUrl, CancellationToken ct) {
             string token = Token;
-            using (var request = new HttpRequestMessage(HttpMethod.Post, Address(baseUrl, "auth/logout")))
-            {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, Address(baseUrl, "auth/logout"))) {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                using (var response = await Http().SendAsync(request, ct)) ThrowIfFailed(response.StatusCode);
+                using (var response = await Http().SendAsync(request, ct)) { ThrowIfFailed(response.StatusCode); }
             }
             if (token == Token) Clear();
         }
 
-        private static void Clear()
-        {
-            s_Token = s_Name = ""; s_Expires = default;
+        private static void Clear() {
+            s_Token = s_Name = "";
+            s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
             ResearchQuests = null;
-            s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged?.Invoke();
-            PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
+            s_VerifiedPlayerId = s_VerifiedServiceUrl = null;
+            Inventory = null;
+            Recovery = new RecoveryInbox();
+            RaidActive = false;
+            InventoryChanged?.Invoke();
+            PlayerPrefs.DeleteKey(s_PreferenceKey);
+            PlayerPrefs.Save();
         }
 
         // Covers the full inventory download, not just the much smaller login response.
-        private static HttpClient Http() => s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
-        private static async Task<HttpResponseMessage> SendAccountRequestAsync(HttpRequestMessage request, CancellationToken ct, bool loadingStash = false)
-        {
-            string timeoutMessage = loadingStash ? "Loading your stash timed out. Please retry Login." : "Account service timed out. Please retry.";
-            try { return await Http().SendAsync(request, ct); }
-            catch (OperationCanceledException ex) when (!ct.IsCancellationRequested)
-            { throw new TimeoutException(timeoutMessage, ex); }
-            // Unity's Mono transport can surface a timeout as WebException instead.
-            catch (WebException ex) when (!ct.IsCancellationRequested &&
-                (ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.RequestCanceled))
-            { throw new TimeoutException(timeoutMessage, ex); }
+        private static HttpClient Http() {
+            return s_Http ?? (s_Http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
         }
+
+        private static async Task<HttpResponseMessage> SendAccountRequestAsync(
+            HttpRequestMessage request,
+            CancellationToken ct,
+            bool loadingStash = false) {
+            string timeoutMessage = loadingStash
+                ? "Loading your stash timed out. Please retry Login."
+                : "Account service timed out. Please retry.";
+            try { return await Http().SendAsync(request, ct); } catch (OperationCanceledException ex) when
+                (!ct.IsCancellationRequested) { throw new TimeoutException(timeoutMessage, ex); }
+            // Unity's Mono transport can surface a timeout as WebException instead.
+            catch (WebException ex) when (!ct.IsCancellationRequested && (ex.Status == WebExceptionStatus.Timeout ||
+                                                                          ex.Status == WebExceptionStatus
+                                                                              .RequestCanceled)) {
+                throw new TimeoutException(timeoutMessage, ex);
+            }
+        }
+
         // 仓库、商店等请求可以同时发出。先按请求序号和库存版本挡掉晚到的旧结果，再用校验过的档案整份替换界面读到的数据。
-        private static void ApplyProfile(Profile profile, long requestId)
-        {
-            if (profile == null || string.IsNullOrEmpty(profile.InventoryJson)) throw new InvalidOperationException("Account service returned no inventory. Update the persistence service.");
+        private static void ApplyProfile(Profile profile, long requestId) {
+            if (profile == null || string.IsNullOrEmpty(profile.InventoryJson))
+                throw new InvalidOperationException(
+                    "Account service returned no inventory. Update the persistence service.");
             var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.InventoryJson);
-            if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null || graph.Find("loot")!=null)
-                throw new InvalidOperationException("Invalid account inventory snapshot. Existing inventory was preserved.");
-            var recovery=string.IsNullOrEmpty(profile.RecoveryJson) ? new RecoveryInbox() : JsonConvert.DeserializeObject<RecoveryInbox>(profile.RecoveryJson);
-            if(recovery==null || recovery.Validate(graph)!=InventoryError.None)throw new InvalidOperationException("Invalid recovery inbox. Existing inventory was preserved.");
+            if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null ||
+                graph.Find("loot") != null)
+                throw new InvalidOperationException(
+                    "Invalid account inventory snapshot. Existing inventory was preserved.");
+            var recovery = string.IsNullOrEmpty(profile.RecoveryJson)
+                ? new RecoveryInbox()
+                : JsonConvert.DeserializeObject<RecoveryInbox>(profile.RecoveryJson);
+            if (recovery == null || recovery.Validate(graph) != InventoryError.None)
+                throw new InvalidOperationException("Invalid recovery inbox. Existing inventory was preserved.");
             var research = profile.ResearchQuests;
             if (research != null && !ResearchQuestRules.Valid(research))
                 throw new InvalidOperationException("Invalid account research quest snapshot.");
@@ -201,10 +275,15 @@ namespace Unity.MP_FPS
                 ResearchQuests = research;
             // A delayed background refresh cannot roll back a successful move or a newer raid state.
             if (Inventory != null && (graph.Version < Inventory.Version ||
-                graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)) return;
-            s_VerifiedPlayerId=Guid.TryParse(profile.PlayerId,out var verified) ? verified.ToString("D") : null;
-            s_VerifiedServiceUrl=Uri.TryCreate(s_BaseUrl,UriKind.Absolute,out var service) ? service.AbsoluteUri.TrimEnd('/') : null;
-            Inventory = graph;Recovery=recovery; s_AppliedProfileRequest = requestId;
+                                      (graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)))
+                return;
+            s_VerifiedPlayerId = Guid.TryParse(profile.PlayerId, out var verified) ? verified.ToString("D") : null;
+            s_VerifiedServiceUrl = Uri.TryCreate(s_BaseUrl, UriKind.Absolute, out var service)
+                ? service.AbsoluteUri.TrimEnd('/')
+                : null;
+            Inventory = graph;
+            Recovery = recovery;
+            s_AppliedProfileRequest = requestId;
             RaidActive = !string.IsNullOrEmpty(profile.ActiveDeploymentId);
             s_Name = profile.DisplayName;
             UpdateStash(profile.Dust, profile.Alloy, profile.Cells);
@@ -212,116 +291,174 @@ namespace Unity.MP_FPS
             GameSettings.Instance.PlayerName = s_Name;
             InventoryChanged?.Invoke();
         }
-        public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) => PostInventoryAsync("auth/inventory/move", command, ct);
-        public static Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct) => PostInventoryAsync("auth/inventory/recovery/claim",request,ct);
-        public static Task TradeAsync(ShopCommand command, CancellationToken ct) => PostInventoryAsync("auth/shop/trade", command, ct);
-        public static Task AdvanceResearchQuestAsync(ResearchQuestCommand command, CancellationToken ct) =>
-            PostInventoryAsync("auth/research/advance", command, ct);
-        private sealed class GameTicket { public string Ticket; }
+
+        public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) {
+            return PostInventoryAsync("auth/inventory/move", command, ct);
+        }
+
+        public static Task ClaimRecoveryAsync(RecoveryClaim request, CancellationToken ct) {
+            return PostInventoryAsync("auth/inventory/recovery/claim", request, ct);
+        }
+
+        public static Task TradeAsync(ShopCommand command, CancellationToken ct) {
+            return PostInventoryAsync("auth/shop/trade", command, ct);
+        }
+
+        public static Task AdvanceResearchQuestAsync(ResearchQuestCommand command, CancellationToken ct) {
+            return PostInventoryAsync("auth/research/advance", command, ct);
+        }
+
+        private sealed class GameTicket {
+            public string Ticket;
+        }
+
         // 大厅已经分配了实例时，用实例号申请专用入场票。ClientGameSystem 把票放进入场 RPC，账号登录凭证留在 HTTP 流程里。
-        public static async Task<string> CreateGameTicketAsync(CancellationToken ct)
-        {
+        public static async Task<string> CreateGameTicketAsync(CancellationToken ct) {
             string token = Token;
             if (string.IsNullOrEmpty(token)) throw new InvalidOperationException("Sign in before starting a raid.");
             bool allocated = OnlineLobbyClient.InInstance;
-            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, allocated ? "auth/lobby/game-ticket" : "auth/game-ticket"));
-            if (allocated) request.Content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceCredential { InstanceId = OnlineLobbyClient.InstanceId, Protocol = Online.OnlineNetworkProtocol.Version }), Encoding.UTF8, "application/json");
+            using var request = new HttpRequestMessage(HttpMethod.Post,
+                Address(s_BaseUrl, allocated ? "auth/lobby/game-ticket" : "auth/game-ticket"));
+            if (allocated)
+                request.Content =
+                    new StringContent(
+                        JsonConvert.SerializeObject(new Online.InstanceCredential {
+                            InstanceId = OnlineLobbyClient.InstanceId, Protocol = Online.OnlineNetworkProtocol.Version
+                        }), Encoding.UTF8, "application/json");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             using var response = await Http().SendAsync(request, ct);
             string body = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
-                throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ?? "服务器拒绝入场，请刷新队伍状态后重试。");
+                throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ??
+                                                    "服务器拒绝入场，请刷新队伍状态后重试。");
             var ticket = JsonConvert.DeserializeObject<GameTicket>(body);
             ct.ThrowIfCancellationRequested();
             if (token != Token) throw new OperationCanceledException("Account changed while joining.");
-            if (ticket?.Ticket?.Length != 64) throw new InvalidOperationException("Invalid game join ticket. Update the account service.");
+            if (ticket?.Ticket?.Length != 64)
+                throw new InvalidOperationException("Invalid game join ticket. Update the account service.");
             return ticket.Ticket;
         }
-        public static async Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)
-        {
+
+        public static async Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct) {
             if (!IsLoggedIn) throw new InventoryRequestException("login_expired");
-            string token = Token; long requestId = ++s_ProfileRequest;
+            string token = Token;
+            long requestId = ++s_ProfileRequest;
             using var request = new HttpRequestMessage(HttpMethod.Get, Address(s_BaseUrl, "auth/shop"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             using var response = await Http().SendAsync(request, ct);
-            ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
-            if (response.StatusCode == HttpStatusCode.Unauthorized) { Clear(); throw new InventoryRequestException("login_expired"); }
-            if (!response.IsSuccessStatusCode) throw new InventoryRequestException("service_" + (int)response.StatusCode);
+            ct.ThrowIfCancellationRequested();
+            if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
+            if (response.StatusCode == HttpStatusCode.Unauthorized) {
+                Clear();
+                throw new InventoryRequestException("login_expired");
+            }
+            if (!response.IsSuccessStatusCode)
+                throw new InventoryRequestException("service_" + (int)response.StatusCode);
             var snapshot = JsonConvert.DeserializeObject<ShopSnapshot>(await response.Content.ReadAsStringAsync());
             if (snapshot?.Profile == null || !ShopCatalog.ValidOffers(snapshot.Offers))
                 throw new InvalidOperationException("Invalid supplier catalogue. Existing inventory was preserved.");
-            ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
-            ApplyProfile(snapshot.Profile, requestId); return snapshot.Offers;
+            ct.ThrowIfCancellationRequested();
+            if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
+            ApplyProfile(snapshot.Profile, requestId);
+            return snapshot.Offers;
         }
+
         // 库存版本不符等冲突交给后端裁决。收到拒绝后先刷新仓库，最后仍把原来的拒绝原因交给操作界面。
-        private static async Task PostInventoryAsync(string path, object command, CancellationToken ct)
-        {
+        private static async Task PostInventoryAsync(string path, object command, CancellationToken ct) {
             if (!IsLoggedIn) throw new InventoryRequestException("login_expired");
             string token = Token;
             long requestId = ++s_ProfileRequest;
             using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, path));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            request.Content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+            request.Content =
+                new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
             ct.ThrowIfCancellationRequested();
             if (token != Token) throw new OperationCanceledException("Account changed while moving inventory.");
-            if (response.StatusCode == HttpStatusCode.Conflict)
-            {
-                string code = JsonConvert.DeserializeObject<Failure>(await response.Content.ReadAsStringAsync())?.Error ?? "unknown";
+            if (response.StatusCode == HttpStatusCode.Conflict) {
+                string code =
+                    JsonConvert.DeserializeObject<Failure>(await response.Content.ReadAsStringAsync())?.Error ??
+                    "unknown";
                 // Refresh failure must not replace the original, actionable rejection.
-                try { await ValidateAsync(s_BaseUrl, ct); }
-                catch (OperationCanceledException) { throw; }
-                catch (Exception ex) when (ex is HttpRequestException || ex is InvalidOperationException) { }
+                try { await ValidateAsync(s_BaseUrl, ct); } catch (OperationCanceledException) { throw; } catch
+                    (Exception ex) when (ex is HttpRequestException || ex is InvalidOperationException) { }
                 throw new InventoryRequestException(code);
             }
-            if (response.StatusCode == HttpStatusCode.Unauthorized) { Clear(); throw new InventoryRequestException("login_expired"); }
-            if (!response.IsSuccessStatusCode) throw new InventoryRequestException("service_" + (int)response.StatusCode);
-            var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync()); ct.ThrowIfCancellationRequested();
+            if (response.StatusCode == HttpStatusCode.Unauthorized) {
+                Clear();
+                throw new InventoryRequestException("login_expired");
+            }
+            if (!response.IsSuccessStatusCode)
+                throw new InventoryRequestException("service_" + (int)response.StatusCode);
+            var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync());
+            ct.ThrowIfCancellationRequested();
             if (token == Token) ApplyProfile(profile, requestId);
         }
-        public static string InventoryFailureMessage(string code)
-        {
-            switch (code)
-            {
-                case "recovery_pending":return "Make room and claim pending recovery items before deploying again.";
-                case "recovery_Full":return "Storage space or item count is full. Make room or sell items, then claim again. Pending items remain saved.";
-                case "recovery_Stale":return "Storage or recovery changed and was refreshed. Claim again.";
-                case "recovery_Missing":return "The item was already claimed or is no longer pending. Refresh storage.";
-                case "recovery_request_conflict":return "Claim request ID conflict. Refresh and retry.";
-                case "raid_active": return "An unfinished raid owns the carried equipment. Finish/disconnect the raid, then refresh storage. [raid_active]";
-                case "inventory_Stale": return "Inventory changed during this move. Storage refreshed; retry the move. [inventory_Stale]";
-                case "inventory_Incompatible": return "This equipment type does not fit this slot. [inventory_Incompatible]";
-                case "inventory_Collision": case "inventory_Full": return "No free space at the destination. [" + code + "]";
+
+        public static string InventoryFailureMessage(string code) {
+            switch (code) {
+                case "recovery_pending": return "Make room and claim pending recovery items before deploying again.";
+                case "recovery_Full":
+                    return
+                        "Storage space or item count is full. Make room or sell items, then claim again. Pending items remain saved.";
+                case "recovery_Stale": return "Storage or recovery changed and was refreshed. Claim again.";
+                case "recovery_Missing":
+                    return "The item was already claimed or is no longer pending. Refresh storage.";
+                case "recovery_request_conflict": return "Claim request ID conflict. Refresh and retry.";
+                case "raid_active":
+                    return
+                        "An unfinished raid owns the carried equipment. Finish/disconnect the raid, then refresh storage. [raid_active]";
+                case "inventory_Stale":
+                    return "Inventory changed during this move. Storage refreshed; retry the move. [inventory_Stale]";
+                case "inventory_Incompatible":
+                    return "This equipment type does not fit this slot. [inventory_Incompatible]";
+                case "inventory_Collision":
+                case "inventory_Full":
+                    return "No free space at the destination. [" + code + "]";
                 case "inventory_Bounds": return "The item extends beyond the container. [inventory_Bounds]";
-                case "inventory_Cycle": return "A container cannot be placed inside itself or its descendants. [inventory_Cycle]";
-                case "inventory_Overweight": return "This move exceeds the carried weight limit. [inventory_Overweight]";
-                case "inventory_Missing": return "The item or container no longer exists. Refresh storage. [inventory_Missing]";
+                case "inventory_Cycle":
+                    return "A container cannot be placed inside itself or its descendants. [inventory_Cycle]";
+                case "inventory_Overweight":
+                    return "This move exceeds the carried weight limit. [inventory_Overweight]";
+                case "inventory_Missing":
+                    return "The item or container no longer exists. Refresh storage. [inventory_Missing]";
                 case "login_expired": return "Login expired. Sign in again before moving equipment. [login_expired]";
-                case "shop_insufficient_dust": return "Not enough moon dust for this order. Sell stored equipment or recover dust in a raid.";
-                case "shop_has_weapon": return "Emergency supply is available only when no halo weapon remains in your inventory.";
+                case "shop_insufficient_dust":
+                    return "Not enough moon dust for this order. Sell stored equipment or recover dust in a raid.";
+                case "shop_has_weapon":
+                    return "Emergency supply is available only when no halo weapon remains in your inventory.";
                 case "shop_emergency_supply": return "Emergency supplies cannot be sold.";
                 case "shop_store_first": return "Return this item to personal storage before selling it.";
-                case "shop_request_conflict": return "This order ID already belongs to a different transaction. Refresh the supplier.";
+                case "shop_request_conflict":
+                    return "This order ID already belongs to a different transaction. Refresh the supplier.";
                 case "shop_invalid": return "This supplier order is no longer valid. Refresh the catalogue.";
                 case "research_complete": return "This permanent halo research is already complete.";
-                case "research_materials": return "Store the required materials before researching. Mooncore fragments must have been successfully extracted.";
+                case "research_materials":
+                    return
+                        "Store the required materials before researching. Mooncore fragments must have been successfully extracted.";
                 case "fabrication_locked": return "Research Mooncore stabilization before fabricating this module.";
-                case "fabrication_materials": return "Not enough fabrication materials in storage. Recover a Mooncore fragment and store a copper coil.";
+                case "fabrication_materials":
+                    return
+                        "Not enough fabrication materials in storage. Recover a Mooncore fragment and store a copper coil.";
                 default: return "Inventory request rejected. Items remain unchanged. [" + code + "]";
             }
         }
-        private static Uri Address(string baseUrl, string path)
-        {
+
+        private static Uri Address(string baseUrl, string path) {
             AccountServiceSettings.ValidateAddress(baseUrl, AllowLanHttp);
             return new Uri(new Uri(baseUrl.TrimEnd('/') + "/"), path);
         }
-        private static void ThrowIfFailed(HttpStatusCode code)
-        {
+
+        private static void ThrowIfFailed(HttpStatusCode code) {
             if ((int)code >= 200 && (int)code < 300) return;
-            if (code == HttpStatusCode.Unauthorized) throw new InvalidOperationException("Incorrect username/password or expired login.");
-            if (code == HttpStatusCode.Conflict) throw new InvalidOperationException("Username or guest profile already registered.");
+            if (code == HttpStatusCode.Unauthorized)
+                throw new InvalidOperationException("Incorrect username/password or expired login.");
+            if (code == HttpStatusCode.Conflict)
+                throw new InvalidOperationException("Username or guest profile already registered.");
             if ((int)code == 429) throw new InvalidOperationException("Too many attempts. Please wait a minute.");
-            if (code == HttpStatusCode.BadRequest) throw new InvalidOperationException("Username: 3-32 letters/digits/underscores. Password: 8-128 characters.");
+            if (code == HttpStatusCode.BadRequest)
+                throw new InvalidOperationException(
+                    "Username: 3-32 letters/digits/underscores. Password: 8-128 characters.");
             throw new InvalidOperationException("Account service unavailable. Please retry.");
         }
     }

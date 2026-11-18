@@ -12,8 +12,7 @@ using Random = Unity.Mathematics.Random;
 using Unity.Transforms;
 using Collider = UnityEngine.Collider;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>
     /// Processes client join requests and spawns a character for each client.
     /// </summary>
@@ -22,117 +21,93 @@ namespace Unity.MP_FPS
     [UpdateAfter(typeof(ServerGhostTransformWriteSystem))]
     //[UpdateInGroup(typeof(SimulationSystemGroup))]  //Default, no explicit declaration is needed;
     [BurstCompile]
-    public partial struct ServerGameSystem : ISystem
-    {
+    public partial struct ServerGameSystem : ISystem {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init()
-        {
-            _overlapColliders = new Collider[16];
-        }
-        
+        private static void Init() { _overlapColliders = new Collider[16]; }
+
         private static Collider[] _overlapColliders = new Collider[16];
         private ComponentLookup<JoinedClient> _joinedClientLookup;
 
-        public void OnCreate(ref SystemState state)
-        {
+        public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<PlayerEntityPrefabs>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<NetworkStreamDriver>();
             state.RequireForUpdate<ClientsMap>();
-
-            Entity randomEntity = state.EntityManager.CreateEntity();
-            state.EntityManager.AddComponentData(randomEntity, new FixedRandom
-            {
-                Random = Random.CreateFromIndex((uint)DateTime.Now.Millisecond),
+            var randomEntity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponentData(randomEntity, new FixedRandom {
+                Random = Random.CreateFromIndex((uint)DateTime.Now.Millisecond)
             });
-
             var mapSingleton = state.EntityManager.CreateSingletonBuffer<ClientsMap>();
             state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //The server NetworkId is 0
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
-            var lootEntity=state.EntityManager.CreateSingleton(new RaidLootWorld());
-            state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
-            state.EntityManager.AddComponentObject(lootEntity,new RaidMissionWorld());
-            state.EntityManager.AddComponentObject(lootEntity,new BountyClashWorld());
-            state.EntityManager.AddComponentObject(lootEntity,new OnlineRaidWorld());
-            state.EntityManager.AddComponentObject(lootEntity,new ClashBotRegistry());
+            var lootEntity = state.EntityManager.CreateSingleton(new RaidLootWorld());
+            state.EntityManager.AddComponentObject(lootEntity, new RaidLootContainers());
+            state.EntityManager.AddComponentObject(lootEntity, new RaidMissionWorld());
+            state.EntityManager.AddComponentObject(lootEntity, new BountyClashWorld());
+            state.EntityManager.AddComponentObject(lootEntity, new OnlineRaidWorld());
+            state.EntityManager.AddComponentObject(lootEntity, new ClashBotRegistry());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
         }
 
         [BurstDiscard]
-        public void OnUpdate(ref SystemState state)
-        {
+        public void OnUpdate(ref SystemState state) {
             // 先为本 World 选好档案通道。添加这份 ECS 数据会改变实体结构，所以要做完再拿本帧用的组件查询和缓冲。
             // Initialize before borrowing buffers/lookups: adding the managed context
             // is a structural change, and the World now has its session-mode marker.
             var persistence = Persistence(ref state);
             _joinedClientLookup.Update(ref state);
-
-            var ecb = SystemAPI.GetSingletonRW<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
-
+            var ecb = SystemAPI.GetSingletonRW<BeginSimulationEntityCommandBufferSystem.Singleton>().ValueRW
+                .CreateCommandBuffer(state.WorldUnmanaged);
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
             var gameplayMapsEntity = SystemAPI.GetSingletonEntity<ClientsMap>();
             var connectionEventsForTick = SystemAPI.GetSingleton<NetworkStreamDriver>().ConnectionEventsForTick;
             RefreshClientsMap(ref state, ecb, clientsMap, connectionEventsForTick);
-
-            if (!SystemAPI.TryGetSingleton(out PlayerEntityPrefabs playerEntityPrefabs))
-            {
-                return;
-            }
-
+            if (!SystemAPI.TryGetSingleton(out PlayerEntityPrefabs playerEntityPrefabs)) return;
             if (SystemAPI.HasSingleton<DisableCharacterDynamicContacts>())
-            {
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<DisableCharacterDynamicContacts>());
-            }
-
             // 有竞技场标记时走临时装备玩法分支。远征和极速赏金继续经过下面的档案、背包、生存与战局步骤。
-            if (SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>())
-            {
+            if (SystemAPI.ManagedAPI.HasSingleton<ArenaMatch>()) {
                 HandleArena(ref state, ecb);
                 return;
             }
-
             PollPersistence(ref state, ecb);
             PollRetainedRaids(ref state, ecb);
             _joinedClientLookup.Update(ref state);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
-            state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).BackendCompatible = persistence.MissionsSupported;
-            if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
+            state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>())
+                .BackendCompatible = persistence.MissionsSupported;
+            if (MoonRaidMap.Active != null) EnsureRaidInventories(ref state);
             UpdateSurvival(ref state);
-            UpdateTacticalItems(ref state,ecb);
-            HandleBountyClash(ref state,ecb);
+            UpdateTacticalItems(ref state, ecb);
+            HandleBountyClash(ref state, ecb);
             HandlePlayerDeathAndRespawn(ref state, ecb);
             HandleRaids(ref state, ecb);
         }
 
-        void RefreshClientsMap(ref SystemState state, EntityCommandBuffer ecb,
+        private void RefreshClientsMap(
+            ref SystemState state,
+            EntityCommandBuffer ecb,
             DynamicBuffer<ClientsMap> clientsMap,
-            NativeArray<NetCodeConnectionEvent>.ReadOnly connectionEventsForTick)
-        {
+            NativeArray<NetCodeConnectionEvent>.ReadOnly connectionEventsForTick) {
             //Maintain the clients map size
-            foreach (var evt in connectionEventsForTick)
-            {
-                if (evt.State == ConnectionState.State.Connected)
-                {
-                    var lengthNeeded = evt.Id.Value + 1;
+            foreach (var evt in connectionEventsForTick) {
+                if (evt.State == ConnectionState.State.Connected) {
+                    int lengthNeeded = evt.Id.Value + 1;
                     if (clientsMap.Length < lengthNeeded)
-                    {
                         clientsMap.Resize(lengthNeeded, NativeArrayOptions.ClearMemory);
-                    }
-
                     clientsMap.ElementAt(evt.Id.Value).ConnectionEntity = evt.ConnectionEntity;
                 }
-
-                if (evt.State == ConnectionState.State.Disconnected)
-                {
-                    var networkId = evt.Id.Value;
-                    if(ClashEnabled(ref state))
-                    {
+                if (evt.State == ConnectionState.State.Disconnected) {
+                    int networkId = evt.Id.Value;
+                    if (ClashEnabled(ref state)) {
                         // The receive-phase hook already retained the body before NetCode cleanup.
-                        DetachClashConnection(ref state,ecb,evt.ConnectionEntity,networkId);
-                        clientsMap=SystemAPI.GetSingletonBuffer<ClientsMap>();
-                        if(networkId<clientsMap.Length&&clientsMap[networkId].ConnectionEntity==evt.ConnectionEntity)clientsMap.ElementAt(networkId)=default;
-                        _joinedClientLookup.Update(ref state);continue;
+                        DetachClashConnection(ref state, ecb, evt.ConnectionEntity, networkId);
+                        clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
+                        if (networkId < clientsMap.Length &&
+                            clientsMap[networkId].ConnectionEntity == evt.ConnectionEntity)
+                            clientsMap.ElementAt(networkId) = default;
+                        _joinedClientLookup.Update(ref state);
+                        continue;
                     }
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
                     // Normally handled by RaidDisconnectSystem before NetCode
@@ -141,27 +116,24 @@ namespace Unity.MP_FPS
                     SettleDisconnectedRaid(ref state, evt.ConnectionEntity);
 
                     // Find and destroy the player character entity by querying for its GhostOwner.
-                    foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>().WithAll<PredictedPlayerGhost>().WithEntityAccess())
-                    {
-                        if (ghostOwner.ValueRO.NetworkId == networkId)
-                        {
-                            Debug.Log($"[Server] Found and destroying PlayerEntity {entity} for disconnected client {networkId}.");
+                    foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>()
+                                 .WithAll<PredictedPlayerGhost>().WithEntityAccess())
+                        if (ghostOwner.ValueRO.NetworkId == networkId) {
+                            Debug.Log(
+                                $"[Server] Found and destroying PlayerEntity {entity} for disconnected client {networkId}.");
                             ecb.DestroyEntity(entity);
                             break;
                         }
-                    }
 
                     // Find and destroy the clientInputEntity by querying for its PlayerCommandTarget.
-                    foreach (var (commandTarget, entity) in SystemAPI.Query<RefRO<PlayerCommandTarget>>().WithEntityAccess())
-                    {
-                        if (commandTarget.ValueRO.NetworkId == networkId)
-                        {
-                            Debug.Log($"[Server] Found and destroying ClientInputEntity {entity} for disconnected client {networkId}.");
+                    foreach (var (commandTarget, entity) in SystemAPI.Query<RefRO<PlayerCommandTarget>>()
+                                 .WithEntityAccess())
+                        if (commandTarget.ValueRO.NetworkId == networkId) {
+                            Debug.Log(
+                                $"[Server] Found and destroying ClientInputEntity {entity} for disconnected client {networkId}.");
                             ecb.DestroyEntity(entity);
                             break;
                         }
-                    }
-
                     RemovePlayerFromLeaderboard(networkId);
                     clientsMap.ElementAt(networkId) = default;
                 }
@@ -169,88 +141,69 @@ namespace Unity.MP_FPS
 
             // Entities created via ECB have temporary Entity IDs. Need to refresh this index lookup. So patch them.
             // 通过命令缓冲排队新建实体时，先拿到的是临时编号。回放之后再把能长期使用的实体引用补回 NetworkId 索引。
-            for (var i = clientsMap.Length - 1; i >= 0; --i)
-            {
+            for (int i = clientsMap.Length - 1; i >= 0; --i) {
                 ref var map = ref clientsMap.ElementAt(i);
-                if (map.OwnerNetworkId.Value == default)
-                {
-                    break;
-                }
-
+                if (map.OwnerNetworkId.Value == default) break;
                 ref var dest = ref clientsMap.ElementAt(map.OwnerNetworkId.Value);
                 Patch(map.PlayerEntity, ref dest.PlayerEntity);
                 Patch(map.CharacterControllerEntity, ref dest.CharacterControllerEntity);
                 map = default;
 
-                static void Patch(Entity possibleRemapValue, ref Entity destination)
-                {
-                    if (possibleRemapValue != Entity.Null)
-                    {
-                        destination = possibleRemapValue;
-                    }
+                static void Patch(Entity possibleRemapValue, ref Entity destination) {
+                    if (possibleRemapValue != Entity.Null) destination = possibleRemapValue;
                 }
 
                 ;
             }
         }
 
-        Entity GetChildWithComponent<T>(EntityManager em, Entity parentEntity)
-            where T : unmanaged, IComponentData
-        {
-            if (!em.HasComponent<Child>(parentEntity))
-            {
-                return Entity.Null;
-            }
-
+        private Entity GetChildWithComponent<T>(EntityManager em, Entity parentEntity)
+            where T : unmanaged, IComponentData {
+            if (!em.HasComponent<Child>(parentEntity)) return Entity.Null;
             var children = em.GetBuffer<Child>(parentEntity);
             foreach (var child in children)
-            {
                 if (em.HasComponent<T>(child.Value))
                     return child.Value;
-            }
-
             return Entity.Null;
         }
-        
+
         [BurstDiscard]
-        private void AddDeathToLeaderboard(int networkId)
-        {
-            LeaderboardManager.Instance.AddDeath(networkId);
-        }
-        
+        private void AddDeathToLeaderboard(int networkId) { LeaderboardManager.Instance.AddDeath(networkId); }
+
         // Add near the top of the struct/class:
         [BurstDiscard]
-        private void AddPlayerToLeaderboard(int networkId, FixedString64Bytes playerName)
-        {
+        private void AddPlayerToLeaderboard(int networkId, FixedString64Bytes playerName) {
             LeaderboardManager.AddPlayer(networkId, playerName);
         }
-        
+
         [BurstDiscard]
-        private void RemovePlayerFromLeaderboard(int networkId)
-        {
+        private void RemovePlayerFromLeaderboard(int networkId) {
             LeaderboardManager.Instance?.RemovePlayer(networkId);
         }
 
-        private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex,
-            ArenaMatch.Player arenaPlayer = null, LocalTransform? matchSpawn = null)
-        {
+        private void SpawnPlayerCharacter(
+            ref SystemState state,
+            EntityCommandBuffer ecb,
+            Entity connectionEntity,
+            FixedString64Bytes playerName,
+            int characterIndex,
+            ArenaMatch.Player arenaPlayer = null,
+            LocalTransform? matchSpawn = null) {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (playerEntityPrefabs.DollSingerEntityPrefab == Entity.Null)
                 throw new InvalidOperationException("Moonkov requires a registered DollSinger player prefab.");
-            var playerEntityPrefab = characterIndex switch
-            {
+            var playerEntityPrefab = characterIndex switch {
                 GameSettings.HatsuneMikuCharacterIndex => playerEntityPrefabs.HatsuneMikuEntityPrefab,
                 GameSettings.ShianCharacterIndex => playerEntityPrefabs.ShianEntityPrefab,
                 _ => playerEntityPrefabs.DollSingerEntityPrefab
             };
-            if (playerEntityPrefab == Entity.Null)
-            {
+            if (playerEntityPrefab == Entity.Null) {
                 characterIndex = GameSettings.DollSingerCharacterIndex;
                 playerEntityPrefab = playerEntityPrefabs.DollSingerEntityPrefab;
             }
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
-            
+
             // Instantiate the client input entity
             // 一条连接同时关联两类实体。命令实体负责接玩家输入，角色实体负责移动和生命值。给两边标上同一个 NetworkId 才能配对。
             var clientInputEntity = ecb.Instantiate(playerEntityPrefabs.ClientInputEntityPrefab);
@@ -261,109 +214,97 @@ namespace Unity.MP_FPS
 
             // Instantiate the player entity
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
-
-            if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))
-            {
+            if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity)) {
                 var context = Persistence(ref state);
-                var graph = context.Profiles.TryGetValue(connectionEntity, out var profile) && !string.IsNullOrEmpty(profile.InventoryJson)
-                    ? RaidInventoryTransport.Decode(profile.InventoryJson).ExtractLoadout() : Inventory.InventoryGraph.Create(stash: false);
+                var graph =
+                    context.Profiles.TryGetValue(connectionEntity, out var profile) &&
+                    !string.IsNullOrEmpty(profile.InventoryJson)
+                        ? RaidInventoryTransport.Decode(profile.InventoryJson).ExtractLoadout()
+                        : Inventory.InventoryGraph.Create(false);
                 SetRaidInventory(ref state, connectionEntity, graph, 0);
             }
-
-            var weaponId = DollSingerWeapons.None;
-            
+            uint weaponId = DollSingerWeapons.None;
             var weaponData = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(weaponId);
-            var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
-
+            int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
             if (arenaPlayer == null && SystemAPI.HasSingleton<LanRaidMode>() && !ClashEnabled(ref state))
                 ecb.AddComponent(playerEntity, new ExpeditionSquadMember { LanCoop = true });
-            if (Persistence(ref state).Profiles.TryGetValue(connectionEntity, out var onlineProfile) && !string.IsNullOrEmpty(onlineProfile.OnlineInstanceId))
+            if (Persistence(ref state).Profiles.TryGetValue(connectionEntity, out var onlineProfile) &&
+                !string.IsNullOrEmpty(onlineProfile.OnlineInstanceId))
                 ecb.AddComponent(playerEntity, new OnlineRaidMember { Team = onlineProfile.OnlineTeam });
-            ecb.AddComponent(playerEntity, new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
-            var playerState = new PredictedPlayerGhost
-            {
+            ecb.AddComponent(playerEntity,
+                new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
+            var playerState = new PredictedPlayerGhost {
                 InputIndex = 0,
                 MaxHealth = 100f,
                 CurrentHealth = 100f,
                 EquippedWeaponID = weaponId,
                 CurrentAmmo = magazineSize,
                 InventoryWeapons = true,
-                PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
+                PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None,
+                PistolWeaponID = DollSingerWeapons.None
             };
             RaidHealth.Initialize(ref playerState);
             playerState.OnlineHuman = !string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId);
             playerState.OnlineTeam = onlineProfile?.OnlineTeam ?? 0;
-            if (arenaPlayer != null)
-            {
+            if (arenaPlayer != null) {
                 playerState.ClashEnabled = true;
                 playerState.ClashTeam = arenaPlayer.Team;
                 playerState.ClashLife = ClashLife.Waiting;
                 playerState.ClashMaxHealthFraction = 1;
                 var match = SystemAPI.ManagedAPI.GetSingleton<ArenaMatch>();
                 if (match.Classic != null) ClassicDust2Map.InitializeAir(ref playerState);
-                ecb.AddComponent(playerEntity, new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Team, Epoch = match.Epoch });
-            }
-            else ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
+                ecb.AddComponent(playerEntity,
+                    new ClashPlayer { ParticipantId = arenaPlayer.Id, TeamId = arenaPlayer.Team, Epoch = match.Epoch });
+            } else { ConfigureClashSpawn(ref state, ecb, connectionEntity, playerEntity, ref playerState); }
             ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);
-
-            if (matchSpawn.HasValue) ecb.SetComponent(playerEntity, matchSpawn.Value);
-            else if (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint))
-            {
-                var spawn = new LocalTransform { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f };
+            if (matchSpawn.HasValue) { ecb.SetComponent(playerEntity, matchSpawn.Value); } else if
+                (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint)) {
+                var spawn = new LocalTransform
+                    { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f };
                 if (!string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId))
-                    spawn = state.EntityManager.GetComponentObject<OnlineRaidWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).Spawn(onlineProfile.OnlineTeam, spawn);
+                    spawn = state.EntityManager
+                        .GetComponentObject<OnlineRaidWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>())
+                        .Spawn(onlineProfile.OnlineTeam, spawn);
                 ecb.SetComponent(playerEntity, spawn);
             }
-
             ecb.SetComponent(playerEntity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
             ecb.SetComponent(playerEntity, new PlayerGhost.PlayerData { Name = playerName });
 
             // Update the clients map
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
             clientsMap.ElementAt(ownerNetworkId.Value).PlayerEntity = playerEntity;
-
-            if (!SystemAPI.HasComponent<JoinedClient>(connectionEntity))
-            {
+            if (!SystemAPI.HasComponent<JoinedClient>(connectionEntity)) {
                 // Update the connection's JoinedClient component with the new player entity
-                ecb.AddComponent(connectionEntity, new JoinedClient
-                {
+                ecb.AddComponent(connectionEntity, new JoinedClient {
                     PlayerEntity = playerEntity, PlayerName = playerName, CharacterIndex = characterIndex
                 });
-                if (MoonRaidMap.Active != null && !SystemAPI.HasComponent<RaidSession>(connectionEntity))
-                {
+                if (MoonRaidMap.Active != null && !SystemAPI.HasComponent<RaidSession>(connectionEntity)) {
                     var raid = new RaidSession();
                     var persistence = Persistence(ref state);
-                    if (arenaPlayer != null)
+                    if (arenaPlayer != null) {
                         raid = new RaidSession { RaidId = 1, Phase = RaidPhase.Active, ExtractionIndex = -1 };
-                    else if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared))
-                    {
+                    } else if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared)) {
                         raid = prepared;
                         persistence.ReadyRaids.Remove(connectionEntity);
-                    }
-                    else
-                    {
-                        RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration);
-                    }
+                    } else { RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration); }
                     ecb.AddComponent(connectionEntity, raid);
                 }
-            }
-            else
-            {
+            } else {
                 var joined = SystemAPI.GetComponent<JoinedClient>(connectionEntity);
                 joined.PlayerEntity = playerEntity;
                 joined.CharacterIndex = characterIndex;
                 ecb.SetComponent(connectionEntity, joined);
             }
-
-            if(ClashEnabled(ref state))
-            {
-                var persistence=Persistence(ref state);
-                if(persistence.ReadyRaids.TryGetValue(connectionEntity,out var prepared))
-                {
-                    if(SystemAPI.HasComponent<RaidSession>(connectionEntity))ecb.SetComponent(connectionEntity,prepared);else ecb.AddComponent(connectionEntity,prepared);
+            if (ClashEnabled(ref state)) {
+                var persistence = Persistence(ref state);
+                if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared)) {
+                    if (SystemAPI.HasComponent<RaidSession>(connectionEntity))
+                        ecb.SetComponent(connectionEntity, prepared);
+                    else
+                        ecb.AddComponent(connectionEntity, prepared);
                     persistence.ReadyRaids.Remove(connectionEntity);
                 }
             }
@@ -372,41 +313,33 @@ namespace Unity.MP_FPS
                 ecb.AddComponent(connectionEntity, new NetworkStreamInGame());
         }
 
-        void HandlePlayerDeathAndRespawn(ref SystemState state, EntityCommandBuffer ecb)
-        {
+        private void HandlePlayerDeathAndRespawn(ref SystemState state, EntityCommandBuffer ecb) {
             var clientsMap = SystemAPI.GetSingletonBuffer<ClientsMap>();
 
             // --- Part 1: Detect Death and Destroy Player Entity ---
-            foreach (var (playerGhost, ghostOwner, entity) in
-                     SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithNone<DollSingerEnemy, ProceduralAlienEnemy.State>().WithEntityAccess())
-            {
-                if(playerGhost.ValueRO.ClashEnabled)continue;
-                if (playerGhost.ValueRO.CurrentHealth <= 0)
-                {
-                    var networkId = ghostOwner.ValueRO.NetworkId;
+            foreach (var (playerGhost, ghostOwner, entity) in SystemAPI
+                         .Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>()
+                         .WithNone<DollSingerEnemy, ProceduralAlienEnemy.State>().WithEntityAccess()) {
+                if (playerGhost.ValueRO.ClashEnabled) continue;
+                if (playerGhost.ValueRO.CurrentHealth <= 0) {
+                    int networkId = ghostOwner.ValueRO.NetworkId;
                     var connectionEntity = clientsMap[ghostOwner.ValueRO.NetworkId].ConnectionEntity;
                     if (!SystemAPI.Exists(connectionEntity)) continue;
-
-                    if (SystemAPI.HasComponent<RaidSession>(connectionEntity))
-                    {
+                    if (SystemAPI.HasComponent<RaidSession>(connectionEntity)) {
                         FinishRaid(ref state, ecb, connectionEntity, RaidPhase.Dead);
                         continue;
                     }
 
                     // Add a respawn timer to the connection
-                    if (!SystemAPI.HasComponent<PendingRespawn>(connectionEntity))
-                    {
-                        Debug.Log($"[Server] Player {entity} has died. Starting respawn timer for connection {connectionEntity}.");
+                    if (!SystemAPI.HasComponent<PendingRespawn>(connectionEntity)) {
+                        Debug.Log(
+                            $"[Server] Player {entity} has died. Starting respawn timer for connection {connectionEntity}.");
                         ecb.AddComponent(connectionEntity, new PendingRespawn { RespawnTimer = 5f });
                     }
-                    
-                    if (SystemAPI.HasComponent<PlayerClientCommandInputLookup>(entity))
-                    {
+                    if (SystemAPI.HasComponent<PlayerClientCommandInputLookup>(entity)) {
                         var inputLookup = SystemAPI.GetComponent<PlayerClientCommandInputLookup>(entity);
                         if (SystemAPI.Exists(inputLookup.ClientCommandInputEntity))
-                        {
                             ecb.DestroyEntity(inputLookup.ClientCommandInputEntity);
-                        }
                     }
 
                     // Destroy the player character entity
@@ -415,27 +348,21 @@ namespace Unity.MP_FPS
             }
 
             // --- Part 2: Countdown Timers and Respawn Players ---
-            foreach (var (pendingRespawn, connection, entity) in
-                     SystemAPI.Query<RefRW<PendingRespawn>, RefRO<NetworkId>>().WithEntityAccess())
-            {
+            foreach (var (pendingRespawn, connection, entity) in SystemAPI
+                         .Query<RefRW<PendingRespawn>, RefRO<NetworkId>>().WithEntityAccess()) {
                 pendingRespawn.ValueRW.RespawnTimer -= SystemAPI.Time.DeltaTime;
-
-                if (pendingRespawn.ValueRO.RespawnTimer <= 0f)
-                {
+                if (pendingRespawn.ValueRO.RespawnTimer <= 0f) {
                     Debug.Log($"[Server] Respawning player for connection {entity}.");
-
-                    if (_joinedClientLookup.HasComponent(entity))
-                    {
+                    if (_joinedClientLookup.HasComponent(entity)) {
                         var joinedClientData = _joinedClientLookup[entity];
 
                         // Call the spawn function again
-                        SpawnPlayerCharacter(ref state, ecb, entity, joinedClientData.PlayerName, joinedClientData.CharacterIndex);
+                        SpawnPlayerCharacter(ref state, ecb, entity, joinedClientData.PlayerName,
+                            joinedClientData.CharacterIndex);
 
                         // Remove the timer component
                         ecb.RemoveComponent<PendingRespawn>(entity);
-                    }
-                    else
-                    {
+                    } else {
                         // This would indicate a problem, but we handle it safely.
                         Debug.LogError($"Connection entity {entity} is pending respawn but has no JoinedClient data!");
                         ecb.RemoveComponent<PendingRespawn>(entity);
@@ -445,116 +372,129 @@ namespace Unity.MP_FPS
         }
 
         // 用 NetCode 给的实际发包连接定位玩家，丢掉重复入场请求。玩法与请求版本先过关，之后才验证票据和锁定出战装备。
-        void HandleJoinRequests(ref SystemState state, Entity gameplayMapsEntity, PlayerEntityPrefabs playerEntityPrefabs, EntityCommandBuffer ecb)
-        {
+        private void HandleJoinRequests(
+            ref SystemState state,
+            Entity gameplayMapsEntity,
+            PlayerEntityPrefabs playerEntityPrefabs,
+            EntityCommandBuffer ecb) {
             var handled = new System.Collections.Generic.HashSet<Entity>();
-            foreach (var (request, rpcReceive, entity) in
-                     SystemAPI.Query<RefRO<ClientJoinRequestV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
-            {
-                Entity source=rpcReceive.ValueRO.SourceConnection;
-                if(!SystemAPI.Exists(source)||!handled.Add(source)||SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(source)||
-                    SystemAPI.HasComponent<NetworkStreamInGame>(source)||Persistence(ref state).Joins.ContainsKey(source)||Persistence(ref state).Deployments.ContainsKey(source))
-                {ecb.DestroyEntity(entity);continue;}
-                bool clash=ClashEnabled(ref state);
-                if(request.ValueRO.Mode!=(clash?RaidGameMode.BountyClash:RaidGameMode.Expedition) ||
-                    request.ValueRO.RulesVersion!=(clash?BountyClashRules.Version:0))
-                {
-                    var reject=ecb.CreateEntity();ecb.AddComponent(reject,new ClashJoinAcceptedRpc{Mode=clash?RaidGameMode.BountyClash:RaidGameMode.Expedition,
-                        RulesVersion=clash?BountyClashRules.Version:0,Accepted=false,Reason="玩法或规则版本不匹配"});
-                    ecb.AddComponent(reject,new SendRpcCommandRequest{TargetConnection=rpcReceive.ValueRO.SourceConnection});
-                    ecb.AddComponent(rpcReceive.ValueRO.SourceConnection,new NetworkStreamRequestDisconnect{Reason=NetworkStreamDisconnectReason.ConnectionClose});
-                    ecb.DestroyEntity(entity);continue;
+            foreach (var (request, rpcReceive, entity) in SystemAPI
+                         .Query<RefRO<ClientJoinRequestV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess()) {
+                var source = rpcReceive.ValueRO.SourceConnection;
+                if (!SystemAPI.Exists(source) || !handled.Add(source) ||
+                    SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(source) ||
+                    SystemAPI.HasComponent<NetworkStreamInGame>(source) ||
+                    Persistence(ref state).Joins.ContainsKey(source) ||
+                    Persistence(ref state).Deployments.ContainsKey(source)) {
+                    ecb.DestroyEntity(entity);
+                    continue;
                 }
-                if(clash&&(!Persistence(ref state).Enabled || SystemAPI.HasSingleton<OfflineRaidMode>()&&!ClashSoloRuntime.Enabled(state.EntityManager)))
-                {ClashAccepted(ecb,rpcReceive.ValueRO.SourceConnection,false,"赏金速战需要已启用的联网持久化服务");ecb.DestroyEntity(entity);continue;}
+                bool clash = ClashEnabled(ref state);
+                if (request.ValueRO.Mode != (clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition) ||
+                    request.ValueRO.RulesVersion != (clash ? BountyClashRules.Version : 0)) {
+                    var reject = ecb.CreateEntity();
+                    ecb.AddComponent(reject, new ClashJoinAcceptedRpc {
+                        Mode = clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition,
+                        RulesVersion = clash ? BountyClashRules.Version : 0, Accepted = false, Reason = "玩法或规则版本不匹配"
+                    });
+                    ecb.AddComponent(reject,
+                        new SendRpcCommandRequest { TargetConnection = rpcReceive.ValueRO.SourceConnection });
+                    ecb.AddComponent(rpcReceive.ValueRO.SourceConnection,
+                        new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
+                if (clash && (!Persistence(ref state).Enabled || (SystemAPI.HasSingleton<OfflineRaidMode>() &&
+                                                                  !ClashSoloRuntime.Enabled(state.EntityManager)))) {
+                    ClashAccepted(ecb, rpcReceive.ValueRO.SourceConnection, false, "赏金速战需要已启用的联网持久化服务");
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
                 if (SystemAPI.HasComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection) &&
-                    !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
-                {
+                    !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection)) {
                     var persistence = Persistence(ref state);
-                    if (!persistence.Enabled || (SystemAPI.HasSingleton<OfflineRaidMode>() &&
-                            (persistence.Joins.Count != 0 || persistence.Profiles.Count != 0 || persistence.Deployments.Count != 0)) ||
-                        !RaidRules.ValidLoadout(request.ValueRO.CarryCells) || (!persistence.Enabled && request.ValueRO.CarryCells != 0))
-                        ecb.AddComponent(rpcReceive.ValueRW.SourceConnection, new NetworkStreamRequestDisconnect { Reason=NetworkStreamDisconnectReason.ConnectionClose });
-                    else if (persistence.Enabled)
-                    {
-                        byte companions = !clash && !SystemAPI.HasSingleton<TutorialRaidMode>() &&
+                    if (!persistence.Enabled ||
+                        (SystemAPI.HasSingleton<OfflineRaidMode>() && (persistence.Joins.Count != 0 ||
+                                                                       persistence.Profiles.Count != 0 ||
+                                                                       persistence.Deployments.Count != 0)) ||
+                        !RaidRules.ValidLoadout(request.ValueRO.CarryCells) ||
+                        (!persistence.Enabled && request.ValueRO.CarryCells != 0)) {
+                        ecb.AddComponent(rpcReceive.ValueRW.SourceConnection,
+                            new NetworkStreamRequestDisconnect
+                                { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                    } else if (persistence.Enabled) {
+                        byte companions =
+                            !clash && !SystemAPI.HasSingleton<TutorialRaidMode>() &&
                             (SystemAPI.HasSingleton<OfflineRaidMode>() || SystemAPI.HasSingleton<LanRaidMode>())
-                            ? (byte)System.Math.Min((int)request.ValueRO.ExpeditionCompanions, RaidRules.MaxCompanions) : (byte)0;
+                                ? (byte)System.Math.Min((int)request.ValueRO.ExpeditionCompanions,
+                                    RaidRules.MaxCompanions)
+                                : (byte)0;
                         persistence.BeginJoin(rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName,
-                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells,
-                            request.ValueRO.ResumeOnly, companions);
-                    }
-                    else
-                    {
-                        SpawnPlayerCharacter(ref state, ecb, rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName, request.ValueRO.CharacterIndex);
+                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(),
+                            request.ValueRO.CarryCells, request.ValueRO.ResumeOnly, companions);
+                    } else {
+                        SpawnPlayerCharacter(ref state, ecb, rpcReceive.ValueRW.SourceConnection,
+                            request.ValueRO.PlayerName, request.ValueRO.CharacterIndex);
                         var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection);
                         AddPlayerToLeaderboard(ownerNetworkId.Value, request.ValueRO.PlayerName);
                     }
                 }
-
                 ecb.DestroyEntity(entity);
             }
         }
 
         [BurstDiscard]
-        private bool FindSpawnPoint(ref SystemState state, out LocalToWorld spawnPoint, System.Collections.Generic.HashSet<Unity.Mathematics.float3> reserved = null)
-        {
+        private bool FindSpawnPoint(
+            ref SystemState state,
+            out LocalToWorld spawnPoint,
+            System.Collections.Generic.HashSet<Mathematics.float3> reserved = null) {
             var spawnPointsQuery = SystemAPI.QueryBuilder().WithAll<SpawnPoint, LocalToWorld>().Build();
             var spawnPoints = spawnPointsQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp);
-            ref FixedRandom random = ref SystemAPI.GetSingletonRW<FixedRandom>().ValueRW;
-
-            if (spawnPoints.Length == 0)
-            {
+            ref var random = ref SystemAPI.GetSingletonRW<FixedRandom>().ValueRW;
+            if (spawnPoints.Length == 0) {
                 spawnPoint = default;
                 spawnPoints.Dispose();
                 return false;
             }
-
-            if (SystemAPI.HasSingleton<TutorialRaidMode>() && RaidMissionSite.Active)
-            {
+            if (SystemAPI.HasSingleton<TutorialRaidMode>() && RaidMissionSite.Active) {
                 var entry = RaidMissionSite.Active.Anchor("entry");
-                if (entry != null)
-                {
-                    int closest = 0; float best = float.MaxValue;
-                    for (int i = 0; i < spawnPoints.Length; i++)
-                    {
+                if (entry != null) {
+                    int closest = 0;
+                    float best = float.MaxValue;
+                    for (int i = 0; i < spawnPoints.Length; i++) {
                         float d = ((Vector3)spawnPoints[i].Position - entry.Approach).sqrMagnitude;
-                        if (d < best) { best = d; closest = i; }
+                        if (d < best) {
+                            best = d;
+                            closest = i;
+                        }
                     }
-                    spawnPoint = spawnPoints[closest]; spawnPoints.Dispose(); return true;
+                    spawnPoint = spawnPoints[closest];
+                    spawnPoints.Dispose();
+                    return true;
                 }
             }
 
             // Shuffle the list to ensure that if multiple points have the same low number
             // of players, the choice among them is still random.
-            for (int i = spawnPoints.Length - 1; i > 0; i--)
-            {
+            for (int i = spawnPoints.Length - 1; i > 0; i--) {
                 int k = random.Random.NextInt(0, i + 1);
                 (spawnPoints[k], spawnPoints[i]) = (spawnPoints[i], spawnPoints[k]);
             }
-
             int bestSpawnPointIndex = -1;
             int minColliderCount = int.MaxValue;
-
-            for (int i = 0; i < spawnPoints.Length; i++)
-            {
+            for (int i = 0; i < spawnPoints.Length; i++) {
                 if (reserved != null && reserved.Contains(spawnPoints[i].Position)) continue;
                 int numColliders = UnityEngine.Physics.OverlapSphereNonAlloc(spawnPoints[i].Position, 2f,
                     _overlapColliders, LayerMask.GetMask("ServerPlayer"));
-
-                if (numColliders == 0)
-                {
+                if (numColliders == 0) {
                     bestSpawnPointIndex = i;
                     break;
                 }
-
-                if (numColliders < minColliderCount)
-                {
+                if (numColliders < minColliderCount) {
                     minColliderCount = numColliders;
                     bestSpawnPointIndex = i;
                 }
             }
-
             spawnPoint = bestSpawnPointIndex >= 0 ? spawnPoints[bestSpawnPointIndex] : default;
             spawnPoints.Dispose();
             return bestSpawnPointIndex >= 0;

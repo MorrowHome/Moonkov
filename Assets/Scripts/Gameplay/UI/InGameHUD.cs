@@ -6,12 +6,10 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.MP_FPS.Client;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     [RequireComponent(typeof(UIDocument))]
     [DefaultExecutionOrder(160)]
-    public partial class InGameHUD : MonoBehaviour
-    {
+    public partial class InGameHUD : MonoBehaviour {
         [Header("Reticle Configuration")] [SerializeField]
         private float reticleBaseSize = 80f;
 
@@ -29,14 +27,12 @@ namespace Unity.MP_FPS
         private bool m_RifleKill;
         private HaloWeaponFeedbackProfile m_HitProfile;
 
-        public static void ConfirmRifleHit(bool killed, HaloWeaponFeedbackProfile profile = null)
-        {
+        public static void ConfirmRifleHit(bool killed, HaloWeaponFeedbackProfile profile = null) {
             if (!s_Active) return;
             s_Active.PresentRifleHit(killed, profile, Time.unscaledTime);
         }
 
-        private void PresentRifleHit(bool killed, HaloWeaponFeedbackProfile profile, float now)
-        {
+        private void PresentRifleHit(bool killed, HaloWeaponFeedbackProfile profile, float now) {
             // Keep the kill readable, but never let subsequent body hits prolong a
             // gold marker indefinitely and imply further kills.
             if (!killed && m_RifleKill && now < m_RifleHitUntil) return;
@@ -63,8 +59,7 @@ namespace Unity.MP_FPS
         private EntityManager m_EntityManager;
         private EntityQuery m_LocalPlayerQuery;
 
-        void OnEnable()
-        {
+        private void OnEnable() {
             ResetChargeFeedback();
             s_Active = this;
             m_RootElement = GetComponent<UIDocument>().rootVisualElement;
@@ -73,31 +68,32 @@ namespace Unity.MP_FPS
             // Find the UI elements by name
             var healthHost = m_RootElement.Q("health-body-host");
             healthHost.Clear();
-            m_Vitals = new RaidVitalsMonitor(); healthHost.Add(m_Vitals);
+            m_Vitals = new RaidVitalsMonitor();
+            healthHost.Add(m_Vitals);
             m_VitalsPanel = m_RootElement.Q("health-info-container");
             m_RootElement.RegisterCallback<GeometryChangedEvent>(FitVitals);
             FitVitals(null);
-
             m_AmmoLabel = m_RootElement.Q<Label>("ammo-label");
             m_AmmoBar = m_RootElement.Q<ProgressBar>("player-ammo-bar");
             m_ReloadingLabel = m_RootElement.Q<Label>("reloading-label");
             m_Reticle = m_RootElement.Q<VisualElement>("player-reticle");
             m_RifleHit = m_RootElement.Q<VisualElement>("rifle-hit-confirmation");
-            if (m_RifleHit == null)
-            {
+            if (m_RifleHit == null) {
                 m_RifleHit = new VisualElement { name = "rifle-hit-confirmation", pickingMode = PickingMode.Ignore };
                 m_RifleHit.style.position = Position.Absolute;
-                m_RifleHit.style.left = Length.Percent(50); m_RifleHit.style.top = Length.Percent(50);
-                m_RifleHit.style.width = 28; m_RifleHit.style.height = 28;
-                m_RifleHit.style.marginLeft = -14; m_RifleHit.style.marginTop = -14;
+                m_RifleHit.style.left = Length.Percent(50);
+                m_RifleHit.style.top = Length.Percent(50);
+                m_RifleHit.style.width = 28;
+                m_RifleHit.style.height = 28;
+                m_RifleHit.style.marginLeft = -14;
+                m_RifleHit.style.marginTop = -14;
                 m_RootElement.Add(m_RifleHit);
             }
             m_RifleHit.generateVisualContent += DrawRifleHit;
             m_RifleHitUntil = 0;
         }
 
-        private void OnDisable()
-        {
+        private void OnDisable() {
             ResetChargeFeedback();
             m_RootElement?.UnregisterCallback<GeometryChangedEvent>(FitVitals);
             if (s_Active == this) s_Active = null;
@@ -105,8 +101,7 @@ namespace Unity.MP_FPS
             m_RifleHitUntil = 0;
         }
 
-        private void FitVitals(GeometryChangedEvent evt)
-        {
+        private void FitVitals(GeometryChangedEvent evt) {
             if (m_VitalsPanel == null) return;
             float panelWidth = m_RootElement.contentRect.width;
             float viewportWidth = Mathf.Min(Screen.width, panelWidth);
@@ -120,22 +115,21 @@ namespace Unity.MP_FPS
             m_VitalsPanel.style.bottom = (compact ? 112 : 28) * scale;
         }
 
-        private void DrawRifleHit(MeshGenerationContext context)
-        {
+        private void DrawRifleHit(MeshGenerationContext context) {
             var painter = context.painter2D;
-            painter.strokeColor = m_RifleKill ? new Color(1f, .8f, .35f) : m_HitProfile?.HitColor ?? new Color(.9f, 1f, 1f);
+            painter.strokeColor =
+                m_RifleKill ? new Color(1f, .8f, .35f) : m_HitProfile?.HitColor ?? new Color(.9f, 1f, 1f);
             float pulse = Mathf.Exp(-Mathf.Max(0, Time.unscaledTime - m_RifleHitStarted) * 35f);
             painter.lineWidth = (m_HitProfile?.HitLineWidth ?? 1.5f) + (m_RifleKill ? .4f : .25f) * pulse;
             float inner = 6f + 1.25f * pulse;
             float outer = Mathf.Clamp((m_HitProfile?.HitOuterRadius ?? 10f) + pulse, 9f, 12f);
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 float x = i % 2 == 0 ? -1 : 1, y = i < 2 ? -1 : 1;
                 painter.BeginPath();
                 painter.MoveTo(new Vector2(14 + x * inner, 14 + y * inner));
-                painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer)); painter.Stroke();
-                if (m_RifleKill)
-                {
+                painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer));
+                painter.Stroke();
+                if (m_RifleKill) {
                     // Forked ends distinguish a kill by shape as well as color.
                     painter.BeginPath();
                     painter.MoveTo(new Vector2(14 + x * (outer - 2.5f), 14 + y * outer));
@@ -147,66 +141,50 @@ namespace Unity.MP_FPS
         }
 
         // 这里连到客户端 World 和本地玩家查询。换局后 World 会换，读取前要重新找到正确的实体。
-        private void InitializeEcs()
-        {
+        private void InitializeEcs() {
             ResetChargeFeedback();
             m_ClientWorld = null;
             // Find the active client world
             foreach (var world in World.All)
-            {
-                if (world.IsCreated && world.IsClient())
-                {
+                if (world.IsCreated && world.IsClient()) {
                     m_ClientWorld = world;
                     m_EntityManager = world.EntityManager;
                     break;
                 }
-            }
-
             if (m_ClientWorld != null)
-            {
                 // This query finds the single entity that is both a predicted player ghost
                 // and is owned by the local client.
-                m_LocalPlayerQuery = m_EntityManager.CreateEntityQuery(
-                    ComponentType.ReadOnly<PredictedPlayerGhost>(),
-                    ComponentType.ReadOnly<GhostOwnerIsLocal>()
-                );
-            }
+                m_LocalPlayerQuery = m_EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PredictedPlayerGhost>(),
+                    ComponentType.ReadOnly<GhostOwnerIsLocal>());
         }
 
-        void LateUpdate()
-        {
+        private void LateUpdate() {
             // Toggle HUD visibility based on the overall game state
             bool isInGame = ClientServerBootstrap.HasClientWorlds &&
                             GameSettings.Instance.GameState == GlobalGameState.InGame && !RaidHUD.CinematicViewActive;
             bool hitVisible = isInGame && Time.unscaledTime < m_RifleHitUntil;
             if (!isInGame) m_RifleHitUntil = 0;
-            if (m_RifleHit != null)
-            {
+            if (m_RifleHit != null) {
                 m_RifleHit.style.display = hitVisible ? DisplayStyle.Flex : DisplayStyle.None;
-                if (hitVisible)
-                {
+                if (hitVisible) {
                     m_RifleHit.MarkDirtyRepaint();
                     m_RifleHit.style.opacity = Mathf.Clamp01((m_RifleHitUntil - Time.unscaledTime) / .06f);
                     m_RifleHit.style.rotate = new Rotate(new Angle(GetOwnedReticleRoll(), AngleUnit.Degree));
                 }
             }
             if (m_RootElement.style.display != (isInGame ? DisplayStyle.Flex : DisplayStyle.None))
-            {
                 m_RootElement.style.display = isInGame ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!isInGame) {
+                m_ChargeFeedback.Reset();
+                return;
             }
-
-            if (!isInGame) { m_ChargeFeedback.Reset(); return; }
 
             // If the world was destroyed (e.g., returned to main menu), try to re-initialize
-            if (m_ClientWorld == null || !m_ClientWorld.IsCreated)
-            {
-                InitializeEcs();
-            }
+            if (m_ClientWorld == null || !m_ClientWorld.IsCreated) InitializeEcs();
 
             // Ensure the ECS systems are ready
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated ||
-                !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>())
-            {
+                !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>()) {
                 // No local player entity found, hide the HUD. This occurs when the player is dead.
                 m_ChargeFeedback.Reset();
                 m_RootElement.style.display = DisplayStyle.None;
@@ -214,17 +192,20 @@ namespace Unity.MP_FPS
             }
 
             // Get the player's data directly from the ECS component
-            PredictedPlayerGhost playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
+            var playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
             FitVitals(null);
             bool statusCheck = RaidKeyBindings.Held(RaidKey.Status);
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
-            m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;
+            m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
             m_VitalsPanel.style.height = playerData.HaloEnergyInitialized && playerData.HaloEquipped ? 320 : 302;
 
             // Update Ammo Label
-            if (m_AmmoLabel != null)
-            {
-                var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID, playerData.EquippedModules);
+            if (m_AmmoLabel != null) {
+                var weaponData =
+                    WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID,
+                        playerData.EquippedModules);
                 int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
                 bool sharedHalo = playerData.HaloEquipped || DollSingerWeapons.IsHalo(playerData.EquippedWeaponID);
                 m_AmmoLabel.style.display = sharedHalo ? DisplayStyle.None : DisplayStyle.Flex;
@@ -232,25 +213,45 @@ namespace Unity.MP_FPS
                 // Update Ammo Text and Color
                 float fraction = magazineSize > 0 ? (float)playerData.CurrentAmmo / magazineSize : 0;
                 m_AmmoLabel.text = playerData.EquippedWeaponID == DollSingerWeapons.Revolver
-                    ? $"REVOLVER / {playerData.CurrentAmmo} / 6"
-                    : playerData.EquippedWeaponID == DollSingerWeapons.Shotgun ? $"SHOTGUN / {playerData.CurrentAmmo} / {magazineSize}"
-                    : playerData.EquippedWeaponID == DollSingerWeapons.Sniper ? $"SNIPER / {playerData.CurrentAmmo} / {magazineSize}"
-                    : weaponData == null ? "UNARMED"
-                    : fraction > .75f ? "ENERGY / HIGH" : fraction > .4f ? "ENERGY / MEDIUM" : fraction > .15f ? "ENERGY / LOW" : "ENERGY / CRITICAL";
+                    ?
+                    $"REVOLVER / {playerData.CurrentAmmo} / 6"
+                    : playerData.EquippedWeaponID == DollSingerWeapons.Shotgun
+                        ? $"SHOTGUN / {playerData.CurrentAmmo} / {magazineSize}"
+                        : playerData.EquippedWeaponID == DollSingerWeapons.Sniper
+                            ? $"SNIPER / {playerData.CurrentAmmo} / {magazineSize}"
+                            : weaponData == null
+                                ? "UNARMED"
+                                : fraction > .75f
+                                    ? "ENERGY / HIGH"
+                                    : fraction > .4f
+                                        ? "ENERGY / MEDIUM"
+                                        : fraction > .15f
+                                            ? "ENERGY / LOW"
+                                            : "ENERGY / CRITICAL";
                 var ammoPanel = m_RootElement.Q<VisualElement>("weapon-info-container");
-                if (ammoPanel != null) ammoPanel.style.display = playerData.EquippedWeaponID == DollSingerWeapons.Revolver || playerData.EquippedWeaponID == DollSingerWeapons.Shotgun || playerData.EquippedWeaponID == DollSingerWeapons.Sniper || alwaysShow || statusCheck || fraction <= .15f || playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
-                if (playerData.CurrentAmmo == 0) m_AmmoLabel.style.color = Color.red;
-                else if (playerData.CurrentAmmo <= magazineSize * 0.3f) m_AmmoLabel.style.color = Color.yellow;
-                else m_AmmoLabel.style.color = Color.white;
-
+                if (ammoPanel != null)
+                    ammoPanel.style.display = playerData.EquippedWeaponID == DollSingerWeapons.Revolver ||
+                                              playerData.EquippedWeaponID == DollSingerWeapons.Shotgun ||
+                                              playerData.EquippedWeaponID == DollSingerWeapons.Sniper || alwaysShow ||
+                                              statusCheck || fraction <= .15f ||
+                                              playerData.ControllerState.IsReloadingState
+                        ? DisplayStyle.Flex
+                        : DisplayStyle.None;
+                if (playerData.CurrentAmmo == 0)
+                    m_AmmoLabel.style.color = Color.red;
+                else if (playerData.CurrentAmmo <= magazineSize * 0.3f)
+                    m_AmmoLabel.style.color = Color.yellow;
+                else
+                    m_AmmoLabel.style.color = Color.white;
                 if (sharedHalo && ammoPanel != null) ammoPanel.style.display = DisplayStyle.None;
-                if (m_AmmoBar != null && (sharedHalo || !playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
+                if (m_AmmoBar != null && (sharedHalo || !playerData.InventoryWeapons ||
+                                          !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
                     m_AmmoBar.style.display = DisplayStyle.None;
             }
 
             // Update Reloading Indicator
-            if (m_ReloadingLabel != null && (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
-            {
+            if (m_ReloadingLabel != null &&
+                (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID))) {
                 m_ReloadingLabel.RemoveFromClassList("halo-charge-warning");
                 MoonkovLocalization.Set(m_ReloadingLabel, "RELOADING");
                 m_ReloadingLabel.style.display =
@@ -265,28 +266,18 @@ namespace Unity.MP_FPS
         }
 
         // 用角色武器、准星散布和瞄准状态更新画面。准星偏转跟着自己角色的镜头侧倾，让画面和武器反馈对得上。
-        private void UpdateReticleVisual(PredictedPlayerGhost playerData)
-        {
-            if (m_Reticle == null)
-                return;
-
+        private void UpdateReticleVisual(PredictedPlayerGhost playerData) {
+            if (m_Reticle == null) return;
             m_Reticle.style.rotate = new Rotate(new Angle(GetOwnedReticleRoll(), AngleUnit.Degree));
-
-            if (m_shotFeedbackTimer > 0)
-            {
-                m_shotFeedbackTimer -= Time.deltaTime;
-            }
-
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID, playerData.EquippedModules);
-
-            if (weaponData == null)
-            {
+            if (m_shotFeedbackTimer > 0) m_shotFeedbackTimer -= Time.deltaTime;
+            var weaponData =
+                WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID,
+                    playerData.EquippedModules);
+            if (weaponData == null) {
                 m_Reticle.style.display = DisplayStyle.None;
                 return;
             }
-
-            if (DollSingerWeapons.IsHalo(playerData.EquippedWeaponID) && playerData.ControllerState.Aiming)
-            {
+            if (DollSingerWeapons.IsHalo(playerData.EquippedWeaponID) && playerData.ControllerState.Aiming) {
                 // The halo and its small local dot own the aiming sight.
                 m_Reticle.style.display = DisplayStyle.None;
                 return;
@@ -302,24 +293,17 @@ namespace Unity.MP_FPS
             if (desiredClass != k_CircularCrossClass) m_Reticle.RemoveFromClassList(k_CircularCrossClass);
 
             // Now, add the correct class if it's not already present.
-            if (!m_Reticle.ClassListContains(desiredClass))
-            {
-                m_Reticle.AddToClassList(desiredClass);
-            }
+            if (!m_Reticle.ClassListContains(desiredClass)) m_Reticle.AddToClassList(desiredClass);
 
             // Update Reticle Visibility
-            if (m_Reticle.style.display == DisplayStyle.None)
-            {
-                if (m_Reticle.style.position != StyleKeyword.Initial)
-                {
+            if (m_Reticle.style.display == DisplayStyle.None) {
+                if (m_Reticle.style.position != StyleKeyword.Initial) {
                     m_Reticle.style.position = StyleKeyword.Initial;
                     m_Reticle.style.left = StyleKeyword.Initial;
                     m_Reticle.style.top = StyleKeyword.Initial;
                 }
-
                 m_Reticle.style.display = DisplayStyle.Flex;
             }
-
             m_Reticle.style.width = reticleBaseSize;
             m_Reticle.style.height = reticleBaseSize;
 
@@ -327,25 +311,16 @@ namespace Unity.MP_FPS
             bool isReloading = playerData.ControllerState.IsReloadingState;
             bool justFired = playerData.ControllerState.Shoot;
             bool isWeaponOnCooldown = playerData.WeaponCooldown < weaponData.CooldownInMs;
-
-            if (justFired)
-            {
-                m_shotFeedbackTimer = k_ShotFeedbackDuration;
-            }
-
+            if (justFired) m_shotFeedbackTimer = k_ShotFeedbackDuration;
             bool greyReticleVisual = false;
 
             // Weapon reloading
-            if (isReloading)
-            {
+            if (isReloading) {
                 greyReticleVisual = true;
                 m_shotFeedbackTimer = 0f;
             }
             // Weapon is on cooldown AND we are not in the shot feedback window.
-            else if (isWeaponOnCooldown && m_shotFeedbackTimer <= 0)
-            {
-                greyReticleVisual = true;
-            }
+            else if (isWeaponOnCooldown && m_shotFeedbackTimer <= 0) { greyReticleVisual = true; }
 
             // Update Reticle Color
             m_Reticle.style.unityBackgroundImageTintColor = greyReticleVisual
@@ -353,20 +328,18 @@ namespace Unity.MP_FPS
                 : new StyleColor(Color.white);
         }
 
-        private static float GetOwnedReticleRoll()
-        {
+        private static float GetOwnedReticleRoll() {
             if (!PlayerGhostManager.TryGetClientInstance(out var manager) || !manager ||
-                !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players)) return 0f;
+                !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players))
+                return 0f;
             foreach (var player in players)
                 if (player && player.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
                     return presentation.OwnedReticleScreenRoll;
             return 0f;
         }
 
-        private string GetReticleClassName(ReticleType reticleType)
-        {
-            switch (reticleType)
-            {
+        private string GetReticleClassName(ReticleType reticleType) {
+            switch (reticleType) {
                 case ReticleType.Cross: return k_CrossReticleClass;
                 case ReticleType.TCross: return k_TCrossReticleClass;
                 case ReticleType.OpenCircular: return k_OpenCircularReticleClass;

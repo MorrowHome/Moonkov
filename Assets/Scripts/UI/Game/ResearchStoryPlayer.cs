@@ -5,13 +5,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static Unity.MP_FPS.Client.ResearchQuestCopy;
 
-namespace Unity.MP_FPS.Client
-{
-    internal static class ResearchSceneLibrary
-    {
+namespace Unity.MP_FPS.Client {
+    internal static class ResearchSceneLibrary {
         [Serializable]
-        internal sealed class Scene
-        {
+        internal sealed class Scene {
             public int id;
             public string titleZh, titleEn;
             public Shot[] frames;
@@ -19,29 +16,27 @@ namespace Unity.MP_FPS.Client
         }
 
         [Serializable]
-        internal sealed class Shot
-        {
+        internal sealed class Shot {
             public string titleZh, titleEn, actionZh, actionEn, art, speakerZh, speakerEn, visual;
             public string[] cues, evidenceZh, evidenceEn;
             public bool fit;
         }
 
         [Serializable]
-        private sealed class Library
-        {
+        private sealed class Library {
             public Scene[] chapters, endings;
         }
 
         private static Library s_Library;
-        private static Library Data => s_Library ??= JsonUtility.FromJson<Library>(
-            Resources.Load<TextAsset>("Moonkov/ResearchScenes").text);
 
-        internal static Scene Chapter(ResearchStoryChapter chapter) => Data.chapters[(int)chapter];
-        internal static Scene Epilogue(ResearchEnding ending) => Data.endings[(int)ending - 1];
+        private static Library Data =>
+            s_Library ??= JsonUtility.FromJson<Library>(Resources.Load<TextAsset>("Moonkov/ResearchScenes").text);
+
+        internal static Scene Chapter(ResearchStoryChapter chapter) { return Data.chapters[(int)chapter]; }
+        internal static Scene Epilogue(ResearchEnding ending) { return Data.endings[(int)ending - 1]; }
     }
 
-    internal sealed class ResearchStoryPlayer
-    {
+    internal sealed class ResearchStoryPlayer {
         private readonly ResearchSceneLibrary.Scene m_Scene;
         private readonly ResearchQuestRadio m_Radio;
         private readonly Func<Task<bool>> m_Finish;
@@ -54,8 +49,11 @@ namespace Unity.MP_FPS.Client
         internal bool Saving { get; private set; }
         internal VisualElement Element { get; }
 
-        internal ResearchStoryPlayer(VisualElement host, ResearchSceneLibrary.Scene scene, ResearchQuestRadio radio, Func<Task<bool>> finish)
-        {
+        internal ResearchStoryPlayer(
+            VisualElement host,
+            ResearchSceneLibrary.Scene scene,
+            ResearchQuestRadio radio,
+            Func<Task<bool>> finish) {
             m_Scene = scene;
             m_Radio = radio;
             m_Finish = finish;
@@ -85,8 +83,7 @@ namespace Unity.MP_FPS.Client
 
         private ResearchSceneLibrary.Shot Current => m_Scene.frames[m_Index];
 
-        private void Show(int index, bool play)
-        {
+        private void Show(int index, bool play) {
             if (index < 0 || index >= m_Scene.frames.Length) return;
             m_Index = index;
             m_Chinese = Chinese;
@@ -111,51 +108,49 @@ namespace Unity.MP_FPS.Client
             if (play) m_Next.Focus();
         }
 
-        internal void RefreshAudio()
-        {
+        internal void RefreshAudio() {
             if (m_Chinese != Chinese) Show(m_Index, false);
             m_Play.style.display = Current.cues.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Play.text = m_Radio.Playing ? Text("停止语音", "Stop audio") : Text("重听", "Replay");
         }
 
-        private void ToggleAudio()
-        {
-            if (m_Radio.Playing) m_Radio.Stop();
-            else m_Radio.PlayStory(Current.cues, Chinese);
+        private void ToggleAudio() {
+            if (m_Radio.Playing)
+                m_Radio.Stop();
+            else
+                m_Radio.PlayStory(Current.cues, Chinese);
             RefreshAudio();
         }
 
-        private async void Next()
-        {
+        private async void Next() {
             if (Saving) return;
-            if (m_Index + 1 < m_Scene.frames.Length) { Show(m_Index + 1, true); return; }
+            if (m_Index + 1 < m_Scene.frames.Length) {
+                Show(m_Index + 1, true);
+                return;
+            }
             Saving = true;
             Element.SetEnabled(false);
             m_Next.text = Text("正在保存", "Saving");
             bool ok;
-            try { ok = await m_Finish(); }
-            catch (Exception) { ok = false; }
-            finally { Saving = false; }
+            try { ok = await m_Finish(); } catch (Exception) { ok = false; } finally { Saving = false; }
             if (Element.panel == null) return;
             Element.SetEnabled(true);
             m_Next.text = Text(Current.actionZh, Current.actionEn);
-            if (!ok)
-            {
+            if (!ok) {
                 m_Error.text = Text("剧情进度未保存，请重试。", "Could not save story progress. Try again.");
                 m_Error.style.display = DisplayStyle.Flex;
                 m_Next.Focus();
             }
         }
 
-        private void DrawTrace(MeshGenerationContext context)
-        {
+        private void DrawTrace(MeshGenerationContext context) {
             var rect = context.visualElement.contentRect;
             if (rect.width < 12 || rect.height < 12) return;
             var painter = context.painter2D;
             float w = rect.width, h = rect.height;
-            Vector2 Point(float x, float y) => new Vector2(x * w, y * h);
-            void Line(Vector2 a, Vector2 b)
-            {
+            Vector2 Point(float x, float y) { return new Vector2(x * w, y * h); }
+
+            void Line(Vector2 a, Vector2 b) {
                 painter.MoveTo(a);
                 painter.LineTo(b);
             }
@@ -166,35 +161,31 @@ namespace Unity.MP_FPS.Client
             for (int i = 1; i < 8; i++) Line(Point(i / 8f, 0), Point(i / 8f, 1));
             for (int i = 1; i < 4; i++) Line(Point(0, i / 4f), Point(1, i / 4f));
             painter.Stroke();
-
             var accent = new Color32(105, 136, 245, 255);
             painter.lineWidth = 2;
-            if (Current.visual is "wave" or "signal" or "offline")
-            {
+            if (Current.visual is "wave" or "signal" or "offline") {
                 int traces = Current.visual == "wave" ? 2 : 1;
-                for (int trace = 0; trace < traces; trace++)
-                {
+                for (int trace = 0; trace < traces; trace++) {
                     painter.strokeColor = trace == 0 ? accent : new Color32(185, 193, 210, 255);
                     painter.BeginPath();
-                    for (int i = 0; i <= 80; i++)
-                    {
+                    for (int i = 0; i <= 80; i++) {
                         float t = i / 80f;
                         float y = .5f + (.15f + .11f * Mathf.Sin(t * 11f)) * Mathf.Sin(t * 39f) + trace * .07f;
                         if (Current.visual == "offline") y = Mathf.Lerp(y, .5f, Mathf.SmoothStep(0, 1, t * 2.5f));
-                        if (i == 0) painter.MoveTo(Point(t, y));
-                        else painter.LineTo(Point(t, y));
+                        if (i == 0)
+                            painter.MoveTo(Point(t, y));
+                        else
+                            painter.LineTo(Point(t, y));
                     }
                     painter.Stroke();
                 }
                 return;
             }
-
             painter.strokeColor = accent;
             var a = Point(.12f, .5f);
             var b = Point(.88f, .5f);
             painter.BeginPath();
-            if (Current.visual == "route")
-            {
+            if (Current.visual == "route") {
                 var mid = Point(.48f, .28f);
                 painter.MoveTo(a);
                 painter.LineTo(Point(.28f, .5f));
@@ -202,8 +193,7 @@ namespace Unity.MP_FPS.Client
                 painter.LineTo(Point(.67f, .28f));
                 painter.LineTo(Point(.79f, .5f));
                 painter.LineTo(b);
-            }
-            else Line(a, b);
+            } else { Line(a, b); }
             Line(b, Point(.84f, .37f));
             Line(b, Point(.84f, .63f));
             painter.Stroke();
@@ -214,20 +204,25 @@ namespace Unity.MP_FPS.Client
             painter.Stroke();
         }
 
-        private static VisualElement Add(VisualElement host, string style)
-        {
-            var element = new VisualElement(); element.AddToClassList(style); host.Add(element); return element;
+        private static VisualElement Add(VisualElement host, string style) {
+            var element = new VisualElement();
+            element.AddToClassList(style);
+            host.Add(element);
+            return element;
         }
 
-        private static Label AddLabel(VisualElement host, string style, string name = null)
-        {
+        private static Label AddLabel(VisualElement host, string style, string name = null) {
             var label = new Label { name = name, pickingMode = PickingMode.Ignore };
-            label.AddToClassList(style); host.Add(label); return label;
+            label.AddToClassList(style);
+            host.Add(label);
+            return label;
         }
 
-        private static Button AddButton(VisualElement host, string style, string name, Action action)
-        {
-            var button = new Button(action) { name = name }; button.AddToClassList(style); host.Add(button); return button;
+        private static Button AddButton(VisualElement host, string style, string name, Action action) {
+            var button = new Button(action) { name = name };
+            button.AddToClassList(style);
+            host.Add(button);
+            return button;
         }
     }
 }

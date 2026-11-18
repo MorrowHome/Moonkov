@@ -79,7 +79,10 @@ public struct PlayerInput {
     public bool HaloLightEnabled => (InputFlags & (uint)InputFlag.HaloLightDisabled) == 0;
 
     public void SetFlag(InputFlag flag, bool set) {
-        if (set) { InputFlags |= (uint)flag; } else { InputFlags &= ~(uint)flag; }
+        if (set)
+            InputFlags |= (uint)flag;
+        else
+            InputFlags &= ~(uint)flag;
     }
 
     // Apply the same numeric contract to client prediction and server simulation.
@@ -88,12 +91,12 @@ public struct PlayerInput {
     public PlayerInput Sanitized() {
         var result = this;
         const uint k_KnownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
-                                       InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo |
-                                       InputFlag.EquipRevolver | InputFlag.EquipPistol | InputFlag.HaloLightDisabled |
-                                       InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe | InputFlag.FireHeld |
-                                       InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer |
-                                       InputFlag.HaloGuard | InputFlag.HaloAnchor | InputFlag.HaloMode |
-                                       InputFlag.HaloScan);
+                                         InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo |
+                                         InputFlag.EquipRevolver | InputFlag.EquipPistol | InputFlag.HaloLightDisabled |
+                                         InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe | InputFlag.FireHeld |
+                                         InputFlag.FireSuppressed | InputFlag.HaloDefense | InputFlag.HaloTransfer |
+                                         InputFlag.HaloGuard | InputFlag.HaloAnchor | InputFlag.HaloMode |
+                                         InputFlag.HaloScan);
         result.InputFlags &= k_KnownFlags;
         result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
@@ -149,8 +152,8 @@ public struct PlayerInput {
     // 跨帧合并时，允许更新连续状态就用当前的移动和视角。短按触发的跳跃、开火和换装会累积下来。
     public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true) {
         bool hadBufferedShot = Shoot;
-        float3 bufferedAimPoint = AimPoint;
-        float2 bufferedLook = LookYawPitchDegrees;
+        var bufferedAimPoint = AimPoint;
+        var bufferedLook = LookYawPitchDegrees;
         float bufferedLean = Lean;
         bool bufferedThirdPerson = ThirdPerson;
         if (updateContinuousState) {

@@ -6,34 +6,38 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.MP_FPS
-{
-    public partial class DollSingerEnemySystem
-    {
-        private static readonly Unity.Profiling.ProfilerMarker s_ThinkProfile = new("Moonkov.Pmc.Think");
-        private PlayerInput Think(Unity.Entities.Entity self, DollSingerEnemyBrain brain, PlayerGhost ghost, LocalTransform pose,
-            ref PredictedPlayerGhost health, MoonRaidMap map, double now, float dt)
-        {
+namespace Unity.MP_FPS {
+    public partial class DollSingerEnemySystem {
+        private static readonly Profiling.ProfilerMarker s_ThinkProfile = new("Moonkov.Pmc.Think");
+
+        private PlayerInput Think(
+            Entity self,
+            DollSingerEnemyBrain brain,
+            PlayerGhost ghost,
+            LocalTransform pose,
+            ref PredictedPlayerGhost health,
+            MoonRaidMap map,
+            double now,
+            float dt) {
             using var profile = s_ThinkProfile.Auto();
             Vector3 position = pose.Position;
-            Vector3 eye = ghost.ShotOrigin.position;
+            var eye = ghost.ShotOrigin.position;
             brain.SelfStatus = null;
             brain.LightGlare = health.HaloLightGlare;
             // The ECS actor exists before the spawned GameObject finishes linking.
             // Use the query's identity rather than reading the not-yet-bound behaviour.
             if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(self, out var status))
                 brain.SelfStatus = status;
-            brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now && brain.SelfStatus.Fire <= now &&
-                (brain.SelfStatus.Poison <= now || brain.SelfStatus.Antidote > now);
+            brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now &&
+                                    brain.SelfStatus.Fire <= now && (brain.SelfStatus.Poison <= now ||
+                                                                     brain.SelfStatus.Antidote > now);
             UpdateCombatPressure(brain, health, now, dt);
             // 感知和选目标按自己的节奏更新，走路和已经开始的动作继续逐拍推进。可以省掉重复的视线、路径和目标判断。
-            if (now >= brain.NextSense)
-            {
+            if (now >= brain.NextSense) {
                 Sense(brain, ghost.transform, eye, map.EnemySightRange, now);
                 brain.NextSense = now + .1;
             }
-            if (now >= brain.NextDecision)
-            {
+            if (now >= brain.NextDecision) {
                 Decide(brain, position, health, map, now);
                 brain.NextDecision = now + m_Tuning.DecisionInterval;
             }
@@ -47,71 +51,75 @@ namespace Unity.MP_FPS
             // can fail and cancel an otherwise reachable corpse or drawer.
             if (brain.Action != PmcAction.Scavenge || brain.LootUntil <= 0)
                 UpdatePath(brain, position, brain.TacticalGoal, now);
-            Vector3 move = FollowPath(brain, position);
-            bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) && !brain.Visible;
-            bool pursuing = brain.IsExpeditionRaider && brain.Action == PmcAction.Search && !brain.Visible && now - brain.LastConfirmedSight < 12;
+            var move = FollowPath(brain, position);
+            bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) &&
+                             !brain.Visible;
+            bool pursuing = brain.IsExpeditionRaider && brain.Action == PmcAction.Search && !brain.Visible &&
+                            now - brain.LastConfirmedSight < 12;
             bool atCorner = brain.Corner < brain.CornerCount - 1 &&
-                HorizontalDistance(position, brain.Corners[brain.Corner]) < 2.5f;
+                            HorizontalDistance(position, brain.Corners[brain.Corner]) < 2.5f;
             bool checkingCorner = searching && atCorner;
-            if (searching) move *= pursuing ? (checkingCorner ? .55f : 1) : (checkingCorner ? .45f : .7f);
+            if (searching) move *= pursuing ? checkingCorner ? .55f : 1 : checkingCorner ? .45f : .7f;
             if (brain.IsPeeking) move *= .65f;
-            if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
-                brain.HealUntil > 0 || brain.NutritionUntil > 0 || brain.Interacting || searching && now < brain.SearchPauseUntil ||
-                HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
-                    Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f) move = Vector3.zero;
-
+            if ((brain.Action == PmcAction.Scavenge && brain.LootUntil > 0) || brain.ExtractionProgress > 0 ||
+                brain.HealUntil > 0 || brain.NutritionUntil > 0 || brain.Interacting ||
+                (searching && now < brain.SearchPauseUntil) ||
+                (HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
+                 Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f))
+                move = Vector3.zero;
             bool blinded = ExpeditionFlashBlinded(brain, now);
             if (brain.IsExpeditionRaider && !blinded && move.sqrMagnitude < .01f)
                 move = SidestepBetweenBursts(brain, position, health, now);
             brain.MovementRequested = move.sqrMagnitude > .01f;
-            bool hasContact = brain.Target != Unity.Entities.Entity.Null;
+            bool hasContact = brain.Target != Entity.Null;
             // 瞄向自己记得的可见部位。清楚看见时才按连续观察到的速度给弹体做有限的提前量。
-            Vector3 aim = brain.LastSeen + brain.AimOffset;
+            var aim = brain.LastSeen + brain.AimOffset;
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;
-            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
-            if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile)
-            {
+            var weapon =
+                WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
+            if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile) {
                 float flight = Mathf.Min(.6f, distance / Mathf.Max(1, weapon.ProjectileSpeed));
                 aim += Vector3.ClampMagnitude(brain.ObservedVelocity * flight, brain.IsExpeditionRaider ? 4.5f : 3);
                 aim.y += .5f * weapon.ProjectileGravity * flight * flight;
             }
-            Vector3 facing = hasContact ? aim - eye : move;
+            var facing = hasContact ? aim - eye : move;
             bool looting = brain.Action == PmcAction.Scavenge && brain.LootUntil > 0;
-            bool preaimCorner = brain.IsExpeditionRaider && atCorner && !brain.Visible && !blinded && brain.MovementRequested &&
-                (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract || brain.Action == PmcAction.FollowSquad) &&
-                !RaidHealth.HandsBusy(health);
-            if (looting) facing = brain.LootLookPoint - eye;
+            bool preaimCorner = brain.IsExpeditionRaider && atCorner && !brain.Visible && !blinded &&
+                                brain.MovementRequested &&
+                                (brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
+                                 brain.Action == PmcAction.FollowSquad) && !RaidHealth.HandsBusy(health);
+            if (looting)
+                facing = brain.LootLookPoint - eye;
             else if (preaimCorner) facing = brain.Corners[brain.Corner + 1] + Vector3.up * 1.15f - eye;
-            if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f)
-                facing = brain.MissionLookPoint - eye;
+            if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f) facing = brain.MissionLookPoint - eye;
             if (brain.Action == PmcAction.FollowSquad && brain.HasSquadLeader && !brain.Visible)
-                facing = move.sqrMagnitude < .01f ? Quaternion.Euler(0, SquadWatchYaw(brain), 0) * Vector3.forward : facing;
-            if (searching && brain.SearchFocusValid)
-            {
-                Vector3 lookPoint = brain.SearchLookPoint;
-                if (now >= brain.SearchPauseUntil && brain.Corner < brain.CornerCount)
-                {
+                facing = move.sqrMagnitude < .01f
+                    ? Quaternion.Euler(0, SquadWatchYaw(brain), 0) * Vector3.forward
+                    : facing;
+            if (searching && brain.SearchFocusValid) {
+                var lookPoint = brain.SearchLookPoint;
+                if (now >= brain.SearchPauseUntil && brain.Corner < brain.CornerCount) {
                     // Check the space beyond an upcoming turn before walking around it.
                     int corner = checkingCorner ? brain.Corner + 1 : brain.Corner;
                     lookPoint = brain.Corners[corner] + Vector3.up * 1.15f;
                 }
                 facing = lookPoint - eye;
             }
-            if (facing.sqrMagnitude > .001f)
-            {
+            if (facing.sqrMagnitude > .001f) {
                 float yaw = Mathf.Atan2(facing.x, facing.z) * Mathf.Rad2Deg;
-                float pitch = hasContact || looting || preaimCorner ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
+                float pitch = hasContact || looting || preaimCorner
+                    ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg
+                    : 0;
                 float turn = m_Tuning.TurnSpeed * (brain.IsExpeditionRaider && brain.Visible ? 1.7f : 1f) * dt;
                 brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, turn);
                 brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, turn * .7f);
             }
-            if (now >= brain.NextAimError)
-            {
-                float settled = Mathf.Clamp01((float)(now - brain.VisibleSince) / (brain.IsExpeditionRaider ? 1.1f : 2f));
+            if (now >= brain.NextAimError) {
+                float settled =
+                    Mathf.Clamp01((float)(now - brain.VisibleSince) / (brain.IsExpeditionRaider ? 1.1f : 2f));
                 float error = Mathf.Lerp(m_Tuning.FirstShotError, m_Tuning.SettledAimError, settled);
                 float movingError = 1.5f;
-                if (brain.IsExpeditionRaider && brain.Visible)
-                {
+                if (brain.IsExpeditionRaider && brain.Visible) {
                     // A fixed angular error would turn a small miss into several body widths at range.
                     float aimDistance = Mathf.Max(1, distance);
                     float offset = Mathf.Lerp(.55f, .27f, settled);
@@ -124,84 +132,117 @@ namespace Unity.MP_FPS
                 brain.AimErrorY = brain.Random.NextFloat(-error * .6f, error * .6f);
                 brain.NextAimError = now + .25;
             }
-            var look = new float2(brain.Yaw + (brain.Visible ? brain.AimErrorX : 0), brain.Pitch + (brain.Visible ? brain.AimErrorY : 0));
-            Vector3 direction = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward;
-            Vector3 localMove = Quaternion.Euler(0, -look.x, 0) * move;
-            var input = new PlayerInput { MoveInput = new float2(localMove.x, localMove.z), LookYawPitchDegrees = look,
+            var look = new float2(brain.Yaw + (brain.Visible ? brain.AimErrorX : 0),
+                brain.Pitch + (brain.Visible ? brain.AimErrorY : 0));
+            var direction = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward;
+            var localMove = Quaternion.Euler(0, -look.x, 0) * move;
+            var input = new PlayerInput {
+                MoveInput = new float2(localMove.x, localMove.z), LookYawPitchDegrees = look,
                 // AimPoint must follow the imperfect, rate-limited look ray; exact target coordinates would bypass it.
-                AimPoint = eye + direction * Mathf.Max(1, distance) };
+                AimPoint = eye + direction * Mathf.Max(1, distance)
+            };
             input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
             bool fighting = CanReturnFire(brain) && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
-            input.SetFlag(PlayerInput.InputFlag.Aim, !blinded && (fighting && brain.Visible || checkingCorner || preaimCorner));
-            input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
-                brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
-                (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
-                    brain.Action == PmcAction.FollowSquad && (position - brain.SquadLeaderPosition).sqrMagnitude > 15 * 15 ||
-                    pursuing && !checkingCorner && distance > 18 ||
-                    (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
-                    (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
+            input.SetFlag(PlayerInput.InputFlag.Aim,
+                !blinded && ((fighting && brain.Visible) || checkingCorner || preaimCorner));
+            input.SetFlag(PlayerInput.InputFlag.Sprint,
+                PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
+                brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !(fighting && brain.Visible) &&
+                move.sqrMagnitude > .1f && (brain.Action == PmcAction.Retreat ||
+                                            brain.Action == PmcAction.EvadeGrenade ||
+                                            brain.Action == PmcAction.EvadeHazard ||
+                                            (brain.Action == PmcAction.Flank && !brain.Visible) ||
+                                            (brain.Action == PmcAction.FollowSquad &&
+                                             (position - brain.SquadLeaderPosition).sqrMagnitude > 15 * 15) ||
+                                            (pursuing && !checkingCorner && distance > 18) ||
+                                            ((brain.Action == PmcAction.Extract ||
+                                              (brain.IsClashBot && brain.Leaving)) && !hasContact) ||
+                                            (brain.Action == PmcAction.Cover &&
+                                             (brain.CoverPhase == PmcCoverPhase.Approaching ||
+                                              brain.CoverPhase == PmcCoverPhase.Returning))));
             int preferred = 0;
-            if (!brain.IsClashBot && brain.Visible && !blinded && brain.LootUntil <= 0)
-            {
+            if (!brain.IsClashBot && brain.Visible && !blinded && brain.LootUntil <= 0) {
                 bool returnFire = CanReturnFire(brain);
                 bool emptyUnderFire = brain.IsExpeditionRaider && health.CurrentAmmo <= 0 &&
-                    (returnFire || brain.Action == PmcAction.Reload) && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 &&
-                    !brain.Interacting && !brain.Grenade.Active(now) && !brain.HazardDanger;
-                if (emptyUnderFire) preferred = PmcWeaponTactics.LoadedAlternate(health, distance);
-                else if (returnFire && now >= brain.NextTacticalSwitch) preferred = PmcWeaponTactics.PreferredSlot(health, distance);
+                                      (returnFire || brain.Action == PmcAction.Reload) && brain.HealUntil <= 0 &&
+                                      brain.NutritionUntil <= 0 && !brain.Interacting && !brain.Grenade.Active(now) &&
+                                      !brain.HazardDanger;
+                if (emptyUnderFire)
+                    preferred = PmcWeaponTactics.LoadedAlternate(health, distance);
+                else if (returnFire && now >= brain.NextTacticalSwitch)
+                    preferred = PmcWeaponTactics.PreferredSlot(health, distance);
             }
-            uint preferredWeapon = preferred == 1 ? health.PrimaryWeaponID : preferred == 2 ? health.SecondaryWeaponID : health.PistolWeaponID;
-            bool switching = preferred != 0 && WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(preferredWeapon) != null;
-            if (switching)
-            {
-                input.SetFlag(preferred == 1 ? PlayerInput.InputFlag.EquipHalo : preferred == 2 ?
-                    PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
+            uint preferredWeapon = preferred == 1 ? health.PrimaryWeaponID :
+                preferred == 2 ? health.SecondaryWeaponID : health.PistolWeaponID;
+            bool switching = preferred != 0 &&
+                             WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(preferredWeapon) != null;
+            if (switching) {
+                input.SetFlag(
+                    preferred == 1 ? PlayerInput.InputFlag.EquipHalo :
+                    preferred == 2 ? PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
                 brain.NextTacticalSwitch = now + 3;
                 if (brain.IsExpeditionRaider && brain.Action == PmcAction.Reload)
                     brain.CommitUntil = brain.NextDecision = 0;
             }
             bool reachingCover = brain.IsExpeditionRaider && brain.Visible && brain.HasCover && !brain.IsPeeking &&
-                !brain.PathFailed && brain.MovementRequested;
-            if (!switching && !reachingCover && brain.LootUntil <= 0 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
-                ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
-            {
-                bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
-                bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory, health.HaloEnergyInitialized ? 1 : weapon.EnergyPerRound);
-                if (cellReady) {brain.ReloadFailure.Clear();input.SetFlag(PlayerInput.InputFlag.Reload, true);}
-                else
-                {
-                    if(weapon != null && !blocked)
-                    {brain.ReloadFailure.Record(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);brain.NextDecision=0;}
-                    if(health.CurrentAmmo==0)
-                    {
-                        if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
-                        else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
-                        else if (health.EquippedWeaponSlot != 2 && health.SecondaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
+                                 !brain.PathFailed && brain.MovementRequested;
+            if (!switching && !reachingCover && brain.LootUntil <= 0 && brain.HealUntil <= 0 &&
+                brain.NutritionUntil <= 0 && !brain.Interacting && ShouldReload(brain, health, position, now) &&
+                !health.ControllerState.IsReloadingState) {
+                bool blocked = weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,
+                    health.EquippedWeaponID, weapon.EnergyPerRound);
+                bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory,
+                    health.HaloEnergyInitialized ? 1 : weapon.EnergyPerRound);
+                if (cellReady) {
+                    brain.ReloadFailure.Clear();
+                    input.SetFlag(PlayerInput.InputFlag.Reload, true);
+                } else {
+                    if (weapon != null && !blocked) {
+                        brain.ReloadFailure.Record(brain.Inventory.Version, health.EquippedWeaponID,
+                            weapon.EnergyPerRound);
+                        brain.NextDecision = 0;
+                    }
+                    if (health.CurrentAmmo == 0) {
+                        if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0)
+                            input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
+                        else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0)
+                            input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
+                        else if (health.EquippedWeaponSlot != 2 && health.SecondaryAmmo > 0)
+                            input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
                     }
                 }
             }
             float firingRange = map.EnemySightRange;
-            if (brain.IsExpeditionRaider && brain.Visible && brain.Contacts.TryGetValue(brain.Target, out var contact) && contact.PlayerControlled)
+            if (brain.IsExpeditionRaider && brain.Visible &&
+                brain.Contacts.TryGetValue(brain.Target, out var contact) && contact.PlayerControlled)
                 firingRange = Mathf.Max(firingRange, m_Tuning.ExpeditionPlayerSightRange);
-            bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && !blinded && health.CurrentAmmo > 0 &&
-                !health.ControllerState.IsReloadingState && health.WeaponEquipRemaining <= 0 &&
-                now - brain.VisibleSince >= ReactionTime(brain) && distance < firingRange &&
-                Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
-                (!brain.IsExpeditionRaider || !DollSingerBotCombat.Obscured(ghost.gameObject.scene.GetPhysicsScene(), m_TacticalWorld, eye, input.AimPoint)) &&
-                (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange)) &&
-                (brain.ExpeditionSquadId == 0 || ExpeditionShotLaneClear(brain, ghost.transform, eye, direction, distance + .2f));
+            bool firingSolution = !switching && !input.Reload && fighting && brain.Visible && !blinded &&
+                                  health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
+                                  health.WeaponEquipRemaining <= 0 && now - brain.VisibleSince >= ReactionTime(brain) &&
+                                  distance < firingRange && Vector3.Angle(direction, facing) < 7 &&
+                                  ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
+                                  (!brain.IsExpeditionRaider || !DollSingerBotCombat.Obscured(
+                                      ghost.gameObject.scene.GetPhysicsScene(), m_TacticalWorld, eye,
+                                      input.AimPoint)) &&
+                                  (!brain.IsClashBot ||
+                                   ClashShotLaneClear(brain, eye, direction, map.EnemySightRange)) &&
+                                  (brain.ExpeditionSquadId == 0 || ExpeditionShotLaneClear(brain, ghost.transform, eye,
+                                      direction, distance + .2f));
             // Do not spend a short peek's entire burst while still reacting or
             // turning toward the contact. The burst starts when the shot is possible.
-            if (now >= brain.NextBurst && firingSolution)
-            {
+            if (now >= brain.NextBurst && firingSolution) {
                 // Releasing defense starts with a lowered halo. Leave time to raise
                 // it before counting the short burst, including injured-hand handling.
-                float raiseTime = DollSingerWeapons.IsHalo(health.EquippedWeaponID) ?
-                    (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds * RaidHealth.HandlingMultiplier(health) : 0;
-                brain.BurstUntil = now + raiseTime + (brain.IsExpeditionRaider ?
-                    brain.Random.NextFloat(.38f, .72f) : brain.Random.NextFloat(.25f, .6f));
-                brain.NextBurst = brain.BurstUntil + (brain.IsExpeditionRaider ?
-                    brain.Random.NextFloat(.18f, .38f) : brain.Random.NextFloat(.5f, 1.1f));
+                float raiseTime = DollSingerWeapons.IsHalo(health.EquippedWeaponID)
+                    ? (1 - Mathf.Clamp01(health.WeaponRaiseProgress)) * DollSinger.DollSingerHaloAim.RaiseSeconds *
+                      RaidHealth.HandlingMultiplier(health)
+                    : 0;
+                brain.BurstUntil = now + raiseTime + (brain.IsExpeditionRaider
+                    ? brain.Random.NextFloat(.38f, .72f)
+                    : brain.Random.NextFloat(.25f, .6f));
+                brain.NextBurst = brain.BurstUntil + (brain.IsExpeditionRaider
+                    ? brain.Random.NextFloat(.18f, .38f)
+                    : brain.Random.NextFloat(.5f, 1.1f));
             }
             if (brain.IsExpeditionRaider && !firingSolution && HaloModuleFire.HasPendingFire(health))
                 HaloModuleFire.Reset(ref health);
@@ -209,31 +250,34 @@ namespace Unity.MP_FPS
             // A valid return-fire window releases defense; otherwise the barrier
             // silently consumes every burst while the actor stands exposed.
             bool defend = !shoot && !TutorialRuntime.Enabled(EntityManager) && brain.Visible &&
-                (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Cover && !brain.IsPeeking) &&
-                health.HaloEnergy > 15 && brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
-                !input.Reload && HaloEnergyRules.CanDefend(health);
+                          (brain.Action == PmcAction.Retreat ||
+                           (brain.Action == PmcAction.Cover && !brain.IsPeeking)) && health.HaloEnergy > 15 &&
+                          brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting && !input.Reload &&
+                          HaloEnergyRules.CanDefend(health);
             input.SetFlag(PlayerInput.InputFlag.HaloDefense, defend);
             input.SetFlag(PlayerInput.InputFlag.Shoot, shoot);
             return input;
         }
 
-        private Vector3 SidestepBetweenBursts(DollSingerEnemyBrain brain, Vector3 position, in PredictedPlayerGhost health, double now)
-        {
+        private Vector3 SidestepBetweenBursts(
+            DollSingerEnemyBrain brain,
+            Vector3 position,
+            in PredictedPlayerGhost health,
+            double now) {
             if (brain.Action != PmcAction.Engage || !brain.Visible || brain.Leaving || !CanReturnFire(brain) ||
-                health.CurrentAmmo <= 0 || RaidHealth.HandsBusy(health) || brain.Grenade.Active(now) || brain.HazardDanger ||
-                now < brain.BurstUntil || now >= brain.NextBurst || now - brain.LastDamage < .65 || brain.Suppression >= .45f)
+                health.CurrentAmmo <= 0 || RaidHealth.HandsBusy(health) || brain.Grenade.Active(now) ||
+                brain.HazardDanger || now < brain.BurstUntil || now >= brain.NextBurst ||
+                now - brain.LastDamage < .65 || brain.Suppression >= .45f)
                 return Vector3.zero;
-
             float distance = HorizontalDistance(position, brain.LastSeen);
             if (distance > PreferredCombatRange(brain, health.EquippedWeaponID) + 4) return Vector3.zero;
-            if (brain.SidestepBurst != brain.NextBurst)
-            {
+            if (brain.SidestepBurst != brain.NextBurst) {
                 float side = ((brain.Seed + (int)(brain.NextBurst * 1.7)) & 1) == 0 ? 1 : -1;
-                brain.SidestepDirection = DollSingerBotCombat.SideStep(position, brain.LastSeen - position, side, distance < 5, m_Filter);
+                brain.SidestepDirection =
+                    DollSingerBotCombat.SideStep(position, brain.LastSeen - position, side, distance < 5, m_Filter);
                 brain.SidestepBurst = brain.NextBurst;
             }
-            if (brain.SidestepDirection.sqrMagnitude > .01f)
-            {
+            if (brain.SidestepDirection.sqrMagnitude > .01f) {
                 // The new position is our firing position for the next burst.
                 brain.TacticalGoal = position;
                 brain.Corner = brain.CornerCount;
@@ -241,83 +285,111 @@ namespace Unity.MP_FPS
             return brain.SidestepDirection * .65f;
         }
 
-        private float ReactionTime(DollSingerEnemyBrain brain) => brain.IsExpeditionRaider ?
-            m_Tuning.ReactionSeconds * (brain.ReacquiredTarget ? .18f : .35f) : m_Tuning.ReactionSeconds;
-
-        private static bool CanReturnFire(DollSingerEnemyBrain brain) =>
-            brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
-            (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
-             brain.Action == PmcAction.Cover ||
-             brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
-
-        private void UpdateShieldSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
-        {
-            if (!health.ShieldEquipped || health.ShieldEnergy > PmcShieldSupply.RechargeThreshold || now < brain.NextShieldSupplyCheck) return;
-            brain.NextShieldSupplyCheck = now + 1;
-            if (!PmcShieldSupply.MayRecharge(brain, health, TutorialRuntime.Enabled(EntityManager),
-                SafeToTreat(brain, position, now), now)) return;
-            var held = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
-            if (held != null && PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound, held.MagazineSize, held))
-                health.LastReloadTick = SystemAPI.GetSingleton<Unity.NetCode.NetworkTime>().ServerTick.TickIndexForValidTick;
+        private float ReactionTime(DollSingerEnemyBrain brain) {
+            return brain.IsExpeditionRaider
+                ? m_Tuning.ReactionSeconds * (brain.ReacquiredTarget ? .18f : .35f)
+                : m_Tuning.ReactionSeconds;
         }
 
-        private void UpdateOxygenSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
-        {
-            if (!PmcLifeSupport.Low(health, PmcLifeSupport.RefillThreshold) || now < brain.NextOxygenSupplyCheck) return;
+        private static bool CanReturnFire(DollSingerEnemyBrain brain) {
+            return brain.HealUntil <= 0 && brain.NutritionUntil <= 0 && !brain.Interacting &&
+                   (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
+                    brain.Action == PmcAction.Cover || brain.Action == PmcAction.Retreat ||
+                    brain.Action == PmcAction.Flank);
+        }
+
+        private void UpdateShieldSupply(
+            DollSingerEnemyBrain brain,
+            ref PredictedPlayerGhost health,
+            Vector3 position,
+            double now) {
+            if (!health.ShieldEquipped || health.ShieldEnergy > PmcShieldSupply.RechargeThreshold ||
+                now < brain.NextShieldSupplyCheck)
+                return;
+            brain.NextShieldSupplyCheck = now + 1;
+            if (!PmcShieldSupply.MayRecharge(brain, health, TutorialRuntime.Enabled(EntityManager),
+                    SafeToTreat(brain, position, now), now))
+                return;
+            var held = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,
+                health.EquippedModules);
+            if (held != null && PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound,
+                    held.MagazineSize, held))
+                health.LastReloadTick = SystemAPI.GetSingleton<NetCode.NetworkTime>().ServerTick.TickIndexForValidTick;
+        }
+
+        private void UpdateOxygenSupply(
+            DollSingerEnemyBrain brain,
+            ref PredictedPlayerGhost health,
+            Vector3 position,
+            double now) {
+            if (!PmcLifeSupport.Low(health, PmcLifeSupport.RefillThreshold) || now < brain.NextOxygenSupplyCheck)
+                return;
             brain.NextOxygenSupplyCheck = now + 1;
             if (!PmcResourceActions.SafeWindow(brain, health, TutorialRuntime.Enabled(EntityManager),
-                SafeToTreat(brain, position, now), now, allowCriticalOxygen: true) || !health.HeadDomeEquipped || brain.Inventory == null) return;
+                    SafeToTreat(brain, position, now), now, true) || !health.HeadDomeEquipped ||
+                brain.Inventory == null)
+                return;
             var supply = PmcLifeSupport.FindAccessible(brain.Inventory);
-            if (supply == null && !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version))
-            {
+            if (supply == null && !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version)) {
                 supply = PmcLifeSupport.Prepare(brain.Inventory);
-                if (supply == null) brain.OxygenSupplyFailure.Record(brain.Inventory.Version);
-                else brain.OxygenSupplyFailure.Clear();
+                if (supply == null)
+                    brain.OxygenSupplyFailure.Record(brain.Inventory.Version);
+                else
+                    brain.OxygenSupplyFailure.Clear();
             }
-            if (PmcLifeSupport.TryRefill(ref health, brain.Inventory, supply))
-            {
+            if (PmcLifeSupport.TryRefill(ref health, brain.Inventory, supply)) {
                 brain.OxygenSupplyFailure.Clear();
                 EnergyShieldEquipment.Flush(ref health, brain.Inventory);
                 brain.NextDecision = 0;
             }
         }
 
-        private void AdvanceNutrition(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
-        {
-            if (brain.NutritionUntil <= 0 && (now < brain.NextNutrition || !PmcNutrition.Low(health, PmcNutrition.UseThreshold))) return;
+        private void AdvanceNutrition(
+            DollSingerEnemyBrain brain,
+            ref PredictedPlayerGhost health,
+            Vector3 position,
+            double now) {
+            if (brain.NutritionUntil <= 0 &&
+                (now < brain.NextNutrition || !PmcNutrition.Low(health, PmcNutrition.UseThreshold)))
+                return;
             bool eligible = !PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold) &&
-                PmcResourceActions.SafeWindow(brain, health, brain.TutorialActor, SafeToTreat(brain, position, now),
-                    now, continuingNutrition: true, allowCriticalNutrition: true);
+                            PmcResourceActions.SafeWindow(brain, health, brain.TutorialActor,
+                                SafeToTreat(brain, position, now), now, continuingNutrition: true,
+                                allowCriticalNutrition: true);
             PmcNutrition.Advance(brain, ref health, position, eligible, now);
         }
 
-        private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt) =>
+        private static void UpdateCombatPressure(
+            DollSingerEnemyBrain brain,
+            PredictedPlayerGhost health,
+            double now,
+            float dt) {
             PmcCombatPressure.Update(brain, health, now, dt);
+        }
     }
 
-    public static class PmcCombatPressure
-    {
-        public static void Update(DollSingerEnemyBrain brain, in PredictedPlayerGhost health, double now, float dt)
-        {
+    public static class PmcCombatPressure {
+        public static void Update(DollSingerEnemyBrain brain, in PredictedPlayerGhost health, double now, float dt) {
             float lost = Mathf.Max(0, brain.LastHealth - health.CurrentHealth);
             bool tracked = !brain.IsClashBot && brain.SelfStatus != null;
-            if (brain.ObservedSelfStatus != brain.SelfStatus)
-            {
+            if (brain.ObservedSelfStatus != brain.SelfStatus) {
                 brain.ObservedSelfStatus = brain.SelfStatus;
                 brain.LastStatusHealthDamage = 0;
                 brain.LastStatusShieldHits = 0;
             }
-            double statusLoss = tracked ? System.Math.Max(0, brain.SelfStatus.PmcStatusHealthDamage - brain.LastStatusHealthDamage) : 0;
-            ulong statusShieldHits = tracked && brain.SelfStatus.PmcStatusShieldHits >= brain.LastStatusShieldHits ?
-                brain.SelfStatus.PmcStatusShieldHits - brain.LastStatusShieldHits : 0;
+            double statusLoss = tracked
+                ? System.Math.Max(0, brain.SelfStatus.PmcStatusHealthDamage - brain.LastStatusHealthDamage)
+                : 0;
+            ulong statusShieldHits = tracked && brain.SelfStatus.PmcStatusShieldHits >= brain.LastStatusShieldHits
+                ? brain.SelfStatus.PmcStatusShieldHits - brain.LastStatusShieldHits
+                : 0;
             uint allShieldHits = unchecked(health.ShieldHitSequence - brain.LastShieldHitSequence);
             bool shieldHit = tracked ? allShieldHits > statusShieldHits : allShieldHits != 0;
-            float externalLoss = tracked ? Mathf.Max(0, lost - (float)statusLoss) : (brain.BleedOnlyDamage ? 0 : lost);
+            float externalLoss = tracked ? Mathf.Max(0, lost - (float)statusLoss) : brain.BleedOnlyDamage ? 0 : lost;
             bool impact = health.LastImpactTick != brain.LastImpactTick;
             // The impact event is authoritative even when healing in the same
             // update makes the net health change zero or positive.
-            if (impact || shieldHit || externalLoss > .001f)
-            {
+            if (impact || shieldHit || externalLoss > .001f) {
                 // Pressure scales with actual injury. Grazes and periodic tissue loss
                 // must not count like repeated half-strength panic impulses.
                 float pressureLoss = !tracked && impact ? lost : externalLoss;
@@ -336,10 +408,11 @@ namespace Unity.MP_FPS
         }
     }
 
-    public static class PmcStatusDamage
-    {
-        public static void Record(TacticalServerWorld.Status status, in PredictedPlayerGhost before, in PredictedPlayerGhost after)
-        {
+    public static class PmcStatusDamage {
+        public static void Record(
+            TacticalServerWorld.Status status,
+            in PredictedPlayerGhost before,
+            in PredictedPlayerGhost after) {
             if (status == null) return;
             status.PmcStatusHealthDamage += System.Math.Max(0, before.CurrentHealth - after.CurrentHealth);
             status.PmcStatusShieldHits += unchecked(after.ShieldHitSequence - before.ShieldHitSequence);

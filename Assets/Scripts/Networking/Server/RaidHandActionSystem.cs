@@ -6,121 +6,153 @@ using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
 
-namespace Unity.MP_FPS
-{
+namespace Unity.MP_FPS {
     /// <summary>Publishes server action state for movement and animation. Presentation never completes or consumes an action.</summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateAfter(typeof(ServerGameSystem))]
-    public partial class RaidHandActionSystem : SystemBase
-    {
+    public partial class RaidHandActionSystem : SystemBase {
         private EntityQuery connections, players, tactical, loot, missions;
-        private readonly Dictionary<Entity, RaidInventoryState> inventories = new Dictionary<Entity, RaidInventoryState>();
-        private readonly HashSet<Entity> timedActors = new HashSet<Entity>();
-        private readonly Dictionary<Entity, TacticalServerWorld.Use> tacticalUses = new Dictionary<Entity, TacticalServerWorld.Use>();
-        protected override void OnCreate()
-        {
+        private readonly Dictionary<Entity, RaidInventoryState> inventories = new();
+        private readonly HashSet<Entity> timedActors = new();
+        private readonly Dictionary<Entity, TacticalServerWorld.Use> tacticalUses = new();
+
+        protected override void OnCreate() {
             connections = GetEntityQuery(typeof(RaidInventoryState), typeof(JoinedClient));
             players = GetEntityQuery(typeof(PredictedPlayerGhost));
             tactical = GetEntityQuery(typeof(TacticalServerWorld));
             loot = GetEntityQuery(typeof(RaidLootContainers));
             missions = GetEntityQuery(typeof(RaidMissionWorld));
         }
-        protected override void OnUpdate()
-        {
+
+        protected override void OnUpdate() {
             inventories.Clear();
             timedActors.Clear();
-            var missionWorld = missions.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<RaidMissionWorld>(missions.GetSingletonEntity());
-            using (var entities = connections.ToEntityArray(Allocator.Temp))
-                foreach (var entity in entities)
-                {
+            var missionWorld = missions.IsEmptyIgnoreFilter
+                ? null
+                : EntityManager.GetComponentObject<RaidMissionWorld>(missions.GetSingletonEntity());
+            using (var entities = connections.ToEntityArray(Allocator.Temp)) {
+                foreach (var entity in entities) {
                     if (EntityManager.HasComponent<NetworkStreamRequestDisconnect>(entity) ||
-                        EntityManager.HasComponent<RaidSession>(entity) && EntityManager.GetComponentData<RaidSession>(entity).Phase != RaidPhase.Active) continue;
+                        (EntityManager.HasComponent<RaidSession>(entity) &&
+                         EntityManager.GetComponentData<RaidSession>(entity).Phase != RaidPhase.Active))
+                        continue;
                     var player = EntityManager.GetComponentData<JoinedClient>(entity).PlayerEntity;
                     var inventory = EntityManager.GetComponentObject<RaidInventoryState>(entity);
                     inventories[player] = inventory;
-                    if (inventory.MedicalItemId != null || inventory.DissectingLootId >= 0 || inventory.TacticalPending ||
-                        missionWorld?.Operation != null && missionWorld.Actors.TryGetValue(entity, out var operation) && operation.Node >= 0)
+                    if (inventory.MedicalItemId != null || inventory.DissectingLootId >= 0 ||
+                        inventory.TacticalPending ||
+                        (missionWorld?.Operation != null &&
+                         missionWorld.Actors.TryGetValue(entity, out var operation) && operation.Node >= 0))
                         timedActors.Add(player);
                 }
-            var world = tactical.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<TacticalServerWorld>(tactical.GetSingletonEntity());
+            }
+            var world = tactical.IsEmptyIgnoreFilter
+                ? null
+                : EntityManager.GetComponentObject<TacticalServerWorld>(tactical.GetSingletonEntity());
             tacticalUses.Clear();
-            if (world != null) foreach (var use in world.Uses.Values) tacticalUses[use.Player] = use;
-            var caches = loot.IsEmptyIgnoreFilter ? null : EntityManager.GetComponentObject<RaidLootContainers>(loot.GetSingletonEntity());
+            if (world != null)
+                foreach (var use in world.Uses.Values)
+                    tacticalUses[use.Player] = use;
+            var caches = loot.IsEmptyIgnoreFilter
+                ? null
+                : EntityManager.GetComponentObject<RaidLootContainers>(loot.GetSingletonEntity());
             double now = SystemAPI.Time.ElapsedTime;
             using var actors = players.ToEntityArray(Allocator.Temp);
-            foreach (var actor in actors)
-            {
+            foreach (var actor in actors) {
                 var health = EntityManager.GetComponentData<PredictedPlayerGhost>(actor);
-                HandAction action = HandAction.None; string code = null;
-                Unity.Mathematics.float3 target = default;
+                var action = HandAction.None;
+                string code = null;
+                Mathematics.float3 target = default;
                 float remaining = 0, duration = 0;
                 bool alive = health.CurrentHealth > 0 && (!health.ClashEnabled || health.ClashLife == ClashLife.Alive);
                 health.TimedActionActive = alive && timedActors.Contains(actor);
-                if (alive && inventories.TryGetValue(actor, out var inventory))
-                {
-                    if (inventory.MedicalItemId != null)
-                    {
+                if (alive && inventories.TryGetValue(actor, out var inventory)) {
+                    if (inventory.MedicalItemId != null) {
                         code = inventory.Graph.Find(inventory.MedicalItemId)?.Code;
                         action = Kind(code, inventory.MedicalIsConsumable);
                         remaining = (float)System.Math.Max(0, inventory.MedicalUntil - now);
-                        duration = inventory.MedicalIsConsumable ? UseSeconds(code) : ConsumableCatalog.MedicalSeconds(code, MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3);
-                    }
-                    else if (inventory.DissectingLootId >= 0)
-                    {
-                        action = HandAction.Search; remaining = inventory.SearchItemRemaining(now);
+                        duration = inventory.MedicalIsConsumable
+                            ? UseSeconds(code)
+                            : ConsumableCatalog.MedicalSeconds(code,
+                                MoonRaidMap.Active ? MoonRaidMap.Active.MedicalSeconds : 3);
+                    } else if (inventory.DissectingLootId >= 0) {
+                        action = HandAction.Search;
+                        remaining = inventory.SearchItemRemaining(now);
                         duration = inventory.SearchSecondsPerItem;
-                        int id = inventory.DissectingLootId; var map = MoonRaidMap.Active;
-                        if (map && id >= 0 && id < map.LootPositions.Length) target = map.LootPositions[id];
-                        else if (caches != null && caches.FurnitureCaches.TryGetValue(id, out var furniture)) target = furniture;
-                        else if (caches != null && caches.MissionCaches.TryGetValue(id, out var mission)) target = mission;
-                        else if (caches != null && caches.DeathBags.TryGetValue(id, out var corpse)) target = corpse.Position + new Unity.Mathematics.float3(0, .25f, 0);
+                        int id = inventory.DissectingLootId;
+                        var map = MoonRaidMap.Active;
+                        if (map && id >= 0 && id < map.LootPositions.Length)
+                            target = map.LootPositions[id];
+                        else if (caches != null && caches.FurnitureCaches.TryGetValue(id, out var furniture))
+                            target = furniture;
+                        else if (caches != null && caches.MissionCaches.TryGetValue(id, out var mission))
+                            target = mission;
+                        else if (caches != null && caches.DeathBags.TryGetValue(id, out var corpse))
+                            target = corpse.Position + new Mathematics.float3(0, .25f, 0);
                     }
                 }
-                if (alive && EntityManager.HasComponent<DollSingerEnemyBrain>(actor))
-                {
+                if (alive && EntityManager.HasComponent<DollSingerEnemyBrain>(actor)) {
                     var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(actor);
-                    if (brain.NutritionUntil > now)
-                    {
-                        code = brain.Inventory.Find(brain.NutritionItemId)?.Code; action = Kind(code, true);
-                        remaining = (float)(brain.NutritionUntil - now); duration = UseSeconds(code);
+                    if (brain.NutritionUntil > now) {
+                        code = brain.Inventory.Find(brain.NutritionItemId)?.Code;
+                        action = Kind(code, true);
+                        remaining = (float)(brain.NutritionUntil - now);
+                        duration = UseSeconds(code);
+                    } else if (brain.HealUntil > now) {
+                        code = brain.Inventory.Find(brain.HealItemId)?.Code;
+                        action = Kind(code, false);
+                        remaining = (float)(brain.HealUntil - now);
+                        duration = ConsumableCatalog.MedicalSeconds(code);
+                    } else if (brain.LootUntil > now) {
+                        action = HandAction.Search;
+                        remaining = (float)(brain.LootUntil - now);
+                        duration = 2.5f;
+                        target = brain.LootLookPoint;
                     }
-                    else if (brain.HealUntil > now)
-                    {
-                        code = brain.Inventory.Find(brain.HealItemId)?.Code; action = Kind(code, false);
-                        remaining = (float)(brain.HealUntil - now); duration = ConsumableCatalog.MedicalSeconds(code);
-                    }
-                    else if (brain.LootUntil > now)
-                    { action = HandAction.Search; remaining = (float)(brain.LootUntil - now); duration = 2.5f; target = brain.LootLookPoint; }
                 }
-                if (alive && action == HandAction.None && tacticalUses.TryGetValue(actor, out var use) && use.Until > now &&
-                    use.Definition?.Injectable == true)
-                {
-                    action = HandAction.Inject; code = use.Definition.Code;
-                    remaining = (float)(use.Until - now); duration = use.Definition.UseSeconds;
+                if (alive && action == HandAction.None && tacticalUses.TryGetValue(actor, out var use) &&
+                    use.Until > now && use.Definition?.Injectable == true) {
+                    action = HandAction.Inject;
+                    code = use.Definition.Code;
+                    remaining = (float)(use.Until - now);
+                    duration = use.Definition.UseSeconds;
                 }
                 Publish(ref health, action, code, remaining, duration);
                 health.HandActionTarget = target;
                 EntityManager.SetComponentData(actor, health);
             }
         }
-        public static HandAction Kind(string code, bool supply)
-        {
-            if (supply)
-            {
+
+        public static HandAction Kind(string code, bool supply) {
+            if (supply) {
                 var definition = ConsumableCatalog.Get(code);
                 if (definition?.Oxygen > 0) return HandAction.RefillOxygen;
-                return definition?.Food == true ? HandAction.Eat : definition?.Hydration > 0 ? HandAction.Drink : HandAction.Treat;
+                return definition?.Food == true ? HandAction.Eat :
+                    definition?.Hydration > 0 ? HandAction.Drink : HandAction.Treat;
             }
-            return code == "medkit" || TacticalItemRules.Find(code)?.Injectable == true ? HandAction.Inject : HandAction.Treat;
+            return code == "medkit" || TacticalItemRules.Find(code)?.Injectable == true
+                ? HandAction.Inject
+                : HandAction.Treat;
         }
-        private static float UseSeconds(string code) => ConsumableCatalog.UseSeconds(code);
-        public static void Publish(ref PredictedPlayerGhost health, HandAction action, string code, float remaining, float duration)
-        {
+
+        private static float UseSeconds(string code) { return ConsumableCatalog.UseSeconds(code); }
+
+        public static void Publish(
+            ref PredictedPlayerGhost health,
+            HandAction action,
+            string code,
+            float remaining,
+            float duration) {
             if (remaining <= 0 || duration <= 0) action = HandAction.None;
             var item = action == HandAction.None ? default : new FixedString64Bytes(code ?? "");
-            if (action != HandAction.None && ((byte)action != health.HandAction || !item.Equals(health.HandActionItem) || action!=HandAction.Search&&remaining > health.HandActionRemaining + .15f))
-                health.HandActionSequence = health.HandActionSequence == uint.MaxValue ? 1 : health.HandActionSequence + 1;
-            health.HandAction = (byte)action; health.HandActionItem = item;
+            if (action != HandAction.None && ((byte)action != health.HandAction ||
+                                              !item.Equals(health.HandActionItem) ||
+                                              (action != HandAction.Search &&
+                                               remaining > health.HandActionRemaining + .15f)))
+                health.HandActionSequence =
+                    health.HandActionSequence == uint.MaxValue ? 1 : health.HandActionSequence + 1;
+            health.HandAction = (byte)action;
+            health.HandActionItem = item;
             health.HandActionRemaining = action == HandAction.None ? 0 : remaining;
             health.HandActionDuration = action == HandAction.None ? 0 : duration;
         }

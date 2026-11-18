@@ -2,73 +2,182 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.MP_FPS.Client
-{
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
-        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder, Fists, TeamTracker, OxygenRecycler, GlareFilter, SurveyMultitool, HemostaticBandage, RescueKit, HydrationGel, CompressedRation, EmergencyOxygen, FlashGrenade, PoisonBomb, RegenerationShot }
+namespace Unity.MP_FPS.Client {
+    public enum StashArtKind {
+        None,
+        Dust,
+        Alloy,
+        Cell,
+        Halo,
+        Outfit,
+        Helmet,
+        Rifle,
+        Pistol,
+        ChestRig,
+        Backpack,
+        HaloRifle,
+        HaloRevolver,
+        HaloShotgun,
+        Medical,
+        HaloSniper,
+        Ration,
+        Water,
+        HaloCapacitor,
+        HaloChargeBridge,
+        HaloFocusLens,
+        HaloFanArray,
+        HaloPulseController,
+        HaloHitMarker,
+        OxygenCanister,
+        MedicalGel,
+        TraumaKit,
+        EnergyGel,
+        ProteinBar,
+        Electrolyte,
+        OxygenReserve,
+        ScoutRig,
+        FieldRig,
+        SlingPack,
+        CargoPack,
+        CircuitBoard,
+        CopperCoil,
+        CeramicPlate,
+        OpticalSensor,
+        DataDrive,
+        HeliumSample,
+        QuantumCore,
+        BlackBox,
+        AlienMeat,
+        AlienOrgan,
+        AlienTissue,
+        AlienSpider,
+        AlienSnake,
+        AlienCaterpillar,
+        AlienTentacle,
+        AlienCentipede,
+        AlienLeech,
+        AlienSlime,
+        AlienRoots,
+        AlienFaceHugger,
+        EnergyGrenade,
+        MooncoreFragment,
+        MissionArchive,
+        HaloMooncoreRecycler,
+        HaloCicada,
+        HaloTrine,
+        HaloAegis,
+        HaloVesper,
+        HaloThorn,
+        HaloSundown,
+        HaloRondo,
+        HaloTempest,
+        HaloNocturne,
+        LifeSupportShroud,
+        ShieldGenerator,
+        EnergySword,
+        CombatKnife,
+        ScoutPack,
+        SecureCase,
+        SurveyCompass,
+        Rangefinder,
+        Fists,
+        TeamTracker,
+        OxygenRecycler,
+        GlareFilter,
+        SurveyMultitool,
+        HemostaticBandage,
+        RescueKit,
+        HydrationGel,
+        CompressedRation,
+        EmergencyOxygen,
+        FlashGrenade,
+        PoisonBomb,
+        RegenerationShot
+    }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
-    public sealed partial class StashItemArt : VisualElement
-    {
+    public sealed partial class StashItemArt : VisualElement {
         private StashArtKind m_Kind;
         private bool m_HasPhysicalIcon;
-        private static System.Collections.Generic.Dictionary<StashArtKind,string> s_PhysicalCodes;
-        private static string PhysicalCode(StashArtKind kind)
-        {
-            if(kind==StashArtKind.None)return null;
-            if(s_PhysicalCodes==null)
-            {
-                s_PhysicalCodes=new System.Collections.Generic.Dictionary<StashArtKind,string>();
-                foreach(var definition in global::Unity.MP_FPS.Inventory.InventoryCatalog.Definitions.Values)
-                    if(PhysicalItemVisuals.IsPhysical(definition.Code))
-                    {
-                        var art=ContainerInventoryView.Art(definition.Code);
-                        if(art!=StashArtKind.None && !s_PhysicalCodes.ContainsKey(art))s_PhysicalCodes.Add(art,definition.Code);
+        private static System.Collections.Generic.Dictionary<StashArtKind, string> s_PhysicalCodes;
+
+        private static string PhysicalCode(StashArtKind kind) {
+            if (kind == StashArtKind.None) return null;
+            if (s_PhysicalCodes == null) {
+                s_PhysicalCodes = new System.Collections.Generic.Dictionary<StashArtKind, string>();
+                foreach (var definition in Inventory.InventoryCatalog.Definitions.Values)
+                    if (PhysicalItemVisuals.IsPhysical(definition.Code)) {
+                        var art = ContainerInventoryView.Art(definition.Code);
+                        if (art != StashArtKind.None && !s_PhysicalCodes.ContainsKey(art))
+                            s_PhysicalCodes.Add(art, definition.Code);
                     }
             }
-            return s_PhysicalCodes.TryGetValue(kind,out var code) ? code : null;
+            return s_PhysicalCodes.TryGetValue(kind, out string code) ? code : null;
         }
+
         private Painter2D m_Painter;
         private Vector2 m_Origin;
         private float m_Scale;
-
         public StashItemArt() : this(StashArtKind.None) { }
-        public StashItemArt(string code) : this(ContainerInventoryView.Art(code))
-        {
-            if (global::Unity.MP_FPS.Inventory.HaloModules.FromCode(code) == HaloModule.None) SetPhysicalIcon(code);
+
+        public StashItemArt(string code) : this(ContainerInventoryView.Art(code)) {
+            if (Inventory.HaloModules.FromCode(code) == HaloModule.None) SetPhysicalIcon(code);
         }
-        private void SetPhysicalIcon(string code)
-        {
-            var texture=PhysicalItemVisuals.Icon(code);
-            if(!texture)return;
-            Clear();m_HasPhysicalIcon=true;
-            var image=new Image {image=texture,scaleMode=ScaleMode.ScaleToFit,pickingMode=PickingMode.Ignore};
-            image.style.position=Position.Absolute;
-            image.style.left=image.style.right=image.style.top=image.style.bottom=0;
-            Add(image);MarkDirtyRepaint();
+
+        private void SetPhysicalIcon(string code) {
+            var texture = PhysicalItemVisuals.Icon(code);
+            if (!texture) return;
+            Clear();
+            m_HasPhysicalIcon = true;
+            var image = new Image
+                { image = texture, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+            image.style.position = Position.Absolute;
+            image.style.left = image.style.right = image.style.top = image.style.bottom = 0;
+            Add(image);
+            MarkDirtyRepaint();
         }
-        public StashItemArt(StashArtKind kind)
-        {
+
+        public StashItemArt(StashArtKind kind) {
             pickingMode = PickingMode.Ignore;
             generateVisualContent += Draw;
             ArtKind = kind;
         }
 
         [UxmlAttribute]
-        public StashArtKind ArtKind
-        {
+        public StashArtKind ArtKind {
             get => m_Kind;
-            set
-            {
-                m_Kind = value; m_HasPhysicalIcon=false; Clear();
-                if (SetModuleArtwork(value)) { MarkDirtyRepaint(); return; }
-                if ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
-                {
-                    var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
-                        ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) ? new[] { "Cicada", "Trine", "Aegis", "Vesper", "Thorn", "Sundown", "Rondo", "Tempest", "Nocturne" }[(int)value-(int)StashArtKind.HaloCicada] : value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-                    icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
+            set {
+                m_Kind = value;
+                m_HasPhysicalIcon = false;
+                Clear();
+                if (SetModuleArtwork(value)) {
+                    MarkDirtyRepaint();
+                    return;
+                }
+                if ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) ||
+                    value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver ||
+                    value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper) {
+                    var icon = new Image {
+                        image = Resources.Load<Texture2D>("HaloIcons/" +
+                                                          (value >= StashArtKind.HaloCicada &&
+                                                           value <= StashArtKind.HaloNocturne
+                                                              ?
+                                                              new[] {
+                                                                  "Cicada", "Trine", "Aegis", "Vesper", "Thorn",
+                                                                  "Sundown", "Rondo", "Tempest", "Nocturne"
+                                                              }[(int)value - (int)StashArtKind.HaloCicada]
+                                                              : value == StashArtKind.HaloRifle
+                                                                  ? "Rifle"
+                                                                  : value == StashArtKind.HaloRevolver
+                                                                      ? "Revolver"
+                                                                      : value == StashArtKind.HaloSniper
+                                                                          ? "Sniper"
+                                                                          : "Shotgun")),
+                        scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore
+                    };
+                    icon.style.position = Position.Absolute;
+                    icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }
                 SetPhysicalIcon(PhysicalCode(value));
@@ -76,16 +185,16 @@ namespace Unity.MP_FPS.Client
             }
         }
 
-        private void Draw(MeshGenerationContext context)
-        {
+        private void Draw(MeshGenerationContext context) {
             if (m_HasPhysicalIcon || contentRect.width < 1 || contentRect.height < 1) return;
             m_Painter = context.painter2D;
             float width = m_Kind == StashArtKind.Cell ? 60 : 100;
-            float height = m_Kind == StashArtKind.Rifle ? 45 : m_Kind == StashArtKind.Alloy || m_Kind == StashArtKind.Pistol ? 60 : 100;
+            float height = m_Kind == StashArtKind.Rifle ? 45 :
+                m_Kind == StashArtKind.Alloy || m_Kind == StashArtKind.Pistol ? 60 : 100;
             m_Scale = Mathf.Min(contentRect.width / width, contentRect.height / height);
-            m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f, (contentRect.height - height * m_Scale) * 0.5f);
-            switch (m_Kind)
-            {
+            m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f,
+                (contentRect.height - height * m_Scale) * 0.5f);
+            switch (m_Kind) {
                 case StashArtKind.Fists: Fists(); break;
                 case StashArtKind.LifeSupportShroud: LifeSupportShroud(); break;
                 case StashArtKind.ShieldGenerator: ShieldGenerator(); break;
@@ -123,10 +232,17 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.AlienMeat: AlienMeat(); break;
                 case StashArtKind.AlienOrgan: AlienOrgan(); break;
                 case StashArtKind.AlienTissue: AlienMeat(true); break;
-                case StashArtKind.AlienSpider:case StashArtKind.AlienSnake:case StashArtKind.AlienCaterpillar:
-                case StashArtKind.AlienTentacle:case StashArtKind.AlienCentipede:case StashArtKind.AlienLeech:
-                case StashArtKind.AlienSlime:case StashArtKind.AlienRoots:case StashArtKind.AlienFaceHugger:
-                    SpeciesOrgan((int)m_Kind-(int)StashArtKind.AlienSpider);break;
+                case StashArtKind.AlienSpider:
+                case StashArtKind.AlienSnake:
+                case StashArtKind.AlienCaterpillar:
+                case StashArtKind.AlienTentacle:
+                case StashArtKind.AlienCentipede:
+                case StashArtKind.AlienLeech:
+                case StashArtKind.AlienSlime:
+                case StashArtKind.AlienRoots:
+                case StashArtKind.AlienFaceHugger:
+                    SpeciesOrgan((int)m_Kind - (int)StashArtKind.AlienSpider);
+                    break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: StandardLifeSupportCollar(); break;
@@ -140,9 +256,9 @@ namespace Unity.MP_FPS.Client
             }
         }
 
-        private Vector2 P(float x, float y) => m_Origin + new Vector2(x, y) * m_Scale;
-        private void Fists()
-        {
+        private Vector2 P(float x, float y) { return m_Origin + new Vector2(x, y) * m_Scale; }
+
+        private void Fists() {
             Box(0x82958b, 26, 42, 48, 35);
             Box(0x52685e, 31, 76, 36, 12);
             for (int finger = 0; finger < 4; finger++)
@@ -150,122 +266,158 @@ namespace Unity.MP_FPS.Client
             Shape(0xaab6a3, new Vector2(25, 45), new Vector2(48, 56), new Vector2(43, 68), new Vector2(20, 57));
             Line(0x35463e, 2, new Vector2(29, 72), new Vector2(68, 72));
         }
-        private void SurveyCompass()
-        {
-            Ring(0x536760, 10, 50, 52, 31); Ring(0xc1cbb8, 2, 50, 52, 24);
+
+        private void SurveyCompass() {
+            Ring(0x536760, 10, 50, 52, 31);
+            Ring(0xc1cbb8, 2, 50, 52, 24);
             Shape(0xc8b080, new Vector2(50, 27), new Vector2(60, 61), new Vector2(50, 54));
             Shape(0x8ca6ac, new Vector2(50, 77), new Vector2(40, 43), new Vector2(50, 54));
             Line(0xdce4d0, 2, new Vector2(50, 12), new Vector2(50, 21));
             Line(0xdce4d0, 2, new Vector2(13, 52), new Vector2(22, 52));
             Line(0xdce4d0, 2, new Vector2(78, 52), new Vector2(87, 52));
         }
-        private void Rangefinder()
-        {
-            Shape(0x607b73, new Vector2(14, 29), new Vector2(70, 21), new Vector2(88, 33), new Vector2(84, 72), new Vector2(29, 81), new Vector2(12, 66));
-            Box(0x263e39, 21, 35, 48, 27); Box(0xb1c9b2, 27, 42, 28, 10);
-            Ring(0xc3d3c7, 5, 75, 47, 9); Ring(0x1d343b, 5, 75, 47, 5);
+
+        private void Rangefinder() {
+            Shape(0x607b73, new Vector2(14, 29), new Vector2(70, 21), new Vector2(88, 33), new Vector2(84, 72),
+                new Vector2(29, 81), new Vector2(12, 66));
+            Box(0x263e39, 21, 35, 48, 27);
+            Box(0xb1c9b2, 27, 42, 28, 10);
+            Ring(0xc3d3c7, 5, 75, 47, 9);
+            Ring(0x1d343b, 5, 75, 47, 5);
             Line(0x91ac9f, 3, new Vector2(29, 71), new Vector2(62, 67));
         }
-        private void SecureCase()
-        {
-            Box(0x526660, 13, 23, 74, 57); Box(0xa9b6a0, 18, 28, 64, 47);
-            Box(0x283b37, 24, 35, 52, 33); Box(0x84968e, 32, 14, 36, 9);
+
+        private void SecureCase() {
+            Box(0x526660, 13, 23, 74, 57);
+            Box(0xa9b6a0, 18, 28, 64, 47);
+            Box(0x283b37, 24, 35, 52, 33);
+            Box(0x84968e, 32, 14, 36, 9);
             Line(0xdbe0c7, 3, new Vector2(34, 53), new Vector2(45, 64), new Vector2(67, 41));
-            Box(0x263531, 11, 43, 8, 15); Box(0x263531, 81, 43, 8, 15);
+            Box(0x263531, 11, 43, 8, 15);
+            Box(0x263531, 81, 43, 8, 15);
         }
-        private void MooncoreFragment()
-        {
-            Shape(0x788fa3, new Vector2(50, 8), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88), new Vector2(27, 58), new Vector2(33, 24));
+
+        private void MooncoreFragment() {
+            Shape(0x788fa3, new Vector2(50, 8), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88),
+                new Vector2(27, 58), new Vector2(33, 24));
             Shape(0xbad4df, new Vector2(50, 8), new Vector2(54, 47), new Vector2(33, 24));
             Shape(0xe8f0e9, new Vector2(50, 8), new Vector2(76, 33), new Vector2(54, 47));
             Shape(0x3d576c, new Vector2(54, 47), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88));
-            Box(0x39434e, 15, 42, 14, 30); Box(0x39434e, 71, 42, 14, 30);
-            Box(0xa8adb0, 17, 44, 9, 20); Box(0xa8adb0, 74, 44, 9, 20);
+            Box(0x39434e, 15, 42, 14, 30);
+            Box(0x39434e, 71, 42, 14, 30);
+            Box(0xa8adb0, 17, 44, 9, 20);
+            Box(0xa8adb0, 74, 44, 9, 20);
             Line(0xcbd6d4, 2, new Vector2(27, 73), new Vector2(36, 83), new Vector2(65, 83), new Vector2(72, 73));
             Line(0x6f9edf, 2, new Vector2(40, 31), new Vector2(54, 47), new Vector2(47, 68));
         }
-        private void MissionArchive()
-        {
-            Shape(0x414f60, new Vector2(22, 16), new Vector2(70, 16), new Vector2(82, 29), new Vector2(82, 84), new Vector2(22, 84));
-            Box(0xc9d1cd, 29, 24, 38, 31); Box(0x26384d, 34, 30, 29, 4);
-            Box(0x72828e, 34, 39, 23, 3); Box(0x72828e, 34, 46, 27, 2);
+
+        private void MissionArchive() {
+            Shape(0x414f60, new Vector2(22, 16), new Vector2(70, 16), new Vector2(82, 29), new Vector2(82, 84),
+                new Vector2(22, 84));
+            Box(0xc9d1cd, 29, 24, 38, 31);
+            Box(0x26384d, 34, 30, 29, 4);
+            Box(0x72828e, 34, 39, 23, 3);
+            Box(0x72828e, 34, 46, 27, 2);
             Box(0x99adbf, 29, 62, 43, 9);
             for (int i = 0; i < 6; i++) Box(0xd6c59c, 32 + i * 6, 78, 3, 10);
             Line(0x7fa3df, 3, new Vector2(16, 31), new Vector2(16, 73));
         }
-        private static Color C(uint rgb) => new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
-        private void Shape(uint color, params Vector2[] points)
-        {
+
+        private static Color C(uint rgb) {
+            return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
+        }
+
+        private void Shape(uint color, params Vector2[] points) {
             m_Painter.fillColor = C(color);
             m_Painter.BeginPath();
             m_Painter.MoveTo(P(points[0].x, points[0].y));
             for (int i = 1; i < points.Length; i++) m_Painter.LineTo(P(points[i].x, points[i].y));
-            m_Painter.ClosePath(); m_Painter.Fill();
+            m_Painter.ClosePath();
+            m_Painter.Fill();
         }
-        private void Box(uint color, float x, float y, float w, float h) => Shape(color,
-            new Vector2(x, y), new Vector2(x + w, y), new Vector2(x + w, y + h), new Vector2(x, y + h));
-        private void Line(uint color, float width, params Vector2[] points)
-        {
-            m_Painter.strokeColor = C(color); m_Painter.lineWidth = width * m_Scale;
-            m_Painter.BeginPath(); m_Painter.MoveTo(P(points[0].x, points[0].y));
+
+        private void Box(uint color, float x, float y, float w, float h) {
+            Shape(color, new Vector2(x, y), new Vector2(x + w, y), new Vector2(x + w, y + h), new Vector2(x, y + h));
+        }
+
+        private void Line(uint color, float width, params Vector2[] points) {
+            m_Painter.strokeColor = C(color);
+            m_Painter.lineWidth = width * m_Scale;
+            m_Painter.BeginPath();
+            m_Painter.MoveTo(P(points[0].x, points[0].y));
             for (int i = 1; i < points.Length; i++) m_Painter.LineTo(P(points[i].x, points[i].y));
             m_Painter.Stroke();
         }
-        private void Ring(uint color, float width, float x, float y, float radius)
-        {
-            m_Painter.strokeColor = C(color); m_Painter.lineWidth = width * m_Scale;
+
+        private void Ring(uint color, float width, float x, float y, float radius) {
+            m_Painter.strokeColor = C(color);
+            m_Painter.lineWidth = width * m_Scale;
             m_Painter.BeginPath();
             m_Painter.Arc(P(x, y), radius * m_Scale, Angle.Degrees(0), Angle.Degrees(360));
             m_Painter.Stroke();
         }
 
-        private void Ration()
-        {
+        private void Ration() {
             Shape(0x4e6047, new Vector2(19, 12), new Vector2(79, 12), new Vector2(85, 88), new Vector2(14, 88));
-            Box(0x9dab85, 24, 22, 51, 55); Box(0xe4ddba, 30, 35, 39, 24);
+            Box(0x9dab85, 24, 22, 51, 55);
+            Box(0xe4ddba, 30, 35, 39, 24);
             Line(0x56694e, 3, new Vector2(36, 42), new Vector2(63, 42));
             Line(0x56694e, 2, new Vector2(36, 50), new Vector2(56, 50));
             Line(0xcacbb0, 2, new Vector2(20, 17), new Vector2(78, 17));
             Line(0x303d32, 2, new Vector2(19, 83), new Vector2(80, 83));
         }
-        private void Water()
-        {
-            Box(0x384f52, 39, 7, 23, 12); Box(0x95b5b7, 42, 19, 17, 9);
-            Shape(0x6d9fa2, new Vector2(42, 25), new Vector2(58, 25), new Vector2(72, 40),
-                new Vector2(72, 88), new Vector2(28, 88), new Vector2(28, 40));
-            Box(0xb5cfcc, 33, 42, 7, 39); Box(0xe5e5cf, 28, 53, 44, 20);
+
+        private void Water() {
+            Box(0x384f52, 39, 7, 23, 12);
+            Box(0x95b5b7, 42, 19, 17, 9);
+            Shape(0x6d9fa2, new Vector2(42, 25), new Vector2(58, 25), new Vector2(72, 40), new Vector2(72, 88),
+                new Vector2(28, 88), new Vector2(28, 40));
+            Box(0xb5cfcc, 33, 42, 7, 39);
+            Box(0xe5e5cf, 28, 53, 44, 20);
             Ring(0x557c7c, 2, 50, 63, 6);
             Line(0x456d6d, 2, new Vector2(29, 85), new Vector2(70, 85));
         }
-        private void OxygenCanister()
-        {
+
+        private void OxygenCanister() {
             // Distinct valve, pressure gauge and cyan shell read at one inventory cell.
-            Box(0x25383b, 43, 10, 14, 12); Box(0xb1bcb9, 35, 7, 30, 6);
-            Shape(0x296e77, new Vector2(37, 23), new Vector2(63, 23), new Vector2(72, 34),
-                new Vector2(72, 82), new Vector2(65, 91), new Vector2(35, 91), new Vector2(28, 82), new Vector2(28, 34));
-            Box(0x55b5be, 34, 32, 31, 49); Box(0x96d5d6, 36, 35, 6, 40);
-            Box(0xd4e5d9, 28, 50, 44, 24); Ring(0x245b65, 2.5f, 45, 61, 7);
-            Line(0x245b65, 2, new Vector2(56, 56), new Vector2(63, 56), new Vector2(63, 61), new Vector2(56, 66), new Vector2(63, 66));
-            Ring(0xd5ddcf, 2, 67, 24, 8); Line(0xe9bd62, 2, new Vector2(67, 24), new Vector2(70, 20));
+            Box(0x25383b, 43, 10, 14, 12);
+            Box(0xb1bcb9, 35, 7, 30, 6);
+            Shape(0x296e77, new Vector2(37, 23), new Vector2(63, 23), new Vector2(72, 34), new Vector2(72, 82),
+                new Vector2(65, 91), new Vector2(35, 91), new Vector2(28, 82), new Vector2(28, 34));
+            Box(0x55b5be, 34, 32, 31, 49);
+            Box(0x96d5d6, 36, 35, 6, 40);
+            Box(0xd4e5d9, 28, 50, 44, 24);
+            Ring(0x245b65, 2.5f, 45, 61, 7);
+            Line(0x245b65, 2, new Vector2(56, 56), new Vector2(63, 56), new Vector2(63, 61), new Vector2(56, 66),
+                new Vector2(63, 66));
+            Ring(0xd5ddcf, 2, 67, 24, 8);
+            Line(0xe9bd62, 2, new Vector2(67, 24), new Vector2(70, 20));
             Box(0x263e43, 33, 84, 34, 6);
         }
-        private void Dust()
-        {
-            Shape(0x151a1b, new Vector2(24, 14), new Vector2(80, 12), new Vector2(87, 88), new Vector2(21, 94), new Vector2(17, 69));
-            Shape(0x778184, new Vector2(23, 10), new Vector2(74, 8), new Vector2(80, 86), new Vector2(23, 91), new Vector2(19, 69));
+
+        private void Dust() {
+            Shape(0x151a1b, new Vector2(24, 14), new Vector2(80, 12), new Vector2(87, 88), new Vector2(21, 94),
+                new Vector2(17, 69));
+            Shape(0x778184, new Vector2(23, 10), new Vector2(74, 8), new Vector2(80, 86), new Vector2(23, 91),
+                new Vector2(19, 69));
             Shape(0x4e5a5e, new Vector2(31, 17), new Vector2(68, 15), new Vector2(71, 81), new Vector2(27, 85));
-            Shape(0xaebabc, new Vector2(23, 10), new Vector2(31, 17), new Vector2(27, 85), new Vector2(23, 91), new Vector2(19, 69));
-            Box(0xc1c8bd, 31, 30, 36, 32); Box(0x465152, 35, 35, 28, 5);
-            Box(0x8c998c, 35, 44, 22, 2); Box(0x8c998c, 35, 49, 25, 2); Box(0x8c998c, 35, 54, 14, 2);
+            Shape(0xaebabc, new Vector2(23, 10), new Vector2(31, 17), new Vector2(27, 85), new Vector2(23, 91),
+                new Vector2(19, 69));
+            Box(0xc1c8bd, 31, 30, 36, 32);
+            Box(0x465152, 35, 35, 28, 5);
+            Box(0x8c998c, 35, 44, 22, 2);
+            Box(0x8c998c, 35, 49, 25, 2);
+            Box(0x8c998c, 35, 54, 14, 2);
             Line(0xd0d5c9, 1.2f, new Vector2(25, 13), new Vector2(72, 11));
             Line(0x313e41, 2, new Vector2(25, 21), new Vector2(72, 19));
-            Shape(0xafa992, new Vector2(35, 76), new Vector2(45, 68), new Vector2(53, 72), new Vector2(63, 69), new Vector2(66, 80), new Vector2(36, 82));
+            Shape(0xafa992, new Vector2(35, 76), new Vector2(45, 68), new Vector2(53, 72), new Vector2(63, 69),
+                new Vector2(66, 80), new Vector2(36, 82));
             Line(0xc6c5b3, 1, new Vector2(31, 88), new Vector2(71, 85));
         }
 
-        private void Alloy()
-        {
-            Shape(0x141713, new Vector2(10, 38), new Vector2(72, 20), new Vector2(97, 29), new Vector2(97, 42), new Vector2(30, 58));
+        private void Alloy() {
+            Shape(0x141713, new Vector2(10, 38), new Vector2(72, 20), new Vector2(97, 29), new Vector2(97, 42),
+                new Vector2(30, 58));
             Shape(0x8c9186, new Vector2(7, 30), new Vector2(72, 13), new Vector2(94, 23), new Vector2(29, 43));
             Shape(0x555e57, new Vector2(29, 43), new Vector2(94, 23), new Vector2(94, 36), new Vector2(29, 55));
             Shape(0xabb0a0, new Vector2(7, 30), new Vector2(29, 43), new Vector2(29, 55), new Vector2(7, 42));
@@ -275,38 +427,50 @@ namespace Unity.MP_FPS.Client
             Line(0x758076, 1, new Vector2(35, 46), new Vector2(84, 32));
         }
 
-        private void Cell()
-        {
-            Box(0x131822, 16, 18, 35, 73); Box(0x6d7990, 11, 13, 35, 74);
-            Box(0xa2b1b5, 11, 13, 7, 74); Box(0x414d67, 39, 13, 7, 74);
-            Box(0xb1b6a5, 11, 12, 35, 7); Box(0x242c3b, 11, 24, 35, 8);
-            Box(0x222b3b, 11, 70, 35, 9); Box(0x808f9c, 14, 84, 29, 5);
-            Box(0xc3c9b3, 21, 7, 14, 5); Box(0x26344a, 20, 36, 17, 29);
-            Shape(0xc5d5dd, new Vector2(31, 39), new Vector2(24, 50), new Vector2(29, 50), new Vector2(25, 62), new Vector2(34, 47), new Vector2(29, 47));
+        private void Cell() {
+            Box(0x131822, 16, 18, 35, 73);
+            Box(0x6d7990, 11, 13, 35, 74);
+            Box(0xa2b1b5, 11, 13, 7, 74);
+            Box(0x414d67, 39, 13, 7, 74);
+            Box(0xb1b6a5, 11, 12, 35, 7);
+            Box(0x242c3b, 11, 24, 35, 8);
+            Box(0x222b3b, 11, 70, 35, 9);
+            Box(0x808f9c, 14, 84, 29, 5);
+            Box(0xc3c9b3, 21, 7, 14, 5);
+            Box(0x26344a, 20, 36, 17, 29);
+            Shape(0xc5d5dd, new Vector2(31, 39), new Vector2(24, 50), new Vector2(29, 50), new Vector2(25, 62),
+                new Vector2(34, 47), new Vector2(29, 47));
             Line(0xdce4d3, 1.3f, new Vector2(14, 20), new Vector2(14, 66));
         }
-        private void Medical()
-        {
-            Box(0x253530, 32, 8, 36, 84); Box(0xd8ddd1, 35, 20, 30, 55);
-            Box(0x8b9e93, 35, 8, 30, 12); Box(0x567763, 36, 76, 28, 10);
-            Box(0x8c3e37, 44, 32, 12, 28); Box(0x8c3e37, 36, 40, 28, 12);
+
+        private void Medical() {
+            Box(0x253530, 32, 8, 36, 84);
+            Box(0xd8ddd1, 35, 20, 30, 55);
+            Box(0x8b9e93, 35, 8, 30, 12);
+            Box(0x567763, 36, 76, 28, 10);
+            Box(0x8c3e37, 44, 32, 12, 28);
+            Box(0x8c3e37, 36, 40, 28, 12);
             Line(0xf2f1e5, 2, new Vector2(38, 23), new Vector2(38, 71));
         }
 
-        private void Halo()
-        {
-            Ring(0x141b1b, 9, 50, 54, 33); Ring(0x807b58, 7, 50, 49, 33);
-            Ring(0xc6caa0, 2, 50, 48, 34); Ring(0x6c9fa5, 1.2f, 50, 48, 27);
+        private void Halo() {
+            Ring(0x141b1b, 9, 50, 54, 33);
+            Ring(0x807b58, 7, 50, 49, 33);
+            Ring(0xc6caa0, 2, 50, 48, 34);
+            Ring(0x6c9fa5, 1.2f, 50, 48, 27);
             Shape(0xd2d8bc, new Vector2(50, 6), new Vector2(57, 14), new Vector2(50, 23), new Vector2(43, 14));
             Shape(0x93c2c3, new Vector2(50, 9), new Vector2(54, 14), new Vector2(50, 19), new Vector2(46, 14));
             Line(0xe0dec0, 2, new Vector2(19, 35), new Vector2(16, 42));
             Line(0xe0dec0, 2, new Vector2(81, 35), new Vector2(84, 42));
         }
 
-        private void Outfit()
-        {
-            Shape(0x0b141a, new Vector2(38, 10), new Vector2(62, 10), new Vector2(80, 31), new Vector2(70, 41), new Vector2(62, 33), new Vector2(83, 90), new Vector2(17, 90), new Vector2(38, 33), new Vector2(30, 41), new Vector2(20, 31));
-            Shape(0xd5d7cb, new Vector2(37, 10), new Vector2(44, 14), new Vector2(50, 10), new Vector2(56, 14), new Vector2(63, 10), new Vector2(73, 25), new Vector2(62, 31), new Vector2(38, 31), new Vector2(27, 25));
+        private void Outfit() {
+            Shape(0x0b141a, new Vector2(38, 10), new Vector2(62, 10), new Vector2(80, 31), new Vector2(70, 41),
+                new Vector2(62, 33), new Vector2(83, 90), new Vector2(17, 90), new Vector2(38, 33), new Vector2(30, 41),
+                new Vector2(20, 31));
+            Shape(0xd5d7cb, new Vector2(37, 10), new Vector2(44, 14), new Vector2(50, 10), new Vector2(56, 14),
+                new Vector2(63, 10), new Vector2(73, 25), new Vector2(62, 31), new Vector2(38, 31),
+                new Vector2(27, 25));
             Shape(0x486876, new Vector2(39, 30), new Vector2(61, 30), new Vector2(76, 84), new Vector2(24, 84));
             Shape(0x7e979a, new Vector2(44, 32), new Vector2(49, 32), new Vector2(44, 81), new Vector2(34, 83));
             Shape(0x243e4b, new Vector2(53, 32), new Vector2(61, 31), new Vector2(76, 84), new Vector2(58, 83));
@@ -314,74 +478,94 @@ namespace Unity.MP_FPS.Client
             Box(0xb9c6c1, 39, 27, 22, 4);
         }
 
-        private void Helmet()
-        {
-            Shape(0x535d60, new Vector2(18, 63), new Vector2(20, 35), new Vector2(31, 19), new Vector2(53, 12), new Vector2(75, 22), new Vector2(84, 42), new Vector2(83, 67), new Vector2(67, 83), new Vector2(35, 81));
-            Shape(0xc5cdcb, new Vector2(24, 39), new Vector2(33, 25), new Vector2(53, 19), new Vector2(72, 27), new Vector2(78, 41));
-            Shape(0x283739, new Vector2(23, 45), new Vector2(78, 45), new Vector2(73, 65), new Vector2(33, 69), new Vector2(24, 60));
+        private void Helmet() {
+            Shape(0x535d60, new Vector2(18, 63), new Vector2(20, 35), new Vector2(31, 19), new Vector2(53, 12),
+                new Vector2(75, 22), new Vector2(84, 42), new Vector2(83, 67), new Vector2(67, 83),
+                new Vector2(35, 81));
+            Shape(0xc5cdcb, new Vector2(24, 39), new Vector2(33, 25), new Vector2(53, 19), new Vector2(72, 27),
+                new Vector2(78, 41));
+            Shape(0x283739, new Vector2(23, 45), new Vector2(78, 45), new Vector2(73, 65), new Vector2(33, 69),
+                new Vector2(24, 60));
             Line(0x8fa8a8, 2, new Vector2(29, 49), new Vector2(73, 49));
-            Box(0x7e8887, 14, 44, 8, 20); Box(0x7e8887, 82, 44, 6, 20);
+            Box(0x7e8887, 14, 44, 8, 20);
+            Box(0x7e8887, 82, 44, 6, 20);
             Line(0xd7ddda, 2, new Vector2(38, 74), new Vector2(64, 74));
         }
-        private void Rifle()
-        {
-            Shape(0x434d50, new Vector2(5, 13), new Vector2(23, 13), new Vector2(31, 18), new Vector2(73, 18), new Vector2(73, 27), new Vector2(29, 27), new Vector2(16, 33), new Vector2(5, 33));
-            Box(0x68777b, 34, 15, 37, 4); Box(0x2b3538, 73, 20, 21, 4); Box(0x434d50, 92, 18, 5, 8);
+
+        private void Rifle() {
+            Shape(0x434d50, new Vector2(5, 13), new Vector2(23, 13), new Vector2(31, 18), new Vector2(73, 18),
+                new Vector2(73, 27), new Vector2(29, 27), new Vector2(16, 33), new Vector2(5, 33));
+            Box(0x68777b, 34, 15, 37, 4);
+            Box(0x2b3538, 73, 20, 21, 4);
+            Box(0x434d50, 92, 18, 5, 8);
             Shape(0x58666a, new Vector2(37, 26), new Vector2(49, 26), new Vector2(54, 40), new Vector2(43, 42));
             Shape(0x313d41, new Vector2(27, 26), new Vector2(34, 26), new Vector2(32, 39), new Vector2(25, 39));
-            Box(0x859193, 42, 8, 13, 6); Box(0x394548, 45, 6, 8, 4);
+            Box(0x859193, 42, 8, 13, 6);
+            Box(0x394548, 45, 6, 8, 4);
             Line(0xaeb8b7, 1, new Vector2(36, 21), new Vector2(66, 21));
             for (int x = 55; x < 70; x += 4) Box(0x293639, x, 23, 2, 2);
         }
-        private void Pistol()
-        {
-            Shape(0x526267, new Vector2(17, 14), new Vector2(82, 14), new Vector2(82, 27), new Vector2(47, 27), new Vector2(39, 53), new Vector2(23, 50), new Vector2(30, 28), new Vector2(17, 26));
-            Box(0x879496, 20, 14, 60, 4); Box(0x2a373b, 28, 33, 11, 14);
+
+        private void Pistol() {
+            Shape(0x526267, new Vector2(17, 14), new Vector2(82, 14), new Vector2(82, 27), new Vector2(47, 27),
+                new Vector2(39, 53), new Vector2(23, 50), new Vector2(30, 28), new Vector2(17, 26));
+            Box(0x879496, 20, 14, 60, 4);
+            Box(0x2a373b, 28, 33, 11, 14);
             Line(0x455358, 3, new Vector2(47, 28), new Vector2(58, 28), new Vector2(57, 36), new Vector2(44, 36));
             Box(0x253237, 71, 11, 6, 3);
         }
-        private void ChestRig()
-        {
-            ChestBadge(6, 0xa89acb);
-        }
-        private void Backpack()
-        {
+
+        private void ChestRig() { ChestBadge(6, 0xa89acb); }
+
+        private void Backpack() {
             Line(0x5a6968, 6, new Vector2(34, 22), new Vector2(37, 12), new Vector2(62, 12), new Vector2(67, 23));
-            Shape(0x647571, new Vector2(28, 20), new Vector2(72, 20), new Vector2(79, 37), new Vector2(78, 87), new Vector2(22, 87), new Vector2(22, 37));
-            Box(0x344744, 17, 44, 10, 29); Box(0x344744, 74, 44, 10, 29);
-            Box(0x8b9991, 29, 26, 42, 22); Box(0x4e625b, 30, 55, 40, 27);
-            Box(0xb8c0b1, 34, 36, 5, 16); Box(0xb8c0b1, 61, 36, 5, 16);
+            Shape(0x647571, new Vector2(28, 20), new Vector2(72, 20), new Vector2(79, 37), new Vector2(78, 87),
+                new Vector2(22, 87), new Vector2(22, 37));
+            Box(0x344744, 17, 44, 10, 29);
+            Box(0x344744, 74, 44, 10, 29);
+            Box(0x8b9991, 29, 26, 42, 22);
+            Box(0x4e625b, 30, 55, 40, 27);
+            Box(0xb8c0b1, 34, 36, 5, 16);
+            Box(0xb8c0b1, 61, 36, 5, 16);
             Line(0xaeb9ad, 1, new Vector2(32, 63), new Vector2(68, 63));
         }
     }
 
-    public sealed class StashGridVisual : VisualElement
-    {
+    public sealed class StashGridVisual : VisualElement {
         private readonly int m_Columns, m_Rows;
-        private Color m_LineColor = new Color(0.24f, 0.26f, 0.25f, 0.18f);
-        public Color LineColor { get => m_LineColor; set { m_LineColor = value; MarkDirtyRepaint(); } }
-        public StashGridVisual(int columns, int rows)
-        {
-            m_Columns = columns; m_Rows = rows;
+        private Color m_LineColor = new(0.24f, 0.26f, 0.25f, 0.18f);
+
+        public Color LineColor {
+            get => m_LineColor;
+            set {
+                m_LineColor = value;
+                MarkDirtyRepaint();
+            }
+        }
+
+        public StashGridVisual(int columns, int rows) {
+            m_Columns = columns;
+            m_Rows = rows;
             pickingMode = PickingMode.Ignore;
             generateVisualContent += Draw;
         }
-        private void Draw(MeshGenerationContext context)
-        {
+
+        private void Draw(MeshGenerationContext context) {
             float w = contentRect.width, h = contentRect.height;
             if (w < 1 || h < 1) return;
             var painter = context.painter2D;
-            painter.strokeColor = m_LineColor; painter.lineWidth = 1;
+            painter.strokeColor = m_LineColor;
+            painter.lineWidth = 1;
             painter.BeginPath();
-            for (int x = 0; x <= m_Columns; x++)
-            {
+            for (int x = 0; x <= m_Columns; x++) {
                 float px = x * w / m_Columns;
-                painter.MoveTo(new Vector2(px, 0)); painter.LineTo(new Vector2(px, h));
+                painter.MoveTo(new Vector2(px, 0));
+                painter.LineTo(new Vector2(px, h));
             }
-            for (int y = 0; y <= m_Rows; y++)
-            {
+            for (int y = 0; y <= m_Rows; y++) {
                 float py = y * h / m_Rows;
-                painter.MoveTo(new Vector2(0, py)); painter.LineTo(new Vector2(w, py));
+                painter.MoveTo(new Vector2(0, py));
+                painter.LineTo(new Vector2(w, py));
             }
             painter.Stroke();
         }
