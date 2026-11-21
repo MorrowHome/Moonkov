@@ -1,5 +1,13 @@
 # 项目交接
 
+## 玩家输入与动画（2026-11-21）
+
+- 修改组合键优先级时看 `DollSingerInput.ResolveActionPriority`。先让手雷读取原始按键，再处理光环、近战和快捷栏。近战消费按键后，快捷栏仍需要收到本帧回调。
+- 网络输入从 `ClientInputReaderSystem` 进入。重生时重新绑定角色。正式角色和模板输入共用一个写入点。`ClientInputSenderSystem` 按目标 tick 合并短按。
+- 网络表现的播放顺序在 `DollSingerNetworkPresentation.Update`。先更新手部动作，再根据本帧的手部占用显示武器。
+- `DollSingerMovement` 在绑定 Animator 时识别可用参数。不同控制器的 MotionSpeed 可能是整数或浮点数。改步态后可运行 `LocomotionCadenceChecks.Run()`。
+- `DollSingerActionAnimation` 按动作资源共用索引。骨骼引用和初始姿势归各角色实例所有。
+
 ## 结项归档（2026-11-15）
 
 - 旧客户端压缩包 `Moonkov20261024_2.zip`、`Moonkov20261024.tar.zst` 和旧服务端压缩包 `MoonServer.zip` 已从 `Build` 移到 `D:/MoonkovBuilds/Closeout-20261115`。移动前后逐个核对了 SHA-256。

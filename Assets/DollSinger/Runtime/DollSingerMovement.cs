@@ -157,21 +157,54 @@ namespace Unity.MP_FPS.DollSinger {
         private Vector2 m_LookInput;
         private bool m_JumpInput;
         private bool m_SprintInput;
-        private bool m_HasSpeedParameter;
-        private bool m_HasMoveParameter;
-        private bool m_HasGroundedParameter;
-        private bool m_HasFreeFallParameter;
-        private bool m_HasMotionSpeedParameter;
-        private bool m_MotionSpeedIsFloat;
-        private bool m_HasStanceMotionSpeed;
-        private bool m_HasJumpParameter;
-        private bool m_HasMoveXParameter, m_HasMoveZParameter;
+        private LocomotionParameters m_Locomotion;
+
+        // 各角色控制器的参数不同。只在绑定时检查名称和类型。
+        private struct LocomotionParameters
+        {
+            private Animator speed, move, grounded, freeFall, jump;
+            public AnimatorControllerParameterType? MotionSpeed;
+            public bool StanceMotionSpeed, Directional, Turn;
+            private static readonly int MoveId = Animator.StringToHash("Move");
+
+            public void SetSpeed(float value) => speed?.SetFloat(k_AnimIDSpeed, value);
+            public void SetMoving(bool value) => move?.SetBool(MoveId, value);
+            public void SetGrounded(bool value) => grounded?.SetBool(k_AnimIDGrounded, value);
+            public void SetFreeFall(bool value) => freeFall?.SetBool(k_AnimIDFreeFall, value);
+            public void TriggerJump() => jump?.SetTrigger(k_AnimIDJump);
+
+            public static LocomotionParameters Bind(Animator animator)
+            {
+                var bindings = new LocomotionParameters();
+                bool x = false, z = false, turnDirection = false, turnPlayback = false;
+                foreach (var parameter in animator.parameters)
+                {
+                    switch ((parameter.name, parameter.type))
+                    {
+                        case ("Speed", AnimatorControllerParameterType.Float): bindings.speed = animator; break;
+                        case ("Move", AnimatorControllerParameterType.Bool): bindings.move = animator; break;
+                        case ("Grounded", AnimatorControllerParameterType.Bool): bindings.grounded = animator; break;
+                        case ("FreeFall", AnimatorControllerParameterType.Bool): bindings.freeFall = animator; break;
+                        case ("Jump", AnimatorControllerParameterType.Trigger): bindings.jump = animator; break;
+                        case ("MotionSpeed", AnimatorControllerParameterType.Float):
+                        case ("MotionSpeed", AnimatorControllerParameterType.Int): bindings.MotionSpeed = parameter.type; break;
+                        case ("StanceMotionSpeed", AnimatorControllerParameterType.Float): bindings.StanceMotionSpeed = true; break;
+                        case ("MoveX", AnimatorControllerParameterType.Float): x = true; break;
+                        case ("MoveZ", AnimatorControllerParameterType.Float): z = true; break;
+                        case ("TurnDirection", AnimatorControllerParameterType.Float): turnDirection = true; break;
+                        case ("TurnPlayback", AnimatorControllerParameterType.Float): turnPlayback = true; break;
+                    }
+                }
+                bindings.Directional = x && z;
+                bindings.Turn = turnDirection && turnPlayback;
+                return bindings;
+            }
+        }
         private Vector2 m_LastMoveDirection = Vector2.up;
         private static readonly int k_AnimIDTurnDirection = Animator.StringToHash("TurnDirection");
         private static readonly int k_AnimIDTurnPlayback = Animator.StringToHash("TurnPlayback");
         private static readonly int k_AnimIDTurnState = Animator.StringToHash("Turn In Place.Turn Steps");
         private int m_TurnLayer = -1;
-        private bool m_HasTurnParameters;
         private bool m_HasBodyYawSample;
         private float m_PreviousBodyYaw, m_TurnWeight, m_TurnHoldTime, m_TurnDirection;
         private float m_HeadLookWeight;
@@ -349,13 +382,13 @@ namespace Unity.MP_FPS.DollSinger {
             m_AnimationBlend = speed >= m_AnimationBlend ? speed : Mathf.Lerp(m_AnimationBlend, speed,
                 1f - Mathf.Exp(-Mathf.Max(0f, deltaTime) * Mathf.Max(0f, m_SpeedChangeRate)));
             if (m_AnimationBlend < 0.01f) m_AnimationBlend = 0f;
-            if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
+            m_Locomotion.SetSpeed(m_AnimationBlend);
             ApplyDirectionalAnimation(worldMovement, deltaTime);
             ApplyTurnAnimation(bodyYaw ?? transform.eulerAngles.y, m_AnimationBlend, grounded && !jumped, deltaTime);
-            if (m_HasMoveParameter) m_Animator.SetBool("Move", m_AnimationBlend > 0.05f);
-            if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, grounded);
-            if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, !grounded && verticalVelocity < 0f);
-            if (m_HasJumpParameter && jumped) m_Animator.SetTrigger(k_AnimIDJump);
+            m_Locomotion.SetMoving(m_AnimationBlend > 0.05f);
+            m_Locomotion.SetGrounded(grounded);
+            m_Locomotion.SetFreeFall(!grounded && verticalVelocity < 0f);
+            if (jumped) m_Locomotion.TriggerJump();
             ApplyLocomotionCadence();
         }
 
@@ -370,39 +403,9 @@ namespace Unity.MP_FPS.DollSinger {
                     foreach (var clip in m_Animator.runtimeAnimatorController.animationClips)
                         foreach (var evt in clip.events)
                             if (evt.functionName == "OnFootstep") { m_FootstepClips.Add(clip); break; }
-                foreach (var parameter in m_Animator.parameters) {
-                    if (parameter.nameHash == k_AnimIDSpeed && parameter.type == AnimatorControllerParameterType.Float)
-                        m_HasSpeedParameter = true;
-                    if (parameter.name == "Move" && parameter.type == AnimatorControllerParameterType.Bool)
-                        m_HasMoveParameter = true;
-                    if (parameter.nameHash == k_AnimIDGrounded && parameter.type == AnimatorControllerParameterType.Bool)
-                        m_HasGroundedParameter = true;
-                    if (parameter.nameHash == k_AnimIDFreeFall && parameter.type == AnimatorControllerParameterType.Bool)
-                        m_HasFreeFallParameter = true;
-                    if (parameter.nameHash == k_AnimIDMotionSpeed &&
-                        (parameter.type == AnimatorControllerParameterType.Float ||
-                         parameter.type == AnimatorControllerParameterType.Int)) {
-                        m_HasMotionSpeedParameter = true;
-                        m_MotionSpeedIsFloat = parameter.type == AnimatorControllerParameterType.Float;
-                    }
-                    if (parameter.nameHash == k_AnimIDJump && parameter.type == AnimatorControllerParameterType.Trigger)
-                        m_HasJumpParameter = true;
-                    if (parameter.nameHash == k_AnimIDMoveX && parameter.type == AnimatorControllerParameterType.Float)
-                        m_HasMoveXParameter = true;
-                    if (parameter.nameHash == k_AnimIDMoveZ && parameter.type == AnimatorControllerParameterType.Float)
-                        m_HasMoveZParameter = true;
-                    if (parameter.nameHash == k_AnimIDStanceMotionSpeed && parameter.type == AnimatorControllerParameterType.Float)
-                        m_HasStanceMotionSpeed = true;
-                }
+                m_Locomotion = LocomotionParameters.Bind(m_Animator);
                 m_TurnLayer = m_Animator.GetLayerIndex("Turn In Place");
                 m_StanceLayer = m_Animator.GetLayerIndex("Stances");
-                bool hasDirection = false, hasPlayback = false;
-                foreach (var parameter in m_Animator.parameters) {
-                    if (parameter.type != AnimatorControllerParameterType.Float) continue;
-                    hasDirection |= parameter.nameHash == k_AnimIDTurnDirection;
-                    hasPlayback |= parameter.nameHash == k_AnimIDTurnPlayback;
-                }
-                m_HasTurnParameters = hasDirection && hasPlayback;
             }
             // Capture the imported bone axes before the Animator evaluates its first pose.
             EnsureLeanBones();
@@ -672,7 +675,7 @@ namespace Unity.MP_FPS.DollSinger {
             m_Grounded = m_Controller.isGrounded && m_VerticalVelocity <= 0f;
 
             // update animator if using character
-            if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, m_Grounded);
+            m_Locomotion.SetGrounded(m_Grounded);
         }
 
         private void CameraRotation() {
@@ -768,20 +771,19 @@ namespace Unity.MP_FPS.DollSinger {
             if (!m_HasAnimator) return;
             m_AnimationBlend = Mathf.Lerp(m_AnimationBlend, CurrentSpeed, Time.deltaTime * m_SpeedChangeRate);
             if (m_AnimationBlend < 0.01f) m_AnimationBlend = 0f;
-            if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
+            m_Locomotion.SetSpeed(m_AnimationBlend);
             ApplyDirectionalAnimation(m_Controller.velocity, Time.deltaTime);
-            if (m_HasMoveParameter) m_Animator.SetBool("Move", CurrentSpeed > 0.05f);
+            m_Locomotion.SetMoving(CurrentSpeed > 0.05f);
             ApplyLocomotionCadence();
         }
 
         private void ApplyLocomotionCadence()
         {
-            if (m_HasMotionSpeedParameter)
-            {
-                if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, NaturalMotionRate(0));
-                else m_Animator.SetInteger(k_AnimIDMotionSpeed, CurrentSpeed > .01f ? 1 : 0);
-            }
-            if (m_HasStanceMotionSpeed)
+            if (m_Locomotion.MotionSpeed == AnimatorControllerParameterType.Float)
+                m_Animator.SetFloat(k_AnimIDMotionSpeed, NaturalMotionRate(0));
+            else if (m_Locomotion.MotionSpeed == AnimatorControllerParameterType.Int)
+                m_Animator.SetInteger(k_AnimIDMotionSpeed, CurrentSpeed > .01f ? 1 : 0);
+            if (m_Locomotion.StanceMotionSpeed)
                 m_Animator.SetFloat(k_AnimIDStanceMotionSpeed, NaturalMotionRate(m_StanceLayer));
         }
 
@@ -807,7 +809,7 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void ApplyDirectionalAnimation(Vector3 worldMovement, float deltaTime)
         {
-            if (!m_HasMoveXParameter || !m_HasMoveZParameter) return;
+            if (!m_Locomotion.Directional) return;
             Vector3 local = transform.InverseTransformDirection(worldMovement);
             var horizontal = new Vector2(local.x, local.z);
             if (horizontal.sqrMagnitude > 0.0001f) m_LastMoveDirection = horizontal.normalized;
@@ -825,7 +827,7 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void ApplyTurnAnimation(float bodyYaw, float speed, bool grounded, float deltaTime)
         {
-            if (m_TurnLayer < 0 || !m_HasTurnParameters) return;
+            if (m_TurnLayer < 0 || !m_Locomotion.Turn) return;
             grounded &= m_Stance == DollSingerStance.Standing;
             float angle = m_HasBodyYawSample ? Mathf.DeltaAngle(m_PreviousBodyYaw, bodyYaw) : 0f;
             bool hadSample = m_HasBodyYawSample;
@@ -865,7 +867,7 @@ namespace Unity.MP_FPS.DollSinger {
                 m_FallTimeoutDelta = m_FallTimeout;
 
                 // update animator if using character
-                if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, false);
+                m_Locomotion.SetFreeFall(false);
 
                 // stop our velocity dropping infinitely when grounded
                 if (m_VerticalVelocity < 0.0f) { m_VerticalVelocity = -2f; }
@@ -877,7 +879,7 @@ namespace Unity.MP_FPS.DollSinger {
 
                     // update animator if using character
                     JumpedThisFrame = true;
-                    if (m_HasJumpParameter) m_Animator.SetTrigger(k_AnimIDJump);
+                    m_Locomotion.TriggerJump();
                 }
 
                 // jump timeout
@@ -889,7 +891,7 @@ namespace Unity.MP_FPS.DollSinger {
                 // fall timeout
                 if (m_FallTimeoutDelta >= 0.0f) { m_FallTimeoutDelta -= Time.deltaTime; } else {
                     // update animator if using character
-                    if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, true);
+                    m_Locomotion.SetFreeFall(true);
                 }
 
                 // if we are not grounded, do not jump
