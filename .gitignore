@@ -24,6 +24,9 @@
 /Assets/SceneDependencyCache/
 /Assets/SceneDependencyCache.meta
 
+# UI Builder generates the local XML schemas used by UXML editors.
+/UIElementsSchema/
+
 # IDE generated files
 .vs/
 .idea/
