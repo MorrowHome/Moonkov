@@ -10,7 +10,7 @@
     <Compile Include="../../Assets/Scripts/Networking/Shared/LobbyAppearanceInventory.cs" Link="Shared/LobbyAppearanceInventory.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ProtectionKitMigration.cs" Link="Shared/ProtectionKitMigration.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/RecoveryInventory.cs" Link="Shared/RecoveryInventory.cs" />
-    <Compile Include="../../Assets/Scripts/Networking/Shared/InventoryModel.cs" Link="Shared/InventoryModel.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Shared/Inventory/*.cs" Link="Shared/Inventory/%(Filename)%(Extension)" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ConsumableCatalog.cs" Link="Shared/ConsumableCatalog.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/AlienBiology.cs" Link="Shared/AlienBiology.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/BatteryEnergy.cs" Link="Shared/BatteryEnergy.cs" />

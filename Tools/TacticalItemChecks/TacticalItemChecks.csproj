@@ -7,7 +7,7 @@
     <Compile Include="../../Assets/Scripts/Networking/Shared/LootInventoryExchange.cs" Link="LootInventoryExchange.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/RaidLootTable.cs" Link="RaidLootTable.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/TacticalItemsRules.cs" Link="TacticalItemsRules.cs" />
-    <Compile Include="../../Assets/Scripts/Networking/Shared/InventoryModel.cs" Link="InventoryModel.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Shared/Inventory/*.cs" Link="Shared/Inventory/%(Filename)%(Extension)" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ConsumableCatalog.cs" Link="ConsumableCatalog.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/AlienBiology.cs" Link="AlienBiology.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/BatteryEnergy.cs" Link="BatteryEnergy.cs" />

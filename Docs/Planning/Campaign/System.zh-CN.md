@@ -23,7 +23,7 @@
 | 有界设备快照与操作 RPC | `Assets/Scripts/Networking/Shared/RaidMissionNetwork.cs` | 当前进度容量为两组 `float4`，即 8 个节点。纯规则虽允许最多 24 节点，`RaidMissionSite.Validate()` 已限制场景模板为最多 8 节点。战役任务不能绕过该限制。 |
 | 局内 J 详情、当前步骤、楼层和直线距离 | `Assets/Scripts/Gameplay/UI/RaidHUD.Missions.cs` | 保留真实交互仲裁。现有 `m_MissionPinned` 只是当前 HUD 的内存状态，新事件会自动置为追踪；尚无跨局追踪列表。 |
 | 局外三个首次记录 | `Assets/Scripts/UI/Game/MoonkovTerminal.cs` 的 `Tasks()` | 当前只显示 `MissionFirsts` 的三个事实。需要扩展为章节任务日志，不能把三个首次记录当成完整任务系统。 |
-| 三个首次事实和两种任务产物来源校验 | `Assets/Scripts/Networking/Shared/InventoryModel.cs` 的 `MissionInventory` | `MissionFirsts` 仅接受 0–7；任务产物仅识别月核与普通档案，内容版本限定为 1。战役进度和四份证据必须有独立记录。 |
+| 三个首次事实和两种任务产物来源校验 | `Assets/Scripts/Networking/Shared/Inventory/MissionInventory.cs` 的 `MissionInventory` | `MissionFirsts` 仅接受 0–7；任务产物仅识别月核与普通档案，内容版本限定为 1。战役进度和四份证据必须有独立记录。 |
 | 带回物、首次奖励和容量不足回收 | `Assets/Scripts/Networking/Shared/RecoveryInventory.cs` | 复用库存事务与 `RecoveryInbox`。新增战役奖励不能挤坏现有回收批次上限。 |
 | 单人原子存档、订单与结算回执 | `Assets/Scripts/Networking/Client/OfflineProfileStore.cs` | 复用同一锁、完整快照、刷新磁盘后替换、`.bak` 与回执。当前接受格式 1、2、3；格式 3 已用于赏金资料。 |
 | 出战与结算日志恢复 | `Assets/Scripts/Networking/Server/RaidPersistenceContext.cs` | 保留先重放结算、再处理未完成出战的顺序；扩展战役检查点恢复，不能另写无协调的进度文件。 |
