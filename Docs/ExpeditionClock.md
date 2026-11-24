@@ -9,7 +9,7 @@ The clock remains unchanged by the 2026-10-09 environment update. Its hours now
 feed a selectable sky model: the shipped MoonGameScene uses MeanLunarOrbit,
 with one astronomical Earth hour per game hour and an approximately 29.53-day
 solar cycle. HUD hours are game time, not local lunar solar time. See
-[Moon realism configuration](../MoonRealism.md) for the authored UTC epoch,
+[Moon realism configuration](MoonRealism.md) for the authored UTC epoch,
 time multiplier and approximation limits.
 
 ```mermaid

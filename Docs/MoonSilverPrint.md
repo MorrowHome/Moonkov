@@ -23,4 +23,4 @@ F1 在游戏窗口已获得焦点、鼠标未捕获时同时重新捕获并切�
 
 已检查正式地图室内外各一处 Edit Mode Game 相机预览，截图和验证记录位于本地 `Library/BuildValidation/Realism20261023/`。这仅确认原始材质和受光恢复：外墙细节仍偏平，不代表最终写实画质验收。本轮未进入 Play、重新打包或进行联机验收，方法检查也不能替代实际键盘交互。
 
-历史效果可查阅 [2026-10-22 环境作用域记录](ArtDirection/20261022-EnvironmentOptics/README.md) 和 [2026-10-19 连续银盐记录](ArtDirection/20261019-ContinuousSilver/README.md)。其中截图、默认值和执行链仅代表当时的实验状态。
+历史效果可查阅 [2026-10-22 环境作用域记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/ArtDirection/20261022-EnvironmentOptics/README.md) 和 [2026-10-19 连续银盐记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/ArtDirection/20261019-ContinuousSilver/README.md)。其中截图、默认值和执行链仅代表当时的实验状态。

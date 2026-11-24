@@ -34,7 +34,7 @@ public sealed partial class MoonkovUIPreview
             try
             {
                 texture.SetPixels(UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(rect.position, texture.width, texture.height)); texture.Apply();
-                var folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/UI/Approved-CD-20261018"));
+                var folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../LocalData/UIReview/Comparisons"));
                 Directory.CreateDirectory(folder); File.WriteAllBytes(Path.Combine(folder, fileName), texture.EncodeToPNG());
                 Debug.Log("Captured Unity editor preview: " + fileName);
             }

@@ -100,10 +100,10 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             int width = Mathf.RoundToInt(rect.width), height = Mathf.RoundToInt(rect.height);
             var pixels = UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(rect.position, width, height);
             var image = new Texture2D(width, height, TextureFormat.RGB24, false); image.SetPixels(pixels); image.Apply();
-            var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/UI/MoonkovHubPreview.png"));
+            var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../LocalData/UIReview/MoonkovHubPreview.png"));
             try { Directory.CreateDirectory(Path.GetDirectoryName(path)); File.WriteAllBytes(path, image.EncodeToPNG()); }
             finally { DestroyImmediate(image); }
-            Debug.Log("Saved the actual Unity UI preview to Docs/UI/MoonkovHubPreview.png.");
+            Debug.Log("Saved the actual Unity UI preview to LocalData/UIReview/MoonkovHubPreview.png.");
         };
     }
 
@@ -120,12 +120,12 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             int width = Mathf.RoundToInt(rect.width), height = Mathf.RoundToInt(rect.height);
             var image = new Texture2D(width, height, TextureFormat.RGB24, false);
             image.SetPixels(UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(rect.position, width, height)); image.Apply();
-            var path = Path.GetFullPath(Path.Combine(Application.dataPath, $"../Docs/UI/MoonkovPage{page}.png"));
+            var path = Path.GetFullPath(Path.Combine(Application.dataPath, $"../LocalData/UIReview/MoonkovPage{page}.png"));
             try { Directory.CreateDirectory(Path.GetDirectoryName(path)); File.WriteAllBytes(path, image.EncodeToPNG()); }
             finally { DestroyImmediate(image); }
             if (++page < 9) { window.m_Screen.NavigatePage(page); return; }
             EditorApplication.update -= tick; window.m_Screen.NavigatePage(0);
-            Debug.Log("Saved nine Moonkov page captures to Docs/UI/.");
+            Debug.Log("Saved nine Moonkov page captures to LocalData/UIReview/.");
         };
         EditorApplication.update += tick;
     }

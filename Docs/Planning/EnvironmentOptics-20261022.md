@@ -31,4 +31,4 @@
 
 Unity C# 重编译无错误，相关 Shader 实际渲染且无 Error，已有共享 HLSL 的潜在未初始化变量警告保留说明。只使用一个 Editor，没有进入 Play 或进行联机验收；结束已正常关闭。两份字体恢复为任务起始用户字节，编辑器设置保持原样。正式场景仅增加 `faithfulLighting: 1`，未为截图调亮灯光。
 
-采集中的线性 PNG 编码问题已校正并单独记录，不将截图转换当作游戏灯光升级。完整图、读数、Console记录、恢复状态和限制见 [交付记录](../ArtDirection/20261022-EnvironmentOptics/README.md)。后续画质提升应针对建筑大平面、材质精度和间接光投入，不继续叠加全屏重滤镜。
+采集中的线性 PNG 编码问题已校正并单独记录，不将截图转换当作游戏灯光升级。完整图、读数、Console记录、恢复状态和限制见 [交付记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/ArtDirection/20261022-EnvironmentOptics/README.md)。后续画质提升应针对建筑大平面、材质精度和间接光投入，不继续叠加全屏重滤镜。

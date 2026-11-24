@@ -43,21 +43,21 @@
 
 ## 验证与画面
 
-- [规则与实际弹体扣血记录](AI/HaloArsenalExpansion/Rules.txt)：六把购买、装备、物品弹量持久化、部分装填和能量不足；三律完整／残余弹量、长按、松开重按、缓冲、取消和同状态重放；星棘单次扣弹和五弹体；坠日重力与薄墙扫掠。
+- [规则与实际弹体扣血记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Rules.txt)：六把购买、装备、物品弹量持久化、部分装填和能量不足；三律完整／残余弹量、长按、松开重按、缓冲、取消和同状态重放；星棘单次扣弹和五弹体；坠日重力与薄墙扫掠。
 - 该记录还通过真实 `Projectile.Advance(server=true) → Impact → ECS` 验证六把伤害，范围检查包含多碰撞体去重、无 owner 异形、初始化人体、射手免伤、其他玩家受伤、遮挡、死亡过滤和跨物理场景隔离。测试直接供应生成状态，不模拟网络传输。
 - 最终 bake revision：`2cadb68e7cc9`。
-- [最终动作与第一人称回归记录](AI/HaloArsenalExpansion/Gestures.txt)。以该文件中的最终 bake revision 和测试结果为准；旧中间截图及失败样本不作为交付验收。
+- [最终动作与第一人称回归记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Gestures.txt)。以该文件中的最终 bake revision 和测试结果为准；旧中间截图及失败样本不作为交付验收。
 - 四机位截图和六段动作短片保存在 `Docs/AI/HaloArsenalExpansion/`。每段左上为第一人称，右上正面，左下侧面，右下背面。另有 `*-unlit-owner.png` 关闭光环投射照明的平涂对照。
 
 本轮验证层级为 Unity 编译、本地 Play、正式网络玩家实例、真实弹体及 ECS/PhysicsScene 测试。正式地图引用同一套玩家与武器注册资源；本轮没有进行正式地图实战、实时 Host/Client 对局、独立构建或 GPU 性能验收。
 
 ### 动作片段与平涂对照
 
-- 蝉鸣：[四机位动作片段](AI/HaloArsenalExpansion/Cicada-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/cicada-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/cicada-unlit-owner.png)
-- 三律：[四机位动作片段](AI/HaloArsenalExpansion/Trine-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/trine-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/trine-unlit-owner.png)
-- 天枢：[四机位动作片段](AI/HaloArsenalExpansion/Aegis-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/aegis-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/aegis-unlit-owner.png)
-- 望舒：[四机位动作片段](AI/HaloArsenalExpansion/Vesper-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/vesper-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/vesper-unlit-owner.png)
-- 星棘：[四机位动作片段](AI/HaloArsenalExpansion/Thorn-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/thorn-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/thorn-unlit-owner.png)
-- 坠日：[四机位动作片段](AI/HaloArsenalExpansion/Sundown-Actions.mp4) · [第一人称](AI/HaloArsenalExpansion/sundown-owner.png) · [关闭投射灯](AI/HaloArsenalExpansion/sundown-unlit-owner.png)
+- 蝉鸣：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Cicada-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/cicada-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/cicada-unlit-owner.png)
+- 三律：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Trine-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/trine-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/trine-unlit-owner.png)
+- 天枢：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Aegis-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/aegis-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/aegis-unlit-owner.png)
+- 望舒：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Vesper-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/vesper-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/vesper-unlit-owner.png)
+- 星棘：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Thorn-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/thorn-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/thorn-unlit-owner.png)
+- 坠日：[四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/Sundown-Actions.mp4) · [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/sundown-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalExpansion/sundown-unlit-owner.png)
 
 短片由 24 fps 实际四路 RenderTexture 录制，1280×720 H.264，无补帧；时长与帧数见 `Clips.json`。关闭照明对照仍保留场景基础光；实验室未启用 Bloom Volume。当前 Unity groundTruth：compilationFailed=false、consoleErrors=0；另有 Unity AI Toolkit 账户 API 连通警告。生成的 Prefab 保留 Unity 空字符串尾空格格式，源码空白检查通过。

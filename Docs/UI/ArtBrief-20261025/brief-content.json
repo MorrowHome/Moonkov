@@ -810,7 +810,7 @@
         "zh": "主界面",
         "en": "Main menu"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/home-dark.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/home-dark.png",
       "date": "2026-10-19",
       "image": "images/01-home-dark.jpg"
     },
@@ -819,7 +819,7 @@
         "zh": "登录与注册",
         "en": "Sign-in and registration"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/account.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/account.png",
       "date": "2026-10-19",
       "image": "images/02-account.jpg"
     },
@@ -837,7 +837,7 @@
         "zh": "物品检查与容器窗口",
         "en": "Item inspection and container windows"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/item.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/item.png",
       "date": "2026-10-19",
       "image": "images/04-item.jpg"
     },
@@ -855,7 +855,7 @@
         "zh": "补给商目录",
         "en": "Supplier directory"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/suppliers.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/suppliers.png",
       "date": "2026-10-19",
       "image": "images/06-suppliers.jpg"
     },
@@ -864,7 +864,7 @@
         "zh": "商品购买与出售",
         "en": "Shop"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/shop.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/shop.png",
       "date": "2026-10-19",
       "image": "images/07-shop.jpg"
     },
@@ -873,7 +873,7 @@
         "zh": "应急补给",
         "en": "Emergency supplies"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/emergency.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/emergency.png",
       "date": "2026-10-19",
       "image": "images/08-emergency.jpg"
     },
@@ -891,7 +891,7 @@
         "zh": "任务与调查记录",
         "en": "Tasks and investigation records"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/tasks.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/tasks.png",
       "date": "2026-10-19",
       "image": "images/10-tasks.jpg"
     },
@@ -915,7 +915,7 @@
         "zh": "基地",
         "en": "Base"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/base.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/base.png",
       "date": "2026-10-19",
       "image": "images/12-base.jpg"
     },
@@ -924,7 +924,7 @@
         "zh": "通讯",
         "en": "Communications"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/comms.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/comms.png",
       "date": "2026-10-19",
       "image": "images/13-comms.jpg"
     },
@@ -933,7 +933,7 @@
         "zh": "设置",
         "en": "Settings"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/settings.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/settings.png",
       "date": "2026-10-19",
       "image": "images/14-settings.jpg"
     },
@@ -942,7 +942,7 @@
         "zh": "出发准备 角色",
         "en": "Deployment Character"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/operator.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/operator.png",
       "date": "2026-10-19",
       "image": "images/15-operator.jpg"
     },
@@ -951,7 +951,7 @@
         "zh": "出发准备 地点",
         "en": "Deployment Destination"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/location.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/location.png",
       "date": "2026-10-19",
       "image": "images/16-location.jpg"
     },
@@ -960,7 +960,7 @@
         "zh": "出发准备 简报",
         "en": "Deployment Briefing"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/briefing.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/briefing.png",
       "date": "2026-10-19",
       "image": "images/17-briefing.jpg"
     },
@@ -969,7 +969,7 @@
         "zh": "出发准备 回收",
         "en": "Deployment Recovery"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/recovery.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/recovery.png",
       "date": "2026-10-19",
       "image": "images/18-recovery.jpg"
     },
@@ -978,7 +978,7 @@
         "zh": "出发准备 确认",
         "en": "Deployment Confirmation"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/ready.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/ready.png",
       "date": "2026-10-19",
       "image": "images/19-ready.jpg"
     },
@@ -1014,7 +1014,7 @@
         "zh": "高级连接设置",
         "en": "Advanced connection"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/session.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/session.png",
       "date": "2026-10-19",
       "image": "images/23-session.jpg"
     },
@@ -1023,7 +1023,7 @@
         "zh": "创建主机弹窗",
         "en": "Host creation dialog"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/host.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/host.png",
       "date": "2026-10-19",
       "image": "images/24-host.jpg",
       "crop": [
@@ -1038,7 +1038,7 @@
         "zh": "地址直连弹窗",
         "en": "Direct-connect dialog"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/direct.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/direct.png",
       "date": "2026-10-19",
       "image": "images/25-direct.jpg",
       "crop": [
@@ -1053,7 +1053,7 @@
         "zh": "连接状态与加载",
         "en": "Connection and loading"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/connecting.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/connecting.png",
       "date": "2026-10-19",
       "image": "images/26-connecting.jpg",
       "crop": [
@@ -1140,7 +1140,7 @@
         "zh": "光环灯光面板",
         "en": "Halo lighting panel"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/halo-light.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/halo-light.png",
       "date": "2026-10-19",
       "image": "images/35-halo-light.jpg"
     },
@@ -1149,7 +1149,7 @@
         "zh": "世界交互提示",
         "en": "World interaction prompts"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/interaction.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/interaction.png",
       "date": "2026-10-19",
       "image": "images/36-interaction.jpg",
       "crop": [
@@ -1164,7 +1164,7 @@
         "zh": "撤离提示",
         "en": "Extraction display"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/extraction.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/extraction.png",
       "date": "2026-10-19",
       "image": "images/37-extraction.jpg",
       "crop": [
@@ -1179,7 +1179,7 @@
         "zh": "行动结果",
         "en": "Session result"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/result.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/result.png",
       "date": "2026-10-19",
       "image": "images/38-result.jpg"
     },
@@ -1188,7 +1188,7 @@
         "zh": "结算物资",
         "en": "Cargo result"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/cargo.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/cargo.png",
       "date": "2026-10-19",
       "image": "images/39-cargo.jpg"
     },
@@ -1197,7 +1197,7 @@
         "zh": "入库与返回",
         "en": "Storage result"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/storage.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/storage.png",
       "date": "2026-10-19",
       "image": "images/40-storage.jpg"
     },
@@ -1206,7 +1206,7 @@
         "zh": "暂停菜单",
         "en": "Pause menu"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/pause.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/pause.png",
       "date": "2026-10-19",
       "image": "images/41-pause.jpg",
       "crop": [
@@ -1221,7 +1221,7 @@
         "zh": "死亡提示",
         "en": "Death display"
       },
-      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/death.png",
+      "source": "https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Native-20261018/death.png",
       "date": "2026-10-19",
       "image": "images/42-death.jpg",
       "crop": [

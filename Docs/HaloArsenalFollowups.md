@@ -10,9 +10,9 @@
 
 新增独立 SVG、640×640 透明组件／图标、材质、Prefab、WeaponData 和 pose/fire/reload Actions。双发各有对应 Fire Action，在 8 个额外俯仰采样中一并烘焙。Bake revision：`fed23d246d69`；前十个 motion 与 `582f8262` 逐项相同。
 
-- [第一人称](AI/HaloArsenalFollowups/Rondo/rondo-owner.png) · [关闭投射灯](AI/HaloArsenalFollowups/Rondo/rondo-unlit-owner.png) · [四机位射击／装填片段](AI/HaloArsenalFollowups/Rondo/Rondo-Actions.mp4)
-- [规则与真实弹体伤害](AI/HaloArsenalFollowups/Rondo/Rules.txt)：按下双发、长按不重复、1／2 剩余弹量、松开重按、死亡／切换／装填／瞄准取消、预测同状态重放；采购、装备、弹量持久化、有限电池装填、真实 Projectile→Impact→ECS 26 点单弹伤害通过。
-- [动作检查](AI/HaloArsenalFollowups/Rondo/Gestures.txt)：正式网络玩家实例，待机／双发／装填、俯仰 -80 到 +80、16:9／4:3、中央手臂网格留白、指向准星与 48 次快速开关镜中断通过。
+- [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Rondo/rondo-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Rondo/rondo-unlit-owner.png) · [四机位射击／装填片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Rondo/Rondo-Actions.mp4)
+- [规则与真实弹体伤害](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Rondo/Rules.txt)：按下双发、长按不重复、1／2 剩余弹量、松开重按、死亡／切换／装填／瞄准取消、预测同状态重放；采购、装备、弹量持久化、有限电池装填、真实 Projectile→Impact→ECS 26 点单弹伤害通过。
+- [动作检查](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Rondo/Gestures.txt)：正式网络玩家实例，待机／双发／装填、俯仰 -80 到 +80、16:9／4:3、中央手臂网格留白、指向准星与 48 次快速开关镜中断通过。
 
 为逐把接入，安装器支持 `HaloArsenalSetup.InstallOne(id)`，本地驱动与实验室列表按已注册武器长度分配；新增双发参数不会改动三律的三发配置。验证器支持 `BlenderGestureValidation.RunWeapon(id-2)` 和 `HaloArsenalCapture.RunWeapon(id)`，每把保留单独证据。
 
@@ -24,9 +24,9 @@
 
 Bake revision：`5b0ef4c950a4`，此前十一个 motion 保持不变。新增完整 pose/fire/reload 与俯仰 Action、独立 PNG／图标／SVG／材质／Prefab／武器配置。仅岚轮的第一人称取景下移 2.5% 屏高，修正开关镜时手臂擦入中央边缘，既有武器取景不变。
 
-- [第一人称](AI/HaloArsenalFollowups/Tempest/tempest-owner.png) · [关闭投射灯](AI/HaloArsenalFollowups/Tempest/tempest-unlit-owner.png) · [四机位动作片段](AI/HaloArsenalFollowups/Tempest/Tempest-Actions.mp4)
-- [规则与实际伤害](AI/HaloArsenalFollowups/Tempest/Rules.txt)：持续按住在 60 Hz 下 2 秒实际发射 8 次；余下 6 发用尽后停止，弹量不为负；1 秒飞行 34 m、下降 1.62 m。真实弹体命中后，主目标和弹道旁另一目标均受到 26 点伤害，确认使用范围路径。采购／换槽／持久化／部分装填和旧武器规则一并通过。
-- [动作检查](AI/HaloArsenalFollowups/Tempest/Gestures.txt)：正式玩家四机位，待机／射击／装填、俯仰 -80 到 +80、16:9／4:3、中央手臂网格留白与 48 次中断开关镜通过。Unity 编译和本地 Play 无新增运行异常；验证范围同上，不代称正式地图或联机实战。
+- [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Tempest/tempest-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Tempest/tempest-unlit-owner.png) · [四机位动作片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Tempest/Tempest-Actions.mp4)
+- [规则与实际伤害](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Tempest/Rules.txt)：持续按住在 60 Hz 下 2 秒实际发射 8 次；余下 6 发用尽后停止，弹量不为负；1 秒飞行 34 m、下降 1.62 m。真实弹体命中后，主目标和弹道旁另一目标均受到 26 点伤害，确认使用范围路径。采购／换槽／持久化／部分装填和旧武器规则一并通过。
+- [动作检查](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Tempest/Gestures.txt)：正式玩家四机位，待机／射击／装填、俯仰 -80 到 +80、16:9／4:3、中央手臂网格留白与 48 次中断开关镜通过。Unity 编译和本地 Play 无新增运行异常；验证范围同上，不代称正式地图或联机实战。
 
 后端共享清单的 `MoonPersistence` .NET 10 编译通过（0 警告、0 错误）。ShopChecks 已成功构建，但因本地缺少 `appsettings.local.json`，未执行数据库／HTTP 集成检查；Unity 内采购和装备夹具结果不等同于该后端检查。
 
@@ -36,8 +36,8 @@ Bake revision：`5b0ef4c950a4`，此前十一个 motion 保持不变。新增完
 
 Bake revision：`6cae2ec5d512`，之前十二套动作数据逐项保持一致。新增独立 SVG／PNG／图标／材质／Prefab／WeaponData 和完整原骨架 pose/fire/reload／俯仰 Actions。指向修正作用于完整双臂，保持 Blender 的手腕、小臂和指关节局部旋转。
 
-- [第一人称](AI/HaloArsenalFollowups/Nocturne/nocturne-owner.png) · [关闭投射灯](AI/HaloArsenalFollowups/Nocturne/nocturne-unlit-owner.png) · [四机位片段](AI/HaloArsenalFollowups/Nocturne/Nocturne-Actions.mp4)
-- [规则与实际伤害](AI/HaloArsenalFollowups/Nocturne/Rules.txt)：两条不同且可重放的精密弹道，1 发扣弹／14 能量补弹，冷却门控；采购、装备、弹量持久化、有限电池和旧武器规则通过。真实 Projectile→Impact→ECS 命中累计造成 76 伤害，弹道外目标不受范围伤害。
-- [动作检查](AI/HaloArsenalFollowups/Nocturne/Gestures.txt)：正式网络玩家实例，第一人称／正面／侧面／背面；待机、射击、装填的局部骨骼旋转保持原烘焙。俯仰 -80～+80、16:9／4:3、食指指向准星、中央手臂网格留白、连续转头和 48 次快速中断开关镜通过。
+- [第一人称](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Nocturne/nocturne-owner.png) · [关闭投射灯](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Nocturne/nocturne-unlit-owner.png) · [四机位片段](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Nocturne/Nocturne-Actions.mp4)
+- [规则与实际伤害](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Nocturne/Rules.txt)：两条不同且可重放的精密弹道，1 发扣弹／14 能量补弹，冷却门控；采购、装备、弹量持久化、有限电池和旧武器规则通过。真实 Projectile→Impact→ECS 命中累计造成 76 伤害，弹道外目标不受范围伤害。
+- [动作检查](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/HaloArsenalFollowups/Nocturne/Gestures.txt)：正式网络玩家实例，第一人称／正面／侧面／背面；待机、射击、装填的局部骨骼旋转保持原烘焙。俯仰 -80～+80、16:9／4:3、食指指向准星、中央手臂网格留白、连续转头和 48 次快速中断开关镜通过。
 
 Unity 编译及本地 Play 验证通过，后端共享清单 .NET 10 编译通过。仍未进行实时 Host/Client、正式地图实战或独立构建；数据库 HTTP 集成检查受缺少本地配置限制。

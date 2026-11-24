@@ -31,11 +31,11 @@ v0.3.1 converts the complete 24-page v0.3 into Markdown and incorporates later a
 
 ## 相关实现文档 / Related implementation documentation
 
-- [项目结构 / Project structure](../AI/UnityProjectContext.md)（存在历史漂移，需核对代码 / contains historical drift; verify against code）
+- [项目结构 / Project structure](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/UnityProjectContext.md)（存在历史漂移，需核对代码 / contains historical drift; verify against code）
 - [单人模式 / Solo mode](../SinglePlayer.md)
 - [库存与容器 / Inventory and containers](../ContainerInventory.md)
 - [持久化 / Persistence](../PostgreSQLPersistence.md)
-- [人形AI / Humanoid AI](../AI/DollSingerEnemies.md)
+- [人形AI / Humanoid AI](../DollSingerEnemies.md)
 - [月面来源 / Lunar source data](../Moon成果迁移/MoonSources.md)
 
 本目录只提供策划参考，不覆盖或替换适用的AGENTS.md及既有仓库操作规则。  

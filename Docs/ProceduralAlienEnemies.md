@@ -72,7 +72,7 @@
 
 新增两个可独立调参的预制体：`XenoStiltWalker.prefab` → `StiltWalker.asset`（约 3.2 m），`XenoStiltWatcher.prefab` → `StiltWatcher.asset`（约 4.2 m）。两者属于 `StiltWalker` 物种，使用细长颈躯、反折长腿、垂臂和狭窄骨面；高度不是把地爬骨架整体拉大。灰色 1.8 m 人形仅为预览比例参照。
 
-![左为 4.2 m，中央为 3.2 m，右为 1.8 m 人形参照](AI/AlienUprightComparison.png)
+![左为 4.2 m，中央为 3.2 m，右为 1.8 m 人形参照](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/AlienUprightComparison.png)
 
 Profile 中的 **长脚窥行者 / 直立体型** 可调 `StiltHeight`、`StiltThickness`、`StiltStride`、`StiltStepSeconds`。Height 是 Scale=1 的脚底到头顶高度；改变骨架比例后需重新生成该敌人。行走时双脚交替固定落地，攻击时前倾、抬臂蓄力，随后向锁定方向伸臂抓击；单轮不会重复伤害同一目标，也不画攻击范围线。
 
@@ -139,7 +139,7 @@ Profile 中的 **长脚窥行者 / 直立体型** 可调 `StiltHeight`、`StiltT
 
 抱脸虫使用独立的程序化身体：扁平腹部贴住面部，八根关节肢从脸前扣到后脑，细长尾巴绕住颈部。行走时肢体使用实际接触落脚点，起跳时收拢再展开。它的附着对象是服务端选择的 Ghost Entity，同一目标最多附着一只。客户端使用映射后的目标姿态跟随本地头部，组织命中体沿相同的抓握曲线布置。目标死亡、目标消失、时间结束或头部空间被世界碰撞占据时松脱；抱脸虫死亡同样立即结束附着。附着不会修改玩家输入、相机旋转或永久移动状态。
 
-![独立抱脸虫附着形态预览，灰色椭球为检查用头部体积](AI/AlienFaceAttachment.png)
+![独立抱脸虫附着形态预览，灰色椭球为检查用头部体积](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/AlienFaceAttachment.png)
 
 ```mermaid
 stateDiagram-v2
@@ -175,7 +175,7 @@ stateDiagram-v2
 
 ## 两类敌人与目标规则
 
-人形玩家敌人使用已有 `DollSingerEnemySystem`，保留搜刮、战斗、撤退和撤离行为。异形使用 `ProceduralAlienEnemy`：巡游、发现目标、追击、搜索最后感知位置、攻击前摇、扑击、恢复和死亡。枪声、脚步和落地声只提供带误差的搜索位置；失去视线后使用有限时长记忆。枪声穿过墙体时听觉范围缩短，连续枪声使用稳定的误差方向。脚步受姿态、负重、距离和遮挡影响，具体规则见[人形敌人感知](AI/DollSingerEnemies.md)。近战结算再次检查目标存活、实际命中体距离和遮挡。
+人形玩家敌人使用已有 `DollSingerEnemySystem`，保留搜刮、战斗、撤退和撤离行为。异形使用 `ProceduralAlienEnemy`：巡游、发现目标、追击、搜索最后感知位置、攻击前摇、扑击、恢复和死亡。枪声、脚步和落地声只提供带误差的搜索位置；失去视线后使用有限时长记忆。枪声穿过墙体时听觉范围缩短，连续枪声使用稳定的误差方向。脚步受姿态、负重、距离和遮挡影响，具体规则见[人形敌人感知](DollSingerEnemies.md)。近战结算再次检查目标存活、实际命中体距离和遮挡。
 
 枪声感知的 13 项生产规则检查通过，覆盖远近、遮挡、连续射击和不精确位置。游戏与编辑器程序集隔离编译通过；实际异形、墙体和多次枪声的服务端夹具已补充，尚未在编辑器运行，正式地图听觉和遭遇平衡仍需试玩。
 

@@ -40,17 +40,17 @@
 
 最终烘焙版本为 `989de9868b58`。Unity 6000.5.10f1 脚本编译完成，当前 Console 为 0 条错误，保留测试前已有的 7 条警告。两份正式玩家 Prefab 均无缺失脚本，且引用同一份最新烘焙。退出 Play 后时间倍率恢复为 1，临时手部相机和演示 RenderTexture 均为 0。
 
-本轮通过记录见 [PlayChecks.txt](AI/BlenderGestureValidation/PlayChecks.txt)。检查包含普通武器中央 12% 方形区域的实际手臂网格遮挡、手指位于屏幕底部、左轮指向准星，以及 16:9／4:3、俯仰 -80° 到 +80° 和连续抬头过程。源烘焙与运行时旋转一致性检查通过（容差 0.12°）；检查还比较肩根的共同世界朝向，防止局部旋转正确却整组转歪。狙击食指最大折角约 0.028°，拇指与食指直角误差约 0.001°，两个接点间隙最大约 0.155 mm。
+本轮通过记录见 [PlayChecks.txt](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/PlayChecks.txt)。检查包含普通武器中央 12% 方形区域的实际手臂网格遮挡、手指位于屏幕底部、左轮指向准星，以及 16:9／4:3、俯仰 -80° 到 +80° 和连续抬头过程。源烘焙与运行时旋转一致性检查通过（容差 0.12°）；检查还比较肩根的共同世界朝向，防止局部旋转正确却整组转歪。狙击食指最大折角约 0.028°，拇指与食指直角误差约 0.001°，两个接点间隙最大约 0.155 mm。
 
 源蒙皮检查工具 `Tools/Blender/validate_gesture_surfaces.py` 逐帧检查前三种武器的手指屈曲方向、腕部角度，以及手指、双手、前臂、躯干表面的交叉。相邻的同手掌／前臂接缝、肩部连接和未在源 Action 中驱动的头部不纳入源表面交叉判断；头部、动态衣物和中间俯仰姿态通过 Unity 实际变形网格另行检查，仍须结合四机位画面。结果见同目录 `SourceSurfaces.json`。实际 Unity 蒙皮的 45 个角度／射击／装填关键姿态结果见 `RuntimeSurfaces.json`。这些是有限采样，不能替代联网、其他移动姿态或所有衣物动态的验收。
 
 以下为此前已认可的狙击对照，两图使用相同实际第一人称手部相机。Blender 保留源 Action 的双臂局部姿态，只匹配正式玩家的身体位置及双臂共同朝向。独立对比所有手势关节的世界坐标，最大差约 0.0007 mm；图中手形与关节轮廓一致，材质／灯光分别来自 Blender Workbench 和 Unity 正式渲染。
 
-![Blender 同机位源动作](AI/BlenderGestureValidation/Blender-Sniper-Owner.png)
+![Blender 同机位源动作](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Blender-Sniper-Owner.png)
 
-![Unity 实际玩家相机](AI/BlenderGestureValidation/Unity-Sniper-Owner.png)
+![Unity 实际玩家相机](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-Owner.png)
 
-![正式玩家四机位](AI/BlenderGestureValidation/Unity-FourCameras-Sniper.png)
+![正式玩家四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-FourCameras-Sniper.png)
 
 对照数据与实际相机快照保存在同目录，可重现 Blender 渲染：
 
@@ -75,17 +75,17 @@ unity command eval_file --project-path . --caller plugin --skill unity-feature-i
 
 实际录像采用同一帧的四个相机输出，左上为第一人称，右上为正面，左下为右侧，右下为背面；录制时将动作时间放慢以便观察。
 
-- [步枪四机位](AI/BlenderGestureValidation/Unity-Rifle-FourViews.mp4)
-- [左轮四机位](AI/BlenderGestureValidation/Unity-Revolver-FourViews.mp4)
-- [霰弹枪四机位](AI/BlenderGestureValidation/Unity-Shotgun-FourViews.mp4)
+- [步枪四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Rifle-FourViews.mp4)
+- [左轮四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Revolver-FourViews.mp4)
+- [霰弹枪四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Shotgun-FourViews.mp4)
 
-- [连续抬头与低头四机位](AI/BlenderGestureValidation/Unity-Pitch-FourViews.mp4)
+- [连续抬头与低头四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Pitch-FourViews.mp4)
 
 狙击框中心对齐：以两组相接指尖形成的对角点求开口中心，只平移第一人称手部相机的 X/Y，保留取景深度、射击时的尺寸变化和源骨骼动作。此前按整只手的包围盒居中、且框仍在屏内就停止更新，导致初始偏低和转头回正后的累积漂移。Play 回归检查要求开口中心距准星小于 0.5 个实际输出像素，覆盖射击、装填、连续俯仰、16:9／4:3 与手部 FOV 50／65／80。
 
-![狙击框中心对齐后的正式玩家四机位](AI/BlenderGestureValidation/Unity-Sniper-Centered.png)
+![狙击框中心对齐后的正式玩家四机位](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-Centered.png)
 
-[原始第一人称画面](AI/BlenderGestureValidation/Unity-Sniper-Centered-Owner.png)
+[原始第一人称画面](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-Centered-Owner.png)
 
 
 ## 2026-10-18：狙击使用正常视角放大
@@ -96,13 +96,13 @@ unity command eval_file --project-path . --caller plugin --skill unity-feature-i
 
 下方旧截图和居中验收为此前版本的历史记录。新验收额外覆盖 1／2／4／6／12 倍：两相机 FOV 相同，手部相机深度偏移为零；框的投影尺寸与实际倍率成正比；光环世界大小和位置不随倍率改变。完整动作、俯仰、长宽比和骨骼一致性仍由同一验证器检查。
 
-本次 Unity 演示场景回归 PASS，包含四武器动作与原有姿态校验；24 组侧倾回归 PASS。比例检查期间暂停 Animator 的待机呼吸，避免跨帧眼位变化干扰光学比例比较，随后恢复动画速度。报告：[倍率和动作](AI/BlenderGestureValidation/NaturalZoomChecks.txt)、[侧倾](AI/BlenderGestureValidation/NaturalZoomLeanChecks.txt)。仍未进入正式地图或联机对局验收。
+本次 Unity 演示场景回归 PASS，包含四武器动作与原有姿态校验；24 组侧倾回归 PASS。比例检查期间暂停 Animator 的待机呼吸，避免跨帧眼位变化干扰光学比例比较，随后恢复动画速度。报告：[倍率和动作](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/NaturalZoomChecks.txt)、[侧倾](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/NaturalZoomLeanChecks.txt)。仍未进入正式地图或联机对局验收。
 
 以下为同一实际玩家相机的 1／2／6 倍原始输出，加入临时世界棋盘检验景物放大；拍摄后删除棋盘并恢复倍率与动画。6 倍时框边和双手均自然位于屏幕外。
 
-- [1 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-1x.png)
-- [2 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-2x.png)
-- [6 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-6x.png)
+- [1 倍](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-1x.png)
+- [2 倍](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-2x.png)
+- [6 倍](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-6x.png)
 
 额外执行旧 `SniperHaloSetup.Validate` 时，在未改动的库存流程 `Store exact ammo` 断言失败（进入光学检查之前）；本次未修改库存逻辑，报告保留该限制。最终脚本编译成功，编辑器恢复 MainMenu／非 Play 状态，时间倍率为 1。
 
@@ -117,13 +117,13 @@ unity command eval_file --project-path . --caller plugin --skill unity-feature-i
 
 狙击拥有者与普通武器一样，在瞄准时屏蔽主相机内的躯干、裙装表面；手臂继续由手部相机绘制。第三人称和完整阴影保留。骨骼烘焙和最终闭框姿态不变。
 
-验证：[完整报告](AI/BlenderGestureValidation/SniperAimTransitionChecks.txt)。四武器完整动作回归通过；新增开关镜过渡检查覆盖 554 个实际渲染帧、俯仰 -65／0／+65 和 16:9／4:3。24 次 40／80／140／220 ms 中断开镜另覆盖 211 帧；固定在较大 15 Hz 模拟帧步长再检查 24 次中断，60 帧通过（不是地图实际 FPS 测试）。拥有者／观察者相机渲染回调分别核对了躯干屏蔽和完整原网格保留。
+验证：[完整报告](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/SniperAimTransitionChecks.txt)。四武器完整动作回归通过；新增开关镜过渡检查覆盖 554 个实际渲染帧、俯仰 -65／0／+65 和 16:9／4:3。24 次 40／80／140／220 ms 中断开镜另覆盖 211 帧；固定在较大 15 Hz 模拟帧步长再检查 24 次中断，60 帧通过（不是地图实际 FPS 测试）。拥有者／观察者相机渲染回调分别核对了躯干屏蔽和完整原网格保留。
 
-最终复测中，手势闭合后才进入放大，退出放大后才允许放下；中央手臂网格无侵入，开镜光环恢复屏内大小。逐帧记录见 [相机和姿态时间线](AI/BlenderGestureValidation/SniperAimTransitionFrames.txt)。以下为原始实际输出；录像左上第一人称、右上正面、左下侧面、右下背面，0.12 倍时间倍率慢放完整开／关镜。
+最终复测中，手势闭合后才进入放大，退出放大后才允许放下；中央手臂网格无侵入，开镜光环恢复屏内大小。逐帧记录见 [相机和姿态时间线](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/SniperAimTransitionFrames.txt)。以下为原始实际输出；录像左上第一人称、右上正面、左下侧面、右下背面，0.12 倍时间倍率慢放完整开／关镜。
 
-- [修复前的过渡帧](AI/BlenderGestureValidation/Unity-Sniper-AimTransition-Before.png)
-- [修复后的完全开镜](AI/BlenderGestureValidation/Unity-Sniper-Scope-Fixed.png)
-- [修复后的四机位连续过渡录像](AI/BlenderGestureValidation/Unity-Sniper-AimTransition.mp4)
+- [修复前的过渡帧](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-AimTransition-Before.png)
+- [修复后的完全开镜](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-Scope-Fixed.png)
+- [修复后的四机位连续过渡录像](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Sniper-AimTransition.mp4)
 
 Unity 脚本编译完成。合并分支后的音效脚本缓存错误通过 AssetDatabase.Refresh 同步解决；临时探针曾访问主验证器已清理的 Mesh，该探针已修正。最后一轮快速中断、相机可见性检查及录像无新增错误。当前验证仍使用演示场景中的正式网络玩家，没有启动正式地图、多人对局或独立构建，也未覆盖全部移动姿态。
 
@@ -134,11 +134,11 @@ Unity 脚本编译完成。合并分支后的音效脚本缓存错误通过 Asse
 
 本轮将成姿／放大时间线统一到所有武器：先成姿再放大，先退镜再放手。普通武器的手部相机位移和等比取景修正随姿态逐渐加入、逐渐撤回；过渡期间重新计算取景，避免反复点按时沿用另一个阶段的构图。完全瞄准时仍使用原先底部手势布局、普通武器的独立呈现 FOV 和中央瞄准空区；未修改烘焙、最终手形或手腕／小臂旋转。光环及模块的展开跟随成姿阶段。
 
-[第一人称开／关镜对照录像](AI/BlenderGestureValidation/Unity-Ordinary-AimTransitions-BeforeAfter.mp4)：上排修复前、下排修复后；从左到右依次为步枪、左轮、霰弹枪，0.15 倍时间慢放。画面直接来自正式玩家的拥有者 RenderTexture。
+[第一人称开／关镜对照录像](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/Unity-Ordinary-AimTransitions-BeforeAfter.mp4)：上排修复前、下排修复后；从左到右依次为步枪、左轮、霰弹枪，0.15 倍时间慢放。画面直接来自正式玩家的拥有者 RenderTexture。
 
-完整回归通过：[验证记录](AI/BlenderGestureValidation/OrdinaryAimTransitionChecks.txt)。普通三武器新增检查覆盖 1459 个实际渲染帧、俯仰 -65／0／+65、16:9／4:3，以及普通步长与 15 Hz 模拟步长下共 144 次快速中断开镜。抬手／放手全程检查中央变形手臂网格；放大时检查手指可见性和左轮指向。狙击及原有四武器射击、装填、完整姿态／俯仰回归一并通过。
+完整回归通过：[验证记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/OrdinaryAimTransitionChecks.txt)。普通三武器新增检查覆盖 1459 个实际渲染帧、俯仰 -65／0／+65、16:9／4:3，以及普通步长与 15 Hz 模拟步长下共 144 次快速中断开镜。抬手／放手全程检查中央变形手臂网格；放大时检查手指可见性和左轮指向。狙击及原有四武器射击、装填、完整姿态／俯仰回归一并通过。
 
-[原始慢放采样对照](AI/BlenderGestureValidation/OrdinaryAimTransitionBaseline.txt)中，修复前步枪／左轮／霰弹枪分别有 4／2／4 个采样帧侵入中央区域；修复后的三个武器共 240 帧未再出现侵入。验证器也展开嵌套协程来捕获断言失败，避免过渡子检查异常后状态停留在 Running。验证仍在演示场景中的正式网络玩家完成；本轮未启动正式地图、联机对局或独立构建。
+[原始慢放采样对照](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/BlenderGestureValidation/OrdinaryAimTransitionBaseline.txt)中，修复前步枪／左轮／霰弹枪分别有 4／2／4 个采样帧侵入中央区域；修复后的三个武器共 240 帧未再出现侵入。验证器也展开嵌套协程来捕获断言失败，避免过渡子检查异常后状态停留在 Running。验证仍在演示场景中的正式网络玩家完成；本轮未启动正式地图、联机对局或独立构建。
 
 ## 2026-10-22：实际对局中隐藏近战附件干扰手部取景
 

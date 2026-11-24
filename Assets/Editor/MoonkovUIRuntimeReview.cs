@@ -34,7 +34,7 @@ public static class MoonkovUIRuntimeReview
     private static bool s_Running, s_KeepCurrentPlay, s_DeploymentVerified;
     private static UnityEngine.Localization.Locale s_PreviousLocale;
     private static readonly List<string> Evidence = new List<string>();
-    private static readonly string Output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/UI/Native-20261018"));
+    private static readonly string Output = Path.GetFullPath(Path.Combine(Application.dataPath, "../LocalData/UIReview/Runtime"));
     static MoonkovUIRuntimeReview() { EditorApplication.playModeStateChanged += State; }
 
     [MenuItem("Tools/Moonkov/Review Approved UI (Runtime RenderTexture)")]
@@ -47,7 +47,6 @@ public static class MoonkovUIRuntimeReview
         foreach (var id in new[] { "Canvas", "HidingBackground", "PlayerNameField", "ConnetionModeOption", "SessionName", "SessionNameField", "CreateJoinGame", "StartHost", "ConnectToServer", "QuitButton", "ProfileMode", "ConnectionPanel", "stashScreenHost" })
             if (entry.Q(id) == null) throw new InvalidOperationException("Actual MainMenu bootstrap binding missing: " + id);
         SessionState.SetString("Moonkov.UIReview.Cases", string.Join("|", cases));
-        if (Application.dataPath.Replace('\\', '/') != "E:/UnityProjects/FPS_Template/Assets") throw new InvalidOperationException("Wrong project.");
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Start outside Play mode.");
         SessionState.SetString(StartScene, AssetDatabase.GetAssetPath(EditorSceneManager.playModeStartScene));
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/MainMenu.unity");

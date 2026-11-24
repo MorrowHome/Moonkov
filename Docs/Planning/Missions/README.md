@@ -278,4 +278,4 @@ MC00 可选定位终端、两处供电、取样 45 秒、取得碎片、撤离�
 - [库存交换](../../../Assets/Scripts/Networking/Shared/LootInventoryExchange.cs)、[库存模型](../../../Assets/Scripts/Networking/Shared/Inventory/InventoryGraph.cs)。
 - [持久化桥接](../../../Assets/Scripts/Networking/Server/RaidPersistenceContext.cs)、[在线后端](../../../Backend/MoonPersistence/Program.cs)、[离线档案](../../../Assets/Scripts/Networking/Client/OfflineProfileStore.cs)。
 - [商店与经济](../../../Assets/Scripts/Networking/Shared/ShopModel.cs)、[异形研究](../../../Assets/Scripts/Networking/Shared/AlienBiology.cs)。
-- [出战界面](../../../Assets/Scripts/UI/Game/MoonkovTerminal.Operations.cs)、[当前 UI 方向](../../UI/Integration-20261019.md)、[正式地图压力](../../TheophilusRaidPressure.md)、[异形层级](../../AlienHorrorSystem.md)。
+- [出战界面](../../../Assets/Scripts/UI/Game/MoonkovTerminal.Operations.cs)、[当前 UI 方向](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/UI/Integration-20261019.md)、[正式地图压力](../../TheophilusRaidPressure.md)、[异形层级](../../AlienHorrorSystem.md)。
