@@ -23,7 +23,7 @@ public class InputSystemManager : Singleton<InputSystemManager> {
 
     public static InputUser GetFirstInputUser() {
         var allPlayers = InputUser.all;
-        return allPlayers[0];
+        return allPlayers.Count > 0 ? allPlayers[0] : default;
     }
 
     public static bool TryGetUserById(int id, out InputUser user) {
@@ -54,17 +54,8 @@ public class InputSystemManager : Singleton<InputSystemManager> {
 
     private void OnDeviceChange(InputDevice device, InputDeviceChange change) {
         if (!Application.isPlaying) return;
-        if (change == InputDeviceChange.Disconnected) {
-            // 占位
-        } else if (change == InputDeviceChange.Reconnected) {
-            // 占位
-        } else if (change == InputDeviceChange.Added) {
-            // 占位
+        if (change == InputDeviceChange.Added || change == InputDeviceChange.ConfigurationChanged)
             EnsureDevicePaired(device);
-        } else if (change == InputDeviceChange.ConfigurationChanged) {
-            // 占位
-            EnsureDevicePaired(device);
-        }
     }
 
     private void EnsureDevicePaired(InputDevice device) {

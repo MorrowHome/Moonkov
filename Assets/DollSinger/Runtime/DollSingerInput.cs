@@ -201,89 +201,100 @@ namespace Unity.MP_FPS.DollSinger
                     (mouse != null && mouse.leftButton.wasPressedThisFrame)) SetCapture(true);
                 return; // Consume the click that reacquires the Game view.
             }
-            bool numberPressed = false;
-            if (keyboard != null)
-            {
-                Move = new Vector2((KeyButton(keyboard, RaidKey.Right).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Left).isPressed ? 1 : 0),
-                    (KeyButton(keyboard, RaidKey.Forward).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Backward).isPressed ? 1 : 0));
-                JumpPressed = KeyButton(keyboard, RaidKey.Jump).wasPressedThisFrame;
-                var sprint = KeyButton(keyboard, RaidKey.Sprint);
-                SprintHeld = sprint.isPressed || sprint.keyCode == Key.LeftShift && keyboard.rightShiftKey.isPressed;
-                if (KeyButton(keyboard, RaidKey.Crouch).wasPressedThisFrame)
-                    toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
-                if (KeyButton(keyboard, RaidKey.Prone).wasPressedThisFrame)
-                    toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
-                if (JumpPressed) toggledStance = DollSingerStance.Standing;
-                Stance = KeyButton(keyboard, RaidKey.HoldCrouch).isPressed ? DollSingerStance.Crouching :
-                    tiptoe && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
-                ViewPressed = KeyButton(keyboard, DarkSightMode?.Invoke() == true ? RaidKey.ClashView : RaidKey.ViewOrDarkSight).wasPressedThisFrame;
-                LightPressed = toggleLight;
-                ReloadPressed = KeyButton(keyboard, RaidKey.Reload).wasPressedThisFrame;
-                DefenseHeld = KeyButton(keyboard, RaidKey.Defense).isPressed;
-                TransferHeld = KeyButton(keyboard, RaidKey.Transfer).isPressed;
-                HaloAnchorHeld = KeyButton(keyboard, RaidKey.DeployHalo).isPressed;
-                HaloModeHeld = KeyButton(keyboard, RaidKey.HaloMode).isPressed;
-                HaloScanHeld = KeyButton(keyboard, RaidKey.Scan).isPressed;
-                int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
-                    keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
-                    keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
-                    keyboard.digit7Key.wasPressedThisFrame ? 7 : keyboard.digit8Key.wasPressedThisFrame ? 8 :
-                    keyboard.digit9Key.wasPressedThisFrame ? 9 : 0;
-                numberPressed = number != 0;
-                WeaponSlotPressed = QuickSlotSelection != null ? QuickSlotSelection(number) : number <= 3 ? number : 0;
-                AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
-                var leanLeft = KeyButton(keyboard, RaidKey.LeanLeft);
-                var leanRight = KeyButton(keyboard, RaidKey.LeanRight);
-                if (leanEnabled && AltHeld && leanLeft.wasPressedThisFrame)
-                    lockedLean = lockedLean < 0f ? 0f : -1f;
-                else if (leanEnabled && AltHeld && leanRight.wasPressedThisFrame)
-                    lockedLean = lockedLean > 0f ? 0f : 1f;
-                float heldLean = !leanEnabled || AltHeld ? 0f :
-                    (leanRight.isPressed ? 1f : 0f) - (leanLeft.isPressed ? 1f : 0f);
-                LeanTarget = leanEnabled ? (heldLean != 0f ? heldLean : lockedLean) : 0f;
-            }
-            if (mouse != null)
-            {
-                Look = mouse.delta.ReadValue() * mouseSensitivity;
-                AimHeld = mouse.rightButton.isPressed;
-                AimPressed = mouse.rightButton.wasPressedThisFrame;
-                FirePressed = mouse.leftButton.wasPressedThisFrame;
-                FireHeld = mouse.leftButton.isPressed;
-                ViewPressed |= mouse.middleButton.wasPressedThisFrame;
-                Scroll = mouse.scroll.ReadValue().y;
-            }
+            bool selectedByNumber = keyboard != null && ReadKeyboard(keyboard, tiptoe, toggleLight);
+            if (mouse != null) ReadMouse(mouse);
             var gamepad = Gamepad.current;
-            if (gamepad != null)
+            if (gamepad != null) ReadGamepad(gamepad);
+            ResolveActionPriority(selectedByNumber);
+            Move = Vector2.ClampMagnitude(Move, 1f);
+        }
+
+        private bool ReadKeyboard(Keyboard keyboard, bool tiptoe, bool toggleLight)
+        {
+            Move = new Vector2((KeyButton(keyboard, RaidKey.Right).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Left).isPressed ? 1 : 0),
+                (KeyButton(keyboard, RaidKey.Forward).isPressed ? 1 : 0) - (KeyButton(keyboard, RaidKey.Backward).isPressed ? 1 : 0));
+            JumpPressed = KeyButton(keyboard, RaidKey.Jump).wasPressedThisFrame;
+            var sprint = KeyButton(keyboard, RaidKey.Sprint);
+            SprintHeld = sprint.isPressed || sprint.keyCode == Key.LeftShift && keyboard.rightShiftKey.isPressed;
+            if (KeyButton(keyboard, RaidKey.Crouch).wasPressedThisFrame)
+                toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
+            if (KeyButton(keyboard, RaidKey.Prone).wasPressedThisFrame)
+                toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
+            if (JumpPressed) toggledStance = DollSingerStance.Standing;
+            Stance = KeyButton(keyboard, RaidKey.HoldCrouch).isPressed ? DollSingerStance.Crouching :
+                tiptoe && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
+            ViewPressed = KeyButton(keyboard, DarkSightMode?.Invoke() == true ? RaidKey.ClashView : RaidKey.ViewOrDarkSight).wasPressedThisFrame;
+            LightPressed = toggleLight;
+            ReloadPressed = KeyButton(keyboard, RaidKey.Reload).wasPressedThisFrame;
+            DefenseHeld = KeyButton(keyboard, RaidKey.Defense).isPressed;
+            TransferHeld = KeyButton(keyboard, RaidKey.Transfer).isPressed;
+            HaloAnchorHeld = KeyButton(keyboard, RaidKey.DeployHalo).isPressed;
+            HaloModeHeld = KeyButton(keyboard, RaidKey.HaloMode).isPressed;
+            HaloScanHeld = KeyButton(keyboard, RaidKey.Scan).isPressed;
+            int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
+                keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
+                keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
+                keyboard.digit7Key.wasPressedThisFrame ? 7 : keyboard.digit8Key.wasPressedThisFrame ? 8 :
+                keyboard.digit9Key.wasPressedThisFrame ? 9 : 0;
+            WeaponSlotPressed = QuickSlotSelection != null ? QuickSlotSelection(number) : number <= 3 ? number : 0;
+            AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
+            var leanLeft = KeyButton(keyboard, RaidKey.LeanLeft);
+            var leanRight = KeyButton(keyboard, RaidKey.LeanRight);
+            if (leanEnabled && AltHeld && leanLeft.wasPressedThisFrame)
+                lockedLean = lockedLean < 0f ? 0f : -1f;
+            else if (leanEnabled && AltHeld && leanRight.wasPressedThisFrame)
+                lockedLean = lockedLean > 0f ? 0f : 1f;
+            float heldLean = !leanEnabled || AltHeld ? 0f :
+                (leanRight.isPressed ? 1f : 0f) - (leanLeft.isPressed ? 1f : 0f);
+            LeanTarget = leanEnabled ? (heldLean != 0f ? heldLean : lockedLean) : 0f;
+            return number != 0;
+        }
+
+        private void ReadMouse(Mouse mouse)
+        {
+            Look = mouse.delta.ReadValue() * mouseSensitivity;
+            AimHeld = mouse.rightButton.isPressed;
+            AimPressed = mouse.rightButton.wasPressedThisFrame;
+            FirePressed = mouse.leftButton.wasPressedThisFrame;
+            FireHeld = mouse.leftButton.isPressed;
+            ViewPressed |= mouse.middleButton.wasPressedThisFrame;
+            Scroll = mouse.scroll.ReadValue().y;
+        }
+
+        private void ReadGamepad(Gamepad gamepad)
+        {
+            if (gamepad.leftStick.ReadValue().sqrMagnitude > Move.sqrMagnitude) Move = gamepad.leftStick.ReadValue();
+            Look += gamepad.rightStick.ReadValue() * (gamepadLookSpeed * Time.deltaTime);
+            JumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
+            SprintHeld |= gamepad.leftStickButton.isPressed;
+            ReloadPressed |= gamepad.buttonNorth.wasPressedThisFrame;
+            DefenseHeld |= gamepad.dpad.right.isPressed;
+            TransferHeld |= gamepad.dpad.left.isPressed;
+            AimHeld |= gamepad.leftTrigger.isPressed;
+            AimPressed |= gamepad.leftTrigger.wasPressedThisFrame;
+            FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
+            FireHeld |= gamepad.rightTrigger.isPressed;
+            ViewPressed |= gamepad.rightStickButton.wasPressedThisFrame;
+            if (gamepad.buttonEast.wasPressedThisFrame)
+                toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
+            if (gamepad.dpad.down.wasPressedThisFrame)
+                toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
+            if (gamepad.buttonSouth.wasPressedThisFrame) toggledStance = DollSingerStance.Standing;
+            if (gamepad.buttonEast.wasPressedThisFrame || gamepad.dpad.down.wasPressedThisFrame || gamepad.buttonSouth.wasPressedThisFrame)
+                Stance = toggledStance;
+            if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
+            if (gamepad.rightShoulder.isPressed)
             {
-                if (gamepad.leftStick.ReadValue().sqrMagnitude > Move.sqrMagnitude) Move = gamepad.leftStick.ReadValue();
-                Look += gamepad.rightStick.ReadValue() * (gamepadLookSpeed * Time.deltaTime);
-                JumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
-                SprintHeld |= gamepad.leftStickButton.isPressed;
-                ReloadPressed |= gamepad.buttonNorth.wasPressedThisFrame;
-                DefenseHeld |= gamepad.dpad.right.isPressed;
-                TransferHeld |= gamepad.dpad.left.isPressed;
-                AimHeld |= gamepad.leftTrigger.isPressed;
-                AimPressed |= gamepad.leftTrigger.wasPressedThisFrame;
-                FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
-                FireHeld |= gamepad.rightTrigger.isPressed;
-                ViewPressed |= gamepad.rightStickButton.wasPressedThisFrame;
-                if (gamepad.buttonEast.wasPressedThisFrame)
-                    toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
-                if (gamepad.dpad.down.wasPressedThisFrame)
-                    toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
-                if (gamepad.buttonSouth.wasPressedThisFrame) toggledStance = DollSingerStance.Standing;
-                if (gamepad.buttonEast.wasPressedThisFrame || gamepad.dpad.down.wasPressedThisFrame || gamepad.buttonSouth.wasPressedThisFrame)
-                    Stance = toggledStance;
-                if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
-                if (gamepad.rightShoulder.isPressed)
-                {
-                    HaloAnchorHeld |= gamepad.dpad.left.isPressed;
-                    HaloModeHeld |= gamepad.dpad.right.isPressed;
-                    HaloScanHeld |= gamepad.rightStickButton.isPressed;
-                    if (HaloScanHeld) { ViewPressed = false; Stance = toggledStance; }
-                    if (HaloAnchorHeld || HaloModeHeld) { TransferHeld = DefenseHeld = false; Stance = toggledStance; }
-                }
+                HaloAnchorHeld |= gamepad.dpad.left.isPressed;
+                HaloModeHeld |= gamepad.dpad.right.isPressed;
+                HaloScanHeld |= gamepad.rightStickButton.isPressed;
+                if (HaloScanHeld) { ViewPressed = false; Stance = toggledStance; }
+                if (HaloAnchorHeld || HaloModeHeld) { TransferHeld = DefenseHeld = false; Stance = toggledStance; }
             }
+        }
+
+        private void ResolveActionPriority(bool numberPressed)
+        {
             // A direct number selection wins if the wheel moves in the same frame.
             if (!numberPressed && !ViewPressed && !HaloAnchorHeld && !HaloModeHeld && !TransferHeld && Mathf.Abs(Scroll) > .01f)
                 WeaponSlotPressed = QuickSlotScrollSelection?.Invoke(Scroll > 0 ? -1 : 1) ?? WeaponSlotPressed;
@@ -291,23 +302,35 @@ namespace Unity.MP_FPS.DollSinger
             bool grenade = GrenadeInput?.Invoke(FirePressed, FireHeld, AimPressed, AimHeld) == true;
             if (suppressFireUntilRelease)
             {
-                bool held = (mouse != null && mouse.leftButton.isPressed) ||
-                    (gamepad != null && gamepad.rightTrigger.isPressed);
+                bool held = FireHeld;
                 FirePressed = FireHeld = false;
                 if (!held) suppressFireUntilRelease = false;
             }
-            GuardHeld = TransferHeld && AimHeld && !grenade;
-            if (HaloAnchorHeld || HaloModeHeld) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false; WeaponSlotPressed = 0; }
-            if (grenade) HaloAnchorHeld = HaloModeHeld = HaloScanHeld = false;
-            if (TransferHeld) { DefenseHeld = false; WeaponSlotPressed = 0; }
-            if (DefenseHeld || TransferHeld) FirePressed = FireHeld = AimHeld = AimPressed = false;
-            if (TransferHeld) ReloadPressed = false;
-            if (grenade) { FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = DefenseHeld = TransferHeld = false; WeaponSlotPressed = 0; }
-            if (!grenade && MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
-            { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
-            if (!grenade && QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
-            { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
-            Move = Vector2.ClampMagnitude(Move, 1f);
+            if (grenade)
+            {
+                GuardHeld = DefenseHeld = TransferHeld = false;
+                HaloAnchorHeld = HaloModeHeld = HaloScanHeld = false;
+                FirePressed = FireHeld = AimHeld = AimPressed = ReloadPressed = false;
+                WeaponSlotPressed = 0;
+                return;
+            }
+
+            GuardHeld = TransferHeld && AimHeld;
+            bool deploying = HaloAnchorHeld || HaloModeHeld;
+            if (TransferHeld) DefenseHeld = false;
+            if (deploying || TransferHeld)
+            {
+                WeaponSlotPressed = 0;
+                ReloadPressed = false;
+            }
+            if (deploying || DefenseHeld || TransferHeld)
+                FirePressed = FireHeld = AimHeld = AimPressed = false;
+
+            // 快捷栏仍要收到本帧回调。近战已消费的按键以松开状态传入。
+            if (MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
+                FirePressed = FireHeld = AimHeld = ReloadPressed = false;
+            if (QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
+                FirePressed = FireHeld = AimHeld = ReloadPressed = false;
         }
 
         private void ClearFrame()

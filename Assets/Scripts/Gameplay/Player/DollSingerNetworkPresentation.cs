@@ -191,26 +191,24 @@ namespace Unity.MP_FPS {
             m_ObstructionView?.Present(OwnedMuzzleObstructed);
         }
 
+        private bool OwnedWeaponInputBlocked =>
+            !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable ||
+            (m_Melee && m_Melee.WantsPresentation) || GameSettings.Instance.IsPauseMenuOpen ||
+            RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
+            RaidHUD.QuickSlotToolSelected;
+
         public bool ReadOwnedAimIntent() {
-            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable ||
-                           (m_Melee && m_Melee.WantsPresentation) || GameSettings.Instance.IsPauseMenuOpen ||
-                           RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
-                           RaidHUD.QuickSlotToolSelected;
             var returning =
                 DollSingerLookController.ReturnFreeLook(m_FreeLookOffset,
                     m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
             bool freeLooking = m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(returning) > .01f);
-            return m_OwnedAiming = !blocked && (m_Input.LightAdjusting
+            return m_OwnedAiming = !OwnedWeaponInputBlocked && (m_Input.LightAdjusting
                 ? m_Input.LightPreviewAiming
                 : m_Input.CanReadPlayerInput && m_Input.AimHeld && !freeLooking);
         }
 
         public bool ReadOwnedReadyIntent() {
-            bool blocked = !m_OwnedAlive || m_HaloOccupied || m_Input.TransferHeld || !WeaponHandsAvailable ||
-                           (m_Melee && m_Melee.WantsPresentation) || GameSettings.Instance.IsPauseMenuOpen ||
-                           RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested ||
-                           RaidHUD.QuickSlotToolSelected || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput;
-            if (blocked || (m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)))
+            if (OwnedWeaponInputBlocked || m_Input.LightAdjusting || !m_Input.CanReadPlayerInput || (m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(m_FreeLookOffset) > .01f)))
                 return false;
             return ReadOwnedReadyState(m_Input.FireHeld || m_Input.FirePressed);
         }
@@ -345,13 +343,28 @@ namespace Unity.MP_FPS {
             if (!m_Linked || Role == MultiplayerRole.Server || GhostGameObject.IsPendingDestroy) return;
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             // 经典爆破保留死者的原角色到回合结束。第一次确认死亡时开始它的死亡片段。
-            if (!m_ClassicDeathStarted && Role != MultiplayerRole.Server && ghost.ClashEnabled &&
+            if (!m_ClassicDeathStarted && ghost.ClashEnabled &&
                 ghost.CurrentHealth <= 0 && GameSettings.Instance.RequestedMode == RaidGameMode.Classic)
                 BeginClassicDeath();
-            var state = ghost.ControllerState;
-            m_HaloOccupied = HaloTransferRules.Occupied(ghost);
+            bool owned = Role == MultiplayerRole.ClientOwned;
             bool downed = ghost.ClashEnabled && ghost.ClashLife == ClashLife.Downed;
-            var presentedStance = downed ? DollSingerStance.Prone : state.Stance;
+            UpdateWeaponState(ghost, downed);
+            if (owned) UpdateOwnedLighting(ghost);
+            m_Halo.LightingSettings = owned ? m_Input.LightingSettings : ghost.ControllerState.HaloLightingSettings;
+
+            var stance = downed ? DollSingerStance.Prone : ghost.ControllerState.Stance;
+            m_Motor.ApplyStanceCapsule(stance);
+            m_Audio?.Update(ghost, transform, owned, Time.deltaTime);
+            PresentLocomotion(ghost, downed, stance);
+            var viewRotation = Quaternion.Euler(ghost.ControllerState.PitchDegrees, ghost.ControllerState.YawDegrees, 0f);
+            bool hideWeapon = PresentHandActions(ghost, owned, downed, viewRotation);
+            PresentWeaponAndView(ghost, owned, hideWeapon, viewRotation);
+            PresentTransfer(ghost);
+            if (owned) UpdateOwnedCameraAndAudio(ghost, hideWeapon);
+        }
+
+        private void UpdateWeaponState(in PredictedPlayerGhost ghost, bool downed) {
+            m_HaloOccupied = HaloTransferRules.Occupied(ghost);
             m_OwnedAlive = ghost.CurrentHealth > 0;
             m_OwnedRaised = ghost.HipFireHoldRemaining > 0;
             // 以角色状态中的待发标记续住动作。旧枪出现死亡、倒地或换武器时清反冲缓存。
@@ -359,21 +372,21 @@ namespace Unity.MP_FPS {
             m_Halo.HandlingMultiplier = RaidHealth.HandlingMultiplier(ghost);
             if (!m_OwnedAlive || downed || m_RecoilWeapon != ghost.EquippedWeaponID) m_Recoil.Reset();
             m_RecoilWeapon = ghost.EquippedWeaponID;
-            if (Role == MultiplayerRole.ClientOwned) {
-                if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
-                if (m_Input.LightAdjusting && m_LightPanel == null) {
-                    var hud = FindAnyObjectByType<RaidHUD>();
-                    if (hud)
-                        m_LightPanel = new Client.HaloLightPanel(
-                            hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement, m_Input, m_Halo);
-                }
-                m_LightPanel?.Refresh(m_OwnedLightEnabled);
+        }
+
+        private void UpdateOwnedLighting(in PredictedPlayerGhost ghost) {
+            if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
+            if (m_Input.LightAdjusting && m_LightPanel == null) {
+                var hud = FindAnyObjectByType<RaidHUD>();
+                if (hud)
+                    m_LightPanel = new Client.HaloLightPanel(
+                        hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement, m_Input, m_Halo);
             }
-            m_Halo.LightingSettings = Role == MultiplayerRole.ClientOwned
-                ? m_Input.LightingSettings
-                : state.HaloLightingSettings;
-            m_Motor.ApplyStanceCapsule(presentedStance);
-            m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
+            m_LightPanel?.Refresh(m_OwnedLightEnabled);
+        }
+
+        private void PresentLocomotion(in PredictedPlayerGhost ghost, bool downed, DollSingerStance presentedStance) {
+            var state = ghost.ControllerState;
             // 跳跃是一次性事件，用 tick 去重。连续收到描述同一拍的多个快照也只播一次。
             bool jumped = ghost.LastJumpTick != 0 &&
                           (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
@@ -382,10 +395,9 @@ namespace Unity.MP_FPS {
                 downed || state.MovementType == FirstPersonController.MovementType.Standing, !downed && state.Sprinting,
                 !downed && jumped, Time.deltaTime, downed ? Vector3.zero : (Vector3)state.AnimatorMotion,
                 ((Quaternion)state.CurrentRotation).eulerAngles.y, presentedStance);
-            var viewRotation = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0f);
-            var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
-            var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
-            bool owned = Role == MultiplayerRole.ClientOwned;
+        }
+
+        private bool PresentHandActions(in PredictedPlayerGhost ghost, bool owned, bool downed, Quaternion viewRotation) {
             if (m_Action)
                 m_Action.Present(ghost, owned, owned && m_View.IsFirstPerson,
                     downed || GrenadeHandling.Occupied(ghost) || ghost.ClashDarkSight ||
@@ -408,10 +420,16 @@ namespace Unity.MP_FPS {
                                                                             RaidHUD.GameplayActionsBlocked)),
                 HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
             });
-            bool hideWeapon = downed || (m_Grenade && m_Grenade.OwnsHands) || ghost.HaloDefenseHeld ||
+            return downed || (m_Grenade && m_Grenade.OwnsHands) || ghost.HaloDefenseHeld ||
                               ghost.ConsumingSupply || ghost.ClashDarkSight || (m_Melee && m_Melee.OwnsHandPose) ||
                               (m_Action && m_Action.OwnsHands) ||
                               (owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected));
+        }
+
+        private void PresentWeaponAndView(in PredictedPlayerGhost ghost, bool owned, bool hideWeapon, Quaternion viewRotation) {
+            var state = ghost.ControllerState;
+            var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
+            var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             // 自己看本机即时朝向和灯开关，其他人看预测后确认的状态，游戏外观统一进入光环表现接口。
@@ -431,38 +449,42 @@ namespace Unity.MP_FPS {
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo, state.IsReloadingState,
                 HaloReload.Progress(ghost, weapon), ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo,
                 ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
-            if (m_Transfer) {
-                DollSingerHaloAim recipient = null;
-                if (World.EntityManager.HasComponent<GhostGameObjectLink>(ghost.HaloTransferTarget)) {
-                    var link = World.EntityManager.GetComponentObject<GhostGameObjectLink>(ghost.HaloTransferTarget);
-                    if (link.LinkedInstance &&
-                        link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var other))
-                        recipient = other.m_Halo;
-                }
-                m_Transfer.Present(ghost, recipient);
+        }
+
+        private void PresentTransfer(in PredictedPlayerGhost ghost) {
+            if (!m_Transfer) return;
+            DollSingerHaloAim recipient = null;
+            if (World.EntityManager.HasComponent<GhostGameObjectLink>(ghost.HaloTransferTarget)) {
+                var link = World.EntityManager.GetComponentObject<GhostGameObjectLink>(ghost.HaloTransferTarget);
+                if (link.LinkedInstance &&
+                    link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var other))
+                    recipient = other.m_Halo;
             }
-            if (Role == MultiplayerRole.ClientOwned) {
-                bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
-                if (ghost.CurrentHealth > 0 && audibleAim != m_AudioAiming)
-                    MoonkovAudio.Play(
-                        audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut,
-                        transform.position);
-                m_AudioAiming = audibleAim;
-                // 空弹点击可在本地播一次提示音，同时做间隔限制，避免按住变成连续错误声音。
-                if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
-                    !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&
-                    !hideWeapon && !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked) {
-                    MoonkovAudio.Play(MoonkovAudio.Library?.DryFire, transform.position);
-                    m_DryFireAt = Time.unscaledTime + .35f;
-                }
-                m_View.SetNetworkLookRotation(m_OwnedViewRotation);
-                m_View.SetAimBlend(m_Halo.AdsBlend);
-                m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
-                bool showFlinch = m_ViewActivated && !GameSettings.Instance.IsPauseMenuOpen &&
-                                  !RaidHUD.GameplayActionsBlocked && !Client.HalosTerminalBackdrop.PrefersReducedMotion;
-                m_View.SetHitFlinch(m_HitFlinch.Step(ghost, Time.deltaTime, m_View.CurrentAimMagnification,
-                    showFlinch));
+            m_Transfer.Present(ghost, recipient);
+        }
+
+        private void UpdateOwnedCameraAndAudio(in PredictedPlayerGhost ghost, bool hideWeapon) {
+            var state = ghost.ControllerState;
+            bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
+            if (ghost.CurrentHealth > 0 && audibleAim != m_AudioAiming)
+                MoonkovAudio.Play(
+                    audibleAim ? MoonkovAudio.Library?.WeaponAimIn : MoonkovAudio.Library?.WeaponAimOut,
+                    transform.position);
+            m_AudioAiming = audibleAim;
+            // 空弹点击可在本地播一次提示音，同时做间隔限制，避免按住变成连续错误声音。
+            if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
+                !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&
+                !hideWeapon && !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.GameplayActionsBlocked) {
+                MoonkovAudio.Play(MoonkovAudio.Library?.DryFire, transform.position);
+                m_DryFireAt = Time.unscaledTime + .35f;
             }
+            m_View.SetNetworkLookRotation(m_OwnedViewRotation);
+            m_View.SetAimBlend(m_Halo.AdsBlend);
+            m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
+            bool showFlinch = m_ViewActivated && !GameSettings.Instance.IsPauseMenuOpen &&
+                              !RaidHUD.GameplayActionsBlocked && !Client.HalosTerminalBackdrop.PrefersReducedMotion;
+            m_View.SetHitFlinch(m_HitFlinch.Step(ghost, Time.deltaTime, m_View.CurrentAimMagnification,
+                showFlinch));
         }
 
         public void PlayShot(
