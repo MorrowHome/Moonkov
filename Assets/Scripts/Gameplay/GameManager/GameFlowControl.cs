@@ -91,9 +91,6 @@ namespace Unity.MP_FPS {
             if (GameConnection == null || GameConnection.Session == null) return;
             // 主动离开前去掉会话的回调。接着由房主删除会话、其他人退出，避免自己触发的离开再重复执行一次返回菜单。
             GameConnection.Session.RemovedFromSession -= OnSessionLeft;
-            if (GameConnection.Session.IsHost || GameConnection.Session.IsServer()) {
-                //ConnectionSettings.Instance.SessionCode = null;
-            }
             if (GameConnection.Session.IsHost)
                 await GameConnection.Session.AsHost().DeleteAsync();
             else
@@ -107,10 +104,8 @@ namespace Unity.MP_FPS {
         }
 
         private static async Task DestroyGameSessionWorlds() {
-            // 先等 World 结束这一轮更新，免得正运行的 World 被销毁，
-            // 就可以从不同的调用位置统一发起清理。
-            // 等这一帧的 ECS 系统跑完再释放 World，避免从系统更新里拆掉正在被使用的对象。
-            await Awaitable.EndOfFrameAsync();
+            // 下一帧再释放 World，保证本轮 ECS 更新已结束。无画面的进程也会推进游戏帧。
+            await Awaitable.NextFrameAsync();
 
             // 清理 Netcode 的 World。
             var shutdowns = new List<Task>();
@@ -129,7 +124,6 @@ namespace Unity.MP_FPS {
                     if (persistence != null) shutdowns.Add(persistence.ShutdownTask);
                 }
             }
-            // 上一局仍占用出战装备时，账号的装备页还不能开放。
             // 每个 World 的存档上下文仍可能在结束战局。等它们真正交还出战装备，再让玩家看见可操作的账号页面。
             await Task.WhenAll(shutdowns);
         }
