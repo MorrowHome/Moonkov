@@ -108,7 +108,7 @@ namespace Unity.MP_FPS.Client {
                 s_PhysicalCodes = new System.Collections.Generic.Dictionary<StashArtKind, string>();
                 foreach (var definition in Inventory.InventoryCatalog.Definitions.Values)
                     if (PhysicalItemVisuals.IsPhysical(definition.Code)) {
-                        var art = ContainerInventoryView.Art(definition.Code);
+                        var art = KindFor(definition.Code);
                         if (art != StashArtKind.None && !s_PhysicalCodes.ContainsKey(art))
                             s_PhysicalCodes.Add(art, definition.Code);
                     }
@@ -121,7 +121,7 @@ namespace Unity.MP_FPS.Client {
         private float m_Scale;
         public StashItemArt() : this(StashArtKind.None) { }
 
-        public StashItemArt(string code) : this(ContainerInventoryView.Art(code)) {
+        public StashItemArt(string code) : this(KindFor(code)) {
             if (Inventory.HaloModules.FromCode(code) == HaloModule.None) SetPhysicalIcon(code);
         }
 
