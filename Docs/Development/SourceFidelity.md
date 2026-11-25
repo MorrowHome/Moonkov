@@ -1,12 +1,12 @@
 # Blender 源画面还原
 
-## 目标与当前状态
+## 源文件与外观目标
 
 用户已允许所有固定灯光预计算。原 MC00 自主灯控可废弃。以源材质、面积灯、反弹光和实时游戏画面为验收对象。
 
 权威源是 `Moonkov_WH01_HU01_LR06_SR01_L23_Removed_Components_CANDIDATE.blend`。SHA-256 为 `2576f4ac6ba4b370843688fc28ace29e1169d594633102d13e0e59c64a6522cf`。工具只读打开源文件，不保存源文件。
 
-整图转换尚未完成。正式游戏尚未启用新外观。用户已转到 Windows 接力，最新状态见 [Windows 外观交接](SourceFidelityWindowsHandoff.md)。旧颗粒实验未达到用户要求，不能作为此目标的完成。
+本文记录源色彩和材质的对照方法。整图转换和正式场景的阶段验收可查[当时的 Windows 交接记录](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/Development/SourceFidelityWindowsHandoff.md)。
 
 ## 已验证的源色彩变换
 

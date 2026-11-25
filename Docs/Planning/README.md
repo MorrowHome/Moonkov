@@ -1,42 +1,10 @@
-# Moonkov 项目策划阅读入口 / Project planning index
+# 项目策划
 
-这里保存长期规划和专项策划。两份双语长期规划具有相同需求ID、内容范围、阶段计划和验收边界。
+本目录保留原始需求、内容设计和已批准的界面参考。长期规划中的时间表和待办记录对应当时的开发阶段。结项版本的运行入口见[项目首页](../../README.md)。
 
-- [单人战役完整策划](Campaign/README.md)：八章故事方向已确认，最终携证乘船返回地球。当前按用户要求只接入[第一章教学版](Campaign/ChapterOne-Status.md)，其余章节保留为后续规格。
-- [中文完整策划](Moonkov_Project_Plan.zh-CN.md)
-- [Complete English plan](Moonkov_Project_Plan.en.md)
-- [随机局内任务系统](Missions/README.md)：无需接取的随机任务、MC00 具体流程、界面追踪与后端结算；分阶段实现与验证范围见其中的实施状态。
-
-单人战役的新方向以 Campaign 为阅读入口。历史长期规划中的“任务后加”和随机事件设计，不能当成已完成这条战役。现有随机事件仍是可复用基础。
-
-The [solo campaign](Campaign/README.md) contains eight chapters, 24 main missions, eight optional missions, and the tracking and persistence specification. The story direction is approved. Implementation is currently limited to [the first chapter tutorial](Campaign/ChapterOne-Status.md); the later chapters and return to Earth remain planned content.
-
-## 中文阅读顺序
-
-1. 先读 MK-STATUS、MK-REQUIREMENTS、MK-SNAPSHOT，区分已确认目标、提案、待决定事项及已验证事实。
-2. 阅读任务对应的完整章节；健康见MK-HEALTH，地图/角色/武器见MK-QUALITY，异形见MK-ENEMIES，网络见MK-NETWORK。
-3. 实现前阅读MK-TESTING、MK-DECISIONS、MK-RISKS；Issue/PR引用稳定需求ID、精确提交和实际测试证据。
-4. 同时核对当前代码、项目指引及相关模块文档。纯.NET检查通过不等于Unity、实际地图或LAN通过，草稿发布不等于验收或合并。
-
-v0.3.1由24页v0.3全文转为Markdown，纳入后续异形地面/墙面/天花板和许可核查要求。建议中文作为语义主版本；若有差异，记录并请负责人确认，再同步两份文件。该维护建议不增加玩法授权。两次展示日期是硬节点，其余逐日安排仍为建议。日期快照不会自动更新。
-
-## English reading order
-
-1. Read MK-STATUS, MK-REQUIREMENTS and MK-SNAPSHOT first to distinguish confirmed goals, proposals, open decisions and verified facts.
-2. Read the full sections relevant to the task: MK-HEALTH for health, MK-QUALITY for map/characters/weapons, MK-ENEMIES for aliens and MK-NETWORK for networking.
-3. Before implementation, read MK-TESTING, MK-DECISIONS and MK-RISKS. Cite stable requirement IDs, exact commits and actual test evidence in issues/PRs.
-4. Also inspect current code, project guidance and relevant module documentation. Pure .NET passes are not Unity, actual-map or LAN passes, and draft publication is not acceptance or merge.
-
-v0.3.1 converts the complete 24-page v0.3 into Markdown and incorporates later alien floor/wall/ceiling and license-check requirements. Chinese is recommended as the semantic source of truth. If the versions differ, record the discrepancy, ask the owner to resolve it and update both. This maintenance recommendation grants no new gameplay authority. The two presentation dates are fixed; other daily scheduling remains proposed. The dated snapshot does not update automatically.
-
-## 相关实现文档 / Related implementation documentation
-
-- [项目结构 / Project structure](https://github.com/MorrowHome/Moonkov/blob/c28b20a7c75d47996f0942acd9de788514f0031c/Docs/AI/UnityProjectContext.md)（存在历史漂移，需核对代码 / contains historical drift; verify against code）
-- [单人模式 / Solo mode](../SinglePlayer.md)
-- [库存与容器 / Inventory and containers](../ContainerInventory.md)
-- [持久化 / Persistence](../PostgreSQLPersistence.md)
-- [人形AI / Humanoid AI](../DollSingerEnemies.md)
-- [月面来源 / Lunar source data](../Moon成果迁移/MoonSources.md)
-
-本目录只提供策划参考，不覆盖或替换适用的AGENTS.md及既有仓库操作规则。  
-This directory provides planning references; it does not override or replace applicable AGENTS.md files or existing repository operating rules.
+| 想找的内容 | 资料 |
+| --- | --- |
+| 原始范围与需求编号 | [中文完整策划](Moonkov_Project_Plan.zh-CN.md) / [English project plan](Moonkov_Project_Plan.en.md) |
+| 战役故事、章节和追踪规则 | [战役策划](Campaign/README.md) / [游戏实际加载的战役目录](../../Assets/Scripts/Networking/Shared/CampaignCatalog.cs) |
+| 月面随机设施任务 | [任务设计](Missions/README.md) / [MC00 月核回收行动](Missions/MC00-Mooncore.md) |
+| 赏金玩法 | [初版设计](BountyClash-20261021.md) / [单机玩法](../OfflineBountyClash.md) |
