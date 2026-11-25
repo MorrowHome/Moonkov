@@ -43,6 +43,15 @@ namespace Unity.MP_FPS {
             IceSession = null;
         }
 
+        internal static Task<GameConnection> OpenAsync(CreationType type, CancellationToken ct) => type switch {
+            CreationType.CreateOrJoin => CreateorJoinGameAsync(ct),
+            CreationType.JoinRelay => JoinGameAsync(ct),
+            CreationType.Host or CreationType.LanHost => HostGameAsync(),
+            CreationType.Offline => OfflineGameAsync(),
+            CreationType.LanJoin or CreationType.ConnectAndJoin => ConnectGameAsync(ct),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+
         public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) {
             return OpenRelayAsync(false, ct);
         }

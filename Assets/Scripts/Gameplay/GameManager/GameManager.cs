@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.GhostBridge;
-using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -70,8 +68,6 @@ namespace Unity.MP_FPS {
             if (!m_IsHeadless && GetComponent<MoonkovUIAudio>() == null) gameObject.AddComponent<MoonkovUIAudio>();
             Application.runInBackground = true; //多人模式把应用放到后台时，保持连接运行。
 
-            // 编辑器选择 Server 模式时，沿用专用服务器的启动流程，
-            // 这样不会额外创建一个只用来显示主菜单的客户端 World。
 #if UNITY_SERVER || UNITY_EDITOR
             // 只运行服务端时，把启动交给 ServerBootstrap。普通客户端才需要继续打开菜单相机、等待菜单资源。
             if (GhostBridgeBootstrap.IsServerOnly) {
@@ -170,7 +166,6 @@ namespace Unity.MP_FPS {
                 if (lan) await LanRoomClient.ReturnedToMenuAsync();
                 return;
             }
-            // 有长期装备的玩法先等仓库命令发完，服务端划出装备时才会读到刚配好的那一套。竞技场这一类使用临时装备的玩法跳过这一步。
             if (!IsHeadless && !arena) {
                 // 进入持久化战局前先把菜单里的装备变动交给档案。等待期间如果换了档案，就停下这次入场，避免混用两个档案的装备。
                 string scope = PlayerProfileClient.LocalPreferenceScope;
@@ -271,143 +266,51 @@ namespace Unity.MP_FPS {
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
-            // 建立多人会话连接。
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.InitializeConnection);
-            // 这里选的是连接路线。Relay 去创建或加入会话，直接连接使用地址，好友房沿用房间连接，单人给同一台机器选本机端点。
-            switch (creationType) {
-                case CreationType.CreateOrJoin: //中继连接
-                {
-                    GameConnection = await GameConnection.CreateorJoinGameAsync(cancellationToken);
-                    break;
-                }
-                case CreationType.JoinRelay:
-                    GameConnection = await GameConnection.JoinGameAsync(cancellationToken);
-                    break;
-                case CreationType.LanHost:
-                case CreationType.Host: //直连，由本机创建主机。
-                {
-                    GameConnection = await GameConnection.HostGameAsync();
-                    break;
-                }
-                case CreationType.Offline: GameConnection = await GameConnection.OfflineGameAsync(); break;
-                case CreationType.LanJoin:
-                case CreationType.ConnectAndJoin: //直连，作为客户端加入主机。
-                {
-                    GameConnection = await GameConnection.ConnectGameAsync(cancellationToken);
-                    break;
-                }
-            }
+            GameConnection = await GameConnection.OpenAsync(creationType, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            World server = null, client = null;
-            // 有服务会话时把离开事件接到菜单返回流程，再按会话给出的角色建立 World。直连或单人从这次入口参数决定是否同时创建服务端。
             if (GameConnection.Session != null) {
                 GameConnection.Session.RemovedFromSession += OnSessionLeft;
                 ConnectionSettings.Instance.SessionCode = GameConnection.Session.Code;
-                CreateEntityWorlds(GameConnection.Session, GameConnection.SessionConnectionType, out server,
-                    out client);
-            } else {
-                CreateEntityWorlds(
-                    creationType == CreationType.Host || creationType == CreationType.LanHost ||
-                    creationType == CreationType.Offline, out server, out client, GameConnection);
-                if (creationType == CreationType.LanHost) server.EntityManager.CreateEntity(typeof(LanRaidMode));
-                if (creationType == CreationType.LanHost || creationType == CreationType.LanJoin)
-                    client.EntityManager.CreateEntity(typeof(LanRaidMode));
-                if (creationType == CreationType.Offline) {
-                    // 单人也有一套完整的服务端 World。客户端负责输入和画面，服务端继续判定搜刮、伤害、撤离与结算。
-                    server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
-                    if (PlayerProfileClient.Tutorial?.Status == Campaign.TutorialStatus.Active &&
-                        GameSettings.Instance.RequestedMode == RaidGameMode.Expedition) {
-                        server.EntityManager.CreateEntity(typeof(TutorialRaidMode));
-                        client.EntityManager.CreateEntity(typeof(TutorialRaidMode));
-                    }
-                    client.EntityManager.CreateEntity(typeof(OfflineRaidMode));
-                    if (GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash) {
-                        server.EntityManager.CreateEntity(typeof(ClashSoloMode));
-                        client.EntityManager.CreateEntity(typeof(ClashSoloMode));
-                    }
-                }
             }
-
-            // 服务端创建成功后开始监听连接。
+            var (server, client) = RaidWorldBootstrap.Create(GameConnection, creationType);
             if (server != null) {
-                using var drvQuery =
-                    server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-                drvQuery.CompleteDependency();
-                var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
-                // 创建了服务端 World 还需要真正监听。这里失败就让整个加载回到菜单，避免客户端接着连一个没打开的端口。
-                if (!serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint))
-                    throw new InvalidOperationException("Cannot start server. The port may be in use.");
-                if (creationType == CreationType.Offline || GameConnection.PeerRoom != null) {
-                    // 本地客户端可能通过 IPC 或 UDP 连接，取决于 NetCode 当时选择的传输方式，
-                    // 例如编辑器的网络模拟会强制用 UDP。填端口 0 时，驱动会分配不同端口，
-                    // 所以客户端要取实际使用的驱动端口。
-                    using var clientDriverQuery =
-                        client.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkStreamDriver>());
-                    var clientDrivers = clientDriverQuery.GetSingleton<NetworkStreamDriver>().DriverStore;
-                    var transport = clientDrivers.GetDriverType(clientDrivers.FirstDriver);
-                    var serverDrivers = serverDriver.ValueRO.DriverStore;
-                    // 房主可以同时挂多种驱动。系统分配端口后，先选客户端所用的驱动，再取它实际监听的地址。
-                    bool matched = false;
-                    for (int id = serverDrivers.FirstDriver; id < serverDrivers.LastDriver; id++)
-                        if (serverDrivers.GetDriverType(id) == transport) {
-                            GameConnection.UseLocalServerEndpoint(serverDriver.ValueRW.GetLocalEndPoint(id));
-                            matched = true;
-                            break;
-                        }
-                    if (!matched) throw new InvalidOperationException("No matching local server transport.");
-                }
+                RaidWorldBootstrap.Listen(GameConnection, creationType, server, client);
                 await ScenesLoader.LoadGameplayAsync(server, null);
                 if (creationType == CreationType.LanHost)
                     await LanRoomClient.RequestAsync("listening", ct: cancellationToken);
             }
 
-            //创建客户端 World 后向服务器发起连接。
-            if (client != null) {
-                ConnectionSettings.Instance.GameJoinTicket = null;
-                ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
-                // 传输连通以后，客户端才能继续加载自己的 ECS 数据和表现资源。连通、收齐地图对象和服务端准许入场分别有各自的等待点。
-                await WaitForPlayerConnectionAsync(cancellationToken);
-                await ScenesLoader.LoadGameplayAsync(null, client);
-                // 卸载场景后仍可能有未使用的资源占着内存。
-                // 在新战局常用资源开始加载之前，先归还这些内存。
-                // 卸掉前一张图的场景只解开引用。这里额外释放不用的资源，再准备新一局会马上用到的资源，尽量把开销留在加载界面。
-                await Resources.UnloadUnusedAssets();
+            if (client == null) {
                 cancellationToken.ThrowIfCancellationRequested();
-                // 地图加载完成后提前读角色素材、灯光和字体，让进入游戏时少碰到临时加载。
-                await PrepareCharacterResourcesAsync(client, cancellationToken);
-                foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>())
-                    await lighting.PrepareResourcesAsync(cancellationToken);
-                await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
-                // 入局票有时效。地图加载可能花很久，所以靠近发送入局请求时再向账号服务取票。
-                // 大地图加载时间可能超过入场票据允许的 60 秒。
-                // 因此等本地场景加载完、发送加入 RPC 前，再领取票据。
-                if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)
-                    ConnectionSettings.Instance.GameJoinTicket =
-                        await AccountClient.CreateGameTicketAsync(cancellationToken);
+                return;
             }
+
+            ConnectionSettings.Instance.GameJoinTicket = null;
+            ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
+            // 传输连通以后，客户端才能继续加载自己的 ECS 数据和表现资源。连通、收齐地图对象和服务端准许入场分别有各自的等待点。
+            await WaitForPlayerConnectionAsync(cancellationToken);
+            await ScenesLoader.LoadGameplayAsync(null, client);
+            // 卸掉前一张图的场景只解开引用。这里额外释放不用的资源，再准备新一局会马上用到的资源，尽量把开销留在加载界面。
+            await Resources.UnloadUnusedAssets();
             cancellationToken.ThrowIfCancellationRequested();
-            if (client != null) {
-                // 本机读完资源后还要等服务器的 Ghost 陆续到齐。非普通远征玩法还需要拿到玩法批准，拒绝会带原因结束加载。
-                await WaitForGhostReplicationAsync(client, cancellationToken);
-                if (GameSettings.Instance.RequestedMode != RaidGameMode.Expedition)
-                    await WaitForModeApprovalAsync(client, cancellationToken);
-            }
+            // 地图加载完成后提前读角色素材、灯光和字体，让进入游戏时少碰到临时加载。
+            await PrepareCharacterResourcesAsync(client, cancellationToken);
+            foreach (var lighting in FindObjectsByType<Moon.SourceWorldLighting>())
+                await lighting.PrepareResourcesAsync(cancellationToken);
+            await MoonkovLocalization.PrepareGameplayFontAsync(cancellationToken);
+            // 入局票有时效。地图加载可能花很久，所以靠近发送入局请求时再向账号服务取票。
+            if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)
+                ConnectionSettings.Instance.GameJoinTicket =
+                    await AccountClient.CreateGameTicketAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            // 本机读完资源后还要等服务器的 Ghost 陆续到齐。非普通远征玩法还需要拿到玩法批准，拒绝会带原因结束加载。
+            await WaitForGhostReplicationAsync(client, cancellationToken);
+            if (GameSettings.Instance.RequestedMode != RaidGameMode.Expedition)
+                await WaitForModeApprovalAsync(client, cancellationToken);
         }
 
-        public static void ConfigureRaidMode(World world) {
-            if (world == null || !world.IsCreated) return;
-            using var query = world.EntityManager.CreateEntityQuery(typeof(RaidModeState));
-            if (!query.IsEmptyIgnoreFilter) return;
-            // 每个 World 各有一份玩法与规则版本。需要临时装备的对局，实际比分、轮次等 ArenaMatch 状态只放在服务端 World。
-            var entity = world.EntityManager.CreateEntity(typeof(RaidModeState));
-            world.EntityManager.SetComponentData(entity,
-                new RaidModeState {
-                    Mode = GameSettings.Instance.RequestedMode,
-                    RulesVersion = GameSettings.Instance.RequestedRulesVersion
-                });
-            if (world.IsServer() && ArenaMatch.UsesTemporaryKit(GameSettings.Instance.RequestedMode))
-                world.EntityManager.AddComponentObject(entity, new ArenaMatch(GameSettings.Instance.RequestedMode));
-        }
+        public static void ConfigureRaidMode(World world) { RaidWorldBootstrap.ConfigureRaidMode(world); }
 
         private static async Task WaitForModeApprovalAsync(World world, CancellationToken cancellationToken) {
             using var query = world.EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
@@ -431,9 +334,6 @@ namespace Unity.MP_FPS {
         /// 等绝大多数 Ghost 实体已经创建后再进入场景。
         /// 否则加载完成时，会看到很多对象在眼前陆续出现。
         /// </summary>
-        /// <param name="world"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         public static async Task WaitForGhostReplicationAsync(
             World world,
             CancellationToken cancellationToken = default) {
@@ -454,82 +354,6 @@ namespace Unity.MP_FPS {
                 }
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
-        }
-
-        private static async Task WaitForAttachedCameraAsync(
-            World world,
-            CancellationToken cancellationToken = default) {
-            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WaitingOnPlayer);
-            using var mainEntityCameraQuery =
-                world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<MainCamera>());
-            double started = Time.realtimeSinceStartupAsDouble;
-            while (!mainEntityCameraQuery.HasSingleton<MainCamera>()) {
-                CheckLoadingConnection(started, "Player spawn timed out. Please reconnect.");
-                await Awaitable.NextFrameAsync(cancellationToken);
-            }
-
-            // 再等一帧，让玩家位置有机会与服务端同步。
-            await Awaitable.NextFrameAsync(cancellationToken);
-        }
-
-        private static void CreateEntityWorlds(
-            ISession session,
-            NetworkType connectionType,
-            out World serverWorld,
-            out World clientWorld) {
-            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
-            DestroyLocalSimulationWorld();
-#if UNITY_EDITOR
-            if (connectionType == NetworkType.Relay && MultiplayerPlayModePreferences.RequestedNumThinClients > 0) {
-                Debug.Log($"[{nameof(CreateEntityWorlds)}] ThinClient is disabled when Relay connection is used.");
-                MultiplayerPlayModePreferences.RequestedNumThinClients = 0;
-            }
-#endif
-            serverWorld = null;
-            clientWorld = null;
-            if (session.IsHost) {
-                serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-                ConfigureRaidMode(serverWorld);
-                GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
-            }
-            if (!session.IsServer()) {
-                clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-                ConfigureRaidMode(clientWorld);
-                GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
-            }
-        }
-
-        private static void CreateEntityWorlds(
-            bool isHost,
-            out World serverWorld,
-            out World clientWorld,
-            GameConnection connection) {
-            var role = isHost ? NetworkRole.Host : NetworkRole.Client;
-            // 先选好底层驱动，再创建 ECS World，World 建起来时 NetCode 就能取到正确的传输。好友房跨网投递、实例 ICE 和普通直连各用各的驱动配置。
-            if (connection.PeerRoom != null)
-                NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(role, connection.PeerRoom);
-            else if (connection.IceSession != null)
-                NetworkStreamReceiveSystem.DriverConstructor =
-                    new EntityDriverConstructor(role, connection.IceSession.Transport);
-            else
-                NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(role,
-                    !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
-            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
-            DestroyLocalSimulationWorld();
-            serverWorld = null;
-            clientWorld = null;
-            if (isHost) {
-                serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-                ConfigureRaidMode(serverWorld);
-                GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
-            }
-            clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            ConfigureRaidMode(clientWorld);
-            GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
-#if UNITY_EDITOR
-            Debug.Log(
-                $"[{nameof(CreateEntityWorlds)}] ThinClient number is {MultiplayerPlayModePreferences.RequestedNumThinClients}");
-#endif
         }
 
         public static async Task WaitForPlayerConnectionAsync(CancellationToken cancellationToken = default) {
@@ -573,13 +397,7 @@ namespace Unity.MP_FPS {
         /// <summary>
         /// 建立新的服务端与客户端 World 前，先清掉本地旧的模拟 World。
         /// </summary>
-        public static void DestroyLocalSimulationWorld() {
-            foreach (var world in World.All)
-                if (world.Flags == WorldFlags.Game) {
-                    world.Dispose();
-                    break;
-                }
-        }
+        public static void DestroyLocalSimulationWorld() { RaidWorldBootstrap.DestroyLocalSimulationWorld(); }
 
         public static void SetGameConnection(GameConnection gameConnection) { GameConnection = gameConnection; }
     }

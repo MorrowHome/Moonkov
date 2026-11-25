@@ -11,11 +11,6 @@ namespace Unity.MP_FPS {
     /// 为一次战局会话统一加载或卸载 Unity 主场景和子场景。
     /// </summary>
     internal static class ScenesLoader {
-        public static async Task LoadMenuPreviewAsync(World client) {
-            await LoadSceneAsync(GameManager.MenuPreviewSceneName, LoadingData.LoadingSteps.LoadGameScene);
-            await WaitForAllSubScenesToLoadAsync(client, LoadingData.LoadingSteps.LoadClient);
-        }
-
         public static async Task LoadGameplayAsync(World server, World client) {
             // 先给两个 World 装好本次规则，再加载共享地图。这样子场景加载过程中的地图组件和系统能读到正确模式。
             GameManager.ConfigureRaidMode(server);
