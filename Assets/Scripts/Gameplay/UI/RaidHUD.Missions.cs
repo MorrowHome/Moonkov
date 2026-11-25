@@ -562,9 +562,7 @@ namespace Unity.MP_FPS {
                 definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive");
             int carried = 0;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
-                var inventory =
-                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
-                        .GetSingletonEntity());
+                var inventory = CurrentInventory;
                 if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId)
                     foreach (var item in inventory.Graph.Items)
                         if (MissionInventory.IsArtifact(item.Code) &&

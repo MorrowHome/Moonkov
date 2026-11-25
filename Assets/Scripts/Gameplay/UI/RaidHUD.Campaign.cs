@@ -243,9 +243,7 @@ namespace Unity.MP_FPS {
             if (node.Kind == CampaignObjectiveKind.RecoverItem) return "打开输出槽取走物品，预留至少 1×1 空位。";
             if (node.Kind == CampaignObjectiveKind.ReachArea) return "移动并观察 MC00 入口，留意来时路线。";
             if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
-                var inventory =
-                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
-                        .GetSingletonEntity());
+                var inventory = CurrentInventory;
                 if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId &&
                     inventory.Graph.CellEnergy(accessibleOnly: true) == 0)
                     return "没有可用电池，留意已充能弹量与回程余量。";

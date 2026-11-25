@@ -217,9 +217,7 @@ namespace Unity.MP_FPS {
             if (m_InventoryRequestPending || m_InventoryQuery.IsEmptyIgnoreFilter || m_ArenaItems.index < 0 ||
                 m_ArenaItems.index >= m_ArenaDefinitions.Length)
                 return;
-            var inventory =
-                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
-                    m_InventoryQuery.GetSingletonEntity());
+            var inventory = CurrentInventory;
             if (inventory.Graph == null) return;
             uint requestId = NextManualActionRequest();
             var code = new Collections.FixedString64Bytes(m_ArenaDefinitions[m_ArenaItems.index].Code);
@@ -235,9 +233,7 @@ namespace Unity.MP_FPS {
         private void TakeClassicSupply(ShopOffer offer, int quantity) {
             if (m_InventoryRequestPending || offer == null || quantity < 1 || m_InventoryQuery.IsEmptyIgnoreFilter)
                 return;
-            var inventory =
-                m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
-                    m_InventoryQuery.GetSingletonEntity());
+            var inventory = CurrentInventory;
             if (inventory.Graph == null) return;
             uint requestId = NextManualActionRequest();
             if (Send(new ArenaSupplyRpc {

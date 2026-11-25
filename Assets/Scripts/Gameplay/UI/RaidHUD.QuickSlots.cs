@@ -126,8 +126,7 @@ namespace Unity.MP_FPS {
         // 快捷栏使用局内收到的库存。快照还属于上一局时不让物品通过可用检查，避免误发旧物品的动作。
         private RaidInventoryClientState QuickInventory =>
             m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
-                ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(
-                    m_InventoryQuery.GetSingletonEntity())
+                ? CurrentInventory
                 : null;
 
         private InventoryGraph QuickGraph =>

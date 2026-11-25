@@ -50,9 +50,7 @@ namespace Unity.MP_FPS {
                 m_ClassicMinimap.Hide();
             m_ArenaArmory.style.display = buy && m_ClassicBuyOpen ? DisplayStyle.Flex : DisplayStyle.None;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter) {
-                var inventory =
-                    m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery
-                        .GetSingletonEntity());
+                var inventory = CurrentInventory;
                 if (inventory.Sequence != m_ClassicPurchaseSequence) {
                     m_ClassicPurchaseSequence = inventory.Sequence;
                     // 买枪结果从库存快照回传。只有编号对得上这次买枪，才更新购买页的成功或失败提示。
