@@ -10,6 +10,12 @@
 - 中文 UI 字体通过本地化表里的 GUID 加载。打包要让 Addressables 随 Player 构建，并把字体 GUID 写入 Catalog。构建前检查会核对两项设置。[构建检查](Assets/Editor/MoonkovPlayerBuildChecks.cs)
 - `LocalData/UIReview` 存放本机新生成的界面验收图。UI Builder 会在 `UIElementsSchema` 生成自己的 XSD。`Docs/AI` 剩下的环形收边 JSON 是美术工具的输入。[收边清单](Docs/AI/Moonkov_Rebuild_R21_RingFinish_Delivery.json)
 
+## 本机磁盘
+
+- 关闭 Unity 后可以清理构建、导入、Burst 和着色器缓存。下次打开会重新导入。`Library/BuildValidation` 混有旧场景备份和脚本，按文件检查。
+- `LocalData/SourceFidelity20261028/World` 存放 Blender 工作文件和烘焙素材。`LocalData/HuntGunshotReview/Sources` 是音效制作工具的输入。[音效制作脚本](Tools/Audio/build_hunt_weapon_reports.py)
+- 清理 Git LFS 历史缓存时使用 `git lfs prune --verify-remote --verify-unreachable --when-unverified=continue`。这会保留远端尚未确认的对象。
+
 ## 改代码时容易漏的地方
 
 - 切场景时让本轮 ECS 更新先结束，再释放旧 World。无画面的 Editor 和服务端也必须能完成这一步，使用下一游戏帧作为清理时机。[退局与销毁](Assets/Scripts/Gameplay/GameManager/GameFlowControl.cs)
