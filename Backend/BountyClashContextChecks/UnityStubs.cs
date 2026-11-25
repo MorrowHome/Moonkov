@@ -26,7 +26,7 @@ namespace UnityEditor
 namespace Unity.MP_FPS
 {
     public enum RaidPhase { Active,Extracted,Dead,TimedOut }
-    public enum RaidLoadoutError{None,InvalidCount,InsufficientCells,Rejected}
+    public enum RaidLoadoutError{None,InvalidCount,InsufficientCells,Rejected,ResearchSuppliesNoSpace}
     public struct RaidSession{public int RaidId,Dust,Alloy,Cells;public RaidPhase Phase;public bool PersistentDeployment;public Unity.Collections.FixedString64Bytes SettlementId;}
     public static class RaidRules{public const int BagCapacity=12;public static bool ValidLoadout(int i)=>i>=0&&i<=12;}
     public sealed class RaidInventoryState{public InventoryGraph Graph;public int RaidId;}
@@ -40,7 +40,19 @@ namespace Unity.MP_FPS
 // UI transport is outside this source-only persistence harness.
 namespace Unity.MP_FPS
 {
-    public enum RaidGameMode : byte { Expedition, BountyClash }
+    public enum RaidGameMode : byte { Expedition, BountyClash, Arena, Classic }
+    public static class ArenaMatch
+    {
+        public const int Capacity = 5;
+        public static bool UsesTemporaryKit(RaidGameMode mode) => mode is RaidGameMode.Arena or RaidGameMode.Classic;
+    }
+    public static class ClassicMatch { public const int Capacity = 10; }
+    public static class OnlineLobbyClient
+    {
+        public static bool InInstance => false;
+        public static string InstanceId => null;
+    }
+    public static class OnlineInstanceServer { public static string InstanceId => null; }
     public static class GameManager { public const int MaxPlayer=32; }
     public static class LanRoomClient
     {

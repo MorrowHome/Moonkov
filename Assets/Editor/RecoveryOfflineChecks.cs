@@ -73,7 +73,7 @@ public static class RecoveryOfflineChecks
             {
                 Check(store.ReadRecovery().ItemCount()==0,"Old save did not migrate to empty inbox");
                 var saved=store.Settle(settlement);var inbox=store.ReadRecovery();
-                Check(Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path)).Value<int>("Format")==2,"New pending save must reject older readers rather than silently dropping Recovery");
+                Check(Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path)).Value<int>("Format")==OfflineProfileStore.CurrentFormat,"Migrated recovery inbox must use the current save format");
                 Check(!store.RaidActive && inbox.Batches.Count==2 && RaidInventoryTransport.Decode(saved.InventoryJson).MissionFirsts==3,"Full old save did not close deployment/save facts");
                 Check(inbox.Batches.SelectMany(b=>b.Items).Single(i=>i.Id==artifact.Id).MissionRecovered && inbox.Batches.Sum(b=>b.Count("dust"))==40,"Pending source/reward lost");
                 store.Settle(settlement);Check(store.ReadRecovery().ItemCount()==inbox.ItemCount(),"Offline settlement replay duplicated inbox");

@@ -22,7 +22,7 @@ namespace Unity.MP_FPS {
             var formatToken = document.GetValue("Format", StringComparison.OrdinalIgnoreCase);
             int format;
             try {
-                format = formatToken == null || formatToken.Type == JTokenType.Null ? 4 : formatToken.ToObject<int>();
+                format = formatToken == null || formatToken.Type == JTokenType.Null ? CurrentFormat : formatToken.ToObject<int>();
             } catch (Exception ex) when (ex is ArgumentException || ex is FormatException || ex is OverflowException ||
                                          ex is InvalidCastException) {
                 throw new InvalidDataException("Single-player save has an invalid format marker.", ex);

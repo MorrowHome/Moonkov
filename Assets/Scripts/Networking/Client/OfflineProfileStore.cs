@@ -14,8 +14,10 @@ namespace Unity.MP_FPS {
     // 独立的单人档案。每次修改先提交完整快照，
     // 随后才对外展示。出战和结算回执重启后仍可恢复。
     public sealed partial class OfflineProfileStore : IDisposable {
+        public const int CurrentFormat = 4;
+
         private sealed class SaveData {
-            public int Format = 4;
+            public int Format = CurrentFormat;
             public string PlayerId = Guid.NewGuid().ToString("D");
             public InventoryGraph Inventory;
             public RecoveryInbox Recovery = new();
@@ -132,7 +134,7 @@ namespace Unity.MP_FPS {
                         Validate(m_Save);
                         TryMigrateProtection();
                         // 旧版档案先通过兼容校验和迁移才能转成当前格式。读到损坏记录就抛错，原文件仍可恢复。
-                        if (m_Save.Format < 4) Commit(Copy());
+                        if (m_Save.Format < CurrentFormat) Commit(Copy());
                     } catch (Exception ex) when (ex is JsonException || ex is InvalidDataException) {
                         throw new InvalidDataException(
                             "Single-player save is invalid. The original file was preserved.", ex);
@@ -157,7 +159,7 @@ namespace Unity.MP_FPS {
 
         private static void Validate(SaveData save) {
             if (save != null && save.Recovery == null) save.Recovery = new RecoveryInbox();
-            if (save == null || (save.Format != 1 && save.Format != 2 && save.Format != 3 && save.Format != 4) ||
+            if (save == null || (save.Format < 1 || save.Format > CurrentFormat) ||
                 !Guid.TryParse(save.PlayerId, out _) || save.Inventory?.Items == null ||
                 save.Inventory.Validate() != InventoryError.None || save.Inventory.Find("stash") == null ||
                 save.Inventory.Find("loot") != null || save.Recovery.Validate(save.Inventory) != InventoryError.None ||
@@ -181,7 +183,7 @@ namespace Unity.MP_FPS {
         private void Commit(SaveData save) {
             if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
             ApplyProtectionMigration(save);
-            save.Format = 4;
+            save.Format = CurrentFormat;
             Validate(save);
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             // 把已经校验过的整份新档写进临时文件并刷盘。全部写好后才换正式文件，同时留下上一版备份。
