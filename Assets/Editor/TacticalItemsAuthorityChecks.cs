@@ -199,8 +199,18 @@ public static class TacticalItemsAuthorityChecks
             Request(TacticalItemAction.Cancel);Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Cancel no spend");
             Request(TacticalItemAction.Use,antidote,raid:3);Check(!inventory.TacticalPending,"Wrong raid rejected");
             Request(TacticalItemAction.Use,antidote,version:inventory.Graph.Version-1);Check(inventory.Error==InventoryError.Stale,"Old graph rejected");
-            Request(TacticalItemAction.Use,antidote);root.transform.position=Vector3.right;Tick();Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Move interrupts atomically");root.transform.position=Vector3.zero;
-            Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);health.LastHitTick++;em.SetComponentData(player,health);Tick();Check(!inventory.TacticalPending,"Damage interrupts");
+            Request(TacticalItemAction.Use, antidote);
+            root.transform.position = Vector3.right;
+            Tick();
+            Check(inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity == initial,
+                "Walking during treatment preserves the action and its item");
+            root.transform.position = Vector3.zero;
+            health = em.GetComponentData<PredictedPlayerGhost>(player);
+            health.LastHitTick++;
+            em.SetComponentData(player, health);
+            Tick();
+            Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity == initial,
+                "Damage interrupts treatment without spending the item");
             Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);
             float oldArm=health.RightArmHealth;RaidHealth.Damage(ref health,BodyPart.RightArm,1,health.LastHitTick);
             RaidHealth.Set(ref health,BodyPart.RightArm,oldArm);em.SetComponentData(player,health);Tick();
