@@ -61,7 +61,7 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 - `Shared/TacticalItemsRules.cs`：品类、明确参数、真实库存消耗/电池补给规则；无Unity依赖。
 - `Shared/TacticalItemsRpc.cs`：action/owner/world可靠RPC与客户端状态。
 - `Shared/TacticalItemEffects.cs`：与现有冲刺/运动接入。
-- `Server/ServerGameSystem.TacticalItems.cs`：服务器意图、耗时、物理、状态、清理；主组在survival后、death前每tick调用UpdateTacticalItems，在终局/再开局调用ClearTacticalItems。
+- 服务端在 `ServerGameSystem.TacticalItems.cs` 处理使用请求、计时和清理，在 `ServerGameSystem.TacticalEffects.cs` 处理效果。每个服务端 World 的道具状态在 `TacticalServerWorld.cs`，声音线索在 `RaidEnvironmentalNoise.cs`。
 - `Client/TacticalItemsClientSystem.cs`：唯一RPC消费者与owner singleton。
 - `Gameplay/Player/GrenadePresentation.cs`：按 Ghost 状态显示本人及观察者的手持、启用、远投和低抛。
 - `Gameplay/VisualEffects/TacticalItemsFeedback.cs`：显示世界投掷物、绊线、电池箱和非投掷手持物；火/毒/窒息复用项目已有 Unity Particle Pack 的专属资源副本与URP材质，提示音为原创合成、客户端交互查找。Shared Ghost字段/health hooks由主组修改；HUD、输入和翻译由UI组修改。
